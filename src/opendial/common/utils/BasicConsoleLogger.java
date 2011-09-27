@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * Utility for logging on the standard output (console).  
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $date::                      $
+ * @version $Date::                      $
  *
  */
 public class BasicConsoleLogger extends Logger {

@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
  * XML reader utility for specification of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $date::                      $
+ * @version $Date::                      $
  *
  */
 
