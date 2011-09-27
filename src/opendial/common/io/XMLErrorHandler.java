@@ -25,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Error handler for XML syntax errors.
  *
- * @author Pierre Lison (plison@ifi.uio.no)
+ * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $date::                      $
  *
  */
