@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * Utility for logging on the standard output (console).  
  *
  * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2011-09-27 17:54:53 #$
+ * @version $Date::                      $
  *
  */
 public class BasicConsoleLogger extends Logger {
