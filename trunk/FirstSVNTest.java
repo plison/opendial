@@ -27,6 +27,6 @@ package opendial.common.readers;
  */
 public class FirstSVNTest {
 	
-	// and now we add a first change
+	// and now we add a second change
 
 }
