@@ -21,11 +21,13 @@ package opendial.imports;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.junit.Test;
  
 
 /**
- *  
+ *  Testing for the XML Reader of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -33,12 +35,13 @@ import org.junit.Test;
  */
 public class XMLDomainReaderTest {
 
-	@Test
-	public void test1() {
-		assertTrue(true);
-	}
+	public static final String dialDomain = "domains//testing//microdom1.xml"; 
+
 	
-	public static void main(String[] args) {
-		System.out.println("hello world!");
+	@Test
+	public void test1() throws IOException {
+		boolean isValidated = XMLDomainReader.validateXML(dialDomain);
+		assertTrue(isValidated);
 	}
+
 }
