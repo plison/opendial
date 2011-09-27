@@ -24,7 +24,7 @@ package opendial.common.readers;
  * 
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                    $ 
+ * @version $Date::                    $
  *
  */
 public class FirstSVNTest {
