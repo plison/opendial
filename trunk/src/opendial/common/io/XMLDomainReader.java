@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
 /**
  * XML reader utility for specification of dialogue domains.
  *
- * @author Pierre Lison (plison@ifi.uio.no)
+ * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $date::                      $
  *
  */
@@ -49,7 +49,7 @@ public class XMLDomainReader {
 	public static final String dialDomainSchema = "resources//domaindef.xsd";
 	
 	static Logger logger = BasicConsoleLogger.getDefaultLogger();
-	
+
 	/** 
 	 * @param args
 	 */

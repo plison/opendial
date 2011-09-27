@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 /**
  * Utility for logging on the standard output (console).  
  *
- * @author Pierre Lison (plison@ifi.uio.no)
+ * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $date::                      $
  *
  */
@@ -60,7 +60,7 @@ public class BasicConsoleLogger extends Logger {
  * String formatter associated with the console logger
  * 
  *
- * @author Pierre Lison (plison@ifi.uio.no)
+ * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $date::                      $
  *
  */
