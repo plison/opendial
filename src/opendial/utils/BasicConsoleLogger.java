@@ -17,42 +17,115 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.common.utils;
+package opendial.utils;
 
 import java.util.logging.ConsoleHandler;
+import java.util.logging.ErrorManager;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
  * Utility for logging on the standard output (console).  
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @author  Pierre Lison plison@ifi.uio.no 
+ * @version $Date:: 2011-09-27 17:54:53 #$
  *
  */
 public class BasicConsoleLogger extends Logger {
 
+	public static final boolean REPLACE_DEFAULT_CONSOLE_LOGGER = true;
+	
+	
+	/**
+	 * Inherited constructor for the console logger
+	 * @param name
+	 * @param resourceBundleName
+	 */
 	protected BasicConsoleLogger(String name, String resourceBundleName) {
 		super(name, resourceBundleName);
 	}
  
-	public static Logger getDefaultLogger() {
+	
+	/**
+	 * Create a new logger, with the name given as parameter 
+	 * and a logging level
+	 * 
+	 * @param loggerName the logger
+	 * @param level logging level
+	 * @return the created logger
+	 */
+	public static Logger createLogger(String loggerName, Level level) {
+		
+		// create a new logger and add the simple log formatter to it
+		Logger logger = getLogger(loggerName);
+		ConsoleHandler errorHandler = new LogHandler();
+		errorHandler.setFormatter(new LogFormatter());
+		errorHandler.setLevel(Level.WARNING);
+		logger.addHandler(errorHandler);
 
-		Logger l = getLogger("");
-
-		for (Handler handler2 : l.getHandlers()) {
-			l.removeHandler(handler2);
+		
+		if (REPLACE_DEFAULT_CONSOLE_LOGGER) {
+			deleteDefaultLogger();
 		}
+		logger.setLevel(level);
+		return logger;
+	}
+	
+	
+	
+	/**
+	 * Delete the default console logger
+	 */
+	private static void deleteDefaultLogger() {
+		Logger rootLogger = getLogger("");
 
-		ConsoleHandler handler = new ConsoleHandler();
-		handler.setFormatter(new LogFormatter());
-		l.addHandler(handler);
-
-		return l;
+		for (Handler handler2 : rootLogger.getHandlers()) {
+			rootLogger.removeHandler(handler2);
+		}
 	}
 
+}
+
+
+/**
+ * Log console handler, using both system.err and system.out
+ * (which means a easier-to-read output)
+ * 
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
+ */
+final class LogHandler extends ConsoleHandler {
+	
+	/**
+	 * Publish a new log record, using using system.err for warning 
+	 * and error messages, and system.out for all other messages
+	 *
+	 * @param rec the log record
+	 */
+	@Override
+	public void publish(LogRecord rec) {
+
+        try {
+            String message = getFormatter().format(rec);
+            if (rec.getLevel().intValue() >= Level.WARNING.intValue())
+            {
+                System.err.write(message.getBytes());                       
+            }
+            else
+            {
+                System.out.write(message.getBytes());
+            }
+        } catch (Exception exception) {
+            reportError(null, exception, ErrorManager.FORMAT_FAILURE);
+            return;
+        }
+
+	}
 }
 
 
@@ -66,9 +139,16 @@ public class BasicConsoleLogger extends Logger {
  */
 final class LogFormatter extends Formatter {
 
+	
+	/**
+	 * Format the log record according to the following convention:
+	 *  [loggerName] recordLevel: message
+	 *  
+	 *  @param rec the log record
+	 */
 	@Override
-	public String format(LogRecord arg0) {
-		return "["+arg0.getClass().getSimpleName()+"] " + arg0.getLevel() + ": " + arg0.getMessage();
+	public String format(LogRecord rec) {
+		return "["+rec.getLoggerName()+"] " + rec.getLevel() + ": " + rec.getMessage() + "\n";
 	}
 }
 
