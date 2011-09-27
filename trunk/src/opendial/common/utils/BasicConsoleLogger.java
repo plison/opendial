@@ -37,7 +37,7 @@ public class BasicConsoleLogger extends Logger {
 	protected BasicConsoleLogger(String name, String resourceBundleName) {
 		super(name, resourceBundleName);
 	}
-
+ 
 	public static Logger getDefaultLogger() {
 
 		Logger l = getLogger("");
