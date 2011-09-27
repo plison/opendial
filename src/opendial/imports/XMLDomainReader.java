@@ -20,9 +20,6 @@
 package opendial.imports;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,11 +27,13 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import opendial.utils.BasicConsoleLogger;
+import opendial.utils.Logger;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XML reader utility for specification of dialogue domains.
@@ -46,16 +45,23 @@ import org.xml.sax.SAXException;
 
 public class XMLDomainReader {
 
-	public static final String dialDomain = "domains//testing//microdom1.xml"; 
+	static Logger log = new Logger("XMLDomainReader", Logger.Level.NORMAL);
+
 	public static final String dialDomainSchema = "resources//domaindef.xsd";
 	
-	static Logger logger = BasicConsoleLogger.createLogger("XMLDomainReader", Level.ALL);
 
-	
-	public static void main(String[] args) {
-				
+	/**
+	 * Validates a XML document containing a specification of a dialogue domain.
+	 * Returns true if the XML document is valid, false otherwise.
+	 * 
+	 * @param dialDomain the filename of the XML document
+	 * @return true if document is valid, false otherwise
+	 * @throws IOException if file cannot be read
+	 */
+	public static boolean validateXML(String dialDomain) throws IOException {
+
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
+ 
 		try {
 			SchemaFactory schema = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 			factory.setSchema(schema.newSchema(new Source[] {new StreamSource(dialDomainSchema)}));
@@ -63,17 +69,47 @@ public class XMLDomainReader {
 
 			builder.setErrorHandler(new XMLErrorHandler());
 			builder.parse(new InputSource(dialDomain));
-			logger.fine("XML parsing of file: " + dialDomain + " successful!");
-
+			log.info("XML parsing of file: " + dialDomain + " successful!");
+			return true;
 		}
 		 catch (SAXException e) {
-			e.printStackTrace();
+			log.warning("Validation aborted");
+			return false;
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        
+			log.warning(e.getMessage());
+			return false;
+		} 
 	}
+	
 
+}
+
+
+
+/**
+ * Small error handler for XML syntax errors.
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
+ */
+final class XMLErrorHandler extends DefaultHandler {
+
+	static Logger log = new Logger("XMLErrorHandler", Logger.Level.NORMAL);
+	
+	public void error (SAXParseException e) throws SAXParseException { 
+		log.warning("Parsing error: "+e.getMessage());
+		throw e;
+	}
+	
+	public void warning (SAXParseException e) { 
+		log.warning("Parsing problem: "+e.getMessage());
+	}
+	
+	public void fatalError (SAXParseException e) { 
+		log.severe("Parsing error: "+e.getMessage()); 
+		log.severe("Cannot continue."); 
+		System.exit(1);
+	}
+	
 }
