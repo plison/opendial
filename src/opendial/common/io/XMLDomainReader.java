@@ -47,7 +47,6 @@ public class XMLDomainReader {
 
 	public static final String dialDomain = "domains//testing//microdom1.xml"; 
 	public static final String dialDomainSchema = "resources//domaindef.xsd";
-
 	
 	static Logger logger = BasicConsoleLogger.getDefaultLogger();
 	
