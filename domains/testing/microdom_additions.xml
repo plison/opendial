@@ -1,0 +1,37 @@
+
+
+<rule model="userPrediction">
+	<input>
+		<underspecifiedvar denotation="i" category="intent"/>
+		<var label="a_m"/>
+	</input>
+	<output><var label="a_u"/></output>
+	<case>
+		<condition>
+			<assign var="i" value="WantX"/>
+			<assign var="a_m" value="ConfirmX"/>
+		</condition>
+		<effect prob="1.0"><assign var="a_u" value="Confirm"/></effect>
+	</case>
+	<case>
+		<condition>
+			<assign var="i" value="WantY"/>
+			<assign var="a_m" value="ConfirmX"/>
+		</condition>
+		<effect prob="1.0"><assign var="a_u" value="Deny"/></effect>
+	</case>
+	<case>
+		<condition>
+			<assign var="i" value="WantY"/>
+			<assign var="a_m" value="ConfirmY"/>
+		</condition>
+		<effect prob="1.0"><assign var="a_u" value="Confirm"/></effect>
+	</case>
+	<case>
+		<condition>
+			<assign var="i" value="WantX"/>
+			<assign var="a_m" value="ConfirmY"/>
+		</condition>
+		<effect prob="1.0"><assign var="a_u" value="Deny"/></effect>
+	</case>
+</rule>
