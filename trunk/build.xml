@@ -4,57 +4,73 @@
 	<description>
 	        build file for opendial
 	</description>
-	  <!-- set global properties for this build -->
+	  
+	<!-- set global properties for this build -->
 	  <property name="src" location="src"/>	  
 	  <property name="testsrc" location="testing"/>	  
 	<property name="javadoc" location="doc/javadoc"/>
 	<property name="testreports" location="doc/testreports"/>
 	<property name="build" location="bin"/>
 	<property name="lib" location="lib"/>
+	
+	<path id="compile.classpath">
+		<fileset dir="${lib}">
+		        <include name="*.jar"/>
+		</fileset>
+	</path>
 
-	  <target name="init">
-	<!-- Create the time stamp -->
-	<tstamp/>
-	<!-- Create the build directory structure used by compile -->
+	
+	<!-- INITIALISATION -->
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
 	 	 <mkdir dir="${build}"/> 
-	  </target>
+	</target>
 
-	  <target name="compile" depends="init" description="compile the source " >
-	<!-- Compile the java code from ${src} into ${build} -->
+	<!-- COMPILATION -->
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
 		<javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
-		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false"/>
-	  </target>
+		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false">
+	  		<classpath refid="compile.classpath"/>
+		</javac>
+	</target>
 
-	  <target name="dist" depends="compile" description="generate the distribution" >
-	<!-- Create the distribution directory -->
-	<mkdir dir="${lib}"/>
+	<!-- GENERATE DISTRIBUTION -->
+	<target name="distribute" depends="compile" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${lib}"/>
+		<!-- Put everything in ${build} into the opendial-${DSTAMP}.jar file -->
+		<jar jarfile="${lib}/opendial-${DSTAMP}.jar" basedir="${build}"/>
+	</target>
 
-	<!-- Put everything in ${build} into the opendial-${DSTAMP}.jar file -->
-	<jar jarfile="${lib}/opendial-${DSTAMP}.jar" basedir="${build}"/>
-	  </target>
-
-	  <target name="clean" description="clean up" >
-	<!-- Delete the ${build} directory trees -->
-		<delete dir="${build}"/>
-		<delete dir="${javadoc}"/>
-	  </target>
 	
-	<junit printsummary="yes" haltonfailure="no" showoutput="no" >
-		<classpath>
-			<pathelement path="${build}"/>
-			<pathelement path="${lib}/junit.jar"/>
-		<!--	<fileset dir="lib">
-				<include name="**/*.jar"/>
-			</fileset> -->
-		</classpath>
-	 	<batchtest fork="yes" todir="${testreports}">
-			<formatter type="xml"/>
-	 		<fileset dir="${testsrc}">
-				<include name="**/*Test*.java"/>
-			</fileset>
-		</batchtest>
-	</junit>
+	<!-- JUNIT TESTING AND REPORT GENERATION -->
+	<target name="test" depends="test-run,test-report" description="junit testing" />
+
+	<target name="test-run" depends="compile">
+		<mkdir dir="${testreports}"/>
+		<junit printsummary="yes" haltonfailure="no" showoutput="no">
+			<classpath refid="compile.classpath"/>
+		 	<batchtest fork="yes" todir="${testreports}">
+				<formatter type="xml"/>
+		 		<fileset dir="${testsrc}">
+					<include name="**/*Test*.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+		
+	<target name="test-report">
+		<junitreport todir="${testreports}">
+			<fileset dir="${testreports}" includes="TEST-*.xml"/>
+			<report format="frames" todir="${testreports}"/>
+		</junitreport>
+	</target>	
 	
+	  	
+	<!-- JAVADOC GENERATION -->
 	<target name="javadoc">
 	    <javadoc
 	          access="public"
@@ -62,15 +78,27 @@
 	           author="true"
 	           version="true"
 	           use="true"
-	           windowtitle="openDial API"
-	       >
+	           windowtitle="openDial API" >
 
-	        <fileset dir="${src}" defaultexcludes="yes">
-	            <include name="**/*.java"/>
+	    	<fileset dir="${src}" defaultexcludes="yes">
+	        	<include name="**/*.java"/>
 	           <!-- <exclude name="org/test/**/*.java" /> -->
 	        </fileset>
 	    </javadoc>
 	</target>
+	
+	
+	<!-- START ALL TASKS (COMPILATION, DISTRIBUTION, TESTING, JAVADOC GENERATION) -->
+	<target name="all" depends="compile,distribute,test,javadoc"/>
+	
+	<!-- CLEANING UP -->
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${javadoc}"/>
+		<delete dir="${testreports}"/>
+	</target>
+
 </project>
 
 
