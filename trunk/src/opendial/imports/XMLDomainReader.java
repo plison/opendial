@@ -87,7 +87,7 @@ public class XMLDomainReader {
 
 
 /**
- * Error handler for XML syntax errors.
+ * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
