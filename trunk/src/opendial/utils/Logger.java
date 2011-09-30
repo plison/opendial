@@ -23,7 +23,7 @@ package opendial.utils;
  * Utility for logging on the standard output (console).  
  *
  * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2011-09-27 22:02:01 #$
+ * @version $Date::                      $
  *
  */
 public class Logger {
