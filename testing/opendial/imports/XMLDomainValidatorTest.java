@@ -30,7 +30,7 @@ import org.junit.Test;
  *  Testing for the XML Reader of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-09-27 23:30:54 #$
+ * @version $Date::                      $
  *
  */
 public class XMLDomainValidatorTest {
