@@ -1,0 +1,39 @@
+
+<model type="userTransition">
+
+<rule>
+	<input>
+		<var label="a_u"/>
+		<var label="a_m"/>
+	</input>
+	<output>
+			<instance category="intent" denotation="i"/>
+	</output>
+	<case>
+		<condition operator="and">
+			<if var="a_u" value="AskForX"/>
+			<if var="a_m" value="AskRepeat" relation="!="/>
+		</condition>
+		<effect prob="1.0"><add var="i"/><set var="i" value="WantX"/></effect>
+	</case>
+</rule>
+
+
+<rule>
+	<input>
+		<var label="a_u"/>
+		<var label="a_m"/>
+	</input>
+	<output>
+		<instance category="intent" denotation="i"/>
+	</output>
+	<case>
+		<condition operator="and">
+			<if var="a_u" value="AskForY"/>
+			<if var="a_m" value="AskRepeat" relation="!="/>
+		</condition>
+		<effect prob="1.0"><add var="i"/><set var="i" value="WantY"/></effect>
+	</case>
+</rule>
+
+</model>

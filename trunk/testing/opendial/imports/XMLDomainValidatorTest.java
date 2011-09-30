@@ -30,17 +30,17 @@ import org.junit.Test;
  *  Testing for the XML Reader of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-09-27 23:30:54 #$
  *
  */
-public class XMLDomainReaderTest {
+public class XMLDomainValidatorTest {
 
-	public static final String dialDomain = "domains//testing//microdom1.xml"; 
-
+	public String dialDomain = "domains//testing//microdom2.xml";
 	
 	@Test
 	public void test1() throws IOException {
-		boolean isValidated = XMLDomainReader.validateXML(dialDomain);
+		
+		boolean isValidated = XMLDomainValidator.validateXML(dialDomain);
 		assertTrue(isValidated);
 	}
 
