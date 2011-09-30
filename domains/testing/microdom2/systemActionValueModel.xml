@@ -3,10 +3,10 @@
 
 <rule>
 	<input>
-		<var label="i"/>
+		<var type="i"/>
 	</input>
 	<output>
-		<var label="a_m"/>
+		<var type="a_m"/>
 	</output>
 	<case>
 		<condition><if var="i" value="WantX"/></condition>
@@ -20,10 +20,10 @@
 
 <rule>
 	<input>
-		<var label="i"/>
+		<var type="i"/>
 	</input>
 	<output>
-		<var label="a_m"/>
+		<var type="a_m"/>
 	</output>
 	<case>
 		<condition><if var="i" value="WantY"/></condition>
@@ -37,10 +37,10 @@
 
 <rule>
 	<input>
-		<var label="i"/>
+		<var type="i"/>
 	</input>
 	<output>
-		<var label="a_m"/>
+		<var type="a_m"/>
 	</output>
 	<case>
 		<effect prob="0.6"><set var="a_m" value="AskRepeat"/></effect>
@@ -50,10 +50,10 @@
 
 <rule>
 	<input>
-		<var label="a_u"/>
+		<var type="a_u"/>
 	</input>
 	<output>
-		<var label="a_m"/>
+		<var type="a_m"/>
 	</output>
 	<case>
 		<condition><if var="a_u" value="Unknown"/></condition>

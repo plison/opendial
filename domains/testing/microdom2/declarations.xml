@@ -1,24 +1,24 @@
 
 <declarations>
 
-	<entity name="intent">
+	<entitytype name="intent">
 		<value>WantX</value>
 		<value>WantY</value>
-	</entity>
+	</entitytype>
 
-	<variable name="a_u">
+	<entitytype name="a_u" fixed="true">
 		<value>AskForX</value>
 		<value>AskForY</value>
 		<value>Confirm</value>
 		<value>Deny</value>
 		<value>Unknown</value>
-	</variable>
+	</entitytype>
 
-	<variable name="a_m">
+	<entitytype name="a_m" fixed="true">
 		<value>DoX</value>
 		<value>DoY</value>
 		<value>AskRepeat</value>
 		<value>InformNotUnderstand</value>
-	</variable>
+	</entitytype>
 
 </declarations>
