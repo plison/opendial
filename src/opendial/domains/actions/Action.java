@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -32,9 +32,17 @@ public abstract class Action {
 
 	static Logger log = new Logger("Action", Logger.Level.NORMAL);
 	
-	String name;
+	String value;
 	
 	public Action(String name) {
-		this.name = name;
+		this.value = name;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Object getValue() {
+		return value;
 	}
 }

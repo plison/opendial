@@ -13,8 +13,9 @@
 	
 	<path id="compile.classpath">
 		<fileset dir="${lib}">
-		        <include name="*.jar"/>
+		        <include name="junit.jar"/>
 		</fileset>
+	      <pathelement path="${build}"/> 
 	</path>
 
 	
@@ -61,7 +62,7 @@
 	</target>
 		
 	<target name="test-report">
-		<junitreport todir="${testreports}">
+		<junitreport todir="${testreports}" >
 			<fileset dir="${testreports}" includes="TEST-*.xml"/>
 			<report format="frames" todir="${testreports}"/>
 		</junitreport>
@@ -76,11 +77,11 @@
 	           author="true"
 	           version="true"
 	           use="true"
-	           windowtitle="openDial API" >
+	           windowtitle="openDial API" 
+	    	verbose="no">
 
 	    	<fileset dir="${src}" defaultexcludes="yes">
 	        	<include name="**/*.java"/>
-	           <!-- <exclude name="org/test/**/*.java" /> -->
 	        </fileset>
 	    </javadoc>
 	</target>

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.imports;
+package opendial.readers;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -43,13 +43,13 @@ import org.xml.sax.helpers.DefaultHandler;
  * XML reader utility for validating the XML specification of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-09-30 18:35:17 #$
  *
  */
 
 public class XMLDomainValidator {
 
-	static Logger log = new Logger("XMLDomainReader", Logger.Level.DEBUG);
+	static Logger log = new Logger("XMLDomainValidator", Logger.Level.NORMAL);
 
 
 	public static final String domainSchema = "resources//schemata//domain.xsd";
@@ -140,7 +140,7 @@ public class XMLDomainValidator {
  * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-09-30 18:35:17 #$
  *
  */
 final class XMLErrorHandler extends DefaultHandler {

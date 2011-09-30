@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,15 +20,19 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import opendial.domains.EntityType;
 import opendial.utils.Logger;
 
 /**
  * Representation of a rule.
+ * 
+ * TODO: for cases, ensure that it is ordered(?)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -50,16 +54,68 @@ public class Rule {
 		cases = new LinkedList<Case>();
 	}
 	
-	public void addInput(Variable var) {
+	public void addInputVariable(Variable var) {
 		inputs.put(var.getDenotation(), var);
 	}
 	
-	public void addOutput(Variable var) {
+	public void addInputVariables(List<Variable> vars) {
+		for (Variable var: vars) {
+			addInputVariable(var);
+		}
+	}
+	
+	public void addOutputVariable(Variable var) {
 		outputs.put(var.getDenotation(), var);
+	}
+	
+	public void addOutputVariables(List<Variable> vars) {
+		for (Variable var: vars) {
+			addOutputVariable(var);
+		}
 	}
 
 	public void addCase(Case case1) {
 		cases.add(case1);
+	}
+
+	
+	public boolean hasInputVariable(String denotation) {
+		return inputs.containsKey(denotation);
+	}
+	public Variable getInputVariable(String denotation) {
+		return inputs.get(denotation);
+	}
+	
+	public boolean hasOutputVariable(String denotation) {
+		return outputs.containsKey(denotation);
+	}
+	
+	public Variable getOutputVariable(String denotation) {
+		return outputs.get(denotation);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<Variable> getInputVariables() {
+		return inputs.values();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<Variable> getOutputVariables() {
+		return outputs.values();
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<Case> getCases() {
+		return cases;
 	}
 	
 }
