@@ -1,0 +1,64 @@
+
+<model type="systemActionValue">
+
+<rule>
+	<input>
+		<var label="i"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition><if var="i" value="WantX"/></condition>
+		<effect prob="1.0"><set var="a_m" value="DoX"/></effect>
+	</case>
+	<case>
+		<condition><if var="i" value="WantY"/></condition>
+		<effect prob="0.0"><set var="a_m" value="DoX"/></effect>
+	</case>
+</rule>
+
+<rule>
+	<input>
+		<var label="i"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition><if var="i" value="WantY"/></condition>
+		<effect prob="1.0"><set var="a_m" value="DoY"/></effect>
+	</case>
+	<case>
+		<condition><if var="i" value="WantX"/></condition>
+		<effect prob="0.0"><set var="a_m" value="DoY"/></effect>
+	</case>
+</rule>
+
+<rule>
+	<input>
+		<var label="i"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<effect prob="0.6"><set var="a_m" value="AskRepeat"/></effect>
+	</case>
+</rule>
+
+
+<rule>
+	<input>
+		<var label="a_u"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition><if var="a_u" value="Unknown"/></condition>
+		<effect prob="1.0"><set var="a_m" value="InformNotUnderstand"/></effect>
+	</case>
+</rule>
+
+</model>

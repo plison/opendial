@@ -1,0 +1,41 @@
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- INITIAL STATE-->
+
+<xs:element name="initialstate" type="initialStateType"/>
+
+<xs:complexType name="initialStateType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="instance" type="initInstanceType"/>
+			<xs:element name="variable" type="initVariableType"/>
+		</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="initInstanceType">
+	<xs:sequence>
+		<xs:element name="value" type="valueType"/>
+	</xs:sequence>
+	<xs:attribute name="category" type="xs:string" use="required"/>
+	<xs:attribute name="label" type="xs:string"/>
+</xs:complexType>
+
+<xs:complexType name="initVariableType">
+	<xs:sequence>
+		<xs:element name="value" type="valueType"/>
+	</xs:sequence>
+	<xs:attribute name="label" type="xs:string" use="required"/>
+</xs:complexType>
+
+
+<xs:complexType name="valueType">
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="prob" type="probabilityType" use="required"/>
+        </xs:extension>
+      </xs:simpleContent>
+ </xs:complexType>
+
+
+
+</xs:schema>

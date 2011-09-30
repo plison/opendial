@@ -1,0 +1,10 @@
+
+
+<actions var="a_m">
+
+	<action value="DoX" type="string" content="OK, doing X!"/>
+	<action value="DoY" type="string" content="OK, doing Y!"/>
+	<action value="AskRepeat" type="string" content="Sorry, could you repeat?"/>
+	<action value="InformNotUnderstand" type="string" content="Sorry, I did not understand"/>
+
+</actions>
