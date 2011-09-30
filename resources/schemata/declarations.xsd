@@ -5,8 +5,7 @@
 
 <xs:complexType name="declarationsType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="entity" type="declarationType"/>
-			<xs:element name="variable" type="declarationType"/>
+			<xs:element name="entitytype" type="declarationType"/>
 		</xs:choice>
 </xs:complexType>
 
@@ -16,6 +15,7 @@
 		<xs:element name="feature" minOccurs="0" maxOccurs="unbounded" type="featureType"/>
 	</xs:sequence>
 	<xs:attribute name="name" type="xs:string"/>
+	<xs:attribute name="fixed" type="xs:boolean"/>
 </xs:complexType>
 
 <xs:complexType name="featureType">

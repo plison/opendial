@@ -46,23 +46,19 @@
 
 	<xs:complexType name="variablesType">
 		<xs:choice maxOccurs="10">
-			<xs:element name="instance" minOccurs="0" type="instanceType" />
-			<xs:element name="var" minOccurs="0" type="simpleLabelType" />
-			<xs:element name="observation" minOccurs="0" type="simpleLabelType" />
-			<xs:element name="action" minOccurs="0" type="simpleLabelType" />
+			<xs:element name="var" minOccurs="0" type="varType" />
 		</xs:choice>
 	</xs:complexType>
 
 
-	<xs:complexType name="instanceType">
-		<xs:attribute name="denotation" type="xs:string" use="required" />
-		<xs:attribute name="category" type="xs:string" use="required" />
-		<xs:attribute name="sameAs" type="xs:string" />
+	<xs:complexType name="varType">
+		<xs:attribute name="denotation" type="xs:string"/>
+		<xs:attribute name="type" type="xs:string" />
 	</xs:complexType>
 
 
 	<xs:complexType name="simpleLabelType">
-		<xs:attribute name="label" type="xs:string" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
 	</xs:complexType>
 
 

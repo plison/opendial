@@ -20,8 +20,6 @@
 package opendial.imports;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;

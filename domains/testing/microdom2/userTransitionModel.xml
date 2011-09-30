@@ -3,11 +3,11 @@
 
 <rule>
 	<input>
-		<var label="a_u"/>
-		<var label="a_m"/>
+		<var type="a_u"/>
+		<var type="a_m"/>
 	</input>
 	<output>
-			<instance category="intent" denotation="i"/>
+			<var type="intent" denotation="i"/>
 	</output>
 	<case>
 		<condition operator="and">
@@ -21,11 +21,11 @@
 
 <rule>
 	<input>
-		<var label="a_u"/>
-		<var label="a_m"/>
+		<var type="a_u"/>
+		<var type="a_m"/>
 	</input>
 	<output>
-		<instance category="intent" denotation="i"/>
+		<var type="intent" denotation="i"/>
 	</output>
 	<case>
 		<condition operator="and">

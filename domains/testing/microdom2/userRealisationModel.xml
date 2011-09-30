@@ -2,8 +2,8 @@
 <model type="userRealisation">
 
 <rule>
-	<input><var label="a_u"/></input>
-	<output><observation label="f1"/></output>
+	<input><var type="a_u"/></input>
+	<output><var type="f1"/></output>
 	<case>
 		<condition><if var="a_u" value="AskForX"/></condition>
 		<effect prob="1.0"><set var="f1" value="true"/></effect>
@@ -12,8 +12,8 @@
 
 
 <rule>
-	<input><var label="a_u"/></input>
-	<output><observation label="f2"/></output>
+	<input><var type="a_u"/></input>
+	<output><var type="f2"/></output>
 	<case>
 		<condition><if var="a_u" value="AskForY"/></condition>
 		<effect prob="1.0"><set var="f2" value="true"/></effect>
@@ -22,8 +22,8 @@
 
 
 <rule>
-	<input><var label="a_u"/></input>
-	<output><observation label="f3"/></output>
+	<input><var type="a_u"/></input>
+	<output><var type="f3"/></output>
 	<case>
 		<condition><if var="a_u" value="Confirm"/></condition>
 		<effect prob="1.0"><set var="f3" value="true"/></effect>
@@ -32,8 +32,8 @@
 
 
 <rule>
-	<input><var label="a_u"/></input>
-	<output><observation label="f4"/></output>
+	<input><var type="a_u"/></input>
+	<output><var type="f4"/></output>
 	<case>
 		<condition><if var="a_u" value="Deny"/></condition>
 		<effect prob="1.0"><set var="f4" value="true"/></effect>
@@ -41,8 +41,8 @@
 </rule>
 
 <rule>
-	<input><var label="a_u"/></input>
-	<output><observation label="f5"/></output>
+	<input><var type="a_u"/></input>
+	<output><var type="f5"/></output>
 	<case>
 		<condition><if var="a_u" value="Unknown"/></condition>
 		<effect prob="1.0"><set var="f5" value="true"/></effect>
