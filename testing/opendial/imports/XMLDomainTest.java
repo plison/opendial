@@ -23,6 +23,9 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import opendial.arch.DialException;
+import opendial.domains.Domain;
+
 import org.junit.Test;
  
 
@@ -33,7 +36,7 @@ import org.junit.Test;
  * @version $Date::                      $
  *
  */
-public class XMLDomainValidatorTest {
+public class XMLDomainTest {
 
 	public String dialDomain = "domains//testing//microdom2.xml";
 	
@@ -42,6 +45,14 @@ public class XMLDomainValidatorTest {
 		
 		boolean isValidated = XMLDomainValidator.validateXML(dialDomain);
 		assertTrue(isValidated);
+	}
+	
+	
+	@Test
+	public void test2() throws IOException, DialException {
+		
+		Domain domain = XMLDomainReader.extractDomain(dialDomain);
+		assertTrue(domain.getEntityTypes().size() == 3);
 	}
 
 }
