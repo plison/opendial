@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import opendial.arch.DialException;
 import opendial.domains.Domain;
+import opendial.utils.Logger;
 
 import org.junit.Test;
  
@@ -38,6 +39,9 @@ import org.junit.Test;
  */
 public class XMLDomainTest {
 
+	static Logger log = new Logger("XMLDomainTest", Logger.Level.DEBUG);
+
+	
 	public String dialDomain = "domains//testing//microdom2.xml";
 	
 	@Test
@@ -51,7 +55,9 @@ public class XMLDomainTest {
 	@Test
 	public void test2() throws IOException, DialException {
 		
+		log.debug("this is at the beginning of the test");
 		Domain domain = XMLDomainReader.extractDomain(dialDomain);
+		log.debug("this is after the extraction");
 		assertTrue(domain.getEntityTypes().size() == 3);
 	}
 
