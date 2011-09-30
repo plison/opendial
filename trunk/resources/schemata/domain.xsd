@@ -23,6 +23,7 @@
 				<xs:element name="actions" type="includeType" minOccurs="1" maxOccurs="1"/>
 
 			</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 

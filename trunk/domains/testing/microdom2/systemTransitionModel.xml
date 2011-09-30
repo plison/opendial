@@ -3,10 +3,10 @@
 
 <rule>
 	<input>
-		<var label="a_m"/>
+		<var type="a_m"/>
 	</input>
 	<output>
-		<instance denotation="i" category="intent"/>
+		<var denotation="i" type="intent"/>
 	</output>
 	<case>
 		<condition><if var="a_m" value="DoX"/></condition>
