@@ -13,8 +13,9 @@
 	
 	<path id="compile.classpath">
 		<fileset dir="${lib}">
-		        <include name="*.jar"/>
+		        <include name="junit.jar"/>
 		</fileset>
+	      <pathelement path="${build}"/> 
 	</path>
 
 	

@@ -49,7 +49,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class XMLDomainValidator {
 
-	static Logger log = new Logger("XMLDomainReader", Logger.Level.DEBUG);
+	static Logger log = new Logger("XMLDomainValidator", Logger.Level.NORMAL);
 
 
 	public static final String domainSchema = "resources//schemata//domain.xsd";
