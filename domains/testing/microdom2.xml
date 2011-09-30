@@ -1,0 +1,17 @@
+<?xml version="1.0"?> 
+<domain xmlns:xs='http://www.w3.org/2001/XMLSchema-instance'>
+
+<declarations file="microdom2/declarations.xml"/>
+<initialstate file="microdom2/initialState.xml"/>
+
+<model file="microdom2/userPredictionModel.xml"/>
+<model file="microdom2/userRealisationModel.xml"/>
+<model file="microdom2/userTransitionModel.xml"/>
+<model file="microdom2/systemActionValueModel.xml"/>
+<model file="microdom2/systemTransitionModel.xml"/>
+<!--  <model file="microdom2/systemRealisationModel.xml"/> -->
+
+<observations file="microdom2/observations.xml"/>
+<actions file="microdom2/actions.xml"/>
+
+</domain>

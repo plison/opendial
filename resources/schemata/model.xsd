@@ -1,0 +1,118 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+	<!-- MODEL SCHEMA -->
+
+	<xs:element name="model" type="modelType" />
+
+	<xs:complexType name="modelType">
+		<xs:sequence>
+			<xs:element name="rule" minOccurs="0" maxOccurs="unbounded"
+				type="ruleType" />
+		</xs:sequence>
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="userRealisation" />
+					<xs:enumeration value="userPrediction" />
+					<xs:enumeration value="userTransition" />
+					<xs:enumeration value="systemActionValue" />
+					<xs:enumeration value="systemRealisation" />
+					<xs:enumeration value="systemTransition" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+
+	<!-- RULE SCHEMA -->
+
+
+	<xs:complexType name="ruleType">
+		<xs:sequence>
+			<xs:element name="input" minOccurs="0" maxOccurs="1"
+				type="variablesType" />
+			<xs:element name="output" minOccurs="0" maxOccurs="1"
+				type="variablesType" />
+			<xs:element name="case" minOccurs="1" maxOccurs="unbounded"
+				type="caseType" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" />
+	</xs:complexType>
+
+
+	<!-- INPUT AND OUTPUT SCHEMA -->
+
+
+	<xs:complexType name="variablesType">
+		<xs:choice maxOccurs="10">
+			<xs:element name="instance" minOccurs="0" type="instanceType" />
+			<xs:element name="var" minOccurs="0" type="simpleLabelType" />
+			<xs:element name="observation" minOccurs="0" type="simpleLabelType" />
+			<xs:element name="action" minOccurs="0" type="simpleLabelType" />
+		</xs:choice>
+	</xs:complexType>
+
+
+	<xs:complexType name="instanceType">
+		<xs:attribute name="denotation" type="xs:string" use="required" />
+		<xs:attribute name="category" type="xs:string" use="required" />
+		<xs:attribute name="sameAs" type="xs:string" />
+	</xs:complexType>
+
+
+	<xs:complexType name="simpleLabelType">
+		<xs:attribute name="label" type="xs:string" use="required" />
+	</xs:complexType>
+
+
+	<!-- CASE SCHEMA -->
+
+
+	<xs:complexType name="caseType">
+		<xs:sequence>
+			<xs:element name="condition" minOccurs="0" maxOccurs="1"
+				type="conditionType" />
+			<xs:element name="effect" minOccurs="1" maxOccurs="10"
+				type="effectType" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="conditionType">
+		<xs:sequence>
+			<xs:element name="if" type="assignType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="operator" type="binaryOperatorType" />
+	</xs:complexType>
+
+
+	<!-- EFFECT SCHEMA -->
+
+	<xs:complexType name="effectType">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="set" type="assignType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="add" type="addRemoveType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="remove" type="addRemoveType" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:choice>
+		<xs:attribute name="prob" type="probabilityType" use="required" />
+		<xs:attribute name="operator" type="binaryOperatorType" />
+	</xs:complexType>
+
+
+	<xs:complexType name="assignType">
+		<xs:attribute name="var" type="xs:string" use="required" />
+		<xs:attribute name="value" type="xs:string" use="required" />
+		<xs:attribute name="relation" type="binaryRelationType" />
+	</xs:complexType>
+
+	<xs:complexType name="addRemoveType">
+		<xs:attribute name="var" type="xs:string" use="required" />
+	</xs:complexType>
+
+
+
+</xs:schema>

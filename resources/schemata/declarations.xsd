@@ -1,0 +1,28 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="declarations" type="declarationsType"/>
+
+
+<xs:complexType name="declarationsType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="entity" type="declarationType"/>
+			<xs:element name="variable" type="declarationType"/>
+		</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="declarationType">
+	<xs:sequence>
+		<xs:element name="value" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		<xs:element name="feature" minOccurs="0" maxOccurs="unbounded" type="featureType"/>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string"/>
+</xs:complexType>
+
+<xs:complexType name="featureType">
+	<xs:sequence>
+		<xs:element name="value" maxOccurs="unbounded" type="xs:string"/>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string"/>
+</xs:complexType>
+
+</xs:schema>
