@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -42,7 +42,8 @@ public class ComplexEffect extends Effect {
 	Operator binaryOp;
 	
 	
-	public ComplexEffect() {
+	public ComplexEffect(float prob) {
+		super(prob);
 		subeffects = new LinkedList<Effect>();
 	}
 	
@@ -52,5 +53,13 @@ public class ComplexEffect extends Effect {
 	
 	public void addSubEffect(Effect effect) {
 		subeffects.add(effect);
+	}
+
+	/**
+	 * 
+	 * @param subeffects2
+	 */
+	public void addSubeffects(List<Effect> subeffects2) {
+		subeffects.addAll(subeffects2);
 	}
 }
