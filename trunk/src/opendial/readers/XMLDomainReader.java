@@ -49,7 +49,7 @@ import opendial.utils.Logger;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-09-30 18:13:25 #$
+ * @version $Date::                      $
  *
  */
 public class XMLDomainReader {

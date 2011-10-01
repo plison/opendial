@@ -43,7 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * XML reader utility for validating the XML specification of dialogue domains.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-09-30 18:35:17 #$
+ * @version $Date::                      $
  *
  */
 
@@ -140,7 +140,7 @@ public class XMLDomainValidator {
  * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-09-30 18:35:17 #$
+ * @version $Date::                      $
  *
  */
 final class XMLErrorHandler extends DefaultHandler {
