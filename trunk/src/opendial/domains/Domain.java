@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import opendial.domains.Model.Type;
 import opendial.domains.actions.Action;
 import opendial.domains.observations.Observation;
 import opendial.state.DialogueState;
@@ -60,6 +61,7 @@ public class Domain {
 	// the possible actions for the domain
 	List<Action> actions;
 	
+	
 	/**
 	 * Create a (empty) dialogue domain
 	 * 
@@ -86,6 +88,11 @@ public class Domain {
 		}
 	}
 	
+
+	public void addInitialState(DialogueState initialState) {
+		this.initialState = initialState;
+	}
+	
 	
 	public void addModel(Model model) {
 		models.put(model.getType(), model);
@@ -98,10 +105,82 @@ public class Domain {
 	public void addAction(Action action) {
 		actions.add(action);
 	}
+	
+	
+	public void setName(String domainName) {
+		this.domainName = domainName;
+	}
 
 	
 	public Collection<EntityType> getEntityTypes() {
 		return entityTypes.values();
 	}
+
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean hasEntityType(String type) {
+		return entityTypes.containsKey(type);
+	}
+
+	
+	public EntityType getEntityType(String type) {
+		return entityTypes.get(type);
+	}
+
+
+	/**
+	 * 
+	 * @param observations2
+	 */
+	public void addObservations(List<Observation> observations2) {
+		observations.addAll(observations2);
+	}
+
+
+	/**
+	 * 
+	 * @param actions2
+	 */
+	public void addActions(List<Action> actions2) {
+		actions.addAll(actions2);
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public DialogueState getInitialState() {
+		return initialState;
+	}
+
+
+	/**
+	 * 
+	 * @param userPrediction
+	 * @return
+	 */
+	public Model getModel(Type type) {
+		return models.get(type);
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<Observation> getObservations() {
+		return observations;
+	}
+	
+	public List<Action> getActions() {
+		return actions;
+	}
+
+
 
 }

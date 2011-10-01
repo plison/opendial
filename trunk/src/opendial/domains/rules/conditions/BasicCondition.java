@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -49,6 +49,14 @@ public class BasicCondition extends Condition {
 	public BasicCondition (Variable var, String value, Relation rel) {
 		this(var,value);
 		this.rel = rel;
+	}
+	
+	public Variable getVariable() {
+		return var;
+	}
+	
+	public String getValue() {
+		return value;
 	}
 	
 	

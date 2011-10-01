@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -67,6 +67,10 @@ public class Logger {
 		}
 	}
 	
+	public void severe(int nb) { severe(""+nb); }
+	public void severe(float fl) { severe(""+fl); }
+
+	
 	/**
 	 * Log a warning message
 	 * 
@@ -77,7 +81,10 @@ public class Logger {
 		 System.err.println("["+componentLabel+"] WARNING: " + s);
 		}
 	}
-	
+
+	public void warning(int nb) { warning(""+nb); }
+	public void warning(float fl) { warning(""+fl); }
+
 	
 	/**
 	 * Log an information message
@@ -89,7 +96,9 @@ public class Logger {
 		 System.out.println("["+componentLabel+"] INFO: " + s);
 		}
 	}
-	
+
+	public void info(int nb) { info(""+nb); }
+	public void info(float fl) { info(""+fl); }
 	
 	/**
 	 * Log a debugging message
@@ -101,6 +110,9 @@ public class Logger {
 		 System.out.println("["+componentLabel+"] DEBUG: " + s);
 		}
 	}
+	
+	public void debug(int nb) { debug(""+nb); }
+	public void debug(float fl) { debug(""+fl); }
 
 }
 

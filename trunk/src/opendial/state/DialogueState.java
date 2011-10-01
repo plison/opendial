@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2009-2011 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,10 +19,14 @@
 
 package opendial.state;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import opendial.utils.Logger;
 
 /**
- * 
+ * Implement the dialogue state
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -31,4 +35,18 @@ import opendial.utils.Logger;
 public class DialogueState {
 
 	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+
+	Map<String,StateVariable> variables;
+	
+	
+	public DialogueState () {
+		variables = new HashMap<String, StateVariable>();
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<StateVariable> getVariables() {
+		return variables.values();
+	}
 }
