@@ -3,7 +3,7 @@
 
 <rule>
 	<output>
-		<var type="a_u"/>
+		<var label="a_u"/>
 	</output>
 	<case>
 		<effect prob="0.33"><set var="a_u" value="AskForX"/></effect>
@@ -16,10 +16,10 @@
 <rule>
 	<input>
 		<var denotation="i" type="intent"/>
-		<var type="a_m"/>
+		<var label="a_m"/>
 	</input>
 	<output>
-		<var type="a_u"/>
+		<var label="a_u"/>
 	</output>
 	<case>
 		<condition>

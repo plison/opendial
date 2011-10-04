@@ -5,24 +5,76 @@
 
 <xs:complexType name="declarationsType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="entitytype" type="declarationType"/>
+			<xs:element name="entity" type="declarationType"/>
+			<xs:element name="variable" type="declarationType"/>
+			<xs:element name="feature" type="declarationType"/>		
+			<xs:element name="action" type="actionType"/>
+			<xs:element name="observation" type="observationType"/>
 		</xs:choice>
 </xs:complexType>
 
 <xs:complexType name="declarationType">
-	<xs:sequence>
+	<xs:choice maxOccurs="unbounded">
 		<xs:element name="value" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		<xs:element name="complexvalue" minOccurs="0" maxOccurs="unbounded" type="complexValueType"/>
 		<xs:element name="feature" minOccurs="0" maxOccurs="unbounded" type="featureType"/>
-	</xs:sequence>
-	<xs:attribute name="name" type="xs:string"/>
-	<xs:attribute name="fixed" type="xs:boolean"/>
+		<xs:element name="range" minOccurs="0" maxOccurs="1" type="xs:string"/>
+	</xs:choice>
+	<xs:attribute name="name" type="xs:string" use="required"/>
 </xs:complexType>
 
 <xs:complexType name="featureType">
 	<xs:sequence>
-		<xs:element name="value" maxOccurs="unbounded" type="xs:string"/>
+		<xs:element name="value" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		<xs:element name="complexvalue" minOccurs="0" maxOccurs="unbounded" type="complexValueType"/>
+		<xs:element name="feature" minOccurs="0" maxOccurs="unbounded" type="featureType"/>
+		<xs:element name="range" minOccurs="0" maxOccurs="1" type="xs:string"/>
 	</xs:sequence>
 	<xs:attribute name="name" type="xs:string"/>
+	<xs:attribute name="ref" type="xs:string"/>
+</xs:complexType>
+
+
+<xs:complexType name="actionType">
+	<xs:sequence>
+		<xs:element name="value" type="actionValueType" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+</xs:complexType>
+
+
+<xs:complexType name="actionValueType">
+<xs:attribute name="label" type="xs:string"/>
+<xs:attribute name="type">
+	<xs:simpleType>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="verbal"/>
+			<xs:enumeration value="motion"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:attribute>
+<xs:attribute name="content" type="xs:string"/>
+</xs:complexType>
+
+
+<xs:complexType name="observationType">
+<xs:attribute name="name" type="xs:string"/>
+<xs:attribute name="type">
+	<xs:simpleType>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="utterance"/>
+			<xs:enumeration value="vision"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:attribute>
+<xs:attribute name="content" type="xs:string"/>
+</xs:complexType>
+
+<xs:complexType name="complexValueType">
+	<xs:sequence>
+		<xs:element name="label" type="xs:string" minOccurs="1" maxOccurs="1"/>
+		<xs:element name="feature" type="featureType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
 </xs:complexType>
 
 </xs:schema>

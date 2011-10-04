@@ -17,34 +17,42 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of an entity type
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-01 19:25:25 #$
  *
  */
-public class StateVariable {
+public class EntityType extends StandardType {
 
-	static Logger log = new Logger("StateVariable", Logger.Level.NORMAL);
-	
-	String varLabel;
-	
-	Map<String,Float> values;
-	
-	public StateVariable(String varLabel) {
-		this.varLabel = varLabel;
-		values = new HashMap<String,Float>();
+	static Logger log = new Logger("EntityType", Logger.Level.NORMAL);
+
+	/**
+	 * @param name
+	 */
+	public EntityType(String name) {
+		super(name);
+		// TODO Auto-generated constructor stub
 	}
 	
-	public void addValue(String value, float prob) {
-		values.put(value, prob);
+	public void addEntityValue(Value val) {
+		addValue(val);
 	}
+	
+	public void addEntityValues(List<Value> val) {
+		addValues(val);
+	}
+
+
 }

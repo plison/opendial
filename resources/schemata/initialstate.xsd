@@ -7,28 +7,28 @@
 
 <xs:complexType name="initialStateType">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="instance" type="initInstanceType"/>
-			<xs:element name="variable" type="initVariableType"/>
+			<xs:element name="entity" type="EntityTokenType"/>
 		</xs:choice>
 </xs:complexType>
 
-<xs:complexType name="initInstanceType">
+<xs:complexType name="EntityTokenType">
 	<xs:sequence>
-		<xs:element name="value" type="valueType"/>
+		<xs:element name="value" type="probValueType" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:element name="feature" type="featureType2" minOccurs="0" maxOccurs="unbounded"/>
 	</xs:sequence>
-	<xs:attribute name="category" type="xs:string" use="required"/>
-	<xs:attribute name="label" type="xs:string"/>
+	<xs:attribute name="type" type="xs:string" use="required"/>
 </xs:complexType>
 
-<xs:complexType name="initVariableType">
+<xs:complexType name="featureType2">
 	<xs:sequence>
-		<xs:element name="value" type="valueType"/>
+		<xs:element name="value" type="probValueType" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:element name="feature" type="featureType2" minOccurs="0" maxOccurs="unbounded"/>
 	</xs:sequence>
-	<xs:attribute name="label" type="xs:string" use="required"/>
+	<xs:attribute name="type" type="xs:string"/>
 </xs:complexType>
 
 
-<xs:complexType name="valueType">
+<xs:complexType name="probValueType">
       <xs:simpleContent>
         <xs:extension base="xs:string">
           <xs:attribute name="prob" type="probabilityType" use="required"/>

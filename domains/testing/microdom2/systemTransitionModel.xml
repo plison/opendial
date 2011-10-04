@@ -3,7 +3,7 @@
 
 <rule>
 	<input>
-		<var type="a_m"/>
+		<var label="a_m"/>
 	</input>
 	<output>
 		<var denotation="i" type="intent"/>

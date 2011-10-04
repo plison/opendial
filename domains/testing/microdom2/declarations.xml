@@ -1,24 +1,44 @@
 
 <declarations>
 
-	<entitytype name="intent">
+	<entity name="intent">
 		<value>WantX</value>
 		<value>WantY</value>
-	</entitytype>
+	</entity>
 
-	<entitytype name="a_u" fixed="true">
-		<value>AskForX</value>
-		<value>AskForY</value>
+	<entity name="robot">
+		<feature name="name">
+			<range>string</range>
+		</feature>
+	</entity>
+
+
+	<variable name="a_u">
+		<complexvalue>
+			<label>AskFor</label>
+			<feature name="obj">
+				<value>X</value>
+				<value>Y</value>
+		</feature>
+		</complexvalue>
 		<value>Confirm</value>
 		<value>Deny</value>
 		<value>Unknown</value>
-	</entitytype>
+	</variable>
 
-	<entitytype name="a_m" fixed="true">
-		<value>DoX</value>
-		<value>DoY</value>
-		<value>AskRepeat</value>
-		<value>InformNotUnderstand</value>
-	</entitytype>
-
+	
+	<observation name="f1" type="utterance" content="do X"/>
+	<observation name="f2" type="utterance" content="do Y"/>
+	<observation name="f3" type="utterance" content="yes"/>
+	<observation name="f4" type="utterance" content="no"/>
+	<observation name="f5" type="utterance" content="*"/>
+	
+	<action name="a_m">
+		<value label="DoX" type="verbal" content="OK, doing X!"/>
+		<value label="DoY" type="verbal" content="OK, doing Y!"/>
+		<value label="AskRepeat" type="verbal" content="Sorry, could you repeat?"/>
+		<value label="InformNotUnderstand" type="verbal" content="Sorry, I did not understand"/>
+	</action>
+	
+	
 </declarations>
