@@ -31,7 +31,7 @@ import opendial.utils.Logger;
  * Representation of an entity type
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-01 19:25:25 #$
+ * @version $Date::                      $
  *
  */
 public class EntityType extends StandardType {

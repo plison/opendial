@@ -26,7 +26,7 @@ import opendial.utils.Logger;
  * TODO: add distinct types of assignment here
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-01 19:25:25 #$
+ * @version $Date::                      $
  *
  */
 public class AssignEffect extends Effect {
