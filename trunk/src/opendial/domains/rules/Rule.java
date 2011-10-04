@@ -19,7 +19,7 @@
 
 package opendial.domains.rules;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ import opendial.utils.Logger;
  */
 public class Rule {
 
-	static Logger log = new Logger("Rule", Logger.Level.NORMAL);
+	static Logger log = new Logger("Rule", Logger.Level.DEBUG);
 	
 	Map<String,Variable> inputs;
 	
@@ -97,16 +97,16 @@ public class Rule {
 	 * 
 	 * @return
 	 */
-	public Collection<Variable> getInputVariables() {
-		return inputs.values();
+	public List<Variable> getInputVariables() {
+		return new ArrayList<Variable>(inputs.values());
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public Collection<Variable> getOutputVariables() {
-		return outputs.values();
+	public List<Variable> getOutputVariables() {
+		return new ArrayList<Variable>(outputs.values());
 	}
 
 	/**

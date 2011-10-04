@@ -19,8 +19,10 @@
 
 package opendial.readers;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,6 +31,9 @@ import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.rules.Case;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.variables.EntityVariable;
+import opendial.domains.rules.variables.FeatureVariable;
+import opendial.domains.rules.variables.FixedVariable;
 import opendial.domains.rules.variables.Variable;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.ComplexCondition;
@@ -38,6 +43,7 @@ import opendial.domains.rules.effects.AssignEffect;
 import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
+import opendial.domains.types.FeatureType;
 import opendial.domains.types.StandardType;
 import opendial.utils.Logger;
 
@@ -98,41 +104,81 @@ public class XMLRuleReader {
 	private List<Variable> getVariables(Node node) throws DialException {
 
 		NodeList varList = node.getChildNodes();
-		List<Variable> vars = new LinkedList<Variable>();
+		Map<String,Variable> vars = new HashMap<String,Variable>();
 		for (int j = 0 ; j < varList.getLength(); j++) {
 			Node varNode = varList.item(j);
+			
 			if (varNode.getNodeName().equals("var") && varNode.hasAttributes()) {
-				
-				String typeStr;
-				if (varNode.getAttributes().getNamedItem("type") != null) {
-					typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
-				}
-				else if (varNode.getAttributes().getNamedItem("label") != null) {
-					typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
-				}
-				else {
-					throw new DialException("type or label must be defined for variables");
-				}
-
-				Variable var;
-				if (domain.hasType(typeStr)) {
-					var = new Variable(typeStr,domain.getType(typeStr));
-				}
-				else {
-					log.debug("entity type: " + typeStr);
-					throw new DialException("entity type " + typeStr + " not declared in domain");
-				}
-				if (varNode.getAttributes().getNamedItem("denotation") != null) {
-					String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
-					var.setDenotation(denotation);
-				}
-				vars.add(var);
+			
+				Variable var = getVariable(varNode, vars);		
+				vars.put(var.getDenotation(), var);
 			}
 		}
-		return vars;
+		return new LinkedList<Variable>(vars.values());
 	}
 
 	
+	/**
+	 * 
+	 * @param varNode
+	 * @return
+	 * @throws DialException 
+	 */
+	private Variable getVariable(Node varNode, Map<String,Variable> previousVars) throws DialException {
+		
+		if (varNode.getAttributes().getNamedItem("type") != null && 
+				varNode.getAttributes().getNamedItem("denotation")!=null) {
+			String typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
+			String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
+			if (domain.hasEntityType(typeStr)) {
+				return new EntityVariable(denotation, domain.getEntityType(typeStr));
+			}
+			else {
+				log.debug("type: " + typeStr);
+				throw new DialException("type " + typeStr + " not declared as entity in domain");
+			}
+		}
+		else if (varNode.getAttributes().getNamedItem("label") != null) {
+			String typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
+			if (domain.hasType(typeStr)) {
+				return new FixedVariable(domain.getType(typeStr));
+			}
+			else {
+				log.debug("type: " + typeStr);
+				throw new DialException("type " + typeStr + " not declared in domain");
+			}
+		}
+		else if (varNode.getAttributes().getNamedItem("feature")!=null && 
+				varNode.getAttributes().getNamedItem("base") != null && 
+				varNode.getAttributes().getNamedItem("denotation")!=null) {
+			
+			String feat = varNode.getAttributes().getNamedItem("feature").getNodeValue();	
+			String base = varNode.getAttributes().getNamedItem("base").getNodeValue();
+			String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
+
+			if (previousVars.containsKey(base)) {
+				Variable baseVar = previousVars.get(base);
+				StandardType baseType = baseVar.getType();
+				if (baseType.hasFeature(feat)) {
+					FeatureType featType = baseType.getFeature(feat);
+					return new FeatureVariable(denotation, featType, baseVar);
+				}
+				else {
+					log.debug("base variable: " + base + ", existing features: " + baseType.getFeatures());
+					throw new DialException("base variable " + base + " has no declared feature " + feat);
+				}
+			}
+			else {
+				throw new DialException("base variable " + base + " has not been set");
+			}
+			
+		}
+		else {
+			throw new DialException("ill-formatted variable declaration");
+		}
+	}
+
+
 	public Case getCase(Node node) throws DialException {
 		Case case1 = new Case();
 		NodeList caseContent = node.getChildNodes();

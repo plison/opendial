@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import opendial.domains.types.values.ComplexValue;
 import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
 
@@ -47,7 +48,7 @@ public class StandardType {
 	Map<String,Value> values;
 	
 	// list of features for the entity
-	Map<String,FeatureType> features;
+	Map<String,FeatureType> fullFeatures;
 		
 	
 	 
@@ -57,7 +58,7 @@ public class StandardType {
 	public StandardType(String name) {
 		this.name = name;
 		values = new HashMap<String,Value>();
-		features = new HashMap<String,FeatureType>();
+		fullFeatures = new HashMap<String,FeatureType>();
 	}
 
 
@@ -88,7 +89,7 @@ public class StandardType {
 	
 	
 	public void addFeature(FeatureType feature) {
-		features.put(feature.getName(), feature);
+		fullFeatures.put(feature.getName(), feature);
 	}
 	
 	/**
@@ -100,10 +101,10 @@ public class StandardType {
 	public void addFeatures(List<FeatureType> features) {
 		for (FeatureType f : features) {
 			String name = f.getName();
-			if (this.features.containsKey(name)) {
+			if (this.fullFeatures.containsKey(name)) {
 				log.warning("feature name " + name + " already in entity " + name);
 			}
-			this.features.put(f.getName(), f);
+			this.fullFeatures.put(f.getName(), f);
 		}
 	}
 	
@@ -141,7 +142,19 @@ public class StandardType {
 	 * @return true if feature present, false otherwise
 	 */
 	public boolean hasFeature(String featureName) {
-		return features.containsKey(featureName);
+		if (fullFeatures.containsKey(featureName)) {
+			return true;
+		}
+		else {
+			for (Value v : values.values()) {
+				if (v instanceof ComplexValue) {
+					if (((ComplexValue)v).hasFeature(featureName)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -152,10 +165,21 @@ public class StandardType {
 	 * @return the entity if the feature is present, or null otherwise.
 	 */
 	public FeatureType getFeature(String featureName) {
-		if (!features.containsKey(featureName)) {
-			log.warning("feature name " + featureName + " absent from entity " + name);		
+		
+		if (fullFeatures.containsKey(featureName)) {
+			return fullFeatures.get(featureName);
 		}
-		return features.get(featureName);
+		else {
+			for (Value v : values.values()) {
+				if (v instanceof ComplexValue) {
+					if (((ComplexValue)v).hasFeature(featureName)) {
+						return ((ComplexValue)v).getFeature(featureName);
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 
 
@@ -164,6 +188,6 @@ public class StandardType {
 	 * @return
 	 */
 	public List<FeatureType> getFeatures() {
-		return new ArrayList<FeatureType>(features.values());
+		return new ArrayList<FeatureType>(fullFeatures.values());
 	}
 }
