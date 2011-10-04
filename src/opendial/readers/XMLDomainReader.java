@@ -20,8 +20,10 @@
 package opendial.readers;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,14 +37,21 @@ import org.xml.sax.SAXException;
 
 import opendial.arch.DialException;
 import opendial.domains.Domain;
-import opendial.domains.EntityType;
 import opendial.domains.Model;
 import opendial.domains.actions.Action;
 import opendial.domains.actions.VerbalAction;
 import opendial.domains.observations.Observation;
-import opendial.domains.observations.StringObservation;
+import opendial.domains.observations.UtteranceObservation;
 import opendial.domains.rules.Rule;
+import opendial.domains.types.ActionType;
+import opendial.domains.types.EntityType;
+import opendial.domains.types.FeatureType;
+import opendial.domains.types.FixedVariableType;
+import opendial.domains.types.StandardType;
+import opendial.domains.types.ObservationType;
+import opendial.domains.types.StandardType;
 import opendial.state.DialogueState;
+import opendial.state.StateEntity;
 import opendial.utils.Logger;
 
 /**
@@ -79,7 +88,7 @@ public class XMLDomainReader {
 	 * @throws IOException if the file cannot be found/opened
 	 * @throws DialException if a format error occurs
 	 */
-	public Domain extractDomain(String topDomainFile) throws IOException, DialException {
+	public Domain extractDomain(String topDomainFile) throws DialException {
 
 		// extract the XML document
 		Document doc = getXMLDocument(topDomainFile);
@@ -104,14 +113,16 @@ public class XMLDomainReader {
 			if (node.getNodeName().equals("declarations")) {
 				String fileReference = getReference(node);
 				Document refDoc = getXMLDocument(rootpath+fileReference);
-				List<EntityType> entityTypes = getEntityTypes(refDoc);
-				domain.addEntityTypes(entityTypes);
+				XMLDeclarationsReader declReader = new XMLDeclarationsReader();
+				List<StandardType> types = declReader.getTypes(refDoc);
+				domain.addTypes(types);
 			}
 
 			else if (node.getNodeName().equals("initialstate")) {
 				String fileReference = getReference(node);
 				Document refDoc = getXMLDocument(rootpath+fileReference);
-				DialogueState initialState = getInitialState(refDoc);
+				XMLInitialStateReader isReader = new XMLInitialStateReader();
+				DialogueState initialState = isReader.getInitialState(refDoc,domain);
 				domain.addInitialState(initialState);
 			}
 			else if (node.getNodeName().equals("model")) {
@@ -120,20 +131,7 @@ public class XMLDomainReader {
 				Model model = getModel(refDoc);
 				domain.addModel(model);
 			}
-			else if (node.getNodeName().equals("observations")) {
-				String fileReference = getReference(node);
-				Document refDoc = getXMLDocument(rootpath+fileReference);
-				List<Observation> observations = getObservations(refDoc);
-				domain.addObservations(observations);
-			}
-			else if (node.getNodeName().equals("actions")) {
-				String fileReference = getReference(node);
-				Document refDoc = getXMLDocument(rootpath+fileReference);
-				List<Action> actions = getActions(refDoc);
-				domain.addActions(actions);
-			}
 		}
-
 
 		return domain;
 	}
@@ -143,17 +141,6 @@ public class XMLDomainReader {
 	// ===================================
 	//  INITIAL STATE METHODS
 	// ===================================
-
-
-	/**
-	 * TODO: implement this method
-	 * @param refDoc
-	 * @return
-	 */
-	private DialogueState getInitialState(Document refDoc) {
-		return new DialogueState();
-	}
-
 
 
 	// ===================================
@@ -185,7 +172,7 @@ public class XMLDomainReader {
 				Node node = midList.item(i);
 				if (node.getNodeName().equals("rule")) {
 					XMLRuleReader ruleReader = new XMLRuleReader();
-					Rule rule = ruleReader.getRule(node);
+					Rule rule = ruleReader.getRule(node,domain);
 					model.addRule(rule);
 				}
 			}
@@ -230,201 +217,6 @@ public class XMLDomainReader {
 	//  ENTITY TYPE DECLARATION METHODS
 	// ===================================
 
-	/**
-	 * Extracts the entity type declarations from the XML document
-	 * 
-	 * @param doc the XML document
-	 * @return the list of entity types which have been declared
-	 * @throws DialException if the document is ill-formatted
-	 */
-	private List<EntityType> getEntityTypes(Document doc) throws DialException {
-
-		List<EntityType> entityTypes = new LinkedList<EntityType>();
-
-		Node mainNode = getMainNode(doc,"declarations");
-		NodeList midList = mainNode.getChildNodes();
-
-		for (int i = 0 ; i < midList.getLength() ; i++) {
-			Node node = midList.item(i);
-			if (node.getNodeName().equals("entitytype")) {
-
-				if (node.hasAttributes() && node.getAttributes().getNamedItem("name") != null) {
-					String name = node.getAttributes().getNamedItem("name").getNodeValue();
-
-					EntityType type = new EntityType(name);
-					List<String> values = extractValues (node);
-					type.addValues(values);
-
-					List<EntityType> features = extractFeatures(node);
-					type.addFeatures(features);
-
-					entityTypes.add(type);
-				}
-				else {
-					throw new DialException("name attribute not provided");
-				}
-			}
-		}
-
-		return entityTypes;
-	}
-
-
-	/**
-	 * Extract values from a XML node
-	 * 
-	 * @param node the node
-	 * @return the list of extracted values
-	 * @throws DialException if the XML fragment is ill-formatted
-	 */
-	private List<String> extractValues(Node node) throws DialException {
-		NodeList contentList = node.getChildNodes();
-
-		List<String> values = new LinkedList<String>();
-
-		for (int i = 0 ; i < contentList.getLength() ; i++) {
-
-			Node subnode = contentList.item(i);
-			if (subnode.getNodeName().equals("value")) {
-				values.add(subnode.getTextContent());
-				log.debug("adding value: " + subnode.getTextContent());
-			}
-		}
-		return values;
-	}
-
-
-	/**
-	 * Extracts features from a XML node
-	 * 
-	 * @param node the node
-	 * @return the list of extracted features
-	 * @throws DialException if the XML fragment is ill-formatted
-	 */
-	private List<EntityType> extractFeatures(Node node) throws DialException {
-		NodeList contentList = node.getChildNodes();
-
-		List<EntityType> types = new LinkedList<EntityType>();
-
-		for (int j = 0 ; j < contentList.getLength() ; j++) {
-
-			Node subnode = contentList.item(j);
-			if (subnode.getNodeName().equals("feature")) {
-
-				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("name") != null) {
-					String featName = subnode.getAttributes().getNamedItem("name").getNodeValue();
-					EntityType featType = new EntityType(featName);
-
-					List<String> values = extractValues (subnode);
-					featType.addValues(values);
-
-					List<EntityType> features = extractFeatures(subnode);
-					featType.addFeatures(features);
-
-					types.add(featType);
-
-				}
-				else {
-					throw new DialException("\"feature\" tag must have a name");
-				}
-			}
-		}
-		return types;
-	}
-
-
-	// ===================================
-	//  OBSERVATION AND ACTION METHODS
-	// ===================================
-
-
-	/**
-	 * 
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
-	 */
-	private List<Observation> getObservations(Document doc) throws DialException {
-		
-		List<Observation> observations = new LinkedList<Observation>();
-
-		Node mainNode = getMainNode(doc, "observations");
-		NodeList actionList = mainNode.getChildNodes();
-		for (int j = 0 ; j < actionList.getLength() ; j++) {
-
-			Node subnode = actionList.item(j);
-			if (subnode.getNodeName().equals("observation")) {
-				
-				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("name") != null && 
-						subnode.getAttributes().getNamedItem("type")!= null &&
-						subnode.getAttributes().getNamedItem("content")!= null) {
-					
-					String value = subnode.getAttributes().getNamedItem("name").getNodeValue();
-					String type = subnode.getAttributes().getNamedItem("type").getNodeValue();
-					String content = subnode.getAttributes().getNamedItem("content").getNodeValue();
-					
-					Observation obs ;
-					if (type.equals("substring") || type.equals("string")) {
-						obs = new StringObservation(value,content);
-					}
-					else {
-						throw new DialException("type " + type + " currently not supported");
-					}
-					observations.add(obs);
-					
-				}
-			}
-		}
-
-		return observations;
-	}
-
-
-
-	/**
-	 * TODO: use the action variable spec a_m?
-	 * 
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
-	 */
-	private List<Action> getActions(Document doc) throws DialException {
-
-		List<Action> actions = new LinkedList<Action>();
-
-		Node mainNode = getMainNode(doc, "actions");
-		NodeList actionList = mainNode.getChildNodes();
-		for (int j = 0 ; j < actionList.getLength() ; j++) {
-
-			Node subnode = actionList.item(j);
-			if (subnode.getNodeName().equals("action")) {
-				
-				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("value") != null && 
-						subnode.getAttributes().getNamedItem("type")!= null &&
-						subnode.getAttributes().getNamedItem("content")!= null) {
-					
-					String value = subnode.getAttributes().getNamedItem("value").getNodeValue();
-					String type = subnode.getAttributes().getNamedItem("type").getNodeValue();
-					String content = subnode.getAttributes().getNamedItem("content").getNodeValue();
-					
-					Action action ;
-					if (type.equals("string")) {
-						action = new VerbalAction(value,content);
-					}
-					else {
-						throw new DialException("type " + type + " currently not supported");
-					}
-					actions.add(action);
-					
-				}
-			}
-		}
-
-		return actions;
-	}
-
-
-
 
 	// ===================================
 	//  UTILITY METHODS
@@ -432,7 +224,7 @@ public class XMLDomainReader {
 
 
 
-	private static Document getXMLDocument (String filename) throws IOException {
+	public static Document getXMLDocument (String filename) throws DialException {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -446,9 +238,14 @@ public class XMLDomainReader {
 		}
 		catch (SAXException e) {
 			log.warning("Reading aborted: \n" + e.getMessage());
-		} catch (ParserConfigurationException e) {
+		} 
+		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 		} 
+		catch (IOException e) {
+			log.warning(e.getMessage());
+			throw new DialException(e.getMessage());
+		}
 		return null;
 	}
 
@@ -461,7 +258,7 @@ public class XMLDomainReader {
 	 * @throws IOException 
 	 * @throws DialException 
 	 */
-	private static String getReference(Node node) throws IOException, DialException {
+	public static String getReference(Node node) throws DialException {
 
 		if (node.hasAttributes() && node.getAttributes().getNamedItem("file") != null) {
 			String filename = node.getAttributes().getNamedItem("file").getNodeValue();
@@ -473,7 +270,7 @@ public class XMLDomainReader {
 	}
 
 
-	private static Node getMainNode (Document doc, String topTag) throws DialException {
+	public static Node getMainNode (Document doc, String topTag) throws DialException {
 
 		NodeList topList = doc.getChildNodes();
 		if (topList.getLength() == 1 && topList.item(0).getNodeName().equals(topTag)) {

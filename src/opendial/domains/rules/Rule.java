@@ -17,44 +17,106 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import opendial.domains.rules.variables.Variable;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * Representation of a rule.
+ * 
+ * TODO: for cases, ensure that it is ordered(?)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class Rule {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
-
-	Map<String,StateEntity> entities;
+	static Logger log = new Logger("Rule", Logger.Level.NORMAL);
 	
+	Map<String,Variable> inputs;
 	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	Map<String,Variable> outputs;
+	
+	List<Case> cases;
+	
+	public Rule() {
+		inputs = new HashMap<String,Variable>();
+		outputs = new HashMap<String,Variable>();
+		cases = new LinkedList<Case>();
 	}
+	
+	public void addInputVariable(Variable var) {
+		inputs.put(var.getDenotation(), var);
+	}
+	
+	public void addInputVariables(List<Variable> vars) {
+		for (Variable var: vars) {
+			addInputVariable(var);
+		}
+	}
+	
+	public void addOutputVariable(Variable var) {
+		outputs.put(var.getDenotation(), var);
+	}
+	
+	public void addOutputVariables(List<Variable> vars) {
+		for (Variable var: vars) {
+			addOutputVariable(var);
+		}
+	}
+
+	public void addCase(Case case1) {
+		cases.add(case1);
+	}
+
+	
+	public boolean hasInputVariable(String denotation) {
+		return inputs.containsKey(denotation);
+	}
+	public Variable getInputVariable(String denotation) {
+		return inputs.get(denotation);
+	}
+	
+	public boolean hasOutputVariable(String denotation) {
+		return outputs.containsKey(denotation);
+	}
+	
+	public Variable getOutputVariable(String denotation) {
+		return outputs.get(denotation);
+	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
+	public Collection<Variable> getInputVariables() {
+		return inputs.values();
 	}
+	
 	/**
 	 * 
-	 * @param entity
+	 * @return
 	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	public Collection<Variable> getOutputVariables() {
+		return outputs.values();
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<Case> getCases() {
+		return cases;
+	}
+	
 }
+
+

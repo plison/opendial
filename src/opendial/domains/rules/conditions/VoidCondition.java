@@ -17,12 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import opendial.utils.Logger;
+package opendial.domains.rules.conditions;
 
 /**
  * 
@@ -31,20 +26,6 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class StateVariable {
+public class VoidCondition extends Condition {
 
-	static Logger log = new Logger("StateVariable", Logger.Level.NORMAL);
-	
-	String varLabel;
-	
-	Map<String,Float> values;
-	
-	public StateVariable(String varLabel) {
-		this.varLabel = varLabel;
-		values = new HashMap<String,Float>();
-	}
-	
-	public void addValue(String value, float prob) {
-		values.put(value, prob);
-	}
 }

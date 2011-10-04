@@ -17,44 +17,25 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package opendial.domains.rules.effects;
 
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class VoidEffect extends Effect {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	/**
+	 * @param probability
+	 */
+	public VoidEffect(float prob) {
+		super(prob);
+	}
 
-	Map<String,StateEntity> entities;
-	
-	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
-	}
-	/**
-	 * 
-	 * @return
-	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
-	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
-	}
+	static Logger log = new Logger("VoidEffect", Logger.Level.NORMAL);
 }

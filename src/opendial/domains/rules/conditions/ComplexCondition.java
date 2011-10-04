@@ -17,44 +17,56 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules.conditions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class ComplexCondition extends Condition {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	static Logger log = new Logger("ComplexCondition", Logger.Level.NORMAL);
 
-	Map<String,StateEntity> entities;
+	public static enum Operator {AND, OR}
+	
+	List<Condition> subconditions;
+
+	Operator binaryOp;
 	
 	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	public ComplexCondition() {
+		subconditions = new LinkedList<Condition>();
 	}
+	
+	public void setOperator(Operator binaryOp) {
+		this.binaryOp = binaryOp;
+	}
+	
+	public void addSubcondition(Condition subcondition) {
+		subconditions.add(subcondition);
+	}
+
+	/**
+	 * 
+	 * @param subconditions2
+	 */
+	public void addSubconditions(List<Condition> subconditions2) {
+		subconditions.addAll(subconditions2);
+	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
-	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	public List<Condition> getSubconditions() {
+		return subconditions;
 	}
 }

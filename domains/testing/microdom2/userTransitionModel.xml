@@ -3,8 +3,8 @@
 
 <rule>
 	<input>
-		<var type="a_u"/>
-		<var type="a_m"/>
+		<var label="a_u"/>
+		<var label="a_m"/>
 	</input>
 	<output>
 			<var type="intent" denotation="i"/>
@@ -21,8 +21,8 @@
 
 <rule>
 	<input>
-		<var type="a_u"/>
-		<var type="a_m"/>
+		<var label="a_u"/>
+		<var label="a_m"/>
 	</input>
 	<output>
 		<var type="intent" denotation="i"/>

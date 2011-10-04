@@ -17,44 +17,41 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules.effects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import opendial.domains.rules.variables.Variable;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * TODO: add distinct types of assignment here
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class AssignEffect extends Effect {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
-
-	Map<String,StateEntity> entities;
+	static Logger log = new Logger("BasicEffect", Logger.Level.NORMAL);
 	
+	Variable var;
 	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	String value;
+	
+	public AssignEffect(Variable var, String value, float prob) {
+		super(prob);
+		this.var = var;
+		this.value = value;
 	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
+	public Variable getVariable() {
+		return var;
 	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	
+	public String getValue() {
+		return value;
 	}
 }

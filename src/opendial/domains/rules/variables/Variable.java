@@ -17,44 +17,50 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules.variables;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import opendial.domains.types.StandardType;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class Variable {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	static Logger log = new Logger("Variable", Logger.Level.NORMAL);
+			
+		String denotation;
+		
+		StandardType type;
+		
+		public Variable(String denotation, StandardType type) {
+			this.denotation = denotation;
+			this.type = type;
+		}
 
-	Map<String,StateEntity> entities;
+
+		public String getDenotation() {
+			return denotation;
+		}
 	
-	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
-	}
-	/**
-	 * 
-	 * @return
-	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
-	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
-	}
+		/**
+		 * 
+		 * @param denotation2
+		 */
+		public void setDenotation(String denotation) {
+			this.denotation = denotation;
+		}
+		
+		public void setType(StandardType type) {
+			this.type = type;
+		}
+		
+		public StandardType getType() {
+			return type;
+		}
+
 }

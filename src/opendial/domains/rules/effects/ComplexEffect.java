@@ -17,44 +17,49 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules.effects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class ComplexEffect extends Effect {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	static Logger log = new Logger("ComplexEffect", Logger.Level.NORMAL);
+	
+	public static enum Operator {AND, OR}
+	
+	List<Effect> subeffects;
 
-	Map<String,StateEntity> entities;
+	Operator binaryOp;
 	
 	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	public ComplexEffect(float prob) {
+		super(prob);
+		subeffects = new LinkedList<Effect>();
 	}
+	
+	public void setOperator(Operator binaryOp) {
+		this.binaryOp = binaryOp;
+	}
+	
+	public void addSubEffect(Effect effect) {
+		subeffects.add(effect);
+	}
+
 	/**
 	 * 
-	 * @return
+	 * @param subeffects2
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
-	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	public void addSubeffects(List<Effect> subeffects2) {
+		subeffects.addAll(subeffects2);
 	}
 }

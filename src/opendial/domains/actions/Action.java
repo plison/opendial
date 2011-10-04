@@ -17,44 +17,33 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package opendial.domains.actions;
 
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public abstract class Action {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
-
-	Map<String,StateEntity> entities;
+	static Logger log = new Logger("ActionValue", Logger.Level.NORMAL);
 	
+	String label;
 	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	public Action(String label) {
+		this.label = label;
 	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
+	public String getLabel() {
+		return label;
 	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
-	}
+	
 }

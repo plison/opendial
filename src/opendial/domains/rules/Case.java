@@ -17,44 +17,53 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.rules;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.VoidCondition;
+import opendial.domains.rules.effects.Effect;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class Case {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	static Logger log = new Logger("Case", Logger.Level.NORMAL);
+	
 
-	Map<String,StateEntity> entities;
+	Condition condition;
+	List<Effect> effects;
 	
-	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	public Case() {
+		condition = new VoidCondition();
+		effects = new LinkedList<Effect>();
 	}
+	
+	public void setCondition(Condition condition) {
+		this.condition = condition;
+	}
+	
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
+	public Condition getCondition() {
+		return condition;
 	}
-	/**
-	 * 
-	 * @param entity
-	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	
+	public List<Effect> getEffects() {
+		return effects;
 	}
 }
