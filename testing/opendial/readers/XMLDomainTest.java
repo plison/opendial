@@ -36,6 +36,8 @@ import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.AssignEffect;
+import opendial.domains.rules.variables.FeatureVariable;
+import opendial.domains.rules.variables.FixedVariable;
 import opendial.domains.types.ActionType;
 import opendial.domains.types.EntityType;
 import opendial.domains.types.FeatureType;
@@ -74,7 +76,7 @@ public class XMLDomainTest {
 	
 	
 	@Test
-	public void declarationExtraction() throws DialException {
+	public void entityExtraction() throws DialException {
 		
 		XMLDomainReader reader = new XMLDomainReader();
 		Domain domain = reader.extractDomain(dialDomain);
@@ -97,6 +99,14 @@ public class XMLDomainTest {
 		assertTrue(featType.getValues().get(0) instanceof RangeValue);
 		assertEquals("string", ((RangeValue)featType.getValues().get(0)).getRange());
 		
+	}
+	
+	@Test
+	public void fixedVariableExtraction() throws DialException {
+
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+
 		FixedVariableType thirdType = domain.getFixedVariableType("a_u");
 		assertEquals("a_u", thirdType.getName());
 		assertEquals(4, thirdType.getValues().size());
@@ -107,8 +117,40 @@ public class XMLDomainTest {
 		assertEquals(1, ((ComplexValue)complexVal).getFeatures().size());
 		assertEquals(2, ((ComplexValue)complexVal).getFeatures().get(0).getValues().size());
 		assertEquals("X", ((ComplexValue)complexVal).getFeatures().get(0).getValues().get(1).getLabel());
+		
 	}
 	
+
+	
+	@Test
+	public void observationExtraction() throws IOException, DialException {
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+
+		List<ObservationType> observations = domain.getObservationTypes();
+		assertEquals(5, observations.size());
+		ObservationType firstObservation = observations.get(0);
+		assertTrue(firstObservation.getTrigger() instanceof UtteranceObservation);
+		assertEquals("f1", firstObservation.getName());
+		assertEquals("do X", ((UtteranceObservation)firstObservation.getTrigger()).getContent());
+	}
+
+	@Test
+	public void actionExtraction() throws IOException, DialException {
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+
+		List<ActionType> actions = domain.getActionTypes();
+		assertEquals(1, actions.size());
+		ActionType mainAction = actions.get(0);
+		
+		assertEquals(4, mainAction.getActionValues().size());
+		log.debug(actions.size());
+
+		assertTrue(mainAction.getActionValues().get(0) instanceof VerbalAction);
+		assertEquals("AskRepeat", mainAction.getActionValues().get(0).getLabel());
+		assertEquals("OK, doing X!", ((VerbalAction)mainAction.getActionValue("DoX")).getContent());
+	}
 	
 	@Test
 	public void initialStateExtraction() throws DialException {
@@ -197,6 +239,7 @@ public class XMLDomainTest {
 	
 	@Test
 	public void modelExtraction2() throws DialException {
+		
 		XMLDomainReader reader = new XMLDomainReader();
 		Domain domain = reader.extractDomain(dialDomain);
 
@@ -210,9 +253,7 @@ public class XMLDomainTest {
 		assertEquals(1, firstRule.getOutputVariables().size());
 		assertEquals("a_m", firstRule.getOutputVariable("a_m").getDenotation());
 		
-		Iterator<Case> caseIt = firstRule.getCases().iterator();
-		Case case1 = caseIt.next();
-		
+		Case case1 = firstRule.getCases().get(0);
 		assertTrue(case1.getCondition() instanceof BasicCondition);
 		assertEquals("i", ((BasicCondition)case1.getCondition()).getVariable().getDenotation());
 		assertEquals("WantX", ((BasicCondition)case1.getCondition()).getValue());
@@ -223,8 +264,7 @@ public class XMLDomainTest {
 		assertEquals("a_m", ((AssignEffect)case1.getEffects().get(0)).getVariable().getDenotation());
 		assertEquals("DoX", ((AssignEffect)case1.getEffects().get(0)).getValue());
 		
-		Case case2 = caseIt.next();
-		
+		Case case2 = firstRule.getCases().get(1);
 		assertTrue(case2.getCondition() instanceof BasicCondition);
 		assertEquals("i", ((BasicCondition)case2.getCondition()).getVariable().getDenotation());
 		assertEquals("WantY", ((BasicCondition)case2.getCondition()).getValue());
@@ -237,34 +277,22 @@ public class XMLDomainTest {
 	}
 	
 	
-	
 	@Test
-	public void observationExtraction() throws IOException, DialException {
-		XMLDomainReader reader = new XMLDomainReader();
-		Domain domain = reader.extractDomain(dialDomain);
-
-		List<ObservationType> observations = domain.getObservationTypes();
-		assertEquals(5, observations.size());
-		ObservationType firstObservation = observations.get(0);
-		assertTrue(firstObservation.getTrigger() instanceof UtteranceObservation);
-		assertEquals("f1", firstObservation.getName());
-		assertEquals("do X", ((UtteranceObservation)firstObservation.getTrigger()).getContent());
-	}
-
-	@Test
-	public void actionExtraction() throws IOException, DialException {
-		XMLDomainReader reader = new XMLDomainReader();
-		Domain domain = reader.extractDomain(dialDomain);
-
-		List<ActionType> actions = domain.getActionTypes();
-		assertEquals(1, actions.size());
-		ActionType mainAction = actions.get(0);
+	public void modelExtraction3 () throws DialException {
 		
-		assertEquals(4, mainAction.getActionValues().size());
-		log.debug(actions.size());
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
 
-		assertTrue(mainAction.getActionValues().get(0) instanceof VerbalAction);
-		assertEquals("AskRepeat", mainAction.getActionValues().get(0).getLabel());
-		assertEquals("OK, doing X!", ((VerbalAction)mainAction.getActionValue("DoX")).getContent());
+		Model model = domain.getModel(Model.Type.USER_REALISATION);
+		
+		Rule firstRule = model.getRules().get(0);
+		
+		assertEquals(2, firstRule.getInputVariables().size());
+		assertEquals(1, firstRule.getOutputVariables().size());
+		
+		assertTrue(firstRule.getInputVariables().get(0) instanceof FixedVariable);
+		assertTrue(firstRule.getInputVariables().get(1) instanceof FeatureVariable);
+		assertEquals(((FeatureVariable)firstRule.getInputVariables().get(1)).getBaseVariable(), firstRule.getInputVariables().get(0));
 	}
+	
 }

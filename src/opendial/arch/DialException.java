@@ -32,9 +32,8 @@ public class DialException extends Exception {
 
 	static Logger log = new Logger("DialException", Logger.Level.NORMAL);
 	
-	String msg;
 	
 	public DialException (String msg) {
-		this.msg = msg;
+		super(msg);
 	}
 }

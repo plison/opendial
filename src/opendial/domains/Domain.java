@@ -159,7 +159,7 @@ public class Domain {
 		return fixedVariableTypes.get(type);
 	}
 	
-	public ObservationType getObversationType(String type) {
+	public ObservationType getObservationType(String type) {
 		return observationTypes.get(type);
 	}
 	
@@ -212,6 +212,50 @@ public class Domain {
 	 */
 	public List<ActionType> getActionTypes() {
 		return new ArrayList<ActionType>(actionTypes.values());
+	}
+
+
+
+	/**
+	 * 
+	 * @param typeStr
+	 * @return
+	 */
+	public boolean hasEntityType(String type) {
+		return entityTypes.containsKey(type);
+	}
+
+
+
+	/**
+	 * 
+	 * @param typeStr
+	 * @return
+	 */
+	public boolean hasFixedVariableType(String type) {
+		return fixedVariableTypes.containsKey(type);
+	}
+
+
+
+	/**
+	 * 
+	 * @param typeStr
+	 * @return
+	 */
+	public boolean hasObservationType(String type) {
+		return observationTypes.containsKey(type);
+	}
+
+
+
+	/**
+	 * 
+	 * @param typeStr
+	 * @return
+	 */
+	public boolean hasActionType(String type) {
+		return actionTypes.containsKey(type);
 	}
 
 

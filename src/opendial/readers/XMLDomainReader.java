@@ -38,20 +38,9 @@ import org.xml.sax.SAXException;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Model;
-import opendial.domains.actions.Action;
-import opendial.domains.actions.VerbalAction;
-import opendial.domains.observations.Observation;
-import opendial.domains.observations.UtteranceObservation;
 import opendial.domains.rules.Rule;
-import opendial.domains.types.ActionType;
-import opendial.domains.types.EntityType;
-import opendial.domains.types.FeatureType;
-import opendial.domains.types.FixedVariableType;
-import opendial.domains.types.StandardType;
-import opendial.domains.types.ObservationType;
 import opendial.domains.types.StandardType;
 import opendial.state.DialogueState;
-import opendial.state.StateEntity;
 import opendial.utils.Logger;
 
 /**
@@ -63,7 +52,7 @@ import opendial.utils.Logger;
  */
 public class XMLDomainReader {
 
-	static Logger log = new Logger("XMLDomainReader", Logger.Level.DEBUG);
+	static Logger log = new Logger("XMLDomainReader", Logger.Level.NORMAL);
 
 	// the dialogue domain which is currently extracted
 	Domain domain;
