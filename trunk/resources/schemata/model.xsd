@@ -54,12 +54,9 @@
 	<xs:complexType name="varType">
 		<xs:attribute name="denotation" type="xs:string"/>
 		<xs:attribute name="type" type="xs:string" />
+		<xs:attribute name="label" type="xs:string"/>
 	</xs:complexType>
 
-
-	<xs:complexType name="simpleLabelType">
-		<xs:attribute name="type" type="xs:string" use="required" />
-	</xs:complexType>
 
 
 	<!-- CASE SCHEMA -->

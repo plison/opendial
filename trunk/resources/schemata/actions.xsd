@@ -5,17 +5,23 @@
 	<xs:sequence>
 		<xs:element name="action" type="actionType" maxOccurs="unbounded"/>
 	</xs:sequence>
-	<xs:attribute name="var" type="xs:string"/>
 	</xs:complexType>
 </xs:element>
 
 <xs:complexType name="actionType">
-<xs:attribute name="value" type="xs:string"/>
+	<xs:sequence>
+		<xs:element name="value" type="actionValueType" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+</xs:complexType>
+
+
+<xs:complexType name="actionValueType">
+<xs:attribute name="label" type="xs:string"/>
 <xs:attribute name="type">
 	<xs:simpleType>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="string"/>
-			<xs:enumeration value="template"/>
+			<xs:enumeration value="verbal"/>
 			<xs:enumeration value="motion"/>
 		</xs:restriction>
 	</xs:simpleType>

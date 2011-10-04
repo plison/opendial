@@ -1,4 +1,8 @@
 
 <initialstate>
 
+<entity type="robot">
+<feature type="name">
+<value prob="1.0">Lenny</value></feature>
+</entity>
 </initialstate>

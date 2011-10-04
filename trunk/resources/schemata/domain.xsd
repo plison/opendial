@@ -3,8 +3,6 @@
 	<xs:include schemaLocation="declarations.xsd" />
 	<xs:include schemaLocation="initialstate.xsd" />
 	<xs:include schemaLocation="model.xsd" /> 
-	<xs:include schemaLocation="observations.xsd" /> 
-	<xs:include schemaLocation="actions.xsd" /> 
 
 	<!-- ROOT DOMAIN SCHEMA -->
 
@@ -18,10 +16,6 @@
 
 				<xs:element name="model"  type="includeType" minOccurs="4" maxOccurs="6"/>
 				
-				<xs:element name="observations" type="includeType" minOccurs="1" maxOccurs="1"/>
-
-				<xs:element name="actions" type="includeType" minOccurs="1" maxOccurs="1"/>
-
 			</xs:sequence>
 		<xs:attribute name="name" type="xs:string"/>
 		</xs:complexType>

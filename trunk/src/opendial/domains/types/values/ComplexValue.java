@@ -17,44 +17,52 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.types.values;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import opendial.domains.types.FeatureType;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DialogueState {
+public class ComplexValue extends BasicValue {
 
-	static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
+	Map<String,FeatureType> features;
 
-	Map<String,StateEntity> entities;
-	
-	
-	public DialogueState () {
-		entities = new HashMap<String, StateEntity>();
+	/**
+	 * @param label
+	 */
+	public ComplexValue(String label) {
+		super(label);
+		features = new HashMap<String,FeatureType>();
 	}
+
+	static Logger log = new Logger("ComplexValue", Logger.Level.NORMAL);
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<StateEntity> getVariables() {
-		return new ArrayList<StateEntity>(entities.values());
+	public List<FeatureType> getFeatures() {
+		return new ArrayList<FeatureType>(features.values());
 	}
+
 	/**
 	 * 
-	 * @param entity
+	 * @param features2
 	 */
-	public void addEntity(StateEntity entity) {
-		entities.put(entity.getLabel(), entity);
+	public void addFeatures(List<FeatureType> features2) {
+		for (FeatureType feat : features2) {
+			features.put(feat.getName(), feat);
+		}
 	}
 }

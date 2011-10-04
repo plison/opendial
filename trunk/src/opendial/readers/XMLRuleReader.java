@@ -26,9 +26,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import opendial.arch.DialException;
+import opendial.domains.Domain;
 import opendial.domains.rules.Case;
 import opendial.domains.rules.Rule;
-import opendial.domains.rules.Variable;
+import opendial.domains.rules.variables.Variable;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
@@ -37,6 +38,7 @@ import opendial.domains.rules.effects.AssignEffect;
 import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
+import opendial.domains.types.StandardType;
 import opendial.utils.Logger;
 
 /**
@@ -49,17 +51,21 @@ import opendial.utils.Logger;
 public class XMLRuleReader {
 
 	static Logger log = new Logger("XMLRuleReader", Logger.Level.DEBUG);
-	
+
 	// ===================================
 	//  RULE CONSTRUCTION METHODS
 	// ===================================
-	
+
 	Rule rule;
-		
-	
-	public Rule getRule(Node topNode) throws DialException {
+
+	Domain domain;
+
+	public Rule getRule(Node topNode, Domain domain) throws DialException {
+
+		this.domain = domain;
+
 		rule = new Rule();
-		
+
 		NodeList topList = topNode.getChildNodes();
 		for (int i = 0 ; i < topList.getLength(); i++) {
 			Node node = topList.item(i);
@@ -78,8 +84,8 @@ public class XMLRuleReader {
 		}
 		return rule;
 	}
-	
-	
+
+
 	/**
 	 * Get the variables declared in the input/output of the rule
 	 * 
@@ -87,18 +93,35 @@ public class XMLRuleReader {
 	 * 
 	 * @param node
 	 * @return
+	 * @throws DialException 
 	 */
-	private List<Variable> getVariables(Node node) {
+	private List<Variable> getVariables(Node node) throws DialException {
+
 		NodeList varList = node.getChildNodes();
 		List<Variable> vars = new LinkedList<Variable>();
 		for (int j = 0 ; j < varList.getLength(); j++) {
 			Node varNode = varList.item(j);
-			if (varNode.getNodeName().equals("var") && 
-					varNode.hasAttributes() &&
-					varNode.getAttributes().getNamedItem("type") != null) {
-				String type = varNode.getAttributes().getNamedItem("type").getNodeValue();
-				Variable var = new Variable(type);
+			if (varNode.getNodeName().equals("var") && varNode.hasAttributes()) {
 				
+				String typeStr;
+				if (varNode.getAttributes().getNamedItem("type") != null) {
+					typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
+				}
+				else if (varNode.getAttributes().getNamedItem("label") != null) {
+					typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
+				}
+				else {
+					throw new DialException("type or label must be defined for variables");
+				}
+
+				Variable var;
+				if (domain.hasType(typeStr)) {
+					var = new Variable(typeStr,domain.getType(typeStr));
+				}
+				else {
+					log.debug("entity type: " + typeStr);
+					throw new DialException("entity type " + typeStr + " not declared in domain");
+				}
 				if (varNode.getAttributes().getNamedItem("denotation") != null) {
 					String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
 					var.setDenotation(denotation);
@@ -108,6 +131,7 @@ public class XMLRuleReader {
 		}
 		return vars;
 	}
+
 	
 	public Case getCase(Node node) throws DialException {
 		Case case1 = new Case();
@@ -125,19 +149,19 @@ public class XMLRuleReader {
 		}
 		return case1;
 	}
-	
-	
+
+
 	public Condition getCondition(Node node) throws DialException {
-				
+
 		List<Condition> subconditions = new LinkedList<Condition>();
 		NodeList condList = node.getChildNodes();
 		for (int i = 0 ; i < condList.getLength(); i++) {
 			Node subnode = condList.item(i);
-			
+
 			if (subnode.getNodeName().equals("if") && subnode.hasAttributes() && 
 					subnode.getAttributes().getNamedItem("var")!=null && 
 					subnode.getAttributes().getNamedItem("value") != null) {
-				
+
 				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
 				if (rule.hasInputVariable(denotation)) {
 					Variable var = rule.getInputVariable(denotation);
@@ -145,7 +169,7 @@ public class XMLRuleReader {
 					BasicCondition basicCond = new BasicCondition(var,value);
 					subconditions.add(basicCond);
 				}
-				
+
 				else {
 					throw new DialException("Variable " + denotation + " not included in rule input");
 				}						
@@ -164,9 +188,9 @@ public class XMLRuleReader {
 			return complexCond;
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the effect specified in the XML node
 	 * 
@@ -179,12 +203,12 @@ public class XMLRuleReader {
 	public Effect getEffect(Node node) throws DialException {
 		List<Effect> subeffects = new LinkedList<Effect>();
 		NodeList effectList = node.getChildNodes();
-		
+
 		// get the probability of the effect
 		float prob = 0.0f;
 		if (node.hasAttributes() && node.getAttributes().getNamedItem("prob") != null) {
 			try {
-			prob = Float.parseFloat(node.getAttributes().getNamedItem("prob").getNodeValue());
+				prob = Float.parseFloat(node.getAttributes().getNamedItem("prob").getNodeValue());
 			}
 			catch (NumberFormatException e) {
 				throw new DialException("probability " + 
@@ -194,14 +218,14 @@ public class XMLRuleReader {
 		else {
 			throw new DialException("effect must specify its probability");
 		}
-		
+
 		for (int i = 0 ; i < effectList.getLength(); i++) {
 			Node subnode = effectList.item(i);
-			
+
 			if (subnode.getNodeName().equals("set") && subnode.hasAttributes() && 
 					subnode.getAttributes().getNamedItem("var")!=null && 
 					subnode.getAttributes().getNamedItem("value") != null) {
-				
+
 				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
 				if (rule.hasOutputVariable(denotation)) {
 					Variable var = rule.getOutputVariable(denotation);
@@ -209,7 +233,7 @@ public class XMLRuleReader {
 					AssignEffect assEffect = new AssignEffect(var,value,prob);
 					subeffects.add(assEffect);
 				}
-				
+
 				else {
 					throw new DialException("Variable " + denotation + " not included in rule output");
 				}
