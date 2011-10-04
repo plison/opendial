@@ -20,14 +20,17 @@
 package opendial.domains;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import opendial.domains.Model.Type;
-import opendial.domains.actions.Action;
-import opendial.domains.observations.Observation;
+import opendial.domains.types.ActionType;
+import opendial.domains.types.EntityType;
+import opendial.domains.types.FeatureType;
+import opendial.domains.types.FixedVariableType;
+import opendial.domains.types.StandardType;
+import opendial.domains.types.ObservationType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
@@ -41,25 +44,24 @@ import opendial.utils.Logger;
  */
 public class Domain {
 
-	static Logger log = new Logger("DialogueDomain", Logger.Level.NORMAL);
+	static Logger log = new Logger("DialogueDomain", Logger.Level.DEBUG);
 	
 	// name of dialogue domain
 	String domainName;
 	
-	// entity declarations
+	// types declarations
+	Map<String,StandardType> allTypes;
+	
 	Map<String,EntityType> entityTypes;
+	Map<String,FixedVariableType> fixedVariableTypes;
+	Map<String,ObservationType> observationTypes;
+	Map<String,ActionType> actionTypes;
 	
 	// initial state of the domain
 	DialogueState initialState;
 	
 	// the specified models (list of rules)
 	Map<Model.Type,Model> models;
-	
-	// the possible observations for the domain
-	List<Observation> observations;
-	
-	// the possible actions for the domain
-	List<Action> actions;
 	
 	
 	/**
@@ -69,24 +71,17 @@ public class Domain {
 	 */
 	public Domain(String domainName) {
 		this.domainName = domainName;
+
+		allTypes = new HashMap<String,StandardType>();
 		entityTypes = new HashMap<String,EntityType>();
+		fixedVariableTypes = new HashMap<String,FixedVariableType>();
+		observationTypes = new HashMap<String,ObservationType>();
+		actionTypes = new HashMap<String,ActionType>();
+		
 		initialState = new DialogueState();
 		models = new HashMap<Model.Type, Model>();
-		observations = new ArrayList<Observation>();
-		actions = new ArrayList<Action>();
 	}
 	
-	
-	public void addEntityType(EntityType newEntity) {
-		entityTypes.put(newEntity.getName(), newEntity);
-	}
-
-
-	public void addEntityTypes(List<EntityType> entityTypes) {
-		for (EntityType e: entityTypes){
-			addEntityType(e);
-		}
-	}
 	
 
 	public void addInitialState(DialogueState initialState) {
@@ -98,23 +93,47 @@ public class Domain {
 		models.put(model.getType(), model);
 	}
 	
-	public void addObservation(Observation obs) {
-		observations.add(obs);
-	}
-	
-	public void addAction(Action action) {
-		actions.add(action);
-	}
 	
 	
 	public void setName(String domainName) {
 		this.domainName = domainName;
 	}
 
-	
-	public Collection<EntityType> getEntityTypes() {
-		return entityTypes.values();
+
+
+	/**
+	 * 
+	 * @param types
+	 */
+	public void addTypes(List<StandardType> types) {
+		for (StandardType type : types) {
+			addType(type);
+		}
 	}
+
+	/**
+	 * 
+	 * @param type
+	 */
+	private void addType(StandardType type) {
+		if (type instanceof EntityType) {
+			entityTypes.put(type.getName(), (EntityType)type);
+		}
+		else if (type instanceof FixedVariableType) {
+			fixedVariableTypes.put(type.getName(), (FixedVariableType)type);
+		}
+	//	else if (type instanceof FeatureType) {
+	//		featureTypes.put(type.getName(), (FeatureType)type);
+	//	}
+		else if (type instanceof ObservationType) {
+			observationTypes.put(type.getName(), (ObservationType)type);
+		}
+		else if (type instanceof ActionType) {
+			actionTypes.put(type.getName(), (ActionType)type);
+		}
+		allTypes.put(type.getName(), type);		
+	}
+
 
 
 	/**
@@ -122,34 +141,32 @@ public class Domain {
 	 * @param type
 	 * @return
 	 */
-	public boolean hasEntityType(String type) {
-		return entityTypes.containsKey(type);
+	public boolean hasType(String type) {
+		return allTypes.containsKey(type);
 	}
 
-	
+
+	public StandardType getType(String type) {
+		return allTypes.get(type);
+	}
+
+
 	public EntityType getEntityType(String type) {
 		return entityTypes.get(type);
 	}
 
-
-	/**
-	 * 
-	 * @param observations2
-	 */
-	public void addObservations(List<Observation> observations2) {
-		observations.addAll(observations2);
+	public FixedVariableType getFixedVariableType(String type) {
+		return fixedVariableTypes.get(type);
 	}
-
-
-	/**
-	 * 
-	 * @param actions2
-	 */
-	public void addActions(List<Action> actions2) {
-		actions.addAll(actions2);
+	
+	public ObservationType getObversationType(String type) {
+		return observationTypes.get(type);
 	}
-
-
+	
+	public ActionType getActionType(String type) {
+		return actionTypes.get(type);
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -169,17 +186,36 @@ public class Domain {
 	}
 
 
+
+	/**
+	 * TODO: improve efficiency of this!
+	 * 
+	 * @return
+	 */
+	public List<EntityType> getEntityTypes() {
+		return new ArrayList<EntityType>(entityTypes.values());
+	}
+
+
 	/**
 	 * 
 	 * @return
 	 */
-	public List<Observation> getObservations() {
-		return observations;
+	public List<ObservationType> getObservationTypes() {
+		return new ArrayList<ObservationType>(observationTypes.values());
+
 	}
-	
-	public List<Action> getActions() {
-		return actions;
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<ActionType> getActionTypes() {
+		return new ArrayList<ActionType>(actionTypes.values());
 	}
+
+
+
 
 
 
