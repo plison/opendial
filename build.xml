@@ -1,5 +1,5 @@
 
-<!-- ANT build file for openDial project -->
+<!-- ANT build file for the openDial project -->
 <project name="opendial" default="compile" basedir=".">
 	<description>build file for opendial</description>
 	  
