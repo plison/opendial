@@ -28,7 +28,7 @@ import opendial.utils.Logger;
  * 
  * TODO: implement add and remove effects as well
  * 
- * @version $Date:: 2011-10-01 19:25:25 #$
+ * @version $Date::                      $
  *
  */
 public abstract class Effect {

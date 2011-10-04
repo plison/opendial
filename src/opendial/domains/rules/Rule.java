@@ -34,7 +34,7 @@ import opendial.utils.Logger;
  * TODO: for cases, ensure that it is ordered(?)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-01 19:25:25 #$
+ * @version $Date::                      $
  *
  */
 public class Rule {
