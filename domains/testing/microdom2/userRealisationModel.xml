@@ -2,10 +2,10 @@
 <model type="userRealisation">
 
 <rule>
-	<input><var label="a_u"/></input>
+	<input><var label="a_u"/><var feature="obj" base="a_u" denotation="o"/></input>
 	<output><var label="f1"/></output>
 	<case>
-		<condition><if var="a_u" value="AskForX"/></condition>
+		<condition><if var="a_u" value="AskFor"/><if var="o" value="X"/></condition>
 		<effect prob="1.0"><set var="f1" value="true"/></effect>
 	</case>
 </rule>

@@ -63,4 +63,5 @@ public class Variable {
 			return type;
 		}
 
+
 }

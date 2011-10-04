@@ -50,7 +50,7 @@
 
 <rule>
 	<input>
-		<var type="a_u"/>
+		<var label="a_u"/>
 	</input>
 	<output>
 		<var label="a_m"/>

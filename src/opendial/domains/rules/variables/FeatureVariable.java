@@ -17,14 +17,10 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package opendial.domains.rules.variables;
 
 import opendial.domains.types.FeatureType;
+import opendial.domains.types.StandardType;
 import opendial.utils.Logger;
 
 /**
@@ -34,48 +30,23 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class ComplexValue extends BasicValue {
+public class FeatureVariable extends Variable {
 
-	Map<String,FeatureType> features;
+	static Logger log = new Logger("FeatureVariable", Logger.Level.NORMAL);
 
+	Variable baseVariable;
+	
 	/**
-	 * @param label
+	 * @param denotation
+	 * @param type
 	 */
-	public ComplexValue(String label) {
-		super(label);
-		features = new HashMap<String,FeatureType>();
-	}
-
-	static Logger log = new Logger("ComplexValue", Logger.Level.NORMAL);
-
-	/**
-	 * 
-	 * @return
-	 */
-	public List<FeatureType> getFeatures() {
-		return new ArrayList<FeatureType>(features.values());
-	}
-
-	/**
-	 * 
-	 * @param features2
-	 */
-	public void addFeatures(List<FeatureType> features2) {
-		for (FeatureType feat : features2) {
-			features.put(feat.getName(), feat);
-		}
-	}
-
-	/**
-	 * 
-	 * @param featureName
-	 * @return
-	 */
-	public boolean hasFeature(String featureName) {
-		return features.containsKey(featureName);
+	public FeatureVariable(String denotation, FeatureType type, Variable baseVariable) {
+		super(denotation, type);
+		this.baseVariable = baseVariable;
 	}
 	
-	public FeatureType getFeature(String featureName) {
-		return features.get(featureName);
+	public Variable getBaseVariable() {
+		return baseVariable;
 	}
+
 }
