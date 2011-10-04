@@ -19,11 +19,12 @@
 
 package opendial.domains.rules.effects;
 
+import opendial.arch.DialException;
 import opendial.domains.rules.variables.Variable;
 import opendial.utils.Logger;
 
 /**
- * TODO: add distinct types of assignment here
+ * TODO: introduce more complex kinds of assignments?
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -37,10 +38,14 @@ public class AssignEffect extends Effect {
 	
 	String value;
 	
-	public AssignEffect(Variable var, String value, float prob) {
+	public AssignEffect(Variable var, String value, float prob) throws DialException {
 		super(prob);
 		this.var = var;
 		this.value = value;
+		
+		if (!var.getType().acceptsValue(value)) {
+			throw new DialException("variable " + var.getType().getName() + " does not accept value " + value);
+		}
 	}
 
 	/**

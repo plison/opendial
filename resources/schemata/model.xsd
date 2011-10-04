@@ -53,6 +53,7 @@
 
 	<xs:complexType name="varType">
 		<xs:attribute name="denotation" type="xs:string"/>
+		<xs:attribute name="pointer" type="xs:string"/>
 		<xs:attribute name="type" type="xs:string" />
 		<xs:attribute name="label" type="xs:string"/>
 		<xs:attribute name="feature" type="xs:string"/>
@@ -93,7 +94,7 @@
 			<xs:element name="remove" type="addRemoveType" minOccurs="0"
 				maxOccurs="unbounded" />
 		</xs:choice>
-		<xs:attribute name="prob" type="probabilityType" use="required" />
+		<xs:attribute name="prob" type="probabilityType"/>
 		<xs:attribute name="operator" type="binaryOperatorType" />
 	</xs:complexType>
 

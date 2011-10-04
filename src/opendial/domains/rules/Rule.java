@@ -30,8 +30,6 @@ import opendial.utils.Logger;
 
 /**
  * Representation of a rule.
- * 
- * TODO: for cases, ensure that it is ordered(?)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -115,6 +113,36 @@ public class Rule {
 	 */
 	public List<Case> getCases() {
 		return cases;
+	}
+
+	/**
+	 * 
+	 * @param denotation
+	 * @return
+	 */
+	public boolean hasVariable(String denotation) {
+		if (inputs.containsKey(denotation)) {
+			return true;
+		}
+		else if (outputs.containsKey(denotation)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param denotation
+	 * @return
+	 */
+	public Variable getVariable(String denotation) {
+		if (inputs.containsKey(denotation)) {
+			return inputs.get(denotation);
+		}
+		else if (outputs.containsKey(denotation)) {
+			return outputs.get(denotation);
+		}
+		return null;
 	}
 	
 }

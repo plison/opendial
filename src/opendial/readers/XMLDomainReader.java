@@ -20,10 +20,7 @@
 package opendial.readers;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,7 +36,7 @@ import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
-import opendial.domains.types.StandardType;
+import opendial.domains.types.AbstractType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
@@ -84,9 +81,10 @@ public class XMLDomainReader {
 
 		// determine the root path 
 		rootpath = topDomainFile.substring(0, topDomainFile.lastIndexOf("//")+1);
+		String filename = topDomainFile.substring(topDomainFile.lastIndexOf("//")+2, topDomainFile.length());
 
 		// create a new, empty domain
-		domain = new Domain("");
+		domain = new Domain(filename);
 
 		Node mainNode = getMainNode(doc, "domain");
 
@@ -103,7 +101,7 @@ public class XMLDomainReader {
 				String fileReference = getReference(node);
 				Document refDoc = getXMLDocument(rootpath+fileReference);
 				XMLDeclarationsReader declReader = new XMLDeclarationsReader();
-				List<StandardType> types = declReader.getTypes(refDoc);
+				List<AbstractType> types = declReader.getTypes(refDoc);
 				domain.addTypes(types);
 			}
 

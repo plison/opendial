@@ -22,7 +22,6 @@ package opendial.domains.types;
 import java.util.List;
 
 import opendial.domains.types.values.Value;
-import opendial.utils.Logger;
 
 /**
  * 
@@ -31,23 +30,24 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class FixedVariableType extends StandardType {
+public class FixedVariableType extends AbstractType {
 
-	static Logger log = new Logger("FixedVariableType", Logger.Level.NORMAL);
+	// static Logger log = new Logger("FixedVariableType", Logger.Level.NORMAL);
 
 	/**
 	 * @param name
 	 */
 	public FixedVariableType(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
-	public void addFixedVariableValue(Value val) {
-		addValue(val);
+	public void addValue(Value val) {
+		internalAddValue(val);
 	}
 	
-	public void addFixedVariableValues(List<Value> val) {
-		addValues(val);
+	public void addValues(List<Value> val) {
+		internalAddValues(val);
 	}
+
+
 }

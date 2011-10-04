@@ -19,7 +19,6 @@
 
 package opendial.arch;
 
-import opendial.utils.Logger;
 
 /**
  * 
@@ -30,8 +29,9 @@ import opendial.utils.Logger;
  */
 public class DialException extends Exception {
 
-	static Logger log = new Logger("DialException", Logger.Level.NORMAL);
+	private static final long serialVersionUID = 1L;
 	
+	// static Logger log = new Logger("DialException", Logger.Level.NORMAL);
 	
 	public DialException (String msg) {
 		super(msg);

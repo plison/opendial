@@ -19,32 +19,28 @@
 
 package opendial.readers;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import opendial.arch.DialException;
-import opendial.domains.actions.Action;
-import opendial.domains.actions.VerbalAction;
-import opendial.domains.observations.Observation;
-import opendial.domains.observations.UtteranceObservation;
+import opendial.domains.realisations.Realisation;
+import opendial.domains.realisations.SurfaceRealisation;
+import opendial.domains.triggers.SurfaceTrigger;
+import opendial.domains.triggers.Trigger;
+import opendial.domains.types.AbstractType;
 import opendial.domains.types.ActionType;
 import opendial.domains.types.EntityType;
 import opendial.domains.types.FeatureType;
 import opendial.domains.types.FixedVariableType;
-import opendial.domains.types.StandardType;
 import opendial.domains.types.ObservationType;
-import opendial.domains.types.StandardType;
 import opendial.domains.types.values.BasicValue;
-import opendial.domains.types.values.ComplexValue;
 import opendial.domains.types.values.RangeValue;
 import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -55,7 +51,7 @@ import opendial.utils.Logger;
  */
 public class XMLDeclarationsReader {
 
-	static Logger log = new Logger("XMLDeclarationsReader", Logger.Level.NORMAL);
+	static Logger log = new Logger("XMLDeclarationsReader", Logger.Level.DEBUG);
 	
 
 	/**
@@ -65,10 +61,9 @@ public class XMLDeclarationsReader {
 	 * @return the list of entity types which have been declared
 	 * @throws DialException if the document is ill-formatted
 	 */
-	public List<StandardType> getTypes(Document doc) throws DialException {
+	public List<AbstractType> getTypes(Document doc) throws DialException {
 
-		List<StandardType> entityTypes = new LinkedList<StandardType>();
-		Map<StandardType,List<String>> unlinkedFeatures = new HashMap<StandardType,List<String>>();
+		List<AbstractType> allTypes = new LinkedList<AbstractType>();
 
 		Node mainNode = XMLDomainReader.getMainNode(doc,"declarations");
 		NodeList midList = mainNode.getChildNodes();
@@ -78,45 +73,26 @@ public class XMLDeclarationsReader {
 
 
 			if (node.hasAttributes() && node.getAttributes().getNamedItem("name") != null) {
-				String name = node.getAttributes().getNamedItem("name").getNodeValue();
 
 				if (node.getNodeName().equals("entity")) {
-					EntityType type = new EntityType(name);
-					List<Value> values = extractTypeValues (node);
-					type.addEntityValues(values);
-					List<String> refFeatures = extractReferencedFeatures(node);
-					unlinkedFeatures.put(type, refFeatures);
-					List<FeatureType> features = extractContentFeatures(node);
-					((StandardType)type).addFeatures(features);
-					entityTypes.add(type);
+					EntityType type = getEntity(node);
+					allTypes.add(type);
 				}
 				else if (node.getNodeName().equals("variable")) {
-					FixedVariableType type = new FixedVariableType(name);
-					List<Value> values = extractTypeValues (node);
-					type.addFixedVariableValues(values);
-					List<String> refFeatures = extractReferencedFeatures(node);
-					unlinkedFeatures.put(type, refFeatures);
-					List<FeatureType> features = extractContentFeatures(node);
-					((StandardType)type).addFeatures(features);
-					entityTypes.add(type);
+					FixedVariableType type = getFixedVariableType(node);
+					allTypes.add(type);
 				}
 				else if (node.getNodeName().equals("feature")) {
-					FeatureType type = new FeatureType(name);
-					List<Value> values = extractTypeValues (node);
-					type.addFeatureValues(values);
-					List<String> refFeatures = extractReferencedFeatures(node);
-					unlinkedFeatures.put(type, refFeatures);
-					List<FeatureType> features = extractContentFeatures(node);
-					((StandardType)type).addFeatures(features);
-					entityTypes.add(type);
+		//			FeatureType type = getFeatureType(node);
+		//			allTypes.add(type);
 				}
-				else if (node.getNodeName().equals("observation")) {
+				else if (node.getNodeName().equals("trigger")) {
 					ObservationType type = getObservation(node);
-					entityTypes.add(type);
+					allTypes.add(type);
 				}
-				else if (node.getNodeName().equals("action")) {
+				else if (node.getNodeName().equals("realisation")) {
 					ActionType type = getAction(node);
-					entityTypes.add(type);
+					allTypes.add(type);
 				}
 				else {
 					throw new DialException("declaration type not recognised");
@@ -128,29 +104,44 @@ public class XMLDeclarationsReader {
 			}
 		}
 
-		linkFeatures(entityTypes, unlinkedFeatures);
-
-		return entityTypes;
+		return allTypes;
 	}
 
-	private void linkFeatures(List<StandardType> types, 
-			Map<StandardType,List<String>> unlinkedFeatures) throws DialException {
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DialException 
+	 */
+	private FixedVariableType getFixedVariableType(Node node) throws DialException {
+		String name = node.getAttributes().getNamedItem("name").getNodeValue();
 
-		for (StandardType type : unlinkedFeatures.keySet()) {
-			for (String featureName : unlinkedFeatures.get(type)) {
-				boolean foundAssociatedType = false;
-				for (StandardType type2: types) {
-					if (featureName.equals(type2.getName()) && type instanceof StandardType && type2 instanceof FeatureType) {
-						type.addFeature((FeatureType)type2);
-						foundAssociatedType = true;
-					}
-				}
-				if (!foundAssociatedType) {
-					throw new DialException("feature " + featureName + " is not declared in the domain");
-				}
-			}
-		}
+		FixedVariableType type = new FixedVariableType(name);
+		List<Value> values = extractTypeValues (node);
+		type.addValues(values);
+		List<FeatureType> features = extractFeatures(node);
+		type.addFeatures(features);
+		return type;
 	}
+
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 * @throws DialException 
+	 */
+	private EntityType getEntity(Node node) throws DialException {
+		String name = node.getAttributes().getNamedItem("name").getNodeValue();
+
+		EntityType type = new EntityType(name);
+		List<Value> values = extractTypeValues (node);
+		type.addValues(values);
+		List<FeatureType> features = extractFeatures(node);
+		type.addFeatures(features);
+		return type;
+	}
+	
+	
 
 	/**
 	 * Extract values from a XML node
@@ -182,48 +173,69 @@ public class XMLDeclarationsReader {
 				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
 					if (subValueNodes.item(j).getNodeName().equals("label")) {
 						valueLabel = subValueNodes.item(j).getTextContent();
+						values.add(new BasicValue(valueLabel));
 					}
 				}
-				
-				List<FeatureType> features = extractContentFeatures(valueNode);
-				
-				ComplexValue complexVal = new ComplexValue(valueLabel);
-				complexVal.addFeatures(features);
-				values.add(complexVal);
-				
 			}
  		}
 		return values;
 	}
 
 
+	public List<FeatureType> extractFeatures(Node node) throws DialException {
+		List<FeatureType> allFeatures = new LinkedList<FeatureType>();
+		allFeatures.addAll(extractFullFeatures(node));
+		allFeatures.addAll(extractPartialFeatures(node));
+		return allFeatures;
+	}
+	
 	/**
-	 * Extracts referenced features from a XML node
 	 * 
-	 * @param node the node
-	 * @return the list of extracted features
-	 * @throws DialException if the XML fragment is ill-formatted
+	 * @param node
+	 * @return
+	 * @throws DialException 
 	 */
-	private List<String> extractReferencedFeatures(Node node) throws DialException {
+	private List<FeatureType> extractPartialFeatures(Node node) throws DialException {
+		
+		List<FeatureType> partialFeatures = new LinkedList<FeatureType>();
+		
 		NodeList contentList = node.getChildNodes();
 
-		List<String> features = new LinkedList<String>();
+		for (int i = 0 ; i < contentList.getLength() ; i++) {
 
-		for (int j = 0 ; j < contentList.getLength() ; j++) {
+			Node valueNode = contentList.item(i);
+			if (valueNode.getNodeName().equals("complexvalue")) {
+				NodeList subValueNodes = valueNode.getChildNodes();
+				
+				String baseValue="";
 
-			Node subnode = contentList.item(j);
-			if (subnode.getNodeName().equals("feature")) {
-
-				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("ref") != null) {
-					String featName = subnode.getAttributes().getNamedItem("ref").getNodeValue();
-					features.add(featName);			
+				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
+					
+					Node insideNode = subValueNodes.item(j);
+					if (insideNode.getNodeName().equals("label")) {
+						baseValue = subValueNodes.item(j).getTextContent();
+					}
+					
+					else if (insideNode.getNodeName().equals("feature") && 
+							insideNode.hasAttributes() && 
+							insideNode.getAttributes().getNamedItem("name")!=null) {
+						
+						String featLabel = insideNode.getAttributes().getNamedItem("name").getNodeValue();
+						FeatureType featType = new FeatureType(featLabel);
+						List<Value> basicValues = extractTypeValues(insideNode);
+						featType.addValues(basicValues);
+						
+						featType.addBaseValue(baseValue);
+						
+						partialFeatures.add(featType);
+					}
 				}
 			}
-		}
-		return features;
+ 		}
+		
+		return partialFeatures;
 	}
 
-	
 	/**
 	 * Extracts features from a XML node
 	 * 
@@ -231,7 +243,7 @@ public class XMLDeclarationsReader {
 	 * @return the list of extracted features
 	 * @throws DialException if the XML fragment is ill-formatted
 	 */
-	private List<FeatureType> extractContentFeatures(Node node) throws DialException {
+	private List<FeatureType> extractFullFeatures(Node node) throws DialException {
 		NodeList contentList = node.getChildNodes();
 
 		List<FeatureType> features = new LinkedList<FeatureType>();
@@ -246,7 +258,7 @@ public class XMLDeclarationsReader {
 					FeatureType newFeat = new FeatureType(featName);
 					
 					List<Value> basicValues = extractTypeValues(featNode);
-					newFeat.addFeatureValues(basicValues);
+					newFeat.addValues(basicValues);
 					features.add(newFeat);
 				}
 				else {
@@ -283,9 +295,9 @@ public class XMLDeclarationsReader {
 			String content = obsNode.getAttributes().getNamedItem("content").getNodeValue();
 
 
-			Observation trigger ;
-			if (type.equals("utterance") ) {
-				trigger = new UtteranceObservation(content);
+			Trigger trigger ;
+			if (type.equals("surface") ) {
+				trigger = new SurfaceTrigger(content);
 				obs = new ObservationType(name, trigger);
 			}
 			else {
@@ -293,9 +305,10 @@ public class XMLDeclarationsReader {
 			}			
 		}
 		else {
-			throw new DialException("observation type not correctly specified (missing attributes)");
+			throw new DialException("trigger type not correctly specified (missing attributes)");
 		}
 
+		
 		return obs;
 	}
 
@@ -315,7 +328,7 @@ public class XMLDeclarationsReader {
 			String actionName = actionNode.getAttributes().getNamedItem("name").getNodeValue();
 			action = new ActionType(actionName);
 
-			List<Action> values = getActionValues(actionNode);
+			List<Realisation> values = getActionValues(actionNode);
 			action.addActionValues(values);
 		}
 		else {
@@ -327,9 +340,9 @@ public class XMLDeclarationsReader {
 	}
 
 
-	private List<Action> getActionValues(Node topNode) {
+	private List<Realisation> getActionValues(Node topNode) {
 
-		List<Action> values = new LinkedList<Action>();
+		List<Realisation> values = new LinkedList<Realisation>();
 
 		NodeList valueList = topNode.getChildNodes();
 		for (int j = 0 ; j < valueList.getLength(); j++) {
@@ -344,9 +357,9 @@ public class XMLDeclarationsReader {
 				String type = valueNode.getAttributes().getNamedItem("type").getNodeValue();
 				String content = valueNode.getAttributes().getNamedItem("content").getNodeValue();
 
-				Action option;
-				if (type.equals("verbal")) {
-					option = new VerbalAction(label, content);
+				Realisation option;
+				if (type.equals("surface")) {
+					option = new SurfaceRealisation(label, content);
 					values.add(option);
 				}
 			}

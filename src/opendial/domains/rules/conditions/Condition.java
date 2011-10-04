@@ -19,7 +19,6 @@
 
 package opendial.domains.rules.conditions;
 
-import opendial.utils.Logger;
 
 /**
  * 
@@ -30,5 +29,5 @@ import opendial.utils.Logger;
  */
 public abstract class Condition {
 
-	static Logger log = new Logger("Condition", Logger.Level.NORMAL);
+	// static Logger log = new Logger("Condition", Logger.Level.NORMAL);
 }

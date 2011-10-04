@@ -19,8 +19,7 @@
 
 package opendial.domains.rules.variables;
 
-import opendial.domains.types.StandardType;
-import opendial.utils.Logger;
+import opendial.domains.types.AbstractType;
 
 /**
  * 
@@ -31,10 +30,10 @@ import opendial.utils.Logger;
  */
 public class FixedVariable extends Variable {
 
-	static Logger log = new Logger("Variable", Logger.Level.NORMAL);
+	// static Logger log = new Logger("Variable", Logger.Level.NORMAL);
 
 		
-		public FixedVariable(StandardType type) {
+		public FixedVariable(AbstractType type) {
 			super(type.getName(), type);
 		}
 

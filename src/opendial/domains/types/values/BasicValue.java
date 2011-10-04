@@ -19,10 +19,7 @@
 
 package opendial.domains.types.values;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import opendial.utils.Logger;
 
 /**
  * 
@@ -33,7 +30,7 @@ import opendial.utils.Logger;
  */
 public class BasicValue implements Value {
 
-	static Logger log = new Logger("LabelValue", Logger.Level.NORMAL);
+	// static Logger log = new Logger("LabelValue", Logger.Level.NORMAL);
 	
 	String label;
 		

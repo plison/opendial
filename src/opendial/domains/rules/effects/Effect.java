@@ -19,21 +19,18 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.utils.Logger;
 
 /**
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * 
- * TODO: implement add and remove effects as well
- * 
  * @version $Date::                      $
  *
  */
 public abstract class Effect {
 
-	static Logger log = new Logger("Effect", Logger.Level.NORMAL);
+	// static Logger log = new Logger("Effect", Logger.Level.NORMAL);
 
 	float probability;
 	

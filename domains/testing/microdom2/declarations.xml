@@ -2,8 +2,13 @@
 <declarations>
 
 	<entity name="intent">
-		<value>WantX</value>
-		<value>WantY</value>
+		<complexvalue>
+			<label>Want</label>
+			<feature name="obj">
+				<value>X</value>
+				<value>Y</value>
+			</feature>
+		</complexvalue>
 	</entity>
 
 	<entity name="robot">
@@ -12,6 +17,12 @@
 		</feature>
 	</entity>
 
+	<variable name="floor">
+		<value>init</value>
+		<value>wait</value>
+		<value>free</value>
+		<value>closed</value>
+	</variable>
 
 	<variable name="a_u">
 		<complexvalue>
@@ -27,18 +38,21 @@
 	</variable>
 
 	
-	<observation name="f1" type="utterance" content="do X"/>
-	<observation name="f2" type="utterance" content="do Y"/>
-	<observation name="f3" type="utterance" content="yes"/>
-	<observation name="f4" type="utterance" content="no"/>
-	<observation name="f5" type="utterance" content="*"/>
+	<trigger name="greetingObs" type="surface" content="hi my name is ${name}"/>
+	<trigger name="doXObs" type="surface" content="do X"/>
+	<trigger name="doYObs" type="surface" content="do Y"/>
+	<trigger name="yesObs" type="surface" content="yes"/>
+	<trigger name="noObs" type="surface" content="no"/>
+	<trigger name="anythingObs" type="surface" content="*"/>
 	
-	<action name="a_m">
-		<value label="DoX" type="verbal" content="OK, doing X!"/>
-		<value label="DoY" type="verbal" content="OK, doing Y!"/>
-		<value label="AskRepeat" type="verbal" content="Sorry, could you repeat?"/>
-		<value label="InformNotUnderstand" type="verbal" content="Sorry, I did not understand"/>
-	</action>
+	<realisation name="a_m">
+		<value label="DoX" type="surface" content="OK, doing X!"/>
+		<value label="DoY" type="surface" content="OK, doing Y!"/>
+		<value label="SayHi" type="surface" content="Hi ${name}!"/>
+		<value label="AskRepeat" type="surface" content="Sorry, could you repeat?"/>
+		<value label="InformNotUnderstand" type="surface" content="Sorry, I did not understand"/>
+		<value label="RequestIntent" type="surface" content="How may I help you?"/>
+	</realisation>
 	
 	
 </declarations>

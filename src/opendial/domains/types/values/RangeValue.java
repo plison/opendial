@@ -19,7 +19,6 @@
 
 package opendial.domains.types.values;
 
-import opendial.utils.Logger;
 
 /**
  * 
@@ -30,7 +29,7 @@ import opendial.utils.Logger;
  */
 public class RangeValue implements Value {
 
-	static Logger log = new Logger("RangeValue", Logger.Level.NORMAL);
+	// static Logger log = new Logger("RangeValue", Logger.Level.NORMAL);
 	
 	String range;
 	
