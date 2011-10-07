@@ -37,7 +37,7 @@ import opendial.utils.Logger;
 /**
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-04 07:57:39 #$
+ * @version $Date::                      $
  *
  */
 public class Fluent {
