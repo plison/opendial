@@ -17,38 +17,75 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
+package opendial.processes;
 
-import java.util.List;
+import static org.junit.Assert.*;
 
-import opendial.domains.types.values.Value;
+import org.junit.Test;
+
+import opendial.arch.DialException;
+import opendial.domains.Domain;
+import opendial.inputs.NBestList;
+import opendial.outputs.Action;
+import opendial.outputs.VoidAction;
+import opendial.readers.XMLDomainReader;
+import opendial.utils.Logger;
 
 /**
- * Representation of an entity type
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class EntityType extends AbstractType {
+public class DialogueSystemTest1 {
 
-	// static Logger log = new Logger("EntityType", Logger.Level.NORMAL);
+	static Logger log = new Logger("DialogueSystemTest1", Logger.Level.DEBUG);
+	
+	public String dialDomain = "domains//testing//microdom2.xml";
 
-	/**
-	 * @param name
-	 */
-	public EntityType(String name) {
-		super(name);
+	 
+	@Test
+	public void pipelineTest1() throws DialException, InterruptedException {
+		
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+		DialogueSystem ds = new DialogueSystem(domain);
+		Action action = ds.getNextAction();
+		log.debug("yoowhoo, action retrieved!!");
+		assertTrue(action instanceof VoidAction);
 	}
 	
-	public void addValue(Value val) {
-		internalAddValue(val);
+	
+	@Test
+	public void pipelineTest2() throws DialException, InterruptedException {
+		
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+		DialogueSystem ds = new DialogueSystem(domain);
+		NBestList obs = new NBestList();
+		obs.addUtterance("robot, please do X!", 1.0f);
+		ds.addObservation(obs);
+		Action action = ds.getNextAction();
+		log.debug("yoowhoo, action retrieved!!");
+		assertTrue(action instanceof VoidAction);
 	}
 	
-	public void addValues(List<Value> val) {
-		internalAddValues(val);
+	
+	@Test
+	public void pipelineTest3() throws DialException, InterruptedException {
+		
+		XMLDomainReader reader = new XMLDomainReader();
+		Domain domain = reader.extractDomain(dialDomain);
+		DialogueSystem ds = new DialogueSystem(domain);
+		NBestList obs = new NBestList();
+		obs.addUtterance("robot, please do X!", 1.0f);
+		ds.addObservation(obs);
+
+		Thread.sleep(200);
+
+		Action action = ds.getNextAction();
+		log.debug("yoowhoo, action retrieved!!");
+		assertTrue(action instanceof VoidAction);
 	}
-
-
-
 }

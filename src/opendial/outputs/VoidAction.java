@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.outputs;
 
 /**
  * 
@@ -26,13 +26,7 @@ package opendial.domains.types.values;
  * @version $Date::                      $
  *
  */
-public interface Value {
+public class VoidAction implements Action {
 
-	/**
-	 * 
-	 * @return
-	 */
-	String getLabel();
-	
-
+	// static Logger log = new Logger("VoidAction", Logger.Level.NORMAL);
 }

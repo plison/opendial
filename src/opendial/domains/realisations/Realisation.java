@@ -17,37 +17,31 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
-
-import java.util.List;
-
-import opendial.domains.types.values.Value;
+package opendial.domains.realisations;
 
 /**
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-04 07:55:02 #$
  *
  */
-public class FixedVariableType extends AbstractType {
+public abstract class Realisation {
 
-	// static Logger log = new Logger("FixedVariableType", Logger.Level.NORMAL);
+//	static Logger log = new Logger("ActionValue", Logger.Level.NORMAL);
+	
+	String label;
+	
+	public Realisation(String label) {
+		this.label = label;
+	}
 
 	/**
-	 * @param name
+	 * 
+	 * @return
 	 */
-	public FixedVariableType(String name) {
-		super(name);
-	}
-
-	public void addValue(Value val) {
-		internalAddValue(val);
+	public String getLabel() {
+		return label;
 	}
 	
-	public void addValues(List<Value> val) {
-		internalAddValues(val);
-	}
-
-
 }

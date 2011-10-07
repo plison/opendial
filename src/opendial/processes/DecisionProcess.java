@@ -17,8 +17,16 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.processes;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import opendial.domains.Domain;
+import opendial.outputs.Action;
+import opendial.outputs.VoidAction;
+import opendial.state.DialogueState;
+import opendial.utils.Logger;
 
 /**
  * 
@@ -27,26 +35,61 @@ package opendial.domains.types.values;
  * @version $Date::                      $
  *
  */
-public class RangeValue implements Value {
+public class DecisionProcess extends Thread{
 
-	// static Logger log = new Logger("RangeValue", Logger.Level.NORMAL);
+	static Logger log = new Logger("DecisionProcess", Logger.Level.DEBUG);
 	
-	String range;
+	DialogueState state;
+	Domain domain;
 	
-	public RangeValue(String range) {
-		this.range = range;
+	Queue<Action> availableActions;
+	
+	public DecisionProcess(DialogueState state, Domain domain) {
+		this.state = state;
+		this.domain = domain;
+		
+		availableActions = new LinkedList<Action>();
 	}
 	
-	public String getRange() {
-		return range;
+	public Action decideNextAction() {
+		return new VoidAction();
 	}
+	
+	
+	@Override
+	public void run () {
+		while (true) {		
+		           
+				log.info("Floor is free, trying to make a decision...");
+				
+				availableActions.add(new VoidAction());
+				synchronized (this) {
+					notify();
+				}
+				
+
+				try { synchronized (state) {  state.wait(); }  }
+				catch (InterruptedException e) {  }
+
+		}
+	}
+
 
 	/**
-	 *
+	 * 
 	 * @return
 	 */
-	@Override
-	public String getLabel() {
-		return "range";
+	public synchronized Action pollAvailableAction() {
+		Action action = availableActions.poll();
+		if (action == null) {
+				try {	wait(); }
+				catch (InterruptedException e) { }
+				action = availableActions.poll();
+		}
+
+		log.debug("polledAction: " + action);		
+		return action;
 	}
+	
+	
 }

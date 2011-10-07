@@ -17,29 +17,55 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.domains.triggers;
 
+import java.util.List;
 
+import opendial.utils.Logger;
+import opendial.utils.StringUtils;
 
 /**
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-04 07:55:02 #$
  *
  */
-public class BasicValue implements Value {
+public class SurfaceTrigger extends Trigger {
 
-	// static Logger log = new Logger("LabelValue", Logger.Level.NORMAL);
+	static Logger log = new Logger("SurfaceTrigger", Logger.Level.NORMAL);
+
+	public static enum MatchType {SUBSTRING, EXACT};
+
+	MatchType match = MatchType.SUBSTRING;
 	
-	String label;
-		
+	String content;
 	
-	public BasicValue(String label) {
-		this.label = label;
+	List<String> slots;
+	
+	
+	public SurfaceTrigger(String content) {
+		this.content = content;
+		slots = StringUtils.extractSlots(content);
 	}
 	
-	public String getLabel() {
-		return label;
+	public void setMatchType(MatchType match) {
+		this.match = match;
+	}
+	
+	public String getContent() {
+		return content;
+	}
+	
+	public MatchType getMatchType() {
+		return match;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getSlots() {
+		return slots;
 	}
 }

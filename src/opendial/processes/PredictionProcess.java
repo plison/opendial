@@ -17,12 +17,14 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
+package opendial.processes;
 
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
 
-import opendial.domains.types.values.Value;
+import opendial.domains.Domain;
+import opendial.outputs.Action;
+import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
 /**
@@ -32,62 +34,53 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class FeatureType extends AbstractType {
+public class PredictionProcess extends Thread {
 
-	static Logger log = new Logger("FeatureType", Logger.Level.NORMAL);
-
-	boolean isPartial = false;
-	List<String> baseValues;		// base values (from top type) in case the feature is partial
+	static Logger log = new Logger("PredictionProcess", Logger.Level.NORMAL);
 	
-	/**
-	 * @param name
-	 */
-	public FeatureType(String name) {
-		super(name);
-		baseValues = new LinkedList<String>();
-	}
+	DialogueState state;
+	Domain domain;
 	
-	public void addValue(Value val) {
-		internalAddValue(val);
-	}
+	Queue<Action> actionsToProcess ;
 	
-	public void addValues(List<Value> val) {
-		internalAddValues(val);
-	}
-	
-	public void addBaseValue(String baseVal) {
-		isPartial = true;
-		baseValues.add(baseVal);
-	}
-	
-	public void addBaseValues(List<String> baseVals) {
-		isPartial = true;
-		baseValues.addAll(baseVals);
-	}
-	
-	public boolean isDefinedForBaseValue(String baseVal) {
-		if (!isPartial) {
-			return true;
-		}
-		else if (baseValues.contains(baseVal)) {
-			return true;
-		}
-		return false;
+	public PredictionProcess(DialogueState state, Domain domain) {
+		this.state = state;
+		this.domain = domain;
+		actionsToProcess = new LinkedList<Action>();
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @param action
 	 */
-	public boolean isPartial() {
-		return isPartial;
+	public synchronized void performTransition(Action action) {
+		actionsToProcess.add(action);
+		notify();
 	}
+	
+	@Override
+	public void run () {
+		while (true) {		
+		           
+				Action action = actionsToProcess.poll();
+				
+				while (action != null) {
+					log.info("Trying to perform action transition...");
+					updateState();
+					action = actionsToProcess.poll();
+				}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public List<String> getBaseValues() {
-		return baseValues;
+				synchronized (this) {
+				try { wait();  }
+				catch (InterruptedException e) {  }
+			}
+		}
 	}
+	
+	
+	public void updateState() {
+		state.dummyChange();
+		log.info("Action transition performed...");
+	}
+	
 }

@@ -17,11 +17,12 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
+package opendial.utils;
 
-import opendial.domains.triggers.SurfaceTrigger;
-import opendial.domains.triggers.Trigger;
-import opendial.domains.types.values.BasicValue;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import opendial.utils.Logger;
 
 /**
@@ -31,32 +32,28 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class ObservationType extends AbstractType {
+public class StringUtils {
 
-	static Logger log = new Logger("ObservationType", Logger.Level.NORMAL);
-
-	Trigger trigger;
+	static Logger log = new Logger("StringUtils", Logger.Level.NORMAL);
 	
-	/**
-	 * @param name
-	 */
-	public ObservationType(String name, Trigger trigger) {
-		super(name);
-		this.trigger = trigger;
-		internalAddValue(new BasicValue("true"));
-		internalAddValue(new BasicValue("false"));		
+	
+	public static List<String> extractSlots(String content) {
 		
-		if (trigger instanceof SurfaceTrigger && !((SurfaceTrigger)trigger).getSlots().isEmpty()) {
-			for (String slot : ((SurfaceTrigger)trigger).getSlots()) {
-				FeatureType feat = new FeatureType(slot);
-				addFeature(feat);
+		List<String> slots = new LinkedList<String>();
+		
+		StringTokenizer tokenizer = new StringTokenizer(content);
+		while (tokenizer.hasMoreTokens()) {
+			String token = tokenizer.nextToken();
+			log.debug("token: " + token);
+			if (token.contains("${") && token.contains("}")) {
+				String strippedToken = token.replace("${", "").replace("}", "")
+				.trim().replace(",", "").replace(".", "").replace("!", "");
+				slots.add(strippedToken);
 			}
 		}
+		
+		return slots;
 	}
 	
 	
-	public Trigger getTrigger() {
-		return trigger;
-	}
-
 }

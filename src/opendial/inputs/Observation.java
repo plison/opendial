@@ -17,17 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import opendial.domains.realisations.Realisation;
-import opendial.domains.realisations.SurfaceRealisation;
-import opendial.domains.types.values.BasicValue;
-import opendial.utils.Logger;
+package opendial.inputs;
 
 /**
  * 
@@ -36,54 +26,6 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class ActionType extends AbstractType {
-
-	static Logger log = new Logger("ActionType", Logger.Level.NORMAL);
-
-	
-	// list of values for the entity
-	Map<String,Realisation> actionValues;
-
-		
-	/**
-	 * @param name
-	 */
-	public ActionType(String name) {
-		super(name);
-		actionValues = new HashMap<String,Realisation>();
-	}
-	
-	public void addActionValue(Realisation action) {
-		actionValues.put(action.getLabel(), action);
-		internalAddValue(new BasicValue(action.getLabel()));
-		if (action instanceof SurfaceRealisation && !((SurfaceRealisation)action).getSlots().isEmpty()) {
-			for (String slot : ((SurfaceRealisation)action).getSlots()) {
-				FeatureType feat = new FeatureType(slot);
-				feat.addBaseValue(action.getLabel());
-				addFeature(feat);
-			}
-		}
-		
-	}
-	
-
-	public Realisation getActionValue(String label) {
-		return actionValues.get(label);
-	}
-	
-	
-	public List<Realisation> getActionValues() {
-		return new ArrayList<Realisation>(actionValues.values());
-	}
-
-	/**
-	 * 
-	 * @param values
-	 */
-	public void addActionValues(List<Realisation> values) {
-		for (Realisation value: values) {
-			addActionValue(value);
-		}
-	}
+public interface Observation {
 
 }
