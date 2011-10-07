@@ -19,13 +19,9 @@
 
 package opendial.domains.types;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import opendial.domains.types.values.Value;
-import opendial.utils.Logger;
 
 /**
  * Representation of an entity type
@@ -34,25 +30,25 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class EntityType extends StandardType {
+public class EntityType extends AbstractType {
 
-	static Logger log = new Logger("EntityType", Logger.Level.NORMAL);
+	// static Logger log = new Logger("EntityType", Logger.Level.NORMAL);
 
 	/**
 	 * @param name
 	 */
 	public EntityType(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 	
-	public void addEntityValue(Value val) {
-		addValue(val);
+	public void addValue(Value val) {
+		internalAddValue(val);
 	}
 	
-	public void addEntityValues(List<Value> val) {
-		addValues(val);
+	public void addValues(List<Value> val) {
+		internalAddValues(val);
 	}
+
 
 
 }

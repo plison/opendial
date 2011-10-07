@@ -19,8 +19,7 @@
 
 package opendial.domains.rules.variables;
 
-import opendial.domains.types.StandardType;
-import opendial.utils.Logger;
+import opendial.domains.types.AbstractType;
 
 /**
  * 
@@ -31,13 +30,13 @@ import opendial.utils.Logger;
  */
 public class Variable {
 
-	static Logger log = new Logger("Variable", Logger.Level.NORMAL);
+	// static Logger log = new Logger("Variable", Logger.Level.NORMAL);
 			
 		String denotation;
 		
-		StandardType type;
+		AbstractType type;
 		
-		public Variable(String denotation, StandardType type) {
+		public Variable(String denotation, AbstractType type) {
 			this.denotation = denotation;
 			this.type = type;
 		}
@@ -55,11 +54,11 @@ public class Variable {
 			this.denotation = denotation;
 		}
 		
-		public void setType(StandardType type) {
+		public void setType(AbstractType type) {
 			this.type = type;
 		}
 		
-		public StandardType getType() {
+		public AbstractType getType() {
 			return type;
 		}
 

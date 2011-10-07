@@ -3,6 +3,10 @@
 
 <entity type="robot">
 <feature type="name">
-<value prob="1.0">Lenny</value></feature>
+<value>Lenny</value></feature>
 </entity>
+
+<variable type="floor">
+	<value>init</value>
+</variable>
 </initialstate>

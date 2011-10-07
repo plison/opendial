@@ -19,8 +19,6 @@
 
 package opendial.domains.types.values;
 
-import opendial.utils.Logger;
-
 /**
  * 
  *
@@ -35,5 +33,6 @@ public interface Value {
 	 * @return
 	 */
 	String getLabel();
+	
 
 }

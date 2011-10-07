@@ -19,8 +19,6 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.utils.Logger;
-
 /**
  * 
  *
@@ -37,5 +35,5 @@ public class VoidEffect extends Effect {
 		super(prob);
 	}
 
-	static Logger log = new Logger("VoidEffect", Logger.Level.NORMAL);
+	// static Logger log = new Logger("VoidEffect", Logger.Level.NORMAL);
 }

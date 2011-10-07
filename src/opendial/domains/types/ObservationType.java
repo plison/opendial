@@ -19,7 +19,9 @@
 
 package opendial.domains.types;
 
-import opendial.domains.observations.Observation;
+import opendial.domains.triggers.SurfaceTrigger;
+import opendial.domains.triggers.Trigger;
+import opendial.domains.types.values.BasicValue;
 import opendial.utils.Logger;
 
 /**
@@ -29,22 +31,31 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class ObservationType extends StandardType {
+public class ObservationType extends AbstractType {
 
 	static Logger log = new Logger("ObservationType", Logger.Level.NORMAL);
 
-	Observation trigger;
+	Trigger trigger;
 	
 	/**
 	 * @param name
 	 */
-	public ObservationType(String name, Observation trigger) {
+	public ObservationType(String name, Trigger trigger) {
 		super(name);
 		this.trigger = trigger;
+		internalAddValue(new BasicValue("true"));
+		internalAddValue(new BasicValue("false"));		
+		
+		if (trigger instanceof SurfaceTrigger && !((SurfaceTrigger)trigger).getSlots().isEmpty()) {
+			for (String slot : ((SurfaceTrigger)trigger).getSlots()) {
+				FeatureType feat = new FeatureType(slot);
+				addFeature(feat);
+			}
+		}
 	}
 	
 	
-	public Observation getTrigger() {
+	public Trigger getTrigger() {
 		return trigger;
 	}
 
