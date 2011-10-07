@@ -23,7 +23,7 @@ package opendial.domains.types.values;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-07 16:21:33 #$
+ * @version $Date::                      $
  *
  */
 public interface Value {

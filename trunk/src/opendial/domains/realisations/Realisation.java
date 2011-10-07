@@ -23,7 +23,7 @@ package opendial.domains.realisations;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-04 07:55:02 #$
+ * @version $Date::                      $
  *
  */
 public abstract class Realisation {

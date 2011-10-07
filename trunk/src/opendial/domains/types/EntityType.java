@@ -27,7 +27,7 @@ import opendial.domains.types.values.Value;
  * Representation of an entity type
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-07 16:21:33 #$
+ * @version $Date::                      $
  *
  */
 public class EntityType extends AbstractType {
