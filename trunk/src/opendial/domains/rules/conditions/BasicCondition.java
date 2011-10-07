@@ -19,6 +19,8 @@
 
 package opendial.domains.rules.conditions;
 
+import opendial.arch.DialConstants.Relation;
+import opendial.arch.DialException;
 import opendial.domains.rules.variables.Variable;
 import opendial.utils.Logger;
 
@@ -32,21 +34,23 @@ import opendial.utils.Logger;
 public class BasicCondition extends Condition {
 
 	static Logger log = new Logger("BasicCondition", Logger.Level.NORMAL);
-	
-	public static enum Relation {EQUAL, UNEQUAL, GREATER_THAN, LESSER_THAN}
-	
+		
 	Variable var;
 	
 	String value;
 	
 	Relation rel = Relation.EQUAL;
 	
-	public BasicCondition (Variable var, String value) {
+	public BasicCondition (Variable var, String value) throws DialException {
 		this.var = var;
 		this.value = value;
+		
+		if (!var.getType().acceptsValue(value)) {
+			throw new DialException("variable " + var.getType().getName() + " does not accept value " + value);
+		}
 	}
 	
-	public BasicCondition (Variable var, String value, Relation rel) {
+	public BasicCondition (Variable var, String value, Relation rel) throws DialException {
 		this(var,value);
 		this.rel = rel;
 	}
@@ -59,5 +63,12 @@ public class BasicCondition extends Condition {
 		return value;
 	}
 	
+	public void setRelation(Relation rel) {
+		this.rel = rel;
+	}
+	
+	public Relation getRelation() {
+		return rel;
+	}
 	
 }

@@ -4,17 +4,24 @@
 <rule>
 	<input>
 		<var label="a_u"/>
+		<var feature="obj" base="a_u" denotation="o1"/>
 		<var label="a_m"/>
 	</input>
 	<output>
 			<var type="intent" denotation="i"/>
+			<var feature="obj" base="i" denotation="o2"/>
 	</output>
 	<case>
 		<condition operator="and">
-			<if var="a_u" value="AskForX"/>
+			<if var="a_u" value="AskFor"/>
+			<if var="o1" value="X"/>
 			<if var="a_m" value="AskRepeat" relation="!="/>
 		</condition>
-		<effect prob="1.0"><add var="i"/><set var="i" value="WantX"/></effect>
+		<effect prob="1.0">
+			<add var="i"/>
+			<set var="i" value="Want"/>
+			<set var="o2" value="X"/>
+		</effect>
 	</case>
 </rule>
 
@@ -22,18 +29,37 @@
 <rule>
 	<input>
 		<var label="a_u"/>
+		<var feature="obj" base="a_u" denotation="o1"/>
 		<var label="a_m"/>
 	</input>
 	<output>
 		<var type="intent" denotation="i"/>
+		<var feature="obj" base="i" denotation="o2"/>
 	</output>
 	<case>
 		<condition operator="and">
-			<if var="a_u" value="AskForY"/>
+			<if var="a_u" value="AskFor"/>
+			<if var="o1" value="Y"/>
 			<if var="a_m" value="AskRepeat" relation="!="/>
 		</condition>
-		<effect prob="1.0"><add var="i"/><set var="i" value="WantY"/></effect>
+		<effect prob="1.0">
+			<add var="i"/>
+			<set var="i" value="Want"/>
+			<set var="o2" value="Y"/>
+		</effect>
 	</case>
 </rule>
+
+<rule>
+	<input>
+		<var label="floor"/>
+	</input>
+	<output>
+		<var label="floor"/>
+	</output>
+	<case>
+		<condition><if var="floor" value="wait"/></condition>
+		<effect><set var="floor" value="free"/></effect>
+	</case></rule>
 
 </model>

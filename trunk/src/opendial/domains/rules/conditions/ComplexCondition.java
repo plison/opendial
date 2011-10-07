@@ -22,6 +22,7 @@ package opendial.domains.rules.conditions;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.arch.DialConstants.BinaryOperator;
 import opendial.utils.Logger;
 
 /**
@@ -34,20 +35,27 @@ import opendial.utils.Logger;
 public class ComplexCondition extends Condition {
 
 	static Logger log = new Logger("ComplexCondition", Logger.Level.NORMAL);
-
-	public static enum Operator {AND, OR}
 	
 	List<Condition> subconditions;
 
-	Operator binaryOp;
+	BinaryOperator binaryOp;
 	
 	
 	public ComplexCondition() {
 		subconditions = new LinkedList<Condition>();
 	}
 	
-	public void setOperator(Operator binaryOp) {
+	public ComplexCondition(BinaryOperator binaryOp) {
+		this();
+		setOperator(binaryOp);
+	}
+	
+	public void setOperator(BinaryOperator binaryOp) {
 		this.binaryOp = binaryOp;
+	}
+	
+	public BinaryOperator getOperator() {
+		return binaryOp;
 	}
 	
 	public void addSubcondition(Condition subcondition) {
@@ -68,5 +76,13 @@ public class ComplexCondition extends Condition {
 	 */
 	public List<Condition> getSubconditions() {
 		return subconditions;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public BinaryOperator getBinaryOperator() {
+		return binaryOp;
 	}
 }

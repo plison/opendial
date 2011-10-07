@@ -20,8 +20,6 @@
 package opendial.domains.rules.variables;
 
 import opendial.domains.types.FeatureType;
-import opendial.domains.types.StandardType;
-import opendial.utils.Logger;
 
 /**
  * 
@@ -32,7 +30,7 @@ import opendial.utils.Logger;
  */
 public class FeatureVariable extends Variable {
 
-	static Logger log = new Logger("FeatureVariable", Logger.Level.NORMAL);
+	// static Logger log = new Logger("FeatureVariable", Logger.Level.NORMAL);
 
 	Variable baseVariable;
 	

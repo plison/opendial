@@ -27,24 +27,14 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import opendial.arch.DialConstants.BinaryOperator;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
-import opendial.domains.rules.Case;
-import opendial.domains.rules.Rule;
-import opendial.domains.rules.variables.EntityVariable;
-import opendial.domains.rules.variables.FeatureVariable;
-import opendial.domains.rules.variables.FixedVariable;
-import opendial.domains.rules.variables.Variable;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.ComplexCondition;
-import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.VoidCondition;
-import opendial.domains.rules.effects.AssignEffect;
-import opendial.domains.rules.effects.ComplexEffect;
-import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.VoidEffect;
-import opendial.domains.types.FeatureType;
-import opendial.domains.types.StandardType;
+import opendial.domains.rules.*;
+import opendial.domains.rules.variables.*;
+import opendial.domains.rules.conditions.*;
+import opendial.domains.rules.effects.*;
+import opendial.domains.types.*;
 import opendial.utils.Logger;
 
 /**
@@ -56,7 +46,7 @@ import opendial.utils.Logger;
  */
 public class XMLRuleReader {
 
-	static Logger log = new Logger("XMLRuleReader", Logger.Level.DEBUG);
+	static Logger log = new Logger("XMLRuleReader", Logger.Level.NORMAL);
 
 	// ===================================
 	//  RULE CONSTRUCTION METHODS
@@ -94,8 +84,6 @@ public class XMLRuleReader {
 
 	/**
 	 * Get the variables declared in the input/output of the rule
-	 * 
-	 * TODO: verify that the entity type matches the ones declared in the model
 	 * 
 	 * @param node
 	 * @return
@@ -148,6 +136,17 @@ public class XMLRuleReader {
 				throw new DialException("type " + typeStr + " not declared in domain");
 			}
 		}
+		else if (varNode.getAttributes().getNamedItem("pointer") != null) {
+			String pointer = varNode.getAttributes().getNamedItem("pointer").getNodeValue();
+			if (rule.hasInputVariable(pointer)) {
+				Variable previousVar = rule.getInputVariable(pointer);
+				return new PointerVariable(previousVar);
+			}
+			else {
+				throw new DialException("sameAs variable not pointing to an existing variable");
+			}
+		}
+		
 		else if (varNode.getAttributes().getNamedItem("feature")!=null && 
 				varNode.getAttributes().getNamedItem("base") != null && 
 				varNode.getAttributes().getNamedItem("denotation")!=null) {
@@ -158,7 +157,7 @@ public class XMLRuleReader {
 
 			if (previousVars.containsKey(base)) {
 				Variable baseVar = previousVars.get(base);
-				StandardType baseType = baseVar.getType();
+				AbstractType baseType = baseVar.getType();
 				if (baseType.hasFeature(feat)) {
 					FeatureType featType = baseType.getFeature(feat);
 					return new FeatureVariable(denotation, featType, baseVar);
@@ -231,6 +230,16 @@ public class XMLRuleReader {
 			ComplexCondition complexCond = new ComplexCondition();
 			complexCond.addSubconditions(subconditions);
 			log.debug("number of (sub)conditions: " + subconditions.size());
+			
+			if (node.hasAttributes() && node.getAttributes().getNamedItem("operator") != null) {
+				String operator = node.getAttributes().getNamedItem("operator").getNodeValue();
+				if (operator.equals("or")) {
+					complexCond.setOperator(BinaryOperator.OR);
+				}
+				else if (operator.equals("and")) {
+					complexCond.setOperator(BinaryOperator.AND);
+				}
+			}
 			return complexCond;
 		}
 	}
@@ -240,30 +249,36 @@ public class XMLRuleReader {
 	/**
 	 * Returns the effect specified in the XML node
 	 * 
-	 * TODO: add add/remove effects to it
-	 * 
 	 * @param node
 	 * @return
 	 * @throws DialException
 	 */
 	public Effect getEffect(Node node) throws DialException {
-		List<Effect> subeffects = new LinkedList<Effect>();
-		NodeList effectList = node.getChildNodes();
-
+		
 		// get the probability of the effect
-		float prob = 0.0f;
-		if (node.hasAttributes() && node.getAttributes().getNamedItem("prob") != null) {
-			try {
-				prob = Float.parseFloat(node.getAttributes().getNamedItem("prob").getNodeValue());
-			}
-			catch (NumberFormatException e) {
-				throw new DialException("probability " + 
-						node.getAttributes().getNamedItem("prob").getNodeValue() + " not a valid probability");
-			}
+		float prob = getEffectProbability(node);
+		
+		List<Effect> subeffects = getSubeffects(node, prob);
+		if (subeffects.isEmpty()) {
+			return new VoidEffect(prob);
+		}
+		else if (subeffects.size() == 1) {
+			return subeffects.get(0);
 		}
 		else {
-			throw new DialException("effect must specify its probability");
+			ComplexEffect complexEffect = new ComplexEffect(prob);
+			complexEffect.addSubeffects(subeffects);
+			log.debug("number of (sub)effects: " + subeffects.size());
+			return complexEffect;
 		}
+	}
+	
+	
+	public List<Effect> getSubeffects(Node topNode, float prob) throws DialException {
+
+		List<Effect> subeffects = new LinkedList<Effect>();
+		
+		NodeList effectList = topNode.getChildNodes();
 
 		for (int i = 0 ; i < effectList.getLength(); i++) {
 			Node subnode = effectList.item(i);
@@ -284,18 +299,41 @@ public class XMLRuleReader {
 					throw new DialException("Variable " + denotation + " not included in rule output");
 				}
 			}
+			
+			else if (subnode.getNodeName().equals("add") && subnode.hasAttributes() && 
+					subnode.getAttributes().getNamedItem("var") != null) {
+				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasOutputVariable(denotation)) {
+					Variable var = rule.getOutputVariable(denotation);
+					AddEntityEffect assEffect = new AddEntityEffect(var,prob);
+					subeffects.add(assEffect);
+				}
+			}
+			else if (subnode.getNodeName().equals("remove") && subnode.hasAttributes() && 
+					subnode.getAttributes().getNamedItem("var") != null) {
+				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasOutputVariable(denotation)) {
+					Variable var = rule.getOutputVariable(denotation);
+					RemoveEntityEffect assEffect = new RemoveEntityEffect(var,prob);
+					subeffects.add(assEffect);
+				}
+			}
 		}
-		if (subeffects.isEmpty()) {
-			return new VoidEffect(prob);
+		return subeffects;
+	}
+	
+	
+	public float getEffectProbability (Node topNode) throws DialException {
+		float prob = 1.0f;
+		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("prob") != null) {
+			try {
+				prob = Float.parseFloat(topNode.getAttributes().getNamedItem("prob").getNodeValue());
+			}
+			catch (NumberFormatException e) {
+				throw new DialException("probability " + 
+						topNode.getAttributes().getNamedItem("prob").getNodeValue() + " not a valid probability");
+			}
 		}
-		else if (subeffects.size() == 1) {
-			return subeffects.get(0);
-		}
-		else {
-			ComplexEffect complexEffect = new ComplexEffect(prob);
-			complexEffect.addSubeffects(subeffects);
-			log.debug("number of (sub)effects: " + subeffects.size());
-			return complexEffect;
-		}
+		return prob;
 	}
 }

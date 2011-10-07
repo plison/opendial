@@ -19,6 +19,7 @@
 
 package opendial.domains.types;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import opendial.domains.types.values.Value;
@@ -31,22 +32,62 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class FeatureType extends StandardType {
+public class FeatureType extends AbstractType {
 
 	static Logger log = new Logger("FeatureType", Logger.Level.NORMAL);
 
+	boolean isPartial = false;
+	List<String> baseValues;		// base values (from top type) in case the feature is partial
+	
 	/**
 	 * @param name
 	 */
 	public FeatureType(String name) {
 		super(name);
+		baseValues = new LinkedList<String>();
 	}
 	
-	public void addFeatureValue(Value val) {
-		addValue(val);
+	public void addValue(Value val) {
+		internalAddValue(val);
 	}
 	
-	public void addFeatureValues(List<Value> val) {
-		addValues(val);
+	public void addValues(List<Value> val) {
+		internalAddValues(val);
+	}
+	
+	public void addBaseValue(String baseVal) {
+		isPartial = true;
+		baseValues.add(baseVal);
+	}
+	
+	public void addBaseValues(List<String> baseVals) {
+		isPartial = true;
+		baseValues.addAll(baseVals);
+	}
+	
+	public boolean isDefinedForBaseValue(String baseVal) {
+		if (!isPartial) {
+			return true;
+		}
+		else if (baseValues.contains(baseVal)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isPartial() {
+		return isPartial;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getBaseValues() {
+		return baseValues;
 	}
 }

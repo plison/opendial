@@ -27,9 +27,8 @@ import java.util.Map;
 import opendial.domains.Model.Type;
 import opendial.domains.types.ActionType;
 import opendial.domains.types.EntityType;
-import opendial.domains.types.FeatureType;
 import opendial.domains.types.FixedVariableType;
-import opendial.domains.types.StandardType;
+import opendial.domains.types.AbstractType;
 import opendial.domains.types.ObservationType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
@@ -44,13 +43,13 @@ import opendial.utils.Logger;
  */
 public class Domain {
 
-	static Logger log = new Logger("DialogueDomain", Logger.Level.DEBUG);
+	static Logger log = new Logger("Domain", Logger.Level.DEBUG);
 	
 	// name of dialogue domain
 	String domainName;
 	
 	// types declarations
-	Map<String,StandardType> allTypes;
+	Map<String,AbstractType> allTypes;
 	
 	Map<String,EntityType> entityTypes;
 	Map<String,FixedVariableType> fixedVariableTypes;
@@ -72,7 +71,7 @@ public class Domain {
 	public Domain(String domainName) {
 		this.domainName = domainName;
 
-		allTypes = new HashMap<String,StandardType>();
+		allTypes = new HashMap<String,AbstractType>();
 		entityTypes = new HashMap<String,EntityType>();
 		fixedVariableTypes = new HashMap<String,FixedVariableType>();
 		observationTypes = new HashMap<String,ObservationType>();
@@ -100,13 +99,16 @@ public class Domain {
 	}
 
 
+	public String getName() {
+		return domainName;
+	}
 
 	/**
 	 * 
 	 * @param types
 	 */
-	public void addTypes(List<StandardType> types) {
-		for (StandardType type : types) {
+	public void addTypes(List<AbstractType> types) {
+		for (AbstractType type : types) {
 			addType(type);
 		}
 	}
@@ -115,7 +117,7 @@ public class Domain {
 	 * 
 	 * @param type
 	 */
-	private void addType(StandardType type) {
+	private void addType(AbstractType type) {
 		if (type instanceof EntityType) {
 			entityTypes.put(type.getName(), (EntityType)type);
 		}
@@ -146,7 +148,7 @@ public class Domain {
 	}
 
 
-	public StandardType getType(String type) {
+	public AbstractType getType(String type) {
 		return allTypes.get(type);
 	}
 
@@ -188,7 +190,6 @@ public class Domain {
 
 
 	/**
-	 * TODO: improve efficiency of this!
 	 * 
 	 * @return
 	 */
