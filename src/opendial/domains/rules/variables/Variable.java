@@ -19,7 +19,7 @@
 
 package opendial.domains.rules.variables;
 
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 
 /**
  * 
@@ -34,9 +34,13 @@ public class Variable {
 			
 		String denotation;
 		
-		AbstractType type;
+		GenericType type;
 		
-		public Variable(String denotation, AbstractType type) {
+		public Variable (GenericType type) {
+			this.denotation = type.getName();
+			this.type = type;
+		}
+		public Variable(String denotation, GenericType type) {
 			this.denotation = denotation;
 			this.type = type;
 		}
@@ -45,7 +49,7 @@ public class Variable {
 		public String getDenotation() {
 			return denotation;
 		}
-	
+	 
 		/**
 		 * 
 		 * @param denotation2
@@ -54,11 +58,11 @@ public class Variable {
 			this.denotation = denotation;
 		}
 		
-		public void setType(AbstractType type) {
+		public void setType(GenericType type) {
 			this.type = type;
 		}
 		
-		public AbstractType getType() {
+		public GenericType getType() {
 			return type;
 		}
 

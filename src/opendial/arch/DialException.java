@@ -21,7 +21,7 @@ package opendial.arch;
 
 
 /**
- * 
+ * Generic exception thrown in openDial
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -29,10 +29,15 @@ package opendial.arch;
  */
 public class DialException extends Exception {
 
+	// static Logger log = new Logger("DialException", Logger.Level.NORMAL);
+
 	private static final long serialVersionUID = 1L;
 	
-	// static Logger log = new Logger("DialException", Logger.Level.NORMAL);
-	
+	/**
+	 * Create a new openDial exception, with a given message
+	 * 
+	 * @param msg the message for the exception
+	 */
 	public DialException (String msg) {
 		super(msg);
 	}

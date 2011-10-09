@@ -45,14 +45,14 @@
 	<trigger name="noObs" type="surface" content="no"/>
 	<trigger name="anythingObs" type="surface" content="*"/>
 	
-	<realisation name="a_m">
+	<actiontemplate name="a_m">
 		<value label="DoX" type="surface" content="OK, doing X!"/>
 		<value label="DoY" type="surface" content="OK, doing Y!"/>
 		<value label="SayHi" type="surface" content="Hi ${name}!"/>
 		<value label="AskRepeat" type="surface" content="Sorry, could you repeat?"/>
 		<value label="InformNotUnderstand" type="surface" content="Sorry, I did not understand"/>
 		<value label="RequestIntent" type="surface" content="How may I help you?"/>
-	</realisation>
+	</actiontemplate>
 	
 	
 </declarations>

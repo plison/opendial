@@ -26,13 +26,10 @@ package opendial.domains.types.values;
  * @version $Date::                      $
  *
  */
-public interface Value {
+public abstract class Value {
 
-	/**
-	 * 
-	 * @return
-	 */
-	String getLabel();
 	
-
+	public abstract boolean acceptsValue(Object val);
+	
+	
 }

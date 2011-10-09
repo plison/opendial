@@ -29,8 +29,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.arch.DialException;
-import opendial.domains.types.EntityType;
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 import opendial.domains.types.FeatureType;
 import opendial.utils.Logger;
 
@@ -44,7 +43,7 @@ public class Fluent {
 
 	static Logger log = new Logger("Fluent", Logger.Level.DEBUG);
 	
-	AbstractType type;
+	GenericType type;
 	
 	String label;
 	private static int entityCounter = 1;
@@ -54,7 +53,7 @@ public class Fluent {
 	Map<String,Fluent> features;
 	
 	
-	public Fluent(AbstractType type) {
+	public Fluent(GenericType type) {
 		this.type = type;
 		values = new TreeMap<String,Float>();
 		features = new HashMap<String,Fluent>();
@@ -104,7 +103,7 @@ public class Fluent {
 	 * 
 	 * @return
 	 */
-	public AbstractType getType() {
+	public GenericType getType() {
 		return type;
 	}
 	
@@ -165,7 +164,7 @@ public class Fluent {
 	
 	private String toString(String indent) {
 		String str = "";
-		if (type instanceof EntityType) {
+		if (type.isEntity()) {
 			str += label + " (" + type.getName() + ")" ;
 		}
 		else {

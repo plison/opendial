@@ -32,11 +32,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import opendial.arch.DialConstants.ModelType;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
@@ -101,9 +102,8 @@ public class XMLDomainReader {
 				String fileReference = getReference(node);
 				Document refDoc = getXMLDocument(rootpath+fileReference);
 				XMLDeclarationsReader declReader = new XMLDeclarationsReader();
-				List<AbstractType> types = declReader.getTypes(refDoc);
-				domain.addTypes(types);
-			}
+				List<GenericType> types = declReader.getTypes(refDoc);
+				domain.addTypes(types);			}
 
 			else if (node.getNodeName().equals("initialstate")) {
 				String fileReference = getReference(node);
@@ -150,7 +150,7 @@ public class XMLDomainReader {
 		if (mainNode.hasAttributes() && mainNode.getAttributes().getNamedItem("type")!=null) {
 
 			// get the type of the model
-			Model.Type type = getModelType(mainNode);
+			ModelType type = getModelType(mainNode);
 			model = new Model(type);
 
 			// add the rules
@@ -173,25 +173,25 @@ public class XMLDomainReader {
 	}
 
 
-	private Model.Type getModelType(Node topNode) throws DialException {
+	private ModelType getModelType(Node topNode) throws DialException {
 		String type = topNode.getAttributes().getNamedItem("type").getNodeValue();
 		if (type.equals("userRealisation")) {
-			return Model.Type.USER_REALISATION;
+			return ModelType.USER_REALISATION;
 		}
 		else if (type.equals("userPrediction")) {
-			return Model.Type.USER_PREDICTION;
+			return ModelType.USER_PREDICTION;
 		}
 		else if (type.equals("userTransition")) {
-			return Model.Type.USER_TRANSITION;
+			return ModelType.USER_TRANSITION;
 		}	
 		else if (type.equals("systemRealisation")) {
-			return Model.Type.SYSTEM_REALISATION;
+			return ModelType.SYSTEM_REALISATION;
 		}
 		else if (type.equals("systemActionValue")) {
-			return Model.Type.SYSTEM_ACTIONVALUE;
+			return ModelType.SYSTEM_ACTIONVALUE;
 		}
 		else if (type.equals("systemTransition")) {
-			return Model.Type.SYSTEM_TRANSITION;
+			return ModelType.SYSTEM_TRANSITION;
 		}
 		else {
 			throw new DialException("model type is not accepted");

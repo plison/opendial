@@ -22,7 +22,6 @@ package opendial.domains.types;
 import java.util.LinkedList;
 import java.util.List;
 
-import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
 
 /**
@@ -32,7 +31,7 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class FeatureType extends AbstractType {
+public class FeatureType extends GenericType {
 
 	static Logger log = new Logger("FeatureType", Logger.Level.NORMAL);
 
@@ -47,13 +46,6 @@ public class FeatureType extends AbstractType {
 		baseValues = new LinkedList<String>();
 	}
 	
-	public void addValue(Value val) {
-		internalAddValue(val);
-	}
-	
-	public void addValues(List<Value> val) {
-		internalAddValues(val);
-	}
 	
 	public void addBaseValue(String baseVal) {
 		isPartial = true;

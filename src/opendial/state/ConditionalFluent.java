@@ -21,7 +21,7 @@ package opendial.state;
 
 
 import opendial.arch.DialException;
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 import opendial.utils.Logger;
 
 /**
@@ -42,7 +42,7 @@ public class ConditionalFluent extends Fluent {
 	/**
 	 * @param type
 	 */
-	public ConditionalFluent(AbstractType type, Fluent inputVariable) {
+	public ConditionalFluent(GenericType type, Fluent inputVariable) {
 		super(type);
 		this.inputVariable = inputVariable;
 	}
