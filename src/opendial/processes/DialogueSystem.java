@@ -22,6 +22,7 @@ package opendial.processes;
 
 import opendial.domains.Domain;
 import opendial.inputs.NBestList;
+import opendial.inputs.Observation;
 import opendial.outputs.Action;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
@@ -65,8 +66,8 @@ public class DialogueSystem {
 	}
 	
 	
-	public void addObservation(NBestList nbestList) {
-		perception.addObservation(nbestList);
+	public void addObservation(Observation obs) {
+		perception.addObservation(obs);
 	}
 	
 

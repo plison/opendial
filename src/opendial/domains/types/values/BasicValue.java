@@ -28,18 +28,24 @@ package opendial.domains.types.values;
  * @version $Date::                      $
  *
  */
-public class BasicValue implements Value {
+public class BasicValue extends Value {
 
 	// static Logger log = new Logger("LabelValue", Logger.Level.NORMAL);
 	
-	String label;
+	String value;
 		
 	
 	public BasicValue(String label) {
-		this.label = label;
+		this.value = label;
 	}
 	
-	public String getLabel() {
-		return label;
+	public String getValue() {
+		return value;
+	}
+
+	
+	@Override
+	public boolean acceptsValue(Object val) {
+		return (val.equals(value));
 	}
 }

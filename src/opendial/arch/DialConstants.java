@@ -20,7 +20,7 @@
 package opendial.arch;
 
 /**
- * 
+ * Placeholder for generic constants and enumerations used in openDial
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -30,9 +30,37 @@ public class DialConstants {
 
 	// static Logger log = new Logger("DialConstants", Logger.Level.NORMAL);
 	
+	/**
+	 * Binary logical operators (used to express combination of several
+	 * conditions or effects)
+	 */
 	public static enum BinaryOperator {AND, OR}
 	
-	public static enum Relation {EQUAL, UNEQUAL, GREATER_THAN, LESSER_THAN}
+	
+	/**
+	 * Equality/unequality relations (used in conditions)
+	 */
+	public static enum Relation {EQUAL, UNEQUAL}
 
-
+	
+	/**
+	 * Enumeration of possible model types
+	 */
+	public static enum ModelType {
+		USER_REALISATION,
+		USER_PREDICTION,
+		USER_TRANSITION,
+		SYSTEM_ACTIONVALUE,
+		SYSTEM_REALISATION,
+		SYSTEM_TRANSITION
+	}
+	
+	
+	public static enum PrimitiveType {
+		BOOLEAN,
+		INTEGER,
+		STRING,
+		FLOAT
+	}
+	
 }

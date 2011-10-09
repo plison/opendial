@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.types.FeatureType;
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 import opendial.state.ConditionalFluent;
 import opendial.state.DialogueState;
 import opendial.state.EntityFluent;
@@ -71,7 +71,7 @@ public class XMLInitialStateReader {
 			if (node.hasAttributes() && node.getAttributes().getNamedItem("type") != null) {
 				String typeStr = node.getAttributes().getNamedItem("type").getNodeValue();
 				if (domain.hasType(typeStr)) {
-					AbstractType type = domain.getType(typeStr);
+					GenericType type = domain.getType(typeStr);
 
 					if (node.getNodeName().equals("entity")) {
 						EntityFluent entity = new EntityFluent(type);
@@ -196,7 +196,7 @@ public class XMLInitialStateReader {
 	 * @return the list of extracted features
 	 * @throws DialException if the XML fragment is ill-formatted
 	 */
-	private List<Fluent> extractFullFeatures(Node node, AbstractType topEntityType) throws DialException {
+	private List<Fluent> extractFullFeatures(Node node, GenericType topEntityType) throws DialException {
 		NodeList contentList = node.getChildNodes();
 
 		List<Fluent> types = new LinkedList<Fluent>();
@@ -209,8 +209,8 @@ public class XMLInitialStateReader {
 				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("type") != null) {
 					String featName = subnode.getAttributes().getNamedItem("type").getNodeValue();
 
-					if (topEntityType instanceof AbstractType && ((AbstractType)topEntityType).hasFeature(featName)) {
-						FeatureType type = ((AbstractType)topEntityType).getFeature(featName);
+					if (topEntityType instanceof GenericType && ((GenericType)topEntityType).hasFeature(featName)) {
+						FeatureType type = ((GenericType)topEntityType).getFeature(featName);
 						Fluent feat = new Fluent(type);
 
 						Map<String,Float> values = extractFluentValues (subnode);

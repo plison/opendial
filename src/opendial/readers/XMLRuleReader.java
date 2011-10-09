@@ -113,13 +113,13 @@ public class XMLRuleReader {
 	 * @throws DialException 
 	 */
 	private Variable getVariable(Node varNode, Map<String,Variable> previousVars) throws DialException {
-		
+		 
 		if (varNode.getAttributes().getNamedItem("type") != null && 
 				varNode.getAttributes().getNamedItem("denotation")!=null) {
 			String typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
 			String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
-			if (domain.hasEntityType(typeStr)) {
-				return new EntityVariable(denotation, domain.getEntityType(typeStr));
+			if (domain.hasType(typeStr)) {
+				return new Variable(denotation, domain.getType(typeStr));
 			}
 			else {
 				log.debug("type: " + typeStr);
@@ -129,7 +129,7 @@ public class XMLRuleReader {
 		else if (varNode.getAttributes().getNamedItem("label") != null) {
 			String typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
 			if (domain.hasType(typeStr)) {
-				return new FixedVariable(domain.getType(typeStr));
+				return new Variable(domain.getType(typeStr));
 			}
 			else {
 				log.debug("type: " + typeStr);
@@ -157,7 +157,7 @@ public class XMLRuleReader {
 
 			if (previousVars.containsKey(base)) {
 				Variable baseVar = previousVars.get(base);
-				AbstractType baseType = baseVar.getType();
+				GenericType baseType = baseVar.getType();
 				if (baseType.hasFeature(feat)) {
 					FeatureType featType = baseType.getFeature(feat);
 					return new FeatureVariable(denotation, featType, baseVar);
