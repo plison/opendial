@@ -19,34 +19,75 @@
 
 package opendial.domains.types.values;
 
+import opendial.arch.DialConstants.PrimitiveType;
+
 
 /**
- * 
+ * TODO: implement range value correctly!
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class RangeValue implements Value {
+public class RangeValue extends Value {
 
 	// static Logger log = new Logger("RangeValue", Logger.Level.NORMAL);
 	
-	String range;
+	PrimitiveType range;
 	
-	public RangeValue(String range) {
+	public RangeValue(PrimitiveType range) {
 		this.range = range;
 	}
 	
-	public String getRange() {
+	public PrimitiveType getRange() {
 		return range;
 	}
+	
+	
+	public boolean acceptsValue(Object val) {
+		if (range.equals(PrimitiveType.STRING)) {
+			return (val instanceof String);
+		}
+		else if (range.equals(PrimitiveType.INTEGER)) {
+			if (val instanceof Integer) {
+				return true;
+			}
+			else if (val instanceof String){
+				try {
+					Integer.parseInt((String)val);
+					return true;
+				}
+				catch (NumberFormatException e) { return false; }	
+			}
+		}
+		else if (range.equals(PrimitiveType.BOOLEAN)) {
+			if (val instanceof Integer) {
+				return true;
+			}
+			else if (val instanceof String){
+				if (((String)val).equals("true") || ((String)val).equals("false")) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public String getLabel() {
-		return "range";
+		}
+		else if (range.equals(PrimitiveType.FLOAT)) {
+			if (val instanceof Float) {
+				return true;
+			}
+			else if (val instanceof String){
+				try {
+					Float.parseFloat((String)val);
+					return true;
+				}
+				catch (NumberFormatException e) { return false; }	
+			}
+		}
+		return false;
 	}
+
+
 }

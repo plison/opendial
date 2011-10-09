@@ -22,6 +22,7 @@ package opendial.domains;
 import java.util.ArrayList;
 import java.util.List;
 
+import opendial.arch.DialConstants.ModelType;
 import opendial.domains.rules.Rule;
 import opendial.utils.Logger;
 
@@ -36,21 +37,12 @@ public class Model {
 
 	static Logger log = new Logger("Model", Logger.Level.NORMAL);
 	
-	public static enum Type {
-		USER_REALISATION,
-		USER_PREDICTION,
-		USER_TRANSITION,
-		SYSTEM_ACTIONVALUE,
-		SYSTEM_REALISATION,
-		SYSTEM_TRANSITION
-	}
-	
-	Type type;
+	ModelType type;
 	
 	List<Rule> rules;
 	
 	
-	public Model(Type type) {
+	public Model(ModelType type) {
 		this.type = type;
 		rules = new ArrayList<Rule>();
 	}
@@ -63,7 +55,7 @@ public class Model {
 	 * 
 	 * @return
 	 */
-	public Type getType() {
+	public ModelType getType() {
 		return type;
 	}
 

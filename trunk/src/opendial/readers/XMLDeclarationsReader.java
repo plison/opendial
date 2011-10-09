@@ -22,18 +22,15 @@ package opendial.readers;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.arch.DialConstants.PrimitiveType;
 import opendial.arch.DialException;
-import opendial.domains.realisations.Realisation;
-import opendial.domains.realisations.SurfaceRealisation;
-import opendial.domains.triggers.SurfaceTrigger;
-import opendial.domains.triggers.Trigger;
-import opendial.domains.types.AbstractType;
-import opendial.domains.types.ActionType;
-import opendial.domains.types.EntityType;
+import opendial.domains.actions.SurfaceRealisationTemplate;
+import opendial.domains.observations.SurfaceTrigger;
+import opendial.domains.types.GenericType;
 import opendial.domains.types.FeatureType;
-import opendial.domains.types.FixedVariableType;
-import opendial.domains.types.ObservationType;
+import opendial.domains.types.values.ActionValue;
 import opendial.domains.types.values.BasicValue;
+import opendial.domains.types.values.ObservationValue;
 import opendial.domains.types.values.RangeValue;
 import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
@@ -61,9 +58,9 @@ public class XMLDeclarationsReader {
 	 * @return the list of entity types which have been declared
 	 * @throws DialException if the document is ill-formatted
 	 */
-	public List<AbstractType> getTypes(Document doc) throws DialException {
+	public List<GenericType> getTypes(Document doc) throws DialException {
 
-		List<AbstractType> allTypes = new LinkedList<AbstractType>();
+		List<GenericType> allTypes = new LinkedList<GenericType>();
 
 		Node mainNode = XMLDomainReader.getMainNode(doc,"declarations");
 		NodeList midList = mainNode.getChildNodes();
@@ -75,23 +72,21 @@ public class XMLDeclarationsReader {
 			if (node.hasAttributes() && node.getAttributes().getNamedItem("name") != null) {
 
 				if (node.getNodeName().equals("entity")) {
-					EntityType type = getEntity(node);
+					GenericType type = getGenericType(node);
 					allTypes.add(type);
 				}
 				else if (node.getNodeName().equals("variable")) {
-					FixedVariableType type = getFixedVariableType(node);
+					GenericType type = getGenericType(node);
+					type.setAsFixed(true);
 					allTypes.add(type);
-				}
-				else if (node.getNodeName().equals("feature")) {
-		//			FeatureType type = getFeatureType(node);
-		//			allTypes.add(type);
 				}
 				else if (node.getNodeName().equals("trigger")) {
-					ObservationType type = getObservation(node);
+					GenericType type = getObservation(node);
+					type.setAsFixed(true);
 					allTypes.add(type);
 				}
-				else if (node.getNodeName().equals("realisation")) {
-					ActionType type = getAction(node);
+				else if (node.getNodeName().equals("actiontemplate")) {
+					GenericType type = getAction(node);
 					allTypes.add(type);
 				}
 				else {
@@ -113,34 +108,16 @@ public class XMLDeclarationsReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private FixedVariableType getFixedVariableType(Node node) throws DialException {
+	private GenericType getGenericType(Node node) throws DialException {
 		String name = node.getAttributes().getNamedItem("name").getNodeValue();
 
-		FixedVariableType type = new FixedVariableType(name);
+		GenericType type = new GenericType(name);
 		List<Value> values = extractTypeValues (node);
 		type.addValues(values);
 		List<FeatureType> features = extractFeatures(node);
 		type.addFeatures(features);
 		return type;
 	}
-
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DialException 
-	 */
-	private EntityType getEntity(Node node) throws DialException {
-		String name = node.getAttributes().getNamedItem("name").getNodeValue();
-
-		EntityType type = new EntityType(name);
-		List<Value> values = extractTypeValues (node);
-		type.addValues(values);
-		List<FeatureType> features = extractFeatures(node);
-		type.addFeatures(features);
-		return type;
-	}
-	
 	
 
 	/**
@@ -163,7 +140,18 @@ public class XMLDeclarationsReader {
 				values.add(new BasicValue(valueNode.getTextContent()));
 			}
 			else if (valueNode.getNodeName().equals("range")) {
-				values.add(new RangeValue(valueNode.getTextContent()));
+				if (valueNode.getTextContent().equals("string")) {
+					values.add(new RangeValue(PrimitiveType.STRING));
+				}
+				else if (valueNode.getTextContent().equals("integer")) {
+					values.add(new RangeValue(PrimitiveType.INTEGER));					
+				}
+				else if (valueNode.getTextContent().equals("float")) {
+					values.add(new RangeValue(PrimitiveType.FLOAT));
+				}
+				else if (valueNode.getTextContent().equals("boolean")) {
+					values.add(new RangeValue(PrimitiveType.BOOLEAN));
+				}
 			}
 			else if (valueNode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = valueNode.getChildNodes();
@@ -282,9 +270,9 @@ public class XMLDeclarationsReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private ObservationType getObservation(Node obsNode) throws DialException {
+	private GenericType getObservation(Node obsNode) throws DialException {
 
-		ObservationType obs;
+		GenericType obs;
 
 		if (obsNode.hasAttributes() && obsNode.getAttributes().getNamedItem("name") != null && 
 				obsNode.getAttributes().getNamedItem("type")!= null &&
@@ -295,10 +283,14 @@ public class XMLDeclarationsReader {
 			String content = obsNode.getAttributes().getNamedItem("content").getNodeValue();
 
 
-			Trigger trigger ;
+			ObservationValue obsValue;
 			if (type.equals("surface") ) {
-				trigger = new SurfaceTrigger(content);
-				obs = new ObservationType(name, trigger);
+				obsValue = new ObservationValue(new SurfaceTrigger(content));
+				obs = new GenericType(name);
+				obs.addValue(obsValue);
+				
+				List<FeatureType> feats = getObservationFeatures(obsValue);
+				obs.addFeatures(feats);
 			}
 			else {
 				throw new DialException("type " + type + " currently not supported");
@@ -313,6 +305,24 @@ public class XMLDeclarationsReader {
 	}
 
 
+	/**
+	 * 
+	 * @param values
+	 * @return
+	 */
+	private List<FeatureType> getObservationFeatures(ObservationValue value) {
+		
+		List<FeatureType> feats = new LinkedList<FeatureType>();
+		
+			if (!value.getSlots().isEmpty()) {
+				for (String slot : value.getSlots()) {
+					FeatureType feat = new FeatureType(slot);
+					feats.add(feat);
+				}
+			}
+		
+		return feats;
+	}
 
 	/**
 	 * 
@@ -320,16 +330,19 @@ public class XMLDeclarationsReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private ActionType getAction(Node actionNode) throws DialException {
+	private GenericType getAction(Node actionNode) throws DialException {
 
-		ActionType action; 
+		GenericType action; 
 		if (actionNode.hasAttributes() && actionNode.getAttributes().getNamedItem("name") != null) {
 
 			String actionName = actionNode.getAttributes().getNamedItem("name").getNodeValue();
-			action = new ActionType(actionName);
+			action = new GenericType(actionName);
 
-			List<Realisation> values = getActionValues(actionNode);
-			action.addActionValues(values);
+			List<ActionValue> values = getActionValues(actionNode);
+			action.addValues(values);
+			
+			List<FeatureType> feats = getActionFeatures(values);
+			action.addFeatures(feats);
 		}
 		else {
 			throw new DialException("action must have a \"name\" attribute");
@@ -340,9 +353,31 @@ public class XMLDeclarationsReader {
 	}
 
 
-	private List<Realisation> getActionValues(Node topNode) {
+	/**
+	 * 
+	 * @param values
+	 * @return
+	 */
+	private List<FeatureType> getActionFeatures(List<ActionValue> values) {
+		
+		List<FeatureType> feats = new LinkedList<FeatureType>();
+		
+		for (ActionValue value: values) {
+		if (value instanceof ActionValue &&  !((ActionValue)value).getSlots().isEmpty()) {
+			for (String slot : ((ActionValue)value).getSlots()) {
+				FeatureType feat = new FeatureType(slot);
+				feat.addBaseValue(value.getValue());
+				feats.add(feat);
+			}
+		}
+		}
+		
+		return feats;
+	}
 
-		List<Realisation> values = new LinkedList<Realisation>();
+	private List<ActionValue> getActionValues(Node topNode) {
+
+		List<ActionValue> values = new LinkedList<ActionValue>();
 
 		NodeList valueList = topNode.getChildNodes();
 		for (int j = 0 ; j < valueList.getLength(); j++) {
@@ -357,9 +392,9 @@ public class XMLDeclarationsReader {
 				String type = valueNode.getAttributes().getNamedItem("type").getNodeValue();
 				String content = valueNode.getAttributes().getNamedItem("content").getNodeValue();
 
-				Realisation option;
+				ActionValue option;
 				if (type.equals("surface")) {
-					option = new SurfaceRealisation(label, content);
+					option = new ActionValue(label, new SurfaceRealisationTemplate(content));
 					values.add(option);
 				}
 			}

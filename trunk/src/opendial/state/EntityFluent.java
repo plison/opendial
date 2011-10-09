@@ -20,7 +20,7 @@
 package opendial.state;
 
 import opendial.arch.DialException;
-import opendial.domains.types.AbstractType;
+import opendial.domains.types.GenericType;
 import opendial.utils.Logger;
 
 /**
@@ -39,7 +39,7 @@ public class EntityFluent extends Fluent {
 	/**
 	 * @param type
 	 */
-	public EntityFluent(AbstractType type) {
+	public EntityFluent(GenericType type) {
 		super(type);
 	}
 

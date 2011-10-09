@@ -7,7 +7,7 @@
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="entity" type="declarationType"/>
 			<xs:element name="variable" type="declarationType"/>
-			<xs:element name="realisation" type="realisationType"/>
+			<xs:element name="actiontemplate" type="realisationType"/>
 			<xs:element name="trigger" type="triggerType"/>
 		</xs:choice>
 </xs:complexType>

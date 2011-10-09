@@ -26,10 +26,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import opendial.arch.DialConstants.BinaryOperator;
+import opendial.arch.DialConstants.ModelType;
+import opendial.arch.DialConstants.PrimitiveType;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Model;
-import opendial.domains.realisations.SurfaceRealisation;
+import opendial.domains.observations.SurfaceTrigger;
 import opendial.domains.rules.Case;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.conditions.BasicCondition;
@@ -38,16 +40,14 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.AssignEffect;
 import opendial.domains.rules.effects.ComplexEffect;
-import opendial.domains.rules.variables.EntityVariable;
 import opendial.domains.rules.variables.FeatureVariable;
-import opendial.domains.rules.variables.FixedVariable;
 import opendial.domains.rules.variables.PointerVariable;
-import opendial.domains.triggers.SurfaceTrigger;
-import opendial.domains.types.ActionType;
-import opendial.domains.types.EntityType;
+import opendial.domains.rules.variables.Variable;
+import opendial.domains.types.GenericType;
 import opendial.domains.types.FeatureType;
-import opendial.domains.types.FixedVariableType;
-import opendial.domains.types.ObservationType;
+import opendial.domains.types.values.ActionValue;
+import opendial.domains.types.values.BasicValue;
+import opendial.domains.types.values.ObservationValue;
 import opendial.domains.types.values.RangeValue;
 import opendial.domains.types.values.Value;
 import opendial.state.Fluent;
@@ -90,40 +90,40 @@ public class XMLDomainTest {
 	@Test
 	public void entityExtraction() throws DialException {
 		
-		log.debug("number of entity type: " + domain.getEntityTypes().size());
-		assertEquals(2, domain.getEntityTypes().size());
+		log.debug("number of entity type: " + domain.getTypes().size());
+	//	assertEquals(2, domain.getEntityTypes().size());
 		
-		EntityType firstType = domain.getEntityType("intent");
+		GenericType firstType = domain.getType("intent");
 		assertEquals("intent", firstType.getName());
 		log.debug("number of values: " + firstType.getValues().size());
 		assertEquals(1, firstType.getValues().size());
-		assertEquals("Want", firstType.getValues().get(0).getLabel());
+		assertEquals("Want", ((BasicValue)firstType.getValues().get(0)).getValue());
 		assertEquals(1, firstType.getPartialFeatures("Want").size());
 		assertEquals(2, firstType.getPartialFeatures("Want").get(0).getValues().size());
 		
-		EntityType secondType = domain.getEntityType("robot");
+		GenericType secondType = domain.getType("robot");
 		assertEquals("robot", secondType.getName());
 		assertEquals(0, secondType.getValues().size());
 		assertEquals(1, secondType.getFeatures().size());
 		FeatureType featType = (FeatureType)secondType.getFeature("name");
 		assertEquals(1, featType.getValues().size());
 		assertTrue(featType.getValues().get(0) instanceof RangeValue);
-		assertEquals("string", ((RangeValue)featType.getValues().get(0)).getRange());
+		assertEquals(PrimitiveType.STRING, ((RangeValue)featType.getValues().get(0)).getRange());
 		
 	}
 	 
 	@Test
 	public void fixedVariableExtraction() throws DialException {
 
-		FixedVariableType thirdType = domain.getFixedVariableType("a_u");
+		GenericType thirdType = domain.getType("a_u");
 		assertEquals("a_u", thirdType.getName());
 		assertEquals(4, thirdType.getValues().size());
 		assertEquals(0, thirdType.getFullFeatures().size());
-		Value val = thirdType.getValues().get(1);
-		assertEquals("AskFor", val.getLabel());
+		Value val = thirdType.getValue("AskFor");
+		assertEquals("AskFor", ((BasicValue)val).getValue());
 		assertEquals(1, thirdType.getPartialFeatures("AskFor").size());
 		assertEquals(2, thirdType.getPartialFeatures("AskFor").get(0).getValues().size());
-		assertEquals("X", thirdType.getPartialFeatures("AskFor").get(0).getValues().get(1).getLabel());
+		assertEquals("X", ((BasicValue) thirdType.getPartialFeatures("AskFor").get(0).getValue("X")).getValue());
 		
 	}
 	
@@ -132,29 +132,25 @@ public class XMLDomainTest {
 	@Test
 	public void observationExtraction() throws IOException, DialException {
 
-		List<ObservationType> observations = domain.getObservationTypes();
-		assertEquals(6, observations.size());
-		ObservationType firstObservation = observations.get(0);
-		assertTrue(firstObservation.getTrigger() instanceof SurfaceTrigger);
+		// assertEquals(6, observations.size());
+		GenericType firstObservation = domain.getType("doYObs");
+		assertTrue(firstObservation.getValues().get(0) instanceof ObservationValue);
 		assertEquals("doYObs", firstObservation.getName());
-		assertEquals("do Y", ((SurfaceTrigger)firstObservation.getTrigger()).getContent());
+		assertEquals("do Y", ((ObservationValue)firstObservation.getValues().get(0)).getTrigger().getContent());
 	}
 
 	@Test
 	public void actionExtraction() throws IOException, DialException {
 
-		List<ActionType> actions = domain.getActionTypes();
-		assertEquals(1, actions.size());
-		ActionType mainAction = actions.get(0);
+		GenericType mainAction = domain.getType("a_m");
 		
-		assertEquals(6, mainAction.getActionValues().size());
-		log.debug(actions.size());
+		assertEquals(6, mainAction.getValues().size());
 
-		assertTrue(mainAction.getActionValues().get(0) instanceof SurfaceRealisation);
-		assertEquals("AskRepeat", mainAction.getActionValues().get(0).getLabel());
-		assertEquals("OK, doing X!", ((SurfaceRealisation)mainAction.getActionValue("DoX")).getContent());
-		assertEquals(1, ((SurfaceRealisation)mainAction.getActionValue("SayHi")).getSlots().size());
-		assertEquals("name", ((SurfaceRealisation)mainAction.getActionValue("SayHi")).getSlots().get(0));
+		assertTrue(mainAction.getValue("AskRepeat") instanceof ActionValue);
+		assertEquals("AskRepeat", ((BasicValue)mainAction.getValue("AskRepeat")).getValue());
+		assertEquals("OK, doing X!", ((ActionValue)mainAction.getValue("DoX")).getTemplate().getContent());
+		assertEquals(1, ((ActionValue)mainAction.getValue("SayHi")).getSlots().size());
+		assertEquals("name", ((ActionValue)mainAction.getValue("SayHi")).getSlots().get(0));
 		assertTrue(mainAction.hasFeature("name"));
 		
 	}
@@ -186,7 +182,7 @@ public class XMLDomainTest {
 	@Test
 	public void modelExtraction1() throws DialException {
 
-		Model model = domain.getModel(Model.Type.USER_PREDICTION);
+		Model model = domain.getModel(ModelType.USER_PREDICTION);
 		
 		assertEquals(2, model.getRules().size());
 		Rule firstRule = model.getRules().get(0);
@@ -250,7 +246,7 @@ public class XMLDomainTest {
 	@Test
 	public void modelExtraction2() throws DialException {
 
-		Model model = domain.getModel(Model.Type.SYSTEM_ACTIONVALUE);
+		Model model = domain.getModel(ModelType.SYSTEM_ACTIONVALUE);
 		
 		assertEquals(5, model.getRules().size());
 		Rule firstRule = model.getRules().get(1);
@@ -287,14 +283,14 @@ public class XMLDomainTest {
 	@Test
 	public void modelExtraction3 () throws DialException {
 
-		Model model = domain.getModel(Model.Type.USER_REALISATION);
+		Model model = domain.getModel(ModelType.USER_REALISATION);
 		
 		Rule firstRule = model.getRules().get(0);
 		
 		assertEquals(2, firstRule.getInputVariables().size());
 		assertEquals(1, firstRule.getOutputVariables().size());
 		
-		assertTrue(firstRule.getInputVariables().get(0) instanceof FixedVariable);
+		assertTrue(firstRule.getInputVariables().get(0) instanceof Variable);
 		assertTrue(firstRule.getInputVariables().get(1) instanceof FeatureVariable);
 		assertEquals(((FeatureVariable)firstRule.getInputVariables().get(1)).getBaseVariable(), firstRule.getInputVariables().get(0));
 	}
@@ -302,7 +298,7 @@ public class XMLDomainTest {
 	@Test
 	public void modelExtraction4() throws DialException {
 
-		Model model = domain.getModel(Model.Type.SYSTEM_TRANSITION);
+		Model model = domain.getModel(ModelType.SYSTEM_TRANSITION);
 		
 		assertEquals(2, model.getRules().size());
 		
@@ -311,8 +307,8 @@ public class XMLDomainTest {
 		assertEquals(2, firstRule.getInputVariables().size());
 		assertEquals(1, firstRule.getOutputVariables().size());
 		
-		assertTrue(firstRule.getInputVariables().get(0) instanceof FixedVariable);
-		assertTrue(firstRule.getInputVariables().get(1) instanceof EntityVariable);
+		assertTrue(firstRule.getInputVariables().get(0) instanceof Variable);
+		assertTrue(firstRule.getInputVariables().get(1) instanceof Variable);
 		assertTrue(firstRule.getOutputVariables().get(0) instanceof PointerVariable);
 		assertEquals(firstRule.getInputVariables().get(1), ((PointerVariable)firstRule.getOutputVariables().get(0)).getTarget());		
 		
@@ -321,7 +317,7 @@ public class XMLDomainTest {
 	@Test 
 	public void modelExtraction5() throws DialException {
 
-		Model model = domain.getModel(Model.Type.USER_TRANSITION);
+		Model model = domain.getModel(ModelType.USER_TRANSITION);
 		
 		assertEquals(3, model.getRules().size());
 		
