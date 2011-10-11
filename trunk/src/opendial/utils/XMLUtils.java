@@ -217,7 +217,7 @@ public class XMLUtils {
  * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-01 19:26:17 #$
+ * @version $Date::                      $
  *
  */
 final class XMLErrorHandler extends DefaultHandler {

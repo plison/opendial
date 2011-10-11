@@ -17,13 +17,16 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.processes;
+package opendial.components;
 
 
+import opendial.arch.DialogueInterface;
 import opendial.domains.Domain;
-import opendial.gui.DialogueInterface;
 import opendial.inputs.Observation;
 import opendial.outputs.Action;
+import opendial.processes.DecisionProcess;
+import opendial.processes.PerceptionProcess;
+import opendial.processes.PredictionProcess;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
