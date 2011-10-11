@@ -21,20 +21,29 @@ package opendial.domains.observations;
 
 import java.util.List;
 
-import opendial.utils.Logger;
-
 /**
- * 
+ * Generic representation for an observation trigger, defined in a parametrised
+ * form (a main content + an optional number of parameters/slots).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public abstract class Trigger {
+public interface Trigger<T> {
 
-	static Logger log = new Logger("Trigger", Logger.Level.NORMAL);
+	/**
+	 * Returns the content of the trigger
+	 * 
+	 * @return the content of the trigger
+	 */
+	public abstract T getContent();
+
 	
+	/**
+	 * Returns the list of slots for the trigger
+	 * 
+	 * @return list of slots
+	 */
 	public abstract List<String> getSlots();
 
-	public abstract String getContent();
 }

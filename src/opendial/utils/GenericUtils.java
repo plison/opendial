@@ -20,7 +20,7 @@
 package opendial.utils;
 
 /**
- * 
+ * Generic utility functions
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $

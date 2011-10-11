@@ -22,29 +22,54 @@ package opendial.domains.rules.variables;
 import opendial.domains.types.FeatureType;
 
 /**
+ * Representation of a feature variable.  It is defined as an extension of the
+ * standard variable, and as such, contains both an identifier and a type.  
  * 
+ * <p>In addition, a feature variable must also define a "base variable", which is the
+ * variable on which the feature is attached (i.e. the variable it is a feature of).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class FeatureVariable extends Variable {
+public class FeatureVariable extends StandardVariable {
 
-	// static Logger log = new Logger("FeatureVariable", Logger.Level.NORMAL);
-
-	Variable baseVariable;
+	// the base variable for the feature
+	StandardVariable baseVariable;
+	
 	
 	/**
-	 * @param denotation
-	 * @param type
+	 * Creates a new feature variable, defined by an identifier, a type and a base variable
+	 * 
+	 * @param identifier the identifier
+	 * @param type the type
+	 * @param baseVariable the base variable
 	 */
-	public FeatureVariable(String denotation, FeatureType type, Variable baseVariable) {
-		super(denotation, type);
+	public FeatureVariable(String identifier, FeatureType type, StandardVariable baseVariable) {
+		super(identifier, type);
 		this.baseVariable = baseVariable;
 	}
 	
-	public Variable getBaseVariable() {
+	
+	/**
+	 * Returns the base variable for the feature
+	 * 
+	 * @return the base variable
+	 */
+	public StandardVariable getBaseVariable() {
 		return baseVariable;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the variable
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		String str = identifier + "=" + type.getName() + "(" + baseVariable + ")";
+		return str;
 	}
 
 }

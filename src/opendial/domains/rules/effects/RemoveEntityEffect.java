@@ -19,32 +19,70 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.domains.rules.variables.Variable;
+import opendial.domains.rules.variables.StandardVariable;
 
 /**
- * 
+ * Representation of an effect which removes a given entity from the dialogue state
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class RemoveEntityEffect extends Effect {
+public class RemoveEntityEffect implements Effect {
 
 	// static Logger log = new Logger("RemoveEntityEffect", Logger.Level.NORMAL);
 
-	Variable var;
+	// the variable to remove
+	StandardVariable var;
 	
 	/**
-	 * @param probability
+	 * Creates a new "entity removal" effect, for the entity referenced by the
+	 * variable
+	 * 
+	 * @param var the variable reference
 	 */
-	public RemoveEntityEffect(Variable var, float probability) {
-		super(probability);
+	public RemoveEntityEffect(StandardVariable var) {
 		this.var = var;
 	}
 	
 	
-	public Variable getVariable() {
+	/**
+	 * Returns the variable in which the effect is anchored
+	 * 
+	 * @return the variable
+	 */
+	public StandardVariable getVariable() {
 		return var;
 	}
 
+
+	/**
+	 * Returns a string representation of the effect
+	 *
+	 * @return
+	 */
+	@Override
+	public String toString() {
+		return"RemoveEntity: " + var;
+	}
+	
+	
+	/**
+	 * Compare the effect to the given one
+	 * 
+	 * @param e the effect to compare with the current object
+	 * @return 0 if equals, -1 otherwise
+	 */
+	@Override
+	public int compareTo(Effect e) {
+		if (e instanceof RemoveEntityEffect) {
+			if (((RemoveEntityEffect)e).getVariable().equals(var)) {
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		return -1;
+	}
 }

@@ -27,7 +27,13 @@ import java.util.Map;
 import opendial.utils.Logger;
 
 /**
- * Implement the dialogue state
+ * Representation of a dialogue state, which comprises a list of 
+ * <i>fluents</i>.  
+ * 
+ * <p>Process threads from the dialogue system can wait for a state change, 
+ * and will be duly notified.
+ * 
+ * @see Fluent
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -35,37 +41,56 @@ import opendial.utils.Logger;
  */
 public class DialogueState {
 
+	// logger
 	static Logger log = new Logger("DialogueState", Logger.Level.DEBUG);
 	
-		
+	// the list of fluents, indexed by label
 	Map<String,Fluent> fluents;
 	
 	
+	/**
+	 * Creates a new dialogue state, with an empty list of fluents
+	 */
 	public DialogueState () {
 		fluents = new HashMap<String, Fluent>();
 	}
+	
+	
 	/**
+	 * Returns the list of fluents associated with the current state
 	 * 
-	 * @return
+	 * @return the list of fluents
 	 */
 	public List<Fluent> getFluents() {
 		return new ArrayList<Fluent>(fluents.values());
 	}
+	
+	
 	/**
+	 * Adds a new fluent to the dialogue state
 	 * 
-	 * @param entity
+	 * @param fluent the new fluent
 	 */
 	public void addFluent(Fluent fluent) {
 		fluents.put(fluent.getLabel(), fluent);
 	}
 	
+	
+	/**
+	 * Performs a dummy change, simply notifying the processes that a 
+	 * change occured.
+	 * 
+	 */
 	public synchronized void dummyChange() {
 		notifyAll();
 	}
 	
 	
-	
-	
+	/**
+	 * Copy the dialogue state
+	 * 
+	 * @return a dialogue state copy
+	 */
 	public DialogueState copy() {
 		DialogueState copy = new DialogueState();
 		
@@ -76,6 +101,11 @@ public class DialogueState {
 	}
 	
 	
+	/**
+	 * Returns a string representation of the current state
+	 *
+	 * @return the string representation
+	 */
 	@Override
 	public String toString() {
 		String str = "";

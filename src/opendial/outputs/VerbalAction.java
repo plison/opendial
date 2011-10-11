@@ -19,10 +19,10 @@
 
 package opendial.outputs;
 
-import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a "verbal action", which is a string to synthesise 
+ * via the Text-to-Speech module.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -30,11 +30,26 @@ import opendial.utils.Logger;
  */
 public class VerbalAction implements Action {
 
-	static Logger log = new Logger("TTS_String", Logger.Level.NORMAL);
-	
+	// the string to synthesise
 	String stringToSynthesize;
 	
+	
+	/**
+	 * Creates a new verbal action with the string to synthesise
+	 * @param stringToSynthesize
+	 */
 	public VerbalAction(String stringToSynthesize) {
 		this.stringToSynthesize = stringToSynthesize;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the action
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		return "VerbalAction: \"" + stringToSynthesize + "\"";
 	}
 }

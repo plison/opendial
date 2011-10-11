@@ -20,12 +20,12 @@
 package opendial.domains.rules.conditions;
 
 /**
- * 
+ * Representation of a void condition (which is always true)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class VoidCondition extends Condition {
+public class VoidCondition implements Condition {
 
 }

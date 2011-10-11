@@ -22,17 +22,10 @@ package opendial.readers;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import opendial.arch.DialConstants.ModelType;
+import opendial.arch.DialConstants.ModelGroup;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Model;
@@ -40,8 +33,10 @@ import opendial.domains.rules.Rule;
 import opendial.domains.types.GenericType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
+import opendial.utils.XMLUtils;
 
 /**
+ * XML reader for a domain specification.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
@@ -58,13 +53,16 @@ public class XMLDomainReader {
 	// the root path for the XML specification files
 	String rootpath;
 
+	// whether to perform XML validation before reading the file 
+	// (might slow down the import operation a bit)
+	public static final boolean priorValidation = false;
 
-	public XMLDomainReader() {
+	// default XML schema for domains
+	public static final String domainSchema = "resources//schemata//domain.xsd";
 
-	}
 
 	// ===================================
-	// CORE METHODS
+	// TOP DOMAIN
 	// ===================================
 
 	/**
@@ -77,8 +75,11 @@ public class XMLDomainReader {
 	 */
 	public Domain extractDomain(String topDomainFile) throws DialException {
 
+		if (priorValidation) {
+			XMLUtils.validateXML(topDomainFile, domainSchema);
+		}
 		// extract the XML document
-		Document doc = getXMLDocument(topDomainFile);
+		Document doc = XMLUtils.getXMLDocument(topDomainFile);
 
 		// determine the root path 
 		rootpath = topDomainFile.substring(0, topDomainFile.lastIndexOf("//")+1);
@@ -87,7 +88,7 @@ public class XMLDomainReader {
 		// create a new, empty domain
 		domain = new Domain(filename);
 
-		Node mainNode = getMainNode(doc, "domain");
+		Node mainNode = XMLUtils.getMainNode(doc, "domain");
 
 		if (mainNode.hasAttributes() && 
 				mainNode.getAttributes().getNamedItem("name") != null) {
@@ -98,59 +99,53 @@ public class XMLDomainReader {
 		for (int j = 0 ; j < firstElements.getLength() ; j++) {
 			Node node = firstElements.item(j);
 
+			// extracting type declarations
 			if (node.getNodeName().equals("declarations")) {
-				String fileReference = getReference(node);
-				Document refDoc = getXMLDocument(rootpath+fileReference);
+				Document refDoc = XMLUtils.getXMLDocument(rootpath+XMLUtils.getReference(node));
 				XMLDeclarationsReader declReader = new XMLDeclarationsReader();
 				List<GenericType> types = declReader.getTypes(refDoc);
 				domain.addTypes(types);			}
 
+			// extracting initial state
 			else if (node.getNodeName().equals("initialstate")) {
-				String fileReference = getReference(node);
-				Document refDoc = getXMLDocument(rootpath+fileReference);
+				Document refDoc = XMLUtils.getXMLDocument(rootpath+XMLUtils.getReference(node));
 				XMLInitialStateReader isReader = new XMLInitialStateReader();
 				DialogueState initialState = isReader.getInitialState(refDoc,domain);
 				domain.addInitialState(initialState);
 			}
+			
+			// extracting rule-based probabilistic model
 			else if (node.getNodeName().equals("model")) {
-				String fileReference = getReference(node);
-				Document refDoc = getXMLDocument(rootpath+fileReference);
+				Document refDoc = XMLUtils.getXMLDocument(rootpath+XMLUtils.getReference(node));
 				Model model = getModel(refDoc);
 				domain.addModel(model);
 			}
 		}
-
 		return domain;
 	}
 
-
-
+	
 	// ===================================
-	//  INITIAL STATE METHODS
-	// ===================================
-
-
-	// ===================================
-	//  MODEL CONSTRUCTION METHODS
+	// RULE-BASED PROBABILISTIC MODEL
 	// ===================================
 
 
 	/**
+	 * Returns the model defined in the XML document
 	 * 
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
+	 * @param refDoc the XML document
+	 * @return the corresponding model
+	 * @throws DialException if the model is ill-formatted
 	 */
 	private Model getModel(Document doc) throws DialException {
 
 		Model model;
-
-		Node mainNode = getMainNode(doc, "model");
-
+		
+		Node mainNode = XMLUtils.getMainNode(doc, "model");
 		if (mainNode.hasAttributes() && mainNode.getAttributes().getNamedItem("type")!=null) {
 
-			// get the type of the model
-			ModelType type = getModelType(mainNode);
+			// get the model group
+			ModelGroup type = getModelGroup(mainNode);
 			model = new Model(type);
 
 			// add the rules
@@ -163,7 +158,6 @@ public class XMLDomainReader {
 					model.addRule(rule);
 				}
 			}
-
 			return model;
 		}
 		else {
@@ -173,103 +167,37 @@ public class XMLDomainReader {
 	}
 
 
-	private ModelType getModelType(Node topNode) throws DialException {
-		String type = topNode.getAttributes().getNamedItem("type").getNodeValue();
-		if (type.equals("userRealisation")) {
-			return ModelType.USER_REALISATION;
+	/**
+	 * Returns the model group from the XML node
+	 * 
+	 * @param topNode XML node
+	 * @return the corresponding model group
+	 * @throws DialException if model group not valid
+	 */
+	private ModelGroup getModelGroup(Node topNode) throws DialException {
+		String group = topNode.getAttributes().getNamedItem("type").getNodeValue();
+		if (group.equals("userRealisation")) {
+			return ModelGroup.USER_REALISATION;
 		}
-		else if (type.equals("userPrediction")) {
-			return ModelType.USER_PREDICTION;
+		else if (group.equals("userPrediction")) {
+			return ModelGroup.USER_PREDICTION;
 		}
-		else if (type.equals("userTransition")) {
-			return ModelType.USER_TRANSITION;
+		else if (group.equals("userTransition")) {
+			return ModelGroup.USER_TRANSITION;
 		}	
-		else if (type.equals("systemRealisation")) {
-			return ModelType.SYSTEM_REALISATION;
+		else if (group.equals("systemRealisation")) {
+			return ModelGroup.SYSTEM_REALISATION;
 		}
-		else if (type.equals("systemActionValue")) {
-			return ModelType.SYSTEM_ACTIONVALUE;
+		else if (group.equals("systemActionValue")) {
+			return ModelGroup.SYSTEM_ACTIONVALUE;
 		}
-		else if (type.equals("systemTransition")) {
-			return ModelType.SYSTEM_TRANSITION;
+		else if (group.equals("systemTransition")) {
+			return ModelGroup.SYSTEM_TRANSITION;
 		}
 		else {
 			throw new DialException("model type is not accepted");
 		}
 	}
 
-
-
-	// ===================================
-	//  ENTITY TYPE DECLARATION METHODS
-	// ===================================
-
-
-	// ===================================
-	//  UTILITY METHODS
-	// ===================================
-
-
-
-	public static Document getXMLDocument (String filename) throws DialException {
-
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-
-			builder.setErrorHandler(new XMLErrorHandler());
-			Document doc = builder.parse(new InputSource(filename));
-			log.debug("XML parsing of file: " + filename + " successful!");
-			return doc;
-		}
-		catch (SAXException e) {
-			log.warning("Reading aborted: \n" + e.getMessage());
-		} 
-		catch (ParserConfigurationException e) {
-			log.warning(e.getMessage());
-		} 
-		catch (IOException e) {
-			log.warning(e.getMessage());
-			throw new DialException(e.getMessage());
-		}
-		return null;
-	}
-
-
-
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 * @throws IOException 
-	 * @throws DialException 
-	 */
-	public static String getReference(Node node) throws DialException {
-
-		if (node.hasAttributes() && node.getAttributes().getNamedItem("file") != null) {
-			String filename = node.getAttributes().getNamedItem("file").getNodeValue();
-			return filename;
-		}
-		else {
-			throw new DialException("Not file attribute in which to extract the reference");
-		}
-	}
-
-
-	public static Node getMainNode (Document doc, String topTag) throws DialException {
-
-		NodeList topList = doc.getChildNodes();
-		if (topList.getLength() == 1 && topList.item(0).getNodeName().equals(topTag)) {
-			Node topNode = topList.item(0);
-			return topNode;
-		}
-		else if (topList.getLength() == 0) {
-			throw new DialException("Document is empty");
-		}
-		else  {
-			throw new DialException("Document contains other tags than \"" + topTag + "\": " + topList.item(0).getNodeName());
-		}
-	}
 
 }

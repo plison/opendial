@@ -21,25 +21,35 @@ package opendial.domains.actions;
 
 import java.util.List;
 
-import opendial.utils.Logger;
-
 /**
+ * Generic representation for an action template (e.g. a surface realisation to be
+ * synthesised, a physical movement to perform, etc.).  
  * 
+ * An action template can be defined a parametrised form, where a main content 
+ * contains a number of slots to be filled.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public abstract class ActionTemplate {
-
-	static Logger log = new Logger("ActionTemplate", Logger.Level.NORMAL);
+public interface ActionTemplate<T> {
 	
-	public abstract List<String> getSlots();
-
 	/**
+	 * Returns the main content of the template.
+	 * 
+	 * The position of the slots are indicated by the denotation "${variable}",
+	 *  where variable denotes the label for the slot
 	 * 
 	 * @return
 	 */
-	public abstract String getContent() ;
+	public abstract T getContent() ;
+
+	
+	/**
+	 * Returns the list of slot labels for the template
+	 * 
+	 * @return
+	 */
+	public abstract List<String> getSlots();
 
 }

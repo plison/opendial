@@ -20,31 +20,54 @@
 package opendial.domains.types.values;
 
 import opendial.arch.DialConstants.PrimitiveType;
+import opendial.utils.Logger;
 
 
 /**
- * TODO: implement range value correctly!
- *
+ * Representation of a type value encoded as a "range" (such as "string",
+ * "integer", "float" or "boolean").
+ * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class RangeValue extends Value {
+public class RangeValue implements Value {
 
-	// static Logger log = new Logger("RangeValue", Logger.Level.NORMAL);
+	// logger
+	 static Logger log = new Logger("RangeValue", Logger.Level.DEBUG);
 	
+	 // the range (can be one of the 4 declared primitive types)
 	PrimitiveType range;
 	
+	/**
+	 * Creates a new range value, with the given range
+	 * 
+	 * @param range the range
+	 */
 	public RangeValue(PrimitiveType range) {
 		this.range = range;
 	}
 	
+	
+	/**
+	 * Returns the range for the value
+	 * 
+	 * @return the range
+	 */
 	public PrimitiveType getRange() {
 		return range;
 	}
 	
 	
-	public boolean acceptsValue(Object val) {
+	/**
+	 * Returns true is the value provided as parameter falls within 
+	 * the specified range
+	 *
+	 * @param val the value to check
+	 * @return true if the value falls within the range, false otherwise
+	 */
+	public boolean containsValue(Object val) {
+
 		if (range.equals(PrimitiveType.STRING)) {
 			return (val instanceof String);
 		}
@@ -65,12 +88,8 @@ public class RangeValue extends Value {
 				return true;
 			}
 			else if (val instanceof String){
-				if (((String)val).equals("true") || ((String)val).equals("false")) {
-					return true;
-				}
-				else {
-					return false;
-				}
+				return (((String)val).toLowerCase().equals("true") ||
+						((String)val).toLowerCase().equals("false"));
 			}
 
 		}
@@ -88,6 +107,28 @@ public class RangeValue extends Value {
 		}
 		return false;
 	}
+	
 
+
+	/**
+	 * Returns a string representation of the range value
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		if (range.equals(PrimitiveType.STRING)) {
+			return "string";
+		}
+		else if (range.equals(PrimitiveType.INTEGER)) {
+			return "integer";
+		}
+		else if (range.equals(PrimitiveType.BOOLEAN)) {
+			return "boolean";
+		}
+		else if (range.equals(PrimitiveType.FLOAT)) {
+			return "float";
+		}
+		return "";
+	}
 
 }

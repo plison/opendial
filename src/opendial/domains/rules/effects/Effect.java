@@ -21,28 +21,14 @@ package opendial.domains.rules.effects;
 
 
 /**
- * 
+ * Generic interface for an effect specified in a rule
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * 
  * @version $Date::                      $
  *
  */
-public abstract class Effect {
+public interface Effect extends Comparable<Effect> {
 
-	// static Logger log = new Logger("Effect", Logger.Level.NORMAL);
-
-	float probability;
 	
-	public Effect(float probability) {
-		this.probability = probability;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public float getProb() {
-		return probability;
-	}
 }

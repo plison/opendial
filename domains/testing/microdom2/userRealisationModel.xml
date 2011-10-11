@@ -4,7 +4,7 @@
 <rule>
 	<input>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o"/>
+		<var feature="obj" base="a_u" id="o"/>
 	</input>
 	<output><var label="doXObs"/></output>
 	<case>
@@ -20,7 +20,7 @@
 <rule>
 	<input>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o"/>
+		<var feature="obj" base="a_u" id="o"/>
 	</input>
 	<output><var label="doYObs"/></output>
 	<case>

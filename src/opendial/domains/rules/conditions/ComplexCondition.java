@@ -26,61 +26,87 @@ import opendial.arch.DialConstants.BinaryOperator;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a complex condition, made of several sub-conditions
+ * connected by a logical operator (AND or OR)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class ComplexCondition extends Condition {
+public class ComplexCondition implements Condition {
 
+	// logger
 	static Logger log = new Logger("ComplexCondition", Logger.Level.NORMAL);
 	
+	// the list of sub-conditions
 	List<Condition> subconditions;
 
-	BinaryOperator binaryOp;
+	// the binary logical operator
+	BinaryOperator binaryOp = BinaryOperator.AND;
 	
 	
+	/**
+	 * Creates a new complex condition, with an empty list of sub-conditions,
+	 * connected by AND
+	 */
 	public ComplexCondition() {
 		subconditions = new LinkedList<Condition>();
 	}
 	
+	/**
+	 * Creates a new complex condition, with an empty list of sub-conditions,
+	 * connected by the given operator
+	 * 
+	 * @param binaryOp the binary operator
+	 */
 	public ComplexCondition(BinaryOperator binaryOp) {
 		this();
 		setOperator(binaryOp);
 	}
 	
+	/**
+	 * Sets the logical operator for the complex condition
+	 * 
+	 * @param binaryOp the logical operator
+	 */
 	public void setOperator(BinaryOperator binaryOp) {
 		this.binaryOp = binaryOp;
 	}
 	
-	public BinaryOperator getOperator() {
-		return binaryOp;
-	}
 	
+	/**
+	 * Adds a sub-condition to the current list of sub-conditions
+	 * 
+	 * @param subcondition the sub-condition to add
+	 */
 	public void addSubcondition(Condition subcondition) {
 		subconditions.add(subcondition);
 	}
 
+	
 	/**
+	 * Adds a list of sub-conditions to the current list
 	 * 
-	 * @param subconditions2
+	 * @param subconditions the sub-conditions to add
 	 */
-	public void addSubconditions(List<Condition> subconditions2) {
-		subconditions.addAll(subconditions2);
+	public void addSubconditions(List<Condition> subconditions) {
+		this.subconditions.addAll(subconditions);
 	}
 
 	/**
+	 * Returns the current list of sub-conditions
 	 * 
-	 * @return
+	 * @return the sub-conditions
 	 */
 	public List<Condition> getSubconditions() {
 		return subconditions;
 	}
 
+	
 	/**
+	 * Returns the logical operator for the complex condition
 	 * 
-	 * @return
+	 * @return the logical operator
 	 */
 	public BinaryOperator getBinaryOperator() {
 		return binaryOp;

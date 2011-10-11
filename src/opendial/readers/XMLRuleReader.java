@@ -38,7 +38,7 @@ import opendial.domains.types.*;
 import opendial.utils.Logger;
 
 /**
- * 
+ * XML reader for a rule specification
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -46,16 +46,29 @@ import opendial.utils.Logger;
  */
 public class XMLRuleReader {
 
+	// logger
 	static Logger log = new Logger("XMLRuleReader", Logger.Level.NORMAL);
 
 	// ===================================
 	//  RULE CONSTRUCTION METHODS
 	// ===================================
 
+	// the rule which is being extracted
 	Rule rule;
 
+	// the dialogue domain (assumes that the declared types are already extracted)
 	Domain domain;
 
+	
+	/**
+	 * Returns the rule specified in the XML node, given the (partly extracted) domain.
+	 * The method assumes that the type declarations are already extracted.
+	 * 
+	 * @param topNode the XML node
+	 * @param domain the domain
+	 * @return the corresponding rule
+	 * @throws DialException if the node is ill-formatted
+	 */
 	public Rule getRule(Node topNode, Domain domain) throws DialException {
 
 		this.domain = domain;
@@ -65,14 +78,20 @@ public class XMLRuleReader {
 		NodeList topList = topNode.getChildNodes();
 		for (int i = 0 ; i < topList.getLength(); i++) {
 			Node node = topList.item(i);
+			
+			// rule input
 			if (node.getNodeName().equals("input")) {
-				List<Variable> input = getVariables(node);
+				List<StandardVariable> input = getVariables(node);
 				rule.addInputVariables(input);
 			}
+			
+			// rule output
 			if (node.getNodeName().equals("output")) {
-				List<Variable> output = getVariables(node);
+				List<StandardVariable> output = getVariables(node);
 				rule.addOutputVariables(output);
 			}	
+			
+			// rule case
 			if (node.getNodeName().equals("case")) {
 				Case case1 = getCase(node);
 				rule.addCase(case1);
@@ -89,20 +108,20 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private List<Variable> getVariables(Node node) throws DialException {
+	private List<StandardVariable> getVariables(Node node) throws DialException {
 
 		NodeList varList = node.getChildNodes();
-		Map<String,Variable> vars = new HashMap<String,Variable>();
+		Map<String,StandardVariable> vars = new HashMap<String,StandardVariable>();
 		for (int j = 0 ; j < varList.getLength(); j++) {
 			Node varNode = varList.item(j);
 			
 			if (varNode.getNodeName().equals("var") && varNode.hasAttributes()) {
 			
-				Variable var = getVariable(varNode, vars);		
-				vars.put(var.getDenotation(), var);
+				StandardVariable var = getVariable(varNode, vars);		
+				vars.put(var.getIdentifier(), var);
 			}
 		}
-		return new LinkedList<Variable>(vars.values());
+		return new LinkedList<StandardVariable>(vars.values());
 	}
 
 	
@@ -112,14 +131,14 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private Variable getVariable(Node varNode, Map<String,Variable> previousVars) throws DialException {
+	private StandardVariable getVariable(Node varNode, Map<String,StandardVariable> previousVars) throws DialException {
 		 
 		if (varNode.getAttributes().getNamedItem("type") != null && 
-				varNode.getAttributes().getNamedItem("denotation")!=null) {
+				varNode.getAttributes().getNamedItem("id")!=null) {
 			String typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
-			String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
+			String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
 			if (domain.hasType(typeStr)) {
-				return new Variable(denotation, domain.getType(typeStr));
+				return new StandardVariable(id, domain.getType(typeStr));
 			}
 			else {
 				log.debug("type: " + typeStr);
@@ -129,7 +148,7 @@ public class XMLRuleReader {
 		else if (varNode.getAttributes().getNamedItem("label") != null) {
 			String typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
 			if (domain.hasType(typeStr)) {
-				return new Variable(domain.getType(typeStr));
+				return new StandardVariable(domain.getType(typeStr));
 			}
 			else {
 				log.debug("type: " + typeStr);
@@ -139,7 +158,7 @@ public class XMLRuleReader {
 		else if (varNode.getAttributes().getNamedItem("pointer") != null) {
 			String pointer = varNode.getAttributes().getNamedItem("pointer").getNodeValue();
 			if (rule.hasInputVariable(pointer)) {
-				Variable previousVar = rule.getInputVariable(pointer);
+				StandardVariable previousVar = rule.getInputVariable(pointer);
 				return new PointerVariable(previousVar);
 			}
 			else {
@@ -149,18 +168,18 @@ public class XMLRuleReader {
 		
 		else if (varNode.getAttributes().getNamedItem("feature")!=null && 
 				varNode.getAttributes().getNamedItem("base") != null && 
-				varNode.getAttributes().getNamedItem("denotation")!=null) {
+				varNode.getAttributes().getNamedItem("id")!=null) {
 			
 			String feat = varNode.getAttributes().getNamedItem("feature").getNodeValue();	
 			String base = varNode.getAttributes().getNamedItem("base").getNodeValue();
-			String denotation = varNode.getAttributes().getNamedItem("denotation").getNodeValue();
+			String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
 
 			if (previousVars.containsKey(base)) {
-				Variable baseVar = previousVars.get(base);
+				StandardVariable baseVar = previousVars.get(base);
 				GenericType baseType = baseVar.getType();
 				if (baseType.hasFeature(feat)) {
 					FeatureType featType = baseType.getFeature(feat);
-					return new FeatureVariable(denotation, featType, baseVar);
+					return new FeatureVariable(id, featType, baseVar);
 				}
 				else {
 					log.debug("base variable: " + base + ", existing features: " + baseType.getFeatures());
@@ -189,7 +208,11 @@ public class XMLRuleReader {
 			}
 			else if (subnode.getNodeName().equals("effect")) {
 				Effect effect = getEffect(subnode);
-				case1.addEffect(effect);
+				
+				// get the probability of the effect
+				float prob = getEffectProbability(subnode);
+	
+				case1.addEffect(effect, prob);
 			}
 		}
 		return case1;
@@ -207,16 +230,16 @@ public class XMLRuleReader {
 					subnode.getAttributes().getNamedItem("var")!=null && 
 					subnode.getAttributes().getNamedItem("value") != null) {
 
-				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
-				if (rule.hasInputVariable(denotation)) {
-					Variable var = rule.getInputVariable(denotation);
+				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasInputVariable(id)) {
+					StandardVariable var = rule.getInputVariable(id);
 					String value = subnode.getAttributes().getNamedItem("value").getNodeValue();
-					BasicCondition basicCond = new BasicCondition(var,value);
+					BasicCondition<String> basicCond = new BasicCondition<String>(var,value);
 					subconditions.add(basicCond);
 				}
 
 				else {
-					throw new DialException("Variable " + denotation + " not included in rule input");
+					throw new DialException("Variable " + id + " not included in rule input");
 				}						
 			}
 		}
@@ -254,19 +277,16 @@ public class XMLRuleReader {
 	 * @throws DialException
 	 */
 	public Effect getEffect(Node node) throws DialException {
-		
-		// get the probability of the effect
-		float prob = getEffectProbability(node);
-		
-		List<Effect> subeffects = getSubeffects(node, prob);
+			
+		List<Effect> subeffects = getSubeffects(node);
 		if (subeffects.isEmpty()) {
-			return new VoidEffect(prob);
+			return new VoidEffect();
 		}
 		else if (subeffects.size() == 1) {
 			return subeffects.get(0);
 		}
 		else {
-			ComplexEffect complexEffect = new ComplexEffect(prob);
+			ComplexEffect complexEffect = new ComplexEffect();
 			complexEffect.addSubeffects(subeffects);
 			log.debug("number of (sub)effects: " + subeffects.size());
 			return complexEffect;
@@ -274,7 +294,7 @@ public class XMLRuleReader {
 	}
 	
 	
-	public List<Effect> getSubeffects(Node topNode, float prob) throws DialException {
+	public List<Effect> getSubeffects(Node topNode) throws DialException {
 
 		List<Effect> subeffects = new LinkedList<Effect>();
 		
@@ -287,34 +307,34 @@ public class XMLRuleReader {
 					subnode.getAttributes().getNamedItem("var")!=null && 
 					subnode.getAttributes().getNamedItem("value") != null) {
 
-				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
-				if (rule.hasOutputVariable(denotation)) {
-					Variable var = rule.getOutputVariable(denotation);
+				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasOutputVariable(id)) {
+					StandardVariable var = rule.getOutputVariable(id);
 					String value = subnode.getAttributes().getNamedItem("value").getNodeValue();
-					AssignEffect assEffect = new AssignEffect(var,value,prob);
+					AssignEffect<String> assEffect = new AssignEffect<String>(var,value);
 					subeffects.add(assEffect);
 				}
 
 				else {
-					throw new DialException("Variable " + denotation + " not included in rule output");
+					throw new DialException("Variable " + id + " not included in rule output");
 				}
 			}
 			
 			else if (subnode.getNodeName().equals("add") && subnode.hasAttributes() && 
 					subnode.getAttributes().getNamedItem("var") != null) {
-				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
-				if (rule.hasOutputVariable(denotation)) {
-					Variable var = rule.getOutputVariable(denotation);
-					AddEntityEffect assEffect = new AddEntityEffect(var,prob);
+				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasOutputVariable(id)) {
+					StandardVariable var = rule.getOutputVariable(id);
+					AddEntityEffect assEffect = new AddEntityEffect(var);
 					subeffects.add(assEffect);
 				}
 			}
 			else if (subnode.getNodeName().equals("remove") && subnode.hasAttributes() && 
 					subnode.getAttributes().getNamedItem("var") != null) {
-				String denotation = subnode.getAttributes().getNamedItem("var").getNodeValue();
-				if (rule.hasOutputVariable(denotation)) {
-					Variable var = rule.getOutputVariable(denotation);
-					RemoveEntityEffect assEffect = new RemoveEntityEffect(var,prob);
+				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
+				if (rule.hasOutputVariable(id)) {
+					StandardVariable var = rule.getOutputVariable(id);
+					RemoveEntityEffect assEffect = new RemoveEntityEffect(var);
 					subeffects.add(assEffect);
 				}
 			}

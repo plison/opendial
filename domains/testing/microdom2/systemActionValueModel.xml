@@ -18,8 +18,8 @@
 <rule>
 	<input>
 		<var label="floor"/>
-		<var type="intent" denotation="i"/>
-		<var feature="obj" base="i" denotation="o"/>
+		<var type="intent" id="i"/>
+		<var feature="obj" base="i" id="o"/>
 	</input>
 	<output>
 		<var label="a_m"/>
@@ -45,8 +45,8 @@
 <rule>
 	<input>
 		<var label="floor"/>
-		<var type="intent" denotation="i"/>
-		<var feature="obj" base="i" denotation="o"/>
+		<var type="intent" id="i"/>
+		<var feature="obj" base="i" id="o"/>
 	</input>
 	<output>
 		<var label="a_m"/>
@@ -72,7 +72,7 @@
 <rule>
 	<input>
 		<var label="floor"/>
-		<var type="intent" denotation="i"/>
+		<var type="intent" id="i"/>
 	</input>
 	<output>
 		<var label="a_m"/>
