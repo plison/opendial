@@ -66,7 +66,7 @@ public class XMLInitialStateReader {
 	 * Returns the initial state from the XML document, for the given domain (where the
 	 * variable types are already declared)
 	 * 
-	 * @param refDoc the XML document
+	 * @param doc the XML document
 	 * @return the corresponding dialogue state
 	 * @throws DialException if XML document is ill-formatted
 	 */

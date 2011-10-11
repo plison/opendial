@@ -80,7 +80,7 @@ public class SurfaceTrigger implements Trigger<String> {
 	/**
 	 * Returns the content of the surface trigger
 	 *
-	 * @return
+	 * @return trigger content
 	 */
 	public String getContent() {
 		return content;

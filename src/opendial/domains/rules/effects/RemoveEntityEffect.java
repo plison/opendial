@@ -59,7 +59,7 @@ public class RemoveEntityEffect implements Effect {
 	/**
 	 * Returns a string representation of the effect
 	 *
-	 * @return
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() {

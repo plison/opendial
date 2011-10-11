@@ -107,7 +107,7 @@ public class Fluent {
 	/**
 	 * Adds a collection of values to the fluent
 	 * 
-	 * @param values2 the values to add
+	 * @param values the values to add
 	 * @throws DialException if one value or probability is invalid
 	 */
 	public void addValues(Map<String, Float> values) throws DialException {
@@ -130,11 +130,11 @@ public class Fluent {
 	/**
 	 * Adds a list of features to the fluent
 	 * 
-	 * @param features2 the features to add
+	 * @param features the features to add
 	 */
-	public void addFeatures(List<ConditionalFluent> features2) {
-		for (ConditionalFluent feat : features2) {
-			features.put(feat.getLabel(), feat);
+	public void addFeatures(List<ConditionalFluent> features) {
+		for (ConditionalFluent feat : features) {
+			this.features.put(feat.getLabel(), feat);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class Fluent {
 	/**
 	 * Returns the fluent label
 	 * 
-	 * @return
+	 * @return the label
 	 */
 	public String getLabel() {
 		return label;
@@ -300,7 +300,7 @@ public class Fluent {
 	 * 
 	 * @param value the value
 	 * @param prob the probability
-	 * @return
+	 * @return the string representation of the value
 	 */
 	public String valueToString(String value, float prob) {
 
