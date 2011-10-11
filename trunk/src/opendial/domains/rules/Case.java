@@ -19,16 +19,21 @@
 
 package opendial.domains.rules;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.utils.Logger;
 
+
 /**
- * 
+ * Representation of a rule case, containing a condition and
+ * a list of alternative effects if the condition holds.  Each
+ * alternative effect has a distinct probability.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -36,34 +41,77 @@ import opendial.utils.Logger;
  */
 public class Case {
 
+	// logger
 	static Logger log = new Logger("Case", Logger.Level.NORMAL);
-	
 
+	// the condition for the case
 	Condition condition;
-	List<Effect> effects;
 	
+	// the list of alternative effects, together with their probability
+	SortedMap<Effect,Float> effects;
+	
+	/**
+	 * Creates a new case, with a void condition and an empty list of
+	 * effects
+	 */
 	public Case() {
 		condition = new VoidCondition();
-		effects = new LinkedList<Effect>();
+		effects = new TreeMap<Effect,Float>();
 	}
 	
+	/**
+	 * Sets the condition for the case (if a condition is already specified,
+	 * it is erased)
+	 * 
+	 * @param condition the condition
+	 */
 	public void setCondition(Condition condition) {
 		this.condition = condition;
 	}
 	
-	public void addEffect(Effect effect) {
-		effects.add(effect);
+	/**
+	 * Adds an effects and its associated probability to the case
+	 * 
+	 * @param effect the effect
+	 * @param prob the effect's probability
+	 */
+	public void addEffect(Effect effect, float prob) {
+		effects.put(effect, prob);
 	}
 
+	
 	/**
+	 * Returns the condition for the case
 	 * 
-	 * @return
+	 * @return the condition
 	 */
 	public Condition getCondition() {
 		return condition;
 	}
 	
+	
+	/**
+	 * Returns the list of alternative effects for the case
+	 * 
+	 * @return the list of alternative effects
+	 */
 	public List<Effect> getEffects() {
-		return effects;
+		return new ArrayList<Effect>(effects.keySet());
 	}
+	
+	
+	/**
+	 * Returns the probability for a given effect in the case.  
+	 * If the effect is not specified in the case, 0.0 is returned.
+	 * 
+	 * @param effect the effect
+	 * @return the probability
+	 */
+	public float getProb(Effect effect) {
+		if (effects.containsKey(effect)) {
+			return effects.get(effect);
+		}
+		return 0.0f;
+	}
+	
 }

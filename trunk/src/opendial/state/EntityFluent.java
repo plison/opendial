@@ -19,12 +19,17 @@
 
 package opendial.state;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import opendial.arch.DialException;
 import opendial.domains.types.GenericType;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a fluent for an entity.  The main extension is the use
+ * of an "existence probability", for cases of uncertainty about the existence
+ * of the entity itself (independently of uncertainty on its content).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -32,22 +37,46 @@ import opendial.utils.Logger;
  */
 public class EntityFluent extends Fluent {
 
+	// logger
 	static Logger log = new Logger("EntityFluent", Logger.Level.NORMAL);
 	
+	// existence probability
 	float existenceProb = 1.0f;
+	
+	// entity counter for each entity
+	private static Map<String,Integer> entityCounter = new HashMap<String,Integer>();
+
 
 	/**
+	 * Creates a new entity fluent.  The label is forged by adding the type label 
+	 * + a counter on the number of entities 
+	 * 
 	 * @param type
 	 */
 	public EntityFluent(GenericType type) {
 		super(type);
+		label = forgeNewLabel();
 	}
+	
 
+	/**
+	 * Sets the existence probability of the entity
+	 * 
+	 * @param existenceProb existence probability
+	 */
 	public void setExistenceProb(float existenceProb) {
 		this.existenceProb = existenceProb;
 	}
 	
 	
+	// ===================================
+	//  UTILITY FUNCTIONS
+	// ===================================
+
+	
+	/**
+	 * Copies the fluent
+	 */
 	public EntityFluent copy() {
 		EntityFluent copy = new EntityFluent(type);
 		copy.setLabel(label);
@@ -60,11 +89,28 @@ public class EntityFluent extends Fluent {
 				log.warning("Strange problem copying a fluent, aborting copy operation");
 			}
 		}
-		for (Fluent f : features.values()) {
+		for (ConditionalFluent f : features.values()) {
 			copy.addFeature(f.copy());
 		}
 		copy.setExistenceProb(existenceProb);
 		return copy;
+	}
+	
+	/**
+	 * Forge a new label, by concatenating the type label + a counter
+	 * on the number of entities
+	 * 
+	 * @return
+	 */
+	private String forgeNewLabel() {
+		String typeName = type.getName();
+		if (!entityCounter.containsKey(typeName)) {
+			entityCounter.put(typeName, 1);
+		}
+		else {
+			entityCounter.put(typeName, entityCounter.get(typeName) + 1);
+		}
+		return typeName + entityCounter.get(typeName);
 	}
 	
 }

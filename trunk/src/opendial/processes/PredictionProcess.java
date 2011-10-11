@@ -28,7 +28,15 @@ import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
 /**
+ * Prediction process, responsible for updating the dialogue state after
+ * the execution of an action, + (POSSIBLY) predicting the next user actions 
+ * or observations to come. 
  * 
+ * More precisely, the process works as such: <ul>
+ * <li> the process waits for a new system action to be posted on the queue;
+ * <li> when such action is available, the process performs inference on the system
+ * transition to determine the updated dialogue state
+ * <li> the procedure is repeated till no other actions needs to be processed</ul>
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -36,13 +44,25 @@ import opendial.utils.Logger;
  */
 public class PredictionProcess extends Thread {
 
+	// logger
 	static Logger log = new Logger("PredictionProcess", Logger.Level.NORMAL);
 	
+	// dialogue state
 	DialogueState state;
+	
+	// dialogue domain
 	Domain domain;
 	
+	// queue of system actions to process
 	Queue<Action> actionsToProcess ;
 	
+	
+	/**
+	 * Creates a new prediction process, with the dialogue state and domain
+	 * 
+	 * @param state the dialogue state
+	 * @param domain the dialogue domain
+	 */
 	public PredictionProcess(DialogueState state, Domain domain) {
 		this.state = state;
 		this.domain = domain;
@@ -50,14 +70,24 @@ public class PredictionProcess extends Thread {
 	}
 
 	/**
+	 * Adds a system action to the queue of actions to process (in order to
+	 * perform the post-action dialogue update)
 	 * 
-	 * @param action
+	 * @param action the system action
 	 */
-	public synchronized void performTransition(Action action) {
+	public synchronized void addSystemAction(Action action) {
 		actionsToProcess.add(action);
 		notify();
 	}
 	
+	
+	/**
+	 * Runs the transition/prediction loop, by polling an action from the
+	 * queue and updating the dialogue state with it.  The procedure is repeated
+	 * till the queue is empty.  
+	 * 
+	 * <p>When this happens, the process goes to sleep.
+	 */
 	@Override
 	public void run () {
 		while (true) {		
@@ -66,7 +96,7 @@ public class PredictionProcess extends Thread {
 				
 				while (action != null) {
 					log.info("Trying to perform action transition...");
-					updateState();
+					updateState(action);
 					action = actionsToProcess.poll();
 				}
 
@@ -78,7 +108,13 @@ public class PredictionProcess extends Thread {
 	}
 	
 	
-	public void updateState() {
+	/**
+	 * Update the dialogue state (post-action update), given the system
+	 * action which is being executed
+	 * 
+	 * @param action the action
+	 */
+	public void updateState(Action action) {
 		state.dummyChange();
 		log.info("Action transition performed...");
 	}

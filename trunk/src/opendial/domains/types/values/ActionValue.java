@@ -19,36 +19,53 @@
 
 package opendial.domains.types.values;
 
-import java.util.List;
-
 import opendial.domains.actions.ActionTemplate;
 
 /**
- * 
+ * Representation of an action value for a variable type.  The action
+ * value is defined as a value label (which must be a string) associated 
+ * with an action template (any class implementing ActionTemplate).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class ActionValue extends BasicValue {
+public class ActionValue<T> extends BasicValue<String> {
 
 //	static Logger log = new Logger("ActionValue", Logger.Level.NORMAL);
 	
-	ActionTemplate template;
+	// the action template
+	ActionTemplate<T> template;
 	
-	public ActionValue(String val, ActionTemplate template) {
-		super(val);
+	/**
+	 * Creates a new action value given a label and an action template
+	 * 
+	 * @param label the label for the action value
+	 * @param template the action template
+	 */
+	public ActionValue(String label, ActionTemplate<T> template) {
+		super(label);
 		this.template = template;
 	}
 	
-	
-	public ActionTemplate getTemplate() {
+	/**
+	 * Returns the template associated with the action value
+	 * 
+	 * @return
+	 */
+	public ActionTemplate<T> getTemplate() {
 		return template;
 	}
 	
-	public List<String> getSlots() {
-		return template.getSlots();
-	}
-
 	
+	/**
+	 * Returns a string representation of the action value
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		String s = super.toString();
+		s += ": " + template.toString();
+		return s;
+	}
 }

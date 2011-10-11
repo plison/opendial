@@ -28,11 +28,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import opendial.domains.types.values.BasicValue;
 import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
 
 /**
+ * Representation of a generic variable type.  A variable type is constituted
+ * by a name, a (possibly empty) set of values, and a (possibly empty) set of features.
  * 
+ * <p>In addition, a type can denote either a fixed variable (representing a fluent
+ * which remains present and fixed in the dialogue state), or an entity (which can
+ * possess 0...n instances in the dialogue state).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -40,65 +46,75 @@ import opendial.utils.Logger;
  */
 public class GenericType {
 
+	// logger
 	static Logger log = new Logger("GenericType", Logger.Level.DEBUG);
 
+	// the type name
 	String name;
-	
+
+	// whether the type is fixed or variable
 	boolean isFixed = false;
-	
-	
+
+
 	// list of values for the entity
 	Set<Value> values;
-	
-	// list of features for the entity
+
+	// list of full features for the entity
 	Map<String,FeatureType> features;
-	
-	
+
+	// ===================================
+	//  TYPE CONSTRUCTION METHODS
+	// ===================================
+
+
 	/**
-	 * @param name
+	 * Creates a new generic type, with the given name
+	 * 
+	 * @param name the type name
 	 */
 	public GenericType(String name) {
 		this.name = name;
 		values = new HashSet<Value>();
-		
+
 		features = new HashMap<String,FeatureType>();
 	}
 
 
-	public String getName(){
-		return name;
-	}
-	
-	
 	/**
-	 * Add a new value to the entity
+	 * Adds a new value to the type
 	 * 
 	 * @param value the new value to add
 	 */
 	public void addValue(Value value) {
 		values.add(value);
 	}
-	
+
 
 	/**
-	 * Add a list of values to the entity
+	 * Adds a list of values to the type
 	 * (if the value already exists, it is overwritten)
 	 * 
-	 * @param actionValues the list of values to add
+	 * @param values the list of values to add
 	 */
-	public void addValues(Collection<? extends Value> values2) {
-		values.addAll(values2);
+	public void addValues(Collection<? extends Value> values) {
+		this.values.addAll(values);
 	}
-	
-	
-	
+
+
+
+	/**
+	 * Adds a new feature to the type (if the feature with identical 
+	 * name already exists, it is overwritten)
+	 * 
+	 * @param feature the feature to add
+	 */
 	public void addFeature(FeatureType feature) {
 		features.put(feature.getName(), feature);
 	}
-	
-	
+
+
 	/**
-	 * Add a list of features to the entity (if a feature 
+	 * Add a list of features to the type (if a feature 
 	 * with identical name already exists, it is overwritten)
 	 * 
 	 * @param features the list of features to add
@@ -112,53 +128,97 @@ public class GenericType {
 			this.features.put(f.getName(), f);
 		}
 	}
-	
-	
-	
+
+	/**
+	 * Sets the type as fixed or not
+	 * 
+	 * @param isFixed whether the type is fixed or not
+	 */
+	public void setAsFixed(boolean isFixed) {
+		this.isFixed = isFixed;
+	}
+
+
+
 	// ===================================
 	//  GETTERS
 	// ===================================
 
-	
+
 	/**
-	 * TODO: make this more efficient with an equals!
+	 * Returns the type name
 	 * 
-	 * Returns true if the entity contains the given value,
+	 * @return the type name
+	 */
+	public String getName(){
+		return name;
+	}
+
+
+	/** 
+	 * Returns true if the type contains the given value,
 	 * false otherwise
 
 	 * @return true if value present, false otherwise
 	 */
-	public boolean acceptsValue(String value) {
+	public boolean containsValue(Object value) {
 		for (Value val : values) {
-			if (val.acceptsValue(value)){
+			if (val.containsValue(value)){
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
+
+
 	/**
-	 * Returns the list of values contained in the entity
+	 * Returns the value denoted by the label, if it exists in the type.
+	 * Else, returns null.
 	 * 
-	 * @return the list of values
+	 * @param valueLabel the label for the value
+	 * @return
 	 */
-	public List<Value> getValues() {
-		return new ArrayList<Value>(values);
-	}
-	
-	
-	public Value getValue(String valueLabel) {
+	public BasicValue<?> getValue(Object valueLabel) {
 		for (Value val: values) {
-			if (val.acceptsValue(valueLabel)) {
-				return val;
+			if (val instanceof BasicValue && val.containsValue(valueLabel)) {
+				return (BasicValue<?>)val;
 			}
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
-	 * Returns true if the entity contains the given feature,
+	 * Returns the list of values contained in the type
+	 * 
+	 * @return the list of values
+	 */
+	public List<Value> getAllValues() {
+		return new ArrayList<Value>(values);
+	}
+
+
+	/**
+	 * Returns the list of basic values contained in the type
+	 * (e.g. excluding all range values)
+	 * 
+	 * @return the list of values
+	 */
+	public List<BasicValue<?>> getBasicValues() {
+		List<BasicValue<?>> basicValues = new LinkedList<BasicValue<?>>();
+		for (Value v: values) {
+			if (v instanceof BasicValue) {
+				basicValues.add((BasicValue<?>)v);
+			}
+		}
+		return basicValues;
+	}
+
+
+
+	/**
+	 * Returns true if the type contains the given feature,
 	 * false otherwise
 	 * 
 	 * @param featureName the feature name
@@ -167,12 +227,13 @@ public class GenericType {
 	public boolean hasFeature(String featureName) {
 		return features.containsKey(featureName);
 	}
-	
+
 	/**
-	 * Returns true if the entity contains the given feature,
-	 * false otherwise
+	 * Returns true if the type contains the a (full or partial) feature
+	 * of the given name, for the specific base value
 	 * 
 	 * @param featureName the feature name
+	 * @param baseValue the type value
 	 * @return true if feature present, false otherwise
 	 */
 	public boolean hasFeatureForBaseValue(String featureName, String baseValue) {
@@ -182,72 +243,72 @@ public class GenericType {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Gets the feature associated with the name, if any
-	 * is present. Else, return null.  
+	 * Gets the feature associated with the name, if any is present. 
+	 * Else, return null.  
 	 * 
 	 * @param featureName the feature name
 	 * @return the entity if the feature is present, or null otherwise.
 	 */
 	public FeatureType getFeature(String featureName) {
-		
+
 		if (features.containsKey(featureName)) {
 			return features.get(featureName);
 		}
 		return null;
 	}
 
-	 public List<FeatureType> getPartialFeatures(String baseValue) {
-		 List<FeatureType> partialFeatures = new LinkedList<FeatureType>();
-		 for (FeatureType feat: features.values()) {
-			 if (feat.isDefinedForBaseValue(baseValue)) {
-				 partialFeatures.add(feat);
-			 }
-		 }
-		 return partialFeatures;
-	 }
-	 
-		/**
-		 * 
-		 * @return
-		 */
-		public List<FeatureType> getFullFeatures() {
-			 List<FeatureType> fullFeatures = new LinkedList<FeatureType>();
-			 for (FeatureType feat: features.values()) {
-				 if (!feat.isPartial()) {
-					 fullFeatures.add(feat);
-				 }
-			 }
-			 return fullFeatures;
-		}
 
 	/**
+	 * Returns the list of partial features defined for the base value
 	 * 
-	 * @return
+	 * @param baseValue the base value
+	 * @return the partial features defined
+	 */ 
+	public List<FeatureType> getPartialFeatures(String baseValue) {
+		List<FeatureType> partialFeatures = new LinkedList<FeatureType>();
+		for (FeatureType feat: features.values()) {
+			if (feat.isDefinedForBaseValue(baseValue)) {
+				partialFeatures.add(feat);
+			}
+		}
+		return partialFeatures;
+	}
+
+	
+	/**
+	 * Returns the list of full features for the type
+	 * 
+	 * @return the list of full features
+	 */
+	public List<FeatureType> getFullFeatures() {
+		List<FeatureType> fullFeatures = new LinkedList<FeatureType>();
+		for (FeatureType feat: features.values()) {
+			if (!feat.isPartial()) {
+				fullFeatures.add(feat);
+			}
+		}
+		return fullFeatures;
+	}
+
+	
+	/**
+	 * Returns the list of (full or partial) features
+	 * 
+	 * @return the list of all features
 	 */
 	public List<FeatureType> getFeatures() {
 		return new ArrayList<FeatureType>(features.values());
 	}
 
 
-	public void setAsFixed(boolean isFixed) {
-		this.isFixed = isFixed;
-	}
-	
 	/**
+	 * Returns true if the type is fixed, false otherwise
 	 * 
-	 * @return
+	 * @return true if type is fixed, false otherwise
 	 */
-	public boolean isEntity() {
-		return !isFixed;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isFixedVariable() {
+	public boolean isFixed() {
 		return isFixed;
 	}
 }

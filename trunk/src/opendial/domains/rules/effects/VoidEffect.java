@@ -20,20 +20,39 @@
 package opendial.domains.rules.effects;
 
 /**
- * 
+ * Representation of a void effect (which does nothing)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class VoidEffect extends Effect {
+public class VoidEffect implements Effect {
 
+	
 	/**
-	 * @param probability
+	 * Returns a string representation of the effect
+	 *
+	 * @return the string representation
 	 */
-	public VoidEffect(float prob) {
-		super(prob);
+	@Override
+	public String toString() {
+		return "Void";
+	}
+	
+	
+	/**
+	 * Compare the effect to the given one
+	 * 
+	 * @param e the effect to compare with the current object
+	 * @return 0 if equals, -1 otherwise
+	 */
+	@Override
+	public int compareTo(Effect e) {
+		if (e instanceof VoidEffect) {
+			return 0;
+		}
+		return -1;
 	}
 
-	// static Logger log = new Logger("VoidEffect", Logger.Level.NORMAL);
+
 }

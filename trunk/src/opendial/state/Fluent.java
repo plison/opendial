@@ -32,8 +32,14 @@ import opendial.arch.DialException;
 import opendial.domains.types.GenericType;
 import opendial.domains.types.FeatureType;
 import opendial.utils.Logger;
+import opendial.utils.StringUtils;
 
 /**
+ * Representation of a <i>fluent</i>, i.e. a probability distribution over a structured
+ * state variable, which can change over time.
+ * 
+ * <p>A fluent is defined by a label, a type, a probability distribution over possible
+ * values, and a (possibly empty) set of features attached to it.  
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -41,42 +47,68 @@ import opendial.utils.Logger;
  */
 public class Fluent {
 
+	// logger
 	static Logger log = new Logger("Fluent", Logger.Level.DEBUG);
-	
+
+	// type
 	GenericType type;
-	
+
+	// label
 	String label;
-	private static int entityCounter = 1;
-	
+
+	// the distribution for the fluent
 	SortedMap<String,Float> values;
-	
-	Map<String,Fluent> features;
-	
-	
+
+	// the features attached to the fluent
+	Map<String,ConditionalFluent> features;
+
+
+	/**
+	 * Creates a new empty fluent, given the declared type
+	 * 
+	 * @param type the declared type associated to the fluent
+	 */
 	public Fluent(GenericType type) {
 		this.type = type;
 		values = new TreeMap<String,Float>();
-		features = new HashMap<String,Fluent>();
-		label = type.getName() + entityCounter;
-		entityCounter++;
+		features = new HashMap<String,ConditionalFluent>();
+		label = type.getName();
+		log.debug("new fluent created: " + label);
 	}
-	
+
+
+
+	// ===================================
+	//  SETTERS
+	// ===================================
+
+
+	/**
+	 * Adds a value to the fluent
+	 * 
+	 * @param value the value to add
+	 * @param prob its probability
+	 * @throws DialException if value or probability is invalid
+	 */
 	public void addValue(String value, float prob) throws DialException {
 		if (prob < 0.0 || prob > 1.0) {
 			throw new DialException(prob + " is not a valid probability");
 		}
-		if (type.acceptsValue(value)) {
+		if (type.containsValue(value)) {
 			values.put(value, prob);
 		}
 		else {
-			throw new DialException("value " + value + " not included in the type declaration for " + type.getName());
+			throw new DialException("value " + value + 
+					" not included in the type declaration for " + type.getName());
 		}
 	}
 
+
 	/**
+	 * Adds a collection of values to the fluent
 	 * 
-	 * @param values2
-	 * @throws DialException 
+	 * @param values2 the values to add
+	 * @throws DialException if one value or probability is invalid
 	 */
 	public void addValues(Map<String, Float> values) throws DialException {
 		for (String val : values.keySet()) {
@@ -84,211 +116,279 @@ public class Fluent {
 		}
 	}
 
+
 	/**
+	 * Adds a feature to the fluent
 	 * 
-	 * @param features2
+	 * @param feat the feature to add
 	 */
-	public void addFeatures(List<Fluent> features2) {
-		for (Fluent feat : features2) {
-			features.put(feat.getLabel(), feat);
-		}
-	}
-	
-	
-	public void addFeature(Fluent feat) {
+	public void addFeature(ConditionalFluent feat) {
 		features.put(feat.getLabel(), feat);
 	}
 
+
 	/**
+	 * Adds a list of features to the fluent
 	 * 
-	 * @return
+	 * @param features2 the features to add
+	 */
+	public void addFeatures(List<ConditionalFluent> features2) {
+		for (ConditionalFluent feat : features2) {
+			features.put(feat.getLabel(), feat);
+		}
+	}
+
+	/**
+	 * Sets the label of the fluent
+	 * 
+	 * @param label the label
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+
+
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+
+	/**
+	 * Returns the fluent type
+	 * 
+	 * @return the type
 	 */
 	public GenericType getType() {
 		return type;
 	}
-	
+
+
+	/**
+	 * Returns the fluent label
+	 * 
+	 * @return
+	 */
 	public String getLabel() {
 		return label;
 	}
 
+
 	/**
+	 * Returns the fluent values
 	 * 
-	 * @return
+	 * @return the values
 	 */
 	public SortedMap<String,Float> getValues() {
 		return values;
 	}
 
 	/**
+	 * Returns the fluent features
 	 * 
-	 * @return
+	 * @return the features
 	 */
-	public List<Fluent> getFeatures() {
-		return new ArrayList<Fluent>(features.values());
+	public List<ConditionalFluent> getFeatures() {
+		return new ArrayList<ConditionalFluent>(features.values());
 	}
 
-	
-	public void setLabel(String label) {
-		this.label = label;
+
+
+	/**
+	 * Returns the features defined for a particular base value
+	 * 
+	 * @param baseValue the base value
+	 * @return all the features (full or partial) defined for the value
+	 */
+	public List<ConditionalFluent> getFeaturesForBaseValue(String baseValue) {
+
+		List<ConditionalFluent> feats = new LinkedList<ConditionalFluent>();
+
+		for (String featKey: features.keySet()) {
+			ConditionalFluent fl = features.get(featKey);
+			if (fl.getType() instanceof FeatureType && 
+					((FeatureType)fl.getType()).isDefinedForBaseValue(baseValue)) {
+				feats.add(fl);
+			}
+		}
+		return feats;
 	}
+
+
+
+	/**
+	 * Returns the full features (which are not partially defined)
+	 * 
+	 * @return the full features
+	 */
+	public List<ConditionalFluent> getFullFeatures() {
+
+		List<ConditionalFluent> feats = new LinkedList<ConditionalFluent>();
+
+		for (String featKey: features.keySet()) {
+			ConditionalFluent fl = features.get(featKey);
+			if (fl.getType() instanceof FeatureType && 
+					!((FeatureType)fl.getType()).isPartial()) {
+				feats.add(fl);
+			}
+		}
+		return feats;
+	}
+
+
+	// ===================================
+	//  PRINT OPERATIONS
+	// ===================================
+
+
 	
 	/**
-	 * 
-	 * @return
+	 * Returns a string representation of the fluent
+	 *
+	 * @return the string representation
 	 */
-	public Fluent copy() {
-		
-		Fluent copy = new Fluent(type);
-		copy.setLabel(label);
-		
-		for (String v : values.keySet()) {
-			try {
-			copy.addValue(v, values.get(v));
-			}
-			catch (DialException e) {
-				log.warning("Strange problem copying a fluent, aborting copy operation");
-			}
-		}
-		for (Fluent f : features.values()) {
-			copy.addFeature(f.copy());
-		}
-		return copy;
-	}
-	
-	
 	@Override
 	public String toString() {
 		return toString("");
 	}
-	
-	
-	private String toString(String indent) {
+
+
+	/**
+	 * Returns a string representation of the fluent,
+	 * with an indent
+	 * 
+	 * @param indent the indent
+	 * @return the string representation
+	 */
+	protected String toString(String indent) {
+		
+		// listing the label and type name
 		String str = "";
-		if (type.isEntity()) {
+		if (!type.isFixed() && !(type instanceof FeatureType)) {
 			str += label + " (" + type.getName() + ")" ;
 		}
 		else {
 			str += type.getName();
 		}
-		str += " = {";
 		
-		indent += makeIndent(str.length());
-				
-		List<Fluent> fullFeats = getFullFeatures();
-
+		// looping on the values
+		str += " = {";
 		Iterator<String> valuesIt = values.keySet().iterator();
 		while (valuesIt.hasNext()) {
+			
 			String v = valuesIt.next();
-			str += v ;
-			
-			List<Fluent> partialFeats = getPartialFeatures(v);
-			List<Fluent> allFeats = mergeLists(fullFeats, partialFeats);
-			
-			if (!allFeats.isEmpty()) {
-				Iterator<Fluent> it = allFeats.iterator();
-				str += "(";
-				while (it.hasNext()) {
-					Fluent fl = it.next();
-					str += fl.getType().getName();
-					if (it.hasNext()) {
-						str += ",";
-					}
-				}
-				str += ")";				
-			}
-			str += " [" + values.get(v) + "]";
-			
-			if (!partialFeats.isEmpty()) {
-				str += " with ";
-				String addIndent = makeIndent(str.length());
-				Iterator<Fluent> it = partialFeats.iterator();
-				while (it.hasNext()) {
-					Fluent fl = it.next();
-					str += fl.toString(addIndent);
-					if (it.hasNext()) {
-						str += " and ";
-					}
-				}
-			}
+			str += valueToString(v, values.get(v));
+
 			if (valuesIt.hasNext()) {
-				str += ",\n" + indent;
+				str += ",\n" + indent + StringUtils.makeIndent(str.length());
 			}
+		}	
+		if (values.keySet().isEmpty()) {	// if no values, add a dummy one
+			str += valueToString("x", 1.0f);
 		}
-		
 		str += "}";
-		if (!fullFeats.isEmpty()) {
-			str += " with ";
-			String addIndent = makeIndent(str.length());
-			Iterator<Fluent> it = fullFeats.iterator();
-			while (it.hasNext()) {
-				Fluent fl = it.next();
-				str += fl.toString(addIndent);
-				if (it.hasNext()) {
-					str += " and ";
-				}
-			}
-		}
+
+		// listing the full features of the fluent
+		str += fullFeatureToString();
+		
 		return str ;
 	}
 
+
 	/**
+	 * Returns a string representation of the given fluent value + prob
 	 * 
-	 * @param length
+	 * @param value the value
+	 * @param prob the probability
 	 * @return
 	 */
-	private String makeIndent(int length) {
-		String str = "";
-		for (int i = 0 ; i < length ; i++) {
-			str += " ";
+	public String valueToString(String value, float prob) {
+
+		// show the value
+		String str = value ;
+
+		// add the arguments of the value (features)
+		str += "(";
+		for (ConditionalFluent fl : getFeaturesForBaseValue(value)) {
+			str += fl.getType().getName();
+			str += ",";	
 		}
+		str += ")";				
+
+		// cleanup 
+		if (str.endsWith("()")) { str = str.replace("()", ""); }
+		else if (str.endsWith(",)")) { str = str.replace(",)", ")"); };
+
+		// add the probability
+		str += " [" + prob + "]";
+
+		// add the definition of partial features
+		str += " with ";
+		for (ConditionalFluent fl : getFeaturesForBaseValue(value)) {
+			if (((FeatureType)fl.getType()).isPartial()) {
+				str += fl.toString(StringUtils.makeIndent(str.length())) + " and ";					
+			}
+		}
+
+		// cleanup
+		if (str.endsWith("with ")) { str = str.replace(" with ", ""); }
+		else if (str.endsWith(" and ")) { str = str.substring(0, str.length() - 5); }
+
 		return str;
 	}
 
-	/**
-	 * 
-	 * @param fullFeats
-	 * @param partialFeats
-	 * @return
-	 */
-	private List<Fluent> mergeLists(List<Fluent> list1, List<Fluent> list2) {
-		List<Fluent> mergedList = new LinkedList<Fluent>();
-		mergedList.addAll(list1);
-		mergedList.addAll(list2);
-		return mergedList;
-	}
 
 	/**
+	 * Returns a string representation of the full features of the fluent
 	 * 
-	 * @return
+	 * @return the string representation
 	 */
-	private List<Fluent> getFullFeatures() {
-		List<Fluent> fullFeats = new LinkedList<Fluent>();
+	public String fullFeatureToString() {
 		
-		for (Fluent f : features.values()) {
-			if (!(f instanceof ConditionalFluent)) {
-				fullFeats.add(f);
-			}
+		// listing the full features
+		String str = " with ";
+		for (ConditionalFluent fl: getFullFeatures()) {
+			str += fl.toString(StringUtils.makeIndent(str.length()));
+			str += " and ";
 		}
-		return fullFeats;
+		// cleanup
+		if (str.endsWith("with ")) { str = str.replace(" with ", ""); }
+		else if (str.endsWith(" and ")) { str = str.substring(0, str.length() - 5); }
+
+		return str;
 	}
+	
+	
+	
+	// ===================================
+	//  OTHER UTILITY FUNCTIONS
+	// ===================================
+
+	
 
 	/**
-	 * 
-	 * @param v
-	 * @return
+	 * Copy the fluent
+	 * @return a copy of the fluent
 	 */
-	public List<Fluent> getPartialFeatures(String baseValue) {
-		
-		List<Fluent> partialFeats = new LinkedList<Fluent>();
-		
-		for (Fluent f : features.values()) {
-			if (f instanceof ConditionalFluent) {
-				FeatureType type = (FeatureType) ((ConditionalFluent)f).getType();
-				if (type.isDefinedForBaseValue(baseValue)) {
-					partialFeats.add(f);
-				}
+	public Fluent copy() {
+
+		Fluent copy = new Fluent(type);
+		copy.setLabel(label);
+
+		for (String v : values.keySet()) {
+			try {
+				copy.addValue(v, values.get(v));
+			}
+			catch (DialException e) {
+				log.warning("Strange problem copying a fluent, aborting copy operation");
 			}
 		}
-		return partialFeats;
+		for (ConditionalFluent f : features.values()) {
+			copy.addFeature(f.copy());
+		}
+		return copy;
 	}
+
+
+	
 }

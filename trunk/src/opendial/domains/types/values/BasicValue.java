@@ -22,30 +22,56 @@ package opendial.domains.types.values;
 
 
 /**
- * 
+ * Representation of a basic value for a variable type.  The class of the
+ * value is parametrised with T.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class BasicValue extends Value {
-
-	// static Logger log = new Logger("LabelValue", Logger.Level.NORMAL);
+public class BasicValue<T> implements Value {
 	
-	String value;
+	// the value
+	T value;
 		
-	
-	public BasicValue(String label) {
-		this.value = label;
+	/**
+	 * Creates a new basic value
+	 * 
+	 * @param value the value
+	 */
+	public BasicValue(T value) {
+		this.value = value;
 	}
 	
-	public String getValue() {
+	/**
+	 * Returns the value
+	 * 
+	 * @return the value
+	 */
+	public T getValue() {
 		return value;
 	}
 
 	
+	/**
+	 * Returns true if the object is equivalent to the value,
+	 * and false otherwise
+	 *
+	 * @param val the object to compare
+	 * @return true if the value is equivalent, false otherwise
+	 */
 	@Override
-	public boolean acceptsValue(Object val) {
+	public boolean containsValue(Object val) {
 		return (val.equals(value));
+	}
+	
+	
+	/**
+	 * Returns a string representation of the value
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		return value.toString();
 	}
 }

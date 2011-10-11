@@ -4,7 +4,7 @@
 <rule>
 	<input>
 		<var label="a_m"/>
-		<var denotation="i" type="intent"/>
+		<var id="i" type="intent"/>
 	</input>
 	<output>
 		<var pointer="i"/>

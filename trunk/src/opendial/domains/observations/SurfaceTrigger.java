@@ -25,47 +25,93 @@ import opendial.utils.Logger;
 import opendial.utils.StringUtils;
 
 /**
+ * Surface trigger for the observation of an user utterance.  The trigger
+ * defines a particular substring which must be matched for the trigger to 
+ * be activated.  
  * 
+ * Two alternative matching strategies are possible: exact string, or an 
+ * included substring.  Additionally, a number of slots can be defined, which
+ * function as a wildcard accepting any substring.  The content of the slot
+ * will then be encoded as a feature of the observation variable.  
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class SurfaceTrigger extends Trigger {
+public class SurfaceTrigger implements Trigger<String> {
 
+	// logger
 	static Logger log = new Logger("SurfaceTrigger", Logger.Level.NORMAL);
 	
+	// possible matches: exact or substring
 	public static enum MatchType {SUBSTRING, EXACT};
 
+	// match type for the trigger
 	MatchType match = MatchType.SUBSTRING;
 	
+	// content of the trigger
 	String content;
 	
+	// (possibly empty) list of slots
 	List<String> slots;
 	
 	
+	/**
+	 * Creates a new surface trigger.  Default match type is "substring",
+	 * and the slots are defined in the content by the notation ${variable}.
+	 * 
+	 * @param content the content of the surface trigger
+	 */
 	public SurfaceTrigger(String content) {
 		this.content = content;
 		slots = StringUtils.extractSlots(content);
 	}
 	
+	/**
+	 * Sets the match type of the surface trigger
+	 * 
+	 * @param match
+	 */
 	public void setMatchType(MatchType match) {
 		this.match = match;
 	}
 	
+	
+	/**
+	 * Returns the content of the surface trigger
+	 *
+	 * @return
+	 */
 	public String getContent() {
 		return content;
 	}
 	
+	
+	/**
+	 * Returns the match type of the trigger
+	 * 
+	 * @return match type of trigger
+	 */
 	public MatchType getMatchType() {
 		return match;
 	}
 
 	/**
+	 * Returns the (possibly empty) list of slots for the trigger
 	 * 
-	 * @return
+	 * @return the list of slots
 	 */
 	public List<String> getSlots() {
 		return slots;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the trigger
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		return content;
 	}
 }

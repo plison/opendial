@@ -19,32 +19,74 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.domains.rules.variables.Variable;
+import opendial.domains.rules.variables.StandardVariable;
 
 /**
- * 
+ * Representation of a rule effect which brings into existence a new
+ * entity in the dialogue state.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class AddEntityEffect extends Effect {
+public class AddEntityEffect implements Effect {
 
 	// static Logger log = new Logger("AddEntityEffect", Logger.Level.NORMAL);
 
-	Variable var;
+	
+	// the variable defining the new entity to create
+	StandardVariable var;
 	
 	/**
-	 * @param probability
+	 * Add a new "add entity" effect, anchored in the given variable
+	 * 
+	 * @param var the variable anchor
 	 */
-	public AddEntityEffect(Variable var, float probability) {
-		super(probability);
+	public AddEntityEffect(StandardVariable var) {
 		this.var = var;
 	}
 	
 	
-	public Variable getVariable() {
+	/**
+	 * Returns the variable anchor
+	 * 
+	 * @return the variable
+	 */
+	public StandardVariable getVariable() {
 		return var;
 	}
+	
 
+
+	/**
+	 * Returns a string representation of the effect
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		return"AddEntity: " + var;
+	}
+
+	
+	/**
+	 * Compare the effect to the given one
+	 * 
+	 * @param e the effect to compare with the current object
+	 * @return 0 if equals, -1 otherwise
+	 */
+	@Override
+	public int compareTo(Effect e) {
+		if (e instanceof AddEntityEffect) {
+			if (((AddEntityEffect)e).getVariable().equals(var)) {
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		return -1;
+	}
+	
+	
 }

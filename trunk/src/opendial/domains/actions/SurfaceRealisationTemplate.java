@@ -25,38 +25,63 @@ import opendial.utils.Logger;
 import opendial.utils.StringUtils;
 
 /**
- * 
+ * A surface realisation template, containing a main string content
+ * (the utterance to synthesise), plus an optional number of slots
+ * to fill.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class SurfaceRealisationTemplate extends ActionTemplate {
+public class SurfaceRealisationTemplate implements ActionTemplate<String> {
 
-	static Logger log = new Logger("SurfaceRealisationTemplate",
-			Logger.Level.NORMAL);
+	// the logger
+	static Logger log = new Logger("SurfaceRealisationTemplate", Logger.Level.NORMAL);
 	
-
+	// the content of the template
 	String content;
 	
+	// the slots of the template (might be empty)
 	List<String> slots;
 	
 	
+	/**
+	 * Creates a new surface realisation template, with the given content.
+	 * The positions for the slots must be denoted by ${variable}.
+	 * 
+	 * @param content the content of the template
+	 */
 	public SurfaceRealisationTemplate(String content) {
 		this.content = content;		
 		slots = StringUtils.extractSlots(content);
 	}
 	
 
+	/**
+	 * Returns the content of the template
+	 *
+	 * @return the content of the template
+	 */
 	public String getContent() {
 		return content;
 	}
 
 	/**
+	 * Returns the (possible empty) collection of slots for the template
 	 * 
-	 * @return
+	 * @return the list of slots (ordering does not matter)
 	 */
 	public List<String> getSlots() {
 		return slots;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the template
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		return content;
 	}
 }

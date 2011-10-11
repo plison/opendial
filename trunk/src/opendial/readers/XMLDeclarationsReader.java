@@ -34,13 +34,14 @@ import opendial.domains.types.values.ObservationValue;
 import opendial.domains.types.values.RangeValue;
 import opendial.domains.types.values.Value;
 import opendial.utils.Logger;
+import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * 
+ * XML reader for declarations types.  
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -50,41 +51,53 @@ public class XMLDeclarationsReader {
 
 	static Logger log = new Logger("XMLDeclarationsReader", Logger.Level.DEBUG);
 	
+	
+	// ===================================
+	//  GENERIC TYPES
+	// ===================================
+
 
 	/**
-	 * Extracts the entity type declarations from the XML document
+	 * Extracts the type declarations from the XML document
 	 * 
 	 * @param doc the XML document
-	 * @return the list of entity types which have been declared
+	 * @return the list of types which have been declared
 	 * @throws DialException if the document is ill-formatted
 	 */
 	public List<GenericType> getTypes(Document doc) throws DialException {
 
 		List<GenericType> allTypes = new LinkedList<GenericType>();
 
-		Node mainNode = XMLDomainReader.getMainNode(doc,"declarations");
+		// getting the main node
+		Node mainNode = XMLUtils.getMainNode(doc,"declarations");
 		NodeList midList = mainNode.getChildNodes();
 
 		for (int i = 0 ; i < midList.getLength() ; i++) {
 			Node node = midList.item(i);
 
-
 			if (node.hasAttributes() && node.getAttributes().getNamedItem("name") != null) {
 
+				// entities
 				if (node.getNodeName().equals("entity")) {
 					GenericType type = getGenericType(node);
 					allTypes.add(type);
 				}
+				
+				// fixed variables
 				else if (node.getNodeName().equals("variable")) {
 					GenericType type = getGenericType(node);
 					type.setAsFixed(true);
 					allTypes.add(type);
 				}
+				
+				// observations
 				else if (node.getNodeName().equals("trigger")) {
 					GenericType type = getObservation(node);
 					type.setAsFixed(true);
 					allTypes.add(type);
 				}
+				
+				// actions
 				else if (node.getNodeName().equals("actiontemplate")) {
 					GenericType type = getAction(node);
 					allTypes.add(type);
@@ -93,6 +106,8 @@ public class XMLDeclarationsReader {
 					throw new DialException("declaration type not recognised");
 				}
 			}
+			
+			// if the type does not specify a name
 			else if (!node.getNodeName().equals("#text") && (!node.getNodeName().equals("#comment"))){
 				log.debug("node name: " + node.getNodeName());
 				throw new DialException("name attribute not provided");
@@ -102,24 +117,35 @@ public class XMLDeclarationsReader {
 		return allTypes;
 	}
 
+	
+	
 	/**
+	 * Returns the generic type declared in the XML node
 	 * 
-	 * @param node
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @return the corresponding generic type
+	 * @throws DialException if the node is ill-formatted
 	 */
 	private GenericType getGenericType(Node node) throws DialException {
 		String name = node.getAttributes().getNamedItem("name").getNodeValue();
 
+		// create the type
 		GenericType type = new GenericType(name);
-		List<Value> values = extractTypeValues (node);
-		type.addValues(values);
-		List<FeatureType> features = extractFeatures(node);
-		type.addFeatures(features);
+		
+		// adding the type values
+		type.addValues(extractTypeValues (node));
+		
+		// adding the type features
+		type.addFeatures(extractFeatures(node));
 		return type;
 	}
 	
 
+	// ===================================
+	// TYPES VALUES
+	// ===================================
+
+	
 	/**
 	 * Extract values from a XML node
 	 * 
@@ -136,9 +162,13 @@ public class XMLDeclarationsReader {
 		for (int i = 0 ; i < contentList.getLength() ; i++) {
 
 			Node valueNode = contentList.item(i);
+			
+			// basic value
 			if (valueNode.getNodeName().equals("value")) {
-				values.add(new BasicValue(valueNode.getTextContent()));
+				values.add(new BasicValue<String>(valueNode.getTextContent()));
 			}
+			
+			// range value
 			else if (valueNode.getNodeName().equals("range")) {
 				if (valueNode.getTextContent().equals("string")) {
 					values.add(new RangeValue(PrimitiveType.STRING));
@@ -153,6 +183,8 @@ public class XMLDeclarationsReader {
 					values.add(new RangeValue(PrimitiveType.BOOLEAN));
 				}
 			}
+			
+			// complex value (with partial features)
 			else if (valueNode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = valueNode.getChildNodes();
 				
@@ -161,7 +193,7 @@ public class XMLDeclarationsReader {
 				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
 					if (subValueNodes.item(j).getNodeName().equals("label")) {
 						valueLabel = subValueNodes.item(j).getTextContent();
-						values.add(new BasicValue(valueLabel));
+						values.add(new BasicValue<String>(valueLabel));
 					}
 				}
 			}
@@ -170,18 +202,33 @@ public class XMLDeclarationsReader {
 	}
 
 
-	public List<FeatureType> extractFeatures(Node node) throws DialException {
+	// ===================================
+	//  FEATURE TYPES
+	// ===================================
+
+	
+	
+	/**
+	 * Extract (full and partial) features from the XML node
+	 * 
+	 * @param node the XML node
+	 * @return the list of extracted features
+	 * @throws DialException if the node is ill-formatted
+	 */
+	private List<FeatureType> extractFeatures(Node node) throws DialException {
 		List<FeatureType> allFeatures = new LinkedList<FeatureType>();
 		allFeatures.addAll(extractFullFeatures(node));
 		allFeatures.addAll(extractPartialFeatures(node));
 		return allFeatures;
 	}
 	
+	
 	/**
+	 * Extract partial features from the XML node
 	 * 
-	 * @param node
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @return the list of extracted features
+	 * @throws DialException if the node is ill-formatted
 	 */
 	private List<FeatureType> extractPartialFeatures(Node node) throws DialException {
 		
@@ -192,6 +239,8 @@ public class XMLDeclarationsReader {
 		for (int i = 0 ; i < contentList.getLength() ; i++) {
 
 			Node valueNode = contentList.item(i);
+			
+			// if a complex value is declared
 			if (valueNode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = valueNode.getChildNodes();
 				
@@ -208,6 +257,7 @@ public class XMLDeclarationsReader {
 							insideNode.hasAttributes() && 
 							insideNode.getAttributes().getNamedItem("name")!=null) {
 						
+						// creating a partial feature
 						String featLabel = insideNode.getAttributes().getNamedItem("name").getNodeValue();
 						FeatureType featType = new FeatureType(featLabel);
 						List<Value> basicValues = extractTypeValues(insideNode);
@@ -225,7 +275,7 @@ public class XMLDeclarationsReader {
 	}
 
 	/**
-	 * Extracts features from a XML node
+	 * Extracts full features from a XML node
 	 * 
 	 * @param node the node
 	 * @return the list of extracted features
@@ -260,15 +310,16 @@ public class XMLDeclarationsReader {
 	
 
 	// ===================================
-	//  OBSERVATION AND ACTION METHODS
+	//  OBSERVATION TYPES
 	// ===================================
 
 
 	/**
+	 * Returns the corresponding observation type from the XML node
 	 * 
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
+	 * @param obsNode the XML node
+	 * @return the extracted type
+	 * @throws DialException if node is ill-formatted
 	 */
 	private GenericType getObservation(Node obsNode) throws DialException {
 
@@ -283,9 +334,9 @@ public class XMLDeclarationsReader {
 			String content = obsNode.getAttributes().getNamedItem("content").getNodeValue();
 
 
-			ObservationValue obsValue;
+			ObservationValue<String> obsValue;
 			if (type.equals("surface") ) {
-				obsValue = new ObservationValue(new SurfaceTrigger(content));
+				obsValue = new ObservationValue<String>(new SurfaceTrigger(content));
 				obs = new GenericType(name);
 				obs.addValue(obsValue);
 				
@@ -306,29 +357,37 @@ public class XMLDeclarationsReader {
 
 
 	/**
+	 * Returns the (implicit) features associated with the observation value
 	 * 
-	 * @param values
-	 * @return
+	 * @param value the observation value
+	 * @return the list of implicit features
 	 */
-	private List<FeatureType> getObservationFeatures(ObservationValue value) {
+	private List<FeatureType> getObservationFeatures(ObservationValue<?> value) {
 		
 		List<FeatureType> feats = new LinkedList<FeatureType>();
 		
-			if (!value.getSlots().isEmpty()) {
-				for (String slot : value.getSlots()) {
+			if (!value.getTrigger().getSlots().isEmpty()) {
+				for (String slot : value.getTrigger().getSlots()) {
 					FeatureType feat = new FeatureType(slot);
 					feats.add(feat);
 				}
 			}
-		
 		return feats;
 	}
+	
+	
+	// ===================================
+	//  ACTION TYPES
+	// ===================================
+
+	
 
 	/**
+	 * Returns the corresponding action type from the XML node
 	 * 
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
+	 * @param actionNode the XML node
+	 * @return the extracted type
+	 * @throws DialException if the node is ill-formatted
 	 */
 	private GenericType getAction(Node actionNode) throws DialException {
 
@@ -338,7 +397,7 @@ public class XMLDeclarationsReader {
 			String actionName = actionNode.getAttributes().getNamedItem("name").getNodeValue();
 			action = new GenericType(actionName);
 
-			List<ActionValue> values = getActionValues(actionNode);
+			List<ActionValue<?>> values = getActionValues(actionNode);
 			action.addValues(values);
 			
 			List<FeatureType> feats = getActionFeatures(values);
@@ -351,33 +410,17 @@ public class XMLDeclarationsReader {
 
 		return action;
 	}
-
-
+	
+	
 	/**
+	 * Returns the values for the XML node declaring an action
 	 * 
-	 * @param values
-	 * @return
+	 * @param topNode the XML node
+	 * @return the extracted values
 	 */
-	private List<FeatureType> getActionFeatures(List<ActionValue> values) {
-		
-		List<FeatureType> feats = new LinkedList<FeatureType>();
-		
-		for (ActionValue value: values) {
-		if (value instanceof ActionValue &&  !((ActionValue)value).getSlots().isEmpty()) {
-			for (String slot : ((ActionValue)value).getSlots()) {
-				FeatureType feat = new FeatureType(slot);
-				feat.addBaseValue(value.getValue());
-				feats.add(feat);
-			}
-		}
-		}
-		
-		return feats;
-	}
+	private List<ActionValue<?>> getActionValues(Node topNode) {
 
-	private List<ActionValue> getActionValues(Node topNode) {
-
-		List<ActionValue> values = new LinkedList<ActionValue>();
+		List<ActionValue<?>> values = new LinkedList<ActionValue<?>>();
 
 		NodeList valueList = topNode.getChildNodes();
 		for (int j = 0 ; j < valueList.getLength(); j++) {
@@ -392,14 +435,39 @@ public class XMLDeclarationsReader {
 				String type = valueNode.getAttributes().getNamedItem("type").getNodeValue();
 				String content = valueNode.getAttributes().getNamedItem("content").getNodeValue();
 
-				ActionValue option;
+				ActionValue<String> option;
 				if (type.equals("surface")) {
-					option = new ActionValue(label, new SurfaceRealisationTemplate(content));
+					option = new ActionValue<String>(label, new SurfaceRealisationTemplate(content));
 					values.add(option);
 				}
 			}
 		}
 		return values;
+	}
+
+
+
+	/**
+	 * Returns the (implicit) features defined in the action values
+	 * 
+	 * @param values the action values
+	 * @return the list of implicit features
+	 */
+	private List<FeatureType> getActionFeatures(List<ActionValue<?>> values) {
+		
+		List<FeatureType> feats = new LinkedList<FeatureType>();
+		
+		for (ActionValue<?> value: values) {
+		if (value instanceof ActionValue &&  !((ActionValue<?>)value).getTemplate().getSlots().isEmpty()) {
+			for (String slot : ((ActionValue<?>)value).getTemplate().getSlots()) {
+				FeatureType feat = new FeatureType(slot);
+				feat.addBaseValue(value.getValue());
+				feats.add(feat);
+			}
+		}
+		}
+		
+		return feats;
 	}
 
 

@@ -25,7 +25,7 @@ import opendial.domains.types.GenericType;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a conditional fluent (used to describe content of features)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -33,33 +33,50 @@ import opendial.utils.Logger;
  */
 public class ConditionalFluent extends Fluent {
 
-
-	static Logger log = new Logger("ConditionalStateVariable",
-			Logger.Level.NORMAL);
+	// logger
+	static Logger log = new Logger("ConditionalFluent", Logger.Level.NORMAL);
 	
+	// input variable (i.e. variable to which the feature is attached)
 	Fluent inputVariable;
 			
+	
 	/**
-	 * @param type
+	 * Creates a new condition fluent, with a given type and input variable
+	 * 
+	 * @param type the type
+	 * @param inputVariable the input variable
 	 */
 	public ConditionalFluent(GenericType type, Fluent inputVariable) {
 		super(type);
 		this.inputVariable = inputVariable;
 	}
 	
+	
+	/**
+	 * Returns the input variable
+	 * 
+	 * @return input variable
+	 */
 	public Fluent getInputVariable() {
 		return inputVariable;
 	}
 	
+	
 	/**
-	 *  
-	 * @param inputVariable2
+	 * Sets the input variable for the fluent
+	 *   
+	 * @param inputVariable2 the input variable
 	 */
 	public void setInputVariable(Fluent inputVariable) {
 		this.inputVariable = inputVariable;
 	}
 	
 	
+	/**
+	 * Returns a copy of the conditional fluent
+	 *
+	 * @return the copy
+	 */
 	public ConditionalFluent copy() {
 		ConditionalFluent copy = new ConditionalFluent(type, inputVariable);
 		copy.setLabel(label);
@@ -72,7 +89,7 @@ public class ConditionalFluent extends Fluent {
 				log.warning("Strange problem copying a fluent, aborting copy operation");
 			}
 		}
-		for (Fluent f : features.values()) {
+		for (ConditionalFluent f : features.values()) {
 			copy.addFeature(f.copy());
 		}
 		return copy;

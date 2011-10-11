@@ -20,16 +20,16 @@
 package opendial.domains.types.values;
 
 /**
- * 
+ * Generic interface for values contained in variable types
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public abstract class Value {
+public interface Value {
 
 	
-	public abstract boolean acceptsValue(Object val);
+	public abstract boolean containsValue(Object val);
 	
 	
 }

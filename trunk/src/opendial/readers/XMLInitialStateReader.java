@@ -37,9 +37,10 @@ import opendial.state.DialogueState;
 import opendial.state.EntityFluent;
 import opendial.state.Fluent;
 import opendial.utils.Logger;
+import opendial.utils.XMLUtils;
 
 /**
- * 
+ * XML reader for the initial state specification
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -47,15 +48,27 @@ import opendial.utils.Logger;
  */
 public class XMLInitialStateReader {
 
+	// logger
 	static Logger log = new Logger("XMLInitialStateReader", Logger.Level.DEBUG);
 
+	// corresponding domain (assumes that the variable types are already declared)
 	Domain domain;
 
 
+	
+	// ===================================
+	//  INITIAL STATE
+	// ===================================
+
+	
+	
 	/**
-	 * @param refDoc
-	 * @return
-	 * @throws DialException 
+	 * Returns the initial state from the XML document, for the given domain (where the
+	 * variable types are already declared)
+	 * 
+	 * @param refDoc the XML document
+	 * @return the corresponding dialogue state
+	 * @throws DialException if XML document is ill-formatted
 	 */
 	public DialogueState getInitialState(Document doc, Domain domain) throws DialException {
 
@@ -63,7 +76,7 @@ public class XMLInitialStateReader {
 
 		DialogueState state = new DialogueState();
 
-		Node mainNode = XMLDomainReader.getMainNode(doc, "initialstate");
+		Node mainNode = XMLUtils.getMainNode(doc, "initialstate");
 		NodeList mainNodeList = mainNode.getChildNodes();
 
 		for (int i = 0; i < mainNodeList.getLength(); i++) {
@@ -73,67 +86,47 @@ public class XMLInitialStateReader {
 				if (domain.hasType(typeStr)) {
 					GenericType type = domain.getType(typeStr);
 
+					// entities
 					if (node.getNodeName().equals("entity")) {
 						EntityFluent entity = new EntityFluent(type);
 
-						Map<String,Float> values = extractFluentValues(node);
-						entity.addValues(values);
+						entity.addValues(extractFluentValues(node));
 
-						List<Fluent> features = extractFeatures(node, entity);
-						entity.addFeatures(features);
+						entity.addFeatures(extractFeatures(node, entity));
 
 						if (node.getAttributes().getNamedItem("existsProb") != null) {
 							float existsProb = Float.parseFloat(node.getAttributes().getNamedItem("existsProb").getNodeValue());
 							entity.setExistenceProb(existsProb);
 						}
-
 						state.addFluent(entity);
 					}
+					
+					// fixed variables
 					else if (node.getNodeName().equals("variable")) {
 						Fluent variable = new Fluent(type);
 
-						Map<String,Float> values = extractFluentValues(node);
-						variable.addValues(values);
+						variable.addValues(extractFluentValues(node));
 
-						List<Fluent> features = extractFeatures(node, variable);
-						variable.addFeatures(features);
+						variable.addFeatures(extractFeatures(node, variable));
 
 						state.addFluent(variable);
-
 					}
 				}
 				else {
 					log.debug("type not found: " + typeStr);
 					throw new DialException("type " + typeStr +  " was not found in domain declarations");
 				}
-
 			}
 		}
-
 		return state;
 	}
 
 
-
-	/**
-	 * 
-	 * @param node
-	 * @param type
-	 * @return
-	 * @throws DialException 
-	 */
-	private List<Fluent> extractFeatures(Node node, Fluent fluent) throws DialException {
-		List<Fluent> features = new LinkedList<Fluent>();
-		features.addAll(extractFullFeatures(node, fluent.getType()));
-		features.addAll(extractPartialFeatures(node, fluent));
-		return features;
-	}
-
-
-
-
-
-
+	// ===================================
+	//  INITIAL STATE VALUES
+	// ===================================
+	
+	
 	/**
 	 * Extract values from a XML node
 	 * 
@@ -147,33 +140,23 @@ public class XMLInitialStateReader {
 		Map<String,Float> values = new HashMap<String,Float>();
 
 		for (int i = 0 ; i < contentList.getLength() ; i++) {
-
+			
 			Node subnode = contentList.item(i);
 
-			float prob = 1.0f;
-			if (subnode.hasAttributes() && 
-					subnode.getAttributes().getNamedItem("prob") != null) {
-
-				try {
-					prob = Float.parseFloat(subnode.getAttributes().getNamedItem("prob").getNodeValue());
-				}
-				catch (NumberFormatException e) {
-					throw new DialException("probability " + 
-							subnode.getAttributes().getNamedItem("prob").getNodeValue() +  " not valid");
-				}
-			}
+			// extracting the value probability
+			float prob = getValueProbability (subnode);
 			
+			// adding a standard value
 			if (subnode.getNodeName().equals("value")) {
-
 				String value = subnode.getTextContent();
 				values.put(value,prob);
 			}
 
+			// adding a complex value
 			else if (subnode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = subnode.getChildNodes();
 
 				String valueLabel="";
-
 				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
 					if (subValueNodes.item(j).getNodeName().equals("label")) {
 						valueLabel = subValueNodes.item(j).getTextContent();
@@ -181,25 +164,76 @@ public class XMLInitialStateReader {
 					}
 				}
 			}
-
-
-
 		}
 		return values;
 	}
 
+	
+	
+	/**
+	 * Returns the probability of the value defined in the XML node
+	 * (default to 1.0f is none is declared)
+	 * 
+	 * @param node the XML node
+	 * @return the value probability
+	 * @throws DialException if probability is ill-formatted
+	 */
+	private float getValueProbability (Node node) throws DialException {
+		
+		float prob = 1.0f;
+		
+		if (node.hasAttributes() && 
+				node.getAttributes().getNamedItem("prob") != null) {
+			String probStr = node.getAttributes().getNamedItem("prob").getNodeValue();
+			
+			try { prob = Float.parseFloat(probStr);	}
+			catch (NumberFormatException e) {
+				throw new DialException("probability " + probStr +  " not valid");
+			}
+		}
+		return prob;
+	}
+	
+	
+	// ===================================
+	//  INITIAL STATE FEATURES
+	// ===================================
+
+	
+	/**
+	 * Extracts all (partial or full) features of the initial state from the XML node
+	 * 
+	 * @param node the XML node
+	 * @param fluent the fluent where the feature is defined (necessary for partial features)
+	 * @return the list of feature fluents
+	 * @throws DialException 
+	 */
+	private List<ConditionalFluent> extractFeatures(Node node, Fluent fluent) throws DialException {
+		List<ConditionalFluent> features = new LinkedList<ConditionalFluent>();
+		features.addAll(extractFullFeatures(node, fluent));
+		features.addAll(extractPartialFeatures(node, fluent));
+		return features;
+	}
+
+
+	// ===================================
+	//  FULL FEATURES
+	// ===================================
+
 
 	/**
-	 * Extracts features from a XML node
+	 * Extracts (full feature) conditional fluents from a XML node
 	 * 
 	 * @param node the node
-	 * @return the list of extracted features
+	 * @return the list of extracted features fluents
 	 * @throws DialException if the XML fragment is ill-formatted
 	 */
-	private List<Fluent> extractFullFeatures(Node node, GenericType topEntityType) throws DialException {
+	private List<ConditionalFluent> extractFullFeatures(Node node, 
+			Fluent fluent) throws DialException {
+		
 		NodeList contentList = node.getChildNodes();
 
-		List<Fluent> types = new LinkedList<Fluent>();
+		List<ConditionalFluent> cfluents = new LinkedList<ConditionalFluent>();
 
 		for (int j = 0 ; j < contentList.getLength() ; j++) {
 
@@ -209,21 +243,25 @@ public class XMLInitialStateReader {
 				if (subnode.hasAttributes() && subnode.getAttributes().getNamedItem("type") != null) {
 					String featName = subnode.getAttributes().getNamedItem("type").getNodeValue();
 
-					if (topEntityType instanceof GenericType && ((GenericType)topEntityType).hasFeature(featName)) {
-						FeatureType type = ((GenericType)topEntityType).getFeature(featName);
-						Fluent feat = new Fluent(type);
+					if (fluent.getType().hasFeature(featName)) {
+						
+						// creating a new conditional fluent
+						FeatureType type = fluent.getType().getFeature(featName);
+						ConditionalFluent feat = new ConditionalFluent(type, fluent);
 
+						// populating it with values
 						Map<String,Float> values = extractFluentValues (subnode);
 						feat.addValues(values);
 
-						List<Fluent> features = extractFullFeatures(subnode, type);
-						feat.addFeatures(features);
+						// extracting subfeatures
+						List<ConditionalFluent> subfeatures = extractFeatures(subnode, feat);
+						feat.addFeatures(subfeatures);
 
-						types.add(feat);
+						cfluents.add(feat);
 					}
 					else {
-						log.debug("feature " + featName + " was not found in domain declarations");
-						throw new DialException("feature " + featName + " was not found in domain declarations");
+						throw new DialException("feature " + featName + 
+								" was not found in domain declarations");
 					}
 				}
 				else {
@@ -231,21 +269,30 @@ public class XMLInitialStateReader {
 				}
 			}
 		}
-		return types;
+		return cfluents;
 	}
 
 
+	
+	// ===================================
+	//  PARTIAL FEATURES
+	// ===================================
+
+	
 
 	/**
+	 * Extracts the list of partial feature fluents from the XML node
+	 * TODO: make this fully recursive (?)
 	 * 
-	 * @param node
-	 * @param fluent
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @param fluent the base fluent
+	 * @return the list of partial feature fluents
+	 * @throws DialException if the XML node is ill-formatted
 	 */
-	private List<ConditionalFluent> extractPartialFeatures(Node node, Fluent topFluent) throws DialException {
+	private List<ConditionalFluent> extractPartialFeatures(Node node, 
+			Fluent topFluent) throws DialException {
+		
 		List<ConditionalFluent> partialFeatures = new LinkedList<ConditionalFluent>();
-
 
 		NodeList contentList = node.getChildNodes();
 
@@ -255,46 +302,91 @@ public class XMLInitialStateReader {
 			if (valueNode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = valueNode.getChildNodes();
 
-				String baseValue="";
+				String baseValue= extractBaseValue (valueNode);
 
 				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
 
 					Node insideNode = subValueNodes.item(j);
-					if (insideNode.getNodeName().equals("label")) {
-						baseValue = subValueNodes.item(j).getTextContent();
-					}
 
-					else if (insideNode.getNodeName().equals("feature") && 
+					if (insideNode.getNodeName().equals("feature") && 
 							insideNode.hasAttributes() && 
 							insideNode.getAttributes().getNamedItem("type")!=null) {
-
-						String featTypeStr = insideNode.getAttributes().getNamedItem("type").getNodeValue();
-
-						if (topFluent.getType().hasFeature(featTypeStr)) {
-							FeatureType featType = topFluent.getType().getFeature(featTypeStr);
-
-							if (featType.isDefinedForBaseValue(baseValue)) {
-								ConditionalFluent condFluent = new ConditionalFluent(featType, topFluent);
-
-								Map<String,Float> values = extractFluentValues(insideNode);
-								condFluent.addValues(values);
-
-								partialFeatures.add(condFluent);
-							}
-							else {
-								throw new DialException("feature type " + featTypeStr + " not declared for value " + baseValue);
-							}
-						}		
-						else {
-							throw new DialException ("feature type " + featTypeStr + " not declared for type " + topFluent.getType());
-						}
-
+						
+						ConditionalFluent partialFeat = 
+							extractPartialFeature (insideNode, topFluent, baseValue);
+						
+						partialFeatures.add(partialFeat);
 					}
 				}
 			}
 		}
-
 		return partialFeatures;
+	}
+	
+	
+	/**
+	 * Extract the partial feature fluent declared inside a XML complex value node
+	 * 
+	 * @param node the XML node
+	 * @param topFluent the top fluent for the feature
+	 * @param baseValue the base value for which the feature is declared
+	 * @return the corresponding conditional fluent
+	 * @throws DialException if the node is ill-formatted
+	 */
+	private ConditionalFluent extractPartialFeature(Node node, Fluent topFluent, 
+			String baseValue) throws DialException {
+
+		String featTypeStr = node.getAttributes().getNamedItem("type").getNodeValue();
+
+		if (topFluent.getType().hasFeature(featTypeStr)) {
+			FeatureType featType = topFluent.getType().getFeature(featTypeStr);
+
+			if (featType.isDefinedForBaseValue(baseValue)) {
+				
+				// creating new conditional fluent
+				ConditionalFluent condFluent = new ConditionalFluent(featType, topFluent);
+
+				// populating it with values
+				Map<String,Float> values = extractFluentValues(node);
+				condFluent.addValues(values);
+
+				return condFluent;
+			}
+			else {
+				throw new DialException("feature type " + featTypeStr + 
+						" not declared for value " + baseValue);
+			}
+		}		
+		else {
+			throw new DialException ("feature type " + featTypeStr + 
+					" not declared for type " + topFluent.getType());
+		}
+	}
+
+
+	/**
+	 * Returns the base value specified in a complex value node. 
+	 * 
+	 * @param node the XML node
+	 * @return the specified base value.
+	 * @throws DialException if no base value can be found
+	 */
+	private String extractBaseValue(Node node) throws DialException {
+		
+		String baseValue = "";
+		
+		NodeList subValueNodes = node.getChildNodes();
+		for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
+			Node insideNode = subValueNodes.item(j);
+			if (insideNode.getNodeName().equals("label")) {
+				baseValue = subValueNodes.item(j).getTextContent();
+			}
+		}
+		
+		if (baseValue.equals("")) {
+			throw new DialException("base value not specified in node");
+		}
+		return baseValue;
 	}
 
 }
