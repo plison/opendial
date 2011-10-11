@@ -17,17 +17,87 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.utils;
+package opendial.inference.algorithms;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNetwork;
+import opendial.inference.bn.BNode;
+import opendial.utils.InferenceUtils;
+import opendial.utils.Logger;
 
 /**
- * Generic utility functions
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class GenericUtils {
+public class NaiveInference {
 
-	// static Logger log = new Logger("GenericUtils", Logger.Level.NORMAL);
+	static Logger log = new Logger("NaiveInference", Logger.Level.NORMAL);
+	
+
+	
+	public static Map<Assignment, Float> query
+		(BNetwork bn, List<String> queryVars, Assignment evidence) {
+		
+		Map<Assignment, Float> fullJoint = getFullJoint(bn);
+		
+		SortedMap<String,Set<Object>> queryValues = new TreeMap<String,Set<Object>>();
+		for (BNode n : bn.getNodes()) {
+			if (queryVars.contains(n.getId())) {
+				queryValues.put(n.getId(), n.getValues());
+			}
+		}
+		List<Assignment> queryAssigns = InferenceUtils.getAllCombinations(queryValues);
+		
+		Map<Assignment, Float> queryResult = new HashMap<Assignment,Float>();
+		
+		for (Assignment queryA : queryAssigns) {
+			float sum = 0.0f;
+			for (Assignment a: fullJoint.keySet()) {
+				if (a.contains(queryA) && a.contains(evidence)) {
+					sum += fullJoint.get(a);
+				}
+			}
+			queryResult.put(queryA, sum);
+		}
+		
+		queryResult = InferenceUtils.normalise(queryResult);
+		
+		return queryResult;
+	}
+	
+	
+	
+	public static Map<Assignment, Float> getFullJoint(BNetwork bn) {
+		
+		SortedMap<String,Set<Object>> allValues = new TreeMap<String,Set<Object>>();
+		for (BNode n : bn.getNodes()) {
+			allValues.put(n.getId(), n.getValues());
+		}
+		List<Assignment> fullAssigns = InferenceUtils.getAllCombinations(allValues);
+
+		Map<Assignment,Float> result = new HashMap<Assignment, Float>();
+		for (Assignment singleAssign : fullAssigns) {
+			float jointProb = 1.0f;
+			for (BNode n: bn.getNodes()) {
+				
+				Assignment trimedAssign = InferenceUtils.trimAssignment(singleAssign,n.getVariables());
+				jointProb = jointProb * n.getProb(trimedAssign);
+			}
+			result.put(singleAssign, jointProb);
+		}
+		
+		return result;
+	}
+	
 	
 }

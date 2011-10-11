@@ -19,15 +19,73 @@
 
 package opendial.utils;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+
+import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNode;
+import opendial.utils.Logger;
+
 /**
- * Generic utility functions
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class GenericUtils {
+public class InferenceUtils {
 
-	// static Logger log = new Logger("GenericUtils", Logger.Level.NORMAL);
+	static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
+	
+	
+	public static List<Assignment> getAllCombinations(Map<String,Set<Object>> valuesMatrix) {
+				
+		List<Assignment> assignments = new LinkedList<Assignment>();
+		assignments.add(new Assignment());
+		
+		for (String label : valuesMatrix.keySet()) {
+
+			List<Assignment> assignments2 = new LinkedList<Assignment>();
+
+			for (Object val: valuesMatrix.get(label)) {
+				
+				for (Assignment ass: assignments) {
+					Assignment ass2 = new Assignment(ass, label, val);
+					assignments2.add(ass2);
+				}
+			}
+			assignments = assignments2;
+		}		
+		return assignments;
+	}
+	
+	
+
+
+	public static Assignment trimAssignment(Assignment fullAssign, Set<String> variables) {
+		Assignment trimedAssign = new Assignment();
+		for (String key : fullAssign.getPairs().keySet()) {
+			if (variables.contains(key)) {
+				trimedAssign.addPair(key, fullAssign.getPairs().get(key));	
+			}
+		}
+		return trimedAssign;
+	}
+	
+	public static Map<Assignment, Float> normalise (Map<Assignment, Float> distrib) {
+		float total = 0.0f;
+		for (Assignment a : distrib.keySet()) {
+			total += distrib.get(a);
+		}
+		Map<Assignment,Float> normalisedDistrib = new HashMap<Assignment,Float>();
+		for (Assignment a: distrib.keySet()) {
+			normalisedDistrib.put(a, distrib.get(a)/ total);
+		}
+		return normalisedDistrib;
+	}
 	
 }

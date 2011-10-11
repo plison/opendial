@@ -17,17 +17,59 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.utils;
+package opendial.inference.bn;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import opendial.arch.DialException;
+import opendial.utils.InferenceUtils;
+import opendial.utils.Logger;
 
 /**
- * Generic utility functions
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class GenericUtils {
+public class BNetwork {
 
-	// static Logger log = new Logger("GenericUtils", Logger.Level.NORMAL);
+	static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
 	
+	Map<String,BNode> nodes;
+	
+	public static boolean autoCompletion = true;
+
+	public BNetwork () {
+		nodes = new HashMap<String, BNode>();
+	}
+	
+	
+	public BNode getNode(String nodeId) {
+		return nodes.get(nodeId);
+	}
+	
+	public void addNode(BNode node) throws DialException {
+		if (autoCompletion) {
+			node.getDistribution().completeProbabilityTable();
+		}
+		
+		if (!node.getDistribution().isWellFormed()) {
+			throw new DialException("Probability table for node " + node.getId() + " is not well-formed");
+		}
+		nodes.put(node.getId(), node);
+	}
+	
+	
+	public List<BNode> getNodes() {
+		return new ArrayList<BNode>(nodes.values());
+	}
+
+
 }

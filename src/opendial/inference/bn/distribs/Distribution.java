@@ -17,17 +17,17 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.utils;
+package opendial.inference.bn.distribs;
+
+import opendial.utils.Logger;
 
 /**
- * Generic utility functions
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class GenericUtils {
+public interface Distribution {
 
-	// static Logger log = new Logger("GenericUtils", Logger.Level.NORMAL);
-	
 }
