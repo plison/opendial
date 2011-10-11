@@ -39,7 +39,7 @@ import opendial.utils.Logger;
  *
  * @see Model
  * @see GenericType
- * @see Rule
+ * @see opendial.domains.rules.Rule
  * @see DialogueState
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)

@@ -49,15 +49,17 @@ public class XMLRuleReader {
 	// logger
 	static Logger log = new Logger("XMLRuleReader", Logger.Level.NORMAL);
 
-	// ===================================
-	//  RULE CONSTRUCTION METHODS
-	// ===================================
-
 	// the rule which is being extracted
 	Rule rule;
 
 	// the dialogue domain (assumes that the declared types are already extracted)
 	Domain domain;
+
+	
+	
+	// ===================================
+	//  RULES
+	// ===================================
 
 	
 	/**
@@ -101,6 +103,11 @@ public class XMLRuleReader {
 	}
 
 
+	// ===================================
+	//  VARIABLES
+	// ===================================
+
+	
 	/**
 	 * Get the variables declared in the input/output of the rule
 	 * 
@@ -126,10 +133,11 @@ public class XMLRuleReader {
 
 	
 	/**
+	 * Returns the variable specified in the input/output of a rule, given the XML node
 	 * 
-	 * @param varNode
-	 * @return
-	 * @throws DialException 
+	 * @param varNode the XML node
+	 * @return the variable
+	 * @throws DialException if node is ill-formatted 
 	 */
 	private StandardVariable getVariable(Node varNode, Map<String,StandardVariable> previousVars) throws DialException {
 		 
@@ -141,7 +149,6 @@ public class XMLRuleReader {
 				return new StandardVariable(id, domain.getType(typeStr));
 			}
 			else {
-				log.debug("type: " + typeStr);
 				throw new DialException("type " + typeStr + " not declared as entity in domain");
 			}
 		}
@@ -151,15 +158,13 @@ public class XMLRuleReader {
 				return new StandardVariable(domain.getType(typeStr));
 			}
 			else {
-				log.debug("type: " + typeStr);
 				throw new DialException("type " + typeStr + " not declared in domain");
 			}
 		}
 		else if (varNode.getAttributes().getNamedItem("pointer") != null) {
 			String pointer = varNode.getAttributes().getNamedItem("pointer").getNodeValue();
 			if (rule.hasInputVariable(pointer)) {
-				StandardVariable previousVar = rule.getInputVariable(pointer);
-				return new PointerVariable(previousVar);
+				return new PointerVariable(rule.getInputVariable(pointer));
 			}
 			else {
 				throw new DialException("sameAs variable not pointing to an existing variable");
@@ -170,34 +175,58 @@ public class XMLRuleReader {
 				varNode.getAttributes().getNamedItem("base") != null && 
 				varNode.getAttributes().getNamedItem("id")!=null) {
 			
-			String feat = varNode.getAttributes().getNamedItem("feature").getNodeValue();	
-			String base = varNode.getAttributes().getNamedItem("base").getNodeValue();
-			String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
-
-			if (previousVars.containsKey(base)) {
-				StandardVariable baseVar = previousVars.get(base);
-				GenericType baseType = baseVar.getType();
-				if (baseType.hasFeature(feat)) {
-					FeatureType featType = baseType.getFeature(feat);
-					return new FeatureVariable(id, featType, baseVar);
-				}
-				else {
-					log.debug("base variable: " + base + ", existing features: " + baseType.getFeatures());
-					throw new DialException("base variable " + base + " has no declared feature " + feat);
-				}
-			}
-			else {
-				throw new DialException("base variable " + base + " has not been set");
-			}
-			
+			return getFeatureVariable(varNode, previousVars);	
 		}
 		else {
 			throw new DialException("ill-formatted variable declaration");
 		}
 	}
 
+	
+	/**
+	 * Returns the feature variable specified in the XML node
+	 * 
+	 * @param varNode the XML node
+	 * @param previousVars the previously defined variables
+	 * @return the feature variable
+	 * @throws DialException if XML node is ill-formatted
+	 */
+	private FeatureVariable getFeatureVariable(Node varNode, Map<String,StandardVariable> previousVars) throws DialException {
+		String feat = varNode.getAttributes().getNamedItem("feature").getNodeValue();	
+		String base = varNode.getAttributes().getNamedItem("base").getNodeValue();
+		String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
 
-	public Case getCase(Node node) throws DialException {
+		if (previousVars.containsKey(base)) {
+			StandardVariable baseVar = previousVars.get(base);
+			GenericType baseType = baseVar.getType();
+			if (baseType.hasFeature(feat)) {
+				FeatureType featType = baseType.getFeature(feat);
+				return new FeatureVariable(id, featType, baseVar);
+			}
+			else {
+				log.debug("base variable: " + base + ", existing features: " + baseType.getFeatures());
+				throw new DialException("base variable " + base + " has no declared feature " + feat);
+			}
+		}
+		else {
+			throw new DialException("base variable " + base + " has not been set");
+		}
+	}
+
+	
+	// ===================================
+	//  CASES
+	// ===================================
+
+	
+	/**
+	 * Returns the case specified in the XML node
+	 * 
+	 * @param node the XML node
+	 * @return the case
+	 * @throws DialException if node is ill-formatted
+	 */
+	private Case getCase(Node node) throws DialException {
 		Case case1 = new Case();
 		NodeList caseContent = node.getChildNodes();
 		for (int j = 0 ; j < caseContent.getLength(); j++) {
@@ -218,8 +247,20 @@ public class XMLRuleReader {
 		return case1;
 	}
 
+	
+	// ===================================
+	//  CONDITIONS
+	// ===================================
 
-	public Condition getCondition(Node node) throws DialException {
+
+	/**
+	 * Returns the condition specified in the XML node
+	 * 
+	 * @param node the XML node
+	 * @return the condition
+	 * @throws DialException if node is ill-formatted
+	 */
+	private Condition getCondition(Node node) throws DialException {
 
 		List<Condition> subconditions = new LinkedList<Condition>();
 		NodeList condList = node.getChildNodes();
@@ -267,16 +308,21 @@ public class XMLRuleReader {
 		}
 	}
 
+	
+	// ===================================
+	//  EFFECTS
+	// ===================================
 
+	
 
 	/**
 	 * Returns the effect specified in the XML node
 	 * 
-	 * @param node
-	 * @return
+	 * @param node the node
+	 * @return the effect
 	 * @throws DialException
 	 */
-	public Effect getEffect(Node node) throws DialException {
+	private Effect getEffect(Node node) throws DialException {
 			
 		List<Effect> subeffects = getSubeffects(node);
 		if (subeffects.isEmpty()) {
@@ -294,7 +340,15 @@ public class XMLRuleReader {
 	}
 	
 	
-	public List<Effect> getSubeffects(Node topNode) throws DialException {
+	
+	/**
+	 * Returns the list of sub-effects specified in the XML node
+	 * 
+	 * @param topNode the node
+	 * @return the effect
+	 * @throws DialException
+	 */
+	private List<Effect> getSubeffects(Node topNode) throws DialException {
 
 		List<Effect> subeffects = new LinkedList<Effect>();
 		
@@ -343,7 +397,14 @@ public class XMLRuleReader {
 	}
 	
 	
-	public float getEffectProbability (Node topNode) throws DialException {
+	/**
+	 * Returns the effect probability as specified in the XML node
+	 * 
+	 * @param topNode the node
+	 * @return the probability
+	 * @throws DialException
+	 */
+	private float getEffectProbability (Node topNode) throws DialException {
 		float prob = 1.0f;
 		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("prob") != null) {
 			try {

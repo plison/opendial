@@ -51,7 +51,7 @@ public class ActionValue<T> extends BasicValue<String> {
 	/**
 	 * Returns the template associated with the action value
 	 * 
-	 * @return
+	 * @return the template
 	 */
 	public ActionTemplate<T> getTemplate() {
 		return template;

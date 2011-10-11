@@ -105,7 +105,7 @@ public class StandardVariable {
 	/**
 	 * Returns a string representation of the variable
 	 *
-	 * @return
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() {

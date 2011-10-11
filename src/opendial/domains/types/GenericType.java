@@ -177,7 +177,7 @@ public class GenericType {
 	 * Else, returns null.
 	 * 
 	 * @param valueLabel the label for the value
-	 * @return
+	 * @return the value
 	 */
 	public BasicValue<?> getValue(Object valueLabel) {
 		for (Value val: values) {

@@ -40,7 +40,7 @@ public interface ActionTemplate<T> {
 	 * The position of the slots are indicated by the denotation "${variable}",
 	 *  where variable denotes the label for the slot
 	 * 
-	 * @return
+	 * @return the content
 	 */
 	public abstract T getContent() ;
 
@@ -48,7 +48,7 @@ public interface ActionTemplate<T> {
 	/**
 	 * Returns the list of slot labels for the template
 	 * 
-	 * @return
+	 * @return the list of slots
 	 */
 	public abstract List<String> getSlots();
 

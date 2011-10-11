@@ -158,8 +158,8 @@ public class Rule {
 	 * @param identifier the id to check
 	 * @return false if output variable is found, false otherwise
 	 */
-	public boolean hasOutputVariable(String denotation) {
-		return outputs.containsKey(denotation);
+	public boolean hasOutputVariable(String identifier) {
+		return outputs.containsKey(identifier);
 	}
 
 	
@@ -170,8 +170,8 @@ public class Rule {
 	 * @param identifier the identifier for the variable
 	 * @return the variable
 	 */
-	public StandardVariable getOutputVariable(String denotation) {
-		return outputs.get(denotation);
+	public StandardVariable getOutputVariable(String identifier) {
+		return outputs.get(identifier);
 	}
 
 	/**

@@ -65,7 +65,7 @@ public class ConditionalFluent extends Fluent {
 	/**
 	 * Sets the input variable for the fluent
 	 *   
-	 * @param inputVariable2 the input variable
+	 * @param inputVariable the input variable
 	 */
 	public void setInputVariable(Fluent inputVariable) {
 		this.inputVariable = inputVariable;
