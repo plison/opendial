@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import opendial.arch.DialogueInterface;
 import opendial.domains.Domain;
-import opendial.gui.DialogueInterface;
 import opendial.inputs.Observation;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;

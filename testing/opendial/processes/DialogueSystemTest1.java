@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import opendial.arch.DialException;
+import opendial.components.DialogueSystem;
 import opendial.domains.Domain;
 import opendial.inputs.NBestList;
 import opendial.outputs.Action;
