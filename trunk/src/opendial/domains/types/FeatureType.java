@@ -104,8 +104,9 @@ public class FeatureType extends GenericType {
 	}
 
 	/**
+	 * Returns the list of base values for the type
 	 * 
-	 * @return
+	 * @return the base values
 	 */
 	public List<String> getBaseValues() {
 		return baseValues;

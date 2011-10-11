@@ -93,7 +93,7 @@ public class BasicCondition<T> implements Condition {
 	/**
 	 * Returns the value specified in the condition
 	 * 
-	 * @return
+	 * @return the value
 	 */
 	public T getValue() {
 		return value;

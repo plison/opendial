@@ -84,7 +84,7 @@ public class NBestList implements Observation {
 	/**
 	 * Returns a string representation of the N-best list
 	 *
-	 * @return
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
