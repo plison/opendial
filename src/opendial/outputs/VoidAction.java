@@ -20,7 +20,7 @@
 package opendial.outputs;
 
 /**
- * 
+ * Representation of a "void action", which does nothing
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -28,5 +28,14 @@ package opendial.outputs;
  */
 public class VoidAction implements Action {
 
-	// static Logger log = new Logger("VoidAction", Logger.Level.NORMAL);
+	
+	/**
+	 * Returns a string representation of the action
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		return "VoidAction";
+	}
 }

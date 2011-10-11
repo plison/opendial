@@ -52,7 +52,7 @@
 
 
 	<xs:complexType name="varType">
-		<xs:attribute name="denotation" type="xs:string"/>
+		<xs:attribute name="id" type="xs:string"/>
 		<xs:attribute name="pointer" type="xs:string"/>
 		<xs:attribute name="type" type="xs:string" />
 		<xs:attribute name="label" type="xs:string"/>

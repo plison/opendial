@@ -20,43 +20,97 @@
 package opendial.domains.rules.effects;
 
 import opendial.arch.DialException;
-import opendial.domains.rules.variables.Variable;
+import opendial.domains.rules.variables.StandardVariable;
 import opendial.utils.Logger;
 
 /**
- * TODO: introduce more complex kinds of assignments?
+ * Representation of a basic assignment effect, which assigns a given value
+ * to a single variable.
+ * 
+ * TODO: introduce more complex kinds of assignments? 
+ * e.g. underspecified values (wildcard), constraints
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class AssignEffect extends Effect {
+public class AssignEffect<T> implements Effect {
 
+	// the logger
 	static Logger log = new Logger("BasicEffect", Logger.Level.NORMAL);
 	
-	Variable var;
+	// the variable to be assigned
+	StandardVariable var;
 	
-	String value;
+	// the value to assign
+	T value;
 	
-	public AssignEffect(Variable var, String value, float prob) throws DialException {
-		super(prob);
+	
+	/**
+	 * Creates a new assignment effect, composed a variable and a specific
+	 * value
+	 * 
+	 * @param var the variable
+	 * @param value the value
+	 * @throws DialException if the variable type does not accept the given value
+	 */
+	public AssignEffect(StandardVariable var, T value) throws DialException {
 		this.var = var;
 		this.value = value;
 		
-		if (!var.getType().acceptsValue(value)) {
+		if (!var.getType().containsValue(value)) {
 			throw new DialException("variable " + var.getType().getName() + " does not accept value " + value);
 		}
 	}
 
 	/**
+	 * Returns the variable
 	 * 
-	 * @return
+	 * @return the variable
 	 */
-	public Variable getVariable() {
+	public StandardVariable getVariable() {
 		return var;
 	}
 	
-	public String getValue() {
+	
+	/**
+	 * Returns the value
+	 * 
+	 * @return the value
+	 */
+	public T getValue() {
 		return value;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the effect
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		String str = "Set " + var + " := " + value;
+		return str;
+	}
+	
+
+	/**
+	 * Compare the effect to the given one
+	 * 
+	 * @param e the effect to compare with the current object
+	 * @return 0 if equals, -1 otherwise
+	 */
+	@Override
+	public int compareTo(Effect e) {
+		if (e instanceof AssignEffect) {
+			if (((AssignEffect<?>)e).getVariable().equals(var) && ((AssignEffect<?>)e).getValue().equals(value)) {
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		return -1;
 	}
 }

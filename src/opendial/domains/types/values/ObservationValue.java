@@ -19,36 +19,53 @@
 
 package opendial.domains.types.values;
 
-import java.util.List;
-
 import opendial.arch.DialConstants.PrimitiveType;
 import opendial.domains.observations.Trigger;
 
 
 /**
- * 
+ * Representation of an observation value in a variable type.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class ObservationValue extends RangeValue {
+public class ObservationValue<T> extends RangeValue {
 
 	// static Logger log = new Logger("GenericObservation", Logger.Level.NORMAL);
 	
-	Trigger trigger;
+	// the observation trigger
+	Trigger<T> trigger;
 	
-	public ObservationValue(Trigger trigger) {
+	/**
+	 * Creates a new observation value, with the given trigger
+	 * 
+	 * @param trigger the trigger associated with the observation
+	 */
+	public ObservationValue(Trigger<T> trigger) {
 		super(PrimitiveType.BOOLEAN);
 		this.trigger = trigger;
 	}
 	
 	
-	public Trigger getTrigger() {
+	/**
+	 * Returns the trigger associated with the observation value
+	 * 
+	 * @return the trigger
+	 */
+	public Trigger<T> getTrigger() {
 		return trigger;
 	}
+
 	
-	public List<String> getSlots() {
-		return trigger.getSlots();
+	/**
+	 * Returns a string representation of the observation value
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		String s = super.toString();
+		s += ": " + trigger.toString();
+		return s;
 	}
 }

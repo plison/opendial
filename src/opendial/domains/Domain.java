@@ -25,34 +25,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import opendial.arch.DialConstants.ModelType;
+import opendial.arch.DialConstants.ModelGroup;
 import opendial.domains.types.GenericType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
 /**
- * Representation of a dialogue domain, complete with entities and variables,
- * rule-based probabilistic models, observations and actions.
+ * Representation of a dialogue domain for openDial, complete with: <ul>
+ * <li> (optional) a domain name;
+ * <li> a list of variable types;
+ * <li> an initial state;
+ * <li> and a set of rule-based probabilistic models. </ul>
  *
+ * @see Model
+ * @see GenericType
+ * @see Rule
+ * @see DialogueState
+ * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
 public class Domain {
 
+	// logger
 	static Logger log = new Logger("Domain", Logger.Level.DEBUG);
 	
 	// name of dialogue domain
 	String domainName;
 	
 	// types declarations
-	Map<String,GenericType> allTypes;
+	Map<String,GenericType> types;
 	
 	// initial state of the domain
 	DialogueState initialState;
 	
 	// the specified models (list of rules)
-	Map<ModelType,Model> models;
+	Map<ModelGroup,Model> models;
 	
 	
 	/**
@@ -63,37 +72,56 @@ public class Domain {
 	public Domain(String domainName) {
 		this.domainName = domainName;
 
-		allTypes = new HashMap<String,GenericType>();
+		types = new HashMap<String,GenericType>();
 		
 		initialState = new DialogueState();
-		models = new HashMap<ModelType, Model>();
+		models = new HashMap<ModelGroup, Model>();
 	}
 	
 	
-
+	/**
+	 * Adds the initial state to the dialogue domain
+	 * 
+	 * @param initialState the initial state
+	 */
 	public void addInitialState(DialogueState initialState) {
 		this.initialState = initialState;
 	}
 	
 	
+	/**
+	 * Adds a rule-based probabilistic model to the domain
+	 * 
+	 * @param model the model to add
+	 */
 	public void addModel(Model model) {
-		models.put(model.getType(), model);
+		models.put(model.getGroup(), model);
 	}
 	
 	
-	
+	/**
+	 * Sets the name of the domain
+	 * 
+	 * @param domainName domain name
+	 */
 	public void setName(String domainName) {
 		this.domainName = domainName;
 	}
 
-
+	/**
+	 * Returns the name of the domain
+	 * 
+	 * @return the domain name
+	 */
 	public String getName() {
 		return domainName;
 	}
 
+	
 	/**
+	 * Adds a collection of declared types to the domain
 	 * 
-	 * @param types
+	 * @param types the types to add
 	 */
 	public void addTypes(Collection<GenericType> types) {
 		for (GenericType type : types) {
@@ -101,34 +129,46 @@ public class Domain {
 		}
 	}
 
+	
 	/**
+	 * Adds a single declared type to the domain
 	 * 
-	 * @param type
+	 * @param type the type to add
 	 */
 	private void addType(GenericType type) {
-		allTypes.put(type.getName(), type);		
+		types.put(type.getName(), type);		
 	}
 
 
 
 	/**
+	 * Returns true if the domain contained a type with the
+	 * given identifier, false otherwise
 	 * 
-	 * @param type
-	 * @return
+	 * @param typeName the type name
+	 * @return true if domain contains the type, false otherwise
 	 */
-	public boolean hasType(String type) {
-		return allTypes.containsKey(type);
+	public boolean hasType(String typeName) {
+		return types.containsKey(typeName);
 	}
 
 
-	public GenericType getType(String type) {
-		return allTypes.get(type);
+	/**
+	 * Returns the type associated with the name, if one
+	 * exists in the domain.  Else, returns null.
+	 * 
+	 * @param typeName the type name
+	 * @return the associated type
+	 */
+	public GenericType getType(String typeName) {
+		return types.get(typeName);
 	}
 
 	
 	/**
+	 * Returns the initial state for the domain
 	 * 
-	 * @return
+	 * @return the initial state
 	 */
 	public DialogueState getInitialState() {
 		return initialState;
@@ -136,22 +176,25 @@ public class Domain {
 
 
 	/**
+	 * Returns the model for the given group, if one is defined.
+	 * Else, returns null.
 	 * 
-	 * @param userPrediction
-	 * @return
+	 * @param group the model group
+	 * @return the associated model
 	 */
-	public Model getModel(ModelType type) {
-		return models.get(type);
+	public Model getModel(ModelGroup group) {
+		return models.get(group);
 	}
 
 
 
 	/**
+	 * Returns the types declared in the model
 	 * 
-	 * @return
+	 * @return all types
 	 */
 	public List<GenericType> getTypes() {
-		return new ArrayList<GenericType>(allTypes.values());
+		return new ArrayList<GenericType>(types.values());
 	}
 
 

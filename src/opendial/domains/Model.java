@@ -22,12 +22,13 @@ package opendial.domains;
 import java.util.ArrayList;
 import java.util.List;
 
-import opendial.arch.DialConstants.ModelType;
+import opendial.arch.DialConstants.ModelGroup;
 import opendial.domains.rules.Rule;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a rule-based probabilistic model, defined by a set of rules,
+ * and tagged for a particular model group.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -35,33 +36,51 @@ import opendial.utils.Logger;
  */
 public class Model {
 
+	// logger
 	static Logger log = new Logger("Model", Logger.Level.NORMAL);
 	
-	ModelType type;
+	// the model group
+	ModelGroup group;
 	
+	// the list of rules for the model
 	List<Rule> rules;
 	
 	
-	public Model(ModelType type) {
-		this.type = type;
+	/**
+	 * Creates a new model (tagged with a particular group), with an
+	 * empty set of rules.
+	 * 
+	 * @param group the model group
+	 */
+	public Model(ModelGroup group) {
+		this.group = group;
 		rules = new ArrayList<Rule>();
 	}
 	
+	
+	/**
+	 * Adds a rule to the model
+	 * 
+	 * @param rule the rule to add
+	 */
 	public void addRule(Rule rule) {
 		rules.add(rule);
 	}
 
 	/**
+	 * Returns the group for the model
 	 * 
-	 * @return
+	 * @return the group of the model
 	 */
-	public ModelType getType() {
-		return type;
+	public ModelGroup getGroup() {
+		return group;
 	}
 
+	
 	/**
+	 * Returns the list of rules contained in the model
 	 * 
-	 * @return
+	 * @return the list of rules
 	 */
 	public List<Rule> getRules() {
 		return rules;

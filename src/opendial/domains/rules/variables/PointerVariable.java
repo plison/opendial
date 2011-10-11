@@ -21,31 +21,42 @@ package opendial.domains.rules.variables;
 
 
 /**
+ * Representation of a pointer variable, i.e. a variable which is only
+ * a pointer/reference for another variable already defined.
  * 
+ * Pointer variables are primarily used to define output variables which
+ * are already specified as input variables.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class PointerVariable extends Variable {
+public class PointerVariable extends StandardVariable {
 
-	// static Logger log = new Logger("PointerVariable", Logger.Level.NORMAL);
-
-	Variable targetVariable ;
+	// the variable which is pointed at
+	StandardVariable targetVariable ;
+	
+	
 	/**
-	 * @param denotation
-	 * @param type
+	 * Creates a new pointer variable, based on the provided target variable
+	 * (i.e. the variable for which the pointer is a reference)
+	 * 
+	 * @param targetVariable the variable which is pointed at
 	 */
-	public PointerVariable(Variable targetVariable) {
-		super(targetVariable.getDenotation(), targetVariable.getType());
+	public PointerVariable(StandardVariable targetVariable) {
+		super(targetVariable.getIdentifier(), targetVariable.getType());
 		this.targetVariable = targetVariable;
 	}
+	
+	
 	/**
+	 * Returns the target variable
 	 * 
-	 * @return
+	 * @return the target variable
 	 */
-	public Object getTarget() {
+	public StandardVariable getTarget() {
 		return targetVariable;
 	}
+	
 
 }

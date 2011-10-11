@@ -4,7 +4,7 @@
 <rule>
 	<output>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o"/>
+		<var feature="obj" base="a_u" id="o"/>
 	</output>
 	<case>
 		<effect prob="0.33">
@@ -22,13 +22,13 @@
 
 <rule>
 	<input>
-		<var denotation="i" type="intent"/>
-		<var feature="obj" base="i" denotation="o1"/>
+		<var id="i" type="intent"/>
+		<var feature="obj" base="i" id="o1"/>
 		<var label="a_m"/>
 	</input>
 	<output>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o2"/>
+		<var feature="obj" base="a_u" id="o2"/>
 	</output>
 	<case>
 		<condition>

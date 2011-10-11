@@ -21,13 +21,12 @@ package opendial.domains.rules.conditions;
 
 
 /**
- * 
+ * Generic interface for a rule condition
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public abstract class Condition {
+public interface Condition {
 
-	// static Logger log = new Logger("Condition", Logger.Level.NORMAL);
 }

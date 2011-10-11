@@ -20,6 +20,8 @@
 package opendial.inputs;
 
 /**
+ * Generic interface for an observation (could be an N-Best list,
+ * a perceived object, a button pressed, etc.)
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)

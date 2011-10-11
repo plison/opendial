@@ -25,10 +25,8 @@ package opendial.arch;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
- */
+ */ 
 public class DialConstants {
-
-	// static Logger log = new Logger("DialConstants", Logger.Level.NORMAL);
 	
 	/**
 	 * Binary logical operators (used to express combination of several
@@ -38,7 +36,7 @@ public class DialConstants {
 	
 	
 	/**
-	 * Equality/unequality relations (used in conditions)
+	 * Equality/inequality relations (used in conditions)
 	 */
 	public static enum Relation {EQUAL, UNEQUAL}
 
@@ -46,7 +44,7 @@ public class DialConstants {
 	/**
 	 * Enumeration of possible model types
 	 */
-	public static enum ModelType {
+	public static enum ModelGroup {
 		USER_REALISATION,
 		USER_PREDICTION,
 		USER_TRANSITION,
@@ -56,6 +54,9 @@ public class DialConstants {
 	}
 	
 	
+	/**
+	 * Primitive data types
+	 */
 	public static enum PrimitiveType {
 		BOOLEAN,
 		INTEGER,

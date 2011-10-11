@@ -32,7 +32,7 @@ import opendial.readers.XMLDomainReader;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Testing for the general dialogue system pipeline
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -51,7 +51,7 @@ public class DialogueSystemTest1 {
 		XMLDomainReader reader = new XMLDomainReader();
 		Domain domain = reader.extractDomain(dialDomain);
 		DialogueSystem ds = new DialogueSystem(domain);
-		Action action = ds.getNextAction();
+		Action action = ds.pollNextAction();
 		log.debug("yoowhoo, action retrieved!!");
 		assertTrue(action instanceof VoidAction);
 	}
@@ -66,7 +66,7 @@ public class DialogueSystemTest1 {
 		NBestList obs = new NBestList();
 		obs.addUtterance("robot, please do X!", 1.0f);
 		ds.addObservation(obs);
-		Action action = ds.getNextAction();
+		Action action = ds.pollNextAction();
 		log.debug("yoowhoo, action retrieved!!");
 		assertTrue(action instanceof VoidAction);
 	}
@@ -84,7 +84,7 @@ public class DialogueSystemTest1 {
 
 		Thread.sleep(200);
 
-		Action action = ds.getNextAction();
+		Action action = ds.pollNextAction();
 		log.debug("yoowhoo, action retrieved!!");
 		assertTrue(action instanceof VoidAction);
 	}

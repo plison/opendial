@@ -4,12 +4,12 @@
 <rule>
 	<input>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o1"/>
+		<var feature="obj" base="a_u" id="o1"/>
 		<var label="a_m"/>
 	</input>
 	<output>
-			<var type="intent" denotation="i"/>
-			<var feature="obj" base="i" denotation="o2"/>
+			<var type="intent" id="i"/>
+			<var feature="obj" base="i" id="o2"/>
 	</output>
 	<case>
 		<condition operator="and">
@@ -29,12 +29,12 @@
 <rule>
 	<input>
 		<var label="a_u"/>
-		<var feature="obj" base="a_u" denotation="o1"/>
+		<var feature="obj" base="a_u" id="o1"/>
 		<var label="a_m"/>
 	</input>
 	<output>
-		<var type="intent" denotation="i"/>
-		<var feature="obj" base="i" denotation="o2"/>
+		<var type="intent" id="i"/>
+		<var feature="obj" base="i" id="o2"/>
 	</output>
 	<case>
 		<condition operator="and">

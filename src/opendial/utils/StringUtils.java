@@ -34,9 +34,17 @@ import opendial.utils.Logger;
  */
 public class StringUtils {
 
+	// logger
 	static Logger log = new Logger("StringUtils", Logger.Level.NORMAL);
 	
 	
+	/**
+	 * Extracts slots in a content.  Slots must be written as ${variable},
+	 * where "variable" can be anything
+	 * 
+	 * @param content the content to extract
+	 * @return the list of slots
+	 */
 	public static List<String> extractSlots(String content) {
 		
 		List<String> slots = new LinkedList<String>();
@@ -55,5 +63,19 @@ public class StringUtils {
 		return slots;
 	}
 	
+	
+	/**
+	 * Returns an string indent of a given length
+	 * 
+	 * @param length the length of the string
+	 * @return the string
+	 */
+	public static String makeIndent(int length) {
+		String str = "";
+		for (int i = 0 ; i < length ; i++) {
+			str += " ";
+		}
+		return str;
+	}
 	
 }

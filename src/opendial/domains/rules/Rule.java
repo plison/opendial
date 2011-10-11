@@ -25,11 +25,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import opendial.domains.rules.variables.Variable;
+import opendial.domains.rules.variables.StandardVariable;
 import opendial.utils.Logger;
 
 /**
- * Representation of a rule.
+ * Representation of a rule.  A rule is specified with a list of input variables,
+ * a list of output variables, and a list of cases (which are condition-effects 
+ * mappings defined on the input and output variables).
+ * 
+ * <p>It is important to note that the list of cases is <>ordered</i>, and that this 
+ * ordering matters for the way probabilistic inference is performed on the rule. 
+ * The list of cases is indeed defined as an <i>if then else</i> construction:
+ * <pre>
+ * if (condition1) then ...
+ * else if (condition2) then ...
+ * else if (condition3) then ...
+ * else then ...
+ * </pre> 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -37,110 +49,188 @@ import opendial.utils.Logger;
  */
 public class Rule {
 
+	// logger
 	static Logger log = new Logger("Rule", Logger.Level.DEBUG);
 	
-	Map<String,Variable> inputs;
+	// the list of input variables, anchored by their identifier
+	Map<String,StandardVariable> inputs;
 	
-	Map<String,Variable> outputs;
+	// the list of output variables, anchored by their identifier
+	Map<String,StandardVariable> outputs;
 	
+	// the list of cases
 	List<Case> cases;
 	
+	/**
+	 * Creates a new rule, with empty inputs and outputs, and no cases.
+	 */
 	public Rule() {
-		inputs = new HashMap<String,Variable>();
-		outputs = new HashMap<String,Variable>();
+		inputs = new HashMap<String,StandardVariable>();
+		outputs = new HashMap<String,StandardVariable>();
 		cases = new LinkedList<Case>();
 	}
 	
-	public void addInputVariable(Variable var) {
-		inputs.put(var.getDenotation(), var);
+	/**
+	 * Adds an input variable to the rule
+	 * 
+	 * @param var the input variable
+	 */
+	public void addInputVariable(StandardVariable var) {
+		if (inputs.containsKey(var.getIdentifier())) {
+			log.warning("Identifier " + var.getIdentifier() + 
+				" has already been defined in the input variables!");
+		}
+		inputs.put(var.getIdentifier(), var);
 	}
 	
-	public void addInputVariables(List<Variable> vars) {
-		for (Variable var: vars) {
+	/**
+	 * Adds a list of input variables to the rule
+	 * 
+	 * @param vars the list of input variables
+	 */
+	public void addInputVariables(List<StandardVariable> vars) {
+		for (StandardVariable var: vars) {
 			addInputVariable(var);
 		}
 	}
 	
-	public void addOutputVariable(Variable var) {
-		outputs.put(var.getDenotation(), var);
+	/**
+	 * Adds an output variable to the rule
+	 * 
+	 * @param var the output variable
+	 */
+	public void addOutputVariable(StandardVariable var) {
+		if (outputs.containsKey(var.getIdentifier())) {
+			log.warning("Identifier " + var.getIdentifier() + 
+				" has already been defined in the output variables!");
+		}
+		outputs.put(var.getIdentifier(), var);
 	}
 	
-	public void addOutputVariables(List<Variable> vars) {
-		for (Variable var: vars) {
+	
+	/**
+	 * Adds a list of output variables to the rule
+	 * 
+	 * @param vars the output variables
+	 */
+	public void addOutputVariables(List<StandardVariable> vars) {
+		for (StandardVariable var: vars) {
 			addOutputVariable(var);
 		}
 	}
 
+	
+	/**
+	 * Adds a new case to the rule (inserted at the end of the list)
+	 * 
+	 * @param case1 the case to add
+	 */
 	public void addCase(Case case1) {
 		cases.add(case1);
 	}
 
-	
-	public boolean hasInputVariable(String denotation) {
-		return inputs.containsKey(denotation);
+	/**
+	 * Returns true if there is an input variable referenced by the
+	 * given identifier, false otherwise
+	 * 
+	 * @param identifier the id to check
+	 * @return false if input variable is found, false otherwise
+	 */
+	public boolean hasInputVariable(String identifier) {
+		return inputs.containsKey(identifier);
 	}
-	public Variable getInputVariable(String denotation) {
-		return inputs.get(denotation);
-	}
 	
+	/**
+	 * Returns the input variable referenced by the identifier, if 
+	 * one exists.  Else, returns null.
+	 * 
+	 * @param identifier the identifier for the variable
+	 * @return the variable
+	 */
+	public StandardVariable getInputVariable(String identifier) {
+		return inputs.get(identifier);
+	}
+
+	/**
+	 * Returns true if there is an output variable referenced by the
+	 * given identifier, false otherwise
+	 * 
+	 * @param identifier the id to check
+	 * @return false if output variable is found, false otherwise
+	 */
 	public boolean hasOutputVariable(String denotation) {
 		return outputs.containsKey(denotation);
 	}
+
 	
-	public Variable getOutputVariable(String denotation) {
+	/**
+	 * Returns the output variable referenced by the identifier, if 
+	 * one exists.  Else, returns null.
+	 * 
+	 * @param identifier the identifier for the variable
+	 * @return the variable
+	 */
+	public StandardVariable getOutputVariable(String denotation) {
 		return outputs.get(denotation);
 	}
 
 	/**
+	 * Returns the list of input variables for this rule
 	 * 
-	 * @return
+	 * @return the input variables
 	 */
-	public List<Variable> getInputVariables() {
-		return new ArrayList<Variable>(inputs.values());
+	public List<StandardVariable> getInputVariables() {
+		return new ArrayList<StandardVariable>(inputs.values());
 	}
 	
 	/**
+	 * Returns the list of output variables for this rule
 	 * 
-	 * @return
+	 * @return the output variables
 	 */
-	public List<Variable> getOutputVariables() {
-		return new ArrayList<Variable>(outputs.values());
+	public List<StandardVariable> getOutputVariables() {
+		return new ArrayList<StandardVariable>(outputs.values());
 	}
 
 	/**
+	 * Returns the (ordered) list of cases for the rule
 	 * 
-	 * @return
+	 * @return the cases
 	 */
 	public List<Case> getCases() {
 		return cases;
 	}
 
 	/**
+	 * Returns true if the rule has an input or output variable
+	 * referenced by the identifier
 	 * 
-	 * @param denotation
-	 * @return
+	 * @param identifier variable identifier
+	 * @return true if a variable has been found, false otherwise
 	 */
-	public boolean hasVariable(String denotation) {
-		if (inputs.containsKey(denotation)) {
+	public boolean hasVariable(String identifier) {
+		if (inputs.containsKey(identifier)) {
 			return true;
 		}
-		else if (outputs.containsKey(denotation)) {
+		else if (outputs.containsKey(identifier)) {
 			return true;
 		}
 		return false;
 	}
 
 	/**
+	 * Returns the variable which is referenced by the identifier,
+	 * if one exists.  Else, returns null.
 	 * 
-	 * @param denotation
-	 * @return
+	 * @param identifier the variable identifier
+	 * @return the variable if it exists in the rule, else null.
 	 */
-	public Variable getVariable(String denotation) {
-		if (inputs.containsKey(denotation)) {
-			return inputs.get(denotation);
+	public StandardVariable getVariable(String identifier) {
+		if (inputs.containsKey(identifier)) {
+			return inputs.get(identifier);
 		}
-		else if (outputs.containsKey(denotation)) {
-			return outputs.get(denotation);
+		else if (outputs.containsKey(identifier)) {
+			return outputs.get(identifier);
 		}
 		return null;
 	}

@@ -21,14 +21,13 @@ package opendial.outputs;
 
 
 /**
- * 
+ * Generic interface for a system action -- can be an utterance to synthesise via TTS,
+ * a physical movement to perform, a non-verbal sign, etc.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
 public interface Action {
-
-	// static Logger log = new Logger("AbstractOutput", Logger.Level.NORMAL);
 
 }
