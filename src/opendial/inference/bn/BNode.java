@@ -22,12 +22,9 @@ package opendial.inference.bn;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import opendial.inference.bn.distribs.GenericDistribution;
 import opendial.inference.bn.distribs.ProbabilityTable;
@@ -101,7 +98,7 @@ public class BNode {
 	 * @param val
 	 * @return
 	 */
-	private boolean hasValue(Object val) {
+	public boolean hasValue(Object val) {
 		return values.contains(val);
 	}
 
@@ -211,6 +208,15 @@ public class BNode {
 			allValues.put(n.getId(), n.getValues());
 		}
 		return allValues;
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<BNode> getOutputNodes() {
+		return new ArrayList<BNode>(outputNodes.values());
 	}
 
 }
