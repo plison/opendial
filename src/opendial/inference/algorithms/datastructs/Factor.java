@@ -17,119 +17,85 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference.bn;
+package opendial.inference.algorithms.datastructs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
-import opendial.arch.DialException;
-import opendial.utils.InferenceUtils;
+import opendial.inference.bn.Assignment;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Representation of a factor used in the Variable Elimination algorithm
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class BNetwork {
+public class Factor {
 
-	static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
+	 static Logger log = new Logger("Factor", Logger.Level.NORMAL);
 	
-	Map<String,BNode> nodes;
-	
-	public static final int MAX_LENGTH = 100;
-	
-	public static boolean autoCompletion = true;
+		Map<Assignment, Float> matrix;
+		
+		Map<String,Set<Object>> possibleValues;
 
-	public BNetwork () {
-		nodes = new HashMap<String, BNode>();
-	}
-	
-	
-	public BNode getNode(String nodeId) {
-		return nodes.get(nodeId);
-	}
-	
-	/**
-	 * Also check for acyclicity, for consistency in BN links (inputs, outputs).
-	 * 
-	 * @param node
-	 * @throws DialException
-	 */
-	public void addNode(BNode node) throws DialException {
-		if (autoCompletion) {
-			node.getDistribution().completeProbabilityTable();
+
+		public Factor() {
+			matrix = new HashMap<Assignment,Float>();
+			possibleValues = new HashMap<String,Set<Object>>();
+		}
+
+
+		public void addEntry (Assignment a, float value) {
+			matrix.put(a, value);
+			fillPossibleValues(a);
 		}
 		
-		if (!node.getDistribution().isWellFormed()) {
-			throw new DialException("Probability table for node " + node.getId() + " is not well-formed");
-		}
-		nodes.put(node.getId(), node);
-	}
-	
-	
-	public List<BNode> getNodes() {
-		return new ArrayList<BNode>(nodes.values());
-	}
-	
-	
-	/**
-	 * TODO: Check for infinite loops!
-	 * And 
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public List<BNode> getAncestors(BNode node, int max_length) {
-		List<BNode> ancestors = new LinkedList<BNode>();
 		
-		if (max_length <= 0) {
-			return ancestors;
-		}
-		for (BNode anc : node.getConditionalNodes()) {
-			ancestors.add(anc);
-			for (BNode anc2 : getAncestors(anc, max_length - 1)) {
-				if (!ancestors.contains(anc2)) {
-					ancestors.add(anc2);
+		public void fillPossibleValues(Assignment a) {
+			for (String var : a.getPairs().keySet()) {
+				if (!possibleValues.containsKey(var)) {
+					Set<Object> vals = new HashSet<Object>();
+					vals.add(a.getPairs().get(var));
+					possibleValues.put(var, vals);
+				}
+				else {
+					possibleValues.get(var).add(a.getPairs().get(var));
 				}
 			}
 		}
-		return ancestors;
-	}
 
+		public float getEntry(Assignment a) {
+			return matrix.get(a);
+		}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public List<BNode> getSortedNodes() {
-		List<BNode> endNodes = new LinkedList<BNode>();
-		for (BNode n : nodes.values()) {
-			if (n.getOutputNodes().isEmpty()) {
-				endNodes.add(n);
+		public Map<Assignment, Float> getMatrix() {
+			return matrix;
+		}
+
+		public Set<String> getVariables() {
+			if (!matrix.isEmpty()) {
+				return matrix.keySet().iterator().next().getPairs().keySet();
+			}
+			else {
+				return new HashSet<String>();
 			}
 		}
 		
-		List<BNode> sortedNodes = new LinkedList<BNode>();
-		sortedNodes.addAll(endNodes);
-		for (BNode n : endNodes) {
-			for (BNode anc2 : getAncestors(n, MAX_LENGTH))  {
-				if (!sortedNodes.contains(anc2)) {
-					sortedNodes.add(anc2);
-				}
-			}
+		public Map<String,Set<Object>> getPossibleValues() {
+			return possibleValues;
 		}
-		
-		return sortedNodes;
-	}
 
+
+		public String toString() {
+			String str = "";
+			for (Assignment a : matrix.keySet()) {
+				str += "P(" + a + ")=" + matrix.get(a) + "\n";
+			}
+			return str;
+		}
 
 }

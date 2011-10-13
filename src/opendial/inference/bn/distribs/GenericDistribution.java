@@ -34,7 +34,7 @@ import opendial.utils.Logger;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 23:02:19 #$
+ * @version $Date::                      $
  *
  */
 public abstract class GenericDistribution {
