@@ -19,9 +19,16 @@
 
 package opendial.inference.bn;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import opendial.arch.DialException;
+import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
@@ -35,53 +42,33 @@ public class BNetwork {
 
 	static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
 	
-	Map<String,BNode<?>> nodes;
+	Map<String,BNode> nodes;
 	
 	public static boolean autoCompletion = true;
 
 	public BNetwork () {
-		nodes = new HashMap<String, BNode<?>>();
+		nodes = new HashMap<String, BNode>();
 	}
 	
 	
-	public BNode<?> getNode(String nodeId) {
+	public BNode getNode(String nodeId) {
 		return nodes.get(nodeId);
 	}
 	
-	public void addNode(BNode<?> node) {
+	public void addNode(BNode node) throws DialException {
 		if (autoCompletion) {
-			node.completeProbabilityTable();
-		}
-		checkCorrectness(node);
-		nodes.put(node.getId(), node);
-	}
-
-	public void checkCorrectness(BNode<?> node) {
-		for (Assignment a : node.getAllPossibleAssignments()) {
-			if (!node.hasProb(a)) {
-				log.warning("probability for " + node.getId() + " not defined for assignment: " + a);
-			}
+			node.getDistribution().completeProbabilityTable();
 		}
 		
-		for (Assignment a : node.getCondAssignments()) {
-			float total = 0.0f;
-			
-			for (Object val : node.getValues()) {
-				Assignment a2 = new Assignment(a, node.getId(), val);
-				total += node.getProb(a2);
-			}
-			
-			if(total< 0.999f || total > 1.0f) {
-				log.warning("total probability for " + node.getId() + " not correctly normalised: "
-						+ total + " for conditial assignment " + a);
-				for (Object val : node.getValues()) {
-					Assignment a2 = new Assignment(a, node.getId(), val);
-					log.debug("P(" + a2 + ") = " + node.getProb(a2));
-				}
-				log.debug("-----");
-			}
+		if (!node.getDistribution().isWellFormed()) {
+			throw new DialException("Probability table for node " + node.getId() + " is not well-formed");
 		}
-
+		nodes.put(node.getId(), node);
+	}
+	
+	
+	public List<BNode> getNodes() {
+		return new ArrayList<BNode>(nodes.values());
 	}
 
 

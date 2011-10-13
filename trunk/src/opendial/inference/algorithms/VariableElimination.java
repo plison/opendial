@@ -17,21 +17,17 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference;
+package opendial.inference.algorithms;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.junit.Test;
-
-import opendial.arch.DialException;
-import opendial.inference.algorithms.NaiveInference;
 import opendial.inference.bn.Assignment;
-import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
+import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
@@ -41,72 +37,84 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class BNInferenceTest {
+public class VariableElimination {
 
-	static Logger log = new Logger("BNInferenceTest", Logger.Level.DEBUG);
+	static Logger log = new Logger("VariableElimination", Logger.Level.NORMAL);
 	
 	
-	public BNetwork constructBayesianNetwork() throws DialException {
-		BNetwork bn = new BNetwork();
+	
+	private static List<Factor> sumOut(BNode node, List<Factor> factors) {
+		return factors;
 		
-		List<Object> bValues = Arrays.asList((Object)Boolean.TRUE, Boolean.FALSE);
-		
-		BNode b = new BNode("Burglary");
-		b.addValues(bValues);
-		b.addRow(new Assignment("Burglary"), 0.001f);
-		bn.addNode(b);
-		
-		BNode e = new BNode("Earthquake");
-		e.addValues(bValues);
-		e.addRow(new Assignment("Earthquake"), 0.002f);
-		bn.addNode(e);
-
-		BNode a = new BNode("Alarm");
-		a.addValues(bValues);
-		a.addConditionalNode(b);
-		a.addConditionalNode(e);
-		a.addRow(new Assignment(Arrays.asList("Burglary", "Earthquake", "Alarm")), 0.95f);
-		a.addRow(new Assignment(Arrays.asList("Burglary", "!Earthquake", "Alarm")), 0.94f);
-		a.addRow(new Assignment(Arrays.asList("!Burglary", "Earthquake", "Alarm")), 0.29f);
-		a.addRow(new Assignment(Arrays.asList("!Burglary", "!Earthquake", "Alarm")), 0.001f);
-		bn.addNode(a);
-
-		BNode mc = new BNode("MaryCalls");
-		mc.addValues(bValues);
-		mc.addConditionalNode(a);
-		mc.addRow(new Assignment(Arrays.asList("Alarm", "MaryCalls")), 0.7f);
-		mc.addRow(new Assignment(Arrays.asList("!Alarm", "MaryCalls")), 0.01f);
-		bn.addNode(mc);
-		
-		BNode jc = new BNode("JohnCalls");
-		jc.addValues(bValues);
-		jc.addConditionalNode(a);
-		jc.addRow(new Assignment(Arrays.asList("Alarm", "JohnCalls")), 0.9f);
-		jc.addRow(new Assignment(Arrays.asList("!Alarm", "JohnCalls")), 0.05f);
-		bn.addNode(jc);
-		
-		return bn;
 	}
 	
 	
-	@Test
-	public void bayesianNetworkTest1() throws DialException {
+	private static Factor pointwiseProduct (List<Factor> factors) {
 		
-		BNetwork bn = constructBayesianNetwork();
+		Map<String,Set<Object>> unionVars = new HashMap<String,Set<Object>>();
+		for (Factor f: factors) {
+			for (String var : f.getVariables()) {
+				unionVars.put(var, f.getValues(var));
+			}
+		}
 		
-		Map<Assignment,Float> fullJoint = NaiveInference.getFullJoint(bn);
+		Factor productFactor = new Factor(unionVars);
+		
+		List<Assignment> combinations = InferenceUtils.getAllCombinations(unionVars);
+		
+		for (Assignment a : combinations) {
+			float product = 1.0f;
+			for (Factor f: factors) {
+				Assignment reducedAssignment = InferenceUtils.trimAssignment(a, f.getVariables());
+				product = product * f.getEntry(reducedAssignment);
+			}
+			productFactor.addEntry(a, product);
+		}
+		
+		
+		return productFactor;
+	}
+	
+	
+	 private static Factor makeFactor(BNode node, Assignment evidence) {
+		 
+		 Factor f = new Factor(node.getAllValues());
+		 
+		 for (Assignment a: node.getAllPossibleAssignments()) {
+			 if (a.contains(evidence)) {
+				 a.removePairs(evidence.getPairs().keySet());
+				 f.addEntry(a, node.getProb(a));
+			 }
+		 }
+		 return f;
+	}
+}
 
-		assertEquals(0.000628f, fullJoint.get(new Assignment(
-				Arrays.asList("JohnCalls", "MaryCalls", "Alarm", "!Burglary", "!Earthquake"))), 0.000001f);
-		
-		assertEquals(0.9367428f, fullJoint.get(new Assignment(
-				Arrays.asList("!JohnCalls", "!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))), 0.000001f);
-		
-		Map<Assignment,Float> query = NaiveInference.query(bn, Arrays.asList("Burglary"), 
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		
-		assertEquals(0.7158281f, query.get(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
-		assertEquals(0.28417188f, query.get(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
-		
+
+ final class Factor {
+	
+	Map<Assignment, Float> matrix;
+	
+	Map<String,Set<Object>> values;
+	
+	public Factor(Map<String,Set<Object>> values) {
+		matrix = new HashMap<Assignment,Float>();
+		this.values = values;
+	}
+	
+	public void addEntry (Assignment a, float value) {
+		matrix.put(a, value);
+	}
+	
+	public float getEntry(Assignment a) {
+		return matrix.get(a);
+	}
+	
+	public Set<String> getVariables() {
+		return values.keySet();
+	}
+	
+	public Set<Object> getValues(String var) {
+		return values.get(var);
 	}
 }

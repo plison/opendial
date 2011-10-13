@@ -17,20 +17,16 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference;
+package opendial.utils;
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 
-import org.junit.Test;
-
-import opendial.arch.DialException;
-import opendial.inference.algorithms.NaiveInference;
 import opendial.inference.bn.Assignment;
-import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
 import opendial.utils.Logger;
 
@@ -41,72 +37,55 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class BNInferenceTest {
+public class InferenceUtils {
 
-	static Logger log = new Logger("BNInferenceTest", Logger.Level.DEBUG);
+	static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
 	
 	
-	public BNetwork constructBayesianNetwork() throws DialException {
-		BNetwork bn = new BNetwork();
+	public static List<Assignment> getAllCombinations(Map<String,Set<Object>> valuesMatrix) {
+				
+		List<Assignment> assignments = new LinkedList<Assignment>();
+		assignments.add(new Assignment());
 		
-		List<Object> bValues = Arrays.asList((Object)Boolean.TRUE, Boolean.FALSE);
-		
-		BNode b = new BNode("Burglary");
-		b.addValues(bValues);
-		b.addRow(new Assignment("Burglary"), 0.001f);
-		bn.addNode(b);
-		
-		BNode e = new BNode("Earthquake");
-		e.addValues(bValues);
-		e.addRow(new Assignment("Earthquake"), 0.002f);
-		bn.addNode(e);
+		for (String label : valuesMatrix.keySet()) {
 
-		BNode a = new BNode("Alarm");
-		a.addValues(bValues);
-		a.addConditionalNode(b);
-		a.addConditionalNode(e);
-		a.addRow(new Assignment(Arrays.asList("Burglary", "Earthquake", "Alarm")), 0.95f);
-		a.addRow(new Assignment(Arrays.asList("Burglary", "!Earthquake", "Alarm")), 0.94f);
-		a.addRow(new Assignment(Arrays.asList("!Burglary", "Earthquake", "Alarm")), 0.29f);
-		a.addRow(new Assignment(Arrays.asList("!Burglary", "!Earthquake", "Alarm")), 0.001f);
-		bn.addNode(a);
+			List<Assignment> assignments2 = new LinkedList<Assignment>();
 
-		BNode mc = new BNode("MaryCalls");
-		mc.addValues(bValues);
-		mc.addConditionalNode(a);
-		mc.addRow(new Assignment(Arrays.asList("Alarm", "MaryCalls")), 0.7f);
-		mc.addRow(new Assignment(Arrays.asList("!Alarm", "MaryCalls")), 0.01f);
-		bn.addNode(mc);
-		
-		BNode jc = new BNode("JohnCalls");
-		jc.addValues(bValues);
-		jc.addConditionalNode(a);
-		jc.addRow(new Assignment(Arrays.asList("Alarm", "JohnCalls")), 0.9f);
-		jc.addRow(new Assignment(Arrays.asList("!Alarm", "JohnCalls")), 0.05f);
-		bn.addNode(jc);
-		
-		return bn;
+			for (Object val: valuesMatrix.get(label)) {
+				
+				for (Assignment ass: assignments) {
+					Assignment ass2 = new Assignment(ass, label, val);
+					assignments2.add(ass2);
+				}
+			}
+			assignments = assignments2;
+		}		
+		return assignments;
 	}
 	
 	
-	@Test
-	public void bayesianNetworkTest1() throws DialException {
-		
-		BNetwork bn = constructBayesianNetwork();
-		
-		Map<Assignment,Float> fullJoint = NaiveInference.getFullJoint(bn);
 
-		assertEquals(0.000628f, fullJoint.get(new Assignment(
-				Arrays.asList("JohnCalls", "MaryCalls", "Alarm", "!Burglary", "!Earthquake"))), 0.000001f);
-		
-		assertEquals(0.9367428f, fullJoint.get(new Assignment(
-				Arrays.asList("!JohnCalls", "!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))), 0.000001f);
-		
-		Map<Assignment,Float> query = NaiveInference.query(bn, Arrays.asList("Burglary"), 
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		
-		assertEquals(0.7158281f, query.get(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
-		assertEquals(0.28417188f, query.get(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
-		
+
+	public static Assignment trimAssignment(Assignment fullAssign, Set<String> variables) {
+		Assignment trimedAssign = new Assignment();
+		for (String key : fullAssign.getPairs().keySet()) {
+			if (variables.contains(key)) {
+				trimedAssign.addPair(key, fullAssign.getPairs().get(key));	
+			}
+		}
+		return trimedAssign;
 	}
+	
+	public static Map<Assignment, Float> normalise (Map<Assignment, Float> distrib) {
+		float total = 0.0f;
+		for (Assignment a : distrib.keySet()) {
+			total += distrib.get(a);
+		}
+		Map<Assignment,Float> normalisedDistrib = new HashMap<Assignment,Float>();
+		for (Assignment a: distrib.keySet()) {
+			normalisedDistrib.put(a, distrib.get(a)/ total);
+		}
+		return normalisedDistrib;
+	}
+	
 }
