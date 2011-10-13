@@ -43,6 +43,11 @@ public class Assignment {
 		pairs = new TreeMap<String,Object>();
 	}
 	
+	public Assignment(Assignment a) {
+		pairs = a.copy().getPairs();
+	}
+	
+	
 	public Assignment(String id, Object val) {
 		this();
 		addPair(id,val);
@@ -168,6 +173,18 @@ public class Assignment {
 			else {
 				return false;
 			}	
+		}
+		return true;
+	}
+	
+	
+	public boolean consistentWith(Assignment evidence) {
+		for (String evidenceVar : evidence.getPairs().keySet()) {
+			if (pairs.containsKey(evidenceVar)) {
+				if (!pairs.get(evidenceVar).equals(evidence.getPairs().get(evidenceVar))) {
+					return false;
+				}
+			}
 		}
 		return true;
 	}

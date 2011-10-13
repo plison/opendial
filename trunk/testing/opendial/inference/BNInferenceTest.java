@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import opendial.arch.DialException;
 import opendial.inference.algorithms.NaiveInference;
+import opendial.inference.algorithms.VariableElimination;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
@@ -105,6 +106,20 @@ public class BNInferenceTest {
 		Map<Assignment,Float> query = NaiveInference.query(bn, Arrays.asList("Burglary"), 
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		
+		assertEquals(0.7158281f, query.get(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
+		assertEquals(0.28417188f, query.get(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
+		
+	}
+	
+	@Test
+	public void bayesianNetworkTest2() throws DialException {
+		
+		BNetwork bn = constructBayesianNetwork();
+		
+		Map<Assignment,Float> query = VariableElimination.query(bn, Arrays.asList("Burglary"), 
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		
+		log.debug("Query: " + query);
 		assertEquals(0.7158281f, query.get(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
 		assertEquals(0.28417188f, query.get(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
 		
