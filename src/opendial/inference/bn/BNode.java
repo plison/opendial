@@ -27,8 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
+import opendial.inference.bn.distribs.GenericDistribution;
 import opendial.inference.bn.distribs.ProbabilityTable;
+import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
@@ -38,118 +41,60 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class BNode<T> {
+public class BNode {
 
 	static Logger log = new Logger("BNode", Logger.Level.NORMAL);
 
 	String id;
 
-	Set<T> values;
+	Set<Object> values;
 
-	Map<String, BNode<?>> condNodes ;
+	Map<String, BNode> inputNodes ;
+	Map<String, BNode> outputNodes;
 
-	ProbabilityTable table;
+	GenericDistribution table;
 	
-
-
+	
 	public BNode(String id) {
 		this.id = id;
-		condNodes = new HashMap<String,BNode<?>>();
-		values = new HashSet<T>();
+		values = new HashSet<Object>();
+		
+		inputNodes = new HashMap<String, BNode>();
+		outputNodes = new HashMap<String, BNode>();
+		
 		table = new ProbabilityTable();
+	
 	}
 
-	public BNode(Set<T> values) {
+
+	public BNode(Set<Object> values) {
 		this.values = values;
+		
 	}
 
-	public void addConditionalNode(BNode<?> node) {
-		condNodes.put(node.getId(), node);
+	public void addConditionalNode(BNode node) {
+		inputNodes.put(node.getId(), node);
+		table.addDepValues(node.getId(), node.getValues());
+		node.addOutputNode(this);
 	}
 
+	
+	protected void addOutputNode(BNode node) {
+		outputNodes.put(node.getId(), node);
+	}
+	
+	
+	
 	public void addRow(Assignment assignment, float prob) {
-		checkValidAssignment(assignment);
-		table.addRow(assignment, prob);		
-	}
-	
-	
-
-	public void completeProbabilityTable() {
-		for (Assignment reducedAss : getCondAssignments()) {
-			List<Assignment> asses = table.getIncludingAssignments (reducedAss);
-			List<Object> uncovered = getUncoveredValues(asses);
-			if (uncovered.size() == 1) {
-				log.debug("Auto completion!!");
-				Assignment lastAss = new Assignment(reducedAss, id, uncovered.get(0));
-				table.addRow(lastAss, getRemainingProbability(asses));
-			}
+		
+		if (table instanceof ProbabilityTable) {
+			((ProbabilityTable)table).addRow(assignment, prob);		
 		}
-	}
-
-
-
-	public float getRemainingProbability(List<Assignment> asses) {
-		float remaining = 1.0f;
-		for (Assignment ass: asses) {
-			remaining = remaining - table.getProb(ass);
+		else {
+			log.warning("distribution is not defined as a CPD, cannot add rows");
 		}
-		return remaining;
-	}
-
-	
-	public List<Assignment> getCondAssignments() {
-		List<Assignment> result = new LinkedList<Assignment>();
-		for (Assignment assignment : table.getAllAssignments()) {
-			Assignment reducedAss = assignment.copy();
-			reducedAss.removeAssignment(id);
-			result.add(reducedAss);
-		}
-		return result;
-	}
-	
-	
-	private List<Object> getUncoveredValues(List<Assignment> asses) {
-		List<Object> coveredVals = new LinkedList<Object>();
-		for (Assignment ass : asses) {
-			Object val = ass.getSubAssignment(id);
-			coveredVals.add(val);
-		}
-		List<Object> uncoveredVals = new LinkedList<Object>();
-		for (Object val : values) {
-			if (!coveredVals.contains(val)) {
-				uncoveredVals.add(val);
-			}
-		}
-		return uncoveredVals;
 	}
  
-
-	public void checkValidAssignment(Assignment assignment) {
-		if (assignment.getSize() != condNodes.size() +1) {
-			log.warning("assignment has a different number of variables than the node: " 
-					+ assignment.getSize() +  " != " + (condNodes.size() + 1));
-		}
-		SortedMap<String,Object> assignments = assignment.getAssignments();
-		for (String key : assignments.keySet()) {
-			Object val = assignments.get(key);
-			
-			if (id.equals(key)) {
-				if (!hasValue(val)) {
-					log.warning("assignement " + key + "= " + val + " uses a value not present in node");	
-				}
-			}
-			else if (condNodes.containsKey(key)) {
-				BNode<?> node = condNodes.get(key);
-				if (!node.hasValue(val)) {
-					log.warning("assignement " + key + "= " + val + " uses a value not present in the input node");
-				}
-			}
-			else {
-				log.warning("assignment with label " + key + " which does not exist in the node or its inputs");
-			}
-		}
-	}
-
 
 	/**
 	 * 
@@ -160,8 +105,14 @@ public class BNode<T> {
 		return values.contains(val);
 	}
 
-	public void addValue(T val) {
+	
+	public void addValue(Object val) {
 		values.add(val);
+		table.addHeadValue(id, val);
+		for (String nodeId : outputNodes.keySet()) {
+			BNode oNode = outputNodes.get(nodeId);
+			oNode.getDistribution().addDepValues(id, val);
+		}
 	}
 
 
@@ -173,45 +124,37 @@ public class BNode<T> {
 	 * 
 	 * @return
 	 */
-	public Set<T> getValues() {
+	public Set<Object> getValues() {
 		return values;
 	}
 
 	public List<Assignment> getAllPossibleAssignments() {
-		List<Assignment> assignments = new LinkedList<Assignment>();
-		for (T val : values) {
-			assignments.add(new Assignment(getId(), val));
-		}
-
-		for (BNode<?> inputNode : condNodes.values()) {
-			for (Object val: inputNode.getValues()) {
-
-				List<Assignment> assignments2 = new LinkedList<Assignment>(assignments);
-
-				for (Assignment ass: assignments) {
-					assignments2.add(new Assignment(ass, inputNode.getId(), val));
-				}
-
-				assignments = assignments2;
-			}
-		}
-		return assignments;
+		Map<String,Set<Object>> allValues = getAllValues();
+		return InferenceUtils.getAllCombinations(allValues);
 	}
+	
+	
+	
 	/**
 	 * 
 	 * @return
 	 */
-	public List<BNode<?>> getConditionalNodes() {
-		return new ArrayList<BNode<?>>(condNodes.values());
+	public List<BNode> getConditionalNodes() {
+		return new ArrayList<BNode>(inputNodes.values());
 	}
 
+	
+	public List<String> getConditionalNodeIds() {
+		return new ArrayList<String>(inputNodes.keySet());
+	}
+	
 	/**
 	 * 
 	 * @param a
 	 * @return
 	 */
 	public boolean hasProb(Assignment a) {
-		return table.hasProb(a);
+		return table.hasDefinedProb(a);
 	}
 
 	/**
@@ -221,6 +164,53 @@ public class BNode<T> {
 	 */
 	public float getProb(Assignment a) {
 		return table.getProb(a);
+	}
+	
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public GenericDistribution getDistribution() {
+		return table;
+	}
+
+
+	/**
+	 * 
+	 * @param bValues
+	 */
+	public void addValues(List<Object> vals) {
+		for (Object val: vals) {
+			addValue(val);
+		}
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Set<String> getVariables() {
+		Set<String> vars = new HashSet<String>();
+		vars.add(id);
+		vars.addAll(inputNodes.keySet());
+		return vars;
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Map<String, Set<Object>> getAllValues() {
+		Map<String,Set<Object>> allValues = new HashMap<String,Set<Object>>();
+		allValues.put(id, values);
+		for (BNode n : inputNodes.values()) {
+			allValues.put(n.getId(), n.getValues());
+		}
+		return allValues;
 	}
 
 }

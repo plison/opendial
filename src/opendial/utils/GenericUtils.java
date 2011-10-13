@@ -29,4 +29,5 @@ package opendial.utils;
 public class GenericUtils {
 
 	// static Logger log = new Logger("GenericUtils", Logger.Level.NORMAL);
+	
 }

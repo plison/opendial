@@ -21,6 +21,7 @@ package opendial.inference.bn;
 
 import java.util.List;
 import java.util.SortedMap;
+import java.util.Set;
 import java.util.TreeMap;
 
 import opendial.utils.Logger;
@@ -36,15 +37,15 @@ public class Assignment {
 
 	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
 	
-	SortedMap<String,Object> assignments;
+	SortedMap<String,Object> pairs;
 	
 	public Assignment() {
-		assignments = new TreeMap<String,Object>();
+		pairs = new TreeMap<String,Object>();
 	}
 	
 	public Assignment(String id, Object val) {
 		this();
-		addAssignment(id,val);
+		addPair(id,val);
 	}
 	
 	public Assignment(String id) {
@@ -65,25 +66,31 @@ public class Assignment {
 	 * @param val
 	 */
 	public Assignment(Assignment ass, String id, Object val) {
-		assignments = ass.getAssignments();
-		addAssignment(id, val);
+		pairs = ass.copy().getPairs();
+		addPair(id, val);
+	}
+	
+	
+	public Assignment(Assignment ass1, Assignment ass2) {
+		pairs = ass1.copy().getPairs();
+		addAssignments(ass2.copy().getPairs());
 	}
 
-	public void addAssignment(String id, Object val) {
-		assignments.put(id, val);
+	public void addPair(String id, Object val) {
+		pairs.put(id, val);
 	}
 	
 	public void addAssignment(String id) {
 		if (!id.startsWith("!")) {
-			addAssignment(id, Boolean.TRUE);
+			addPair(id, Boolean.TRUE);
 		}
 		else {
-			addAssignment(id.substring(1,id.length()), Boolean.FALSE);
+			addPair(id.substring(1,id.length()), Boolean.FALSE);
 		}
 	}
 	
 	public void addAssignments (SortedMap<String,Object> assignments) {
-		this.assignments.putAll(assignments);
+		this.pairs.putAll(assignments);
 	}
 	
 	
@@ -92,12 +99,15 @@ public class Assignment {
 	public int hashCode() {
 		double hash = 0;
 		int counter = 1;
-		for (String key: assignments.keySet()) {
-			hash += 2*counter*key.hashCode() + 3*counter*assignments.get(key).hashCode();
+		
+		for (String key: pairs.keySet()) {
+			hash += counter*key.hashCode()*pairs.get(key).hashCode()/100;
+			if (hash == 0) {
+				log.warning("hash value for assignment has dropped to 0, might cause problems");
+			}
 			counter++;
 		}
 		if (hash < Integer.MIN_VALUE || hash > Integer.MAX_VALUE) {
-			log.debug("Hashcode exceeds min or max value, scaling down");
 			hash = hash / 10000;
 		}
  		return (int)hash;
@@ -110,8 +120,8 @@ public class Assignment {
 	}
 	
 	
-	public SortedMap<String,Object> getAssignments() {
-		return assignments;
+	public SortedMap<String,Object> getPairs() {
+		return pairs;
 	}
 
 	/**
@@ -119,22 +129,22 @@ public class Assignment {
 	 * @return
 	 */
 	public int getSize() {
-		return assignments.size();
+		return pairs.size();
 	}
 	
 	
 	public Assignment copy() {
 		Assignment ass = new Assignment();
-		ass.addAssignments(assignments);
+		ass.addAssignments(pairs);
 		return ass;
 	}
 	
 	
 	public String toString() {
 		String str = "";
-		for (String key: assignments.keySet()) {
-			str += key + "=" + assignments.get(key) ;
-			if (!key.equals(assignments.lastKey())) {
+		for (String key: pairs.keySet()) {
+			str += key + "=" + pairs.get(key) ;
+			if (!key.equals(pairs.lastKey())) {
 				str += " ^ ";
 			}
 		}
@@ -148,10 +158,10 @@ public class Assignment {
 	 * @return
 	 */
 	public boolean contains(Assignment subAss) {	
-		for (String key : subAss.getAssignments().keySet()) {
-			if (assignments.containsKey(key)) {
-				Object val = subAss.getAssignments().get(key);
-				if (!assignments.get(key).equals(val)) {
+		for (String key : subAss.getPairs().keySet()) {
+			if (pairs.containsKey(key)) {
+				Object val = subAss.getPairs().get(key);
+				if (!pairs.get(key).equals(val)) {
 					return false;
 				}
 			}
@@ -162,21 +172,20 @@ public class Assignment {
 		return true;
 	}
 
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public Object getSubAssignment(String id) {
-		return assignments.get(id);
-	}
+
 
 	/**
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public void removeAssignment(String id) {
-		assignments.remove(id);
+	public void removePair(String id) {
+		pairs.remove(id);
+	}
+	
+	public void removePairs(Set<String> ids) {
+		for (String id: ids) {
+			pairs.remove(id);
+		}
 	}
 }

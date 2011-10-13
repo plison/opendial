@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import opendial.inference.bn.Assignment;
+import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
@@ -35,18 +36,23 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class ProbabilityTable {
+public class ProbabilityTable extends GenericDistribution {
 
 	static Logger log = new Logger("ProbabilityTable", Logger.Level.DEBUG);
 	
 	Map<Assignment, Float> table;
+		
 	
 	public ProbabilityTable() {
+		super();
 		table = new HashMap<Assignment,Float>();
 	}
+
 	
 	public void addRow(Assignment assignment, float prob) {
-		table.put(assignment, prob);
+		if (isValidAssignment(assignment)) {
+			table.put(assignment, prob);
+		}
 	}
 	
 	public float getProb (Assignment assignment) {
@@ -59,31 +65,74 @@ public class ProbabilityTable {
 		}
 	}
 	
-	public boolean hasProb (Assignment assignment) {
+	
+	public boolean hasDefinedProb (Assignment assignment) {
 		boolean result = table.containsKey(assignment);
 		return result;
 	}
 
-	/**
-	 * 
-	 * @param subAss
-	 * @return
-	 */
-	public List<Assignment> getIncludingAssignments(Assignment subAss) {
-		List<Assignment> result = new LinkedList<Assignment>();
-		for (Assignment ass: table.keySet()) {
-			if (ass.contains(subAss)) {
-				result.add(ass);
+	
+	public void completeProbabilityTable() {
+				
+		for (Assignment condAss : getConditionalAssignments()) {
+			List<Assignment> uncovered = getUncoveredAssignments(condAss);
+			if (uncovered.size() == 1) {
+				Assignment lastAss = new Assignment(condAss, uncovered.get(0));  // hack!
+				float remainingProb = 1 - getTotalProbability(condAss);
+				addRow(lastAss, remainingProb);
+		//		log.debug("Completing table with: P(" + lastAss + ") = " + remainingProb );
 			}
 		}
-		return result;
 	}
+	
+
+	
+	public boolean isWellFormed() {
+		
+		List<Assignment> condAssignments = getConditionalAssignments();
+		for (Assignment condAss : condAssignments) {
+			List<Assignment> uncovered = getUncoveredAssignments(condAss);
+			if (uncovered.size() > 0) {
+				for (Assignment uncoveredHead : uncovered) {
+					log.warning("Uncovered assignments in the probability table: P(" + uncoveredHead + " | " + condAss + ") = ?");
+				}
+				return false;
+			}
+			
+			float totalProbability = getTotalProbability(condAss);
+			if (totalProbability < 0.999f || totalProbability > 1.0001f) {
+				log.warning("total probability for conditional assignment " + condAss + " = " + totalProbability);
+				return false;
+			}
+		}
+		List<Assignment> possibleCondAssignments = InferenceUtils.getAllCombinations(depValues);
+		if (possibleCondAssignments.size() != condAssignments.size()) {
+			for (Assignment p : possibleCondAssignments) {
+				if (!condAssignments.contains(p)) {
+					log.warning("No distribution is declared for conditional assignment " + p);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	
 
 	/**
 	 * 
 	 * @return
 	 */
-	public Set<Assignment> getAllAssignments() {
+	public Set<Assignment> getDefinedAssignments() {
 		return table.keySet();
+	}
+	
+	
+	public String toString() {
+		String str = "";
+		for (Assignment assign: table.keySet()) {
+			str += "P(" + assign + ")=" + table.get(assign) + "\n";
+		}
+		return str;
 	}
 }
