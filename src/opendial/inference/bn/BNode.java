@@ -101,6 +101,12 @@ public class BNode implements Comparable<BNode> {
 		inputNodes = new HashMap<String, BNode>();
 	}
 	
+
+
+	// ===================================
+	//  SETTERS
+	// ===================================
+
 	
 	/**
 	 * Attaches a new input node
@@ -112,7 +118,41 @@ public class BNode implements Comparable<BNode> {
 	}
 
 	
- 
+
+	/**
+	 * Sets the distribution associated with the node.  Before setting the
+	 * distribution, the method (1) completes the table if necessary, (2)
+	 * ensures that the resulting distribution if well-formed
+	 * 
+	 * @param distrib the distribution
+	 * @throws DialException if the distribution is not well-formed
+	 */
+	public void setDistribution(Distribution distrib) throws DialException {
+
+		 if (distrib instanceof ProbabilityTable && autoCompletion) {
+			((ProbabilityTable)distrib).completeProbabilityTable();
+		}
+		
+		if (!distrib.isWellFormed()) {
+			throw new DialException("Probability table for node " + id + " is not well-formed");
+		}
+		
+		
+		for (Assignment a : getAllPossibleAssignments()) {
+			if (!distrib.hasProb(a)) {
+				throw new DialException("Probability distribution not defined for assignment: " + a);
+			}
+		}
+
+		this.distrib = distrib;
+	}
+	
+	
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+	
 
 	/**
 	 * Returns true if the node contains the following value,
@@ -226,7 +266,7 @@ public class BNode implements Comparable<BNode> {
 		vars.addAll(inputNodes.keySet());
 		return vars;
 	}
-
+	
 
 	/**
 	 * Returns the variables + values which are associated with the dependent 
@@ -243,46 +283,7 @@ public class BNode implements Comparable<BNode> {
 	}
 
 
-
-	/**
-	 * Sets the distribution associated with the node.  Before setting the
-	 * distribution, the method (1) completes the table if necessary, (2)
-	 * ensures that the resulting distribution if well-formed
-	 * 
-	 * @param distrib the distribution
-	 * @throws DialException if the distribution is not well-formed
-	 */
-	public void setDistribution(Distribution distrib) throws DialException {
-
-		 if (distrib instanceof ProbabilityTable && autoCompletion) {
-			((ProbabilityTable)distrib).completeProbabilityTable();
-		}
-		
-		if (!distrib.isWellFormed()) {
-			throw new DialException("Probability table for node " + id + " is not well-formed");
-		}
-		
-		
-		for (Assignment a : getAllPossibleAssignments()) {
-			if (!distrib.hasProb(a)) {
-				throw new DialException("Probability distribution not defined for assignment: " + a);
-			}
-		}
-
-		this.distrib = distrib;
-	}
 	
-	
-	
-	/**
-	 * Returns a string representation of the node
-	 *
-	 * @return the string representation
-	 */
-	public String toString() {
-		return inputNodes + " --> " + id;
-	}
-
 	
 	
 	/**
@@ -308,6 +309,24 @@ public class BNode implements Comparable<BNode> {
 		}
 		return ancestors;
 	}
+		
+	
+	// ===================================
+	//  UTILITY METHODS
+	// ===================================
+
+	
+	/**
+	 * Returns a string representation of the node
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		return inputNodes + " --> " + id;
+	}
+
+	
+
  
 
 	/**
