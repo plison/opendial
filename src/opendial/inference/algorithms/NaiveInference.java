@@ -29,11 +29,14 @@ import java.util.TreeMap;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
+import opendial.inference.bn.distribs.GenericDistribution;
+import opendial.inference.bn.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
- * 
+ * Algorithm for naive probabilistic inference, based on computing the full
+ * joint distribution, and then summing everything.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -44,8 +47,16 @@ public class NaiveInference {
 	static Logger log = new Logger("NaiveInference", Logger.Level.NORMAL);
 	
 
-	
-	public static Map<Assignment, Float> query
+	/**
+	 * Queries the probability distribution encoded in the Bayesian Network, given
+	 * a set of query variables, and some evidence.
+	 * 
+	 * @param bn the Bayesian Network
+	 * @param queryVars the query variables
+	 * @param evidence the evidence
+	 * @return the resulting probability distribution
+	 */
+	public static GenericDistribution query
 		(BNetwork bn, List<String> queryVars, Assignment evidence) {
 		
 		Map<Assignment, Float> fullJoint = getFullJoint(bn);
@@ -72,7 +83,8 @@ public class NaiveInference {
 		
 		queryResult = InferenceUtils.normalise(queryResult);
 		
-		return queryResult;
+		GenericDistribution distrib = new ProbabilityTable(queryResult);
+		return distrib;
 	}
 	
 	
@@ -90,7 +102,7 @@ public class NaiveInference {
 			float jointProb = 1.0f;
 			for (BNode n: bn.getNodes()) {
 				
-				Assignment trimedAssign = InferenceUtils.trimAssignment(singleAssign,n.getVariables());
+				Assignment trimedAssign = singleAssign.getTrimmed(n.getVariables());
 				jointProb = jointProb * n.getProb(trimedAssign);
 			}
 			result.put(singleAssign, jointProb);

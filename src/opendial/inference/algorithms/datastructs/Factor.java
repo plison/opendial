@@ -25,71 +25,80 @@ import java.util.Map;
 import java.util.Set;
 
 import opendial.inference.bn.Assignment;
-import opendial.utils.Logger;
 
 /**
- * Representation of a factor used in the Variable Elimination algorithm
+ * Representation of a factor matrix, used to perform probabilistic inference
+ * with the Variable Elimination algorithm
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
 public class Factor {
-
-	 static Logger log = new Logger("Factor", Logger.Level.NORMAL);
 	
+		// the matrix
 		Map<Assignment, Float> matrix;
-		
-		Map<String,Set<Object>> possibleValues;
 
-
+		/**
+		 * Creates a new, empty factor
+		 */
 		public Factor() {
 			matrix = new HashMap<Assignment,Float>();
-			possibleValues = new HashMap<String,Set<Object>>();
 		}
 
-
+		/**
+		 * Adds a new entry to the matrix
+		 * 
+		 * @param a the assignment
+		 * @param value the probability value
+		 */
 		public void addEntry (Assignment a, float value) {
 			matrix.put(a, value);
-			fillPossibleValues(a);
 		}
 		
-		
-		public void fillPossibleValues(Assignment a) {
-			for (String var : a.getPairs().keySet()) {
-				if (!possibleValues.containsKey(var)) {
-					Set<Object> vals = new HashSet<Object>();
-					vals.add(a.getPairs().get(var));
-					possibleValues.put(var, vals);
-				}
-				else {
-					possibleValues.get(var).add(a.getPairs().get(var));
-				}
-			}
-		}
 
+		/**
+		 * Returns the probability for the assignment, if it is
+		 * encoded in the matrix.  Else, returns null
+		 * 
+		 * @param a the assignment
+		 * @return probability of the assignment
+		 */
 		public float getEntry(Assignment a) {
 			return matrix.get(a);
 		}
 
+		/**
+		 * Returns the matrix included in the factor
+		 * 
+		 * @return the matrix
+		 */
 		public Map<Assignment, Float> getMatrix() {
 			return matrix;
 		}
 
+		/**
+		 * Returns the set of variables used in the assignment.  It assumes
+		 * that at least one entry exists in the matrix.  Else, returns
+		 * an empty list
+		 * 
+		 * @return
+		 */
 		public Set<String> getVariables() {
 			if (!matrix.isEmpty()) {
-				return matrix.keySet().iterator().next().getPairs().keySet();
+				return matrix.keySet().iterator().next().getVariables();
 			}
 			else {
 				return new HashSet<String>();
 			}
 		}
 		
-		public Map<String,Set<Object>> getPossibleValues() {
-			return possibleValues;
-		}
 
-
+		/**
+		 * Returns a string representation of the factor
+		 *
+		 * @return the string representation
+		 */
 		public String toString() {
 			String str = "";
 			for (Assignment a : matrix.keySet()) {
