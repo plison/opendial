@@ -19,117 +19,161 @@
 
 package opendial.inference.bn.distribs;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNode;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
 /**
+ * Generic class for a discrete probability distribution, which consists of a set 
+ * of head variables h_1...h_n, and a set of dependent variables d_1...d_n.  The 
+ * distribution is then defined over P(h_1...h_n | d_1...d_n)
  * 
+ * <p>The class provides methods for adding, retrieving and manipulating the distribution
+ * variables and their associated values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public abstract class GenericDistribution {
+public abstract class GenericDistribution implements Distribution {
 
-	static Logger log = new Logger("ProbabilityTable", Logger.Level.DEBUG);
+	// logger
+	static Logger log = new Logger("GenericDistribution", Logger.Level.DEBUG);
+
+	// head variables and their values
+	protected Map<String,Set<Object>> heads;
+	
+	// dependent variables and their values
+	protected Map<String,Set<Object>> deps;
 
 	
-	protected SortedMap<String,Set<Object>> headValues;
-	protected SortedMap<String,Set<Object>> depValues;
-
+	/**
+	 * Creates a new generic distribution, with empty sets of variables
+	 */
 	public GenericDistribution() {
-		this.headValues = new TreeMap<String,Set<Object>>();
-		this.depValues = new TreeMap<String,Set<Object>>();;
+		this.heads = new HashMap<String,Set<Object>>();
+		this.deps = new HashMap<String,Set<Object>>();;
 	}
 	
+	
+	/**
+	 * Creates a new generic distribution, with the head variable being
+	 * the variable from the Bayesian node, and the dependent variables
+	 * being the variables defined for its input nodes.
+	 * 
+	 * @param node the Bayesian node
+	 */
+	public GenericDistribution(BNode node) {
+		this();
+		heads.put(node.getId(), node.getValues());
+		for (BNode inputNode: node.getInputNodes()) {
+			deps.put(inputNode.getId(), inputNode.getValues());
+		}
+	}
 	
 	// ===================================
-	// HEAD AND DEPENDENT VALUES
-	// ===================================
-
-	
-	public void addHeadValues(String headLabel, Set<Object> values) {
-		if (headValues.containsKey(headLabel)) {
-			headValues.get(headLabel).addAll(values);
-		}
-		else {
-			headValues.put(headLabel, values);
-		}
-	}
-	
-	public void addHeadValue(String headLabel, Object value) {
-		if (headValues.containsKey(headLabel)) {
-			headValues.get(headLabel).add(value);
-		}
-		else {
-			Set<Object> newSet = new HashSet<Object>();
-			newSet.add(value);
-			headValues.put(headLabel, newSet);
-		}
-	}
-	
-	
-	public void addDepValues(String depLabel, Set<Object> values) {
-		if (depValues.containsKey(depLabel)) {
-			depValues.get(depLabel).addAll(values);
-		}
-		else {
-			depValues.put(depLabel, values);
-		}
-	}
-	
-	public void addDepValues(String depLabel, Object value) {
-		if (depValues.containsKey(depLabel)) {
-			depValues.get(depLabel).add(value);
-		}
-		else {
-			Set<Object> newSet = new HashSet<Object>();
-			newSet.add(value);
-			depValues.put(depLabel, newSet);
-		}
-	}
-	
-	
-	// ===================================
-	// ABSTRACT METHODS
+	// SETTERS
 	// ===================================
 
 	
-	public abstract boolean hasDefinedProb(Assignment assign);
-	
-	public abstract float getProb(Assignment assign);
-	
-	public abstract Set<Assignment> getDefinedAssignments();
-	
-	public abstract boolean isWellFormed() ;
-	
-	
-	public void completeProbabilityTable() {
-		
+	/**
+	 * Adds a new head variable to the distribution
+	 * 
+	 * @param headLabel the variable label 
+	 * @param values the variable values
+	 */
+	public void addHeadVariable(String headLabel, Set<Object> values) {
+		if (heads.containsKey(headLabel)) {
+			heads.get(headLabel).addAll(values);
+		}
+		else {
+			heads.put(headLabel, values);
+		}
 	}
 	
+	
+	/**
+	 * Adds a new dependent variable to the distribution
+	 * 
+	 * @param depLabel the variable label
+	 * @param values the variable values
+	 */
+	public void addDependentVariable(String depLabel, Set<Object> values) {
+		if (deps.containsKey(depLabel)) {
+			deps.get(depLabel).addAll(values);
+		}
+		else {
+			deps.put(depLabel, values);
+		}
+	}
+	
+	
 	// ===================================
-	// ASSIGNMENT METHODS
+	// GETTERS
 	// ===================================
 
 	
+	/**
+	 * Returns the list of possible assignments for the combination of
+	 * dependent variables d_1...d_n in the distribution
+	 * 
+	 * @return the possible assignments for the dependent variables
+	 */
+	public List<Assignment> getConditions() {
+		return InferenceUtils.getAllCombinations(deps);
+	}
 	
-	public boolean isValidAssignment(Assignment assign) {
-		for (String basicAss : assign.getPairs().keySet()) {
-			Object value = assign.getPairs().get(basicAss);
-			if (headValues.containsKey(basicAss)) {
-				return headValues.get(basicAss).contains(value);
+	
+	/**
+	 * Returns the list of possible assignments for the combination of
+	 * head variables h_1... h_n in the distribution
+	 * 
+	 * @return the possible assignments for the head variables
+	 */
+	public List<Assignment> getHeads() {
+		return InferenceUtils.getAllCombinations(heads);
+	}
+	
+	
+	/**
+	 * Returns the list of possible assignment for all (head + dependent)
+	 * variables in the distribution
+	 * 
+	 * @return the possible assignments for all variables
+	 */
+	public List<Assignment> getAllPossibleAssignments() {
+		Map<String, Set<Object>> all = new HashMap<String, Set<Object>>();
+		all.putAll(heads);
+		all.putAll(deps);
+		return InferenceUtils.getAllCombinations(all);
+	}
+	
+	
+	/**
+	 * Returns true if the assignment is valid, i.e. if it only uses
+	 * variables and values which have been declared in the head and
+	 * dependent variables of the distribution
+	 * 
+	 * @param assign the assignment
+	 * @return true if valid assignment, false otherwise
+	 */
+	protected boolean isValid (Assignment assign) {
+		for (String basicAss : assign.getVariables()) {
+			Object value = assign.getValue(basicAss);
+			if (heads.containsKey(basicAss)) {
+				return heads.get(basicAss).contains(value);
 			}
-			else if (depValues.containsKey(basicAss)) {
-				return depValues.get(basicAss).contains(value);
+			else if (deps.containsKey(basicAss)) {
+				return deps.get(basicAss).contains(value);
 			}
 			else {
 				log.warning("assignment contains variable " + basicAss + " which is not declared in the table");
@@ -139,40 +183,5 @@ public abstract class GenericDistribution {
 	}
 	
 	
-	
-	public List<Assignment> getConditionalAssignments() {
-		List<Assignment> result = new LinkedList<Assignment>();
-		for (Assignment assignment : getDefinedAssignments()) {
-			Assignment reducedAss = assignment.copy();
-			reducedAss.removePairs(headValues.keySet());
-			result.add(reducedAss);
-		}
-		return result;
-	}
-
-	
-	
-	protected List<Assignment> getUncoveredAssignments(Assignment condAss) {
-		List<Assignment> uncovered = new LinkedList<Assignment>();
-		
-		List<Assignment> valueCombinations = InferenceUtils.getAllCombinations(headValues);
-		for (Assignment comb : valueCombinations) {
-			if (!hasDefinedProb(new Assignment(condAss, comb))) {
-				uncovered.add(comb);
-			}
-		}
-		return uncovered;
-	}
-
-
-	protected float getTotalProbability(Assignment condAss) {
-		float total = 0.0f;
-		for (Assignment a : getDefinedAssignments()) {
-			if (a.contains(condAss)) {
-				total += getProb(a);
-			}
-		}
-		return total;
-	}
 
 }

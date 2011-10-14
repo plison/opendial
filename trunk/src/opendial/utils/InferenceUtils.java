@@ -24,14 +24,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 
 import opendial.inference.bn.Assignment;
-import opendial.inference.bn.BNode;
 import opendial.utils.Logger;
 
 /**
- * 
+ * General utilities for probabilistic inference
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -42,6 +40,14 @@ public class InferenceUtils {
 	static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
 	
 	
+	/**
+	 * Generates all possible assignment combinations from the set of values
+	 * provided as parameters (each variable being associated with a set of
+	 * alternative values)
+	 * 
+	 * @param valuesMatrix the 
+	 * @return
+	 */
 	public static List<Assignment> getAllCombinations(Map<String,Set<Object>> valuesMatrix) {
 				
 		List<Assignment> assignments = new LinkedList<Assignment>();
@@ -64,18 +70,42 @@ public class InferenceUtils {
 	}
 	
 	
+	/**
+	 * Generates all combinations of assignments from the list
+	 * 
+	 * @param allAssignments list of alternative assignments
+	 * @return the generated combination of assignments
+	 */
+	public static List<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
+		
+		List<Assignment> assignments = new LinkedList<Assignment>();
+		assignments.add(new Assignment());
+		
+		for (Set<Assignment> list1: allAssignments) {
 
+			List<Assignment> assignments2 = new LinkedList<Assignment>();
 
-	public static Assignment trimAssignment(Assignment fullAssign, Set<String> variables) {
-		Assignment trimedAssign = new Assignment();
-		for (String key : fullAssign.getPairs().keySet()) {
-			if (variables.contains(key)) {
-				trimedAssign.addPair(key, fullAssign.getPairs().get(key));	
+			for (Assignment a : list1) {
+				
+				for (Assignment ass: assignments) {
+					if (ass.consistentWith(a)) {
+					Assignment ass2 = new Assignment(ass, a);
+					assignments2.add(ass2);
+					}
+				}
 			}
-		}
-		return trimedAssign;
+			assignments = assignments2;
+		}		
+		return assignments;
 	}
-	
+
+
+	/**
+	 * Normalise probability distribution
+	 * 
+	 * @param distrib the distribution to normalise
+	 * @return the normalised distribution
+	 */
 	public static Map<Assignment, Float> normalise (Map<Assignment, Float> distrib) {
 		float total = 0.0f;
 		for (Assignment a : distrib.keySet()) {
