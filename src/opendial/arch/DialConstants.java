@@ -64,4 +64,7 @@ public class DialConstants {
 		FLOAT
 	}
 	
+	public static final int MAX_PATH_LENGTH = 100;
+
+	
 }

@@ -21,7 +21,6 @@ package opendial.inference.algorithms;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,8 @@ import opendial.inference.algorithms.datastructs.Factor;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
+import opendial.inference.bn.distribs.GenericDistribution;
+import opendial.inference.bn.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
@@ -54,8 +55,7 @@ public class VariableElimination {
 	 * @param evidence the evidence
 	 * @return the probability distribution for the query
 	 */
-	public static Map<Assignment,Float> query
-	(BNetwork bn, List<String> queryVars, Assignment evidence) {
+	public static GenericDistribution query (BNetwork bn, List<String> queryVars, Assignment evidence) {
 
 		List<Factor> factors = new LinkedList<Factor>();
 
@@ -78,7 +78,11 @@ public class VariableElimination {
 		Factor finalProduct = pointwiseProduct(factors);
 		Map<Assignment,Float> normalisedProbs = InferenceUtils.normalise(finalProduct.getMatrix());
 
-		return normalisedProbs;
+		normalisedProbs = addEvidencePairs (bn, normalisedProbs, queryVars, evidence);
+		
+		GenericDistribution distrib = new ProbabilityTable(normalisedProbs);
+		return distrib;
+		
 	}
 
 
@@ -174,7 +178,7 @@ public class VariableElimination {
 		// their content to the reduced factor
 		Map<Assignment, Float> matrix = factor.getMatrix();
 		for (Assignment a : matrix.keySet()) {
-			if (a.getPairs().get(var).equals(val)) {
+			if (a.getValue(var).equals(val)) {
 				Assignment reducedA = new Assignment(a);
 				reducedA.removePair(var);
 				subFactor.addEntry(reducedA, matrix.get(a));
@@ -194,21 +198,20 @@ public class VariableElimination {
 	private static Factor pointwiseProduct (List<Factor> factors) {
 
 		Factor productFactor = new Factor();
-
-		// compute the union of the variables expressed in each factor
-		Map<String,Set<Object>> unionVars = new HashMap<String,Set<Object>>();
-		for (Factor f: factors) {
-			unionVars.putAll(f.getPossibleValues());
-		}
-		
+	
 		// generates the alternative assignments combination for the variables
-		List<Assignment> combinations = InferenceUtils.getAllCombinations(unionVars);
+		List<Set<Assignment>> unionValues = new LinkedList<Set<Assignment>>();
+		for (Factor f: factors) {
+			unionValues.add(f.getMatrix().keySet());
+		}		
+		List<Assignment> combinations = InferenceUtils.getAllCombinations(unionValues);
 
 		// calculate the product for each assignment
 		for (Assignment a : combinations) {
 			float product = 1.0f;
 			for (Factor f: factors) {
-				Assignment reducedAssignment = InferenceUtils.trimAssignment(a, f.getVariables());
+				a.getTrimmed(f.getVariables());
+				Assignment reducedAssignment = a.getTrimmed(f.getVariables());
 				product = product * f.getEntry(reducedAssignment);
 			}
 			productFactor.addEntry(a, product);
@@ -239,11 +242,62 @@ public class VariableElimination {
 				
 				// adding a new entry to the factor
 				Assignment a2 = new Assignment(a);
-				a2.removePairs(evidence.getPairs().keySet());
+				a2.removePairs(evidence.getVariables());
 				f.addEntry(a2, node.getProb(a));
 			}
 		}
 
 		return f;
+	}
+	
+	
+	
+
+	/**
+	 * In case of overlap between the query variables and the evidence (this happens
+	 * when a variable specified in the evidence also appears in the query), extends 
+	 * the distribution to add the evidence assignment pairs.
+	 * 
+	 * @param bn the Bayesian network
+	 * @param distribution the computed distribution
+	 * @param queryVars the query variables
+	 * @param evidence the evidence
+	 * @return the extended distribution
+	 */
+	private static Map<Assignment, Float> addEvidencePairs(BNetwork bn,
+			Map<Assignment, Float> distribution, List<String> queryVars,
+			Assignment evidence) {
+
+		// first, check if there is an overlap between the query variables and
+		// the evidence variables
+		Map<String,Set<Object>> valuesToAdd = new HashMap<String,Set<Object>>();
+		for (String queryVar : queryVars) {
+			if (evidence.getPairs().containsKey(queryVar)) {
+				valuesToAdd.put(queryVar, bn.getNode(queryVar).getValues());
+			}
+		}
+
+		// in case of overlap, extend the distribution
+		if (!valuesToAdd.isEmpty()) {
+			List<Assignment> possibleExtensions = InferenceUtils.getAllCombinations(valuesToAdd);
+			
+			Map<Assignment,Float> extendedDistribution = new HashMap<Assignment,Float>();
+			for (Assignment a : distribution.keySet()) {
+				for (Assignment b: possibleExtensions) {
+					
+					// if the assignment b agrees with the evidence, reuse the probability value
+					if (evidence.contains(b)) {
+						extendedDistribution.put(new Assignment(a, b), distribution.get(a));
+					}
+					
+					// else, set the probability value to 0.0f
+					else {
+						extendedDistribution.put(new Assignment(a, b), 0.0f);				
+					}
+				}
+			}
+			return extendedDistribution;
+		}
+		return distribution;
 	}
 }

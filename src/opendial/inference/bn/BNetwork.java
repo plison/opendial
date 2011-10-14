@@ -20,20 +20,27 @@
 package opendial.inference.bn;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
+import opendial.arch.DialConstants;
 import opendial.arch.DialException;
-import opendial.utils.InferenceUtils;
+import opendial.inference.bn.distribs.Distribution;
 import opendial.utils.Logger;
 
 /**
+ * Bayesian Network representation.  The Bayesian Network is constituted
+ * of nodes connected with each other by directed edges.  The network must
+ * not contain any cycles.
  * 
+ * <p>The class provides basic methods for adding nodes (and verify their 
+ * consistency), as well as retrieving and sorting them.  To perform 
+ * probabilistic inference on such network, one must uses the algorithms 
+ * in package <i>opendial.inference.algorithms</i>.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -41,94 +48,88 @@ import opendial.utils.Logger;
  */
 public class BNetwork {
 
+	// logger
 	static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
 	
+	// the nodes, indexed by identifier
 	Map<String,BNode> nodes;
-	
-	public static final int MAX_LENGTH = 100;
-	
-	public static boolean autoCompletion = true;
+		
 
+	/**
+	 * Creates a Bayesian Network, with no nodes
+	 */
 	public BNetwork () {
 		nodes = new HashMap<String, BNode>();
 	}
 	
+
+	/**
+	 * Adds a new node to the network.  The node must contain a well-formed distribution,
+	 * and its introduction must not create cycles in the network.
+	 * 
+	 * @param node the node to add
+	 * @throws DialException if no valid distribution, or if cycles are present
+	 */
+	public void addNode(BNode node) throws DialException {
+		Distribution distrib = node.getDistribution();
+		if (distrib == null) {
+			throw new DialException("Node " + node.getId() + " must specify a distribution");
+		}
+		if (node.getAncestors(DialConstants.MAX_PATH_LENGTH).contains(node)) {
+			throw new DialException("Cyclic dependency for node " + node);
+		}
+		
+		nodes.put(node.getId(), node);
+	}
 	
+	
+	/**
+	 * Returns the node indexed by the identifier, if one exists.  Else, 
+	 * returns null.
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the node, if it exists.
+	 */
 	public BNode getNode(String nodeId) {
 		return nodes.get(nodeId);
 	}
 	
 	/**
-	 * Also check for acyclicity, for consistency in BN links (inputs, outputs).
+	 * Returns the (unordered) collection of nodes present in the network.
 	 * 
-	 * @param node
-	 * @throws DialException
+	 * @return the collection of nodes
 	 */
-	public void addNode(BNode node) throws DialException {
-		if (autoCompletion) {
-			node.getDistribution().completeProbabilityTable();
-		}
-		
-		if (!node.getDistribution().isWellFormed()) {
-			throw new DialException("Probability table for node " + node.getId() + " is not well-formed");
-		}
-		nodes.put(node.getId(), node);
-	}
-	
-	
-	public List<BNode> getNodes() {
-		return new ArrayList<BNode>(nodes.values());
+	public Collection<BNode> getNodes() {
+		return nodes.values();
 	}
 	
 	
 	/**
-	 * TODO: Check for infinite loops!
-	 * And 
+	 * Returns the sorted list of nodes in the network, where the ordering is 
+	 * defined in the compareTo method implemented in BNode.  The ordering will 
+	 * place end nodes (i.e. nodes with no outward edges) at the beginning of 
+	 * the list, and start nodes  (nodes with no inward edges) at the end of the 
+	 * list. 
 	 * 
-	 * @param node
-	 * @return
-	 */
-	public List<BNode> getAncestors(BNode node, int max_length) {
-		List<BNode> ancestors = new LinkedList<BNode>();
-		
-		if (max_length <= 0) {
-			return ancestors;
-		}
-		for (BNode anc : node.getConditionalNodes()) {
-			ancestors.add(anc);
-			for (BNode anc2 : getAncestors(anc, max_length - 1)) {
-				if (!ancestors.contains(anc2)) {
-					ancestors.add(anc2);
-				}
-			}
-		}
-		return ancestors;
-	}
-
-
-	/**
+	 * <p>This ordering is used in particular for the variable elimination algorithm.
 	 * 
-	 * @return
+	 * @return the ordered list of nodes
 	 */
 	public List<BNode> getSortedNodes() {
-		List<BNode> endNodes = new LinkedList<BNode>();
-		for (BNode n : nodes.values()) {
-			if (n.getOutputNodes().isEmpty()) {
-				endNodes.add(n);
-			}
-		}
-		
-		List<BNode> sortedNodes = new LinkedList<BNode>();
-		sortedNodes.addAll(endNodes);
-		for (BNode n : endNodes) {
-			for (BNode anc2 : getAncestors(n, MAX_LENGTH))  {
-				if (!sortedNodes.contains(anc2)) {
-					sortedNodes.add(anc2);
-				}
-			}
-		}
-		
-		return sortedNodes;
+		List<BNode> nodesList = new ArrayList<BNode>(nodes.values()); 
+		Collections.sort(nodesList);
+	//	log.debug("sorted nodes: " + nodesList);
+		return nodesList;
+	}
+	
+	
+	/**
+	 * Returns the nodes identifiers
+	 * 
+	 * @return the nodes identifiers
+	 */
+	public Set<String> getNodeIds() {
+		return nodes.keySet();
 	}
 
 
