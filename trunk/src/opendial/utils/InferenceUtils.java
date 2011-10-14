@@ -37,22 +37,27 @@ import opendial.utils.Logger;
  */
 public class InferenceUtils {
 
+	// logger
 	static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
 	
 	
 	/**
 	 * Generates all possible assignment combinations from the set of values
-	 * provided as parameters (each variable being associated with a set of
-	 * alternative values)
+	 * provided as parameters -- each variable being associated with a set of
+	 * alternative values.
 	 * 
-	 * @param valuesMatrix the 
-	 * @return
+	 * <p>NB: use with caution, computational complexity is exponential!
+	 * 
+	 * @param valuesMatrix the set of values to combine 
+	 * @return the list of all possible combinations
 	 */
 	public static List<Assignment> getAllCombinations(Map<String,Set<Object>> valuesMatrix) {
-				
+			
+		// start with a single, empty assignment
 		List<Assignment> assignments = new LinkedList<Assignment>();
 		assignments.add(new Assignment());
 		
+		// at each iterator, we expand each assignment with a new combination
 		for (String label : valuesMatrix.keySet()) {
 
 			List<Assignment> assignments2 = new LinkedList<Assignment>();
@@ -73,14 +78,18 @@ public class InferenceUtils {
 	/**
 	 * Generates all combinations of assignments from the list
 	 * 
+	 * <p>NB: use with caution, computational complexity is exponential!
+
 	 * @param allAssignments list of alternative assignments
 	 * @return the generated combination of assignments
 	 */
 	public static List<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
 		
+		// start with a single, empty assignment
 		List<Assignment> assignments = new LinkedList<Assignment>();
 		assignments.add(new Assignment());
 		
+		// incrementally combines and expands the assignments
 		for (Set<Assignment> list1: allAssignments) {
 
 			List<Assignment> assignments2 = new LinkedList<Assignment>();
@@ -101,7 +110,7 @@ public class InferenceUtils {
 
 
 	/**
-	 * Normalise probability distribution
+	 * Normalise the given probability distribution.
 	 * 
 	 * @param distrib the distribution to normalise
 	 * @return the normalised distribution
