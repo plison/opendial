@@ -19,7 +19,7 @@
 
 package opendial.domains.rules.variables;
 
-import opendial.domains.types.GenericType;
+import opendial.domains.Type;
 
 /**
  * Standard representation for a variable defined as input or output
@@ -38,7 +38,7 @@ public class StandardVariable {
 	String identifier;
 
 	// the type of the variable
-	GenericType type;
+	Type type;
 
 	/**
 	 * Creates a new standard variable, based on the given type.  The default
@@ -46,7 +46,7 @@ public class StandardVariable {
 	 * 
 	 * @param type the variable type
 	 */
-	public StandardVariable (GenericType type) {
+	public StandardVariable (Type type) {
 		this.identifier = type.getName();
 		this.type = type;
 	}
@@ -57,7 +57,7 @@ public class StandardVariable {
 	 * @param identifier the identifier for the variable
 	 * @param type the variable type
 	 */
-	public StandardVariable(String identifier, GenericType type) {
+	public StandardVariable(String identifier, Type type) {
 		this.identifier = identifier;
 		this.type = type;
 	}
@@ -87,7 +87,7 @@ public class StandardVariable {
 	 * 
 	 * @param type the type
 	 */
-	public void setType(GenericType type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 
@@ -97,7 +97,7 @@ public class StandardVariable {
 	 * 
 	 * @return the variable type
 	 */
-	public GenericType getType() {
+	public Type getType() {
 		return type;
 	}
 

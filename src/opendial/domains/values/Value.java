@@ -17,55 +17,19 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
-
-import opendial.arch.DialConstants.PrimitiveType;
-import opendial.domains.observations.Trigger;
-
+package opendial.domains.values;
 
 /**
- * Representation of an observation value in a variable type.
+ * Generic interface for values contained in variable types
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 14:37:16 #$
  *
  */
-public class ObservationValue<T> extends RangeValue {
-
-	// static Logger log = new Logger("GenericObservation", Logger.Level.NORMAL);
-	
-	// the observation trigger
-	Trigger<T> trigger;
-	
-	/**
-	 * Creates a new observation value, with the given trigger
-	 * 
-	 * @param trigger the trigger associated with the observation
-	 */
-	public ObservationValue(Trigger<T> trigger) {
-		super(PrimitiveType.BOOLEAN);
-		this.trigger = trigger;
-	}
-	
-	
-	/**
-	 * Returns the trigger associated with the observation value
-	 * 
-	 * @return the trigger
-	 */
-	public Trigger<T> getTrigger() {
-		return trigger;
-	}
+public interface Value {
 
 	
-	/**
-	 * Returns a string representation of the observation value
-	 *
-	 * @return the string representation
-	 */
-	public String toString() {
-		String s = super.toString();
-		s += ": " + trigger.toString();
-		return s;
-	}
+	public abstract boolean containsValue(Object val);
+	
+	
 }

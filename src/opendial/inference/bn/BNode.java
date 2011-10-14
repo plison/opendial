@@ -51,7 +51,7 @@ import opendial.utils.Logger;
 public class BNode implements Comparable<BNode> {
 
 	// logger
-	static Logger log = new Logger("BNode", Logger.Level.NORMAL);
+	static Logger log = new Logger("BNode", Logger.Level.DEBUG);
 
 	// node/variable identifier (must be unique)
 	String id;
@@ -101,13 +101,24 @@ public class BNode implements Comparable<BNode> {
 		inputNodes = new HashMap<String, BNode>();
 	}
 	
-
-
+	
+	
 	// ===================================
 	//  SETTERS
 	// ===================================
 
+
+
+	/**
+	 * Adds a new value to the node
+	 * 
+	 * @param val the value
+	 */
+	public void addValue(Object val) {
+		values.add(val);
+	}
 	
+
 	/**
 	 * Attaches a new input node
 	 * 
@@ -322,12 +333,16 @@ public class BNode implements Comparable<BNode> {
 	 * @return the string representation
 	 */
 	public String toString() {
-		return inputNodes + " --> " + id;
+		if (!inputNodes.isEmpty()) {
+			return inputNodes.keySet() + " --> " + id;
+		}
+		else {
+			return id;
+		}
 	}
 
 	
 
- 
 
 	/**
 	 * Compares the nodes to the one given as parameter.  If the given node
@@ -349,5 +364,6 @@ public class BNode implements Comparable<BNode> {
 		}
 		return 0;
 	}
+
 
 }

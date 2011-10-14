@@ -19,7 +19,8 @@
 
 package opendial.domains.rules.variables;
 
-import opendial.domains.types.FeatureType;
+import opendial.domains.Type;
+
 
 /**
  * Representation of a feature variable.  It is defined as an extension of the
@@ -45,7 +46,7 @@ public class FeatureVariable extends StandardVariable {
 	 * @param type the type
 	 * @param baseVariable the base variable
 	 */
-	public FeatureVariable(String identifier, FeatureType type, StandardVariable baseVariable) {
+	public FeatureVariable(String identifier, Type type, StandardVariable baseVariable) {
 		super(identifier, type);
 		this.baseVariable = baseVariable;
 	}

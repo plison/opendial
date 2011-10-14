@@ -99,7 +99,7 @@ public class Assignment {
 	 * Creates an assignment with a list of boolean assignments (cf. method
 	 * above).  
 	 * 
-	 * @param ids the list of boolean assignments
+	 * @param booleanAssigns the list of boolean assignments
 	 */
 	public Assignment(List<String> booleanAssigns) {
 		this();
@@ -285,7 +285,7 @@ public class Assignment {
 	/**
 	 * Returns the list of variables used 
 	 * 
-	 * @return
+	 * @return variables list
 	 */
 	public Set<String> getVariables() {
 		return pairs.keySet();

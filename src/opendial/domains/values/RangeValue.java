@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.domains.values;
 
 import opendial.arch.DialConstants.PrimitiveType;
 import opendial.utils.Logger;
@@ -28,7 +28,7 @@ import opendial.utils.Logger;
  * "integer", "float" or "boolean").
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 14:37:16 #$
  *
  */
 public class RangeValue implements Value {

@@ -20,6 +20,7 @@
 package opendial.state;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,8 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.arch.DialException;
-import opendial.domains.types.GenericType;
-import opendial.domains.types.FeatureType;
+import opendial.domains.Type;
 import opendial.utils.Logger;
 import opendial.utils.StringUtils;
 
@@ -46,34 +46,44 @@ import opendial.utils.StringUtils;
  *
  */
 public class Fluent {
-
+ 
 	// logger
 	static Logger log = new Logger("Fluent", Logger.Level.DEBUG);
 
 	// type
-	GenericType type;
+	Type type;
 
 	// label
 	String label;
 
 	// the distribution for the fluent
-	SortedMap<String,Float> values;
+	SortedMap<Object,Float> values;
 
 	// the features attached to the fluent
-	Map<String,ConditionalFluent> features;
+	Map<String,Fluent> features;
 
 
+	// entity counter for each entity                                                  
+    private static Map<String,Integer> entityCounter = new HashMap<String,Integer>();
+
+
+    
 	/**
 	 * Creates a new empty fluent, given the declared type
 	 * 
 	 * @param type the declared type associated to the fluent
 	 */
-	public Fluent(GenericType type) {
+	public Fluent(Type type) {
 		this.type = type;
-		values = new TreeMap<String,Float>();
-		features = new HashMap<String,ConditionalFluent>();
+		values = new TreeMap<Object,Float>();
+		features = new HashMap<String,Fluent>();
+		
+		if (type.isFixed()) {
 		label = type.getName();
-		log.debug("new fluent created: " + label);
+		}
+		else {
+			label = forgeNewLabel();
+		}
 	}
 
 
@@ -90,7 +100,7 @@ public class Fluent {
 	 * @param prob its probability
 	 * @throws DialException if value or probability is invalid
 	 */
-	public void addValue(String value, float prob) throws DialException {
+	public void addValue(Object value, float prob) throws DialException {
 		if (prob < 0.0 || prob > 1.0) {
 			throw new DialException(prob + " is not a valid probability");
 		}
@@ -122,8 +132,9 @@ public class Fluent {
 	 * 
 	 * @param feat the feature to add
 	 */
-	public void addFeature(ConditionalFluent feat) {
+	public void addFeature(Fluent feat) {
 		features.put(feat.getLabel(), feat);
+		feat.setLabel(feat.getLabel() + "(" + label  + ")");
 	}
 
 
@@ -132,9 +143,9 @@ public class Fluent {
 	 * 
 	 * @param features the features to add
 	 */
-	public void addFeatures(List<ConditionalFluent> features) {
-		for (ConditionalFluent feat : features) {
-			this.features.put(feat.getLabel(), feat);
+	public void addFeatures(List<Fluent> features) {
+		for (Fluent feat : features) {
+			addFeature(feat);
 		}
 	}
 
@@ -149,6 +160,24 @@ public class Fluent {
 
 
 
+
+	/**
+	 * Sets the existence probability of the entity
+	 * 
+	 * @param existenceProb existence probability
+	 * @throws DialException if problem occurs with the feature insertion
+	 */
+	public void setExistenceProb(float existenceProb) throws DialException {
+		Type type = new Type("Exists");
+		type.addValues(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
+		type.setAsFixed(true);
+		Fluent existenceFluent = new Fluent(type);
+		existenceFluent.addValue(Boolean.TRUE, existenceProb);
+		existenceFluent.addValue(Boolean.FALSE, 1.0f - existenceProb);		
+		features.put(existenceFluent.getLabel(), existenceFluent);
+	}
+	
+	
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -159,7 +188,7 @@ public class Fluent {
 	 * 
 	 * @return the type
 	 */
-	public GenericType getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -179,8 +208,24 @@ public class Fluent {
 	 * 
 	 * @return the values
 	 */
-	public SortedMap<String,Float> getValues() {
+	public SortedMap<Object,Float> getValues() {
 		return values;
+	}
+	
+	/**
+	 * Returns the probability associated with the given value,
+	 * if one exists.  Else, return 0.0f;
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public float getProb(Object value) {
+		if (values.containsKey(value)) {
+			return values.get(value);
+		}
+		else {
+			return 0.0f;
+		}
 	}
 
 	/**
@@ -188,27 +233,37 @@ public class Fluent {
 	 * 
 	 * @return the features
 	 */
-	public List<ConditionalFluent> getFeatures() {
-		return new ArrayList<ConditionalFluent>(features.values());
+	public List<Fluent> getFeatures() {
+		return new ArrayList<Fluent>(features.values());
 	}
 
-
+	
+	/**
+	 * Returns the fluent features compatible with the value
+	 * 
+	 * @return all the features (full or partial) defined for the value
+	 */
+	public List<Fluent> getFeatures(Object baseValue) {
+		List<Fluent> feats = new LinkedList<Fluent>();
+		feats.addAll(getPartialFeatures(baseValue));
+		feats.addAll(getFullFeatures());
+		return feats;
+	}
+	
 
 	/**
 	 * Returns the features defined for a particular base value
 	 * 
 	 * @param baseValue the base value
-	 * @return all the features (full or partial) defined for the value
+	 * @return all the partial features defined for the value
 	 */
-	public List<ConditionalFluent> getFeaturesForBaseValue(String baseValue) {
+	public List<Fluent> getPartialFeatures(Object baseValue) {
 
-		List<ConditionalFluent> feats = new LinkedList<ConditionalFluent>();
+		List<Fluent> feats = new LinkedList<Fluent>();
 
-		for (String featKey: features.keySet()) {
-			ConditionalFluent fl = features.get(featKey);
-			if (fl.getType() instanceof FeatureType && 
-					((FeatureType)fl.getType()).isDefinedForBaseValue(baseValue)) {
-				feats.add(fl);
+		for (String feat : features.keySet()) {
+			if (type.hasPartialFeature(feat, baseValue)) {
+				feats.add(features.get(feat));
 			}
 		}
 		return feats;
@@ -221,20 +276,34 @@ public class Fluent {
 	 * 
 	 * @return the full features
 	 */
-	public List<ConditionalFluent> getFullFeatures() {
+	public List<Fluent> getFullFeatures() {
 
-		List<ConditionalFluent> feats = new LinkedList<ConditionalFluent>();
+		List<Fluent> feats = new LinkedList<Fluent>();
 
 		for (String featKey: features.keySet()) {
-			ConditionalFluent fl = features.get(featKey);
-			if (fl.getType() instanceof FeatureType && 
-					!((FeatureType)fl.getType()).isPartial()) {
-				feats.add(fl);
+			if (type.hasFullFeature(featKey)) {
+				feats.add(features.get(featKey));
 			}
 		}
 		return feats;
 	}
 
+	 
+	/**
+	 * Returns the existence probability of the entity, if one is
+	 * defined.  Otherwise, returns 1.0f.
+	 * 
+	 * @return the existence probability
+	 */
+	public float getExistenceProb() {
+		if (features.containsKey("Exists")) {
+			return features.get("Exists").getProb(Boolean.TRUE);
+		}
+		else {
+			return 1.0f;
+		}
+	}
+	
 
 	// ===================================
 	//  PRINT OPERATIONS
@@ -264,7 +333,7 @@ public class Fluent {
 		
 		// listing the label and type name
 		String str = "";
-		if (!type.isFixed() && !(type instanceof FeatureType)) {
+		if (!type.isFixed()) {
 			str += label + " (" + type.getName() + ")" ;
 		}
 		else {
@@ -273,10 +342,10 @@ public class Fluent {
 		
 		// looping on the values
 		str += " = {";
-		Iterator<String> valuesIt = values.keySet().iterator();
+		Iterator<Object> valuesIt = values.keySet().iterator();
 		while (valuesIt.hasNext()) {
 			
-			String v = valuesIt.next();
+			Object v = valuesIt.next();
 			str += valueToString(v, values.get(v));
 
 			if (valuesIt.hasNext()) {
@@ -302,14 +371,14 @@ public class Fluent {
 	 * @param prob the probability
 	 * @return the string representation of the value
 	 */
-	public String valueToString(String value, float prob) {
+	public String valueToString(Object value, float prob) {
 
 		// show the value
-		String str = value ;
+		String str = value.toString() ;
 
 		// add the arguments of the value (features)
 		str += "(";
-		for (ConditionalFluent fl : getFeaturesForBaseValue(value)) {
+		for (Fluent fl : getFeatures(value)) {
 			str += fl.getType().getName();
 			str += ",";	
 		}
@@ -324,10 +393,8 @@ public class Fluent {
 
 		// add the definition of partial features
 		str += " with ";
-		for (ConditionalFluent fl : getFeaturesForBaseValue(value)) {
-			if (((FeatureType)fl.getType()).isPartial()) {
+		for (Fluent fl : getPartialFeatures(value)) {
 				str += fl.toString(StringUtils.makeIndent(str.length())) + " and ";					
-			}
 		}
 
 		// cleanup
@@ -347,7 +414,7 @@ public class Fluent {
 		
 		// listing the full features
 		String str = " with ";
-		for (ConditionalFluent fl: getFullFeatures()) {
+		for (Fluent fl: getFullFeatures()) {
 			str += fl.toString(StringUtils.makeIndent(str.length()));
 			str += " and ";
 		}
@@ -375,7 +442,7 @@ public class Fluent {
 		Fluent copy = new Fluent(type);
 		copy.setLabel(label);
 
-		for (String v : values.keySet()) {
+		for (Object v : values.keySet()) {
 			try {
 				copy.addValue(v, values.get(v));
 			}
@@ -383,11 +450,30 @@ public class Fluent {
 				log.warning("Strange problem copying a fluent, aborting copy operation");
 			}
 		}
-		for (ConditionalFluent f : features.values()) {
-			copy.addFeature(f.copy());
+		for (Fluent f : features.values()) {
+			Fluent f2 = new Fluent(f.getType());
+			copy.addFeature(f2);
 		}
 		return copy;
 	}
+
+	
+    /**                                                                                
+     * Forge a new label, by concatenating the type label + a counter                  
+     * on the number of entities                                                       
+     *                                                                                 
+     * @return                                                                         
+     */
+    private String forgeNewLabel() {
+            String typeName = type.getName();
+            if (!entityCounter.containsKey(typeName)) {
+                    entityCounter.put(typeName, 1);
+            }
+            else {
+                    entityCounter.put(typeName, entityCounter.get(typeName) + 1);
+            }
+            return typeName + entityCounter.get(typeName);
+    }
 
 
 	

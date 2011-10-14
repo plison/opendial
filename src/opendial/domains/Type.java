@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types;
+package opendial.domains;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.domains.types.values.BasicValue;
-import opendial.domains.types.values.Value;
+import opendial.domains.values.BasicValue;
+import opendial.domains.values.Value;
 import opendial.utils.Logger;
 
 /**
@@ -41,13 +41,13 @@ import opendial.utils.Logger;
  * possess 0...n instances in the dialogue state).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 15:10:13 #$
  *
  */
-public class GenericType {
+public class Type {
 
 	// logger
-	static Logger log = new Logger("GenericType", Logger.Level.DEBUG);
+	static Logger log = new Logger("Type", Logger.Level.NORMAL);
 
 	// the type name
 	String name;
@@ -56,12 +56,14 @@ public class GenericType {
 	boolean isFixed = false;
 
 
-	// list of values for the entity
+	// list of values
 	Set<Value> values;
 
-	// list of full features for the entity
-	Map<String,FeatureType> features;
+	// list of features
+	Map<String, Type> features;
 
+	// base values for partially defined features
+	Map<String, Value> baseValuesForFeats;
 	// ===================================
 	//  TYPE CONSTRUCTION METHODS
 	// ===================================
@@ -72,14 +74,24 @@ public class GenericType {
 	 * 
 	 * @param name the type name
 	 */
-	public GenericType(String name) {
+	public Type(String name) {
 		this.name = name;
 		values = new HashSet<Value>();
 
-		features = new HashMap<String,FeatureType>();
+		features = new HashMap<String, Type>();
+		baseValuesForFeats = new HashMap<String,Value>();
 	}
 
-
+	/**
+	 * Adds a new value to the type
+	 * 
+	 * @param value the new value to add
+	 */
+	public <T> void addValue(T value) {
+		values.add(new BasicValue<T>(value));
+	}
+	
+	
 	/**
 	 * Adds a new value to the type
 	 * 
@@ -89,29 +101,61 @@ public class GenericType {
 		values.add(value);
 	}
 
-
+	
+	
 	/**
 	 * Adds a list of values to the type
 	 * (if the value already exists, it is overwritten)
 	 * 
 	 * @param values the list of values to add
 	 */
-	public void addValues(Collection<? extends Value> values) {
-		this.values.addAll(values);
-	}
+	public <T> void addValues(Collection<T> values) {
+		for (T value : values) {
+			if (value instanceof Value) {
+				this.values.add((Value)value);
+			}
+			else {
+			this.values.add(new BasicValue<T>(value));
+			}
+		}
+	} 
 
 
 
 	/**
-	 * Adds a new feature to the type (if the feature with identical 
-	 * name already exists, it is overwritten)
+	 * Adds a new full feature to the type (if the feature with identical 
+	 * name already exists, it is overwritten).  A full feature is a feature
+	 * defined for all values of the type
 	 * 
 	 * @param feature the feature to add
 	 */
-	public void addFeature(FeatureType feature) {
+	public void adFullFeature(Type feature) {
 		features.put(feature.getName(), feature);
+		feature.setAsFixed(true);
 	}
-
+	
+	
+	
+	/**
+	 * Adds a new partial feature to the type, which is defined to be valid
+	 * only for the given value
+	 * 
+	 * @param feature the feature to add
+	 * @param baseValue the value for which it is value
+	 */
+	public <T> void addPartialFeature(Type feature, T baseValue) {
+		features.put(feature.getName(), feature);
+		if (baseValue instanceof Value) {
+			baseValuesForFeats.put(feature.getName(), (Value)baseValue);
+		}
+		else {
+			baseValuesForFeats.put(feature.getName(), new BasicValue<T>(baseValue));
+		}
+		feature.setAsFixed(true);
+	}
+	
+	
+	
 
 	/**
 	 * Add a list of features to the type (if a feature 
@@ -119,13 +163,30 @@ public class GenericType {
 	 * 
 	 * @param features the list of features to add
 	 */
-	public void addFeatures(List<FeatureType> features) {
-		for (FeatureType f : features) {
+	public void addFullFeatures(List<Type> features) {
+		for (Type f : features) {
 			String name = f.getName();
 			if (this.features.containsKey(name)) {
 				log.warning("feature name " + name + " already in entity " + name);
 			}
 			this.features.put(f.getName(), f);
+			f.setAsFixed(true);
+		}
+	}
+	
+	
+	/**
+	 * Adds a list of partial features to the type. The list of partial features
+	 * is defined as a map between the feature and the base values for which they
+	 * are defined.
+	 * 
+	 * @param partialFeats the partial features to add
+	 */
+	public void addPartialFeatures(Map<Type, Value> partialFeats) {
+		for (Type pfeat : partialFeats.keySet()) {
+			log.debug("here, adding partial feature: " + pfeat);
+			addPartialFeature(pfeat, partialFeats.get(pfeat));
+			pfeat.setAsFixed(true);
 		}
 	}
 
@@ -216,18 +277,65 @@ public class GenericType {
 	}
 
 
-
 	/**
-	 * Returns true if the type contains the given feature,
+	 * Returns true if the type contains the given full or partial feature,
 	 * false otherwise
 	 * 
 	 * @param featureName the feature name
-	 * @return true if feature present, false otherwise
+	 * @return true if  feature present, false otherwise
 	 */
 	public boolean hasFeature(String featureName) {
 		return features.containsKey(featureName);
 	}
+	
 
+	/**
+	 * Returns true if the type contains the given full feature,
+	 * false otherwise
+	 * 
+	 * @param featureName the feature name
+	 * @return true if full feature present, false otherwise
+	 */
+	public boolean hasFullFeature(String featureName) {
+		return (features.containsKey(featureName) &&
+				!baseValuesForFeats.containsKey(featureName));
+	}
+
+	
+	/**
+	 * Returns true if the type contains the given partial feature
+	 * 
+	 * @param featureName the feature name
+	 * @return true if partial feature present, false otherwise
+	 */
+	public boolean hasPartialFeature(String featureName) {
+		return (features.containsKey(featureName) &&
+				baseValuesForFeats.containsKey(featureName));
+	}
+	
+	
+	/**
+	 * Returns true if the type contains the partial feature
+	 * of the given name, for the specific base value
+	 * 
+	 * @param featureName the feature name
+	 * @param baseValue the type value
+	 * @return true if partial feature present, false otherwise
+	 */
+	public <T> boolean hasPartialFeature(String featureName, T baseValue) {
+		if (features.containsKey(featureName) &&
+				baseValuesForFeats.containsKey(featureName)) {
+			if (baseValue instanceof Value) {
+				return baseValuesForFeats.get(featureName).equals(baseValue);
+			}
+			else {
+				return baseValuesForFeats.get(featureName).equals(new BasicValue<T>(baseValue));
+			}
+		}
+		return false;
+	}
+	
+	
 	/**
 	 * Returns true if the type contains the a (full or partial) feature
 	 * of the given name, for the specific base value
@@ -236,24 +344,20 @@ public class GenericType {
 	 * @param baseValue the type value
 	 * @return true if feature present, false otherwise
 	 */
-	public boolean hasFeatureForBaseValue(String featureName, String baseValue) {
-		if (features.containsKey(featureName)) {
-			FeatureType feat = features.get(featureName);
-			return feat.isDefinedForBaseValue(baseValue);
-		}
-		return false;
+	public <T> boolean hasFeature(String featureName, T baseValue) {
+		return (hasFullFeature(featureName) || hasPartialFeature(featureName, baseValue));
 	}
 
+	
 	/**
-	 * Gets the feature associated with the name, if any is present. 
+	 * Gets the full feature associated with the name, if any is present. 
 	 * Else, return null.  
 	 * 
 	 * @param featureName the feature name
 	 * @return the entity if the feature is present, or null otherwise.
 	 */
-	public FeatureType getFeature(String featureName) {
-
-		if (features.containsKey(featureName)) {
+	public Type getFullFeature(String featureName) {
+		if (!baseValuesForFeats.containsKey(featureName)) {
 			return features.get(featureName);
 		}
 		return null;
@@ -261,19 +365,38 @@ public class GenericType {
 
 
 	/**
+	 * Gets the partial feature associated with the name, if any is present. 
+	 * Else, return null.  
+	 * 
+	 * @param featureName the feature name
+	 * @return the entity if the feature is present, or null otherwise.
+	 */
+	public Type getPartialFeature(String featureName) {
+		if (baseValuesForFeats.containsKey(featureName)) {
+			return features.get(featureName);
+		}
+		return null;
+	}
+
+	
+	/**
 	 * Returns the list of partial features defined for the base value
 	 * 
 	 * @param baseValue the base value
 	 * @return the partial features defined
 	 */ 
-	public List<FeatureType> getPartialFeatures(String baseValue) {
-		List<FeatureType> partialFeatures = new LinkedList<FeatureType>();
-		for (FeatureType feat: features.values()) {
-			if (feat.isDefinedForBaseValue(baseValue)) {
-				partialFeatures.add(feat);
+	public <T> List<Type> getPartialFeatures(T baseValue) {
+		List<Type> partialFeats = new LinkedList<Type>();
+		for (String feat : baseValuesForFeats.keySet()) {
+			
+			if (baseValue instanceof Value && baseValuesForFeats.get(feat).equals(baseValue)) {
+				partialFeats.add(features.get(feat));
+			}
+			else if (baseValuesForFeats.get(feat).equals(new BasicValue<T>(baseValue))) {
+				partialFeats.add(features.get(feat));
 			}
 		}
-		return partialFeatures;
+		return partialFeats;
 	}
 
 	
@@ -282,24 +405,37 @@ public class GenericType {
 	 * 
 	 * @return the list of full features
 	 */
-	public List<FeatureType> getFullFeatures() {
-		List<FeatureType> fullFeatures = new LinkedList<FeatureType>();
-		for (FeatureType feat: features.values()) {
-			if (!feat.isPartial()) {
-				fullFeatures.add(feat);
+	public List<Type> getFullFeatures() {
+		List<Type> fullFeats = new LinkedList<Type>();
+		for (String feat : features.keySet()) {
+			if (!baseValuesForFeats.containsKey(feat)) {
+				fullFeats.add(features.get(feat));
 			}
 		}
-		return fullFeatures;
+		return fullFeats;
 	}
 
 	
 	/**
-	 * Returns the list of (full or partial) features
+	 * Returns the list of (full or partial) features.  Note that some
+	 * of these features might only be defined for specific values
+	 * of the base!
 	 * 
 	 * @return the list of all features
 	 */
-	public List<FeatureType> getFeatures() {
-		return new ArrayList<FeatureType>(features.values());
+	public List<Type> getFeatures() {
+		return new ArrayList<Type>(features.values());
+	}
+	
+	
+	/**
+	 * Returns the partial or full feature associated with the name
+	 * 
+	 * @param featureName the feature name
+	 * @return
+	 */
+	public Type getFeature(String featureName) {
+		return features.get(featureName);
 	}
 
 
@@ -311,4 +447,21 @@ public class GenericType {
 	public boolean isFixed() {
 		return isFixed;
 	}
+	
+	
+	/**
+	 * Returns a string representation of the type
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		String str = name;
+		str += " = " + values;
+		if (!features.isEmpty()) {
+			str += " [" + features.values() + "]";
+		}
+		return str;
+	}
+
+
 }

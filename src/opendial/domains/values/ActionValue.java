@@ -17,85 +17,61 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.domains.values;
 
-
-import opendial.arch.DialException;
-import opendial.domains.types.GenericType;
-import opendial.utils.Logger;
+import opendial.domains.actions.ActionTemplate;
 
 /**
- * Representation of a conditional fluent (used to describe content of features)
+ * Representation of an action value for a variable type.  The action
+ * value is defined as a value label (which must be a string) associated 
+ * with an action template (any class implementing ActionTemplate).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 15:10:13 #$
  *
  */
-public class ConditionalFluent extends Fluent {
+public class ActionValue<T> extends BasicValue<String> {
 
-	// logger
-	static Logger log = new Logger("ConditionalFluent", Logger.Level.NORMAL);
+//	static Logger log = new Logger("ActionValue", Logger.Level.NORMAL);
 	
-	// input variable (i.e. variable to which the feature is attached)
-	Fluent inputVariable;
-			
+	// the action template
+	ActionTemplate<T> template;
 	
 	/**
-	 * Creates a new condition fluent, with a given type and input variable
+	 * Creates a new action value given a label and an action template
 	 * 
-	 * @param type the type
-	 * @param inputVariable the input variable
+	 * @param label the label for the action value
+	 * @param template the action template
 	 */
-	public ConditionalFluent(GenericType type, Fluent inputVariable) {
-		super(type);
-		this.inputVariable = inputVariable;
+	public ActionValue(String label, ActionTemplate<T> template) {
+		super(label);
+		this.template = template;
 	}
 	
-	
 	/**
-	 * Returns the input variable
+	 * Returns the template associated with the action value
 	 * 
-	 * @return input variable
+	 * @return the template
 	 */
-	public Fluent getInputVariable() {
-		return inputVariable;
+	public ActionTemplate<T> getTemplate() {
+		return template;
 	}
 	
 	
 	/**
-	 * Sets the input variable for the fluent
-	 *   
-	 * @param inputVariable the input variable
-	 */
-	public void setInputVariable(Fluent inputVariable) {
-		this.inputVariable = inputVariable;
-	}
-	
-	
-	/**
-	 * Returns a copy of the conditional fluent
+	 * Returns a string representation of the action value
 	 *
-	 * @return the copy
+	 * @return the string representation
 	 */
-	public ConditionalFluent copy() {
-		ConditionalFluent copy = new ConditionalFluent(type, inputVariable);
-		copy.setLabel(label);
-		
-		for (String v : values.keySet()) {
-			try {
-			copy.addValue(v, values.get(v));
-			}
-			catch (DialException e) {
-				log.warning("Strange problem copying a fluent, aborting copy operation");
-			}
-		}
-		for (ConditionalFluent f : features.values()) {
-			copy.addFeature(f.copy());
-		}
-		return copy;
+	public String toString() {
+		String s = super.toString();
+		s += ": " + template.toString();
+		return s;
 	}
 	
-
-
-
+	
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
 }

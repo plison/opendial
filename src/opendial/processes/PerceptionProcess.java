@@ -46,7 +46,7 @@ import opendial.utils.Logger;
 public class PerceptionProcess extends Thread {
 
 	// logger
-	static Logger log = new Logger("PerceptionProcess", Logger.Level.NORMAL);
+	static Logger log = new Logger("PerceptionProcess", Logger.Level.DEBUG);
 	
 	// the dialogue state
 	DialogueState state;
@@ -97,6 +97,7 @@ public class PerceptionProcess extends Thread {
 	 * @param obs the new observation
 	 */
 	private void informInterfaces(Observation obs) {
+		log.debug("number of interfaces: " + interfaces.size());
 		for (DialogueInterface interface1 : interfaces) {
 			interface1.showObservation(obs);
 		}

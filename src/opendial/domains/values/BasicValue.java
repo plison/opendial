@@ -17,55 +17,73 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.domains.values;
 
-import opendial.domains.actions.ActionTemplate;
+
 
 /**
- * Representation of an action value for a variable type.  The action
- * value is defined as a value label (which must be a string) associated 
- * with an action template (any class implementing ActionTemplate).
+ * Representation of a basic value for a variable type.  The class of the
+ * value is parametrised with T.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 14:37:16 #$
  *
  */
-public class ActionValue<T> extends BasicValue<String> {
+public class BasicValue<T> implements Value {
+	
+	// the value
+	T value;
+		
+	/**
+	 * Creates a new basic value
+	 * 
+	 * @param value the value
+	 */
+	public BasicValue(T value) {
+		this.value = value;
+	}
+	
+	/**
+	 * Returns the value
+	 * 
+	 * @return the value
+	 */
+	public T getValue() {
+		return value;
+	}
 
-//	static Logger log = new Logger("ActionValue", Logger.Level.NORMAL);
-	
-	// the action template
-	ActionTemplate<T> template;
 	
 	/**
-	 * Creates a new action value given a label and an action template
-	 * 
-	 * @param label the label for the action value
-	 * @param template the action template
+	 * Returns true if the object is equivalent to the value,
+	 * and false otherwise
+	 *
+	 * @param val the object to compare
+	 * @return true if the value is equivalent, false otherwise
 	 */
-	public ActionValue(String label, ActionTemplate<T> template) {
-		super(label);
-		this.template = template;
-	}
-	
-	/**
-	 * Returns the template associated with the action value
-	 * 
-	 * @return the template
-	 */
-	public ActionTemplate<T> getTemplate() {
-		return template;
+	@Override
+	public boolean containsValue(Object val) {
+		return (val.equals(value));
 	}
 	
 	
 	/**
-	 * Returns a string representation of the action value
+	 * Returns a string representation of the value
 	 *
 	 * @return the string representation
 	 */
+	@Override
 	public String toString() {
-		String s = super.toString();
-		s += ": " + template.toString();
-		return s;
+		return value.toString();
+	}
+	
+	
+	@Override 
+	public boolean equals (Object o) {
+		if (!(o instanceof BasicValue)) {
+			return false;
+		}
+		else {
+			return ((BasicValue<?>)o).getValue().equals(value);
+		}
 	}
 }

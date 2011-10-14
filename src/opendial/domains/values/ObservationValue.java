@@ -17,61 +17,55 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.types.values;
+package opendial.domains.values;
 
+import opendial.arch.DialConstants.PrimitiveType;
+import opendial.domains.observations.Trigger;
 
 
 /**
- * Representation of a basic value for a variable type.  The class of the
- * value is parametrised with T.
+ * Representation of an observation value in a variable type.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 14:37:16 #$
  *
  */
-public class BasicValue<T> implements Value {
+public class ObservationValue<T> extends RangeValue {
+
+	// static Logger log = new Logger("GenericObservation", Logger.Level.NORMAL);
 	
-	// the value
-	T value;
-		
+	// the observation trigger
+	Trigger<T> trigger;
+	
 	/**
-	 * Creates a new basic value
+	 * Creates a new observation value, with the given trigger
 	 * 
-	 * @param value the value
+	 * @param trigger the trigger associated with the observation
 	 */
-	public BasicValue(T value) {
-		this.value = value;
+	public ObservationValue(Trigger<T> trigger) {
+		super(PrimitiveType.BOOLEAN);
+		this.trigger = trigger;
 	}
 	
+	
 	/**
-	 * Returns the value
+	 * Returns the trigger associated with the observation value
 	 * 
-	 * @return the value
+	 * @return the trigger
 	 */
-	public T getValue() {
-		return value;
+	public Trigger<T> getTrigger() {
+		return trigger;
 	}
 
 	
 	/**
-	 * Returns true if the object is equivalent to the value,
-	 * and false otherwise
-	 *
-	 * @param val the object to compare
-	 * @return true if the value is equivalent, false otherwise
-	 */
-	@Override
-	public boolean containsValue(Object val) {
-		return (val.equals(value));
-	}
-	
-	
-	/**
-	 * Returns a string representation of the value
+	 * Returns a string representation of the observation value
 	 *
 	 * @return the string representation
 	 */
 	public String toString() {
-		return value.toString();
+		String s = super.toString();
+		s += ": " + trigger.toString();
+		return s;
 	}
 }
