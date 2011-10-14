@@ -82,7 +82,7 @@ public class Factor {
 		 * that at least one entry exists in the matrix.  Else, returns
 		 * an empty list
 		 * 
-		 * @return
+		 * @return the set of variables
 		 */
 		public Set<String> getVariables() {
 			if (!matrix.isEmpty()) {
