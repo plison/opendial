@@ -29,6 +29,7 @@ import opendial.arch.DialConstants.ModelGroup;
 import opendial.arch.DialConstants.PrimitiveType;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
+import opendial.domains.Type;
 import opendial.domains.Model;
 import opendial.domains.rules.Case;
 import opendial.domains.rules.Rule;
@@ -41,13 +42,11 @@ import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.variables.FeatureVariable;
 import opendial.domains.rules.variables.PointerVariable;
 import opendial.domains.rules.variables.StandardVariable;
-import opendial.domains.types.GenericType;
-import opendial.domains.types.FeatureType;
-import opendial.domains.types.values.ActionValue;
-import opendial.domains.types.values.BasicValue;
-import opendial.domains.types.values.ObservationValue;
-import opendial.domains.types.values.RangeValue;
-import opendial.domains.types.values.Value;
+import opendial.domains.values.ActionValue;
+import opendial.domains.values.BasicValue;
+import opendial.domains.values.ObservationValue;
+import opendial.domains.values.RangeValue;
+import opendial.domains.values.Value;
 import opendial.state.Fluent;
 import opendial.utils.Logger;
 import opendial.utils.XMLUtils;
@@ -92,7 +91,7 @@ public class XMLDomainTest {
 		log.debug("number of entity type: " + domain.getTypes().size());
 	//	assertEquals(2, domain.getEntityTypes().size());
 		
-		GenericType firstType = domain.getType("intent");
+		Type firstType = domain.getType("intent");
 		assertEquals("intent", firstType.getName());
 		log.debug("number of values: " + firstType.getAllValues().size());
 		assertEquals(1, firstType.getAllValues().size());
@@ -100,11 +99,11 @@ public class XMLDomainTest {
 		assertEquals(1, firstType.getPartialFeatures("Want").size());
 		assertEquals(2, firstType.getPartialFeatures("Want").get(0).getAllValues().size());
 		
-		GenericType secondType = domain.getType("robot");
+		Type secondType = domain.getType("robot");
 		assertEquals("robot", secondType.getName());
 		assertEquals(0, secondType.getAllValues().size());
 		assertEquals(1, secondType.getFeatures().size());
-		FeatureType featType = (FeatureType)secondType.getFeature("name");
+		Type featType = secondType.getFullFeature("name");
 		assertEquals(1, featType.getAllValues().size());
 		assertTrue(featType.getAllValues().get(0) instanceof RangeValue);
 		assertEquals(PrimitiveType.STRING, ((RangeValue)featType.getAllValues().get(0)).getRange());
@@ -114,7 +113,7 @@ public class XMLDomainTest {
 	@Test
 	public void fixedVariableExtraction() throws DialException {
 
-		GenericType thirdType = domain.getType("a_u");
+		Type thirdType = domain.getType("a_u");
 		assertEquals("a_u", thirdType.getName());
 		assertEquals(4, thirdType.getAllValues().size());
 		assertEquals(0, thirdType.getFullFeatures().size());
@@ -132,7 +131,7 @@ public class XMLDomainTest {
 	public void observationExtraction() throws IOException, DialException {
 
 		// assertEquals(6, observations.size());
-		GenericType firstObservation = domain.getType("doYObs");
+		Type firstObservation = domain.getType("doYObs");
 		assertTrue(firstObservation.getAllValues().get(0) instanceof ObservationValue);
 		assertEquals("doYObs", firstObservation.getName());
 		assertEquals("do Y", ((ObservationValue<?>)firstObservation.getAllValues().get(0)).getTrigger().getContent());
@@ -141,7 +140,7 @@ public class XMLDomainTest {
 	@Test
 	public void actionExtraction() throws IOException, DialException {
 
-		GenericType mainAction = domain.getType("a_m");
+		Type mainAction = domain.getType("a_m");
 		
 		assertEquals(6, mainAction.getAllValues().size());
 
@@ -150,7 +149,7 @@ public class XMLDomainTest {
 		assertEquals("OK, doing X!", ((ActionValue<?>)mainAction.getValue("DoX")).getTemplate().getContent());
 		assertEquals(1, ((ActionValue<?>)mainAction.getValue("SayHi")).getTemplate().getSlots().size());
 		assertEquals("name", ((ActionValue<?>)mainAction.getValue("SayHi")).getTemplate().getSlots().get(0));
-		assertTrue(mainAction.hasFeature("name"));
+		assertTrue(mainAction.hasPartialFeature("name", "SayHi"));
 	}
 	
 	

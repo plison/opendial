@@ -82,6 +82,18 @@ public class BNetwork {
 		nodes.put(node.getId(), node);
 	}
 	
+	/**
+	 * Adds the list of nodes to the network
+	 * 
+	 * @param nodes2 the list of nodes to add
+	 * @throws DialException if no valid distribution, or if cycles are present
+	 */
+	public void addNodes(List<BNode> nodes2) throws DialException {
+		for (BNode node : nodes2) {
+			addNode(node);
+		}
+		
+	}
 	
 	/**
 	 * Returns the node indexed by the identifier, if one exists.  Else, 
@@ -131,6 +143,7 @@ public class BNetwork {
 	public Set<String> getNodeIds() {
 		return nodes.keySet();
 	}
+
 
 
 }

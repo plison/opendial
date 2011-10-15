@@ -28,9 +28,9 @@ import org.w3c.dom.NodeList;
 import opendial.arch.DialConstants.ModelGroup;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
+import opendial.domains.Type;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
-import opendial.domains.types.GenericType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 import opendial.utils.XMLUtils;
@@ -45,7 +45,7 @@ import opendial.utils.XMLUtils;
  */
 public class XMLDomainReader {
 
-	static Logger log = new Logger("XMLDomainReader", Logger.Level.NORMAL);
+	static Logger log = new Logger("XMLDomainReader", Logger.Level.DEBUG);
 
 	// the dialogue domain which is currently extracted
 	Domain domain;
@@ -81,8 +81,9 @@ public class XMLDomainReader {
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(topDomainFile);
 
-		// determine the root path 
-		rootpath = topDomainFile.substring(0, topDomainFile.lastIndexOf("//")+1);
+		// determine the root path 	
+		rootpath = topDomainFile.substring(0, topDomainFile.lastIndexOf("/")+1);			
+			
 		String filename = topDomainFile.substring(topDomainFile.lastIndexOf("//")+2, topDomainFile.length());
 
 		// create a new, empty domain
@@ -103,7 +104,7 @@ public class XMLDomainReader {
 			if (node.getNodeName().equals("declarations")) {
 				Document refDoc = XMLUtils.getXMLDocument(rootpath+XMLUtils.getReference(node));
 				XMLDeclarationsReader declReader = new XMLDeclarationsReader();
-				List<GenericType> types = declReader.getTypes(refDoc);
+				List<Type> types = declReader.getTypes(refDoc);
 				domain.addTypes(types);			}
 
 			// extracting initial state

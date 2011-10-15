@@ -19,20 +19,21 @@
 
 package opendial.readers;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import opendial.arch.DialConstants.PrimitiveType;
 import opendial.arch.DialException;
+import opendial.domains.Type;
 import opendial.domains.actions.SurfaceRealisationTemplate;
 import opendial.domains.observations.SurfaceTrigger;
-import opendial.domains.types.GenericType;
-import opendial.domains.types.FeatureType;
-import opendial.domains.types.values.ActionValue;
-import opendial.domains.types.values.BasicValue;
-import opendial.domains.types.values.ObservationValue;
-import opendial.domains.types.values.RangeValue;
-import opendial.domains.types.values.Value;
+import opendial.domains.values.ActionValue;
+import opendial.domains.values.BasicValue;
+import opendial.domains.values.ObservationValue;
+import opendial.domains.values.RangeValue;
+import opendial.domains.values.Value;
 import opendial.utils.Logger;
 import opendial.utils.XMLUtils;
 
@@ -64,9 +65,9 @@ public class XMLDeclarationsReader {
 	 * @return the list of types which have been declared
 	 * @throws DialException if the document is ill-formatted
 	 */
-	public List<GenericType> getTypes(Document doc) throws DialException {
+	public List<Type> getTypes(Document doc) throws DialException {
 
-		List<GenericType> allTypes = new LinkedList<GenericType>();
+		List<Type> allTypes = new LinkedList<Type>();
 
 		// getting the main node
 		Node mainNode = XMLUtils.getMainNode(doc,"declarations");
@@ -79,27 +80,27 @@ public class XMLDeclarationsReader {
 
 				// entities
 				if (node.getNodeName().equals("entity")) {
-					GenericType type = getGenericType(node);
+					Type type = getGenericType(node);
 					allTypes.add(type);
 				}
 				
 				// fixed variables
 				else if (node.getNodeName().equals("variable")) {
-					GenericType type = getGenericType(node);
+					Type type = getGenericType(node);
 					type.setAsFixed(true);
 					allTypes.add(type);
 				}
 				
 				// observations
 				else if (node.getNodeName().equals("trigger")) {
-					GenericType type = getObservation(node);
+					Type type = getObservation(node);
 					type.setAsFixed(true);
 					allTypes.add(type);
 				}
 				
 				// actions
 				else if (node.getNodeName().equals("actiontemplate")) {
-					GenericType type = getAction(node);
+					Type type = getAction(node);
 					allTypes.add(type);
 				}
 				else {
@@ -126,17 +127,18 @@ public class XMLDeclarationsReader {
 	 * @return the corresponding generic type
 	 * @throws DialException if the node is ill-formatted
 	 */
-	private GenericType getGenericType(Node node) throws DialException {
+	private Type getGenericType(Node node) throws DialException {
 		String name = node.getAttributes().getNamedItem("name").getNodeValue();
 
 		// create the type
-		GenericType type = new GenericType(name);
+		Type type = new Type(name);
 		
 		// adding the type values
 		type.addValues(extractTypeValues (node));
 		
 		// adding the type features
-		type.addFeatures(extractFeatures(node));
+		type.addFullFeatures(extractFullFeatures(node));
+		type.addPartialFeatures(extractPartialFeatures(node));
 		return type;
 	}
 	
@@ -208,20 +210,6 @@ public class XMLDeclarationsReader {
 
 	
 	
-	/**
-	 * Extract (full and partial) features from the XML node
-	 * 
-	 * @param node the XML node
-	 * @return the list of extracted features
-	 * @throws DialException if the node is ill-formatted
-	 */
-	private List<FeatureType> extractFeatures(Node node) throws DialException {
-		List<FeatureType> allFeatures = new LinkedList<FeatureType>();
-		allFeatures.addAll(extractFullFeatures(node));
-		allFeatures.addAll(extractPartialFeatures(node));
-		return allFeatures;
-	}
-	
 	
 	/**
 	 * Extract partial features from the XML node
@@ -230,9 +218,9 @@ public class XMLDeclarationsReader {
 	 * @return the list of extracted features
 	 * @throws DialException if the node is ill-formatted
 	 */
-	private List<FeatureType> extractPartialFeatures(Node node) throws DialException {
+	private Map<Type,Value> extractPartialFeatures(Node node) throws DialException {
 		
-		List<FeatureType> partialFeatures = new LinkedList<FeatureType>();
+		Map<Type,Value> partialFeatures = new HashMap<Type,Value>();
 		
 		NodeList contentList = node.getChildNodes();
 
@@ -244,7 +232,7 @@ public class XMLDeclarationsReader {
 			if (valueNode.getNodeName().equals("complexvalue")) {
 				NodeList subValueNodes = valueNode.getChildNodes();
 				
-				String baseValue="";
+				String baseValue = "";
 
 				for (int j = 0 ; j < subValueNodes.getLength() ; j++) {
 					
@@ -259,13 +247,11 @@ public class XMLDeclarationsReader {
 						
 						// creating a partial feature
 						String featLabel = insideNode.getAttributes().getNamedItem("name").getNodeValue();
-						FeatureType featType = new FeatureType(featLabel);
+						Type featType = new Type(featLabel);
 						List<Value> basicValues = extractTypeValues(insideNode);
 						featType.addValues(basicValues);
-						
-						featType.addBaseValue(baseValue);
-						
-						partialFeatures.add(featType);
+										
+						partialFeatures.put(featType, new BasicValue<String>(baseValue));
 					}
 				}
 			}
@@ -281,10 +267,10 @@ public class XMLDeclarationsReader {
 	 * @return the list of extracted features
 	 * @throws DialException if the XML fragment is ill-formatted
 	 */
-	private List<FeatureType> extractFullFeatures(Node node) throws DialException {
+	private List<Type> extractFullFeatures(Node node) throws DialException {
 		NodeList contentList = node.getChildNodes();
 
-		List<FeatureType> features = new LinkedList<FeatureType>();
+		List<Type> features = new LinkedList<Type>();
 
 		for (int j = 0 ; j < contentList.getLength() ; j++) {
 
@@ -293,7 +279,7 @@ public class XMLDeclarationsReader {
 
 				if (featNode.hasAttributes() && featNode.getAttributes().getNamedItem("name") != null) {
 					String featName = featNode.getAttributes().getNamedItem("name").getNodeValue();
-					FeatureType newFeat = new FeatureType(featName);
+					Type newFeat = new Type(featName);
 					
 					List<Value> basicValues = extractTypeValues(featNode);
 					newFeat.addValues(basicValues);
@@ -321,9 +307,9 @@ public class XMLDeclarationsReader {
 	 * @return the extracted type
 	 * @throws DialException if node is ill-formatted
 	 */
-	private GenericType getObservation(Node obsNode) throws DialException {
+	private Type getObservation(Node obsNode) throws DialException {
 
-		GenericType obs;
+		Type obs;
 
 		if (obsNode.hasAttributes() && obsNode.getAttributes().getNamedItem("name") != null && 
 				obsNode.getAttributes().getNamedItem("type")!= null &&
@@ -337,11 +323,14 @@ public class XMLDeclarationsReader {
 			ObservationValue<String> obsValue;
 			if (type.equals("surface") ) {
 				obsValue = new ObservationValue<String>(new SurfaceTrigger(content));
-				obs = new GenericType(name);
+				obs = new Type(name);
 				obs.addValue(obsValue);
 				
-				List<FeatureType> feats = getObservationFeatures(obsValue);
-				obs.addFeatures(feats);
+				Map<Type, Value> feats = new HashMap<Type, Value>();
+				for (Type slot : getObservationFeatures(obsValue)) {
+					feats.put(slot, new BasicValue<String>(name));
+				}
+				obs.addPartialFeatures(feats);
 			}
 			else {
 				throw new DialException("type " + type + " currently not supported");
@@ -362,13 +351,13 @@ public class XMLDeclarationsReader {
 	 * @param value the observation value
 	 * @return the list of implicit features
 	 */
-	private List<FeatureType> getObservationFeatures(ObservationValue<?> value) {
+	private List<Type> getObservationFeatures(ObservationValue<?> value) {
 		
-		List<FeatureType> feats = new LinkedList<FeatureType>();
+		List<Type> feats = new LinkedList<Type>();
 		
 			if (!value.getTrigger().getSlots().isEmpty()) {
 				for (String slot : value.getTrigger().getSlots()) {
-					FeatureType feat = new FeatureType(slot);
+					Type feat = new Type(slot);
 					feats.add(feat);
 				}
 			}
@@ -389,19 +378,18 @@ public class XMLDeclarationsReader {
 	 * @return the extracted type
 	 * @throws DialException if the node is ill-formatted
 	 */
-	private GenericType getAction(Node actionNode) throws DialException {
+	private Type getAction(Node actionNode) throws DialException {
 
-		GenericType action; 
+		Type action; 
 		if (actionNode.hasAttributes() && actionNode.getAttributes().getNamedItem("name") != null) {
 
 			String actionName = actionNode.getAttributes().getNamedItem("name").getNodeValue();
-			action = new GenericType(actionName);
+			action = new Type(actionName);
 
 			List<ActionValue<?>> values = getActionValues(actionNode);
 			action.addValues(values);
-			
-			List<FeatureType> feats = getActionFeatures(values);
-			action.addFeatures(feats);
+						
+			action.addPartialFeatures(getActionFeatures(values));
 		}
 		else {
 			throw new DialException("action must have a \"name\" attribute");
@@ -453,16 +441,15 @@ public class XMLDeclarationsReader {
 	 * @param values the action values
 	 * @return the list of implicit features
 	 */
-	private List<FeatureType> getActionFeatures(List<ActionValue<?>> values) {
+	private Map<Type, Value> getActionFeatures(List<ActionValue<?>> values) {
 		
-		List<FeatureType> feats = new LinkedList<FeatureType>();
+		Map<Type,Value> feats = new HashMap<Type,Value>();
 		
 		for (ActionValue<?> value: values) {
 		if (value instanceof ActionValue &&  !((ActionValue<?>)value).getTemplate().getSlots().isEmpty()) {
 			for (String slot : ((ActionValue<?>)value).getTemplate().getSlots()) {
-				FeatureType feat = new FeatureType(slot);
-				feat.addBaseValue(value.getValue());
-				feats.add(feat);
+				Type feat = new Type(slot);
+				feats.put(feat, value);
 			}
 		}
 		}

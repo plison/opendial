@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialConstants.ModelGroup;
-import opendial.domains.types.GenericType;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
@@ -38,7 +37,7 @@ import opendial.utils.Logger;
  * <li> and a set of rule-based probabilistic models. </ul>
  *
  * @see Model
- * @see GenericType
+ * @see Type
  * @see opendial.domains.rules.Rule
  * @see DialogueState
  * 
@@ -55,7 +54,7 @@ public class Domain {
 	String domainName;
 	
 	// types declarations
-	Map<String,GenericType> types;
+	Map<String,Type> types;
 	
 	// initial state of the domain
 	DialogueState initialState;
@@ -72,7 +71,7 @@ public class Domain {
 	public Domain(String domainName) {
 		this.domainName = domainName;
 
-		types = new HashMap<String,GenericType>();
+		types = new HashMap<String,Type>();
 		
 		initialState = new DialogueState();
 		models = new HashMap<ModelGroup, Model>();
@@ -123,8 +122,8 @@ public class Domain {
 	 * 
 	 * @param types the types to add
 	 */
-	public void addTypes(Collection<GenericType> types) {
-		for (GenericType type : types) {
+	public void addTypes(Collection<Type> types) {
+		for (Type type : types) {
 			addType(type);
 		}
 	}
@@ -135,7 +134,7 @@ public class Domain {
 	 * 
 	 * @param type the type to add
 	 */
-	private void addType(GenericType type) {
+	private void addType(Type type) {
 		types.put(type.getName(), type);		
 	}
 
@@ -160,7 +159,7 @@ public class Domain {
 	 * @param typeName the type name
 	 * @return the associated type
 	 */
-	public GenericType getType(String typeName) {
+	public Type getType(String typeName) {
 		return types.get(typeName);
 	}
 
@@ -193,8 +192,8 @@ public class Domain {
 	 * 
 	 * @return all types
 	 */
-	public List<GenericType> getTypes() {
-		return new ArrayList<GenericType>(types.values());
+	public List<Type> getTypes() {
+		return new ArrayList<Type>(types.values());
 	}
 
 
