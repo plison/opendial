@@ -129,7 +129,7 @@ public class Type {
 	 * 
 	 * @param feature the feature to add
 	 */
-	public void adFullFeature(Type feature) {
+	public void addFullFeature(Type feature) {
 		features.put(feature.getName(), feature);
 		feature.setAsFixed(true);
 	}
@@ -399,6 +399,17 @@ public class Type {
 		return partialFeats;
 	}
 
+	
+	/**
+	 * Returns the base value for the partial feature, if one is defined.
+	 * Else, returns null.
+	 * 
+	 * @param featName the feature name
+	 * @return the value
+	 */
+	public Value getBaseValueForPartialFeature(String featName) {
+		return baseValuesForFeats.get(featName);
+	}
 	
 	/**
 	 * Returns the list of full features for the type

@@ -19,7 +19,9 @@
 
 package opendial.inference.bn.distribs;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,14 +90,15 @@ public abstract class GenericDistribution implements Distribution {
 	 * @param headLabel the variable label 
 	 * @param values the variable values
 	 */
-	public void addHeadVariable(String headLabel, Set<Object> values) {
+	public void addHeadVariable(String headLabel, Collection<Object> values) {
 		if (heads.containsKey(headLabel)) {
 			heads.get(headLabel).addAll(values);
 		}
 		else {
-			heads.put(headLabel, values);
+			heads.put(headLabel, new HashSet<Object>(values));
 		}
 	}
+	
 	
 	
 	/**
@@ -164,19 +167,24 @@ public abstract class GenericDistribution implements Distribution {
 	 * @return true if valid assignment, false otherwise
 	 */
 	protected boolean isValid (Assignment assign) {
+		boolean result = true;
 		for (String basicAss : assign.getVariables()) {
 			Object value = assign.getValue(basicAss);
 			if (heads.containsKey(basicAss)) {
-				return heads.get(basicAss).contains(value);
+				result = (heads.get(basicAss).contains(value));
 			}
 			else if (deps.containsKey(basicAss)) {
-				return deps.get(basicAss).contains(value);
+				result = (deps.get(basicAss).contains(value));
 			}
 			else {
 				log.warning("assignment contains variable " + basicAss + " which is not declared in the table");
 			}
 		}
-		return true;
+		
+		if (!result) {
+			log.warning("warning, assignment not valid for probability table: " + assign);
+		}
+		return result;
 	}
 	
 	

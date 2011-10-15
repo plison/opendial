@@ -357,12 +357,12 @@ public class BNode implements Comparable<BNode> {
 	@Override
 	public int compareTo(BNode node) {
 		if (getAncestors(DialConstants.MAX_PATH_LENGTH).contains(node)) {
-			return -1;
+			return -10;
 		}
 		else if (node.getAncestors(DialConstants.MAX_PATH_LENGTH).contains(this)) {
-			return 1;
+			return 10;
 		}
-		return 0;
+		return id.compareTo(node.getId());
 	}
 
 

@@ -249,4 +249,5 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 		}
 		return str;
 	}
+
 }
