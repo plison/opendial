@@ -30,11 +30,11 @@ import org.w3c.dom.NodeList;
 import opendial.arch.DialConstants.BinaryOperator;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
+import opendial.domains.Type;
 import opendial.domains.rules.*;
 import opendial.domains.rules.variables.*;
 import opendial.domains.rules.conditions.*;
 import opendial.domains.rules.effects.*;
-import opendial.domains.types.*;
 import opendial.utils.Logger;
 
 /**
@@ -198,9 +198,9 @@ public class XMLRuleReader {
 
 		if (previousVars.containsKey(base)) {
 			StandardVariable baseVar = previousVars.get(base);
-			GenericType baseType = baseVar.getType();
+			Type baseType = baseVar.getType();
 			if (baseType.hasFeature(feat)) {
-				FeatureType featType = baseType.getFeature(feat);
+				Type featType = baseType.getFeature(feat);
 				return new FeatureVariable(id, featType, baseVar);
 			}
 			else {

@@ -139,6 +139,9 @@ public class DecisionProcess extends Thread{
 	 * @return the best action
 	 */
 	private Action decideNextAction() {
+		
+	//	(new StateConverter()).buildBayesianNetwork(state);
+		
 		return new VoidAction();
 	}
 	

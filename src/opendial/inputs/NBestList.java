@@ -39,14 +39,14 @@ public class NBestList implements Observation {
 	static Logger log = new Logger("NBestList", Logger.Level.NORMAL);
 	
 	// the list of alternative utterances, with their probability
-	Map<String,Float> alternativeUtterances;
+	Map<String,Float> hypotheses;
 	
 	
 	/**
 	 * Creates a new N-best list, with an empty list of utterances
 	 */
 	public NBestList() {
-		alternativeUtterances = new HashMap<String,Float>();
+		hypotheses = new HashMap<String,Float>();
 	}
 	
 	
@@ -55,11 +55,23 @@ public class NBestList implements Observation {
 	 * 
 	 * @param alternativeUtterances the utterances
 	 */
-	public NBestList(Map<String,Float> alternativeUtterances) {
-		this.alternativeUtterances = alternativeUtterances;
+	public NBestList(Map<String,Float> hypotheses) {
+		this.hypotheses = hypotheses;
 	}
 	
 	
+	/**
+	 * Creates a new N-Best list with a single element
+	 * 
+	 * @param utt the utterance
+	 * @param prob the probability
+	 */
+	public NBestList(String utt, float prob) {
+		this();
+		hypotheses.put(utt, prob);
+	}
+
+
 	/**
 	 * Adds a new utterance (with associated probability) to the N-best list
 	 * 
@@ -67,7 +79,20 @@ public class NBestList implements Observation {
 	 * @param prob the probability
 	 */
 	public void addUtterance(String utt, float prob) {
-		alternativeUtterances.put(utt, prob);
+		hypotheses.put(utt, prob);
+	}
+	
+	
+	public String getBestHypothesis() {
+		float bestScore = 0.0f;
+		String bestHypo = "";
+		for (String utt : hypotheses.keySet()) {
+			if (hypotheses.get(utt) > bestScore) {
+				bestScore = hypotheses.get(utt);
+				bestHypo = utt;
+			}
+		}
+		return bestHypo;
 	}
 	
 	
@@ -77,7 +102,29 @@ public class NBestList implements Observation {
 	 * @return the list of utterances
 	 */
 	public Map<String,Float> getUtterances() {
-		return alternativeUtterances;
+		return hypotheses;
+	}
+	
+	
+	/**
+	 * Returns a shortened version of the N-best list string representation,
+	 * suitable for a chat window
+	 * 
+	 * @return a short string representation
+	 */
+	public String toShortString() {
+		if (!hypotheses.isEmpty()) {
+			String hypo = getBestHypothesis();
+			if (hypotheses.get(hypo) > 0.99) {
+				return hypo;
+			}
+			else {
+				return hypo + " (" + hypotheses.get(hypo) + ")";
+			}
+		}
+		else {
+			return "(nothing recognised)";
+		}
 	}
 	
 	
@@ -89,8 +136,8 @@ public class NBestList implements Observation {
 	@Override
 	public String toString() {
 		String str = "{";
-		for (String utt : alternativeUtterances.keySet()) {
-			str += "\"" + utt + "\" (" + alternativeUtterances.get(utt) + "), ";
+		for (String utt : hypotheses.keySet()) {
+			str += "\"" + utt + "\" (" + hypotheses.get(utt) + "), ";
 		}
 		return str.substring(0,str.length()-2) + "}";
 	}

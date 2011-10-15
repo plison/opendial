@@ -96,7 +96,7 @@ public class DialogueSystem {
 		
 		log.info("Dialogue system started, dialogue domain: " + domain.getName());
 	}
-	
+	  
 	
 	/**
 	 * Adds a dialogue interface listening to new input observations and 

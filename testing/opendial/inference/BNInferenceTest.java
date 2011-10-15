@@ -82,7 +82,7 @@ public class BNInferenceTest {
 		distrib_a.addRow(new Assignment(Arrays.asList("!Burglary", "!Earthquake", "Alarm")), 0.001f);
 		a.setDistribution(distrib_a);
 		bn.addNode(a);
-
+  
 		BNode mc = new BNode("MaryCalls");
 		mc.addInputNode(a);
 		ProbabilityTable distrib_mc = new ProbabilityTable(mc);
@@ -128,7 +128,7 @@ public class BNInferenceTest {
 		
 		assertEquals(0.62644875f, query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))), 0.001f);
 
-	}
+	} 
 	
 	@Test
 	public void bayesianNetworkTest2() throws DialException {
@@ -233,5 +233,17 @@ public class BNInferenceTest {
 			}
 		}
 		return allAssignments;
+	}
+	
+	
+	
+	public static void main (String[] args) {
+		BNInferenceTest test = new BNInferenceTest();
+		try {
+			test.bayesianNetworkTest3();
+		} catch (DialException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
