@@ -19,6 +19,7 @@
 
 package opendial.inference.converters;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import opendial.arch.DialException;
+import opendial.domains.Type;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
@@ -88,7 +90,7 @@ public class StateConverter {
 			nodes.add(mainNode);
 		}
 		
-		Stack<Fluent> depStack = new Stack<Fluent>();
+		List<Fluent> depStack = new LinkedList<Fluent>();
 		depStack.add(fluent);
 
 		for (Fluent cfluent : fluent.getFeatures()) {
@@ -109,11 +111,11 @@ public class StateConverter {
 		log.debug("fluent to analyse: " + fluent);
 		log.debug("values: " + fluent.getValues().keySet());
 		boolean found = false;
-		for (int i = baseFluents.size() -1 ; i <= 0 && !found ; i--) {
+		Fluent previousFluent = fluent;
+		for (int i = baseFluents.size() -1 ; i >= 0 && !found ; i--) {
 			Fluent baseFluent = baseFluents.get(i);
-			if (baseFluent.getType().hasPartialFeature(fluent.getType().getName())) {
-				BNode baseNode = mapping.get(baseFluent);
-				BNode featNode = createFeatureNode(fluent, baseNode, baseFluent);
+			if (baseFluent.getType().hasPartialFeature(previousFluent.getType().getName())) {
+				BNode featNode = createFeatureNode(fluent, baseFluent);
 				mapping.put(fluent, featNode);
 				nodes.add(featNode);
 				found = true;
@@ -128,8 +130,16 @@ public class StateConverter {
 					found = true;
 				}
 			}
-			
+			previousFluent = baseFluent;
 		}
+		
+		baseFluents.add(fluent);
+
+		for (Fluent cfluent : fluent.getFeatures()) {
+			if (!cfluent.getLabel().equals("Exists")) {
+			nodes.addAll(processFeatureFluent(cfluent, baseFluents));
+		}
+		} 
 		
 		return nodes;
 	}
@@ -162,9 +172,13 @@ public class StateConverter {
 			distrib.addRow(new Assignment(falseAssign, fluent.getLabel(), val), 0.0f);
 			total += fluent.getValues().get(val);
 		}
+		
+		node.addValue("None");
+		distrib.addHeadVariable(node.getId(), Arrays.asList((Object)"None"));
+
 		distrib.addRow(new Assignment(falseAssign, fluent.getLabel(), "None"), 1.0f);
+		
 		if (total < 1.0f) {
-			node.addValue("None");
 			distrib.addRow(new Assignment(node.getId(), "None"), 1.0f - total);
 		}
 		
@@ -210,6 +224,7 @@ public class StateConverter {
 		}
 		if (total < 1.0f) {
 			node.addValue("None");
+			distrib.addHeadVariable(node.getId(), Arrays.asList((Object)"None"));
 			distrib.addRow(new Assignment(node.getId(), "None"), 1.0f - total);
 		}
 		
@@ -221,8 +236,10 @@ public class StateConverter {
 
 	
 	
-	public static BNode createFeatureNode (Fluent cfluent, BNode baseNode, Fluent baseFluent) throws DialException {
+	public BNode createFeatureNode (Fluent cfluent, Fluent baseFluent) throws DialException {
 		
+		BNode baseNode = mapping.get(baseFluent);
+
 		log.debug("creating feature: " + cfluent.getLabel());
 		
 			BNode node = new BNode(cfluent.getLabel(), cfluent.getValues().keySet());
@@ -254,6 +271,7 @@ public class StateConverter {
 			
 			if (total < 1.0f) {
 				node.addValue("None");
+				distrib.addHeadVariable(node.getId(), Arrays.asList((Object)"None"));
 				distrib.addRow(new Assignment(node.getId(), "None"), 1.0f - total);
 			}
 			}
@@ -263,8 +281,12 @@ public class StateConverter {
 					Assignment full = new Assignment(base, node.getId(), val);
 					distrib.addRow(full, 0.0f);
 				}
+				node.addValue("None");
+				distrib.addHeadVariable(node.getId(), Arrays.asList((Object)"None"));
+				distrib.addRow(new Assignment(base, node.getId(), "None"), 1.0f);
 			}
 		}	
+		log.debug("distrib: " + distrib);
  
 		return distrib;
 	} 
