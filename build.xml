@@ -13,7 +13,7 @@
 	
 	<path id="compile.classpath">
 		<fileset dir="${lib}">
-		        <include name="junit.jar"/>
+		    <include name="*.jar" />
 		</fileset>
 	      <pathelement path="${build}"/> 
 	</path>
@@ -30,7 +30,9 @@
 	<!-- COMPILATION -->
 	<target name="compile" depends="init" description="compile the source " >
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+			<classpath refid="compile.classpath"/>
+		</javac>
 		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false">
 	  		<classpath refid="compile.classpath"/>
 		</javac>
