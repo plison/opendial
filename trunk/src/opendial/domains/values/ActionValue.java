@@ -27,7 +27,7 @@ import opendial.domains.actions.ActionTemplate;
  * with an action template (any class implementing ActionTemplate).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 15:10:13 #$
+ * @version $Date::                      $
  *
  */
 public class ActionValue<T> extends BasicValue<String> {

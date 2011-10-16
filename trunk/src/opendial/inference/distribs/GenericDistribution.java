@@ -40,7 +40,7 @@ import opendial.utils.Logger;
  * variables and their associated values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-15 23:46:18 #$
+ * @version $Date::                      $
  *
  */
 public abstract class GenericDistribution implements Distribution {
