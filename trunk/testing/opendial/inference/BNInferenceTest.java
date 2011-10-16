@@ -39,8 +39,8 @@ import opendial.inference.algorithms.VariableElimination;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
-import opendial.inference.bn.distribs.GenericDistribution;
-import opendial.inference.bn.distribs.ProbabilityTable;
+import opendial.inference.distribs.GenericDistribution;
+import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.Logger;
 
 /**
@@ -59,6 +59,7 @@ public class BNInferenceTest {
 	
 	public BNetwork constructBayesianNetwork() throws DialException {
 		BNetwork bn = new BNetwork();
+		BNode.autoCompletion = true;
 				
 		BNode b = new BNode("Burglary");
 		ProbabilityTable distrib_b = new ProbabilityTable(b);
