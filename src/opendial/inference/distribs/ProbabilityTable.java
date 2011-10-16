@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference.bn.distribs;
+package opendial.inference.distribs;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ import opendial.utils.Logger;
  * table directly maps possible variable assignments to probability values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-15 23:46:18 #$
  *
  */
 public class ProbabilityTable extends GenericDistribution implements Distribution {
@@ -244,8 +244,10 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 	@Override
 	public String toString() {
 		String str = "";
-		for (Assignment assign: table.keySet()) {
-			str += "P(" + assign + ")=" + table.get(assign) + "\n";
+		for (Assignment cond: getConditions()) {
+			for (Assignment head: this.getHeads()) {
+				str += "P(" + head + " | " + cond + "):="  + table.get(new Assignment(cond, head)) + "\n";
+			}
 		}
 		return str;
 	}

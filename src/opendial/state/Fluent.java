@@ -18,7 +18,7 @@
 // =================================================================                                                                   
 
 package opendial.state;
-
+ 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,7 +63,10 @@ public class Fluent {
 	Map<String,Fluent> features;
 
 
-	// entity counter for each entity                                                  
+	// existence probability for entities
+	float existenceProb = 1.0f;
+	
+	// entity counter for each entity (to forge entity labels)                                             
     private static Map<String,Integer> entityCounter = new HashMap<String,Integer>();
 
 
@@ -168,13 +171,7 @@ public class Fluent {
 	 * @throws DialException if problem occurs with the feature insertion
 	 */
 	public void setExistenceProb(float existenceProb) throws DialException {
-		Type type = new Type("Exists");
-		type.addValues(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
-		type.setAsFixed(true);
-		Fluent existenceFluent = new Fluent(type);
-		existenceFluent.addValue(Boolean.TRUE, existenceProb);
-		existenceFluent.addValue(Boolean.FALSE, 1.0f - existenceProb);		
-		features.put(existenceFluent.getLabel(), existenceFluent);
+		this.existenceProb = existenceProb;
 	}
 	
 	
@@ -296,12 +293,7 @@ public class Fluent {
 	 * @return the existence probability
 	 */
 	public float getExistenceProb() {
-		if (features.containsKey("Exists")) {
-			return features.get("Exists").getProb(Boolean.TRUE);
-		}
-		else {
-			return 1.0f;
-		}
+		return existenceProb;
 	}
 	
 

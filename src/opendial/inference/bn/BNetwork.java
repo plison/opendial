@@ -29,7 +29,7 @@ import java.util.Set;
 
 import opendial.arch.DialConstants;
 import opendial.arch.DialException;
-import opendial.inference.bn.distribs.Distribution;
+import opendial.inference.distribs.Distribution;
 import opendial.utils.Logger;
 
 /**

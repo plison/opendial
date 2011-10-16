@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference.bn.distribs;
+package opendial.inference.distribs;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ import opendial.utils.Logger;
  * variables and their associated values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-15 23:46:18 #$
  *
  */
 public abstract class GenericDistribution implements Distribution {

@@ -29,8 +29,8 @@ import java.util.TreeMap;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
-import opendial.inference.bn.distribs.GenericDistribution;
-import opendial.inference.bn.distribs.ProbabilityTable;
+import opendial.inference.distribs.GenericDistribution;
+import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 

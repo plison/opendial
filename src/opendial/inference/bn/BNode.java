@@ -30,8 +30,8 @@ import java.util.Set;
 
 import opendial.arch.DialConstants;
 import opendial.arch.DialException;
-import opendial.inference.bn.distribs.Distribution;
-import opendial.inference.bn.distribs.ProbabilityTable;
+import opendial.inference.distribs.Distribution;
+import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
@@ -67,7 +67,7 @@ public class BNode implements Comparable<BNode> {
 		
 	// whether the probability distribution should be automatically
 	// completed or not
-	public static boolean autoCompletion = true;
+	public static boolean autoCompletion = false;
 
 	
 	/**
@@ -334,8 +334,9 @@ public class BNode implements Comparable<BNode> {
 	 */
 	public String toString() {
 		if (!inputNodes.isEmpty()) {
-			return inputNodes.keySet() + " --> " + id;
-		}
+			return id;
+	//		return inputNodes.keySet() + " --> " + id;
+		} 
 		else {
 			return id;
 		}
@@ -346,8 +347,8 @@ public class BNode implements Comparable<BNode> {
 
 	/**
 	 * Compares the nodes to the one given as parameter.  If the given node
-	 * is one ancestor of this node, return -1.  If the opposite is true, returns
-	 * +1.  Else, returns 0.
+	 * is one ancestor of this node, return -10.  If the opposite is true, returns
+	 * +10.  Else, returns 0.
 	 * 
 	 * <p>This ordering is used for the variable elimination algorithm.
 	 *
@@ -362,7 +363,19 @@ public class BNode implements Comparable<BNode> {
 		else if (node.getAncestors(DialConstants.MAX_PATH_LENGTH).contains(this)) {
 			return 10;
 		}
-		return id.compareTo(node.getId());
+		else if (!node.getInputNodes().isEmpty() && getInputNodes().isEmpty()) {
+			return +10;
+		}
+		else if (node.getInputNodes().isEmpty() && !getInputNodes().isEmpty()) {
+			return -10;
+		}
+		else if (node.getInputNodes().isEmpty() && getInputNodes().isEmpty()) {
+			return id.compareTo(node.getId());
+		}
+		else {
+			return (node.getAncestors(DialConstants.MAX_PATH_LENGTH).size() - 
+					getAncestors(DialConstants.MAX_PATH_LENGTH).size());
+		}
 	}
 
 

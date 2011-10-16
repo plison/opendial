@@ -405,7 +405,15 @@ public class Assignment {
 	public String toString() {
 		String str = "";
 		for (String key: pairs.keySet()) {
-			str += key + "=" + pairs.get(key) ;
+			if (pairs.get(key).equals(Boolean.TRUE)) {
+				str += key;
+			}
+			else if (pairs.get(key).equals(Boolean.FALSE)) {
+				str += "!" + key;
+			}
+			else {
+				str += key + "=" + pairs.get(key) ;
+			}
 			if (!key.equals(pairs.lastKey())) {
 				str += " ^ ";
 			}

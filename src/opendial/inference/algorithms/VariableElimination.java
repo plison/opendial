@@ -30,8 +30,8 @@ import opendial.inference.algorithms.datastructs.Factor;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
-import opendial.inference.bn.distribs.GenericDistribution;
-import opendial.inference.bn.distribs.ProbabilityTable;
+import opendial.inference.distribs.GenericDistribution;
+import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
 
@@ -59,6 +59,8 @@ public class VariableElimination {
 
 		List<Factor> factors = new LinkedList<Factor>();
 
+	//	log.debug("sorted nodes: " + bn.getSortedNodes());
+		
 		// sort the nodes
 		for (BNode n: bn.getSortedNodes()) {
 
