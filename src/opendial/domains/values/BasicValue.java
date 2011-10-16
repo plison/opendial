@@ -26,7 +26,7 @@ package opendial.domains.values;
  * value is parametrised with T.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 14:37:16 #$
+ * @version $Date::                      $
  *
  */
 public class BasicValue<T> implements Value {

@@ -34,7 +34,7 @@ import opendial.utils.Logger;
  * table directly maps possible variable assignments to probability values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-15 23:46:18 #$
+ * @version $Date::                      $
  *
  */
 public class ProbabilityTable extends GenericDistribution implements Distribution {
