@@ -41,7 +41,7 @@ import opendial.utils.Logger;
  * possess 0...n instances in the dialogue state).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 15:10:13 #$
+ * @version $Date::                      $
  *
  */
 public class Type {

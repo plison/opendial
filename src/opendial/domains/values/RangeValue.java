@@ -28,7 +28,7 @@ import opendial.utils.Logger;
  * "integer", "float" or "boolean").
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 14:37:16 #$
+ * @version $Date::                      $
  *
  */
 public class RangeValue implements Value {

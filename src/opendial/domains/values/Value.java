@@ -23,7 +23,7 @@ package opendial.domains.values;
  * Generic interface for values contained in variable types
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 14:37:16 #$
+ * @version $Date::                      $
  *
  */
 public interface Value {

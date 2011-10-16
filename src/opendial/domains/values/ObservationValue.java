@@ -27,7 +27,7 @@ import opendial.domains.observations.Trigger;
  * Representation of an observation value in a variable type.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-11 14:37:16 #$
+ * @version $Date::                      $
  *
  */
 public class ObservationValue<T> extends RangeValue {

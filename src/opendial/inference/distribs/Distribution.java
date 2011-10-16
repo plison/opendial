@@ -32,7 +32,7 @@ import opendial.inference.bn.Assignment;
  * TODO: provide an interface for continuous distributions as well?
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-14 12:40:36 #$
+ * @version $Date::                      $
  *
  */
 public interface Distribution {
