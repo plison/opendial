@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference.bn.distribs;
+package opendial.inference.distribs;
 
 import java.util.Set;
 
@@ -32,7 +32,7 @@ import opendial.inference.bn.Assignment;
  * TODO: provide an interface for continuous distributions as well?
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-14 12:40:36 #$
  *
  */
 public interface Distribution {
