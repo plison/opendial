@@ -53,7 +53,7 @@ public class DialogueSystemTest1 {
 		Domain domain = reader.extractDomain(dialDomain);
 		DialogueSystem ds = new DialogueSystem(domain);
 		Action action = ds.pollNextAction();
-		log.debug("yoowhoo, action retrieved!!");
+	//	log.debug("yoowhoo, action retrieved!!");
 		assertTrue(action instanceof VoidAction);
 	}
 	
