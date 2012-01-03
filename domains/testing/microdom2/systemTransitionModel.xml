@@ -28,7 +28,7 @@
 		<var label="floor"/>
 	</output>
 	<case>
-		<condition><if var="floor" value="free"/></condition>
+		<condition operator="or"><if var="floor" value="free"/><if var="floor" value="init"/></condition>
 		<effect><set var="floor" value="wait"/></effect>
 	</case>
 </rule>

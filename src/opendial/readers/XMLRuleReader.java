@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import opendial.arch.DialConstants.BinaryOperator;
+import opendial.arch.DialConstants.Relation;
 import opendial.arch.DialException;
 import opendial.domains.Domain;
 import opendial.domains.Type;
@@ -83,13 +84,13 @@ public class XMLRuleReader {
 			
 			// rule input
 			if (node.getNodeName().equals("input")) {
-				List<StandardVariable> input = getVariables(node);
+				List<TypedVariable> input = getVariables(node);
 				rule.addInputVariables(input);
 			}
 			
 			// rule output
 			if (node.getNodeName().equals("output")) {
-				List<StandardVariable> output = getVariables(node);
+				List<TypedVariable> output = getVariables(node);
 				rule.addOutputVariables(output);
 			}	
 			
@@ -115,20 +116,20 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private List<StandardVariable> getVariables(Node node) throws DialException {
+	private List<TypedVariable> getVariables(Node node) throws DialException {
 
 		NodeList varList = node.getChildNodes();
-		Map<String,StandardVariable> vars = new HashMap<String,StandardVariable>();
+		Map<String,TypedVariable> vars = new HashMap<String,TypedVariable>();
 		for (int j = 0 ; j < varList.getLength(); j++) {
 			Node varNode = varList.item(j);
 			
 			if (varNode.getNodeName().equals("var") && varNode.hasAttributes()) {
 			
-				StandardVariable var = getVariable(varNode, vars);		
+				TypedVariable var = getVariable(varNode, vars);		
 				vars.put(var.getIdentifier(), var);
 			}
 		}
-		return new LinkedList<StandardVariable>(vars.values());
+		return new LinkedList<TypedVariable>(vars.values());
 	}
 
 	
@@ -139,23 +140,35 @@ public class XMLRuleReader {
 	 * @return the variable
 	 * @throws DialException if node is ill-formatted 
 	 */
-	private StandardVariable getVariable(Node varNode, Map<String,StandardVariable> previousVars) throws DialException {
+	private TypedVariable getVariable(Node varNode, Map<String,TypedVariable> previousVars) throws DialException {
 		 
 		if (varNode.getAttributes().getNamedItem("type") != null && 
 				varNode.getAttributes().getNamedItem("id")!=null) {
 			String typeStr = varNode.getAttributes().getNamedItem("type").getNodeValue();
 			String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
 			if (domain.hasType(typeStr)) {
-				return new StandardVariable(id, domain.getType(typeStr));
+				return new TypedVariable(id, domain.getType(typeStr));
 			}
 			else {
 				throw new DialException("type " + typeStr + " not declared as entity in domain");
 			}
 		}
+		else if (varNode.getAttributes().getNamedItem("count") != null && 
+				varNode.getAttributes().getNamedItem("id")!=null) {
+			String typeStr = varNode.getAttributes().getNamedItem("count").getNodeValue();
+			String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
+			if (domain.hasType(typeStr)) {
+				return new CountVariable(id, domain.getType(typeStr));
+			}
+			else {
+				throw new DialException("type " + typeStr + " not declared as entity in domain");
+			}
+		}
+		
 		else if (varNode.getAttributes().getNamedItem("label") != null) {
 			String typeStr = varNode.getAttributes().getNamedItem("label").getNodeValue();	
 			if (domain.hasType(typeStr)) {
-				return new StandardVariable(domain.getType(typeStr));
+				return new TypedVariable(domain.getType(typeStr));
 			}
 			else {
 				throw new DialException("type " + typeStr + " not declared in domain");
@@ -191,13 +204,13 @@ public class XMLRuleReader {
 	 * @return the feature variable
 	 * @throws DialException if XML node is ill-formatted
 	 */
-	private FeatureVariable getFeatureVariable(Node varNode, Map<String,StandardVariable> previousVars) throws DialException {
+	private FeatureVariable getFeatureVariable(Node varNode, Map<String,TypedVariable> previousVars) throws DialException {
 		String feat = varNode.getAttributes().getNamedItem("feature").getNodeValue();	
 		String base = varNode.getAttributes().getNamedItem("base").getNodeValue();
 		String id = varNode.getAttributes().getNamedItem("id").getNodeValue();
 
 		if (previousVars.containsKey(base)) {
-			StandardVariable baseVar = previousVars.get(base);
+			TypedVariable baseVar = previousVars.get(base);
 			Type baseType = baseVar.getType();
 			if (baseType.hasFeature(feat)) {
 				Type featType = baseType.getFeature(feat);
@@ -273,10 +286,24 @@ public class XMLRuleReader {
 
 				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
 				if (rule.hasInputVariable(id)) {
-					StandardVariable var = rule.getInputVariable(id);
-					String value = subnode.getAttributes().getNamedItem("value").getNodeValue();
-					BasicCondition<String> basicCond = new BasicCondition<String>(var,value);
+					TypedVariable var = rule.getInputVariable(id);
+					Object value = subnode.getAttributes().getNamedItem("value").getNodeValue();
+					if (value.equals("true") || value.equals("false")) {
+						value = Boolean.parseBoolean((String)value);
+					}
+					try {
+					Integer intValue = Integer.parseInt((String)value);
+					value = intValue;
+					}
+					catch (Exception NumberFormatException) {	}
+					BasicCondition basicCond = new BasicCondition(var,value);
 					subconditions.add(basicCond);
+					if (subnode.getAttributes().getNamedItem("relation") != null) {
+						String relation = subnode.getAttributes().getNamedItem("relation").getNodeValue();
+						if (relation.equals("!=")) {
+							basicCond.setRelation(Relation.UNEQUAL);
+						}
+					}
 				}
 
 				else {
@@ -363,9 +390,12 @@ public class XMLRuleReader {
 
 				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
 				if (rule.hasOutputVariable(id)) {
-					StandardVariable var = rule.getOutputVariable(id);
-					String value = subnode.getAttributes().getNamedItem("value").getNodeValue();
-					AssignEffect<String> assEffect = new AssignEffect<String>(var,value);
+					TypedVariable var = rule.getOutputVariable(id);
+					Object value = subnode.getAttributes().getNamedItem("value").getNodeValue();
+					if (value.equals("true") || value.equals("false")) {
+						value = Boolean.parseBoolean((String)value);
+					}
+					AssignEffect assEffect = new AssignEffect(var,value);
 					subeffects.add(assEffect);
 				}
 
@@ -378,7 +408,7 @@ public class XMLRuleReader {
 					subnode.getAttributes().getNamedItem("var") != null) {
 				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
 				if (rule.hasOutputVariable(id)) {
-					StandardVariable var = rule.getOutputVariable(id);
+					TypedVariable var = rule.getOutputVariable(id);
 					AddEntityEffect assEffect = new AddEntityEffect(var);
 					subeffects.add(assEffect);
 				}
@@ -386,9 +416,9 @@ public class XMLRuleReader {
 			else if (subnode.getNodeName().equals("remove") && subnode.hasAttributes() && 
 					subnode.getAttributes().getNamedItem("var") != null) {
 				String id = subnode.getAttributes().getNamedItem("var").getNodeValue();
-				if (rule.hasOutputVariable(id)) {
-					StandardVariable var = rule.getOutputVariable(id);
-					RemoveEntityEffect assEffect = new RemoveEntityEffect(var);
+				if (rule.hasOutputVariable(id) && rule.getOutputVariable(id) instanceof PointerVariable) {
+					TypedVariable var = rule.getOutputVariable(id);
+					RemoveEntityEffect assEffect = new RemoveEntityEffect((PointerVariable)var);
 					subeffects.add(assEffect);
 				}
 			}

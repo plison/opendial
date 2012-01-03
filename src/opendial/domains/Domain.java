@@ -22,11 +22,15 @@ package opendial.domains;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialConstants.ModelGroup;
+import opendial.arch.DialException;
+import opendial.domains.values.ObservationValue;
 import opendial.state.DialogueState;
+import opendial.state.Fluent;
 import opendial.utils.Logger;
 
 /**
@@ -56,6 +60,10 @@ public class Domain {
 	// types declarations
 	Map<String,Type> types;
 	
+	List<String> typesWithObservations;
+
+	List<String> typesWithActions;
+
 	// initial state of the domain
 	DialogueState initialState;
 	
@@ -72,6 +80,8 @@ public class Domain {
 		this.domainName = domainName;
 
 		types = new HashMap<String,Type>();
+		typesWithObservations = new LinkedList<String>();
+		typesWithActions = new LinkedList<String>();
 		
 		initialState = new DialogueState();
 		models = new HashMap<ModelGroup, Model>();
@@ -84,7 +94,9 @@ public class Domain {
 	 * @param initialState the initial state
 	 */
 	public void addInitialState(DialogueState initialState) {
-		this.initialState = initialState;
+		for (Fluent f: initialState.getFluents()) {
+			this.initialState.addFluent(f);
+		}
 	}
 	
 	
@@ -121,8 +133,9 @@ public class Domain {
 	 * Adds a collection of declared types to the domain
 	 * 
 	 * @param types the types to add
+	 * @throws DialException 
 	 */
-	public void addTypes(Collection<Type> types) {
+	public void addTypes(Collection<Type> types) throws DialException {
 		for (Type type : types) {
 			addType(type);
 		}
@@ -133,9 +146,20 @@ public class Domain {
 	 * Adds a single declared type to the domain
 	 * 
 	 * @param type the type to add
+	 * @throws DialException 
 	 */
-	private void addType(Type type) {
-		types.put(type.getName(), type);		
+	private void addType(Type type) throws DialException {
+		types.put(type.getName(), type);
+		if (!type.getAllValues().isEmpty() && type.getAllValues().get(0) instanceof ObservationValue) {
+			typesWithObservations.add(type.getName());
+		}
+		if (type.isFixed() && !(type.getAllValues().get(0) instanceof ObservationValue)) {
+			if (initialState.getFluent(type.getName()) == null) {
+			Fluent newFluent = new Fluent(type);
+			newFluent.addValue("None", 1.0f);
+			initialState.addFluent(newFluent);
+			}
+		}
 	}
 
 
@@ -198,7 +222,13 @@ public class Domain {
 
 
 
-
+	public List<Type> getTypesWithAttachedObservations() {
+		List<Type> typesWithObs = new LinkedList<Type>();
+		for (String type : typesWithObservations) {
+			typesWithObs.add(types.get(type));
+		}
+		return typesWithObs;
+	}
 
 
 }

@@ -20,12 +20,14 @@
 package opendial.inference.converters;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialException;
+import opendial.domains.values.BasicValue;
 import opendial.domains.values.Value;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
@@ -45,7 +47,7 @@ import opendial.utils.Logger;
  * values of the root fluent).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-16 16:12:07 #$
  *
  */
 public class StateConverter {
@@ -74,7 +76,11 @@ public class StateConverter {
 	 * @throws DialException if a conversion error occurs
 	 */
 	public BNetwork buildBayesianNetwork (DialogueState state) throws DialException {
-
+		return buildBayesianNetwork(state.getFluents());
+	}
+	
+	
+	public BNetwork buildBayesianNetwork (Collection<Fluent> fluents) throws DialException {
 		// initialise the mapping between fluents and nodes
 		fluentsToBNodes = new HashMap<Fluent,BNode>();
 
@@ -82,11 +88,16 @@ public class StateConverter {
 		BNetwork bn = new BNetwork();
 
 		// creates the nodes for each root fluent in the dialogue state
-		for (Fluent fluent : state.getFluents()) {
+		for (Fluent fluent : fluents) {
 			bn.addNodes(processTopFluent(fluent));
 		}
-
 		return bn;
+	}
+	
+	
+	
+	public Map<Fluent,BNode> getFluentToNodeMapping() {
+		return fluentsToBNodes;
 	}
 
 
@@ -104,13 +115,13 @@ public class StateConverter {
 	 * @throws DialException if a conversion error occurs
 	 */
 	private List<BNode> processTopFluent (Fluent fluent) throws DialException {
-
+		
 		List<BNode> nodes = new LinkedList<BNode>();
 
 		// if the fluent has an existence probability < 1.0f, create an existence node
-		if (fluent.getExistenceProb() < 1.0f) {
+		if (fluent.getExistenceProb() < 0.999f) {
 			BNode enode = createExistenceNode(fluent);
-			BNode mainNode = createNodeWithExistenceDependency(fluent, enode);
+			BNode mainNode = createDependentNode(fluent, enode, new BasicValue<Boolean>(Boolean.TRUE));
 			fluentsToBNodes.put(fluent, mainNode);
 			nodes.add(enode);
 			nodes.add(mainNode);
@@ -155,14 +166,18 @@ public class StateConverter {
 		while (!foundAttachment) {
 			
 			// get the parent fluent of the current one
+			if (!fluentHierarchy.containsKey(curFluent)) {
+				throw new DialException("error processing feature fluent " + featFluent);
+			}
 			Fluent  parentFluent = fluentHierarchy.get(curFluent);
 			
 			// if the parent fluent defines curFluent as a partial feature (only valid
 			// for specific values), create a dependent node with value dependency
 			if (parentFluent.getType().hasPartialFeature(curFluent.getType().getName())) {
 				BNode conditionalNode = fluentsToBNodes.get(parentFluent);
-				Value baseValue = parentFluent.getType().getBaseValueForPartialFeature(curFluent.getType().getName());
-				BNode featNode = createNodeWithValueDependency(featFluent, conditionalNode, baseValue);
+				Value baseValue = parentFluent.getType().
+					getBaseValueForPartialFeature(curFluent.getType().getName());
+				BNode featNode = createDependentNode(featFluent, conditionalNode, baseValue);
 				fluentsToBNodes.put(featFluent, featNode);
 				nodes.add(featNode);
 				foundAttachment = true;
@@ -176,7 +191,8 @@ public class StateConverter {
 				if (parentFluent.getExistenceProb() < 1.0f) {
 					BNode entityNode = fluentsToBNodes.get(parentFluent);
 					BNode existenceNode = entityNode.getInputNodes().get(0);
-					BNode mainNode = createNodeWithExistenceDependency(featFluent, existenceNode);
+					BNode mainNode = createDependentNode(featFluent, existenceNode, 
+							new BasicValue<Boolean>(Boolean.TRUE));
 					fluentsToBNodes.put(featFluent, mainNode);
 					nodes.add(mainNode);
 					foundAttachment = true;
@@ -187,6 +203,7 @@ public class StateConverter {
 					BNode mainNode = createIndependentNode(featFluent);
 					fluentsToBNodes.put(featFluent, mainNode);
 					nodes.add(mainNode);
+					foundAttachment = true;
 				}
 			}
 			
@@ -223,8 +240,9 @@ public class StateConverter {
 	public BNode createIndependentNode(Fluent fluent) throws DialException {
 
 		String label = fluent.getLabel();
-
 		BNode node = new BNode(label, fluent.getValues().keySet());
+		
+		node.addValue("None");
 
 		ProbabilityTable distrib = new ProbabilityTable(node);
 
@@ -233,11 +251,9 @@ public class StateConverter {
 			distrib.addRow(new Assignment(node.getId(), val), fluent.getValues().get(val));
 			total += fluent.getValues().get(val);
 		}
-
-		node.addValue("None");
-		distrib.addHeadVariable(node.getId(), Arrays.asList((Object)"None"));
-		distrib.addRow(new Assignment(node.getId(), "None"), 1.0f - total);
-
+		if (!distrib.hasProb(new Assignment(node.getId(), "None"))) {
+			distrib.addRow(new Assignment(node.getId(), "None"), 1.0f - total);
+		}
 		node.setDistribution(distrib);
 
 		return node;
@@ -257,7 +273,9 @@ public class StateConverter {
 
 		// create a new node
 		BNode node = new BNode("Exists(" + fluent.getLabel() + ")");
-
+		node.addValue(Boolean.TRUE);
+		node.addValue(Boolean.FALSE);
+		
 		// set the distribution
 		ProbabilityTable distrib = new ProbabilityTable(node);
 		distrib.addRow(new Assignment(node.getId(), Boolean.TRUE), fluent.getExistenceProb());
@@ -270,53 +288,9 @@ public class StateConverter {
 
 
 	/**
-	 * Creates a node with an existence dependency for the fluent, with the existence
-	 * node already given as parameter.  
-	 * 
-	 * @param fluent the fluent to convert
-	 * @param existenceNode the already created existence node
-	 * @return the 
-	 * @throws DialException
-	 */
-	private BNode createNodeWithExistenceDependency(Fluent fluent, BNode existenceNode) throws DialException {
-
-		// create a new node
-		String label = fluent.getLabel();
-		BNode node = new BNode(label, fluent.getValues().keySet());
-		node.addValue("None");
-
-		// add the existence node to the input
-		node.addInputNode(existenceNode);
-
-		// create a new distribution
-		ProbabilityTable distrib = new ProbabilityTable(node);
-
-		// define the basic assignments for the existence node
-		Assignment trueAssign = new Assignment(existenceNode.getId(), Boolean.TRUE);
-		Assignment falseAssign = new Assignment(existenceNode.getId(), Boolean.FALSE);
-
-		// loop on the node values and define the probability table for them
-		float total = 0.0f;
-		for (Object val : fluent.getValues().keySet()) {
-			distrib.addRow(new Assignment(trueAssign, fluent.getLabel(), val), fluent.getValues().get(val));
-			distrib.addRow(new Assignment(falseAssign, fluent.getLabel(), val), 0.0f);
-			total += fluent.getValues().get(val);
-		}
-
-		// add the probabilities for the "None" value
-		distrib.addRow(new Assignment(trueAssign, node.getId(), "None"), 1.0f - total);
-		distrib.addRow(new Assignment(falseAssign, fluent.getLabel(), "None"), 1.0f);
-
-		node.setDistribution(distrib);
-
-		return node;
-	}
-
-
-
-	/**
-	 * Creates a Bayesian Network node for a partial feature (defined only for a
-	 * specific value of the base fluent).
+	 * Creates a Bayesian Network node which is dependent on another one, and for which 
+	 * the probability distribution is defined as : P(h=x|d) = P(h=x) if d = baseValue,
+	 * and P(None|d) = 1.0f otherwise.
 	 * 
 	 * 
 	 * @param featFluent the feature fluent
@@ -324,7 +298,8 @@ public class StateConverter {
 	 * @return the corresponding Bayesian Network node
 	 * @throws DialException if resulting probability table is ill-formed
 	 */
-	public BNode createNodeWithValueDependency (Fluent featFluent, BNode conditionalNode, Value baseValue) throws DialException {
+	public BNode createDependentNode (Fluent featFluent, BNode conditionalNode, 
+			Value baseValue) throws DialException {
 
 		// create a new node
 		BNode node = new BNode(featFluent.getLabel(), featFluent.getValues().keySet());
@@ -352,9 +327,9 @@ public class StateConverter {
 					distrib.addRow(full, featFluent.getValues().get(val));
 					total += featFluent.getValues().get(val);
 				}
-
-				distrib.addRow(new Assignment(base, node.getId(), "None"), 1.0f - total);
-
+				if (!distrib.hasProb(new Assignment(base, node.getId(), "None"))) {
+					distrib.addRow(new Assignment(base, node.getId(), "None"), 1.0f - total);
+				}
 			}
 			
 			// else, set all probability mass onto the "None" value
@@ -367,6 +342,7 @@ public class StateConverter {
 			}
 		}	
 
+	//	log.debug("DISTRIBUTION: " + distrib);
 		node.setDistribution(distrib);
 
 		return node;

@@ -54,5 +54,16 @@ public class VoidEffect implements Effect {
 		return -1;
 	}
 
+	
+	@Override
+	public boolean equals(Object o) {
+		return (o instanceof VoidEffect);
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return 103459;
+	}
 
 }

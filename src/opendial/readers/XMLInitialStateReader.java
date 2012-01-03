@@ -90,7 +90,7 @@ public class XMLInitialStateReader {
 						variable.addValues(extractFluentValues(node));
 
 						variable.addFeatures(extractFeatures(node, variable));
-
+						
 						if (node.getAttributes().getNamedItem("existsProb") != null) {
 							float existsProb = Float.parseFloat(node.getAttributes().getNamedItem("existsProb").getNodeValue());
 							variable.setExistenceProb(existsProb);

@@ -26,10 +26,11 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import opendial.arch.DialException;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
-import opendial.inference.distribs.GenericDistribution;
+import opendial.inference.distribs.Distribution;
 import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
@@ -44,7 +45,7 @@ import opendial.utils.Logger;
  */
 public class NaiveInference {
 
-	static Logger log = new Logger("NaiveInference", Logger.Level.NORMAL);
+	static Logger log = new Logger("NaiveInference", Logger.Level.DEBUG);
 	
 
 	/**
@@ -55,12 +56,12 @@ public class NaiveInference {
 	 * @param queryVars the query variables
 	 * @param evidence the evidence
 	 * @return the resulting probability distribution
+	 * @throws DialException 
 	 */
-	public static GenericDistribution query
-		(BNetwork bn, List<String> queryVars, Assignment evidence) {
+	public static Distribution query
+		(BNetwork bn, List<String> queryVars, Assignment evidence) throws DialException {
 		
 		Map<Assignment, Float> fullJoint = getFullJoint(bn);
-		
 		SortedMap<String,Set<Object>> queryValues = new TreeMap<String,Set<Object>>();
 		for (BNode n : bn.getNodes()) {
 			if (queryVars.contains(n.getId())) {
@@ -68,7 +69,6 @@ public class NaiveInference {
 			}
 		}
 		List<Assignment> queryAssigns = InferenceUtils.getAllCombinations(queryValues);
-		
 		Map<Assignment, Float> queryResult = new HashMap<Assignment,Float>();
 		
 		for (Assignment queryA : queryAssigns) {
@@ -83,7 +83,8 @@ public class NaiveInference {
 		
 		queryResult = InferenceUtils.normalise(queryResult);
 		
-		GenericDistribution distrib = new ProbabilityTable(queryResult);
+		Distribution distrib = new ProbabilityTable(queryResult);
+		
 		return distrib;
 	}
 	
@@ -99,13 +100,13 @@ public class NaiveInference {
 
 		Map<Assignment,Float> result = new HashMap<Assignment, Float>();
 		for (Assignment singleAssign : fullAssigns) {
-			float jointProb = 1.0f;
+			
+			double jointLogProb = 0.0f;
 			for (BNode n: bn.getNodes()) {
-				
 				Assignment trimedAssign = singleAssign.getTrimmed(n.getVariables());
-				jointProb = jointProb * n.getProb(trimedAssign);
+				jointLogProb += Math.log(n.getProb(trimedAssign));
 			}
-			result.put(singleAssign, jointProb);
+			result.put(singleAssign, (float)Math.exp(jointLogProb));
 		}
 		
 		return result;

@@ -35,76 +35,111 @@ import opendial.inference.bn.Assignment;
  *
  */
 public class Factor {
-	
-		// the matrix
-		Map<Assignment, Float> matrix;
 
-		/**
-		 * Creates a new, empty factor
-		 */
-		public Factor() {
-			matrix = new HashMap<Assignment,Float>();
-		}
+	// the matrix
+	Map<Assignment, Float> matrix;
 
-		/**
-		 * Adds a new entry to the matrix
-		 * 
-		 * @param a the assignment
-		 * @param value the probability value
-		 */
-		public void addEntry (Assignment a, float value) {
-			matrix.put(a, value);
-		}
-		
 
-		/**
-		 * Returns the probability for the assignment, if it is
-		 * encoded in the matrix.  Else, returns null
-		 * 
-		 * @param a the assignment
-		 * @return probability of the assignment
-		 */
-		public float getEntry(Assignment a) {
-			return matrix.get(a);
-		}
+	/**
+	 * Creates a new, empty factor
+	 */
+	public Factor() {
+		matrix = new HashMap<Assignment,Float>();
+	}
 
-		/**
-		 * Returns the matrix included in the factor
-		 * 
-		 * @return the matrix
-		 */
-		public Map<Assignment, Float> getMatrix() {
-			return matrix;
-		}
+	/**
+	 * @param productFactor
+	 */
+	public Factor(Map<Assignment, Float> matrix) {
+		this.matrix = matrix;
+	}
 
-		/**
-		 * Returns the set of variables used in the assignment.  It assumes
-		 * that at least one entry exists in the matrix.  Else, returns
-		 * an empty list
-		 * 
-		 * @return the set of variables
-		 */
-		public Set<String> getVariables() {
-			if (!matrix.isEmpty()) {
-				return matrix.keySet().iterator().next().getVariables();
-			}
-			else {
-				return new HashSet<String>();
-			}
-		}
-		
 
-		/**
-		 * Returns a string representation of the factor
-		 *
-		 * @return the string representation
-		 */
-		public String toString() {
-			String str = "";
-			for (Assignment a : matrix.keySet()) {
-				str += "P(" + a + ")=" + matrix.get(a) + "\n";
-			}
-			return str;
+	/**
+	 * Adds a new entry to the matrix
+	 * 
+	 * @param a the assignment
+	 * @param value the probability value
+	 */
+	public void addEntry (Assignment a, float value) {
+		matrix.put(a, value);
+	}
+
+
+	/**
+	 * Returns the probability for the assignment, if it is
+	 * encoded in the matrix.  Else, returns null
+	 * 
+	 * @param a the assignment
+	 * @return probability of the assignment
+	 */
+	public float getEntry(Assignment a) {
+		if (!matrix.containsKey(a)) {
+			System.out.println("==> assignment FAILURE: " + a);
 		}
+		return matrix.get(a);
+	}
+
+	/**
+	 * Returns the matrix included in the factor
+	 * 
+	 * @return the matrix
+	 */
+	public Map<Assignment, Float> getMatrix() {
+		return matrix;
+	}
+
+	/**
+	 * Returns the set of variables used in the assignment.  It assumes
+	 * that at least one entry exists in the matrix.  Else, returns
+	 * an empty list
+	 * 
+	 * @return the set of variables
+	 */
+	public Set<String> getVariables() {
+		if (!matrix.isEmpty()) {
+			return matrix.keySet().iterator().next().getVariables();
+		}
+		else {
+			return new HashSet<String>();
+		}
+	}
+
+
+	public boolean isNull() {
+		float total = 0.0f;
+		for (Assignment a : matrix.keySet()) {
+			total += matrix.get(a);
+		}
+		if (total == 0.0f) {
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns a string representation of the factor
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		String str = "";
+		for (Assignment a : matrix.keySet()) {
+			str += "P(" + a + ")=" + matrix.get(a) + "\n";
+		}
+		return str;
+	}
+
+	/**
+	 * 
+	 * @param reducedA
+	 * @return
+	 */
+	public boolean hasAssignment(Assignment a) {
+		return matrix.containsKey(a);
+	}
+
+
 
 }

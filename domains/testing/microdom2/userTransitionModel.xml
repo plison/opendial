@@ -5,7 +5,7 @@
 	<input>
 		<var label="a_u"/>
 		<var feature="obj" base="a_u" id="o1"/>
-		<var label="a_m"/>
+		<var count="intent" id="intent_count"/>
 	</input>
 	<output>
 			<var type="intent" id="i"/>
@@ -15,7 +15,7 @@
 		<condition operator="and">
 			<if var="a_u" value="AskFor"/>
 			<if var="o1" value="X"/>
-			<if var="a_m" value="AskRepeat" relation="!="/>
+			<if var="intent_count" value="0"/>
 		</condition>
 		<effect prob="1.0">
 			<add var="i"/>
@@ -30,7 +30,7 @@
 	<input>
 		<var label="a_u"/>
 		<var feature="obj" base="a_u" id="o1"/>
-		<var label="a_m"/>
+		<var count="intent" id="intent_count"/>
 	</input>
 	<output>
 		<var type="intent" id="i"/>
@@ -40,7 +40,7 @@
 		<condition operator="and">
 			<if var="a_u" value="AskFor"/>
 			<if var="o1" value="Y"/>
-			<if var="a_m" value="AskRepeat" relation="!="/>
+			<if var="intent_count" value="0"/>
 		</condition>
 		<effect prob="1.0">
 			<add var="i"/>
@@ -58,7 +58,7 @@
 		<var label="floor"/>
 	</output>
 	<case>
-		<condition><if var="floor" value="wait"/></condition>
+		<condition operator="or"><if var="floor" value="wait"/><if var="floor" value="free"/><if var="floor" value="init"/></condition>
 		<effect><set var="floor" value="free"/></effect>
 	</case></rule>
 

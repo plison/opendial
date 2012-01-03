@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import opendial.arch.DialConstants;
 import opendial.arch.DialException;
@@ -128,10 +130,38 @@ public class BNetwork {
 	 * @return the ordered list of nodes
 	 */
 	public List<BNode> getSortedNodes() {
-		List<BNode> nodesList = new ArrayList<BNode>(nodes.values()); 
-		Collections.sort(nodesList);
-	//	log.debug("sorted nodes: " + nodesList);
-		return nodesList;
+
+		Stack<BNode> sortedNodes = new Stack<BNode>();
+
+		Stack<BNode> endNodes = new Stack<BNode>();
+		for (BNode n : nodes.values()) {
+			if (getOutputNodes(n).isEmpty()) {
+				endNodes.add(n);
+			}
+		}
+		
+		Stack<BNode> nodesToProcess = new Stack<BNode>();
+		nodesToProcess.addAll(endNodes);
+		
+		while (!nodesToProcess.isEmpty()) {
+			BNode n = nodesToProcess.pop();
+			List<BNode> outerNodes = getOutputNodes(n);			
+			if (!sortedNodes.containsAll(outerNodes)) {
+				outerNodes.remove(n);
+				nodesToProcess.addAll(outerNodes);
+			}
+			else if (!sortedNodes.contains(n)) {
+				sortedNodes.add(n);
+				nodesToProcess.addAll(n.getInputNodes());
+			}
+		}
+		
+		if (sortedNodes.size() != nodes.size()) {
+			log.warning("node sorting problem, duplicates found");
+			log.debug("sorted nodes: " + sortedNodes);
+			log.debug("all nodes: " + nodes.values());		
+		}
+		return sortedNodes;
 	}
 	
 	
@@ -145,5 +175,62 @@ public class BNetwork {
 	}
 
 
+	/**
+	 * 
+	 * @param node
+	 */
+	public void removeNode(BNode node) {
+		nodes.remove(node.getId());
+	}
+
+
+	public List<BNode> getOutputNodes(BNode node) {
+		List<BNode> oNodes = new LinkedList<BNode>();
+		for (BNode n : nodes.values()) {
+			if (n.getInputNodes().contains(node)) {
+				oNodes.add(n);
+			}
+		}
+		return oNodes;
+	}
+
+
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public List<BNode> getDescendents(BNode node) {
+		List<BNode> dNodes = new LinkedList<BNode>();
+		boolean fixedPoint = false;
+		while (!fixedPoint) {
+			fixedPoint = true;
+			for (BNode n : nodes.values()) {
+				for (BNode i : n.getInputNodes()) {
+					if (!dNodes.contains(n) && (dNodes.contains(i) || node.equals(i))) {
+						dNodes.add(n);
+						fixedPoint = false;
+					}
+				}
+			}
+		}
+		return dNodes;
+	}
+	
+	
+	public BNetwork copy() throws DialException {
+		BNetwork newBN = new BNetwork();
+		for (BNode n : nodes.values()) {
+			newBN.addNode(n.copy());
+		}
+		for (BNode n : newBN.getNodes()) {
+			for (BNode i : n.getInputNodes()) {
+				BNode newNodeRef = newBN.getNode(i.getId());
+				n.removeInputNode(i);
+				n.addInputNode(newNodeRef);
+			}
+		}
+		return newBN;
+	}
 
 }

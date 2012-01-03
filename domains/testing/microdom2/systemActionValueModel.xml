@@ -57,7 +57,7 @@
 			<if var="i" value="Want"/>
 			<if var="o" value="X"/>
 		</condition>
-		<effect prob="1.0"><set var="a_m" value="DoY"/></effect>
+		<effect prob="0.0"><set var="a_m" value="DoY"/></effect>
 	</case>
 	<case>
 		<condition>
@@ -65,7 +65,7 @@
 			<if var="i" value="Want"/>
 			<if var="o" value="Y"/>
 		</condition>
-		<effect prob="0.0"><set var="a_m" value="DoY"/></effect>
+		<effect prob="1.0"><set var="a_m" value="DoY"/></effect>
 	</case>
 </rule>
 
@@ -81,7 +81,60 @@
 		<condition>
 			<if var="floor" value="free"/>
 		</condition>
-		<effect prob="0.6"><set var="a_m" value="AskRepeat"/></effect>
+		<effect prob="0.55"><set var="a_m" value="AskRepeat"/></effect>
+	</case>
+</rule>
+
+
+<rule>
+	<input>
+		<var label="floor"/>
+		<var type="intent" id="i"/>
+		<var feature="obj" base="i" id="o"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition>
+			<if var="floor" value="free"/>
+			<if var="i" value="Want"/>
+			<if var="o" value="X"/>
+		</condition>
+		<effect prob="0.75"><set var="a_m" value="ConfirmX"/></effect>
+	</case>
+	<case>
+		<condition>
+			<if var="floor" value="free"/>
+		</condition>
+		<effect prob="0.4"><set var="a_m" value="ConfirmX"/></effect>
+	</case>
+</rule>
+
+
+
+<rule>
+	<input>
+		<var label="floor"/>
+		<var type="intent" id="i"/>
+		<var feature="obj" base="i" id="o"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition>
+			<if var="floor" value="free"/>
+			<if var="i" value="Want"/>
+			<if var="o" value="Y"/>
+		</condition>
+		<effect prob="0.75"><set var="a_m" value="ConfirmY"/></effect>
+	</case>
+	<case>
+		<condition>
+			<if var="floor" value="free"/>
+		</condition>
+		<effect prob="0.4"><set var="a_m" value="ConfirmY"/></effect>
 	</case>
 </rule>
 
@@ -99,7 +152,26 @@
 			<if var="floor" value="free"/>
 			<if var="a_u" value="Unknown"/>
 		</condition>
-		<effect prob="1.0"><set var="a_m" value="InformNotUnderstand"/></effect>
+		<effect prob="0.7"><set var="a_m" value="InformNotUnderstand"/></effect>
+	</case>
+</rule>
+
+
+
+<rule>
+	<input>
+		<var label="floor"/>
+		<var label="a_u"/>
+	</input>
+	<output>
+		<var label="a_m"/>
+	</output>
+	<case>
+		<condition>
+			<if var="floor" value="free"/>
+			<if var="a_u" value="Greet"/>
+		</condition>
+		<effect prob="1.0"><set var="a_m" value="SayHi"/></effect>
 	</case>
 </rule>
 

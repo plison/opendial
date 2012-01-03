@@ -31,10 +31,10 @@ package opendial.domains.rules.variables;
  * @version $Date::                      $
  *
  */
-public class PointerVariable extends StandardVariable {
+public class PointerVariable extends TypedVariable {
 
 	// the variable which is pointed at
-	StandardVariable targetVariable ;
+	TypedVariable targetVariable ;
 	
 	
 	/**
@@ -43,7 +43,7 @@ public class PointerVariable extends StandardVariable {
 	 * 
 	 * @param targetVariable the variable which is pointed at
 	 */
-	public PointerVariable(StandardVariable targetVariable) {
+	public PointerVariable(TypedVariable targetVariable) {
 		super(targetVariable.getIdentifier(), targetVariable.getType());
 		this.targetVariable = targetVariable;
 	}
@@ -54,7 +54,7 @@ public class PointerVariable extends StandardVariable {
 	 * 
 	 * @return the target variable
 	 */
-	public StandardVariable getTarget() {
+	public TypedVariable getTarget() {
 		return targetVariable;
 	}
 	

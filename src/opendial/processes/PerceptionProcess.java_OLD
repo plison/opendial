@@ -19,14 +19,27 @@
 
 package opendial.processes;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import opendial.arch.DialException;
 import opendial.arch.DialogueInterface;
+import opendial.arch.DialConstants.ModelGroup;
 import opendial.domains.Domain;
+import opendial.gui.NetworkVisualisation;
+import opendial.inference.algorithms.VariableElimination;
+import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNetwork;
+import opendial.inference.converters.NodeConverter;
+import opendial.inference.converters.ObservationConverter;
+import opendial.inference.converters.RuleConverter;
+import opendial.inference.distribs.Distribution;
+import opendial.inputs.NBestList;
 import opendial.inputs.Observation;
 import opendial.state.DialogueState;
+import opendial.state.Fluent;
 import opendial.utils.Logger;
 
 /**
@@ -40,7 +53,7 @@ import opendial.utils.Logger;
  * <li> when the observation queue is emptied, the thread goes back to sleep. </li>
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-15 21:53:05 #$
  *
  */
 public class PerceptionProcess extends Thread {
@@ -72,6 +85,7 @@ public class PerceptionProcess extends Thread {
 		interfaces = new LinkedList<DialogueInterface>();
 		
 		observationsToProcess = new LinkedList<Observation>();
+		
 	}
 
 	
@@ -116,7 +130,10 @@ public class PerceptionProcess extends Thread {
 		while (true) {		
 		           
 				// the new observation to process
-				Observation newObs = observationsToProcess.poll();
+				Observation newObs = null;
+				while (newObs == null) {
+					newObs = observationsToProcess.poll();
+				}
 				
 				while (newObs != null) {
 					
@@ -138,6 +155,8 @@ public class PerceptionProcess extends Thread {
 	}
 
 	
+	static long perceptionTime = 0;
+	
 	/**
 	 * Updates the dialogue state given the new observation
 	 * TODO: implement dialogue state update
@@ -145,7 +164,72 @@ public class PerceptionProcess extends Thread {
 	 * @param obs the observation to process
 	 */
 	private synchronized void updateState(Observation obs) {
-		state.dummyChange();
+		
+		long initTime = System.currentTimeMillis();
+		
+		state.getPrediction().waitUntilReady();
+		
+		BNetwork uRealisation = state.getPrediction().getRealisationNetwork();
+		BNetwork uPrediction = state.getPrediction().getPredictionNetwork();
+
+		
+	//	log.debug("Perception process, initial state: " + state);
+	//	log.debug("uRealisation size: " + uRealisation.getNodes().size());
+		
+		try {
+		ObservationConverter oconverter = new ObservationConverter();
+				
+		uRealisation = oconverter.extendBayesianNetworkWithObservations(uRealisation, obs, domain.getTypesWithAttachedObservations());
+		List<Fluent> userActFluents = NodeConverter.convertInputNodesToFluents(uRealisation, domain, oconverter.obsAssignment);
+		
+		
+
+		for (Fluent f: userActFluents) {
+	//		f.normaliseValues();
+			state.addFluent(f);
+			log.debug("user act fluent given observation: " + f);
+		}
+		
+
+
+	//	NetworkVisualisation.showBayesianNetwork(uPrediction);
+		uPrediction = oconverter.extendBayesianNetworkWithBlabla(userActFluents, uPrediction);	
+	//	NetworkVisualisation.showBayesianNetwork(uPrediction);
+		List<Fluent> updatedFluents = NodeConverter.convertInputNodesToFluents(uPrediction, domain, oconverter.mainObsAssignment);
+
+		for (Fluent f: updatedFluents) {
+			// check here if fluent is not part of the user fluents!!!
+	//		f.normaliseValues();
+			state.addFluent(f);
+			log.debug("adding fluent: " + f);
+		}
+	
+		RuleConverter converter = new RuleConverter();
+		BNetwork userTransition = converter.createBayesianNetwork(domain.getModel(ModelGroup.USER_TRANSITION), state);
+
+
+	//	NetworkVisualisation.showBayesianNetwork(userTransition);
+
+		List<Fluent> transitionFluents = NodeConverter.convertOutputNodesToFluents(userTransition, domain, new Assignment());
+		
+		for (Fluent f: transitionFluents) {
+	//		f.normaliseValues();
+			state.addFluent(f);
+	//		log.debug("transition fluent: " + f);
+		}
+		
+		synchronized(state) {
+			state.notifyAll();
+		}
+
+		perceptionTime += System.currentTimeMillis() - initTime;
+
+		}
+		catch (DialException e) {
+			log.warning("error in Bayesian network compilation, aborting process");
+			e.printStackTrace();
+		} 
+		
 	}
 
 

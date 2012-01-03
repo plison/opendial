@@ -84,7 +84,7 @@ public class RangeValue implements Value {
 			}
 		}
 		else if (range.equals(PrimitiveType.BOOLEAN)) {
-			if (val instanceof Integer) {
+			if (val instanceof Boolean) {
 				return true;
 			}
 			else if (val instanceof String){

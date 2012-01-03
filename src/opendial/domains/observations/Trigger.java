@@ -20,6 +20,9 @@
 package opendial.domains.observations;
 
 import java.util.List;
+import java.util.Map;
+
+import opendial.inputs.Observation;
 
 /**
  * Generic representation for an observation trigger, defined in a parametrised
@@ -46,4 +49,16 @@ public interface Trigger<T> {
 	 */
 	public abstract List<String> getSlots();
 
+	
+	public float getProb(Observation obs);
+
+
+	/**
+	 * 
+	 * @param t2
+	 * @return
+	 */
+	public abstract boolean subsumes(Trigger t2);
+	
+	public Map<String,Map<String,Float>> fillSlots (Observation obs) ;
 }

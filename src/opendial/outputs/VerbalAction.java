@@ -42,6 +42,10 @@ public class VerbalAction implements Action {
 		this.stringToSynthesize = stringToSynthesize;
 	}
 	
+	public String getString() {
+		return stringToSynthesize;
+	}
+	
 	
 	/**
 	 * Returns a string representation of the action

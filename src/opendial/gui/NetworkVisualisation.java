@@ -19,16 +19,37 @@
 
 package opendial.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.border.Border;
 
 import org.apache.commons.collections15.Transformer;
 
+import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
+import edu.uci.ics.jung.algorithms.layout.DAGLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
 import opendial.utils.Logger;
@@ -44,6 +65,7 @@ public class NetworkVisualisation {
 
 	static Logger log = new Logger("NetworkVisualisation", Logger.Level.DEBUG);
 	
+	public static boolean showOnce = true;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void showBayesianNetwork (BNetwork bn) {
@@ -55,31 +77,51 @@ public class NetworkVisualisation {
 		for (BNode node: bn.getNodes()) {
 			f.addVertex(node.getId());
 			for (BNode inputNode : node.getInputNodes()) {
+				if (bn.getNode(inputNode.getId()) != null) {
 				f.addEdge(counter, inputNode.getId(), node.getId());
 				counter++;
+				}
 			}
 		}
 		
 		
-		Layout<String, Integer> layout = new TreeLayout(f, 100, 100); 
-		// layout.setSize(new Dimension(300,300)); 
-		// sets the initial size of the space
+		DAGLayout<String, Integer> layout = new DAGLayout<String,Integer>(f); 
 
+		layout.setStretch(1);
+		layout.setRepulsionRange(30);
+		layout.setForceMultiplier(1);
+		// sets the initial size of the space
+		layout.setSize(new Dimension(300,300));
+	//	layout.done();
 		// The BasicVisualizationServer<V,E> is parameterized by the edge types 
 		VisualizationViewer<String,Integer> vv =
-		new VisualizationViewer<String,Integer>(layout); 
-	//	vv.setPreferredSize(new Dimension(800,400)); 
+		new VisualizationViewer<String,Integer>(layout, new Dimension(700,500)); 
+		MutableTransformer modelTransformer =
+            vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
+	    modelTransformer.rotate(1 * Math.PI / 2.0, 
+       		vv.getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, new Point(100,200)));
+
+        vv.setBackground(Color.white);
 
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 		vv.setVertexToolTipTransformer(new TooltipTransformer(bn));
 
 		//Sets the viewing area size
 		JFrame frame = new JFrame("Bayesian Network visualisation"); 
-
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-		frame.getContentPane().add(vv); 
+		Container contentPane = frame.getContentPane();
+		
+		contentPane.add(Box.createRigidArea(new Dimension(20,20)), BorderLayout.NORTH);
+		contentPane.add(Box.createRigidArea(new Dimension(20,20)), BorderLayout.WEST);
+		contentPane.add(vv, BorderLayout.CENTER); 
+		contentPane.add(Box.createRigidArea(new Dimension(20,20)), BorderLayout.EAST);
+		contentPane.add(Box.createRigidArea(new Dimension(20,20)), BorderLayout.SOUTH);
+		frame.setLocation(new Point(400, 400));
 		frame.pack();
-		frame.setVisible(true);
+	//	if (showOnce) {
+			frame.setVisible(true);
+	//		showOnce = false;
+	//	}
 	}
 }
 
@@ -104,6 +146,7 @@ final class TooltipTransformer implements Transformer<String,String> {
 		String htmlDistrib = "<html><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + 
 		distribStr.replace("\n", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + "<br></html>";
 		htmlDistrib = htmlDistrib.replace("P(", "<b>P(</b>").replace("):=", "<b>):=</b>");
+		htmlDistrib = htmlDistrib.replace("if", "<b>if</b>").replace("then", "<b>then</b>");
 		return htmlDistrib;
 	}
 	

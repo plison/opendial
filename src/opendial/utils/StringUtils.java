@@ -19,6 +19,7 @@
 
 package opendial.utils;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -35,7 +36,7 @@ import opendial.utils.Logger;
 public class StringUtils {
 
 	// logger
-	static Logger log = new Logger("StringUtils", Logger.Level.NORMAL);
+	static Logger log = new Logger("StringUtils", Logger.Level.DEBUG);
 	
 	
 	/**
@@ -52,7 +53,7 @@ public class StringUtils {
 		StringTokenizer tokenizer = new StringTokenizer(content);
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
-			log.debug("token: " + token);
+	//		log.debug("token: " + token);
 			if (token.contains("${") && token.contains("}")) {
 				String strippedToken = token.replace("${", "").replace("}", "")
 				.trim().replace(",", "").replace(".", "").replace("!", "");
@@ -63,6 +64,27 @@ public class StringUtils {
 		return slots;
 	}
 	
+	
+
+	public static List<String> splitContent (String content, List<String> slots) {
+		if (slots.isEmpty()) {
+			return Arrays.asList(content);
+		}
+		else {
+			List<String> splits = new LinkedList<String>();
+			splits.add(content);
+			for (String slot : slots) {
+				List<String> splits_copy = new LinkedList<String>();
+				for (String split : splits) {
+					String[] onesplit = split.split("\\$\\{"+slot+"\\}");
+					splits_copy.addAll(Arrays.asList(onesplit));
+				}
+				splits = splits_copy;
+			}	
+			return splits;
+		}
+	}
+
 	
 	/**
 	 * Returns an string indent of a given length

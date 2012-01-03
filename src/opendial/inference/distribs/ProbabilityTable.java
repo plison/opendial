@@ -19,6 +19,8 @@
 
 package opendial.inference.distribs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +77,11 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 	 */
 	public ProbabilityTable(Map<Assignment, Float> table) {
 		super();
+		for (Assignment a : table.keySet()) {
+			for (String avar : a.getVariables()) {
+				addHeadVariable(avar, Arrays.asList(a.getValue(avar)));
+			}
+		}
 		this.table = table;
 	}
 
@@ -93,9 +100,9 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 	 * @param prob the associated probability
 	 */
 	public void addRow(Assignment assignment, float prob) {
-		if (isValid(assignment)) {
+	//	if (isValid(assignment)) {
 			table.put(assignment, prob);
-		}
+	//	}
 	}
 	
 	
@@ -107,7 +114,8 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 	 * a probability = 1.0f - sum(other assignments).
 	 */
 	public void completeProbabilityTable() {
-				
+			
+		if (!getConditions().isEmpty()) {
 		for (Assignment condAss : getConditions()) {
 			
 			// search for combinations of head variables not covered in the table
@@ -119,15 +127,16 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 			}
 			
 			if (uncoveredHeads.size() == 1) {
-				Assignment lastAss = new Assignment(condAss, uncoveredHeads.get(0));  // hack!
+				Assignment lastAss = new Assignment(condAss, uncoveredHeads.get(0));  
 				float remainingProb = 1 - getTotalProbilityForCondition(condAss);
 				addRow(lastAss, remainingProb);
-		//		log.debug("Completing table with: P(" + lastAss + ") = " + remainingProb );
+				log.debug("Completing table with: P(" + lastAss + ") = " + remainingProb );
 			}
 			
 			else if (uncoveredHeads.size() > 1) {
 				log.warning("cannot complete probability table, more than one missing assignment");
 			}
+		}
 		}
 	}
 	
@@ -144,8 +153,8 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 	 * @return the look-up table
 	 */
 	@Override
-	public Set<Assignment> getTable() {
-		return table.keySet();
+	public List<Assignment> getTable() {
+		return new ArrayList<Assignment>(table.keySet());
 	}
 	
 	
@@ -197,6 +206,7 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 		for (Assignment a : getAllPossibleAssignments()) {
 			if (!table.containsKey(a)) {
 				log.warning("No distribution is declared for assignment " + a);
+				log.debug("all keys: " + table.keySet());
 				return false;			
 			}
 		}
@@ -205,7 +215,8 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 		for (Assignment condAss : getConditions()) {
 			float totalProbability = getTotalProbilityForCondition(condAss);
 			if (totalProbability < 0.999f || totalProbability > 1.0001f) {
-				log.warning("total probability for conditional assignment " + condAss + " = " + totalProbability);
+				log.warning("total probability for P(.|" + condAss + ") = " + totalProbability);
+				log.debug("full table:" + table);
 				return false;
 			}
 		}		
@@ -246,9 +257,15 @@ public class ProbabilityTable extends GenericDistribution implements Distributio
 		String str = "";
 		for (Assignment cond: getConditions()) {
 			for (Assignment head: this.getHeads()) {
+				if (cond.getSize() > 0) {
 				str += "P(" + head + " | " + cond + "):="  + table.get(new Assignment(cond, head)) + "\n";
+				}
+				else {
+					str += "P(" + head + "):="  + table.get(new Assignment(head)) + "\n";
+				}
 			}
 		}
+		
 		return str;
 	}
 

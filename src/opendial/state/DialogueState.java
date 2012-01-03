@@ -21,9 +21,15 @@ package opendial.state;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import opendial.domains.Type;
+import opendial.domains.values.Value;
+import opendial.inference.bn.BNetwork;
 import opendial.utils.Logger;
 
 /**
@@ -45,14 +51,20 @@ public class DialogueState {
 	static Logger log = new Logger("DialogueState", Logger.Level.DEBUG);
 	
 	// the list of fluents, indexed by label
-	Map<String,Fluent> fluents;
+	SortedMap<String,Fluent> fluents;
 	
-	
+	Prediction prediction;
+
 	/**
 	 * Creates a new dialogue state, with an empty list of fluents
 	 */
 	public DialogueState () {
-		fluents = new HashMap<String, Fluent>();
+		fluents = new TreeMap<String, Fluent>();
+		prediction = new Prediction();
+	}
+	
+	public Prediction getPrediction() {
+		return prediction;
 	}
 	
 	
@@ -72,18 +84,15 @@ public class DialogueState {
 	 * @param fluent the new fluent
 	 */
 	public void addFluent(Fluent fluent) {
+		if (fluent.getExistenceProb() > 0.0001f) {
 		fluents.put(fluent.getLabel(), fluent);
+		}
+		else {
+			fluents.remove(fluent.getLabel());
+		}
 	}
 	
-	
-	/**
-	 * Performs a dummy change, simply notifying the processes that a 
-	 * change occured.
-	 * 
-	 */
-	public synchronized void dummyChange() {
-		notifyAll();
-	}
+
 	
 	
 	/**
@@ -113,6 +122,40 @@ public class DialogueState {
 			str += fl.toString() + "\n";
 		}
 		return str;
+	}
+
+
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public Fluent getFluent(String fluentId) {
+		return fluents.get(fluentId);
+	}
+
+	/**
+	 * 
+	 * @param label
+	 */
+	public void removeFluent(String label) {
+		fluents.remove(label);
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public List<Fluent> getFluents(Type type) {
+		List<Fluent> fluentsOfType = new LinkedList<Fluent>(); 
+		for (String s: fluents.keySet()) {
+			Fluent f = fluents.get(s);
+			if (f.getType().equals(type)) {
+				fluentsOfType.add(f);
+			}
+		}
+		return fluentsOfType;
 	}
 	
 }

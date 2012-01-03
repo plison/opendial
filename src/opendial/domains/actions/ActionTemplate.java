@@ -20,6 +20,7 @@
 package opendial.domains.actions;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generic representation for an action template (e.g. a surface realisation to be
@@ -52,4 +53,5 @@ public interface ActionTemplate<T> {
 	 */
 	public abstract List<String> getSlots();
 
+	public T getFilledContent(Map<String,Object> filledSlots);
 }
