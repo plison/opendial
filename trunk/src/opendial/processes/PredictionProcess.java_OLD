@@ -20,11 +20,23 @@
 package opendial.processes;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
+import opendial.arch.DialException;
+import opendial.arch.DialConstants.ModelGroup;
+import opendial.arch.DialogueInterface;
 import opendial.domains.Domain;
+import opendial.gui.NetworkVisualisation;
+import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNetwork;
+import opendial.inference.converters.NodeConverter;
+import opendial.inference.converters.RuleConverter;
+import opendial.inputs.Observation;
 import opendial.outputs.Action;
+import opendial.outputs.VoidAction;
 import opendial.state.DialogueState;
+import opendial.state.Fluent;
 import opendial.utils.Logger;
 
 /**
@@ -39,23 +51,20 @@ import opendial.utils.Logger;
  * <li> the procedure is repeated till no other actions needs to be processed</ul>
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-11 14:37:16 #$
  *
- */
-public class PredictionProcess extends Thread {
+ */ 
+public class PredictionProcess extends Thread  {
 
 	// logger
-	static Logger log = new Logger("PredictionProcess", Logger.Level.NORMAL);
+	static Logger log = new Logger("PredictionProcess", Logger.Level.DEBUG);
 	
 	// dialogue state
 	DialogueState state;
 	
 	// dialogue domain
 	Domain domain;
-	
-	// queue of system actions to process
-	Queue<Action> actionsToProcess ;
-	
+		
 	
 	/**
 	 * Creates a new prediction process, with the dialogue state and domain
@@ -66,20 +75,8 @@ public class PredictionProcess extends Thread {
 	public PredictionProcess(DialogueState state, Domain domain) {
 		this.state = state;
 		this.domain = domain;
-		actionsToProcess = new LinkedList<Action>();
 	}
 
-	/**
-	 * Adds a system action to the queue of actions to process (in order to
-	 * perform the post-action dialogue update)
-	 * 
-	 * @param action the system action
-	 */
-	public synchronized void addSystemAction(Action action) {
-		actionsToProcess.add(action);
-		notify();
-	}
-	
 	
 	/**
 	 * Runs the transition/prediction loop, by polling an action from the
@@ -90,23 +87,21 @@ public class PredictionProcess extends Thread {
 	 */
 	@Override
 	public void run () {
+	
 		while (true) {		
 		           
-				Action action = actionsToProcess.poll();
-				
-				while (action != null) {
-					log.info("Trying to perform action transition...");
-					updateState(action);
-					action = actionsToProcess.poll();
-				}
-
-				synchronized (this) {
-				try { wait();  }
+			synchronized (state.getPrediction()) {
+				try { 
+				state.getPrediction().wait();  }
 				catch (InterruptedException e) {  }
-			}
+
+					updateState();
+
+				}
 		}
 	}
 	
+	static long predictionTime = 0;
 	
 	/**
 	 * Update the dialogue state (post-action update), given the system
@@ -114,9 +109,60 @@ public class PredictionProcess extends Thread {
 	 * 
 	 * @param action the action
 	 */
-	public void updateState(Action action) {
-		state.dummyChange();
-		log.info("Action transition performed...");
+	public void updateState() {
+
+		long initTime = System.currentTimeMillis();
+		
+		log.info("Starting transition/prediction process...");
+		
+		RuleConverter converter = new RuleConverter();
+		try {
+								
+		//	log.debug("Current state in prediction/transition: " + state);
+			
+			BNetwork systemTransition = converter.createBayesianNetwork(domain.getModel(ModelGroup.SYSTEM_TRANSITION), state);
+			
+		//	NetworkVisualisation.showBayesianNetwork(systemTransition);
+			
+			List<Fluent> transitionFluents = 
+				NodeConverter.convertOutputNodesToFluents(systemTransition, domain, new Assignment());
+			
+			for (Fluent f: transitionFluents) {
+					state.addFluent(f);
+					log.debug("adding system transition fluent: " + f);
+			}
+			
+			BNetwork userPredictionNetwork = converter.createBayesianNetwork(domain.getModel(ModelGroup.USER_PREDICTION), state);
+			
+			state.getPrediction().setPredictionNetwork(userPredictionNetwork);
+			
+	//		NetworkVisualisation.showBayesianNetwork(userPredictionNetwork);
+			
+			List<Fluent> intermediaryFluents = 
+				NodeConverter.convertOutputNodesToFluents(userPredictionNetwork, domain, new Assignment());
+			
+			for (Fluent f : intermediaryFluents) {
+				log.debug("predicted next user act: " + f);
+			}
+			
+			BNetwork userRealisationNetwork = converter.createBayesianNetwork(
+					domain.getModel(ModelGroup.USER_REALISATION), state, intermediaryFluents);
+
+
+			state.getPrediction().setRealisationNetwork(userRealisationNetwork);
+			state.getPrediction().setAsBusy(false);
+			
+	//		NetworkVisualisation.showBayesianNetwork(userRealisationNetwork);
+	
+			predictionTime += System.currentTimeMillis() - initTime;
+
+			
+		} catch (DialException e) {
+			log.warning("error in Bayesian network compilation: " + e.getMessage());
+		}
+		
+		log.debug("Action transition performed, waiting for next task...");
 	}
+
 	
 }

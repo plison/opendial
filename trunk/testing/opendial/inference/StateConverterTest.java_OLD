@@ -22,7 +22,6 @@ package opendial.inference;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -32,7 +31,6 @@ import opendial.domains.Domain;
 import opendial.domains.Type;
 import opendial.domains.values.RangeValue;
 import opendial.gui.NetworkVisualisation;
-import opendial.inference.algorithms.NaiveInference;
 import opendial.inference.algorithms.VariableElimination;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
@@ -47,7 +45,7 @@ import opendial.utils.Logger;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-16 16:12:07 #$
  *
  */
 public class StateConverterTest {
@@ -61,16 +59,19 @@ public class StateConverterTest {
 		
 		XMLDomainReader reader = new XMLDomainReader();
 		Domain domain = reader.extractDomain(dialDomain);
-		
-		StateConverter converter = new StateConverter();
+ 		StateConverter converter = new StateConverter();
 		DialogueState state = domain.getInitialState();
-		state.getFluents().get(1).setExistenceProb(0.9f);
+		state.getFluent("robot1").setExistenceProb(0.9f);
 		BNetwork bn = converter.buildBayesianNetwork(state);
-		assertEquals(4, bn.getNodes().size());
-		assertEquals("name(robot1)", bn.getSortedNodes().get(0).getId());
-		assertEquals("robot1", bn.getSortedNodes().get(1).getId());
+
+		log.debug(""+ bn.getSortedNodes());
+		assertEquals(6, bn.getNodes().size());
+		assertEquals("robot1", bn.getSortedNodes().get(0).getId());
+		assertEquals("name(robot1)", bn.getSortedNodes().get(1).getId());
 		assertEquals("Exists(robot1)", bn.getSortedNodes().get(2).getId());	
-		assertEquals("floor", bn.getSortedNodes().get(3).getId());
+		assertEquals("a_m", bn.getSortedNodes().get(3).getId());
+		assertEquals("floor", bn.getSortedNodes().get(4).getId());
+		assertEquals("a_u", bn.getSortedNodes().get(5).getId());
 		
 		Distribution query1 = VariableElimination.query(bn, Arrays.asList("name(robot1)"), new Assignment());
 		assertEquals(0.9f, query1.getProb(new Assignment("name(robot1)", "Lenny")), 0.001f);
@@ -87,7 +88,7 @@ public class StateConverterTest {
 		
 		StateConverter converter = new StateConverter();
 		DialogueState state = domain.getInitialState();
-		state.getFluents().get(1).setExistenceProb(0.9f);
+		state.getFluent("robot2").setExistenceProb(0.9f);
 		
 		Type type = new Type("bla");
 		type.setAsFixed(true);
@@ -108,15 +109,17 @@ public class StateConverterTest {
 	
 		BNetwork bn = converter.buildBayesianNetwork(state);	
 			
-		assertEquals(6, bn.getNodes().size());
-		assertEquals("robot2", bn.getSortedNodes().get(0).getId());
-		assertEquals("name(robot2)", bn.getSortedNodes().get(1).getId());
-		assertEquals("feat(bla)", bn.getSortedNodes().get(2).getId());		
-		assertEquals("Exists(robot2)", bn.getSortedNodes().get(3).getId());
-		assertEquals("Exists(robot2)", bn.getSortedNodes().get(0).getInputNodes().get(0).getId());
-		assertEquals("bla", bn.getSortedNodes().get(4).getId());
-		assertEquals("bla", bn.getSortedNodes().get(2).getInputNodes().get(0).getId());
-		assertEquals("floor", bn.getSortedNodes().get(5).getId());
+		assertEquals(8, bn.getNodes().size());
+		assertEquals("feat(bla)", bn.getSortedNodes().get(0).getId());		
+		assertEquals("bla", bn.getSortedNodes().get(1).getId());
+		assertEquals("bla", bn.getSortedNodes().get(0).getInputNodes().get(0).getId());
+		assertEquals("name(robot2)", bn.getSortedNodes().get(2).getId());
+		assertEquals("robot2", bn.getSortedNodes().get(3).getId());
+		assertEquals("Exists(robot2)", bn.getSortedNodes().get(4).getId());
+		assertEquals("Exists(robot2)", bn.getSortedNodes().get(3).getInputNodes().get(0).getId());
+		assertEquals("a_m", bn.getSortedNodes().get(5).getId());
+		assertEquals("floor", bn.getSortedNodes().get(6).getId());
+		assertEquals("a_u", bn.getSortedNodes().get(7).getId());
 		
 		Distribution query1 = VariableElimination.query(bn, Arrays.asList("name(robot2)"), new Assignment());
 		assertEquals(0.9f, query1.getProb(new Assignment("name(robot2)", "Lenny")), 0.001f);
@@ -138,7 +141,7 @@ public class StateConverterTest {
 		
 		StateConverter converter = new StateConverter();
 		DialogueState state = domain.getInitialState();
-		state.getFluents().get(1).setExistenceProb(0.9f);
+		state.getFluent("robot3").setExistenceProb(0.9f);
 		
 		Type type = new Type("type1");
 		type.setAsFixed(true);
@@ -181,18 +184,19 @@ public class StateConverterTest {
 	//	NetworkVisualisation.showBayesianNetwork(bn);
 	//	Thread.currentThread().sleep(30000);
 		
-		assertEquals(8, bn.getNodes().size());
+		assertEquals(10, bn.getNodes().size());
 		assertEquals("feat2(feat1(type1))", bn.getSortedNodes().get(0).getId());
-		assertEquals("feat3(feat1(type1))", bn.getSortedNodes().get(1).getId());
-		assertEquals("feat1(type1)", bn.getSortedNodes().get(2).getId());
-		assertEquals("robot3", bn.getSortedNodes().get(3).getId());
-		assertEquals("name(robot3)", bn.getSortedNodes().get(4).getId());
-		assertEquals("Exists(robot3)", bn.getSortedNodes().get(5).getId());
-		assertEquals("Exists(robot3)", bn.getSortedNodes().get(3).getInputNodes().get(0).getId());
-		assertEquals("Exists(robot3)", bn.getSortedNodes().get(4).getInputNodes().get(0).getId());
-		assertEquals("floor", bn.getSortedNodes().get(6).getId());
-		assertEquals(1, bn.getSortedNodes().get(3).getInputNodes().size());
-		assertEquals("type1", bn.getSortedNodes().get(7).getId());
+		assertEquals("feat1(type1)", bn.getSortedNodes().get(1).getId());
+		assertEquals("feat3(feat1(type1))", bn.getSortedNodes().get(2).getId());
+		assertEquals("type1", bn.getSortedNodes().get(3).getId());
+		assertEquals("a_m", bn.getSortedNodes().get(4).getId());
+		assertEquals("name(robot3)", bn.getSortedNodes().get(5).getId());
+		assertEquals("robot3", bn.getSortedNodes().get(6).getId());
+		assertEquals("Exists(robot3)", bn.getSortedNodes().get(7).getId());
+		assertEquals("Exists(robot3)", bn.getSortedNodes().get(6).getInputNodes().get(0).getId());
+		assertEquals("Exists(robot3)", bn.getSortedNodes().get(5).getInputNodes().get(0).getId());
+		assertEquals("floor", bn.getSortedNodes().get(8).getId());
+		assertEquals("a_u", bn.getSortedNodes().get(9).getId());
 		
 		Distribution query1 = VariableElimination.query(bn, Arrays.asList("name(robot3)"), new Assignment());
 		assertEquals(0.9f, query1.getProb(new Assignment("name(robot3)", "Lenny")), 0.001f);

@@ -21,11 +21,15 @@ package opendial.domains.rules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.variables.FeatureVariable;
+import opendial.domains.rules.variables.TypedVariable;
 import opendial.utils.Logger;
 
 /**
@@ -52,11 +56,14 @@ public class Rule {
 	// logger
 	static Logger log = new Logger("Rule", Logger.Level.DEBUG);
 	
+	// rule identifier
+	String id = "";
+	
 	// the list of input variables, anchored by their identifier
-	Map<String,StandardVariable> inputs;
+	Map<String,TypedVariable> inputs;
 	
 	// the list of output variables, anchored by their identifier
-	Map<String,StandardVariable> outputs;
+	Map<String,TypedVariable> outputs;
 	
 	// the list of cases
 	List<Case> cases;
@@ -65,9 +72,18 @@ public class Rule {
 	 * Creates a new rule, with empty inputs and outputs, and no cases.
 	 */
 	public Rule() {
-		inputs = new HashMap<String,StandardVariable>();
-		outputs = new HashMap<String,StandardVariable>();
+		inputs = new HashMap<String,TypedVariable>();
+		outputs = new HashMap<String,TypedVariable>();
 		cases = new LinkedList<Case>();
+	}
+	
+	/**
+	 * Sets the identifier for the rule
+	 * 
+	 * @param id the identifier
+	 */
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	/**
@@ -75,7 +91,7 @@ public class Rule {
 	 * 
 	 * @param var the input variable
 	 */
-	public void addInputVariable(StandardVariable var) {
+	public void addInputVariable(TypedVariable var) {
 		if (inputs.containsKey(var.getIdentifier())) {
 			log.warning("Identifier " + var.getIdentifier() + 
 				" has already been defined in the input variables!");
@@ -88,8 +104,8 @@ public class Rule {
 	 * 
 	 * @param vars the list of input variables
 	 */
-	public void addInputVariables(List<StandardVariable> vars) {
-		for (StandardVariable var: vars) {
+	public void addInputVariables(List<TypedVariable> vars) {
+		for (TypedVariable var: vars) {
 			addInputVariable(var);
 		}
 	}
@@ -99,7 +115,7 @@ public class Rule {
 	 * 
 	 * @param var the output variable
 	 */
-	public void addOutputVariable(StandardVariable var) {
+	public void addOutputVariable(TypedVariable var) {
 		if (outputs.containsKey(var.getIdentifier())) {
 			log.warning("Identifier " + var.getIdentifier() + 
 				" has already been defined in the output variables!");
@@ -113,8 +129,8 @@ public class Rule {
 	 * 
 	 * @param vars the output variables
 	 */
-	public void addOutputVariables(List<StandardVariable> vars) {
-		for (StandardVariable var: vars) {
+	public void addOutputVariables(List<TypedVariable> vars) {
+		for (TypedVariable var: vars) {
 			addOutputVariable(var);
 		}
 	}
@@ -127,6 +143,31 @@ public class Rule {
 	 */
 	public void addCase(Case case1) {
 		cases.add(case1);
+	}
+	
+	
+	/**
+	 * Returns the identifier for the rule
+	 * 
+	 * @return the identifier
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	
+	/**
+	 * Returns the union of all effects specified in the cases of
+	 * the rule.
+	 * 
+	 * @return the set of all possible effects
+	 */
+	public Set<Effect> getAllEffects() {
+		Set<Effect> effects = new HashSet<Effect>();
+		for (Case case1 : cases) {
+			effects.addAll(case1.getEffects());
+		}
+		return effects;
 	}
 
 	/**
@@ -147,7 +188,7 @@ public class Rule {
 	 * @param identifier the identifier for the variable
 	 * @return the variable
 	 */
-	public StandardVariable getInputVariable(String identifier) {
+	public TypedVariable getInputVariable(String identifier) {
 		return inputs.get(identifier);
 	}
 
@@ -170,7 +211,7 @@ public class Rule {
 	 * @param identifier the identifier for the variable
 	 * @return the variable
 	 */
-	public StandardVariable getOutputVariable(String identifier) {
+	public TypedVariable getOutputVariable(String identifier) {
 		return outputs.get(identifier);
 	}
 
@@ -179,8 +220,17 @@ public class Rule {
 	 * 
 	 * @return the input variables
 	 */
-	public List<StandardVariable> getInputVariables() {
-		return new ArrayList<StandardVariable>(inputs.values());
+	public List<TypedVariable> getInputVariables() {
+		LinkedList<TypedVariable> sortedInputs = new LinkedList<TypedVariable>();
+		for (TypedVariable var: inputs.values()) {
+			if (var instanceof FeatureVariable) {
+				sortedInputs.addLast(var);
+			}
+			else {
+				sortedInputs.addFirst(var);
+			}
+		}
+		return sortedInputs;
 	}
 	
 	/**
@@ -188,8 +238,8 @@ public class Rule {
 	 * 
 	 * @return the output variables
 	 */
-	public List<StandardVariable> getOutputVariables() {
-		return new ArrayList<StandardVariable>(outputs.values());
+	public List<TypedVariable> getOutputVariables() {
+		return new ArrayList<TypedVariable>(outputs.values());
 	}
 
 	/**
@@ -225,7 +275,7 @@ public class Rule {
 	 * @param identifier the variable identifier
 	 * @return the variable if it exists in the rule, else null.
 	 */
-	public StandardVariable getVariable(String identifier) {
+	public TypedVariable getVariable(String identifier) {
 		if (inputs.containsKey(identifier)) {
 			return inputs.get(identifier);
 		}
@@ -234,6 +284,10 @@ public class Rule {
 		}
 		return null;
 	}
+
+
+
+
 	
 }
 

@@ -31,6 +31,7 @@ import java.util.TreeMap;
 
 import opendial.arch.DialException;
 import opendial.domains.Type;
+import opendial.inference.bn.Assignment;
 import opendial.utils.Logger;
 import opendial.utils.StringUtils;
 
@@ -107,8 +108,13 @@ public class Fluent {
 		if (prob < 0.0 || prob > 1.0) {
 			throw new DialException(prob + " is not a valid probability");
 		}
-		if (type.containsValue(value)) {
+		if (type.containsValue(value) || value.equals("None")) {
+			if (values.containsKey(value)) {
+				values.put(value, values.get(value) + prob);
+			}
+			else {
 			values.put(value, prob);
+			}
 		}
 		else {
 			throw new DialException("value " + value + 
@@ -137,7 +143,9 @@ public class Fluent {
 	 */
 	public void addFeature(Fluent feat) {
 		features.put(feat.getLabel(), feat);
-		feat.setLabel(feat.getLabel() + "(" + label  + ")");
+		if (!(feat.getLabel().contains( "(" + label  + ")"))) {
+			feat.setLabel(feat.getLabel() + "(" + label  + ")");
+		}
 	}
 
 
@@ -335,13 +343,18 @@ public class Fluent {
 		// looping on the values
 		str += " = {";
 		Iterator<Object> valuesIt = values.keySet().iterator();
+		String indent2 = null;
 		while (valuesIt.hasNext()) {
 			
+			if (indent2 == null) {
+				indent2 = indent + StringUtils.makeIndent(str.length());
+			}
+
 			Object v = valuesIt.next();
 			str += valueToString(v, values.get(v));
-
+						
 			if (valuesIt.hasNext()) {
-				str += ",\n" + indent + StringUtils.makeIndent(str.length());
+				str += ",\n" + indent2;
 			}
 		}	
 		if (values.keySet().isEmpty()) {	// if no values, add a dummy one
@@ -386,7 +399,7 @@ public class Fluent {
 		// add the definition of partial features
 		str += " with ";
 		for (Fluent fl : getPartialFeatures(value)) {
-				str += fl.toString(StringUtils.makeIndent(str.length())) + " and ";					
+				str += fl.toString(StringUtils.makeIndent(str.length()+7)) + " and ";					
 		}
 
 		// cleanup
@@ -407,7 +420,7 @@ public class Fluent {
 		// listing the full features
 		String str = " with ";
 		for (Fluent fl: getFullFeatures()) {
-			str += fl.toString(StringUtils.makeIndent(str.length()));
+			str += fl.toString(StringUtils.makeIndent(str.length()+7));
 			str += " and ";
 		}
 		// cleanup
@@ -443,7 +456,7 @@ public class Fluent {
 			}
 		}
 		for (Fluent f : features.values()) {
-			Fluent f2 = new Fluent(f.getType());
+			Fluent f2 = f.copy();
 			copy.addFeature(f2);
 		}
 		return copy;
@@ -466,6 +479,68 @@ public class Fluent {
             }
             return typeName + entityCounter.get(typeName);
     }
+
+
+
+	/**
+	 * 
+	 */
+	public void clearValues() {
+		values.clear();
+	}
+
+
+
+	/**
+	 * 
+	 */
+	public void normaliseValues() {
+		float total = 0.0f;
+		for (Object val : values.keySet()) {
+			if (!val.equals("None")) {
+			total += values.get(val);
+			}
+		}
+		if (total > 0.0f) {
+			for (Object val : values.keySet()) {
+				if (!val.equals("None")) {
+				values.put(val, values.get(val) / total);
+				}
+				else {
+					values.put(val, 0.0f);
+				}
+			}
+		}
+		else {
+			log.warning("total probability is 0, cannot be normalised");
+			values.put("None", 1.0f);
+		}
+	}
+
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Object getHighestProb() {
+		float highestProb = 0.0f;
+		Object curBest = null;
+		for (Object v: values.keySet()) {
+			if (values.get(v) > highestProb) {
+				highestProb = values.get(v);
+				curBest = v;
+			}
+		}
+		return curBest;
+	}
+
+
+
+
+	public void removeValue(Object val) {
+		values.remove(val);
+	}
 
 
 	

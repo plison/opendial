@@ -19,7 +19,7 @@
 
 package opendial.inference.distribs;
 
-import java.util.Set;
+import java.util.List;
 
 import opendial.inference.bn.Assignment;
 
@@ -28,8 +28,6 @@ import opendial.inference.bn.Assignment;
  * not assume a particular form for the distribution (it could be encoded as a 
  * conditional probability table, or a deterministic function); the only assumption
  * made here is that the distribution is discrete.
- * 
- * TODO: provide an interface for continuous distributions as well?
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -67,7 +65,7 @@ public interface Distribution {
 	 * 
 	 * @return the table of assignments
 	 */
-	public Set<Assignment> getTable();
+	public List<Assignment> getTable();
 	
 	
 	/**
@@ -77,5 +75,12 @@ public interface Distribution {
 	 * @return true if distribution is well-formed, false otherwise
 	 */
 	public boolean isWellFormed() ;
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Assignment getHighestProb();
 	
 }

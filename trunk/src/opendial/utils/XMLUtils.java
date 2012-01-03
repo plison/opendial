@@ -62,6 +62,7 @@ public class XMLUtils {
 	 */
 	public static Document getXMLDocument (String filename) throws DialException {
 
+		log.info("parsing file: " + filename);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {

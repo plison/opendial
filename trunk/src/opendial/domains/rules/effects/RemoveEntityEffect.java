@@ -19,7 +19,8 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.variables.PointerVariable;
+import opendial.domains.rules.variables.TypedVariable;
 
 /**
  * Representation of an effect which removes a given entity from the dialogue state
@@ -33,7 +34,7 @@ public class RemoveEntityEffect implements Effect {
 	// static Logger log = new Logger("RemoveEntityEffect", Logger.Level.NORMAL);
 
 	// the variable to remove
-	StandardVariable var;
+	PointerVariable var;
 	
 	/**
 	 * Creates a new "entity removal" effect, for the entity referenced by the
@@ -41,7 +42,7 @@ public class RemoveEntityEffect implements Effect {
 	 * 
 	 * @param var the variable reference
 	 */
-	public RemoveEntityEffect(StandardVariable var) {
+	public RemoveEntityEffect(PointerVariable var) {
 		this.var = var;
 	}
 	
@@ -51,7 +52,7 @@ public class RemoveEntityEffect implements Effect {
 	 * 
 	 * @return the variable
 	 */
-	public StandardVariable getVariable() {
+	public PointerVariable getVariable() {
 		return var;
 	}
 
@@ -63,7 +64,7 @@ public class RemoveEntityEffect implements Effect {
 	 */
 	@Override
 	public String toString() {
-		return"RemoveEntity: " + var;
+		return "[RemoveEntity: " + var + "]";
 	}
 	
 	
@@ -85,4 +86,26 @@ public class RemoveEntityEffect implements Effect {
 		}
 		return -1;
 	}
+	
+	
+	/**
+	 * Compare the two objects for equality
+	 *
+	 * @param o the object to compare
+	 * @return true if the two objects are identical, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof RemoveEntityEffect) {
+			return var.equals(((RemoveEntityEffect)o).getVariable());
+		}
+		return false;
+	}
+	
+	
+
+	public int hashCode() {
+		return var.hashCode();
+	}
+		
 }

@@ -141,4 +141,17 @@ public class NBestList implements Observation {
 		}
 		return str.substring(0,str.length()-2) + "}";
 	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public float getTotalProbability() {
+		float total = 0.0f;
+		for (String utt: hypotheses.keySet()) {
+			total += hypotheses.get(utt);
+		}
+		return total;
+	}
 }

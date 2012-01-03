@@ -19,6 +19,11 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Map;
+
+import opendial.domains.rules.variables.Variable;
+import opendial.inference.bn.Assignment;
+
 /**
  * Representation of a void condition (which is always true)
  *
@@ -27,5 +32,33 @@ package opendial.domains.rules.conditions;
  *
  */
 public class VoidCondition implements Condition {
+
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	@Override
+	public boolean isSatisfiedBy(Assignment input, Map<Variable,String> anchors) {
+		return true;
+	}
+	
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	@Override
+	public boolean isSatisfiedBy(Assignment input) {
+		return true;
+	}
+	
+	public String toString() {
+		return "[VoidCondition]";
+	}
 
 }

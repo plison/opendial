@@ -20,7 +20,7 @@
 package opendial.domains.rules.effects;
 
 import opendial.arch.DialException;
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.variables.TypedVariable;
 import opendial.utils.Logger;
 
 /**
@@ -34,16 +34,16 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class AssignEffect<T> implements Effect {
+public class AssignEffect implements Effect {
 
 	// the logger
 	static Logger log = new Logger("BasicEffect", Logger.Level.NORMAL);
 	
 	// the variable to be assigned
-	StandardVariable var;
+	TypedVariable var;
 	
 	// the value to assign
-	T value;
+	Object value;
 	
 	
 	/**
@@ -54,7 +54,7 @@ public class AssignEffect<T> implements Effect {
 	 * @param value the value
 	 * @throws DialException if the variable type does not accept the given value
 	 */
-	public AssignEffect(StandardVariable var, T value) throws DialException {
+	public AssignEffect(TypedVariable var, Object value) throws DialException {
 		this.var = var;
 		this.value = value;
 		
@@ -68,7 +68,7 @@ public class AssignEffect<T> implements Effect {
 	 * 
 	 * @return the variable
 	 */
-	public StandardVariable getVariable() {
+	public TypedVariable getVariable() {
 		return var;
 	}
 	
@@ -78,7 +78,7 @@ public class AssignEffect<T> implements Effect {
 	 * 
 	 * @return the value
 	 */
-	public T getValue() {
+	public Object getValue() {
 		return value;
 	}
 	
@@ -90,7 +90,7 @@ public class AssignEffect<T> implements Effect {
 	 */
 	@Override
 	public String toString() {
-		String str = "Set " + var + " := " + value;
+		String str = "[" + var + ":=" + value + "]";
 		return str;
 	}
 	
@@ -104,7 +104,7 @@ public class AssignEffect<T> implements Effect {
 	@Override
 	public int compareTo(Effect e) {
 		if (e instanceof AssignEffect) {
-			if (((AssignEffect<?>)e).getVariable().equals(var) && ((AssignEffect<?>)e).getValue().equals(value)) {
+			if (((AssignEffect)e).getVariable().equals(var) && ((AssignEffect)e).getValue().equals(value)) {
 				return 0;
 			}
 			else {
@@ -113,4 +113,28 @@ public class AssignEffect<T> implements Effect {
 		}
 		return -1;
 	}
+	
+	
+	
+	/**
+	 * Compare the two objects for equality
+	 *
+	 * @param o the object to compare
+	 * @return true if the two objects are identical, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AssignEffect) {
+			return (var.equals(((AssignEffect)o).getVariable()) && value.equals(((AssignEffect)o).getValue()));
+		}
+		return false;
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return var.getIdentifier().hashCode() + 7*value.hashCode();
+	}
+	
+	
 }

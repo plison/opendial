@@ -20,6 +20,7 @@
 package opendial.domains.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import opendial.utils.Logger;
 import opendial.utils.StringUtils;
@@ -84,4 +85,22 @@ public class SurfaceRealisationTemplate implements ActionTemplate<String> {
 	public String toString() {
 		return content;
 	}
+
+
+	/**
+	 *
+	 * @param filledSlots
+	 * @return
+	 */
+	@Override
+	public String getFilledContent(Map<String, Object> filledSlots) {
+		String filledContent = content;
+		for (String slot : filledSlots.keySet()) {
+			filledContent = filledContent.replace("${" + slot + "}", (String)filledSlots.get(slot));
+		}
+		return filledContent;
+	}
+
+
+
 }

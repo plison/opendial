@@ -33,10 +33,10 @@ import opendial.domains.Type;
  * @version $Date::                      $
  *
  */
-public class FeatureVariable extends StandardVariable {
+public class FeatureVariable extends TypedVariable {
 
 	// the base variable for the feature
-	StandardVariable baseVariable;
+	TypedVariable baseVariable;
 	
 	
 	/**
@@ -46,7 +46,7 @@ public class FeatureVariable extends StandardVariable {
 	 * @param type the type
 	 * @param baseVariable the base variable
 	 */
-	public FeatureVariable(String identifier, Type type, StandardVariable baseVariable) {
+	public FeatureVariable(String identifier, Type type, TypedVariable baseVariable) {
 		super(identifier, type);
 		this.baseVariable = baseVariable;
 	}
@@ -57,7 +57,7 @@ public class FeatureVariable extends StandardVariable {
 	 * 
 	 * @return the base variable
 	 */
-	public StandardVariable getBaseVariable() {
+	public TypedVariable getBaseVariable() {
 		return baseVariable;
 	}
 	
@@ -69,7 +69,7 @@ public class FeatureVariable extends StandardVariable {
 	 */
 	@Override
 	public String toString() {
-		String str = identifier + "=" + type.getName() + "(" + baseVariable + ")";
+		String str = identifier + ":" + type.getName() + "(" + baseVariable + ")";
 		return str;
 	}
 

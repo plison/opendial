@@ -24,13 +24,10 @@ import opendial.arch.DialogueInterface;
 import opendial.domains.Domain;
 import opendial.inputs.Observation;
 import opendial.outputs.Action;
-import opendial.processes.DecisionProcess;
-import opendial.processes.PerceptionProcess;
-import opendial.processes.PredictionProcess;
 import opendial.state.DialogueState;
 import opendial.utils.Logger;
 
-/**
+/**  
  * Top class for the dialogue system.  The dialogue system is defined by a dialogue
  * domain, which comprise type declarations, initial state, and several rule-based
  * probabilistic models.
@@ -52,7 +49,7 @@ import opendial.utils.Logger;
 public class DialogueSystem {
 
 	// logger
-	static Logger log = new Logger("DialogueSystem", Logger.Level.NORMAL);
+	static Logger log = new Logger("DialogueSystem", Logger.Level.MIN);
 	
 	// the dialogue domain
 	Domain domain;
@@ -61,13 +58,13 @@ public class DialogueSystem {
 	DialogueState state;
 		
 	// the perception process
-	PerceptionProcess perception;
+	// PerceptionProcess perception;
 	
 	// the decision process
-	DecisionProcess decision;
+	// DecisionProcess decision;
 	
 	// the transition process
-	PredictionProcess transition;
+	// PredictionProcess transition;
 		
 	
 	/**
@@ -77,23 +74,27 @@ public class DialogueSystem {
 	 */
 	public DialogueSystem(Domain domain) {
 		
+		log.info("----------------------------------------");
 		// initialise the system
 		this.domain = domain;
 		state = domain.getInitialState().copy();
 		log.info("initial state: \n" + state.toString());
 		
 		// start up the perception process
-		perception = new PerceptionProcess(state,domain);
+	/**	perception = new PerceptionProcess(state,domain);
 		perception.start();
-		
-		// start up the decision process
-		decision = new DecisionProcess(state,domain);
-		decision.start();
 		
 		// start up the prediction process
 		transition = new PredictionProcess(state,domain);
 		transition.start();
-		
+
+		try { Thread.sleep(50); } 
+		catch (InterruptedException e) { }
+
+		// start up the decision process
+		decision = new DecisionProcess(state,domain);
+		decision.start(); */
+				
 		log.info("Dialogue system started, dialogue domain: " + domain.getName());
 	}
 	  
@@ -105,8 +106,8 @@ public class DialogueSystem {
 	 * @param interface1 the interface
 	 */
 	public void addInterface(DialogueInterface interface1) {
-		perception.addInterface(interface1);
-		decision.addInterface(interface1);
+	//	perception.addInterface(interface1);
+	//	decision.addInterface(interface1);
 	}
 	
 	
@@ -116,22 +117,31 @@ public class DialogueSystem {
 	 * @param obs the observation
 	 */
 	public void addObservation(Observation obs) {
-		// TODO: provide the predicted bayesian network to the perception component
-		perception.addObservation(obs);
+	//	perception.addObservation(obs);
 	}
 	
-
+ 
 	/**
 	 * Poll the next action selected by the system
 	 * 
 	 * @return the next action
-	 */
+	 */ 
 	public Action pollNextAction() {
-		Action action = decision.pollAvailableAction();
-		transition.addSystemAction(action);
-		return action;
+	//	Action action = decision.pollAvailableAction();
+		return null;
 	}
 
-	
+	public DialogueState getState() {
+		return state;
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Domain getDomain() {
+		return domain;
+	}
 	
 }

@@ -23,6 +23,8 @@ import opendial.inputs.Observation;
 import opendial.outputs.Action;
 
 /**
+ * An interface listening to the inputs and outputs of a dialogue
+ * system.  The interface can both show observations and actions.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)

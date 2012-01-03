@@ -30,6 +30,7 @@ import java.util.Set;
 
 import opendial.arch.DialConstants;
 import opendial.arch.DialException;
+import opendial.domains.Type;
 import opendial.inference.distribs.Distribution;
 import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
@@ -78,8 +79,8 @@ public class BNode implements Comparable<BNode> {
 	public BNode(String id) {
 		this.id = id;
 		values = new HashSet<Object>();
-		values.add((Object)Boolean.TRUE);
-		values.add((Object)Boolean.FALSE);
+	//	values.add((Object)Boolean.TRUE);
+	//	values.add((Object)Boolean.FALSE);
 				
 		inputNodes = new HashMap<String, BNode>();
 	}
@@ -91,7 +92,7 @@ public class BNode implements Comparable<BNode> {
 	 * @param id the identifier
 	 * @param values the values
 	 */
-	public BNode(String id, Collection<Object> values) {
+	public BNode(String id, Collection<? extends Object> values) {
 		this.id = id;
 		this.values = new HashSet<Object>();
 		for (Object val: values) {
@@ -100,6 +101,7 @@ public class BNode implements Comparable<BNode> {
 		
 		inputNodes = new HashMap<String, BNode>();
 	}
+	
 	
 	
 	
@@ -115,10 +117,27 @@ public class BNode implements Comparable<BNode> {
 	 * @param val the value
 	 */
 	public void addValue(Object val) {
+	/**	if (values.contains(Boolean.TRUE) && values.contains(Boolean.FALSE)) {
+			values.clear();
+		} */
 		values.add(val);
 	}
 	
 
+
+	/**
+	 * Adds a collection of values to the node
+	 * 
+	 * @param vals the values
+	 */
+	public void addValues(Collection<? extends Object> vals) {
+		if (values.contains(Boolean.TRUE) && values.contains(Boolean.FALSE)) {
+			values.clear();
+		}
+		values.addAll(vals);
+	}
+
+	
 	/**
 	 * Attaches a new input node
 	 * 
@@ -141,19 +160,20 @@ public class BNode implements Comparable<BNode> {
 	public void setDistribution(Distribution distrib) throws DialException {
 
 		 if (distrib instanceof ProbabilityTable && autoCompletion) {
+	//		 log.debug("trying to complete table!");
 			((ProbabilityTable)distrib).completeProbabilityTable();
 		}
 		
-		if (!distrib.isWellFormed()) {
+	/**	if (!distrib.isWellFormed()) {
 			throw new DialException("Probability table for node " + id + " is not well-formed");
-		}
+		} */
 		
 		
-		for (Assignment a : getAllPossibleAssignments()) {
+	/**	for (Assignment a : getAllPossibleAssignments()) {
 			if (!distrib.hasProb(a)) {
 				throw new DialException("Probability distribution not defined for assignment: " + a);
 			}
-		}
+		} */
 
 		this.distrib = distrib;
 	}
@@ -376,6 +396,50 @@ public class BNode implements Comparable<BNode> {
 			return (node.getAncestors(DialConstants.MAX_PATH_LENGTH).size() - 
 					getAncestors(DialConstants.MAX_PATH_LENGTH).size());
 		}
+	}
+
+	
+	
+	public BNode copy () {
+		BNode node = new BNode(id);
+		for (Object val : values) {
+			node.addValue(val);
+		}
+		for (BNode input : inputNodes.values()) {
+			node.addInputNode(input);
+		}
+		try {
+			node.setDistribution(distrib);
+		} catch (DialException e) {
+			e.printStackTrace();
+		}
+		return node;
+	}
+
+	/**
+	 * 
+	 * @param string
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+	/**
+	 * 
+	 * @param n2
+	 */
+	public void removeInputNode(BNode n2) {
+		inputNodes.remove(n2.getId());
+	}
+
+
+	/**
+	 * 
+	 * @param valuesToRemove
+	 */
+	public void removeValues(List<Object> valuesToRemove) {
+		values.removeAll(valuesToRemove);
 	}
 
 

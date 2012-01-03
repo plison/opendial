@@ -101,6 +101,7 @@ public class XMLDeclarationsReader {
 				// actions
 				else if (node.getNodeName().equals("actiontemplate")) {
 					Type type = getAction(node);
+					type.setAsFixed(true);
 					allTypes.add(type);
 				}
 				else {
@@ -167,6 +168,9 @@ public class XMLDeclarationsReader {
 			
 			// basic value
 			if (valueNode.getNodeName().equals("value")) {
+				if (valueNode.getTextContent().equals("true") || valueNode.getTextContent().equals("false")) {
+					values.add(new BasicValue<Boolean>(Boolean.parseBoolean(valueNode.getTextContent())));
+				}
 				values.add(new BasicValue<String>(valueNode.getTextContent()));
 			}
 			
@@ -358,6 +362,7 @@ public class XMLDeclarationsReader {
 			if (!value.getTrigger().getSlots().isEmpty()) {
 				for (String slot : value.getTrigger().getSlots()) {
 					Type feat = new Type(slot);
+					feat.addValue(new RangeValue(PrimitiveType.STRING));
 					feats.add(feat);
 				}
 			}
@@ -449,6 +454,7 @@ public class XMLDeclarationsReader {
 		if (value instanceof ActionValue &&  !((ActionValue<?>)value).getTemplate().getSlots().isEmpty()) {
 			for (String slot : ((ActionValue<?>)value).getTemplate().getSlots()) {
 				Type feat = new Type(slot);
+				feat.addValue(new RangeValue(PrimitiveType.STRING));
 				feats.put(feat, value);
 			}
 		}

@@ -52,7 +52,9 @@ public abstract class GenericDistribution implements Distribution {
 	protected Map<String,Set<Object>> heads;
 	
 	// dependent variables and their values
-	protected Map<String,Set<Object>> deps;
+	public Map<String,Set<Object>> deps;
+	
+	List<Assignment> possibleAssignmentsCache ;
 
 	
 	/**
@@ -145,16 +147,57 @@ public abstract class GenericDistribution implements Distribution {
 	
 	
 	/**
+	 * Returns the part of the assignment which pertains to conditional variables
+	 * 
+	 * @param a the assignment to split
+	 * @return the conditional part of the assignment
+	 */
+	public Assignment getConditionInAssignment (Assignment a) {
+		Assignment condAssignment = new Assignment();
+		for (String var : a.getVariables()) {
+			if (deps.containsKey(var)) {
+				condAssignment.addPair(var, a.getValue(var));
+			}
+		}
+		return condAssignment;
+	}
+	
+	
+	/**
+	 * Returns the part of the assignment which pertains to head variables
+	 * 
+	 * @param a the assignment to split
+	 * @return the head part of the assignment
+	 */
+	public Assignment getHeadInAssignment (Assignment a) {
+		Assignment headAssignment = new Assignment();
+		for (String var : a.getVariables()) {
+			if (heads.containsKey(var)) {
+				headAssignment.addPair(var, a.getValue(var));
+			}
+		}
+		return headAssignment;
+	}
+	
+	
+	/**
 	 * Returns the list of possible assignment for all (head + dependent)
 	 * variables in the distribution
 	 * 
 	 * @return the possible assignments for all variables
 	 */
 	public List<Assignment> getAllPossibleAssignments() {
+		if (possibleAssignmentsCache == null) {
 		Map<String, Set<Object>> all = new HashMap<String, Set<Object>>();
 		all.putAll(heads);
 		all.putAll(deps);
-		return InferenceUtils.getAllCombinations(all);
+		possibleAssignmentsCache = InferenceUtils.getAllCombinations(all);
+		return possibleAssignmentsCache;
+		}
+		else {
+			return possibleAssignmentsCache;
+		}
+		
 	}
 	
 	
@@ -188,5 +231,21 @@ public abstract class GenericDistribution implements Distribution {
 	}
 	
 	
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public Assignment getHighestProb() {
+		float highestProb = 0.0f;
+		Assignment curBest = null;
+		for (Assignment a : getAllPossibleAssignments()) {
+			if (getProb(a) > highestProb) {
+				highestProb = getProb(a);
+				curBest = a;
+			}
+		}
+		return curBest;
+	}
 
 }

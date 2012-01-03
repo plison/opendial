@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import opendial.arch.DialConstants;
+import opendial.arch.DialException;
+import opendial.gui.NetworkVisualisation;
 import opendial.inference.algorithms.datastructs.Factor;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
-import opendial.inference.distribs.GenericDistribution;
+import opendial.inference.distribs.Distribution;
 import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.InferenceUtils;
 import opendial.utils.Logger;
@@ -38,6 +41,9 @@ import opendial.utils.Logger;
 /**
  * Implementation of the Variable Elimination algorithm
  *
+ * NB: make this more efficient by discarding irrelevant variables!
+ * also see Koller's book to compare the algorithm
+ * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
@@ -45,7 +51,26 @@ import opendial.utils.Logger;
 public class VariableElimination {
 
 	static Logger log = new Logger("VariableElimination", Logger.Level.DEBUG);
+	
+	public static int nbQueries = 0 ;
+	public static long totalQueryTime = 0L;
+	public static boolean activateProfiling = false;
+	
+	public static Distribution query (BNetwork bn, List<String> queryVars) {
+		return query(bn, queryVars, new Assignment(), bn.getSortedNodes());
+	}
+	
+	public static Distribution query (BNetwork bn, List<String> queryVars, Assignment evidence) {
+		return query(bn, queryVars, evidence, bn.getSortedNodes());
+	}
+	
+	
+	public static Distribution query (BNetwork bn, List<String> queryVars, List<BNode> sortedNodes) {
+		return query(bn, queryVars, new Assignment(), sortedNodes);
+	}
+	
 
+	
 	/**
 	 * Computes the probability distribution for the query variables in the Bayesian 
 	 * Network, given the evidence
@@ -54,37 +79,50 @@ public class VariableElimination {
 	 * @param queryVars the list of query variables (must be included in the BN)
 	 * @param evidence the evidence
 	 * @return the probability distribution for the query
+	 * @throws DialException 
 	 */
-	public static GenericDistribution query (BNetwork bn, List<String> queryVars, Assignment evidence) {
+	public static Distribution query (BNetwork bn, List<String> queryVars, Assignment evidence, List<BNode> sortedNodes) {
 
+	//	log.debug("query vars: " + queryVars);
+	//	log.debug("sorted nodes: " + sortedNodes);	
+
+		long initTime = System.currentTimeMillis();
+		
 		List<Factor> factors = new LinkedList<Factor>();
-
-	//	log.debug("sorted nodes: " + bn.getSortedNodes());
 		
 		// sort the nodes
-		for (BNode n: bn.getSortedNodes()) {
+		for (BNode n: sortedNodes) {
 
-			// create the basic factor for every variable
-			Factor basicFactor = makeFactor(n, evidence);
-			factors.add(basicFactor);
+			if (true) {
 
-			// if the variable is hidden, we sum it out
-			if (!queryVars.contains(n.getId()) && ! evidence.getPairs().containsKey(n.getId())) {
-				Factor sumFactor = sumOut(n, factors);
-				factors.clear();
-				factors.add(sumFactor);
+				// create the basic factor for every variable
+				Factor basicFactor = makeFactor(n, evidence);
+
+				factors.add(basicFactor);
+
+				// if the variable is hidden, we sum it out
+				if (!queryVars.contains(n.getId()) && 
+						!evidence.getPairs().containsKey(n.getId())) {
+					factors = sumOut(n, factors);
+				}
 			}
 		}
 
 		// compute the final product, and normalise
 		Factor finalProduct = pointwiseProduct(factors);
-		Map<Assignment,Float> normalisedProbs = InferenceUtils.normalise(finalProduct.getMatrix());
+
+		Map<Assignment, Float> normalisedProbs = normalise(finalProduct, queryVars);
 
 		normalisedProbs = addEvidencePairs (bn, normalisedProbs, queryVars, evidence);
-		
-		GenericDistribution distrib = new ProbabilityTable(normalisedProbs);
+
+		Distribution distrib = new ProbabilityTable(normalisedProbs);
+
+		if (activateProfiling) {
+			nbQueries++;
+			totalQueryTime += (System.currentTimeMillis() - initTime);
+		}
 		return distrib;
-		
+
 	}
 
 
@@ -96,7 +134,7 @@ public class VariableElimination {
 	 * @param factors the factors to sum out
 	 * @return the summed out factor
 	 */
-	private static Factor sumOut(BNode node, List<Factor> factors) {	
+	private static List<Factor> sumOut(BNode node, List<Factor> factors) {	
 
 		// we divide the factors into two lists: the factors which are
 		// independent of the variable, and those who aren't
@@ -112,22 +150,19 @@ public class VariableElimination {
 			}
 		}
 
-		// we compute the product of the independent factors
-		Factor productIndependentFactors = pointwiseProduct(independentFactors);
-
 		// we compute the product of the dependent factors
 		Factor productDependentFactors = pointwiseProduct(dependentFactors);
 
 		// we sum out the dependent factors
 		Factor sumDependentFactors = sumOutDependent(node, productDependentFactors);
 
-		// finally, we compute the product of all factors
-		Factor finalFactor = pointwiseProduct(Arrays.asList(productIndependentFactors, sumDependentFactors));
+		List<Factor> finalFactors = new LinkedList<Factor>();
+		finalFactors.addAll(independentFactors);
+		finalFactors.add(sumDependentFactors);
 
-		return finalFactor;
+		return finalFactors;
 
 	}
-
 
 
 	/**
@@ -139,56 +174,23 @@ public class VariableElimination {
 	 */
 	private static Factor sumOutDependent(BNode node, Factor factor) {
 
-		// generate the list of sub-factors for each possible instantiation of 
-		// the variable value
-		List<Factor> subFactors = new LinkedList<Factor>();
-		for (Object v: node.getValues())  {
-			Factor subFactor = reduceFactor(factor, node.getId(), v);
-			subFactors.add(subFactor);
-		}
-
 		// create the new factor
-		Factor sumFactor = new Factor();
+		Factor sumFactor = new Factor();		
 
-		// compute the sum and add it to the new factor
-		for (Assignment a : subFactors.get(0).getMatrix().keySet()) {
-			float sum = 0.0f;
-			for (Factor f : subFactors) {
-				sum += f.getEntry(a);
+		for (Assignment a : factor.getMatrix().keySet()) {
+			Assignment reducedA = new Assignment(a);
+			reducedA.removePair(node.getId());
+			if (sumFactor.hasAssignment(reducedA)) {
+				sumFactor.addEntry(reducedA, sumFactor.getEntry(reducedA) + factor.getEntry(a));
 			}
-			sumFactor.addEntry(a, sum);
+			else {
+				sumFactor.addEntry(reducedA, factor.getEntry(a));
+			}	
 		}
 
 		return sumFactor;
 	}
 
-
-	/**
-	 * Returns the reduced factor obtained by fixing a variable to a given value
-	 * 
-	 * @param factor the factor to reduce
-	 * @param var the variable to fix
-	 * @param val the value to fix
-	 * @return the reduced factor
-	 */
-	private static Factor reduceFactor(Factor factor, String var, Object val) {
-
-		// create reduced factor
-		Factor subFactor = new Factor();
-
-		// search for factor assignments which matches var=val, and adding
-		// their content to the reduced factor
-		Map<Assignment, Float> matrix = factor.getMatrix();
-		for (Assignment a : matrix.keySet()) {
-			if (a.getValue(var).equals(val)) {
-				Assignment reducedA = new Assignment(a);
-				reducedA.removePair(var);
-				subFactor.addEntry(reducedA, matrix.get(a));
-			}
-		}
-
-		return subFactor;
-	}
 
 
 	/**
@@ -199,30 +201,26 @@ public class VariableElimination {
 	 */
 	private static Factor pointwiseProduct (List<Factor> factors) {
 
-		Factor productFactor = new Factor();
-	
-		// generates the alternative assignments combination for the variables
-		List<Set<Assignment>> unionValues = new LinkedList<Set<Assignment>>();
-		for (Factor f: factors) {
-			unionValues.add(f.getMatrix().keySet());
-		}		
-		List<Assignment> combinations = InferenceUtils.getAllCombinations(unionValues);
+		Map<Assignment, Float> productFactor = new HashMap<Assignment, Float>();
+		productFactor.put(new Assignment(), 1.0f);
 
-		// calculate the product for each assignment
-		for (Assignment a : combinations) {
-			float product = 1.0f;
-			for (Factor f: factors) {
-				a.getTrimmed(f.getVariables());
-				Assignment reducedAssignment = a.getTrimmed(f.getVariables());
-				product = product * f.getEntry(reducedAssignment);
+		for (Factor f: factors) {
+
+			Map<Assignment, Float> tempFactor = new HashMap<Assignment,Float>();
+			for (Assignment a : f.getMatrix().keySet()) {
+
+				for (Assignment b: productFactor.keySet()) {
+					if (b.consistentWith(a)) {
+						float product = f.getEntry(a) * productFactor.get(b);
+						tempFactor.put(new Assignment(a,b), product);
+					}
+				}
 			}
-			productFactor.addEntry(a, product);
+			productFactor = tempFactor;
 		}
 
-
-		return productFactor;
+		return new Factor(productFactor);
 	}
-
 
 	/**
 	 * Creates a new factor given the probability distribution defined in the Bayesian
@@ -238,10 +236,10 @@ public class VariableElimination {
 
 		// generates all possible assignments for the node content
 		for (Assignment a: node.getAllPossibleAssignments()) {
-			
+
 			// verify that the assignment is consistent with the evidence
 			if (a.consistentWith(evidence)) {
-				
+
 				// adding a new entry to the factor
 				Assignment a2 = new Assignment(a);
 				a2.removePairs(evidence.getVariables());
@@ -251,9 +249,8 @@ public class VariableElimination {
 
 		return f;
 	}
-	
-	
-	
+
+
 
 	/**
 	 * In case of overlap between the query variables and the evidence (this happens
@@ -282,24 +279,43 @@ public class VariableElimination {
 		// in case of overlap, extend the distribution
 		if (!valuesToAdd.isEmpty()) {
 			List<Assignment> possibleExtensions = InferenceUtils.getAllCombinations(valuesToAdd);
-			
+
 			Map<Assignment,Float> extendedDistribution = new HashMap<Assignment,Float>();
 			for (Assignment a : distribution.keySet()) {
 				for (Assignment b: possibleExtensions) {
-					
+
 					// if the assignment b agrees with the evidence, reuse the probability value
 					if (evidence.contains(b)) {
 						extendedDistribution.put(new Assignment(a, b), distribution.get(a));
 					}
-					
+
 					// else, set the probability value to 0.0f
 					else {
 						extendedDistribution.put(new Assignment(a, b), 0.0f);				
 					}
 				}
 			}
+
 			return extendedDistribution;
 		}
 		return distribution;
+	}
+	
+	
+	public static Map<Assignment, Float> normalise (Factor factor, List<String> queryVars) {
+		Map<Assignment,Float> result = new HashMap<Assignment, Float>();
+		try {
+			result = InferenceUtils.normalise(factor.getMatrix());
+		} catch (DialException e) {
+			//		NetworkVisualisation.showBayesianNetwork(bn);
+	//		log.warning("normalisation failed for query P( " + queryVars + "), replacing with default value...");
+			Assignment a = new Assignment();
+			for (String q : queryVars) {
+				a.addPair(q, "None");
+			}
+			result.putAll(factor.getMatrix());
+			result.put(a, 1.0f);
+		}
+		return result;
 	}
 }

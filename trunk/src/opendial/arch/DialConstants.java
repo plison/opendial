@@ -34,13 +34,31 @@ public class DialConstants {
 	 */
 	public static enum BinaryOperator {AND, OR}
 	
+	public static String toString(BinaryOperator binaryOp) {
+		if (binaryOp.equals(BinaryOperator.AND)) {
+			return " ^ ";
+		}
+		else if (binaryOp.equals(BinaryOperator.OR)) {
+			return " v ";
+		}
+		return "";
+	}
 	
 	/**
 	 * Equality/inequality relations (used in conditions)
 	 */
 	public static enum Relation {EQUAL, UNEQUAL}
 
-	
+	public static String toString(Relation rel) {
+		if (rel.equals(Relation.EQUAL)) {
+			return "=";
+		}
+		else if (rel.equals(Relation.UNEQUAL)) {
+			return "!=";
+		}
+		return "";
+	}
+
 	/**
 	 * Enumeration of possible model types
 	 */
@@ -51,6 +69,34 @@ public class DialConstants {
 		SYSTEM_ACTIONVALUE,
 		SYSTEM_REALISATION,
 		SYSTEM_TRANSITION
+	}
+	
+	/**
+	 * String representation of the model groups
+	 * 
+	 * @param mg the model group
+	 * @return the string representation
+	 */
+	public static String toString(ModelGroup mg) {
+		if (mg == ModelGroup.USER_REALISATION) {
+			return "userRealisation"; 
+		}
+		else if (mg == ModelGroup.USER_PREDICTION) {
+			return "userPrediction";
+		}
+		else if (mg == ModelGroup.USER_TRANSITION) {
+			return "userPrediction";
+		}
+		else if (mg == ModelGroup.SYSTEM_ACTIONVALUE) {
+			return "systemActionValue";
+		}
+		else if (mg == ModelGroup.SYSTEM_REALISATION) {
+			return "systemRealisation";
+		}
+		else if (mg == ModelGroup.SYSTEM_TRANSITION) {
+			return "systemTransition";
+		}
+		return "";
 	}
 	
 	
@@ -64,6 +110,9 @@ public class DialConstants {
 		FLOAT
 	}
 	
+	/**
+	 * Maximum path length when processing a Bayesn Network
+	 */
 	public static final int MAX_PATH_LENGTH = 100;
 
 	

@@ -22,6 +22,7 @@ package opendial.domains;
 import java.util.ArrayList;
 import java.util.List;
 
+import opendial.arch.DialConstants;
 import opendial.arch.DialConstants.ModelGroup;
 import opendial.domains.rules.Rule;
 import opendial.utils.Logger;
@@ -45,6 +46,7 @@ public class Model {
 	// the list of rules for the model
 	List<Rule> rules;
 	
+	int ruleCounter = 1;
 	
 	/**
 	 * Creates a new model (tagged with a particular group), with an
@@ -65,6 +67,9 @@ public class Model {
 	 */
 	public void addRule(Rule rule) {
 		rules.add(rule);
+	//	rule.setId(DialConstants.toString(group) + ruleCounter);
+		rule.setId("r"+ruleCounter);
+		ruleCounter++;
 	}
 
 	/**
