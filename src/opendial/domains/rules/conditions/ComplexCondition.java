@@ -21,8 +21,12 @@ package opendial.domains.rules.conditions;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import opendial.arch.DialConstants;
 import opendial.arch.DialConstants.BinaryOperator;
+import opendial.domains.rules.variables.Variable;
+import opendial.inference.bn.Assignment;
 import opendial.utils.Logger;
 
 /**
@@ -36,7 +40,7 @@ import opendial.utils.Logger;
 public class ComplexCondition implements Condition {
 
 	// logger
-	static Logger log = new Logger("ComplexCondition", Logger.Level.NORMAL);
+	static Logger log = new Logger("ComplexCondition", Logger.Level.DEBUG);
 	
 	// the list of sub-conditions
 	List<Condition> subconditions;
@@ -110,5 +114,73 @@ public class ComplexCondition implements Condition {
 	 */
 	public BinaryOperator getBinaryOperator() {
 		return binaryOp;
+	}
+
+	
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	@Override
+	public boolean isSatisfiedBy(Assignment input, Map<Variable,String> anchors) {
+		if (binaryOp.equals(BinaryOperator.AND)) {
+			for (Condition subcondition : subconditions) {
+				if (!subcondition.isSatisfiedBy(input, anchors)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		else if (binaryOp.equals(BinaryOperator.OR)) {
+	//		log.debug("number of subconditions: " + subconditions);
+			for (Condition subcondition: subconditions) {
+	//			log.debug("is subcond : "+ subcondition+ " satisfied by input " + input + "?" + subcondition.isSatisfiedBy(input));
+				if (subcondition.isSatisfiedBy(input, anchors)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+	
+	
+	
+	
+	@Override
+	public boolean isSatisfiedBy(Assignment input) {
+		if (binaryOp.equals(BinaryOperator.AND)) {
+			for (Condition subcondition : subconditions) {
+				if (!subcondition.isSatisfiedBy(input)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		else if (binaryOp.equals(BinaryOperator.OR)) {
+	//		log.debug("number of subconditions: " + subconditions);
+			for (Condition subcondition: subconditions) {
+	//			log.debug("is subcond : "+ subcondition+ " satisfied by input " + input + "?" + subcondition.isSatisfiedBy(input));
+				if (subcondition.isSatisfiedBy(input)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+	
+	
+	
+	@Override
+	public String toString() {
+		String str = "";
+		for (Condition subcondition : subconditions) {
+			str += subcondition + DialConstants.toString(binaryOp);
+		}
+		return str.substring(0, str.length() - 3);
 	}
 }

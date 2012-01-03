@@ -19,7 +19,7 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.variables.TypedVariable;
 
 /**
  * Representation of a rule effect which brings into existence a new
@@ -35,14 +35,14 @@ public class AddEntityEffect implements Effect {
 
 	
 	// the variable defining the new entity to create
-	StandardVariable var;
+	TypedVariable var;
 	
 	/**
 	 * Add a new "add entity" effect, anchored in the given variable
 	 * 
 	 * @param var the variable anchor
 	 */
-	public AddEntityEffect(StandardVariable var) {
+	public AddEntityEffect(TypedVariable var) {
 		this.var = var;
 	}
 	
@@ -52,7 +52,7 @@ public class AddEntityEffect implements Effect {
 	 * 
 	 * @return the variable
 	 */
-	public StandardVariable getVariable() {
+	public TypedVariable getVariable() {
 		return var;
 	}
 	
@@ -65,7 +65,7 @@ public class AddEntityEffect implements Effect {
 	 */
 	@Override
 	public String toString() {
-		return"AddEntity: " + var;
+		return"[AddEntity: " + var + "]";
 	}
 
 	
@@ -86,6 +86,26 @@ public class AddEntityEffect implements Effect {
 			}
 		}
 		return -1;
+	}
+	
+	
+	/**
+	 * Compare the two objects for equality
+	 *
+	 * @param o the object to compare
+	 * @return true if the two objects are identical, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AddEntityEffect) {
+			return var.equals(((AddEntityEffect)o).getVariable());
+		}
+		return false;
+	}
+	
+	
+	public int hashCode() {
+		return var.hashCode();
 	}
 	
 	

@@ -64,6 +64,8 @@ public class Type {
 
 	// base values for partially defined features
 	Map<String, Value> baseValuesForFeats;
+	
+	
 	// ===================================
 	//  TYPE CONSTRUCTION METHODS
 	// ===================================
@@ -80,6 +82,13 @@ public class Type {
 
 		features = new HashMap<String, Type>();
 		baseValuesForFeats = new HashMap<String,Value>();
+	}
+	
+	public <T> Type(String name, Collection<T> values) {
+		this(name);
+		for (T val : values) {
+			this.values.add(new BasicValue<T>(val));
+		}
 	}
 
 	/**
@@ -261,16 +270,16 @@ public class Type {
 
 
 	/**
-	 * Returns the list of basic values contained in the type
+	 * Returns the list of basic values content contained in the type
 	 * (e.g. excluding all range values)
 	 * 
-	 * @return the list of values
+	 * @return the list of values content
 	 */
-	public List<BasicValue<?>> getBasicValues() {
-		List<BasicValue<?>> basicValues = new LinkedList<BasicValue<?>>();
+	public List<Object> getBasicValuesContent() {
+		List<Object> basicValues = new LinkedList<Object>();
 		for (Value v: values) {
 			if (v instanceof BasicValue) {
-				basicValues.add((BasicValue<?>)v);
+				basicValues.add(((BasicValue<?>)v).getValue());
 			}
 		}
 		return basicValues;
@@ -472,6 +481,25 @@ public class Type {
 			str += " [" + features.values() + "]";
 		}
 		return str;
+	}
+	
+	
+	/**
+	 * Checks whether two types are identical.  Important note: we only
+	 * check the name of the type, which means it is crucial to ensure that
+	 * each type has a unique identifier!
+	 *
+	 * @param o the object to compare
+	 * @return true if they are identical, false otherwise
+	 */
+	@Override
+	public boolean equals (Object o) {
+		if (o instanceof Type) {
+			return (name.equals(((Type)o).getName()));
+		}
+		else {
+			return false;
+		}
 	}
 
 

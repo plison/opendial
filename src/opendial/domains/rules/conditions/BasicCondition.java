@@ -19,9 +19,14 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Map;
+
 import opendial.arch.DialConstants.Relation;
+import opendial.arch.DialConstants;
 import opendial.arch.DialException;
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.variables.TypedVariable;
+import opendial.domains.rules.variables.Variable;
+import opendial.inference.bn.Assignment;
 import opendial.utils.Logger;
 
 /**
@@ -33,16 +38,16 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class BasicCondition<T> implements Condition {
+public class BasicCondition implements Condition {
 
 	// logger
-	static Logger log = new Logger("BasicCondition", Logger.Level.NORMAL);
+	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
 		
 	// variable reference
-	StandardVariable var;
+	Variable var;
 	
 	// the value to check
-	T value;
+	Object value;
 	
 	// the relation which needs to hold between the variable and the value
 	Relation rel = Relation.EQUAL;
@@ -56,13 +61,26 @@ public class BasicCondition<T> implements Condition {
 	 * @param value the value
 	 * @throws DialException if the type of the variable does not accept the given value
 	 */
-	public BasicCondition (StandardVariable var, T value) throws DialException {
+	public BasicCondition (Variable var, Object value) throws DialException {
 		this.var = var;
 		this.value = value;
 		
-		if (!var.getType().containsValue(value)) {
-			throw new DialException("variable " + var.getType().getName() + " does not accept value " + value);
+		if (var instanceof TypedVariable && !((TypedVariable)var).getType().containsValue(value)) {
+			throw new DialException("variable " + var.getIdentifier() + " does not accept value " + value);
 		}
+	}
+	
+	
+	/**
+	 * Creates a new basic condition between an (untyped) variable and a value.  The
+	 * default relation is Relation.EQUAL
+	 * 
+	 * @param var
+	 * @param value
+	 */
+	public BasicCondition (String var, Object value) {
+		this.var = new Variable(var);
+		this.value = value;
 	}
 	
 	
@@ -75,7 +93,7 @@ public class BasicCondition<T> implements Condition {
 	 * @param rel the binary relation
 	 * @throws DialException if the type of the variable does not accept the given value
 	 */
-	public BasicCondition (StandardVariable var, T value, Relation rel) throws DialException {
+	public BasicCondition (TypedVariable var, Object value, Relation rel) throws DialException {
 		this(var,value);
 		setRelation(rel);
 	}
@@ -86,7 +104,7 @@ public class BasicCondition<T> implements Condition {
 	 * 
 	 * @return the variable reference
 	 */
-	public StandardVariable getVariable() {
+	public Variable getVariable() {
 		return var;
 	}
 	
@@ -95,7 +113,7 @@ public class BasicCondition<T> implements Condition {
 	 * 
 	 * @return the value
 	 */
-	public T getValue() {
+	public Object getValue() {
 		return value;
 	}
 	
@@ -116,6 +134,59 @@ public class BasicCondition<T> implements Condition {
 	 */
 	public Relation getRelation() {
 		return rel;
+	}
+
+
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	@Override
+	public boolean isSatisfiedBy(Assignment input, Map<Variable,String> anchors) {
+		if (input.getVariables().contains(anchors.get(var)) && 
+				rel.equals(Relation.EQUAL)) {
+			return input.getValue(anchors.get(var)).equals(value);
+		}
+		else if (input.getVariables().contains(anchors.get(var)) && 
+				rel.equals(Relation.UNEQUAL)) {
+			return (!input.getValue(anchors.get(var)).equals(value));
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	@Override
+	public boolean isSatisfiedBy(Assignment input) {
+		if (input.getVariables().contains(var.getIdentifier()) && 
+				rel.equals(Relation.EQUAL)) {
+			return input.getValue(var.getIdentifier()).equals(value);
+		}
+		else if (input.getVariables().contains(var.getIdentifier()) && 
+				rel.equals(Relation.UNEQUAL)) {
+			return (!input.getValue(var.getIdentifier()).equals(value));
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the basic condition
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		return var.getIdentifier() + DialConstants.toString(rel) + value;
 	}
 	
 }

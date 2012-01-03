@@ -61,4 +61,15 @@
 	</case>
 </rule>
 
+
+<rule>
+	<input><var label="a_u"/></input>
+	<output><var label="greetingObs"/></output>
+	<case>
+		<condition><if var="a_u" value="Greet"/></condition>
+		<effect prob="1.0"><set var="greetingObs" value="true"/></effect>
+	</case>
+</rule>
+
+
 </model>

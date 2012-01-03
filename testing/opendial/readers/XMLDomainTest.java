@@ -41,7 +41,7 @@ import opendial.domains.rules.effects.AssignEffect;
 import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.variables.FeatureVariable;
 import opendial.domains.rules.variables.PointerVariable;
-import opendial.domains.rules.variables.StandardVariable;
+import opendial.domains.rules.variables.TypedVariable;
 import opendial.domains.values.ActionValue;
 import opendial.domains.values.BasicValue;
 import opendial.domains.values.ObservationValue;
@@ -95,7 +95,7 @@ public class XMLDomainTest {
 		assertEquals("intent", firstType.getName());
 		log.debug("number of values: " + firstType.getAllValues().size());
 		assertEquals(1, firstType.getAllValues().size());
-		assertEquals("Want", firstType.getBasicValues().get(0).getValue());
+		assertEquals("Want", firstType.getBasicValuesContent().get(0));
 		assertEquals(1, firstType.getPartialFeatures("Want").size());
 		assertEquals(2, firstType.getPartialFeatures("Want").get(0).getAllValues().size());
 		
@@ -115,7 +115,7 @@ public class XMLDomainTest {
 
 		Type thirdType = domain.getType("a_u");
 		assertEquals("a_u", thirdType.getName());
-		assertEquals(4, thirdType.getAllValues().size());
+		assertEquals(5, thirdType.getAllValues().size());
 		assertEquals(0, thirdType.getFullFeatures().size());
 		Value val = thirdType.getValue("AskFor");
 		assertEquals("AskFor", ((BasicValue<?>)val).getValue());
@@ -134,7 +134,7 @@ public class XMLDomainTest {
 		Type firstObservation = domain.getType("doYObs");
 		assertTrue(firstObservation.getAllValues().get(0) instanceof ObservationValue);
 		assertEquals("doYObs", firstObservation.getName());
-		assertEquals("do Y", ((ObservationValue<?>)firstObservation.getAllValues().get(0)).getTrigger().getContent());
+		assertEquals("do y", ((ObservationValue<?>)firstObservation.getAllValues().get(0)).getTrigger().getContent());
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class XMLDomainTest {
 
 		Type mainAction = domain.getType("a_m");
 		
-		assertEquals(6, mainAction.getAllValues().size());
+		assertEquals(8, mainAction.getAllValues().size());
 
 		assertTrue(mainAction.getValue("AskRepeat") instanceof ActionValue);
 		assertEquals("AskRepeat", ((BasicValue<?>)mainAction.getValue("AskRepeat")).getValue());
@@ -156,9 +156,8 @@ public class XMLDomainTest {
 	@Test
 	public void initialStateExtraction() throws DialException {
 		
-		assertEquals (2,domain.getInitialState().getFluents().size());
-		Fluent entity = domain.getInitialState().getFluents().get(0);
-		log.debug("entity type: " + entity.getType().getName());
+		assertEquals (4,domain.getInitialState().getFluents().size());
+		Fluent entity = domain.getInitialState().getFluents().get(3);
 		
 		assertEquals("robot", entity.getType().getName());
 		log.info("label for state entity: " + entity.getLabel());
@@ -168,7 +167,7 @@ public class XMLDomainTest {
 		assertEquals ("Lenny",feat.getValues().firstKey());		
 		assertEquals (1.0f,feat.getValues().get("Lenny"), 0.01f);
 		
-		Fluent variable = domain.getInitialState().getFluents().get(1);
+		Fluent variable = domain.getInitialState().getFluents().get(2);
 		assertEquals("floor", variable.getType().getName());
 		assertFalse(variable.getValues().isEmpty());
 		assertEquals (1,variable.getValues().size());		
@@ -182,26 +181,24 @@ public class XMLDomainTest {
 
 		Model model = domain.getModel(ModelGroup.USER_PREDICTION);
 		
-		assertEquals(2, model.getRules().size());
+		assertEquals(3, model.getRules().size());
 		Rule firstRule = model.getRules().get(0);
 		
-		assertTrue(firstRule.getInputVariables().isEmpty());
+		assertEquals(0, firstRule.getInputVariables().size());
 		assertEquals(2, firstRule.getOutputVariables().size());
 		
 		assertEquals("a_u", firstRule.getOutputVariable("a_u").getIdentifier());
 		assertEquals("a_u", firstRule.getOutputVariable("a_u").getType().getName());
 		
 		Case case1 = firstRule.getCases().get(0);
-		
-		assertTrue(case1.getCondition() instanceof VoidCondition);
-		
-		assertEquals(3, case1.getEffects().size());
-		assertEquals(0.33f, case1.getProb(case1.getEffects().get(0)),  0.01f);
-		assertTrue(((ComplexEffect)case1.getEffects().get(1)).getSubeffects().get(0) instanceof AssignEffect);
-		assertEquals("a_u", ((AssignEffect<?>)((ComplexEffect)case1.getEffects().get(1)).getSubeffects().get(0)).getVariable().getIdentifier());
-		assertEquals("a_u", ((AssignEffect<?>)((ComplexEffect)case1.getEffects().get(1)).getSubeffects().get(0)).getVariable().getType().getName());
-		assertEquals("AskFor", ((AssignEffect<?>)((ComplexEffect)case1.getEffects().get(1)).getSubeffects().get(0)).getValue());
-		assertEquals("AskFor", ((AssignEffect<?>)((ComplexEffect)case1.getEffects().get(1)).getSubeffects().get(0)).getValue());
+				
+		assertEquals(4, case1.getEffects().size());
+		assertEquals(0.25f, case1.getProb(case1.getEffects().get(0)),  0.01f);
+		assertTrue(((ComplexEffect)case1.getEffects().get(2)).getSubeffects().get(0) instanceof AssignEffect);
+		assertEquals("a_u", ((AssignEffect)((ComplexEffect)case1.getEffects().get(2)).getSubeffects().get(0)).getVariable().getIdentifier());
+		assertEquals("a_u", ((AssignEffect)((ComplexEffect)case1.getEffects().get(2)).getSubeffects().get(0)).getVariable().getType().getName());
+		assertEquals("AskFor", ((AssignEffect)((ComplexEffect)case1.getEffects().get(2)).getSubeffects().get(0)).getValue());
+		assertEquals("AskFor", ((AssignEffect)((ComplexEffect)case1.getEffects().get(2)).getSubeffects().get(0)).getValue());
 		
 		Rule secondRule = model.getRules().get(1);
 		assertEquals(3, secondRule.getInputVariables().size());
@@ -217,25 +214,25 @@ public class XMLDomainTest {
 		assertTrue(case2.getCondition() instanceof ComplexCondition);
 		assertEquals(3, ((ComplexCondition)case2.getCondition()).getSubconditions().size());
 		assertTrue(((ComplexCondition)case2.getCondition()).getSubconditions().get(0) instanceof BasicCondition);
-		assertEquals("i", ((BasicCondition<?>)((ComplexCondition)case2.getCondition())
+		assertEquals("i", ((BasicCondition)((ComplexCondition)case2.getCondition())
 				.getSubconditions().get(0)).getVariable().getIdentifier());
-		assertEquals("Want", ((BasicCondition<?>)((ComplexCondition)case2.getCondition())
+		assertEquals("Want", ((BasicCondition)((ComplexCondition)case2.getCondition())
 				.getSubconditions().get(0)).getValue());
-		assertEquals("a_m", ((BasicCondition<?>)((ComplexCondition)case2.getCondition())
+		assertEquals("a_m", ((BasicCondition)((ComplexCondition)case2.getCondition())
 				.getSubconditions().get(2)).getVariable().getIdentifier());
-		assertEquals("AskRepeat", ((BasicCondition<?>)((ComplexCondition)case2.getCondition())
+		assertEquals("AskRepeat", ((BasicCondition)((ComplexCondition)case2.getCondition())
 				.getSubconditions().get(2)).getValue());
 		
 		assertEquals(1, case2.getEffects().size());
 		assertEquals(case2.getProb(case2.getEffects().get(0)), 1.0f, 0.01f);
 		assertTrue(case2.getEffects().get(0) instanceof ComplexEffect);
-		assertEquals("a_u", ((AssignEffect<?>)((ComplexEffect)case2.getEffects().get(0)).getSubeffects().get(0)).getVariable().getIdentifier());
-		assertEquals("AskFor", ((AssignEffect<?>)((ComplexEffect)case2.getEffects().get(0)).getSubeffects().get(0)).getValue());
+		assertEquals("a_u", ((AssignEffect)((ComplexEffect)case2.getEffects().get(0)).getSubeffects().get(0)).getVariable().getIdentifier());
+		assertEquals("AskFor", ((AssignEffect)((ComplexEffect)case2.getEffects().get(0)).getSubeffects().get(0)).getValue());
 		
 		Case case3 = caseIt.next();
-		assertEquals("Want", ((BasicCondition<?>)((ComplexCondition)case3.getCondition())
+		assertEquals("Want", ((BasicCondition)((ComplexCondition)case3.getCondition())
 				.getSubconditions().get(0)).getValue());
-		assertEquals("AskFor", ((AssignEffect<?>)((ComplexEffect)case3.getEffects().get(0)).getSubeffects().get(0)).getValue());
+		assertEquals("AskFor", ((AssignEffect)((ComplexEffect)case3.getEffects().get(0)).getSubeffects().get(0)).getValue());
 
 	}
 	
@@ -246,7 +243,7 @@ public class XMLDomainTest {
 
 		Model model = domain.getModel(ModelGroup.SYSTEM_ACTIONVALUE);
 		
-		assertEquals(5, model.getRules().size());
+		assertEquals(8, model.getRules().size());
 		Rule firstRule = model.getRules().get(1);
 		
 		assertEquals(3, firstRule.getInputVariables().size());
@@ -256,25 +253,25 @@ public class XMLDomainTest {
 		
 		Case case1 = firstRule.getCases().get(0);
 		assertTrue(case1.getCondition() instanceof ComplexCondition);
-		assertEquals("i", ((BasicCondition<?>)((ComplexCondition)case1.getCondition()).getSubconditions().get(1)).getVariable().getIdentifier());
-		assertEquals("Want", ((BasicCondition<?>)((ComplexCondition)case1.getCondition()).getSubconditions().get(1)).getValue());
+		assertEquals("i", ((BasicCondition)((ComplexCondition)case1.getCondition()).getSubconditions().get(1)).getVariable().getIdentifier());
+		assertEquals("Want", ((BasicCondition)((ComplexCondition)case1.getCondition()).getSubconditions().get(1)).getValue());
 		
 		assertEquals(1, case1.getEffects().size());
 		assertEquals(case1.getProb(case1.getEffects().get(0)), 1.0f, 0.01f);
 		assertTrue(case1.getEffects().get(0) instanceof AssignEffect);
-		assertEquals("a_m", ((AssignEffect<?>)case1.getEffects().get(0)).getVariable().getIdentifier());
-		assertEquals("DoX", ((AssignEffect<?>)case1.getEffects().get(0)).getValue());
+		assertEquals("a_m", ((AssignEffect)case1.getEffects().get(0)).getVariable().getIdentifier());
+		assertEquals("DoX", ((AssignEffect)case1.getEffects().get(0)).getValue());
 		
 		Case case2 = firstRule.getCases().get(1);
 		assertTrue(case2.getCondition() instanceof ComplexCondition);
-		assertEquals("i", ((BasicCondition<?>)((ComplexCondition)case2.getCondition()).getSubconditions().get(1)).getVariable().getIdentifier());
-		assertEquals("Want", ((BasicCondition<?>)((ComplexCondition)case2.getCondition()).getSubconditions().get(1)).getValue());
+		assertEquals("i", ((BasicCondition)((ComplexCondition)case2.getCondition()).getSubconditions().get(1)).getVariable().getIdentifier());
+		assertEquals("Want", ((BasicCondition)((ComplexCondition)case2.getCondition()).getSubconditions().get(1)).getValue());
 
 		assertEquals(1, case2.getEffects().size());
 		assertEquals(case2.getProb(case2.getEffects().get(0)), 0.0f, 0.01f);
 		assertTrue(case2.getEffects().get(0) instanceof AssignEffect);
-		assertEquals("a_m", ((AssignEffect<?>)case2.getEffects().get(0)).getVariable().getIdentifier());
-		assertEquals("DoX", ((AssignEffect<?>)case2.getEffects().get(0)).getValue());
+		assertEquals("a_m", ((AssignEffect)case2.getEffects().get(0)).getVariable().getIdentifier());
+		assertEquals("DoX", ((AssignEffect)case2.getEffects().get(0)).getValue());
 	}
 	
 	
@@ -288,7 +285,7 @@ public class XMLDomainTest {
 		assertEquals(2, firstRule.getInputVariables().size());
 		assertEquals(1, firstRule.getOutputVariables().size());
 		
-		assertTrue(firstRule.getInputVariables().get(0) instanceof StandardVariable);
+		assertTrue(firstRule.getInputVariables().get(0) instanceof TypedVariable);
 		assertTrue(firstRule.getInputVariables().get(1) instanceof FeatureVariable);
 		assertEquals(((FeatureVariable)firstRule.getInputVariables().get(1)).getBaseVariable(), firstRule.getInputVariables().get(0));
 	}
@@ -305,10 +302,10 @@ public class XMLDomainTest {
 		assertEquals(2, firstRule.getInputVariables().size());
 		assertEquals(1, firstRule.getOutputVariables().size());
 		
-		assertTrue(firstRule.getInputVariables().get(0) instanceof StandardVariable);
-		assertTrue(firstRule.getInputVariables().get(1) instanceof StandardVariable);
+		assertTrue(firstRule.getInputVariables().get(0) instanceof TypedVariable);
+		assertTrue(firstRule.getInputVariables().get(1) instanceof TypedVariable);
 		assertTrue(firstRule.getOutputVariables().get(0) instanceof PointerVariable);
-		assertEquals(firstRule.getInputVariables().get(1), ((PointerVariable)firstRule.getOutputVariables().get(0)).getTarget());		
+		assertEquals(firstRule.getInputVariables().get(0), ((PointerVariable)firstRule.getOutputVariables().get(0)).getTarget());		
 		
 	}
 	
@@ -326,8 +323,8 @@ public class XMLDomainTest {
 		assertEquals(BinaryOperator.AND, ((ComplexCondition)firstCond).getBinaryOperator());
 		Condition subCondition1 = ((ComplexCondition)firstCond).getSubconditions().get(0);
 		assertTrue(subCondition1 instanceof BasicCondition);
-		assertEquals("a_u", ((BasicCondition<?>)subCondition1).getVariable().getIdentifier());
-		assertEquals("AskFor", ((BasicCondition<?>)subCondition1).getValue());		
+		assertEquals("a_u", ((BasicCondition)subCondition1).getVariable().getIdentifier());
+		assertEquals("AskFor", ((BasicCondition)subCondition1).getValue());		
 	}
 	
 }

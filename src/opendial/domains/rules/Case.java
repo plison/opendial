@@ -20,7 +20,9 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -42,13 +44,13 @@ import opendial.utils.Logger;
 public class Case {
 
 	// logger
-	static Logger log = new Logger("Case", Logger.Level.NORMAL);
+	static Logger log = new Logger("Case", Logger.Level.DEBUG);
 
 	// the condition for the case
 	Condition condition;
 	
 	// the list of alternative effects, together with their probability
-	SortedMap<Effect,Float> effects;
+	Map<Effect,Float> effects;
 	
 	/**
 	 * Creates a new case, with a void condition and an empty list of
@@ -56,6 +58,18 @@ public class Case {
 	 */
 	public Case() {
 		condition = new VoidCondition();
+		effects = new HashMap<Effect,Float>();
+	}
+	
+	
+	/**
+	 * Creates a new case, with the given condition and an empty list
+	 * of effects
+	 * 
+	 * @param condition the condition for the case
+	 */
+	public Case(Condition condition) {
+		this.condition = condition;
 		effects = new TreeMap<Effect,Float>();
 	}
 	

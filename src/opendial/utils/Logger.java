@@ -113,6 +113,7 @@ public class Logger {
 	
 	public void debug(int nb) { debug(""+nb); }
 	public void debug(float fl) { debug(""+fl); }
+	public void debug(Object o) { debug(""+o); }
 
 }
 

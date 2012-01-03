@@ -2,21 +2,24 @@
 <model type="userPrediction">
 
 <rule>
+
 	<output>
 		<var label="a_u"/>
 		<var feature="obj" base="a_u" id="o"/>
 	</output>
 	<case>
-		<effect prob="0.33">
+		<effect prob="0.25">
 			<set var="a_u" value="AskFor"/>
 			<set var="o" value="X"/>
 		</effect>	
-		<effect prob="0.33">
+		<effect prob="0.25">
 			<set var="a_u" value="AskFor"/>
 			<set var="o" value="Y"/>
 		</effect>
-		<effect prob="0.34"><set var="a_u" value="Unknown"/></effect>
+		<effect prob="0.25"><set var="a_u" value="Unknown"/></effect>
+		<effect prob="0.25"><set var="a_u" value="Greet"/></effect>
 	</case>
+
 </rule>
 
 
@@ -50,6 +53,59 @@
 		<effect prob="1.0">
 			<set var="a_u" value="AskFor"/>
 			<set var="o2" value="Y"/>
+		</effect>
+	</case>
+</rule>
+
+
+
+<rule>
+	<input>
+		<var id="i" type="intent"/>
+		<var feature="obj" base="i" id="o1"/>
+		<var label="a_m"/>
+	</input>
+	<output>
+		<var label="a_u"/>
+	</output>
+	<case>
+		<condition>
+			<if var="i" value="Want"/>
+			<if var="o1" value="X"/>
+			<if var="a_m" value="ConfirmX"/>
+		</condition>
+		<effect prob="1.0">
+			<set var="a_u" value="Confirm"/>
+		</effect>
+	</case>
+	<case>
+		<condition>
+			<if var="i" value="Want"/>
+			<if var="o1" value="Y"/>
+			<if var="a_m" value="ConfirmX"/>
+		</condition>
+		<effect prob="1.0">
+			<set var="a_u" value="Deny"/>
+		</effect>
+	</case>
+		<case>
+		<condition>
+			<if var="i" value="Want"/>
+			<if var="o1" value="X"/>
+			<if var="a_m" value="ConfirmY"/>
+		</condition>
+		<effect prob="1.0">
+			<set var="a_u" value="Deny"/>
+		</effect>
+	</case>
+	<case>
+		<condition>
+			<if var="i" value="Want"/>
+			<if var="o1" value="Y"/>
+			<if var="a_m" value="ConfirmY"/>
+		</condition>
+		<effect prob="1.0">
+			<set var="a_u" value="Confirm"/>
 		</effect>
 	</case>
 </rule>

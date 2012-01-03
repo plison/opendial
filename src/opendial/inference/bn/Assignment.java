@@ -19,10 +19,14 @@
 
 package opendial.inference.bn;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.SortedMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.utils.Logger;
@@ -40,24 +44,21 @@ import opendial.utils.Logger;
  * @version $Date::                      $
  *
  */
-public class Assignment {
+public class Assignment extends TreeMap<String,Object> {
 
 	// logger
-	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
+	// static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
 	
 	// mapping between variables and values
-	SortedMap<String,Object> pairs;
+	// SortedMap<String,Object> pairs;
 	
 	
 	// ===================================
 	//  CONSTRUCTORS
 	// ===================================
 
-	/**
-	 * Creates an empty assignment
-	 */
 	public Assignment() {
-		pairs = new TreeMap<String,Object>();
+		super();
 	}
 	
 	/**
@@ -66,7 +67,8 @@ public class Assignment {
 	 * @param a the assignment to copy
 	 */
 	public Assignment(Assignment a) {
-		pairs = a.copy().getPairs();
+		super();
+		addPairs(a.getPairs());
 	}
 	
 	
@@ -77,7 +79,7 @@ public class Assignment {
 	 * @param val the value
 	 */
 	public Assignment(String var, Object val) {
-		this();
+		super();
 		addPair(var,val);
 	}
 	
@@ -91,7 +93,7 @@ public class Assignment {
 	 * @param booleanAssign the boolean assignment
 	 */
 	public Assignment(String booleanAssign) {
-		this();
+		super();
 		addPair(booleanAssign);
 	}
 	
@@ -102,7 +104,7 @@ public class Assignment {
 	 * @param booleanAssigns the list of boolean assignments
 	 */
 	public Assignment(List<String> booleanAssigns) {
-		this();
+		super();
 		for (String ba: booleanAssigns) {
 			addPair(ba);
 		}
@@ -115,7 +117,7 @@ public class Assignment {
 	 * @param pairs the pairs
 	 */
 	public Assignment(SortedMap<String,Object> pairs) {
-		this.pairs = pairs;
+		putAll(pairs);
 	}
 	
 	/**
@@ -127,7 +129,8 @@ public class Assignment {
 	 * @param val the value
 	 */
 	public Assignment(Assignment ass, String var, Object val) {
-		pairs = ass.copy().getPairs();
+		super();
+		addPairs(ass.getPairs());
 		addPair(var, val);
 	}
 	
@@ -140,8 +143,9 @@ public class Assignment {
 	 * @param ass2 the second assignment
 	 */
 	public Assignment(Assignment ass1, Assignment ass2) {
-		pairs = ass1.copy().getPairs();
-		addPairs(ass2.copy().getPairs());
+		super();
+		addPairs(ass1.getPairs()); 
+		addPairs(ass2.getPairs());
 	}
 
 
@@ -151,7 +155,7 @@ public class Assignment {
 	 * @param entries the entries to add
 	 */
 	public Assignment(Set<Entry<String, Object>> entries) {
-		this();
+		super();
 		for (Entry<String,Object> entry: entries) {
 			addPair(entry.getKey(), entry.getValue());
 		}
@@ -171,7 +175,7 @@ public class Assignment {
 	 * @param val the value
 	 */
 	public void addPair(String var, Object val) {
-		pairs.put(var, val);
+		put(var, val);
 	}
 	
 	
@@ -198,7 +202,7 @@ public class Assignment {
 	 * @param pairs the pairs to add
 	 */
 	public void addPairs (SortedMap<String,Object> pairs) {
-		this.pairs.putAll(pairs);
+		putAll(pairs);
 	}
 	
 
@@ -209,7 +213,7 @@ public class Assignment {
 	 * @param var the variable to remove
 	 */
 	public void removePair(String var) {
-		pairs.remove(var);
+		remove(var);
 	}
 	
 	
@@ -220,7 +224,7 @@ public class Assignment {
 	 */
 	public void removePairs(Set<String> vars) {
 		for (String var: vars) {
-			pairs.remove(var);
+			remove(var);
 		}
 	}
 	
@@ -237,7 +241,7 @@ public class Assignment {
 	 * @return all pairs
 	 */
 	public SortedMap<String,Object> getPairs() {
-		return pairs;
+		return this;
 	}
 
 
@@ -247,7 +251,7 @@ public class Assignment {
 	 * @return the number of pairs
 	 */
 	public int getSize() {
-		return pairs.size();
+		return size();
 	}
 	
 	
@@ -259,11 +263,11 @@ public class Assignment {
 	 * @param variables the variables to consider
 	 * @return a new, trimmed assignment
 	 */
-	public Assignment getTrimmed(Set<String> variables) {
+	public Assignment getTrimmed(Collection<String> variables) {
 		SortedMap<String,Object> newPair = new TreeMap<String,Object>();
-		for (String key : pairs.keySet()) {
+		for (String key : keySet()) {
 			if (variables.contains(key)) {
-				newPair.put(key, pairs.get(key));	
+				newPair.put(key, get(key));	
 			}
 		}
 		return new Assignment(newPair);
@@ -277,7 +281,7 @@ public class Assignment {
 	 */
 	public Assignment copy() {
 		Assignment ass = new Assignment();
-		ass.addPairs(pairs);
+		ass.addPairs(this);
 		return ass;
 	}
 	
@@ -288,7 +292,7 @@ public class Assignment {
 	 * @return variables list
 	 */
 	public Set<String> getVariables() {
-		return pairs.keySet();
+		return keySet();
 	} 
 	
 	
@@ -300,7 +304,7 @@ public class Assignment {
 	 * @return the associated value
 	 */
 	public Object getValue(String var) {
-		return pairs.get(var);
+		return get(var);
 	}
 	
 	
@@ -314,9 +318,9 @@ public class Assignment {
 	 */
 	public boolean contains(Assignment a) {	
 		for (String key : a.getVariables()) {
-			if (pairs.containsKey(key)) {
+			if (containsKey(key)) {
 				Object val = a.getValue(key);
-				if (!pairs.get(key).equals(val)) {
+				if (!get(key).equals(val)) {
 					return false;
 				}
 			}
@@ -338,8 +342,8 @@ public class Assignment {
 	 */
 	public boolean consistentWith(Assignment a) {
 		for (String evidenceVar : a.getVariables()) {
-			if (pairs.containsKey(evidenceVar)) {
-				if (!pairs.get(evidenceVar).equals(a.getValue(evidenceVar))) {
+			if (containsKey(evidenceVar)) {
+				if (!get(evidenceVar).equals(a.getValue(evidenceVar))) {
 					return false;
 				}
 			}
@@ -347,7 +351,11 @@ public class Assignment {
 		return true;
 	}
 
-
+	public Object getFirstValue() {
+		List<String> keyList = new ArrayList<String>(keySet());
+		return get(keyList.get(0));
+	}
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -356,28 +364,15 @@ public class Assignment {
 	/**
 	 * Returns the hashcode associated with the assignment.  The hashcode is
 	 * calculated by looping on each pair (which are sorted, since we use a sorted
-	 * map), and using a small heuristic for associated a unique hash value
+	 * map), and using a small heuristic for associating a unique hash value
 	 * for each pair.
 	 * 
 	 * @return the corresponding hashcode
 	 */
 	@Override
 	public int hashCode() {
-		double hash = 0;
-		int counter = 1;
-		
-		for (String key: pairs.keySet()) {
-			hash += counter*key.hashCode()*pairs.get(key).hashCode()/10000;
-			if (hash == 0) {
-				log.warning("Hash value for assignment has dropped to 0, might cause problems");
-			}
-			counter++;
-		}
-		if (hash < Integer.MIN_VALUE || hash > Integer.MAX_VALUE) {
-			hash = hash / 1000000;
-		}
- 		return (int)hash;
-	}
+		return super.hashCode();
+	} 
 	
 	
 	/**
@@ -389,7 +384,22 @@ public class Assignment {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Assignment) {
-			return (hashCode() == o.hashCode());
+			if (((Assignment)o).getSize() != size()) {
+				return false;
+			}
+			else {
+				for (String var : keySet()) {
+					if (!((Assignment)o).getVariables().contains(var)) {
+						return false;
+					}
+					else {
+						if (!get(var).equals(((Assignment)o).getValue(var))) {
+							return false;
+						}
+					}
+				}
+				return true;
+			}
 		}
 		else {
 			return false;
@@ -404,17 +414,18 @@ public class Assignment {
 	 */
 	public String toString() {
 		String str = "";
-		for (String key: pairs.keySet()) {
-			if (pairs.get(key).equals(Boolean.TRUE)) {
+		List<String> keyList = new ArrayList<String>(keySet());
+		for (String key: keyList) {
+			if (get(key).equals(Boolean.TRUE)) {
 				str += key;
 			}
-			else if (pairs.get(key).equals(Boolean.FALSE)) {
+			else if (get(key).equals(Boolean.FALSE)) {
 				str += "!" + key;
 			}
 			else {
-				str += key + "=" + pairs.get(key) ;
+				str += key + "=" + get(key) ;
 			}
-			if (!key.equals(pairs.lastKey())) {
+			if (!key.equals(keyList.get(keySet().size() - 1))) {
 				str += " ^ ";
 			}
 		}

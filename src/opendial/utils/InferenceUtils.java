@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import opendial.arch.DialException;
 import opendial.inference.bn.Assignment;
 import opendial.utils.Logger;
 
@@ -40,6 +41,8 @@ public class InferenceUtils {
 	// logger
 	static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
 	
+	public static long totalTimeForCombinatorics = 0;
+
 	
 	/**
 	 * Generates all possible assignment combinations from the set of values
@@ -53,13 +56,13 @@ public class InferenceUtils {
 	 */
 	public static List<Assignment> getAllCombinations(Map<String,Set<Object>> valuesMatrix) {
 			
+		long initTime = System.currentTimeMillis();
 		// start with a single, empty assignment
 		List<Assignment> assignments = new LinkedList<Assignment>();
 		assignments.add(new Assignment());
 		
 		// at each iterator, we expand each assignment with a new combination
 		for (String label : valuesMatrix.keySet()) {
-
 			List<Assignment> assignments2 = new LinkedList<Assignment>();
 
 			for (Object val: valuesMatrix.get(label)) {
@@ -70,7 +73,12 @@ public class InferenceUtils {
 				}
 			}
 			assignments = assignments2;
-		}		
+		}	
+	//	if (assignments.size() == 1 && assignments.get(0).getSize() == 0) {
+	//		return new LinkedList<Assignment>();
+	//	}
+		
+		totalTimeForCombinatorics += (System.currentTimeMillis() - initTime);
 		return assignments;
 	}
 	
@@ -84,6 +92,8 @@ public class InferenceUtils {
 	 * @return the generated combination of assignments
 	 */
 	public static List<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
+		
+		long initTime = System.currentTimeMillis();
 		
 		// start with a single, empty assignment
 		List<Assignment> assignments = new LinkedList<Assignment>();
@@ -105,6 +115,9 @@ public class InferenceUtils {
 			}
 			assignments = assignments2;
 		}		
+		
+		totalTimeForCombinatorics += (System.currentTimeMillis() - initTime);
+
 		return assignments;
 	}
 
@@ -115,10 +128,14 @@ public class InferenceUtils {
 	 * @param distrib the distribution to normalise
 	 * @return the normalised distribution
 	 */
-	public static Map<Assignment, Float> normalise (Map<Assignment, Float> distrib) {
+	public static Map<Assignment, Float> normalise (Map<Assignment, Float> distrib) throws DialException {
 		float total = 0.0f;
 		for (Assignment a : distrib.keySet()) {
 			total += distrib.get(a);
+		}
+		if (total == 0.0f) {
+	//		log.debug("distribution: " + distrib);
+			throw new DialException("all assignments in the distribution have a zero probability, cannot be normalised");
 		}
 		Map<Assignment,Float> normalisedDistrib = new HashMap<Assignment,Float>();
 		for (Assignment a: distrib.keySet()) {
@@ -126,5 +143,6 @@ public class InferenceUtils {
 		}
 		return normalisedDistrib;
 	}
+
 	
 }

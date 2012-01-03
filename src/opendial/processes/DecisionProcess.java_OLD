@@ -19,15 +19,34 @@
 
 package opendial.processes;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
+import opendial.arch.DialConstants.ModelGroup;
+import opendial.arch.DialException;
 import opendial.arch.DialogueInterface;
 import opendial.domains.Domain;
+import opendial.domains.Type;
+import opendial.domains.actions.ActionTemplate;
+import opendial.domains.actions.SurfaceRealisationTemplate;
+import opendial.domains.values.ActionValue;
+import opendial.domains.values.Value;
+import opendial.gui.NetworkVisualisation;
+import opendial.inference.algorithms.VariableElimination;
+import opendial.inference.bn.Assignment;
+import opendial.inference.bn.BNetwork;
+import opendial.inference.converters.NodeConverter;
+import opendial.inference.converters.RuleConverter;
+import opendial.inference.distribs.Distribution;
 import opendial.outputs.Action;
+import opendial.outputs.VerbalAction;
 import opendial.outputs.VoidAction;
 import opendial.state.DialogueState;
+import opendial.state.Fluent;
 import opendial.utils.Logger;
 
 /**
@@ -45,7 +64,7 @@ import opendial.utils.Logger;
  * to the process and are informed of newly selected actions.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2011-10-15 21:53:05 #$
  *
  */
 public class DecisionProcess extends Thread{
@@ -94,10 +113,16 @@ public class DecisionProcess extends Thread{
 				
 				// decide on the next action
 				Action nextAction = decideNextAction();	
-				log.info("--> Action selection complete, selected action: " + nextAction);
+				log.info("Action selection complete, selected action: " + nextAction);
+
+				state.getPrediction().setAsBusy(true);
+				synchronized (state.getPrediction()) {
+					state.getPrediction().notify();
+				}
 
 				// add it to the queue, inform the interfaces
 				actionsToExecute.add(nextAction);
+
 				informInterfaces(nextAction);
 				
 				synchronized (this) { notify(); }
@@ -132,6 +157,7 @@ public class DecisionProcess extends Thread{
 	}
 
 	
+	static long decisionTime = 0;
 	/**
 	 * Decide on the next action to perform in the current state
 	 * TODO: implement action selection
@@ -140,7 +166,52 @@ public class DecisionProcess extends Thread{
 	 */
 	private Action decideNextAction() {
 		
-	//	(new StateConverter()).buildBayesianNetwork(state);
+		long initTime = System.currentTimeMillis();
+		try {
+			
+			log.debug("current state before action selection: " + state);
+			
+			BNetwork systemActionValue = RuleConverter.createBayesianNetwork(domain.getModel(ModelGroup.SYSTEM_ACTIONVALUE), state);
+
+			List<Fluent> actionFluents = NodeConverter.convertOutputNodesToFluents(systemActionValue, domain, new Assignment());
+			
+			
+			
+			for (Fluent actionFluent : actionFluents) {
+				if (actionFluent.getLabel().equals("a_m") && actionFluent.getHighestProb() != null) {
+
+					Object val = actionFluent.getHighestProb();
+					
+					Map<String,Object> filledSlots = new HashMap<String,Object>();
+					if (!actionFluent.getType().getPartialFeatures(val).isEmpty()) {
+						for (Type slotType : actionFluent.getType().getPartialFeatures(val)) {
+							if (state.getFluent(slotType.getName()) != null) {
+								filledSlots.put(slotType.getName(), state.getFluent(slotType.getName()).getHighestProb());
+							}
+						}
+					}
+					
+					log.debug("found best action: " + actionFluent);
+
+					
+					Fluent aFluent = new Fluent(domain.getType("a_m"));
+					aFluent.addValue(val, 1.0f);
+					state.addFluent(aFluent);
+					
+					Value actionVal = domain.getType("a_m").getValue(val);
+					if (actionVal instanceof ActionValue) {
+						ActionTemplate<?> template = ((ActionValue<?>)actionVal).getTemplate();
+						decisionTime += System.currentTimeMillis() - initTime;
+						return new VerbalAction((String)template.getFilledContent(filledSlots));
+					}
+										
+				}
+			}
+
+			
+		} catch (DialException e) {
+			log.warning("error in Bayesian network compilation: " + e.getMessage());
+		}
 		
 		return new VoidAction();
 	}
@@ -156,13 +227,14 @@ public class DecisionProcess extends Thread{
 	 */
 	public synchronized Action pollAvailableAction() {
 		Action action = actionsToExecute.poll();
-		if (action == null) {
+		while (action == null) {
+			log.debug("polling for action, waiting....");
 				try {	wait(); }
 				catch (InterruptedException e) { }
 				action = actionsToExecute.poll();
 		}
 
-		log.debug("polledAction: " + action);		
+	//	log.debug("polledAction: " + action);		
 		return action;
 	}
 	

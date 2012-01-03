@@ -39,6 +39,7 @@ import opendial.inference.algorithms.VariableElimination;
 import opendial.inference.bn.Assignment;
 import opendial.inference.bn.BNetwork;
 import opendial.inference.bn.BNode;
+import opendial.inference.distribs.Distribution;
 import opendial.inference.distribs.GenericDistribution;
 import opendial.inference.distribs.ProbabilityTable;
 import opendial.utils.Logger;
@@ -62,18 +63,25 @@ public class BNInferenceTest {
 		BNode.autoCompletion = true;
 				
 		BNode b = new BNode("Burglary");
+		b.addValue(Boolean.TRUE);
+		b.addValue(Boolean.FALSE);
+
 		ProbabilityTable distrib_b = new ProbabilityTable(b);
 		distrib_b.addRow(new Assignment("Burglary"), 0.001f);
 		b.setDistribution(distrib_b);
 		bn.addNode(b);
 		
 		BNode e = new BNode("Earthquake");
+		e.addValue(Boolean.TRUE);
+		e.addValue(Boolean.FALSE);
 		ProbabilityTable distrib_e = new ProbabilityTable(e);
 		distrib_e.addRow(new Assignment("Earthquake"), 0.002f);
 		e.setDistribution(distrib_e);
 		bn.addNode(e);
 
 		BNode a = new BNode("Alarm");
+		a.addValue(Boolean.TRUE);
+		a.addValue(Boolean.FALSE);
 		a.addInputNode(b);
 		a.addInputNode(e);
 		ProbabilityTable distrib_a = new ProbabilityTable(a);
@@ -85,6 +93,8 @@ public class BNInferenceTest {
 		bn.addNode(a);
   
 		BNode mc = new BNode("MaryCalls");
+		mc.addValue(Boolean.TRUE);
+		mc.addValue(Boolean.FALSE);
 		mc.addInputNode(a);
 		ProbabilityTable distrib_mc = new ProbabilityTable(mc);
 		distrib_mc.addRow(new Assignment(Arrays.asList("Alarm", "MaryCalls")), 0.7f);
@@ -93,6 +103,8 @@ public class BNInferenceTest {
 		bn.addNode(mc);
 		
 		BNode jc = new BNode("JohnCalls");
+		jc.addValue(Boolean.TRUE);
+		jc.addValue(Boolean.FALSE);
 		jc.addInputNode(a);
 		ProbabilityTable distrib_jc = new ProbabilityTable(jc);
 		distrib_jc.addRow(new Assignment(Arrays.asList("Alarm", "JohnCalls")), 0.9f);
@@ -117,14 +129,14 @@ public class BNInferenceTest {
 		assertEquals(0.9367428f, fullJoint.get(new Assignment(
 				Arrays.asList("!JohnCalls", "!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))), 0.000001f);
 		
-		GenericDistribution query = NaiveInference.query(bn, Arrays.asList("Burglary"), 
+		Distribution query = NaiveInference.query(bn, Arrays.asList("Burglary"), 
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		
 		assertEquals(0.7158281f, query.getProb(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
 		assertEquals(0.28417188f, query.getProb(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
 		
 
-		GenericDistribution query2 = NaiveInference.query(bn, Arrays.asList("Alarm", "Burglary"), 
+		Distribution query2 = NaiveInference.query(bn, Arrays.asList("Alarm", "Burglary"), 
 				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 		
 		assertEquals(0.62644875f, query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))), 0.001f);
@@ -136,13 +148,13 @@ public class BNInferenceTest {
 		
 		BNetwork bn = constructBayesianNetwork();
 		
-		GenericDistribution query = VariableElimination.query(bn, Arrays.asList("Burglary"), 
+		Distribution query = VariableElimination.query(bn, Arrays.asList("Burglary"), 
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		
 		assertEquals(0.7158281f, query.getProb(new Assignment("Burglary", Boolean.FALSE)), 0.0001f);
 		assertEquals(0.28417188f, query.getProb(new Assignment("Burglary", Boolean.TRUE)), 0.0001f);
 		
-		GenericDistribution query2 = VariableElimination.query(bn, Arrays.asList("Alarm", "Burglary"), 
+		Distribution query2 = VariableElimination.query(bn, Arrays.asList("Alarm", "Burglary"), 
 				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 		
 		assertEquals(0.62644875f, query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))), 0.001f);
@@ -161,18 +173,19 @@ public class BNInferenceTest {
 		long totalTimeVE = 0;
 		
 		for (Set<String> queryVars: queryVarsPowerset) {
+			if (!queryVars.isEmpty()) {
 			for (Assignment evidence : evidencePowerset) {
 
 				if ((new Random()).nextFloat() < PERCENT_COMPARISONS / 100.0) {
 					long timeInit = System.currentTimeMillis();
 					
-					GenericDistribution query1 = 
+					Distribution query1 = 
 						NaiveInference.query(bn, new ArrayList<String>(queryVars), evidence);
 					
 					long timeQuery1 = System.currentTimeMillis();				
 					totalTimeNaive += (timeQuery1 - timeInit);
 					
-					GenericDistribution query2 = 
+					Distribution query2 = 
 						VariableElimination.query(bn, new ArrayList<String>(queryVars), evidence);
 					
 					long timeQuery2 = System.currentTimeMillis();
@@ -192,7 +205,7 @@ public class BNInferenceTest {
 						}
 					}				
 				}
-
+			}
 			}
 		}
 		log.info("Total number of performed inferences: 2 x " + (queryVarsPowerset.size()*evidencePowerset.size()));
@@ -243,7 +256,6 @@ public class BNInferenceTest {
 		try {
 			test.bayesianNetworkTest3();
 		} catch (DialException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

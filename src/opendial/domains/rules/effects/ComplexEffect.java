@@ -19,6 +19,7 @@
 
 package opendial.domains.rules.effects;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ComplexEffect implements Effect {
 	List<Effect> subeffects;
 
 	// the binary logical operator
-	BinaryOperator binaryOp;
+	BinaryOperator binaryOp = BinaryOperator.AND;
 	
 	/**
 	 * Creates a new complex effect, with an empty list of sub-effects
@@ -119,7 +120,7 @@ public class ComplexEffect implements Effect {
 	 */
 	@Override
 	public String toString() {
-		String str = "Complex: (";
+		String str = "[";
 		Iterator<Effect> it = subeffects.iterator();
 		while (it.hasNext()) {
 			str += it.next();
@@ -132,7 +133,7 @@ public class ComplexEffect implements Effect {
 				}
 			}
 		}
-		return str + ")";
+		return str + "]";
 	}
 	
 
@@ -160,6 +161,27 @@ public class ComplexEffect implements Effect {
 			return 0;
 		}
 		return -1;
+	}
+	
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ComplexEffect) {
+			return (compareTo((ComplexEffect)o) == 0);
+		}
+		return false;
+	}
+	
+	
+	public int hashCode() {
+		int hash = 0;
+		
+		Collections.sort(subeffects);
+		for (Effect effect: subeffects) {
+			hash += effect.hashCode();
+		}
+		
+		return hash;
 	}
 	
 }

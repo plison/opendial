@@ -19,6 +19,11 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Map;
+
+import opendial.domains.rules.variables.Variable;
+import opendial.inference.bn.Assignment;
+
 
 /**
  * Generic interface for a rule condition
@@ -28,5 +33,17 @@ package opendial.domains.rules.conditions;
  *
  */
 public interface Condition {
+
+	
+	boolean isSatisfiedBy(Assignment input);
+
+	/**
+	 * Returns true is the condition is satisfied by the following
+	 * assignment, and false otherwise
+	 * 
+	 * @param input the assignment to check
+	 * @return true if the condition is satisfied, false otherwise
+	 */
+	boolean isSatisfiedBy(Assignment input, Map<Variable,String> anchors);
 
 }

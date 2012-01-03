@@ -35,6 +35,7 @@
 		<value>Confirm</value>
 		<value>Deny</value>
 		<value>Unknown</value>
+		<value>Greet</value>
 	</variable>
 
 	
@@ -46,6 +47,8 @@
 	<trigger name="anythingObs" type="surface" content="*"/>
 	
 	<actiontemplate name="a_m">
+		<value label="ConfirmX" type="surface" content="Do you want me to do X?"/>
+		<value label="ConfirmY" type="surface" content="Do you want me to do Y?"/>
 		<value label="DoX" type="surface" content="OK, doing X!"/>
 		<value label="DoY" type="surface" content="OK, doing Y!"/>
 		<value label="SayHi" type="surface" content="Hi ${name}!"/>
