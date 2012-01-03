@@ -20,7 +20,7 @@
 package opendial.arch;
 
 /**
- * Placeholder for generic constants and enumerations used in openDial
+ * Placeholder for generic constants and enumerations used in openDial.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
