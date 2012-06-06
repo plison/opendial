@@ -24,8 +24,8 @@ package opendial.arch;
  * Generic exception thrown in openDial
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2011-10-09 15:04:30 #$
- * 
+ * @version $Date::                      $
+ *  
  */ 
 public class DialException extends Exception {
 
