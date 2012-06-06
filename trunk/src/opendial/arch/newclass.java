@@ -25,7 +25,7 @@ package opendial.arch;
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *
+ * 
  */
 public class newclass {
 
