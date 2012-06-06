@@ -26,7 +26,7 @@ package opendial.arch;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2011-10-09 15:04:30 #$
  * 
- */
+ */ 
 public class DialException extends Exception {
 
 	// static Logger log = new Logger("DialException", Logger.Level.NORMAL);
