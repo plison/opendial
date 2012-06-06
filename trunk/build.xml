@@ -5,7 +5,7 @@
 	  
 	<!-- set global properties for this build -->
 	  <property name="src" location="src"/>	  
-	  <property name="testsrc" location="testing"/>	  
+	  <property name="testsrc" location="test"/>	  
 	<property name="javadoc" location="doc/javadoc"/>
 	<property name="testreports" location="doc/testreports"/>
 	<property name="build" location="bin"/>
@@ -37,7 +37,7 @@
 	  		<classpath refid="compile.classpath"/>
 		</javac>
 	</target>
-
+ 
 	<!-- GENERATE DISTRIBUTION -->
 	<target name="distribute" depends="compile" description="generate the distribution" >
 		<!-- Create the distribution directory -->
