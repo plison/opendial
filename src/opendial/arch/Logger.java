@@ -19,26 +19,102 @@
 
 package opendial.arch;
 
-
 /**
- * Generic exception thrown in openDial
+ * Utility for logging on the standard output (console).  
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author  Pierre Lison plison@ifi.uio.no 
  * @version $Date::                      $
- *  
- */ 
-public class DialException extends Exception {
-
-	// static Logger log = new Logger("DialException", Logger.Level.NORMAL);
-
-	private static final long serialVersionUID = 1L;
+ * 
+ */
+public class Logger {
 	
-	/** 
-	 * Create a new openDial exception, with a given message
+	/** Logging levels */
+	public static enum Level {
+		NONE,  		/* no messages are shown */
+		MIN,  		/* only severe errors are shown */
+		NORMAL, 	/* severe errors, warning and infos are shown */
+		DEBUG 		/* every message is shown, including debug */
+	}  
+	  
+	// Label of the component to log
+	String componentLabel;
+	 
+	// logging level for this particular logger
+	Level level;
+
+	
+	/**
+	 * Create a new logger for the component, set at a given
+	 * logging level
 	 * 
-	 * @param msg the message for the exception
+	 * @param componentLabel the label for the component
+	 * @param level the logging level
 	 */
-	public DialException (String msg) {
-		super(msg);
+	public Logger(String componentLabel, Level level) {
+		this.componentLabel = componentLabel;
+		this.level = level;
 	}
+	
+	
+	/**
+	 * Log a severe error message
+	 * 
+	 * @param s the message
+	 */
+	public void severe(String s) {
+		if (level != Level.NONE) {
+		System.err.println("["+componentLabel+"] SEVERE: " + s);
+		}
+	}
+	
+	public void severe(int nb) { severe(""+nb); }
+	public void severe(float fl) { severe(""+fl); }
+
+	
+	/**
+	 * Log a warning message
+	 * 
+	 * @param s the message
+	 */
+	public void warning(String s) {
+		if (level == Level.NORMAL || level == Level.DEBUG) {
+		 System.err.println("["+componentLabel+"] WARNING: " + s);
+		}
+	}
+
+	public void warning(int nb) { warning(""+nb); }
+	public void warning(float fl) { warning(""+fl); }
+
+	
+	/**
+	 * Log an information message
+	 * 
+	 * @param s the message
+	 */
+	public void info(String s) {
+		if (level == Level.NORMAL || level == Level.DEBUG) {
+		 System.out.println("["+componentLabel+"] INFO: " + s);
+		}
+	}
+
+	public void info(int nb) { info(""+nb); }
+	public void info(float fl) { info(""+fl); }
+	
+	/**
+	 * Log a debugging message
+	 * 
+	 * @param s the message
+	 */
+	public void debug(String s) {
+		if (level == Level.DEBUG) {
+		 System.out.println("["+componentLabel+"] DEBUG: " + s);
+		}
+	}
+	
+	public void debug(int nb) { debug(""+nb); }
+	public void debug(float fl) { debug(""+fl); }
+	public void debug(Object o) { debug(""+o); }
+
 }
+
+
