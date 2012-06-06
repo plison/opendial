@@ -24,7 +24,7 @@ package opendial.arch;
  *
  * @author  Pierre Lison plison@ifi.uio.no 
  * @version $Date::                      $
- *
+ * 
  */
 public class Logger {
 	
@@ -34,11 +34,11 @@ public class Logger {
 		MIN,  		/* only severe errors are shown */
 		NORMAL, 	/* severe errors, warning and infos are shown */
 		DEBUG 		/* every message is shown, including debug */
-	}
-	
+	}  
+	  
 	// Label of the component to log
 	String componentLabel;
-	
+	 
 	// logging level for this particular logger
 	Level level;
 
