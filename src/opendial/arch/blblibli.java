@@ -19,6 +19,7 @@
 
 package opendial.arch;
 
+import opendial.utils.Logger;
 
 /**
  * 
@@ -26,7 +27,8 @@ package opendial.arch;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
- */ 
-public class lasttest {
+ */
+public class blblibli {
 
+	static Logger log = new Logger("blblibli", Logger.Level.NORMAL);
 }
