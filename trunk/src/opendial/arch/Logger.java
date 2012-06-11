@@ -19,6 +19,8 @@
 
 package opendial.arch;
 
+import opendial.arch.Logger.Level;
+
 /**
  * Utility for logging on the standard output (console).  
  *
@@ -55,6 +57,14 @@ public class Logger {
 		this.level = level;
 	}
 	
+	/**
+	 * Modifies the logging level of the logger
+	 * 
+	 * @param level the new level
+	 */
+	public void setLevel(Level level) {
+		this.level = level;
+	}
 	
 	/**
 	 * Log a severe error message
@@ -114,6 +124,8 @@ public class Logger {
 	public void debug(int nb) { debug(""+nb); }
 	public void debug(float fl) { debug(""+fl); }
 	public void debug(Object o) { debug(""+o); }
+
+
 
 }
 

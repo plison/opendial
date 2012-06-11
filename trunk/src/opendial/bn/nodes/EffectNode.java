@@ -17,28 +17,32 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.bn.nodes;
 
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.distribs.ProbDistribution;
 
 /**
- * Generic exception thrown in openDial
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *  
- */ 
-public class DialException extends Exception {
+ *
+ */
+public class EffectNode extends ChanceNode {
 
-	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
-
-	private static final long serialVersionUID = 1L;
+	// logger
+	public static Logger log = new Logger("EffectNode", Logger.Level.NORMAL);
 	
-	/** 
-	 * Create a new openDial exception, with a given message
-	 * 
-	 * @param msg the message for the exception
+	/**
+	 * @param nodeId
+	 * @throws DialException 
 	 */
-	public DialException (String msg) {
-		super(msg);
+	public EffectNode(String nodeId, ProbDistribution distrib) throws DialException {
+		super(nodeId, distrib);
+		// TODO Auto-generated constructor stub
 	}
+
+
 }
