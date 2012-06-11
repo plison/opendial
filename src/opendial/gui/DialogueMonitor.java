@@ -17,28 +17,104 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.gui;
 
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+
+import opendial.arch.Logger;
 
 /**
- * Generic exception thrown in openDial
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *  
- */ 
-public class DialException extends Exception {
+ *
+ */
+@SuppressWarnings("serial")
+public class DialogueMonitor extends JFrame {
 
-	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
+	public static Logger log = new Logger("DialogueMonitor", Logger.Level.NORMAL);
 
-	private static final long serialVersionUID = 1L;
-	
-	/** 
-	 * Create a new openDial exception, with a given message
-	 * 
-	 * @param msg the message for the exception
-	 */
-	public DialException (String msg) {
-		super(msg);
+	JTabbedPane tabbedPane;
+
+	List<JComponent> activatedTabs;
+
+	private static DialogueMonitor monitor;
+
+	public static DialogueMonitor getSingletonInstance() {
+		if (monitor == null) {
+			monitor = new DialogueMonitor();
+		}
+		return monitor;
 	}
+
+	private DialogueMonitor() {
+
+		Container contentPane = getContentPane();
+
+		tabbedPane = new JTabbedPane();
+
+		contentPane.add(tabbedPane);
+
+		setLocation(new Point(200, 200));
+
+		addWindowListener(new WindowAdapter() 
+		{
+			public void windowClosing(WindowEvent e) 
+			{ System.exit(0); }
+		}
+		); 
+
+		activatedTabs = new LinkedList<JComponent>();
+
+		setPreferredSize(new Dimension(1000,800));
+		pack();
+	}
+
+	
+	public synchronized void addComponent (GUIComponent component) {
+
+		if (tabbedPane.getTabCount() > component.getTabPosition()) {
+			tabbedPane.insertTab(component.getTabTitle(), null, component, 
+					component.getTabTip(), component.getTabPosition());
+		}
+		else {
+			tabbedPane.addTab(component.getTabTitle(), null, component, component.getTabTip());
+		}
+
+		if (component.getTabPosition() == 0) {
+			tabbedPane.setSelectedComponent(component);
+		}
+		if (tabbedPane.getTabCount() > 0) {
+			pack();
+			setVisible(true);
+		}
+
+		activatedTabs.add(component);
+
+	}
+
+
+
+	/**
+	 * 
+	 * @param viewer
+	 * @return
+	 */
+	public synchronized boolean hasTab(JComponent tab) {
+		synchronized (activatedTabs) {
+			return activatedTabs.contains(tab);
+		}
+	}
+
 }

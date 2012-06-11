@@ -17,28 +17,50 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.gui;
 
+import javax.swing.JComponent;
+
+import opendial.arch.Logger;
 
 /**
- * Generic exception thrown in openDial
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *  
- */ 
-public class DialException extends Exception {
-
-	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
-
-	private static final long serialVersionUID = 1L;
+ *
+ */
+@SuppressWarnings("serial")
+public abstract class GUIComponent extends JComponent {
 	
-	/** 
-	 * Create a new openDial exception, with a given message
-	 * 
-	 * @param msg the message for the exception
-	 */
-	public DialException (String msg) {
-		super(msg);
+	String tabTitle;
+	int tabPosition;
+	String tabTip;
+	
+	public GUIComponent(String title, int tabPosition) {
+		this.tabTitle = title;
+		this.tabPosition = tabPosition;
+		this.tabTip = title;
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getTabPosition() {
+		return tabPosition;
+	}
+	
+	public String getTabTitle() {
+		return tabTitle;
+	}
+	
+	public void setTabTip(String tabTip) {
+		this.tabTip = tabTip;
+	}
+	
+	public String getTabTip() {
+		return tabTip;
+	}
+
 }
