@@ -17,28 +17,93 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.bn.distribs;
 
+import java.util.Map;
+
+import opendial.bn.Assignment;
 
 /**
- * Generic exception thrown in openDial
+ * Generic interface for a probability distribution P(X1...Xn|Y1...Yn), 
+ * where X1...Xn,Y1,...Yn are all random variables.  X1...Xn is called the head 
+ * part of the distribution, and Y1...Yn the conditional part.  
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *  
- */ 
-public class DialException extends Exception {
-
-	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
-
-	private static final long serialVersionUID = 1L;
+ *
+ */
+public interface ProbDistribution {
 	
-	/** 
-	 * Create a new openDial exception, with a given message
+
+	/**
+	 * Sample a head assignment from the distribution P(head|condition), given the
+	 * condition.  If no assignment can be sampled (due to e.g. an ill-formed 
+	 * distribution), returns an empty assignment.
 	 * 
-	 * @param msg the message for the exception
+	 * @param condition the condition
+	 * @return the sampled assignment
 	 */
-	public DialException (String msg) {
-		super(msg);
-	}
+	public Assignment sample(Assignment condition);
+	
+	
+	/**
+	 * Returns the probability P(head|condition), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * <p>If one head variable has a continuous range, the method returns the 
+	 * probability mass for the bucket (as defined by the discretisation procedure) 
+	 * in which lies the value given as argument.  
+	 *
+	 * @param condition the conditional assignment
+	 * @param head the head assignment
+	 * @return the associated probability, if one exists.
+	 */
+	public float getProb(Assignment condition, Assignment head);
+	
+	
+	
+	/**
+	 * Returns the probability table for the head variables, given the
+	 * conditional assignment given as argument.
+	 * 
+	 * <p>If a head variable has a continuous range, the values defined
+	 * in the table are based on a discretisation procedure which creates
+	 * a sequence of buckets, each with an approximatively similar
+	 * probability mass.
+	 * 
+	 * 
+	 * @param condition the assignment for the conditional variable
+	 * @return the resulting probability table
+	 */
+	public Map<Assignment,Float> getProbTable(Assignment condition) ;
+	
+	/**
+	 * Checks that the probability distribution is well-formed (all assignments are covered,
+	 * and the probabilities add up to 1.0f)
+	 * 
+	 * @return true is the distribution is well-formed, false otherwise
+	 */
+	public boolean isWellFormed();
+	
+	
+	/**
+	 * Creates a copy of the probability distribution
+	 * 
+	 * @return the copy
+	 */
+	public ProbDistribution copy();
+
+
+
+	/**
+	 * Returns a pretty print representation of the distribution
+	 * 
+	 * @return the pretty print for the distribution
+	 */
+	public String prettyPrint();
+	
+
 }
+
+
