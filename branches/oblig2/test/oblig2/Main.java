@@ -52,6 +52,7 @@ public class Main {
 		DialoguePolicy policy = new BasicPolicy();
 		
 		// starts up the system
-		new DialogueSystem(policy, parameters);
+		DialogueSystem system = new DialogueSystem(policy, parameters);
+		system.start();
 	}
 }

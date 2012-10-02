@@ -23,4 +23,5 @@ grammar = "numbers"
 
 # should be changed to your own policy!
 policy = BasicPolicy()
-DialogueSystem(policy, ConfigParameters(uuid, appname, grammar));
+system = DialogueSystem(policy, ConfigParameters(uuid, appname, grammar))
+system.start();

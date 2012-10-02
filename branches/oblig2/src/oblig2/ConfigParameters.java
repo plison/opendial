@@ -30,7 +30,7 @@ import oblig2.state.RobotPosition.Orientation;
 
 
 /**
- * Repository of various paramters for the dialogue system
+ * Repository of various parameters for the dialogue system
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -44,6 +44,9 @@ public class ConfigParameters {
 	public String grammar;
 	
 	/** OPTIONAL PARAMETERS (can be left as default) */
+	
+	// should we use a gui or not?
+	public boolean activateGUI = true;
 	
 	// temporary files in which to save the audio
 	public String tempASRSoundFile = "tmp/input.au";

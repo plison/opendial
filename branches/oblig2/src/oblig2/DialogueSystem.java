@@ -42,10 +42,10 @@ import oblig2.util.ServerConnection;
  * @version $Date::                      $
  *
  */
-public class DialogueSystem implements DialogueStateListener {
+public class DialogueSystem extends Thread implements DialogueStateListener {
 
 	// logger
-	public static Logger log = new Logger("DialogueSystem", Logger.Level.NORMAL);
+	public static Logger log = new Logger("DialogueSystem", Logger.Level.DEBUG);
 
 	// system parameters
 	ConfigParameters parameters;
@@ -72,15 +72,21 @@ public class DialogueSystem implements DialogueStateListener {
 		// sets the policy and parameters
 		this.policy = policy;
 		this.parameters = parameters;
-
+		
 		// creates the basic state representations
 		dstate = new DialogueState();
 		wstate = new WorldState(parameters);
 		dstate.addListener(this);
-
+	}
+	
+	
+	
+	public void run() {
 		// starts up the GUI and remove connection
 		try {
-		new DialogueSystemGUI(this);
+			if (parameters.activateGUI) {
+				new DialogueSystemGUI(this);
+			}
 		new ServerConnection(this);	
 		}
 		catch (Exception e) {

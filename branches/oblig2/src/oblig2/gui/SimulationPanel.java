@@ -108,6 +108,7 @@ public class SimulationPanel  extends JPanel implements WorldStateListener {
 	 */
 	@Override
 	public void updatedWorldState() {
+		log.debug("updating simulation panel");
 		this.removeAll();
 
 		Image[][] table = new Image[state.getGridSizeX()][state.getGridSizeY()];
@@ -142,7 +143,7 @@ public class SimulationPanel  extends JPanel implements WorldStateListener {
 	 * @return updated table
 	 */
 	private Image[][] addObjectsToTable(Image[][] table) {
-		for (VisualObject obj : state.getVisualObjects()) {
+		for (VisualObject obj : state.getAllObjects()) {
 			if (obj.getX() < state.getGridSizeX() && obj.getY() < state.getGridSizeY()) {
 				if (obj.getShape() == Shape.CUBE && obj.getColour() == Colour.BLUE) {
 					table[obj.getX()][obj.getY()] = cubeCell;

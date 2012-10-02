@@ -48,6 +48,9 @@ To run the Jython code, you can use the following command:
 	(it will only work if you have specified JYTHON_HOME; cf. above)
 	
 
+In both cases, don't forget to change the uuid, appname and grammar to your own 
+parameters (see the code in Main.java or Main.py)!
+
 4) Contact
 ---------------
 

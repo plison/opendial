@@ -38,14 +38,14 @@ import oblig2.state.RobotPosition.Orientation;
 public class WorldState {
 
 	// logger
-	public static Logger log = new Logger("WorldState", Logger.Level.NORMAL);
-	
+	public static Logger log = new Logger("WorldState", Logger.Level.DEBUG);
+
 	// size of the grid for our simulated world
 	int gridSizeX, gridSizeY;
-	
+
 	// robot position
 	RobotPosition robotPos;
-	
+
 	// visual objects
 	Set<VisualObject> objects;
 
@@ -68,7 +68,7 @@ public class WorldState {
 		gridSizeY = parameters.gridSizeY;
 		log.debug("grid: (" + gridSizeX + ", "+ gridSizeY + ")");
 	}
-	
+
 	/**
 	 * Attaches a new listener to the world state
 	 * 
@@ -77,17 +77,17 @@ public class WorldState {
 	public void addListener(WorldStateListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	/**
 	 * Adds a new visual object to the world
 	 * 
 	 * @param obj the object to add
 	 */
-	public void addVisualObject(VisualObject obj) {
+	protected void addVisualObject(VisualObject obj) {
 		objects.add(obj);
 	}
-	
-	
+
+
 	/**
 	 * Returns the robot position
 	 * 
@@ -96,15 +96,81 @@ public class WorldState {
 	public RobotPosition getRobotPosition() {
 		return robotPos;
 	}
-	
+
 	/**
 	 * Returns the set of visual objects
 	 * 
 	 * @return the visual objects
 	 */
-	public Set<VisualObject> getVisualObjects() {
+	public Set<VisualObject> getAllObjects() {
 		return new HashSet<VisualObject>(objects);
 	}
+
+
+	public Set<VisualObject> getObjectsInSight() {
+		Set<VisualObject> objectsInSight = new HashSet<VisualObject>();
+		for (VisualObject o : objects) {
+			int incrX = o.getX() - robotPos.getX();
+			int incrY = o.getY() - robotPos.getY(); 
+			switch (robotPos.getOrientation()) {
+			case NORTH: 
+				if ((incrX == -1 && incrY == 1) || 
+					(incrX == 0 && incrY == 1) || 
+					(incrX == 1 && incrY == 1) || 
+					(incrX == -1 && incrY == 2) ||
+					(incrX == 0 && incrY == 2) || 
+					(incrX == 1 && incrY == 2)) {
+				objectsInSight.add(o);
+			}
+			break;
+			case WEST: if ((incrX == -1 && incrY == -1) || 
+					(incrX == -1 && incrY == 0) || 
+					(incrX == -1 && incrY == 1) || 
+					(incrX == -2 && incrY == 1) ||
+					(incrX == -2 && incrY == 0) || 
+					(incrX == -1 && incrY == -1)) {
+				objectsInSight.add(o);
+			}
+			break;
+			case SOUTH: if ((incrX == -1 && incrY == -1) ||
+					(incrX == 0 && incrY == -1) ||
+					(incrX == 1 && incrY == -1) || 
+					(incrX == -1 && incrY == -2) ||
+					(incrX == 0 && incrY == -2) || 
+					(incrX == 1 && incrY == -2)) {
+				objectsInSight.add(o);
+			}
+			break;
+			case EAST: if ((incrX == 1 && incrY == -1) ||
+					(incrX == 1 && incrY == 0) ||
+					(incrX == 1 && incrY == 1) || 
+					(incrX == 2 && incrY == 1) ||
+					(incrX == 2 && incrY == 0) || 
+					(incrX == 1 && incrY == -1)) {
+				objectsInSight.add(o);
+			}
+			break;
+			}
+		}
+		return objectsInSight;
+	}
+
+
+	/**
+	 * If the robot is carrying an object, returns it.  Else, returns null.
+	 * 
+	 * @return an object or null
+	 */
+	public VisualObject getCarriedObject() {
+		for (VisualObject obj : objects) {
+			if (obj.getX() == robotPos.getX() && obj.getY() == robotPos.getY()) {
+				return obj;
+			}
+		}
+		return null;
+	}
+
+
 
 
 	/**
@@ -115,7 +181,7 @@ public class WorldState {
 	public int getGridSizeX() {
 		return gridSizeX;
 	}
-	
+
 	/**
 	 * Returns the vertical size of the grid
 	 * 
@@ -124,13 +190,13 @@ public class WorldState {
 	public int getGridSizeY() {
 		return gridSizeY;
 	}
-	
+
 
 	// ==============================================================
 	// ACTION EXECUTION METHODS
 	// ==============================================================
 
-	
+
 	/**
 	 * Executes the given action in the world
 	 * 
@@ -170,13 +236,13 @@ public class WorldState {
 		case PICK: pickUpObject(); break ;
 		case PUTDOWN :putDownObject(); break;
 		}
-		
+
 		for (WorldStateListener listener: listeners) {
 			listener.updatedWorldState();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Move robot by a relative increment on the grid
 	 * 
@@ -184,18 +250,18 @@ public class WorldState {
 	 * @param incrY increment on the Y axis
 	 */
 	private void goToRelative (int incrX, int incrY) {
-	
+
 		int newXPos = robotPos.getX() + incrX;
 		int newYPos = robotPos.getY() + incrY;
 		if (newXPos >= gridSizeX || newYPos >= gridSizeY || newXPos < 0 || newYPos < 0) {
-			log.warning("ignoring command, we have to stay inside the grid");
+			log.debug("ignoring command, we have to stay inside the grid");
 			return;
 		}
 		else {
 			VisualObject carriedObject = null;
 			for (VisualObject obj : objects) {
 				if (obj.getX() == newXPos && obj.getY() == newYPos) {
-					log.warning("ignoring command, we cannot enter a grid already occupied by an object");
+					log.debug("ignoring command, we cannot enter a grid already occupied by an object");
 					return;
 				}
 				if (obj.getX() == robotPos.getX() && obj.getY() == robotPos.getY()) {
@@ -209,13 +275,13 @@ public class WorldState {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Picks up the object in front of the robot (if any)
 	 */
 	private void pickUpObject() {
-		
+
 		int expectedObjXPos;
 		int expectedObjYPos;
 		switch (robotPos.getOrientation()) {
@@ -225,28 +291,26 @@ public class WorldState {
 		case EAST: expectedObjXPos = robotPos.getX() +1 ; expectedObjYPos = robotPos.getY() ; break;
 		default: return ;
 		}
-		boolean found = false;
-		for (VisualObject obj : objects) {
-			if (obj.getX() == expectedObjXPos && obj.getY() == expectedObjYPos) {
-				log.debug("found object to pick up");
-				obj.setPosition(robotPos.getX(), robotPos.getY());
-				found = true;
+		if (getCarriedObject() == null) {	
+			boolean found = false;
+			for (VisualObject obj : objects) {
+				if (obj.getX() == expectedObjXPos && obj.getY() == expectedObjYPos) {
+					log.debug("found object to pick up");
+					obj.setPosition(robotPos.getX(), robotPos.getY());
+					found = true;
+				}
 			}
-			if (obj.getX() == robotPos.getX() && obj.getY() == robotPos.getY()) {
-				log.debug("already carrying an object, ignoring the command");
-				return; 
+			if (!found) {
+				log.debug("found no object to pick up, ignoring command");
 			}
-		}
-		if (!found) {
-			log.warning("found no object to pick up, ignoring command");
 		}
 	}
-	
+
 	/**
 	 * Puts down the object in front of the robot (if any)
 	 */
 	private void putDownObject() {
-		
+
 		int expectedObjXPos;
 		int expectedObjYPos;
 		switch (robotPos.getOrientation()) {
@@ -257,13 +321,13 @@ public class WorldState {
 		default: return ;
 		}
 		if (expectedObjXPos >= gridSizeX || expectedObjYPos >= gridSizeY || expectedObjXPos < 0 || expectedObjYPos < 0 ) {
-			log.warning("cannot put down object there (must be inside the grid), ignoring command");
+			log.debug("cannot put down object there (must be inside the grid), ignoring command");
 			return;
 		}
 		VisualObject objToPutDown = null;
 		for (VisualObject obj : objects) {
 			if (obj.getX() == expectedObjXPos && obj.getY() == expectedObjYPos) {
-				log.warning("object already placed there, cannot put a second object at this place");
+				log.debug("object already placed there, cannot put a second object at this place");
 				return;
 			}
 			if (obj.getX() == robotPos.getX() && obj.getY() == robotPos.getY()) {
