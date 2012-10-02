@@ -56,7 +56,7 @@ import oblig2.util.Logger;
 @SuppressWarnings("serial")
 public class SimulationPanel  extends JPanel implements WorldStateListener {
 
-	public static Logger log = new Logger("SimulationPanel", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SimulationPanel", Logger.Level.NORMAL);
 
 	// images for the simulation
 	Image basicCell;

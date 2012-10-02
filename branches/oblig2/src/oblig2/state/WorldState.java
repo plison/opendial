@@ -38,7 +38,7 @@ import oblig2.state.RobotPosition.Orientation;
 public class WorldState {
 
 	// logger
-	public static Logger log = new Logger("WorldState", Logger.Level.DEBUG);
+	public static Logger log = new Logger("WorldState", Logger.Level.NORMAL);
 
 	// size of the grid for our simulated world
 	int gridSizeX, gridSizeY;

@@ -62,6 +62,8 @@ public class ConfigParameters {
 	public int gridSizeX = 5, gridSizeY = 5;
 	
 	// number of elements in N-Best list
+	// The results given by AT&T don't seem to make a lot of sense regarding
+	// confidence scores, so we'll simply use the first N-Best
 	public int nbest = 1;
 	
 	// initial robot position
