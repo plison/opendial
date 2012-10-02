@@ -1,0 +1,122 @@
+
+<!-- ANT build file for the oblig2 project -->
+<project name="oblig2" default="compile" basedir=".">
+	<description>build file for oblig2</description>
+	  
+	<!-- set global properties for this build -->
+	  <property name="src" location="src"/>	  
+	  <property name="testsrc" location="test"/>	  
+	<property name="javadoc" location="doc/javadoc"/>
+	<property name="testreports" location="doc/testreports"/>
+	<property name="build" location="bin"/>
+	<property name="lib" location="lib"/>
+	
+	<property environment="env"/>
+	<property name="JYTHON_HOME" value="${env.JYTHON_HOME}"/>
+
+	<path id="compile.classpath">
+		<fileset dir="${lib}">
+		    <include name="*.jar" /> 
+		</fileset> 
+	      <pathelement path="${build}"/> 
+		
+		<pathelement path="${JYTHON_HOME}/jython.jar"/>
+	</path>
+
+	
+	<!-- INITIALISATION -->
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+	 	 <mkdir dir="${build}"/> 
+	</target>
+
+	<!-- COMPILATION -->
+	<target name="compile" depends="init" description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+			<classpath refid="compile.classpath"/>
+		</javac>
+		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false">
+	  		<classpath refid="compile.classpath"/>
+		</javac>
+	</target>
+ 
+	<!-- GENERATE DISTRIBUTION -->
+	<target name="distribute" depends="compile" description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${lib}"/>
+		<!-- Put everything in ${build} into the oblig2-${DSTAMP}.jar file -->
+		<jar jarfile="${lib}/oblig2{DSTAMP}.jar" basedir="${build}"/>
+	</target>
+
+	
+	<!-- JUNIT TESTING AND REPORT GENERATION -->
+	<target name="junit" depends="junit-run,junit-report" description="junit testing" />
+
+	<target name="junit-run" depends="compile">
+		<mkdir dir="${testreports}"/>
+		<junit printsummary="yes" haltonfailure="no" showoutput="no">
+			<classpath refid="compile.classpath"/>
+		 	<batchtest fork="yes" todir="${testreports}">
+				<formatter type="xml"/>
+		 		<fileset dir="${testsrc}">
+					<include name="**/*Test*.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+		
+	<target name="junit-report">
+		<junitreport todir="${testreports}" >
+			<fileset dir="${testreports}" includes="TEST-*.xml"/>
+			<report format="frames" todir="${testreports}"/>
+		</junitreport>
+	</target>	
+	
+	<target name="run" depends="run_java"/>
+	
+	<target name="run_java" description="Runs the Main class to start the dialogue system" depends="compile">
+			<java classname="oblig2.Main" fork="yes">
+				<classpath refid="compile.classpath"/>
+			</java>
+	</target>
+	
+	<target name="run_jython" description="Runs the Main.py Jython script to start the dialogue system" depends="compile">
+	  	<java classname="org.python.util.jython" args="test/oblig2/Main.py" fork="yes">
+			<classpath refid="compile.classpath"/>
+	  		</java>
+	</target>
+	  	
+	<!-- JAVADOC GENERATION -->
+	<target name="javadoc">
+	    <javadoc
+	          access="public"
+	           destdir="${javadoc}"
+	           author="true"
+	           version="true"
+	           use="true"
+	           windowtitle="oblig2 API" 
+	    	verbose="no">
+
+	    	<fileset dir="${src}" defaultexcludes="yes">
+	        	<include name="**/*.java"/>
+	        </fileset>
+	    </javadoc>
+	</target>
+	
+	
+	<!-- FIRE ALL TASKS (COMPILATION, DISTRIBUTION, JUNIT TESTING, JAVADOC GENERATION) -->
+	<target name="all" depends="compile,distribute,junit,javadoc"/>
+	
+	<!-- CLEANING UP -->
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${javadoc}"/>
+		<delete dir="${testreports}"/>
+	</target>
+
+</project>
+
