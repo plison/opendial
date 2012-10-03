@@ -43,6 +43,15 @@ import javax.sound.sampled.AudioFileFormat;
 import oblig2.ConfigParameters;
 import oblig2.gui.SoundLevelMeter;
 
+
+/**
+ * Class for recording 8000 Hz, 16 bit audio from the microphone.
+ * 
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
+ */
 public class AudioRecorder extends Thread {
 
 	public static Logger log = new Logger("AudioRecorder", Logger.Level.NORMAL);

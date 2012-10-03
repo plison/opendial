@@ -51,10 +51,14 @@ import javax.sound.sampled.SourceDataLine;
 
 
 
-/*	If the compilation fails because this class is not available,
-	get gnu.getopt from the URL given in the comment below.
-*/
-
+/**
+ * Class for playing audio files.
+ * 
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
+ */
 public class AudioPlayer extends Thread
 {
 	
