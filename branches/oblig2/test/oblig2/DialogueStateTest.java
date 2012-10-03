@@ -1,4 +1,3 @@
-
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
@@ -20,131 +19,64 @@
 
 package oblig2;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.*;
 
+import java.io.File;
+
+import oblig2.state.DialogueState;
 import oblig2.util.Logger;
 
+import org.junit.Test;
+
 /**
- * Representation of an N-Best list provided by the speech recogniser
+ * Some JUnit testing for the dialogue state
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class NBest {
+public class DialogueStateTest {
 
-	// logger
-	public static Logger log = new Logger("NBest", Logger.Level.NORMAL);
+	public static Logger log = new Logger("DialogueStateTest", Logger.Level.DEBUG);
+
+	// AT&T parameters
+	static String uuid = "F9A9D13BC9A811E1939C95CDF95052CC";
+	static String	appname = "def001";
+	static String	grammar = "numbers";
 	
-	// list of ordered hypotheses in N-Best list
-	List<Hypothesis> hypotheses;
-	
-	/**
-	 * Creates a new, empty N-Best list
-	 */
-	public NBest () {
-		hypotheses = new ArrayList<Hypothesis>();
-	}
-	
-	/**
-	 * Creates an N-Best list with a single hypothesis
-	 * 
-	 * @param hyp the hypothesis
-	 * @param conf its confidence score
-	 */
-	public NBest (String hyp, float conf) {
-		this();
-		addHypothesis(hyp, conf);
-	}
-	
-	/**
-	 * Adds a new hypothesis to the N-Best list
-	 * 
-	 * @param hyp the hypothesis
-	 * @param conf its confidence score
-	 */
-	public void addHypothesis(String hyp, float conf) {
-		hypotheses.add(new Hypothesis (hyp, conf));
-	}
-	
-	/**
-	 * Returns the list of hypotheses included in the N-Best list
-	 * 
-	 * @return the hypotheses
-	 */
-	public List<Hypothesis> getHypotheses() {
-		return hypotheses;
-	}
-	
-	/**
-	 * Returns a string representation of the N-Best list
-	 *
-	 * @return the string
-	 */
-	public String toString() {
-		String s = "";
-		for (Hypothesis hyp : hypotheses) {
-			s += hyp + "\n";
-		}
-		return s.substring(0, s.length()-1);
-	}
-	
-	
-	/**
-	 * Representation of a single recognition hypothesis, made of a string 
-	 * and an associated confidence score.
-	 *
-	 */
-	public final class Hypothesis {
+
+	@Test
+	public void basicTest() throws InterruptedException {
 		
-		// the string
-		String hyp;
+		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
+		parameters.activateGUI = false;
+		parameters.doTesting = false;
+		parameters.activateSound = false;
+
+		DialoguePolicy policy = new BasicPolicy();
 		
-		// the confidence score
-		float conf;
+		DialogueSystem system = new DialogueSystem(policy, parameters);
+		system.start();
 		
-		/**
-		 * Creates a new hypothesis
-		 * 
-		 * @param hyp the hypothesis
-		 * @param conf the confidence score
-		 */
-		public Hypothesis (String hyp, float conf) {
-			this.hyp = hyp;
-			this.conf = conf;
-		}
+		DialogueState dstate = system.getDialogueState();
+		assertTrue(dstate.getDialogueHistory().isEmpty());
+
+		// just waiting for the speech recogniser to connect to the dialogue state
+		Thread.sleep(80);
 		
-		/**
-		 * Returns a string representation of the hypothesis
-		 *
-		 * @return the string
-		 */
-		public String toString() {
-			String s = hyp;
-			if (conf < 1.0) {
-				s += " (" + conf + ")";
-			}
-			return s;
-		}
+		dstate.newSpeechSignal(new File(parameters.testASRFile));
 		
-		/**
-		 * Returns the string hypothesis (without score)
-		 * 
-		 * @return the hypothesis
-		 */
-		public String getString() {
-			return hyp;
-		}
+		assertEquals(2, dstate.getDialogueHistory().size());
+		assertEquals("one two three four five", dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getString());
+		assertEquals(1, dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().size());
+		assertEquals(1.0f, dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getConf(), 0.0001f);
+		assertEquals("user", dstate.getDialogueHistory().get(0).getAgent());
+		
+		assertEquals("you said: one two three four five", dstate.getDialogueHistory().get(1).getUtterance().getHypotheses().get(0).getString());
+		assertEquals(1, dstate.getDialogueHistory().get(1).getUtterance().getHypotheses().size());
+		assertEquals(1.0f, dstate.getDialogueHistory().get(1).getUtterance().getHypotheses().get(0).getConf(), 0.0001f);
+		assertEquals("robot", dstate.getDialogueHistory().get(1).getAgent());
 		
 		
-		/**
-		 * Returns the confidence score for the hypothesis
-		 * 
-		 * @return the score
-		 */
-		public float getConf() {
-			return conf;
-		}
 	}
 }

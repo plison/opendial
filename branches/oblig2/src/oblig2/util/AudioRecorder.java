@@ -41,6 +41,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.AudioFileFormat;
 
 import oblig2.ConfigParameters;
+import oblig2.gui.SoundLevelMeter;
 
 public class AudioRecorder extends Thread {
 
@@ -53,12 +54,24 @@ public class AudioRecorder extends Thread {
 	private AudioInputStream	m_audioInputStream;
 	private File			m_outputFile;
 	
+	SoundLevelMeter levelMeter;
+	
 
 	public AudioRecorder(ConfigParameters parameters) {
 		m_outputFile = new File(parameters.tempASRSoundFile);
 	}
 
+	
+	/**
+	 * Attaches a level meter to the recorder
+	 * 
+	 * @param meter the meter to attach
+	 */
+	public void attachLevelMeter(SoundLevelMeter meter) {
+		this.levelMeter = meter;
+	}
 
+	
 	/** Starts the recording.
 	    To accomplish this, (i) the line is started and (ii) the
 	    thread is started.
@@ -113,6 +126,30 @@ public class AudioRecorder extends Thread {
 		}
 		};
 		t.start();
+		
+		
+		// update the volume level
+		Thread t2 = new Thread() { public void run() {
+			try {
+			while (m_line.isOpen() && levelMeter != null) {
+				byte tempBuffer[] = new byte[200];
+				int cnt = m_line.read(tempBuffer, 0, tempBuffer.length);
+				if(cnt > 0){
+				levelMeter.updateVolume(calculateRMSLevel(tempBuffer));
+				}
+				Thread.sleep(50);
+			}
+			if (levelMeter != null) {
+			levelMeter.updateVolume(0);
+			}
+			} catch (InterruptedException e) {			}
+			
+		}
+		};
+		t2.start();
+		
+		
+	
 	}
  
 	/** Stops the recording.
@@ -136,6 +173,30 @@ public class AudioRecorder extends Thread {
 	}
 
 
+	/**
+	 * Calculate the noise level on the microphone
+	 * 
+	 * @param audioData buffer of audio date
+	 * @return the RMS sound level
+	 */
+	private double calculateRMSLevel(byte[] audioData)
+	{ 
+	// audioData might be buffered data read from a data line
+
+	long lSum = 0;
+	for(int i=0; i < audioData.length; i++)
+	lSum = lSum + audioData[i];
+
+	double dAvg = lSum / audioData.length;
+
+	double sumMeanSquare = 0d;
+
+	for(int j=0; j < audioData.length; j++)
+	sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+	double averageMeanSquare = sumMeanSquare / audioData.length;
+	return Math.pow(averageMeanSquare,0.5d) + 0.5;
+	}
+	
 
 }
 

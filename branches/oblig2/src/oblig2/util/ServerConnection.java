@@ -79,17 +79,23 @@ public class ServerConnection implements DialogueStateListener {
 		this.state = owner.getDialogueState();
 		state.addListener(this);
 
+		if (parameters.doTesting) {
+			testRecognition();
+		}
+	}
+
+	
+	private void testRecognition() throws Exception {
 		log.info("testing connection to AT&T servers...");
 		NBest nbest = recognise(new File(parameters.testASRFile));
-		if (nbest.getHypotheses().isEmpty() || !nbest.getHypotheses().get(0).getString().contains("one two three four five")) {
+		if (nbest.getHypotheses().isEmpty() || 
+				!nbest.getHypotheses().get(0).getString().contains("one two three four five")) {
 			throw new Exception ("Error, connection with AT&T servers could not be established");
 		}
 		else {
 			log.debug("connection successfully established");
 		}
 	}
-
-	
 	/**
 	 * Reacts to a new speech signal available for recognition by triggering
 	 * the connection to the AT&T server
@@ -216,7 +222,9 @@ public class ServerConnection implements DialogueStateListener {
 			out.close();
 			in.close();
 
+			if (parameters.activateSound) {
 			(new AudioPlayer(parameters.tempTTSSoundFile)).start();
+			}
 		}
 		catch (Exception e) {
 			log.severe("Synthesis error"+ e.toString() + ", TTS operation is discarded");

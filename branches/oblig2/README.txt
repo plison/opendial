@@ -51,6 +51,8 @@ To run the Jython code, you can use the following command:
 In both cases, don't forget to change the uuid, appname and grammar to your own 
 parameters (see the code in Main.java or Main.py)!
 
+The Main scripts are located in test/oblig2.
+
 4) Contact
 ---------------
 

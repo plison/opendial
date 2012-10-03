@@ -45,7 +45,7 @@ import oblig2.util.ServerConnection;
 public class DialogueSystem extends Thread implements DialogueStateListener {
 
 	// logger
-	public static Logger log = new Logger("DialogueSystem", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueSystem", Logger.Level.NORMAL);
 
 	// system parameters
 	ConfigParameters parameters;
@@ -74,7 +74,7 @@ public class DialogueSystem extends Thread implements DialogueStateListener {
 		this.parameters = parameters;
 		
 		// creates the basic state representations
-		dstate = new DialogueState();
+		dstate = new DialogueState(parameters);
 		wstate = new WorldState(parameters);
 		dstate.addListener(this);
 	}

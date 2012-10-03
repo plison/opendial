@@ -20,11 +20,11 @@
 package oblig2.state;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
+import oblig2.ConfigParameters;
 import oblig2.NBest;
 import oblig2.actions.DialogueAction;
 import oblig2.util.Logger;
@@ -43,8 +43,10 @@ public class DialogueState {
 	// logger
 	public static Logger log = new Logger("DialogueState", Logger.Level.NORMAL);
 
-	// the ordered list of utterances (both user and system)
-	List<NBest> utterances;	
+	ConfigParameters parameters;
+	
+	// the dialogue history
+	Stack<DialogueTurn> history;	
 	
 	// the listeners attached to this state
 	Set<DialogueStateListener> listeners;
@@ -52,8 +54,9 @@ public class DialogueState {
 	/**
 	 * Creates a new dialogue state with empty history
 	 */
-	public DialogueState() {
-		utterances = new ArrayList<NBest>();
+	public DialogueState(ConfigParameters parameters) {
+		this.parameters = parameters;
+		history = new Stack<DialogueTurn>();
 		listeners = new HashSet<DialogueStateListener>();
 	}
 	
@@ -67,7 +70,7 @@ public class DialogueState {
 	}
 	
 	/**
-	 * Indicates that a new speech signal has been recorderd in an audio
+	 * Indicates that a new speech signal has been recorded in an audio
 	 * file, and informs its listeners
 	 */
 	public void newSpeechSignal(File audioFile) { 
@@ -84,7 +87,7 @@ public class DialogueState {
 	 * @param u_u the user utterance
 	 */
 	public void addUserUtterance(NBest u_u) {
-		utterances.add(u_u);
+		history.add(new DialogueTurn(parameters.username, u_u));
 		for (DialogueStateListener listener: listeners) {
 			listener.processUserInput(u_u);
 		}
@@ -97,9 +100,108 @@ public class DialogueState {
 	 * @param u_m the system utterance (action)
 	 */
 	public void executeAction(DialogueAction u_m) {
-		utterances.add(new NBest(u_m.getUtterance(), 1.0f));
+		DialogueTurn systemTurn = new DialogueTurn(parameters.machinename, new NBest(u_m.getUtterance(), 1.0f));
+		history.add(systemTurn);
 		for (DialogueStateListener listener: listeners) {
 			listener.processSystemOutput(u_m);
+		}
+	}
+	
+	
+	/**
+	 * Returns the dialogue history recorded by the system.
+	 * 
+	 * @return the dialogue history
+	 */
+	public Stack<DialogueTurn> getDialogueHistory() {
+		return history;
+	}
+	
+	
+	/**
+	 * Returns a string representation of the dialogue state
+	 *
+	 * @return the string
+	 */
+	public String toString() {
+		String s = "";
+		for (DialogueTurn turn : history) {
+			s += turn.toString() + "\n";
+		}
+		return s;
+	}
+	
+	
+	
+	/**
+	 * Representation of a dialogue turn, which can be either from the user
+	 * or from the system.  The turn contains the name of the agent, its
+	 * utterance (as N-Best list), and the timing of the utterance as recorded 
+	 * in the dialogue history.
+	 * 
+	 *
+	 */
+	public final class DialogueTurn {
+		
+		// name of the agent
+		String agent;
+		
+		// the utterance
+		NBest utterance;
+		
+		// utterance timing
+		long time;
+		
+		
+		
+		/**
+		 * Creates a new dialogue turn
+		 * 
+		 * @param agent name of the agent
+		 * @param utterance the utterance
+		 */
+		public DialogueTurn(String agent, NBest utterance) {
+			this.agent = agent;
+			this.utterance = utterance;
+			time = System.currentTimeMillis();
+		}
+		
+		/**
+		 * Returns the name of the agent
+		 * 
+		 * @return the agent
+		 */
+		public String getAgent() {
+			return agent;
+		}
+		
+		
+		/**
+		 * Returns the utterance for the turn (as an N-Best list)
+		 * 
+		 * @return the utterance
+		 */
+		public NBest getUtterance() {
+			return utterance;
+		}
+		
+		/**
+		 * Returns the timing (in milliseconds) for the utterance
+		 * 
+		 * @return the timing
+		 */
+		public long getTime() {
+			return time;
+		}
+		
+		
+		/**
+		 * Returns a string representation of the dialogue turn
+		 *
+		 * @return the string
+		 */
+		public String toString() {
+			return getAgent() + ":\t" + getUtterance();
 		}
 	}
 	

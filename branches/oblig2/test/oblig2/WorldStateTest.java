@@ -52,6 +52,8 @@ public class WorldStateTest {
 
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
 		parameters.activateGUI = false;
+		parameters.doTesting = false;
+		parameters.activateSound = false;
 		
 		DialoguePolicy policy = new BasicPolicy();
 		
@@ -126,7 +128,9 @@ public class WorldStateTest {
 
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
 		parameters.activateGUI = false;
-		
+		parameters.doTesting = false;
+		parameters.activateSound = false;
+
 		DialoguePolicy policy = new BasicPolicy();
 		
 		DialogueSystem system = new DialogueSystem(policy, parameters);
@@ -218,7 +222,9 @@ public class WorldStateTest {
 
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
 		parameters.activateGUI = false;
-		
+		parameters.doTesting = false;
+		parameters.activateSound = false;
+	
 		DialoguePolicy policy = new BasicPolicy();
 		
 		DialogueSystem system = new DialogueSystem(policy, parameters);
@@ -378,7 +384,9 @@ public class WorldStateTest {
 		
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
 			parameters.activateGUI = false;
-			
+			parameters.doTesting = false;
+			parameters.activateSound = false;
+
 			DialoguePolicy policy = new BasicPolicy();
 			
 			DialogueSystem system = new DialogueSystem(policy, parameters);

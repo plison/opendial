@@ -1,4 +1,3 @@
-
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
@@ -18,133 +17,67 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package oblig2;
+package oblig2.gui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
-import oblig2.util.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
+import oblig2.util.AudioRecorder;
+
 
 /**
- * Representation of an N-Best list provided by the speech recogniser
+ * Small panel to indicate the current sound level captured by the microphone
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class NBest {
+@SuppressWarnings("serial")
+public class SoundLevelMeter extends JPanel {
 
-	// logger
-	public static Logger log = new Logger("NBest", Logger.Level.NORMAL);
+	private int volume = 0;
 	
-	// list of ordered hypotheses in N-Best list
-	List<Hypothesis> hypotheses;
-	
+	AudioRecorder recorder;
+		
 	/**
-	 * Creates a new, empty N-Best list
-	 */
-	public NBest () {
-		hypotheses = new ArrayList<Hypothesis>();
-	}
-	
-	/**
-	 * Creates an N-Best list with a single hypothesis
+	 * Attaches the meter to the recorder
 	 * 
-	 * @param hyp the hypothesis
-	 * @param conf its confidence score
+	 * @param recorder the recorder
 	 */
-	public NBest (String hyp, float conf) {
-		this();
-		addHypothesis(hyp, conf);
+	public SoundLevelMeter(AudioRecorder recorder) {
+		recorder.attachLevelMeter(this);
 	}
 	
 	/**
-	 * Adds a new hypothesis to the N-Best list
+	 * Updates the meter volume
 	 * 
-	 * @param hyp the hypothesis
-	 * @param conf its confidence score
+	 * @param d
 	 */
-	public void addHypothesis(String hyp, float conf) {
-		hypotheses.add(new Hypothesis (hyp, conf));
+	public void updateVolume(double d) {
+		volume =(int) d;
+		repaint();
 	}
 	
 	/**
-	 * Returns the list of hypotheses included in the N-Best list
-	 * 
-	 * @return the hypotheses
-	 */
-	public List<Hypothesis> getHypotheses() {
-		return hypotheses;
-	}
-	
-	/**
-	 * Returns a string representation of the N-Best list
+	 * Repaint
 	 *
-	 * @return the string
+	 * @param gg
 	 */
-	public String toString() {
-		String s = "";
-		for (Hypothesis hyp : hypotheses) {
-			s += hyp + "\n";
-		}
-		return s.substring(0, s.length()-1);
+	public void paintComponent(Graphics gg) {
+		gg.setColor(Color.GREEN);
+		gg.clearRect(0, 0, 150, 20);
+		gg.fillRect(0,0, volume*2, 20);
 	}
-	
-	
-	/**
-	 * Representation of a single recognition hypothesis, made of a string 
-	 * and an associated confidence score.
-	 *
-	 */
-	public final class Hypothesis {
-		
-		// the string
-		String hyp;
-		
-		// the confidence score
-		float conf;
-		
-		/**
-		 * Creates a new hypothesis
-		 * 
-		 * @param hyp the hypothesis
-		 * @param conf the confidence score
-		 */
-		public Hypothesis (String hyp, float conf) {
-			this.hyp = hyp;
-			this.conf = conf;
-		}
-		
-		/**
-		 * Returns a string representation of the hypothesis
-		 *
-		 * @return the string
-		 */
-		public String toString() {
-			String s = hyp;
-			if (conf < 1.0) {
-				s += " (" + conf + ")";
-			}
-			return s;
-		}
-		
-		/**
-		 * Returns the string hypothesis (without score)
-		 * 
-		 * @return the hypothesis
-		 */
-		public String getString() {
-			return hyp;
-		}
-		
-		
-		/**
-		 * Returns the confidence score for the hypothesis
-		 * 
-		 * @return the score
-		 */
-		public float getConf() {
-			return conf;
-		}
-	}
+
 }

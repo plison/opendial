@@ -48,6 +48,12 @@ public class ConfigParameters {
 	// should we use a gui or not?
 	public boolean activateGUI = true;
 	
+	// do testing beforehand?
+	public boolean doTesting = true;
+	
+	// activate (output) sound
+	public boolean activateSound = true;
+	
 	// temporary files in which to save the audio
 	public String tempASRSoundFile = "tmp/input.au";
 	public String	tempTTSSoundFile = "tmp/output.au";
@@ -71,6 +77,12 @@ public class ConfigParameters {
 	
 	// set of visual objects
 	public Set<VisualObject> initObjects;
+	
+	// name of user
+	public String username = "user";
+	
+	// name of machine
+	public String machinename = "robot";
 	
 	/**
 	 * Creates a new set of configuration parameters

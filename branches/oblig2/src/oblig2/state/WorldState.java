@@ -337,7 +337,7 @@ public class WorldState {
 		}
 		if (objToPutDown != null) {
 			objToPutDown.setPosition(expectedObjXPos, expectedObjYPos);
-			log.info("object is put down on the floor");
+			log.debug("object is put down on the floor");
 		}
 	}
 }

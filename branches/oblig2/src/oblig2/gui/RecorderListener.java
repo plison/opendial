@@ -63,6 +63,16 @@ public class RecorderListener implements MouseListener {
 	
 	
 	/**
+	 * Returns the recorder associated with the listener
+	 * 
+	 * @return the recorder
+	 */
+	public AudioRecorder getRecorder() {
+		return recorder;
+	}
+	
+	
+	/**
 	 * Starts the recording 
 	 *
 	 * @param e mouse event (ignored)
