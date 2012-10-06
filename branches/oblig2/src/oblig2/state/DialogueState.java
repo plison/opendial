@@ -19,9 +19,10 @@
 
 package oblig2.state;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -50,7 +51,7 @@ public class DialogueState {
 	Stack<DialogueTurn> history;	
 	
 	// the listeners attached to this state
-	Set<DialogueStateListener> listeners;
+	List<DialogueStateListener> listeners;
 	
 	/**
 	 * Creates a new dialogue state with empty history
@@ -58,7 +59,7 @@ public class DialogueState {
 	public DialogueState(ConfigParameters parameters) {
 		this.parameters = parameters;
 		history = new Stack<DialogueTurn>();
-		listeners = new HashSet<DialogueStateListener>();
+		listeners = new LinkedList<DialogueStateListener>();
 	}
 	
 	/**
@@ -67,7 +68,7 @@ public class DialogueState {
 	 * @param listener the listener
 	 */
 	public void addListener(DialogueStateListener listener) {
-		listeners.add(listener);
+		listeners.add(0,listener);
 	}
 	
 	/**

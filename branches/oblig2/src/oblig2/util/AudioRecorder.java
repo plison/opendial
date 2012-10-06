@@ -31,13 +31,8 @@ package oblig2.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
@@ -47,7 +42,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.AudioFileFormat;
 
-import oblig2.ConfigParameters;
 import oblig2.gui.SoundLevelMeter;
 
 

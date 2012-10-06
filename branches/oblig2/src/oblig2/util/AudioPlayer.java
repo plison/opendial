@@ -34,13 +34,9 @@
 
 package oblig2.util;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.net.URL;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

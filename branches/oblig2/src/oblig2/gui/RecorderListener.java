@@ -21,11 +21,7 @@ package oblig2.gui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.sound.sampled.LineUnavailableException;
 

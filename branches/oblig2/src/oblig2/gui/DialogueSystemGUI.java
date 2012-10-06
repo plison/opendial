@@ -5,15 +5,9 @@ package oblig2.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -133,7 +127,8 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 		InputStream stream = recorder.getInputStream();
 		int length = 0 ;
 		byte[] buffer = new byte[4096];  
-		for (int n; (n = stream.read(buffer)) != -1; )  { 
+		for (@SuppressWarnings("unused")
+		int n; (n = stream.read(buffer)) != -1; )  { 
 			length += buffer.length;
 		}
 		if (length < 5000) {

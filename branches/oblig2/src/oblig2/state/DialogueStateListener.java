@@ -19,7 +19,6 @@
 
 package oblig2.state;
 
-import java.io.File;
 import java.io.InputStream;
 
 import oblig2.NBest;
