@@ -22,8 +22,15 @@ package oblig2.gui;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.sound.sampled.LineUnavailableException;
 
 import oblig2.DialogueSystem;
+import oblig2.util.AudioCommon;
 import oblig2.util.AudioRecorder;
 import oblig2.util.Logger;
 
@@ -39,10 +46,10 @@ public class RecorderListener implements MouseListener {
 
 	// logger
 	public static Logger log = new Logger("RecorderListener", Logger.Level.NORMAL);
-	
+
 	// dialogue system owner
 	DialogueSystem owner; 
-	
+
 	// the audio recorder itself
 	AudioRecorder recorder;
 
@@ -57,11 +64,11 @@ public class RecorderListener implements MouseListener {
 	 * @param dstate the dialogue state
 	 */
 	public RecorderListener(DialogueSystem owner) {
-		this.recorder = new AudioRecorder(owner.getParameters());
+		this.recorder = new AudioRecorder();
 		this.owner = owner;
 	}
-	
-	
+
+
 	/**
 	 * Returns the recorder associated with the listener
 	 * 
@@ -70,8 +77,8 @@ public class RecorderListener implements MouseListener {
 	public AudioRecorder getRecorder() {
 		return recorder;
 	}
-	
-	
+
+
 	/**
 	 * Starts the recording 
 	 *
@@ -79,7 +86,15 @@ public class RecorderListener implements MouseListener {
 	 */
 	public void mousePressed(MouseEvent e) { 
 		startTime = System.currentTimeMillis() ;
-		recorder.startRecording();
+		try {
+			recorder.startRecording();
+		}
+		catch (LineUnavailableException e1) {
+			log.warning("Unable to get a recording line, aborting (please check " +
+			"that your microphone is connected!)");
+		} catch (IOException e2) {
+			log.warning("Unable to write audio data to file " + owner.getParameters().tempASRSoundFile);
+		}
 	}
 
 	/**
@@ -92,16 +107,20 @@ public class RecorderListener implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		recorder.stopRecording();  
 		if (System.currentTimeMillis() - startTime > owner.getParameters().minimumRecordingTime) {
-			owner.getDialogueState().newSpeechSignal(new File(owner.getParameters().tempASRSoundFile));
+			owner.getDialogueState().newSpeechSignal(recorder.getInputStream());
+			
+			// writing stream to file
+			AudioCommon.writeToFile(recorder.getInputStream(), owner.getParameters().tempASRSoundFile);
 		}
 		else {
 			log.info("recording is discarded: too short duration ( < 1s)");
 		}
 	}
 	
-	
+
+
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseClicked(MouseEvent e) {}
-	
+
 }

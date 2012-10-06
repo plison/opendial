@@ -84,6 +84,9 @@ public class NBest {
 	 */
 	public String toString() {
 		String s = "";
+		if (hypotheses.isEmpty()) {
+			return "";
+		}
 		for (Hypothesis hyp : hypotheses) {
 			s += hyp + "\n";
 		}

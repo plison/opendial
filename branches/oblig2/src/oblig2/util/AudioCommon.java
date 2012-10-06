@@ -35,6 +35,9 @@
 package oblig2.util;
 
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -251,5 +254,24 @@ public class AudioCommon
 	}
 
 
+	
+	/**
+	 * Writing the data in the stream to a file
+	 * 
+	 * @param istream the stream
+	 * @param filename the file
+	 */
+	public static void writeToFile(InputStream istream, String filename) {
+		try {
+			FileOutputStream fileStream = new FileOutputStream(filename);
+			byte[] buffer = new byte[4096];  
+			for (int n; (n = istream.read(buffer)) != -1; )  { 
+				fileStream.write(buffer, 0, n);  
+			}
+			fileStream.close(); 
+		} catch (Exception e1) {
+			out("problem with file " + filename + ", skipping the operation");
+		}
+	}
 
 }

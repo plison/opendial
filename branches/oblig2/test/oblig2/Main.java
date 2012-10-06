@@ -47,7 +47,7 @@ public class Main {
 		
 		// basic parameters
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
-
+		
 		// should be changed to your own policy!
 		DialoguePolicy policy = new BasicPolicy();
 		

@@ -20,6 +20,7 @@
 package oblig2;
 
 import java.io.File;
+import java.io.InputStream;
 
 import oblig2.actions.Action;
 import oblig2.actions.CompoundAction;
@@ -90,7 +91,8 @@ public class DialogueSystem extends Thread implements DialogueStateListener {
 		new ServerConnection(this);	
 		}
 		catch (Exception e) {
-			log.warning("fatal error while starting up the system, must exit. Reason: " + e.toString());
+			log.severe("fatal error while starting up the system, must exit. Reason: " + e.toString());
+			System.exit(1);
 		}
 	}
 
@@ -138,7 +140,7 @@ public class DialogueSystem extends Thread implements DialogueStateListener {
 	 * Does nothing
 	 */
 	@Override
-	public void newSpeechSignal(File audioFile) {	}
+	public void newSpeechSignal(InputStream istream) {	}
 	
 
 

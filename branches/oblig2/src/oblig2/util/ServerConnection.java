@@ -22,6 +22,8 @@ package oblig2.util;
 
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +31,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -87,22 +91,25 @@ public class ServerConnection implements DialogueStateListener {
 	
 	private void testRecognition() throws Exception {
 		log.info("testing connection to AT&T servers...");
-		NBest nbest = recognise(new File(parameters.testASRFile));
+		NBest nbest = recognise(new FileInputStream(new File(parameters.testASRFile)));
 		if (nbest.getHypotheses().isEmpty() || 
 				!nbest.getHypotheses().get(0).getString().contains("one two three four five")) {
-			throw new Exception ("Error, connection with AT&T servers could not be established");
+			throw new Exception ("Error, connection with AT&T servers could not be established.  " +
+					"Please check that you have Internet access.");
 		}
 		else {
 			log.debug("connection successfully established");
 		}
 	}
+	
+	
 	/**
 	 * Reacts to a new speech signal available for recognition by triggering
 	 * the connection to the AT&T server
 	 */
 	@Override
-	public void newSpeechSignal(File audioFile) {
-		NBest nbest = recognise(audioFile); 
+	public void newSpeechSignal(InputStream istream) {
+		NBest nbest = recognise(istream); 
 		log.debug("recognition complete, results: " + nbest);
 		state.addUserUtterance(nbest);
 	}
@@ -126,15 +133,16 @@ public class ServerConnection implements DialogueStateListener {
 	
 	/**
 	 * Performs remote speech recognition on the AT&T server, by posting the audio
-	 * file and waiting for the answer
+	 * stream and waiting for the answer
 	 * 
 	 * @param filename filename for the audio file to send
 	 * @return the N-Best list, if one could be received
 	 */
-	protected NBest recognise(File audioFile) {
+	protected NBest recognise(InputStream istream) {
 		log.info("calling AT&T server...\t");       
-
+		
 		try {
+
 			log.debug("open up connection");
 			URL url = new URL("http://service.research.att.com/smm/watson" + 
 					"?uuid="+parameters.uuid
@@ -151,15 +159,13 @@ public class ServerConnection implements DialogueStateListener {
 
 			OutputStream out = conn.getOutputStream();
 
-			FileInputStream fin = new FileInputStream(audioFile);
-
 			byte[] data = new byte[1024];
 			int read = 0;
-			while ((read=fin.read(data)) != -1) {
+			while ((read=istream.read(data)) != -1) {
 				out.write(data, 0, read);
 			}
 
-			fin.close();
+			istream.close();
 			out.close();
 			log.debug("finished sending audio");
 
@@ -212,7 +218,7 @@ public class ServerConnection implements DialogueStateListener {
 			// Get the response
 			InputStream in = conn.getInputStream();
 
-			OutputStream out = new FileOutputStream(parameters.tempTTSSoundFile);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 			byte[] data = new byte[1024];
 			int read = 0;
@@ -223,8 +229,10 @@ public class ServerConnection implements DialogueStateListener {
 			in.close();
 
 			if (parameters.activateSound) {
-			(new AudioPlayer(parameters.tempTTSSoundFile)).start();
+			(new AudioPlayer(new ByteArrayInputStream(out.toByteArray()))).start();
 			}
+			
+			AudioCommon.writeToFile(new ByteArrayInputStream(out.toByteArray()), parameters.tempTTSSoundFile);
 		}
 		catch (Exception e) {
 			log.severe("Synthesis error"+ e.toString() + ", TTS operation is discarded");

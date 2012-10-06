@@ -20,6 +20,7 @@
 package oblig2.state;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
@@ -71,11 +72,11 @@ public class DialogueState {
 	
 	/**
 	 * Indicates that a new speech signal has been recorded in an audio
-	 * file, and informs its listeners
+	 * stream, and informs its listeners
 	 */
-	public void newSpeechSignal(File audioFile) { 
+	public void newSpeechSignal(InputStream istream) { 
 		for (DialogueStateListener listener: listeners) {
-			listener.newSpeechSignal(audioFile);
+			listener.newSpeechSignal(istream);
 		}
 	}
 	

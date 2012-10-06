@@ -29,8 +29,15 @@
 package oblig2.util;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
@@ -57,20 +64,15 @@ public class AudioRecorder extends Thread {
 	public static Logger log = new Logger("AudioRecorder", Logger.Level.NORMAL);
 
 	// ugly hard-coding of the audio format (sampling rate of 8000 Hz, 16 bits, 1 channel)
-	AudioFormat	audioFormat = new AudioFormat(8000.0F, 16, 1, true, false);
-	private TargetDataLine		m_line;
-	private AudioFileFormat.Type	m_targetType;
-	private AudioInputStream	m_audioInputStream;
-	private File			m_outputFile;
-	
+	public static AudioFormat	AUDIO_FORMAT = new AudioFormat(8000.0F, 16, 1, true, false);
+	private TargetDataLine		audioLine;
+	private AudioInputStream	audioStream;
+
+	private ByteArrayOutputStream	outputStream;
+
 	SoundLevelMeter levelMeter;
-	
 
-	public AudioRecorder(ConfigParameters parameters) {
-		m_outputFile = new File(parameters.tempASRSoundFile);
-	}
 
-	
 	/**
 	 * Attaches a level meter to the recorder
 	 * 
@@ -80,43 +82,43 @@ public class AudioRecorder extends Thread {
 		this.levelMeter = meter;
 	}
 
-	
-	/** Starts the recording.
-	    To accomplish this, (i) the line is started and (ii) the
-	    thread is started.
+
+	/**
+	 * Starts the recording on a suitable sound line (e.g. microphone), and 
+	 * writes the result in the sound file provided as argument.
+	 * The sound file can be either .AU or .WAV.
+	 * 
+	 * @param outputFile file in which to write the sound data
+	 * @throws LineUnavailableException 
+	 * @throws IOException 
+	 * @throws Exception if the sound cannot be recorded
 	 */
-	public void startRecording() {
+	public void startRecording() throws LineUnavailableException, IOException {
 		log.debug("start recording...\t");
-		
+
 		/* Now, we are trying to get a TargetDataLine. The
 		   TargetDataLine is used later to read audio data from it.
 		   If requesting the line was successful, we are opening
 		   it (important!).
 		 */
-		DataLine.Info	info = new DataLine.Info(TargetDataLine.class, audioFormat);
+		DataLine.Info	info = new DataLine.Info(TargetDataLine.class, AUDIO_FORMAT);
 		TargetDataLine	targetDataLine = null;
-		try {
-			targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
-			targetDataLine.open(audioFormat);
-		}
-		catch (LineUnavailableException e) {
-			log.severe("unable to get a recording line");
-			e.printStackTrace();
-			System.exit(1);
-		}
+		targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
+		targetDataLine.open(AUDIO_FORMAT);
 
-		AudioFileFormat.Type targetType = AudioFileFormat.Type.AU;
 
-		m_line = targetDataLine;
-		m_audioInputStream = new AudioInputStream(targetDataLine);
-		m_targetType = targetType;
-		
+		audioLine = targetDataLine;
+		audioStream = new AudioInputStream(targetDataLine);
+
 		/* Starting the TargetDataLine. It tells the line that
 		   we now want to read data from it. If this method
 		   isn't called, we won't
 		   be able to read data from the line at all.
 		 */
-		m_line.start();
+		audioLine.start();
+		
+		outputStream = new ByteArrayOutputStream();				
+
 
 		/* Starting the thread. This call results in the
 		   method 'run()' (see below) being called. There, the
@@ -124,46 +126,30 @@ public class AudioRecorder extends Thread {
 		 */
 		Thread t = new Thread() { public void run() {
 			try {
-				AudioSystem.write(
-						m_audioInputStream,
-						m_targetType,
-						m_outputFile);
+				AudioSystem.write(audioStream, AudioFileFormat.Type.AU, outputStream);
 			}
 			catch (IOException e) {
 				log.debug("IOException while recording file: " + e.toString());
-			} 
+			}  
 		}
 		};
 		t.start();
+
 		
-		
-		// update the volume level
-		Thread t2 = new Thread() { public void run() {
-			try {
-			while (m_line.isOpen() && levelMeter != null) {
-				byte tempBuffer[] = new byte[200];
-				int cnt = m_line.read(tempBuffer, 0, tempBuffer.length);
-				if(cnt > 0){
-				levelMeter.updateVolume(calculateRMSLevel(tempBuffer));
-				}
-				Thread.sleep(50);
-			}
-			if (levelMeter != null) {
-			levelMeter.updateVolume(0);
-			}
-			} catch (InterruptedException e) {			}
-			
-		}
-		};
-		t2.start();
-		
-		
-	
+		if (levelMeter != null) {
+			levelMeter.monitorVolume(outputStream);
+		} 
 	}
- 
+	
+	
+	public InputStream getInputStream() { 
+		ByteArrayInputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
+		return stream;
+	}
+
 	/** Stops the recording.
 
-	    Note that stopping the thread explicitely is not necessary. Once
+	    Note that stopping the thread explicitly is not necessary. Once
 	    no more data can be read from the TargetDataLine, no more data
 	    be read from our AudioInputStream. And if there is no more
 	    data from the AudioInputStream, the method 'AudioSystem.write()'
@@ -177,35 +163,14 @@ public class AudioRecorder extends Thread {
 	 */
 	public void stopRecording() {
 		log.debug("stopped...\t");
-		m_line.stop();
-		m_line.close();
+		audioLine.stop();
+		audioLine.close();
+		if (levelMeter != null) {
+			levelMeter.stopMonitoring();
+		}
 	}
 
 
-	/**
-	 * Calculate the noise level on the microphone
-	 * 
-	 * @param audioData buffer of audio date
-	 * @return the RMS sound level
-	 */
-	private double calculateRMSLevel(byte[] audioData)
-	{ 
-	// audioData might be buffered data read from a data line
-
-	long lSum = 0;
-	for(int i=0; i < audioData.length; i++)
-	lSum = lSum + audioData[i];
-
-	double dAvg = lSum / audioData.length;
-
-	double sumMeanSquare = 0d;
-
-	for(int j=0; j < audioData.length; j++)
-	sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
-	double averageMeanSquare = sumMeanSquare / audioData.length;
-	return Math.pow(averageMeanSquare,0.5d) + 0.5;
-	}
-	
 
 }
 

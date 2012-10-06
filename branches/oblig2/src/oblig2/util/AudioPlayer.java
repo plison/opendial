@@ -35,6 +35,7 @@
 package oblig2.util;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
@@ -72,23 +73,15 @@ public class AudioPlayer extends Thread
 
 	private static int	DEFAULT_EXTERNAL_BUFFER_SIZE = 128000;
 
-	String filename;
+	InputStream stream;
 
 
-	public AudioPlayer(String filename)   {
-		this.filename = filename;
+	public AudioPlayer(InputStream stream)   {
+		this.stream = stream;
 	}
 	
 	public void run() {
 		try {
-		/** Determines if command line arguments are intereted as URL.
-		    If true, filename arguments on the command line are
-		    interpreted as URL. If false, they are interpreted as
-		    filenames. This flag is set by the command line
-		    option "-u". It is reset by the command line option
-		    "-f".
-		*/
-		boolean	bInterpretFilenameAsUrl = false;
 
 		/** Flag for forcing a conversion.
 		    If set to true, a conversion of the AudioInputStream
@@ -123,27 +116,7 @@ public class AudioPlayer extends Thread
 
 		int	nInternalBufferSize = AudioSystem.NOT_SPECIFIED;
 
-
-		AudioInputStream audioInputStream = null;
-		if (bInterpretFilenameAsUrl)
-		{
-			URL url = new URL(filename);
-			audioInputStream = AudioSystem.getAudioInputStream(url);
-		}
-		else
-		{
-			// Are we requested to use standard input?
-			if (filename.equals("-"))
-			{
-				InputStream inputStream = new BufferedInputStream(System.in);
-				audioInputStream = AudioSystem.getAudioInputStream(inputStream);
-			}
-			else
-			{
-				File file = new File(filename);
-				audioInputStream = AudioSystem.getAudioInputStream(file);
-			}
-		}
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(stream);
 	
 		if (DEBUG) out("AudioPlayer.main(): primary AIS: " + audioInputStream);
 

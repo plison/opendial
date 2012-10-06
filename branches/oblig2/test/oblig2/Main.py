@@ -11,7 +11,10 @@ class BasicPolicy(DialoguePolicy):
 	# in the form of an Action (in this case, a DialogueAction)
 	def processInput(self, nbest, dialstate, worldstate):
 		print "input is " + str(nbest)
-		action = DialogueAction("you said " + nbest.getHypotheses()[0].getString())
+		if not nbest.getHypotheses().isEmpty():
+			action = DialogueAction("you said " + nbest.getHypotheses()[0].getString())
+		else:
+			action = VoidAction()
 		return action
 
 
@@ -23,5 +26,7 @@ grammar = "numbers"
 
 # should be changed to your own policy!
 policy = BasicPolicy()
-system = DialogueSystem(policy, ConfigParameters(uuid, appname, grammar))
+
+params = ConfigParameters(uuid,appname,grammar)
+system = DialogueSystem(policy, params)
 system.start();

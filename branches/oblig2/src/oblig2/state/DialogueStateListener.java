@@ -20,6 +20,7 @@
 package oblig2.state;
 
 import java.io.File;
+import java.io.InputStream;
 
 import oblig2.NBest;
 import oblig2.actions.DialogueAction;
@@ -35,9 +36,9 @@ import oblig2.actions.DialogueAction;
 public interface DialogueStateListener {
 	
 	/**
-	 * Reacts to a new speech signal recorded (as a temporary sound file)
+	 * Reacts to a new speech signal recorded as an input stream
 	 */
-	public void newSpeechSignal(File audioFile);
+	public void newSpeechSignal(InputStream istream);
 
 	/**
 	 * Reacts to a new user utterance recognised by the ASR

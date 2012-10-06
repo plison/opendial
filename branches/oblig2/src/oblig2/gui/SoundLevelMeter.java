@@ -21,19 +21,21 @@ package oblig2.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.TargetDataLine;
 import javax.swing.JPanel;
 
-import oblig2.util.AudioRecorder;
 
 
 /**
@@ -46,29 +48,53 @@ import oblig2.util.AudioRecorder;
 @SuppressWarnings("serial")
 public class SoundLevelMeter extends JPanel {
 
+	// size of the buffer to calculate the volume
+	public static final int BUFFER_SIZE = 1024;
+
+	// the current volume
 	private int volume = 0;
-	
-	AudioRecorder recorder;
-		
+
+	private boolean isMonitoring = false;
+
 	/**
-	 * Attaches the meter to the recorder
+	 * Monitors the volume on the sound line, updating it regularly.
 	 * 
-	 * @param recorder the recorder
+	 * @param m_line the sound line to monitor
 	 */
-	public SoundLevelMeter(AudioRecorder recorder) {
-		recorder.attachLevelMeter(this);
+	public void monitorVolume(final ByteArrayOutputStream streamo) {
+		// update the volume level
+		isMonitoring = true;
+		Thread t2 = new Thread() {
+			public void run() { 
+				while (isMonitoring) {
+					byte[] data = streamo.toByteArray();
+					if (data.length > 0) {
+						updateVolume(calculateRMSLevel(data));			
+					}
+					try { Thread.sleep(80) ; } catch (InterruptedException e) { }
+				}
+			}
+		 } ;
+		t2.start();
 	}
-	
+
+
+	public void stopMonitoring() {
+		isMonitoring = false;
+		updateVolume(0);
+	}
+
+
 	/**
-	 * Updates the meter volume
+	 * Updates the volume on the meter
 	 * 
-	 * @param d
+	 * @param volume the new volume
 	 */
-	public void updateVolume(double d) {
-		volume =(int) d;
+	private void updateVolume(double volume) {
+		this.volume = (int) volume;
 		repaint();
 	}
-	
+
 	/**
 	 * Repaint
 	 *
@@ -79,5 +105,31 @@ public class SoundLevelMeter extends JPanel {
 		gg.clearRect(0, 0, 150, 20);
 		gg.fillRect(0,0, volume*2, 20);
 	}
+
+
+	/**
+	 * Calculate the noise level on the microphone
+	 * 
+	 * @param audioData buffer of audio date
+	 * @return the RMS sound level
+	 */
+	private double calculateRMSLevel(byte[] audioData)
+	{ 
+		// audioData might be buffered data read from a data line
+		long lSum = 0;
+		for(int i=0; i < audioData.length; i++)
+			lSum = lSum + audioData[i];
+
+		double dAvg = lSum / audioData.length;
+
+		double sumMeanSquare = 0d;
+		for(int j= audioData.length -1 ; j > audioData.length - BUFFER_SIZE && j > 0; j--) {
+			sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+		}
+		double averageMeanSquare = sumMeanSquare / BUFFER_SIZE;
+		return Math.pow(averageMeanSquare,0.5d) + 0.5;
+	}
+
+
 
 }

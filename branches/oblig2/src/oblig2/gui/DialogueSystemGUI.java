@@ -3,15 +3,17 @@
 package oblig2.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -100,42 +102,43 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 		container.add(new JLabel("   Control:      "), BorderLayout.WEST);
 		container.add(button, BorderLayout.CENTER);
 		
-		 Container container2 = new Container();
+		Container container2 = new Container();
 		container2.setLayout(new BorderLayout());
 		container2.add(new JLabel("        Microphone sound level:   "), BorderLayout.WEST);
-	 	SoundLevelMeter vc = new SoundLevelMeter(rl.getRecorder());
-		vc.setPreferredSize(new Dimension(150, 20));
-		vc.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+	 	SoundLevelMeter slm = new SoundLevelMeter();
+	 	rl.getRecorder().attachLevelMeter(slm);
+	 	slm.setPreferredSize(new Dimension(150, 20));
+	 	slm.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		container2.add(new JLabel("   \n "), BorderLayout.NORTH); 
-		container2.add(vc, BorderLayout.CENTER); 
+		container2.add(slm, BorderLayout.CENTER); 
 		container2.add(new JLabel("   \n "), BorderLayout.SOUTH); 
 		container2.add(new JLabel("         "), BorderLayout.EAST); 
 		container.add(container2, BorderLayout.EAST);  
 		container.add(new JLabel("  "), BorderLayout.SOUTH);
 		add(container, BorderLayout.SOUTH);
+		
 		setVisible(true);
 	}
 	
 	
 	private void testRecorder() throws Exception {
 	    log.debug("testing functions for recording and playing sounds...");
-	    AudioRecorder recorder = new AudioRecorder(owner.getParameters());
+	    AudioRecorder recorder = new AudioRecorder();
 		recorder.startRecording();
 		try {
-			Thread.sleep(500);
+			Thread.sleep(800);
 		} catch (InterruptedException e) {	}
 		recorder.stopRecording();	
-
-		File f = new File(owner.getParameters().tempASRSoundFile);
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(f);
-	    AudioFormat format = audioInputStream.getFormat();
-	    long audioFileLength = f.length();
-	    int frameSize = format.getFrameSize();
-	    float frameRate = format.getFrameRate();
-	    float duration = (audioFileLength / (frameSize * frameRate));
-	    if (duration < 0.1) {
-	    	throw new Exception ("recorded file was shorter than 0.1 seconds, there's a problem");
-	    }
+		
+		InputStream stream = recorder.getInputStream();
+		int length = 0 ;
+		byte[] buffer = new byte[4096];  
+		for (int n; (n = stream.read(buffer)) != -1; )  { 
+			length += buffer.length;
+		}
+		if (length < 5000) {
+			throw new Exception("sound was not properly recorded");
+		}
 	    log.debug("testing successful");
 	}
 
@@ -179,6 +182,6 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 	 * Does nothing (simply there to implement the dialogue listener interface)
 	 */
 	@Override
-	public void newSpeechSignal(File audioFile) { }
+	public void newSpeechSignal(InputStream istream) { }
 	
 }

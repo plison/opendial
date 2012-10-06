@@ -22,6 +22,8 @@ package oblig2;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import oblig2.state.DialogueState;
 import oblig2.util.Logger;
@@ -46,7 +48,7 @@ public class DialogueStateTest {
 	
 
 	@Test
-	public void basicTest() throws InterruptedException {
+	public void basicTest() throws InterruptedException, FileNotFoundException {
 		
 		ConfigParameters parameters = new ConfigParameters (uuid, appname, grammar);
 		parameters.activateGUI = false;
@@ -64,7 +66,7 @@ public class DialogueStateTest {
 		// just waiting for the speech recogniser to connect to the dialogue state
 		Thread.sleep(80);
 		
-		dstate.newSpeechSignal(new File(parameters.testASRFile));
+		dstate.newSpeechSignal(new FileInputStream(parameters.testASRFile));
 		
 		assertEquals(2, dstate.getDialogueHistory().size());
 		assertEquals("one two three four five", dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getString());

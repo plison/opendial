@@ -22,6 +22,7 @@ package oblig2;
 
 import oblig2.actions.Action;
 import oblig2.actions.DialogueAction;
+import oblig2.actions.VoidAction;
 import oblig2.state.DialogueState;
 import oblig2.state.WorldState;
 
@@ -43,7 +44,12 @@ public class BasicPolicy implements DialoguePolicy {
 	 */
 	@Override
 	public Action processInput(NBest u_u, DialogueState dstate, WorldState wstate) {
+		if (!u_u.getHypotheses().isEmpty()) {
 		return new DialogueAction("you said: " + u_u.getHypotheses().get(0).getString());
+		}
+		else {
+			return new VoidAction();
+		}
 	}
 
 
