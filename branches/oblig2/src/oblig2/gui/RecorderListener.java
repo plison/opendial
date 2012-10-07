@@ -106,7 +106,9 @@ public class RecorderListener implements MouseListener {
 			owner.getDialogueState().newSpeechSignal(recorder.getInputStream());
 			
 			// writing stream to file
-			AudioCommon.writeToFile(recorder.getInputStream(), owner.getParameters().tempASRSoundFile);
+			if (owner.getParameters().writeTempSoundFiles) {
+				AudioCommon.writeToFile(recorder.getInputStream(), owner.getParameters().tempASRSoundFile);
+			}
 		}
 		else {
 			log.info("recording is discarded: too short duration ( < 1s)");

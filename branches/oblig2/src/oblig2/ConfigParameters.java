@@ -54,9 +54,11 @@ public class ConfigParameters {
 	// activate (output) sound
 	public boolean activateSound = true;
 	
+	// whether to write temporary sound files or not
+	public boolean writeTempSoundFiles = true;
+	
 	// temporary files in which to save the audio
-	// (leave empty if you don't want to save anything)
-	public String tempASRSoundFile = "dd";
+	public String tempASRSoundFile = "temp/inputau";
 	public String	tempTTSSoundFile = "tmp/output.au";
 	
 	// test file for AT&T connection

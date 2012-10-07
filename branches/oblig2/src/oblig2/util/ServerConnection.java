@@ -229,7 +229,9 @@ public class ServerConnection implements DialogueStateListener {
 			(new AudioPlayer(new ByteArrayInputStream(out.toByteArray()))).start();
 			}
 			
-			AudioCommon.writeToFile(new ByteArrayInputStream(out.toByteArray()), parameters.tempTTSSoundFile);
+			if (parameters.writeTempSoundFiles) {
+				AudioCommon.writeToFile(new ByteArrayInputStream(out.toByteArray()), parameters.tempTTSSoundFile);
+			}
 		}
 		catch (Exception e) {
 			log.severe("Synthesis error"+ e.toString() + ", TTS operation is discarded");
