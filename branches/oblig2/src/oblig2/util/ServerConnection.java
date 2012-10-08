@@ -86,9 +86,20 @@ public class ServerConnection implements DialogueStateListener {
 	}
 
 	
+	/**
+	 * Testing the speech recogniser
+	 * 
+	 * @throws Exception
+	 */
 	private void testRecognition() throws Exception {
+		
+		String uuid = "F9A9D13BC9A811E1939C95CDF95052CC";
+		String	appname = "def001";
+		String	grammar = "numbers";
+		String testASRFile = "resources/onetwothreefourfive.au";
+		
 		log.info("testing connection to AT&T servers...");
-		NBest nbest = recognise(new FileInputStream(new File(parameters.testASRFile)));
+		NBest nbest = recognise(new FileInputStream(new File(testASRFile)), uuid, appname, grammar, parameters.nbest);
 		if (nbest.getHypotheses().isEmpty() || 
 				!nbest.getHypotheses().get(0).getString().contains("one two three four five")) {
 			throw new Exception ("Error, connection with AT&T servers could not be established.  " +
@@ -136,6 +147,26 @@ public class ServerConnection implements DialogueStateListener {
 	 * @return the N-Best list, if one could be received
 	 */
 	protected NBest recognise(InputStream istream) {
+		return recognise(istream, parameters.uuid, parameters.appname, 
+				parameters.grammar, parameters.nbest);
+	}
+	
+	
+	
+	/**
+	 * Performs remote speech recognition on the AT&T server, by posting the audio
+	 * stream and waiting for the answer.  AT&T parameters must be provided
+	 * 
+	 * @param istream the input stream
+	 * @param uuid UUID
+	 * @param appname application name
+	 * @param grammar grammar
+	 * @param nbNbest number of N-Best results
+	 * @return the N-Best list, if one could be received
+	 */
+	private static NBest recognise(InputStream istream, String uuid, String appname, 
+			String grammar, int nbNbest) {
+		
 		log.info("calling AT&T server...\t");       
 		
 		try {
@@ -144,12 +175,12 @@ public class ServerConnection implements DialogueStateListener {
 			
 			// ugly hardcoding of the URL
 			URL url = new URL("http://service.research.att.com/smm/watson" + 
-					"?uuid="+parameters.uuid
+					"?uuid="+uuid
 					+"&cmd=rawoneshot" 
-					+ "&appname="+parameters.appname
-					+"&grammar="+parameters.grammar
+					+ "&appname="+appname
+					+"&grammar="+grammar
 					+ "&resultFormat=emma"
-					+ "&control=set+config.nbest=" + parameters.nbest);
+					+ "&control=set+config.nbest=" + nbNbest);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "audio/au");
@@ -252,7 +283,7 @@ public class ServerConnection implements DialogueStateListener {
 	 * @param plainResponse the response
 	 * @return the extract N-Best, if any
 	 */
-	protected NBest extractNBest(String plainResponse) {
+	protected static NBest extractNBest(String plainResponse) {
 
 		NBest nbest = new NBest();
 

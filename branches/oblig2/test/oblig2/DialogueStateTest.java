@@ -44,7 +44,8 @@ public class DialogueStateTest {
 	static String uuid = "F9A9D13BC9A811E1939C95CDF95052CC";
 	static String	appname = "def001";
 	static String	grammar = "numbers";
-	
+	String testASRFile = "resources/onetwothreefourfive.au";
+
 
 	@Test
 	public void basicTest() throws InterruptedException, FileNotFoundException {
@@ -65,7 +66,7 @@ public class DialogueStateTest {
 		// just waiting for the speech recogniser to connect to the dialogue state
 		Thread.sleep(80);
 		
-		dstate.addUserSpeechSignal(new FileInputStream(parameters.testASRFile));
+		dstate.addUserSpeechSignal(new FileInputStream(testASRFile));
 		
 		assertEquals(2, dstate.getDialogueHistory().size());
 		assertEquals("one two three four five", dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getString());

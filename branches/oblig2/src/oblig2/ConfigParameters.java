@@ -60,9 +60,6 @@ public class ConfigParameters {
 	// temporary files in which to save the audio
 	public String tempASRSoundFile = "tmp/input.au";
 	public String	tempTTSSoundFile = "tmp/output.au";
-	
-	// test file for AT&T connection
-	public String testASRFile = "resources/onetwothreefourfive.au";
 
 	// minimum recording time, in milliseconds
 	public int minimumRecordingTime = 1000;
