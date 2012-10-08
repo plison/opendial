@@ -107,10 +107,6 @@ public class DialogueState {
 		}
 	}
 	
-	public void addSystemSpeechSignal(InputStream stream) {
-		
-	}
-	
 	
 	/**
 	 * Returns the dialogue history recorded by the system.
