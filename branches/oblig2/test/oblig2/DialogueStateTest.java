@@ -65,7 +65,7 @@ public class DialogueStateTest {
 		// just waiting for the speech recogniser to connect to the dialogue state
 		Thread.sleep(80);
 		
-		dstate.newSpeechSignal(new FileInputStream(parameters.testASRFile));
+		dstate.addUserSpeechSignal(new FileInputStream(parameters.testASRFile));
 		
 		assertEquals(2, dstate.getDialogueHistory().size());
 		assertEquals("one two three four five", dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getString());

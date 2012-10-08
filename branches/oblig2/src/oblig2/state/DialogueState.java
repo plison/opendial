@@ -75,7 +75,7 @@ public class DialogueState {
 	 * Indicates that a new speech signal has been recorded in an audio
 	 * stream, and informs its listeners
 	 */
-	public void newSpeechSignal(InputStream istream) { 
+	public void addUserSpeechSignal(InputStream istream) { 
 		for (DialogueStateListener listener: listeners) {
 			listener.newSpeechSignal(istream);
 		}
@@ -107,6 +107,10 @@ public class DialogueState {
 		for (DialogueStateListener listener: listeners) {
 			listener.processSystemOutput(u_m);
 		}
+	}
+	
+	public void addSystemSpeechSignal(InputStream stream) {
+		
 	}
 	
 	

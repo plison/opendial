@@ -141,6 +141,8 @@ public class ServerConnection implements DialogueStateListener {
 		try {
 
 			log.debug("open up connection");
+			
+			// ugly hardcoding of the URL
 			URL url = new URL("http://service.research.att.com/smm/watson" + 
 					"?uuid="+parameters.uuid
 					+"&cmd=rawoneshot" 
@@ -154,8 +156,8 @@ public class ServerConnection implements DialogueStateListener {
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 
+			// reading up the output 
 			OutputStream out = conn.getOutputStream();
-
 			byte[] data = new byte[1024];
 			int read = 0;
 			while ((read=istream.read(data)) != -1) {
@@ -192,13 +194,15 @@ public class ServerConnection implements DialogueStateListener {
 
 
 	/**
-	 * Performs remote speech synthesis with the given utterance
+	 * Performs remote speech synthesis with the given utterance, and plays it on the 
+	 * standard audio output.
 	 * 
 	 * @param utterance the utterance to synthesis
 	 */
 	protected void synthesise(String utterance) {
 
 		try {
+			// ugly hardcoding of the URL
 			URL url = new URL("http://service.research.att.com/smm/tts?uuid="+parameters.uuid
 					+"&audioFormat=linear&appname="+ parameters.appname);
 
@@ -225,10 +229,12 @@ public class ServerConnection implements DialogueStateListener {
 			out.close();
 			in.close();
 
+			// playing the sound
 			if (parameters.activateSound) {
 			(new AudioPlayer(new ByteArrayInputStream(out.toByteArray()))).start();
 			}
 			
+			// recording the sound in a temporary file
 			if (parameters.writeTempSoundFiles) {
 				AudioCommon.writeToFile(new ByteArrayInputStream(out.toByteArray()), parameters.tempTTSSoundFile);
 			}

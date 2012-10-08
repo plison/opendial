@@ -103,7 +103,7 @@ public class RecorderListener implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		recorder.stopRecording();  
 		if (System.currentTimeMillis() - startTime > owner.getParameters().minimumRecordingTime) {
-			owner.getDialogueState().newSpeechSignal(recorder.getInputStream());
+			owner.getDialogueState().addUserSpeechSignal(recorder.getInputStream());
 			
 			// writing stream to file
 			if (owner.getParameters().writeTempSoundFiles) {
