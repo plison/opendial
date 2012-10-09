@@ -31,7 +31,7 @@ import java.util.List;
  * @version $Date::                      $
  *
  */
-public class CompoundAction {
+public class CompoundAction implements Action {
 
 	// the list of basic actions included in the compound
 	List<Action> basicActions;
