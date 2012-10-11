@@ -119,7 +119,8 @@ public class ServerConnection implements DialogueStateListener {
 	public void newSpeechSignal(InputStream istream) {
 		NBest nbest = recognise(istream); 
 		log.debug("recognition complete, results: " + nbest);
-		state.addUserUtterance(nbest);
+		NBest noisyNBest = NoiseSimulator.addNoise(nbest);
+		state.addUserUtterance(noisyNBest);
 	}
 
 

@@ -53,7 +53,7 @@ public class NBest {
 	 * @param hyp the hypothesis
 	 * @param conf its confidence score
 	 */
-	public NBest (String hyp, float conf) {
+	public NBest (String hyp, double conf) {
 		this();
 		addHypothesis(hyp, conf);
 	}
@@ -64,7 +64,7 @@ public class NBest {
 	 * @param hyp the hypothesis
 	 * @param conf its confidence score
 	 */
-	public void addHypothesis(String hyp, float conf) {
+	public void addHypothesis(String hyp, double conf) {
 		hypotheses.add(new Hypothesis (hyp, conf));
 	}
 	
@@ -105,7 +105,7 @@ public class NBest {
 		String hyp;
 		
 		// the confidence score
-		float conf;
+		double conf;
 		
 		/**
 		 * Creates a new hypothesis
@@ -113,7 +113,7 @@ public class NBest {
 		 * @param hyp the hypothesis
 		 * @param conf the confidence score
 		 */
-		public Hypothesis (String hyp, float conf) {
+		public Hypothesis (String hyp, double conf) {
 			this.hyp = hyp;
 			this.conf = conf;
 		}
@@ -146,7 +146,7 @@ public class NBest {
 		 * 
 		 * @return the score
 		 */
-		public float getConf() {
+		public double getConf() {
 			return conf;
 		}
 	}

@@ -22,8 +22,8 @@ package oblig2.actions;
 
 /**
  * Representation of a physical action in our simplified world model.
- * A physical action must be one of the five basic movements:
- * {forward, backward, left, right, pick}
+ * A physical action must be one of the six basic movements:
+ * {forward, backward, left, right, pick, put down}
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
@@ -68,6 +68,7 @@ public final class PhysicalAction implements Action {
 		case LEFT: return "Left";
 		case RIGHT: return "Right";
 		case PICK: return "Pick";
+		case PUTDOWN: return "Put down";
 		}
 		return "";
 	}
