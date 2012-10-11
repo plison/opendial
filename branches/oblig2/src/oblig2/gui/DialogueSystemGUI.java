@@ -151,7 +151,7 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 
 			history.append("\t" + hyp.getString());
 			if (hyp.getConf() < 1.0) {
-				history.append("\t(" +hyp.getConf()+")");
+				history.append("\t(" +Math.round(hyp.getConf()*1000)/1000.0+")");
 			}
 			history.append("\n");
 		}
