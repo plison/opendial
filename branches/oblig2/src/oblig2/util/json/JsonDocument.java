@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2013 Sindre Wetjen (sindrewe@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -15,57 +15,33 @@
 // License along with this program; if not, write to the Free Software                                                                 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
 // 02111-1307, USA.                                                                                                                    
-// =================================================================                                                                   
+// =================================================================    
 
-package oblig2.util;
+package oblig2.util.json;
+import java.util.HashMap;
+//import HashJsonElement;
 
-import java.util.Random;
+public class JsonDocument {
 
-import oblig2.NBest;
-import oblig2.NBest.Hypothesis;
+    HashJsonElement root;
 
+    public JsonDocument(String json) throws JsonMalformedException {
+        root = new HashJsonElement();
+        root.parseJson(json.substring(1, json.length() - 1));
+    }
+    
+    public String toString() {
+        return root.toString();
+    }
+    
+    public JsonElement get(String key) {
+        return root.get(key);
+    }
 
-/**
- * Class adding some artificial Gaussian noise to the N-Best list (since the results
- * coming from the AT&T servers don't seem to provide such information)
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public class NoiseSimulator {
-
-	
-	public static double MEAN = 0.7;
-	public static double VARIANCE = 0.15;
-	// logger
-	public static Logger log = new Logger("NoiseSimulator", Logger.Level.DEBUG);
-	
-	
-	public static NBest addNoise(NBest initNBest) {
-		//NBest noisyNBest = new NBest();
-		
-		Random random = new Random();
-		
-		double remainder = 1.0;
-		for (Hypothesis hyp : initNBest.getHypotheses()) {
-			
-			// adds a Gaussian noise the confidence score
-			double probability = remainder * ( MEAN + random.nextGaussian() * VARIANCE);
-			
-			// we have to ensure the probability is valid
-			
-			probability = (probability > remainder) ? remainder : (probability < 0.0)? 0.0: probability;
-			hyp.setConfidence(probability);
-			
-			remainder = remainder - probability;
-		}
-		// if we have some probability mass left, assign it to an "unknown" hypothesis
-		if (remainder > 0.01) {
-			initNBest.addHypothesis("UNKNOWN", "UNKNOWN", remainder);
-		}
-		
-		return initNBest;
-	}
-	
+    public static void main(String[] args) throws JsonMalformedException {
+        String document = "{\"type\":\"WIRE_NOTIFY\",\"evType\":\"phrase_result\",\"results\":[{\"activate_lm_time\":\"0.00608587265015\",\"chOpenTime\":\"0.025\",\"clockTime\":\"1.67339897156\",\"cpuTime\":\"0.21\",\"decoded_frame_count\":\"0\",\"frame_count\":\"0\",\"grammar\":\"/n/u205/speechmashups-prod/subfusc/def001/grammars/lm/ASR\",\"hostname\":\"ss-4\",\"majorPageFaults\":\"0\",\"minorPageFaults\":\"9391\",\"norm_score\":\"100\",\"pid\":\"21918\",\"privDirty\":\"17424\",\"reco\":\"hi\",\"result_id\":\"1\",\"session_id\":\"ss-4-201210101223-50DA6\",\"sharedDirty\":\"4600\",\"slot.cost\":19633.2324,\"slot.firstSpeechFrame\":95,\"slot.gdelta\":15,\"slot.glhood\":0,\"slot.gscore\":100,\"slot.hypothesis\":\"hi\",\"slot.lastSpeechFrame\":116,\"slot.likelihood\":0,\"slot.lms\":[\"/n/u205/speechmashups-prod/subfusc/def001/grammars/lm/ASR\"],\"slot.nlu-sisr\":\"greeting\",\"slot.normCost\":129.166,\"slot.normLhood\":0,\"slot.normSpeechLhood\":0,\"slot.numFrames\":152,\"slot.numSpeechFrames\":0,\"slot.score\":100,\"slot.udelta\":0,\"slot.ulhood\":0,\"slot.uscore\":100,\"speech_start_sample\":\"0\",\"speech_stop_sample\":\"0\",\"trigger\":\"audioEnd\"}]}";
+        JsonDocument json = new JsonDocument(document);
+        System.out.println(json);
+    }
 }
+

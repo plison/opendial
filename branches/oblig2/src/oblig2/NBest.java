@@ -57,7 +57,7 @@ public class NBest {
 		this();
 		addHypothesis(hyp, conf);
 	}
-	
+
 	/**
 	 * Adds a new hypothesis to the N-Best list
 	 * 
@@ -68,6 +68,10 @@ public class NBest {
 		hypotheses.add(new Hypothesis (hyp, conf));
 	}
 	
+    public void addHypothesis(String hyp, String semvalue, double conf) {
+		hypotheses.add(new Hypothesis (hyp, semvalue, conf));
+	}
+
 	/**
 	 * Returns the list of hypotheses included in the N-Best list
 	 * 
@@ -99,10 +103,13 @@ public class NBest {
 	 * and an associated confidence score.
 	 *
 	 */
-	public final class Hypothesis {
+	public class Hypothesis {
 		
 		// the string
 		String hyp;
+
+        //Semvalue, if there
+        String semvalue;
 		
 		// the confidence score
 		double conf;
@@ -116,8 +123,19 @@ public class NBest {
 		public Hypothesis (String hyp, double conf) {
 			this.hyp = hyp;
 			this.conf = conf;
+            this.semvalue = null;
 		}
 		
+        public Hypothesis (String hyp, String semvalue, double conf) {
+			this.hyp = hyp;
+			this.conf = conf;
+            this.semvalue = semvalue;
+		}
+		
+        public void setConfidence(double f) {
+            conf = f;
+        }
+
 		/**
 		 * Returns a string representation of the hypothesis
 		 *
@@ -140,6 +158,15 @@ public class NBest {
 			return hyp;
 		}
 		
+        /**
+         * Returns a string containing the semantic values of the result.
+         *
+         * @return the semantic value
+         *
+         */
+        public String getSem() {
+            return semvalue;
+        }
 		
 		/**
 		 * Returns the confidence score for the hypothesis

@@ -1,4 +1,6 @@
-// =================================================================                                             //                                                                                    
+// =================================================================                                                                   
+// Copyright (C) 2011-2013 Sindre Wetjen (sindrewe@ifi.uio.no)                                                                            
+//                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
 // as published by the Free Software Foundation; either version 2.1 of                                                                 
@@ -13,18 +15,9 @@
 // License along with this program; if not, write to the Free Software                                                                 
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
 // 02111-1307, USA.                                                                                                                    
-// =================================================================                                                                   
+// =================================================================    
 
-package oblig2.actions;
+package oblig2.util.json;
+import java.lang.Exception;
 
-/**
- * Dummy interface representing an abstract action, which can be a
- * physical action, a dialogue action, or no action at all.
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public interface Action {
-
-}
+public class JsonMalformedException extends Exception {};

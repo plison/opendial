@@ -156,6 +156,17 @@ public class WorldState {
 	}
 
 
+	
+	/**
+	 * Returns true if the robot currently carries an object, and false
+	 * otherwise.
+	 * 
+	 * @return true if the robot carries something, false otherwise
+	 */
+	public boolean carriesObject() {
+		return (getCarriedObject()!=null);
+	}
+	
 	/**
 	 * If the robot is carrying an object, returns it.  Else, returns null.
 	 * 
@@ -170,6 +181,51 @@ public class WorldState {
 		return null;
 	}
 
+	
+	/**
+	 * Returns true if there is an object right in front of the robot at the
+	 * present time, and false otherwise.
+	 * 
+	 * @return true if object in front, false otherwise
+	 */
+	public boolean hasObjectInFront() {
+		return (getObjectInFront()!=null);
+	}
+	
+	
+	/**
+	 * Returns the object which is currently right in front of the robot.
+	 * Else, returns null
+	 * 
+	 * @return the object in front, or null if there is none.
+	 */
+	public VisualObject getObjectInFront() {
+		for (VisualObject o : objects) {
+			int incrX = o.getX() - robotPos.getX();
+			int incrY = o.getY() - robotPos.getY(); 
+			switch (robotPos.getOrientation()) {
+			case NORTH: 
+				if (incrX == 0 && incrY == 1) {
+				return o;
+			}
+			break;
+			case WEST: 
+				if (incrX == -1 && incrY == 0) {
+				return o;
+			}
+			break;
+			case SOUTH: if (incrX == 0 && incrY == -1) {
+				return o;
+			}
+			break;
+			case EAST: if (incrX == 1 && incrY == 0) {
+				return o;
+			}
+			break;
+			}
+		}
+		return null;
+	}
 
 
 

@@ -102,6 +102,36 @@ public class VisualObject {
 		return shape;
 	}
 
+	
+	/**
+	 * Returns the string corresponding to the object colour
+	 * 
+	 * @return the object colour
+	 */
+    public String getColourString() {
+        switch (colour) {
+        case RED: return "red";
+        case GREEN: return "green";
+		case BLUE: return "blue";
+        default: return "*unk*";
+		}
+    }
+
+    
+    /**
+     * Returns the string corresponding to the object shape
+     * 
+     * @return the object shape
+     */
+    public String getShapeString() {
+        switch (shape) {
+		case CUBE: return "cube"; 
+		case CYLINDER: return "cylinder";
+        default: return "*unk*";
+		}
+    }
+
+    
 	/**
 	 * Returns the object colour
 	 * 
@@ -117,19 +147,7 @@ public class VisualObject {
 	 * @return the string
 	 */
 	public String toString() {
-
-		String str = "";
-		switch (colour) {
-		case RED: str = "red "; break;
-		case GREEN: str = "green "; break;
-		case BLUE: str = "blue "; break;
-		}
-		switch (shape) {
-		case CUBE: str = "cube "; break;
-		case CYLINDER: str = "cylinder "; break;
-		}
-
-		return str + "at (" + xPos + ", " + yPos + ") ";
+		return getColourString() + " " + getShapeString() + " at (" + xPos + ", " + yPos + ") ";
 	}
 
 

@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +43,7 @@ import oblig2.ConfigParameters;
 import oblig2.actions.DialogueAction;
 import oblig2.state.DialogueState;
 import oblig2.state.DialogueStateListener;
+import oblig2.util.json.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -61,6 +63,7 @@ public class ServerConnection implements DialogueStateListener {
 
 	// logger
 	public static Logger log = new Logger("ServerConnection", Logger.Level.NORMAL);
+    private static boolean useJson = true;
 
 	// dialogue state
 	DialogueState state;
@@ -176,12 +179,12 @@ public class ServerConnection implements DialogueStateListener {
 			
 			// ugly hardcoding of the URL
 			URL url = new URL("http://service.research.att.com/smm/watson" + 
-					"?uuid="+uuid
-					+"&cmd=rawoneshot" 
-					+ "&appname="+appname
-					+"&grammar="+grammar
-					+ "&resultFormat=emma"
-					+ "&control=set+config.nbest=" + nbNbest);
+                              "?uuid="+uuid
+                              +"&cmd=rawoneshot" 
+                              + "&appname="+appname
+                              +"&grammar="+grammar
+                              + "&resultFormat=" + ((useJson) ? "json" : "emma")
+                              + "&control=set+config.nbest=" + nbNbest);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "audio/au");
@@ -286,31 +289,69 @@ public class ServerConnection implements DialogueStateListener {
 	 */
 	protected static NBest extractNBest(String plainResponse) {
 
+   //     System.out.printf("Response: %s\n", plainResponse);
 		NBest nbest = new NBest();
 
 		try {
-			// Create a factory
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			// Use document builder factory
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			//Parse the document
-			CharArrayReader reader=new CharArrayReader(plainResponse.toCharArray());
-			Document doc = builder.parse(new org.xml.sax.InputSource(reader));
+            if (useJson) {
+                //System.err.println("Here");
+                JsonDocument doc = new JsonDocument(plainResponse);
+                ArrayJsonElement aje = (ArrayJsonElement) doc.get("results");
+                LinkedList<JsonElement> list = aje.getList();
+            
+                //System.err.println("Here");
+                for (JsonElement result:list) {
+                    HashJsonElement tmp = (HashJsonElement) result;
+                    JsonElement tokens =  tmp.get("slot.hypothesis");
+                    JsonElement semvalue =  tmp.get("slot.nlu-sisr");
+                    JsonElement conf = tmp.get("slot.likelihood");
+                    String t = null;
+                    float f = 0;
 
+                    if (tokens != null && tokens.type() == JsonElement.JsonType.STRING) {
+                        t = ((StringJsonElement) tokens).get();
+                    }
+                    
+                    if (conf != null && conf.type() == JsonElement.JsonType.NUMBER) {
+                        f = Float.parseFloat(((NumberJsonElement) conf).get());
+                    }
+                    
+                    if (semvalue != null && semvalue.type() == JsonElement.JsonType.STRING) {
+                        nbest.addHypothesis(t, ((StringJsonElement) semvalue).get(), f);
+                    } else {
+                        nbest.addHypothesis(t, f);
+                    }
+                }
+                //System.err.printf("Json: \n%s\n", doc);
+                //System.err.printf("Hypothesis: \n%s\n", nbest);
 
-			NodeList nl = doc.getElementsByTagName("emma:interpretation");
-			for (int i = 0 ; i < nl.getLength(); i++) {
-				Node n = nl.item(i);
-				String tokens = n.getAttributes().getNamedItem("emma:tokens").getNodeValue();
-				float conf = Float.parseFloat(n.getAttributes().getNamedItem("emma:confidence").getNodeValue());
-				nbest.addHypothesis(tokens, conf);
-			}
-		}
-		catch (Exception e) {
-			log.warning ("Error in XML extraction: " + e.toString() + " returning empty nbest list");
+            } else {
+                // Create a factory
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                // Use document builder factory
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                //Parse the document
+                CharArrayReader reader = new CharArrayReader(plainResponse.toCharArray());
+                Document doc = builder.parse(new org.xml.sax.InputSource(reader));
+                
+                NodeList nl = doc.getElementsByTagName("emma:interpretation");
+                for (int i = 0 ; i < nl.getLength(); i++) {
+                    Node n = nl.item(i);
+                    String tokens = n.getAttributes().getNamedItem("emma:tokens").getNodeValue();
+                    String semvalue = n.getTextContent(); // Get semantic values of the interpretation
+                    float conf = Float.parseFloat(n.getAttributes().getNamedItem("emma:confidence").getNodeValue());
+                    
+                    if (semvalue != null) {
+                        nbest.addHypothesis(tokens, semvalue.trim(), conf);
+                    } else {
+                        nbest.addHypothesis(tokens, conf);
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            log.warning("Error in Answer extraction: " + e.toString() + " returning empty nbest list");
 		}
 		return nbest;
 	}
-
-
 }
