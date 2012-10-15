@@ -289,7 +289,7 @@ public class ServerConnection implements DialogueStateListener {
 	 */
 	protected static NBest extractNBest(String plainResponse) {
 
-   //     System.out.printf("Response: %s\n", plainResponse);
+    //   System.out.printf("Response: %s\n", plainResponse);
 		NBest nbest = new NBest();
 
 		try {
@@ -316,10 +316,12 @@ public class ServerConnection implements DialogueStateListener {
                         f = Float.parseFloat(((NumberJsonElement) conf).get());
                     }
                     
+                    if (t != null) {
                     if (semvalue != null && semvalue.type() == JsonElement.JsonType.STRING) {
                         nbest.addHypothesis(t, ((StringJsonElement) semvalue).get(), f);
                     } else {
                         nbest.addHypothesis(t, f);
+                    }
                     }
                 }
                 //System.err.printf("Json: \n%s\n", doc);

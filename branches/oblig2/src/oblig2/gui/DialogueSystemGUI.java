@@ -150,6 +150,9 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 		for (NBest.Hypothesis hyp : u_u.getHypotheses()) {
 
 			history.append("\t" + hyp.getString());
+			if (!hyp.getSem().equals("")) {
+				history.append("\t[" + hyp.getSem() + "]");
+			}
 			if (hyp.getConf() < 1.0) {
 				history.append("\t(" +Math.round(hyp.getConf()*1000)/1000.0+")");
 			}

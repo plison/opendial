@@ -68,6 +68,7 @@ public class NBest {
 		hypotheses.add(new Hypothesis (hyp, conf));
 	}
 	
+	
     public void addHypothesis(String hyp, String semvalue, double conf) {
 		hypotheses.add(new Hypothesis (hyp, semvalue, conf));
 	}
@@ -123,7 +124,7 @@ public class NBest {
 		public Hypothesis (String hyp, double conf) {
 			this.hyp = hyp;
 			this.conf = conf;
-            this.semvalue = null;
+            this.semvalue = "";
 		}
 		
         public Hypothesis (String hyp, String semvalue, double conf) {

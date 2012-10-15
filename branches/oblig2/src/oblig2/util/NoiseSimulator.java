@@ -43,7 +43,7 @@ public class NoiseSimulator {
 	
 	
 	public static NBest addNoise(NBest initNBest) {
-		//NBest noisyNBest = new NBest();
+		NBest noisyNBest = new NBest();
 		
 		Random random = new Random();
 		
@@ -56,16 +56,17 @@ public class NoiseSimulator {
 			// we have to ensure the probability is valid
 			
 			probability = (probability > remainder) ? remainder : (probability < 0.0)? 0.0: probability;
-			hyp.setConfidence(probability);
+			
+			noisyNBest.addHypothesis(hyp.getString(), hyp.getSem(), probability);
 			
 			remainder = remainder - probability;
 		}
 		// if we have some probability mass left, assign it to an "unknown" hypothesis
 		if (remainder > 0.01) {
-			initNBest.addHypothesis("UNKNOWN", "UNKNOWN", remainder);
+			noisyNBest.addHypothesis("UNKNOWN", "", remainder);
 		}
 		
-		return initNBest;
+		return noisyNBest;
 	}
 	
 }
