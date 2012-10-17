@@ -157,6 +157,7 @@ public class AudioRecorder extends Thread {
 	 */
 	public void stopRecording() {
 		log.debug("stopped...\t");
+		audioLine.flush();
 		audioLine.stop();
 		audioLine.close();
 		if (levelMeter != null) {
