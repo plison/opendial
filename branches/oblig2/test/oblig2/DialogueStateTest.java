@@ -70,8 +70,8 @@ public class DialogueStateTest {
 		
 		assertEquals(2, dstate.getDialogueHistory().size());
 		assertEquals("one two three four five", dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getString());
-		assertEquals(1, dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().size());
-		assertEquals(1.0f, dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getConf(), 0.0001f);
+		assertEquals(parameters.nbest, dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().size());
+		assertTrue(dstate.getDialogueHistory().get(0).getUtterance().getHypotheses().get(0).getConf() > 0.1);
 		assertEquals("user", dstate.getDialogueHistory().get(0).getAgent());
 		
 		assertEquals("you said: one two three four five", dstate.getDialogueHistory().get(1).getUtterance().getHypotheses().get(0).getString());

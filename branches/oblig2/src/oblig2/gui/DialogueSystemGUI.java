@@ -65,8 +65,9 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 		simulation = new SimulationPanel(owner.getWorldState());
 		createWidgets();
 		
+		// the test recorder doesn't seem to work, so we remove it
 		if (owner.getParameters().doTesting) {
-			testRecorder();
+		//	testRecorder();
 		}
 	}
 
