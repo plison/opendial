@@ -19,7 +19,6 @@
 
 package oblig2.util.json;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class HashJsonElement extends JsonElement {
 

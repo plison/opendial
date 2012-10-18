@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -65,17 +66,17 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 		simulation = new SimulationPanel(owner.getWorldState());
 		createWidgets();
 		
-		// the test recorder doesn't seem to work, so we remove it
 		if (owner.getParameters().doTesting) {
-		//	testRecorder();
+			testRecorder();
 		}
 	}
 
 	/**
 	 * Creates the widgets
 	 * @throws IOException 
+	 * @throws LineUnavailableException 
 	 */
-	private void createWidgets() throws IOException {
+	private void createWidgets() throws IOException, LineUnavailableException {
 		setTitle("Dialogue system GUI");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1000, 630);
@@ -118,7 +119,7 @@ public class DialogueSystemGUI extends JFrame implements DialogueStateListener {
 	
 	private void testRecorder() throws Exception {
 	    log.debug("testing functions for recording and playing sounds...");
-	    AudioRecorder recorder = new AudioRecorder();
+	    AudioRecorder recorder = new AudioRecorder(owner.getParameters());
 		recorder.startRecording();
 		try {
 			Thread.sleep(800);

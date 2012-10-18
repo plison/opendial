@@ -21,7 +21,6 @@ package oblig2.gui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
 
@@ -58,9 +57,10 @@ public class RecorderListener implements MouseListener {
 	 * 
 	 * @param recorder the audio recorder
 	 * @param dstate the dialogue state
+	 * @throws LineUnavailableException if the audio line is unavailable
 	 */
-	public RecorderListener(DialogueSystem owner) {
-		this.recorder = new AudioRecorder();
+	public RecorderListener(DialogueSystem owner) throws LineUnavailableException {
+		this.recorder = new AudioRecorder(owner.getParameters());
 		this.owner = owner;
 	}
 
@@ -88,9 +88,7 @@ public class RecorderListener implements MouseListener {
 		catch (LineUnavailableException e1) {
 			log.warning("Unable to get a recording line, aborting (please check " +
 			"that your microphone is connected!)");
-		} catch (IOException e2) {
-			log.warning("Unable to write audio data to file " + owner.getParameters().tempASRSoundFile);
-		}
+		} 
 	}
 
 	/**

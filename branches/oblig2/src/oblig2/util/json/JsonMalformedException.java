@@ -20,4 +20,5 @@
 package oblig2.util.json;
 import java.lang.Exception;
 
+@SuppressWarnings("serial")
 public class JsonMalformedException extends Exception {};

@@ -51,6 +51,9 @@ public class ConfigParameters {
 	// do testing beforehand?
 	public boolean doTesting = true;
 	
+	// mixer name for audio capture (leave empty to take default)
+	public String audioMixer = "";
+	
 	// activate (output) sound
 	public boolean activateSound = true;
 	

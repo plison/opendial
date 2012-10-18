@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -42,6 +44,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.AudioFileFormat;
 
+import oblig2.ConfigParameters;
 import oblig2.gui.SoundLevelMeter;
 
 
@@ -68,6 +71,49 @@ public class AudioRecorder extends Thread {
 
 
 	/**
+	 * Creates a new recorder, and sets up the audio line. If the audioMixer setting
+	 * in the parameter specifies an audio mixer, that one is used.  Else, the default
+	 * line is selected
+	 * 
+	 * @param parameters configuration parameters
+	 * @throws LineUnavailableException if the line is unavailable
+	 */
+	public AudioRecorder(ConfigParameters parameters) throws LineUnavailableException {
+
+		Info[] mixers = AudioSystem.getMixerInfo();
+
+		// printing out the list of possible mixers (in debug mode)
+		for (int i = 0 ; i < mixers.length ; i++) {
+				log.debug("mixer " + mixers[i].getName());
+		}
+		
+		/* Now, we are trying to get a TargetDataLine. The
+		   TargetDataLine is used later to read audio data from it. */
+		DataLine.Info info = new DataLine.Info(TargetDataLine.class, AUDIO_FORMAT);
+
+		// default settings
+		if (parameters.audioMixer == null || parameters.audioMixer.equals("")) {
+			audioLine = (TargetDataLine) AudioSystem.getLine(info);
+		}
+		
+		// use of a specific mixer
+		else {
+			for (int i = 0 ; i < mixers.length ; i++) {
+				if (mixers[i].getName().contains(parameters.audioMixer)) {
+					Mixer mixer = AudioSystem.getMixer(mixers[i]);
+					audioLine = (TargetDataLine) mixer.getLine(info);
+					log.debug("selecting mixer " + mixers[i].getName());
+				}
+			}
+			if (audioLine ==null) {
+				log.debug("mixer " + parameters.audioMixer + " was not found, using default line");
+				audioLine = (TargetDataLine) AudioSystem.getLine(info);
+			}
+		}
+
+	}
+
+	/**
 	 * Attaches a level meter to the recorder
 	 * 
 	 * @param meter the meter to attach
@@ -87,22 +133,12 @@ public class AudioRecorder extends Thread {
 	 * @throws IOException 
 	 * @throws Exception if the sound cannot be recorded
 	 */
-	public void startRecording() throws LineUnavailableException, IOException {
+	public void startRecording() throws LineUnavailableException {
 		log.debug("start recording...\t");
 
-		/* Now, we are trying to get a TargetDataLine. The
-		   TargetDataLine is used later to read audio data from it.
-		   If requesting the line was successful, we are opening
-		   it (important!).
-		 */
-		DataLine.Info	info = new DataLine.Info(TargetDataLine.class, AUDIO_FORMAT);
-		TargetDataLine	targetDataLine = null;
-		targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
-		targetDataLine.open(AUDIO_FORMAT);
+		audioLine.open(AUDIO_FORMAT);
 
-
-		audioLine = targetDataLine;
-		audioStream = new AudioInputStream(targetDataLine);
+		audioStream = new AudioInputStream(audioLine);
 
 		/* Starting the TargetDataLine. It tells the line that
 		   we now want to read data from it. If this method
@@ -110,7 +146,7 @@ public class AudioRecorder extends Thread {
 		   be able to read data from the line at all.
 		 */
 		audioLine.start();
-		
+
 		outputStream = new ByteArrayOutputStream();				
 
 
@@ -129,13 +165,18 @@ public class AudioRecorder extends Thread {
 		};
 		t.start();
 
-		
+
 		if (levelMeter != null) {
 			levelMeter.monitorVolume(outputStream);
 		} 
 	}
-	
-	
+
+
+	/**
+	 * Returns the input stream associated with the audio capture
+	 * 
+	 * @return the input stream
+	 */
 	public InputStream getInputStream() { 
 		ByteArrayInputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
 		return stream;
