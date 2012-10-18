@@ -16,7 +16,7 @@
 
 	<path id="compile.classpath">
 		<fileset dir="${lib}">
-		    <include name="*.jar" /> 
+		    <include name="junit.jar" /> 
 		</fileset> 
 	      <pathelement path="${build}"/> 
 		
@@ -48,7 +48,7 @@
 		<!-- Create the distribution directory -->
 		<mkdir dir="${lib}"/>
 		<!-- Put everything in ${build} into the oblig2-${DSTAMP}.jar file -->
-		<jar jarfile="${lib}/oblig2{DSTAMP}.jar" basedir="${build}"/>
+		<jar jarfile="${lib}/oblig2${DSTAMP}.jar" basedir="${build}"/>
 	</target>
 
 	
