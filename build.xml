@@ -43,7 +43,7 @@
 		<!-- Create the distribution directory -->
 		<mkdir dir="${lib}"/>
 		<!-- Put everything in ${build} into the opendial-${DSTAMP}.jar file -->
-		<jar jarfile="${lib}/opendial-${DSTAMP}.jar" basedir="${build}"/>
+		<jar jarfile="${build}/opendial-${DSTAMP}.jar" basedir="${build}"/>
 	</target>
 
 	
@@ -68,7 +68,13 @@
 			<fileset dir="${testreports}" includes="TEST-*.xml"/>
 			<report format="frames" todir="${testreports}"/>
 		</junitreport>
-	</target>	
+	</target>
+	
+	<target name="run_java" description="Runs the Main class to start the dialogue system" depends="compile">
+				<java classname="opendial.arch.DialogueSystem" fork="yes">
+					<classpath refid="compile.classpath"/>
+				</java>
+		</target>
 	
 	  	
 	<!-- JAVADOC GENERATION -->
