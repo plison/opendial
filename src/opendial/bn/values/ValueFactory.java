@@ -17,130 +17,115 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.bn.values;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import opendial.arch.Logger;
+import opendial.bn.nodes.BNode;
 
 /**
- * Utility for logging on the standard output (console).  
+ * Factory for creating variable values
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public class ValueFactory {
 
+	// logger
+	public static Logger log = new Logger("ValueFactory", Logger.Level.NORMAL);
 	
+	// none value (no need to recreate one everytime)
+	static NoneVal noneValue = new NoneVal();
+
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Creates a new value based on the provided string representation.
+	 * If the string contains a numeric value, "true", "false", "None", 
+	 * or opening and closing brackets, convert it to the appropriate
+	 * values.  Else, returns a string value.
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @param str the string representation for the value
+	 * @return the resulting value
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
+	public static Value create(String str) {
+		str = str.trim();
 		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			double d = Double.parseDouble(str);
+			return new DoubleVal(d);
 		}
-		
-		
-	}
-	
-	/**
-	 * Modifies the logging level of the logger
-	 * 
-	 * @param level the new level
-	 */
-	public void setLevel(Level level) {
-		this.level = level;
-	}
-	
-	/**
-	 * Log a severe error message
-	 * 
-	 * @param s the message
-	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
+		catch (NumberFormatException e) {
+			if (str.equalsIgnoreCase("true")) {
+				return new BooleanVal(true);
+			}
+			else if (str.equalsIgnoreCase("false")) {
+				return new BooleanVal(false);
+			}
+			else if (str.equalsIgnoreCase("None")) {
+				return none();
+			}
+			// adds the converted value
+			else if (str.startsWith("[") && str.endsWith("]")) {
+				
+				Set<Value> subVals = new HashSet<Value>();
+				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+					subVals.add(create(subVal.trim()));
+				}
+				return new SetVal(subVals);
+			}
+			return new StringVal(str);
 		}
 	}
 	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
-	
 	/**
-	 * Log a warning message
+	 * Returns a double value given the double
 	 * 
-	 * @param s the message
+	 * @param d the double
+	 * @return the value
 	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
-	}
-
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
-	
-	/**
-	 * Log an information message
-	 * 
-	 * @param s the message
-	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
-	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
-	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
-	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
+	public static DoubleVal create(double d) {
+		return new DoubleVal(d);
 	}
 	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
+	/**
+	 * Returns the boolean value given the boolean
+	 * 
+	 * @param b the boolean 
+	 * @return the double
+	 */
+	public static BooleanVal create(boolean b) {
+		return new BooleanVal(b);
+	}
+	
+	/**
+	 * Returns the set value given the values
+	 * 
+	 * @param vals the values
+	 * @return the set value
+	 */
+	public static SetVal create(Value...vals) {
+		return new SetVal(vals);
+	}
+	
+	/**
+	 * Returns the set value given the values
+	 * 
+	 * @param vals the values
+	 * @return the set value
+	 */
+	public static SetVal create(Collection<Value> vals) {
+		return new SetVal(vals);
+	}
+	
 
-
-
+	/**
+	 * Returns the none value
+	 * 
+	 * @return the none value
+	 */
+	public static NoneVal none() {
+		return noneValue;
+	}
 }
-
-

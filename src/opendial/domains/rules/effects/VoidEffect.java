@@ -17,130 +17,96 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.domains.rules.effects;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+
+import java.util.Set;
+
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.TemplateString;
 
 /**
- * Utility for logging on the standard output (console).  
+ * A void effect, having no effect on any variable.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public class VoidEffect implements Effect {
+
+	// logger
+	static Logger log = new Logger("VoidEffect", Logger.Level.NORMAL);
+
+	/**
+	 * Returns an empty set
+	 * 
+	 * @return an empty set
+	 */
+	@Override
+	public Set<String> getAdditionalInputVariables() {
+		return new HashSet<String>();
+	}
 
 	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Returns an empty set
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @return an empty set
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+	@Override
+	public Set<TemplateString> getOutputVariables() {
+		return new HashSet<TemplateString>();
+	}
+
+	/**
+	 * Returns an empty output
+	 * 
+	 * @param input the additional input (ignored)
+	 * @return an empty output
+	 */
+	@Override
+	public Output createOutput(Assignment input) {
+		return new Output();
+	}
+	
+	
+	/**
+	 * Returns "Void"
+	 *
+	 * @return "Void"
+	 */
+	@Override
+	public String toString() {
+		return "Void";
+	}
+	
+	/**
+	 * Returns a constant as hashcode
+	 *
+	 * @return the hashcode
+	 */
+	@Override
+	public int hashCode() {
+		return 79;
+	}
+	
+	
+	/**
+	 * Returns true if o is also a void effect
+	 *
+	 * @param o the object to compare
+	 * @return true if o is also a VoidEffect
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof VoidEffect) {
+			return true;
 		}
-		
-		
-	}
-	
-	/**
-	 * Modifies the logging level of the logger
-	 * 
-	 * @param level the new level
-	 */
-	public void setLevel(Level level) {
-		this.level = level;
-	}
-	
-	/**
-	 * Log a severe error message
-	 * 
-	 * @param s the message
-	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
-	}
-	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
-	
-	/**
-	 * Log a warning message
-	 * 
-	 * @param s the message
-	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
+		return false;
 	}
 
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
 	
-	/**
-	 * Log an information message
-	 * 
-	 * @param s the message
-	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
-	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
-	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
-	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
-	}
-	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
-
-
-
 }
-
-

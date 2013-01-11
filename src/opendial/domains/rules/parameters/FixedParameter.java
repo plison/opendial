@@ -17,130 +17,98 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.domains.rules.parameters;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.nodes.ChanceNode;
 
 /**
- * Utility for logging on the standard output (console).  
+ * Representation of a parameter fixed to one single specific value.
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public class FixedParameter implements Parameter {
 
+	// logger
+	public static Logger log = new Logger("FixedParameter", Logger.Level.NORMAL);
+	
+	// the parameter value
+	double param;
 	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Constructs a fixed parameter with the given value.
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @param param the parameter value
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		
+	public FixedParameter(double param) {
+		this.param = param;
 	}
 	
 	/**
-	 * Modifies the logging level of the logger
+	 * Returns the parameter value
 	 * 
-	 * @param level the new level
+	 * @return the value for the parameter
 	 */
-	public void setLevel(Level level) {
-		this.level = level;
+	public double getParameterValue() {
+		return param;
 	}
+	
 	
 	/**
-	 * Log a severe error message
+	 * Returns the parameter value, ignoring the input
 	 * 
-	 * @param s the message
+	 * @return the value for the parameter
 	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
+	public double getParameterValue(Assignment input) {
+		return getParameterValue();
 	}
 	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
 	
 	/**
-	 * Log a warning message
-	 * 
-	 * @param s the message
+	 * Returns an empty set
+	 *
+	 * @return an empty set of distributions
 	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
+	public Collection<ChanceNode> getDistributions() {
+		return new LinkedList<ChanceNode>();
 	}
-
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
+	
 	
 	/**
-	 * Log an information message
-	 * 
-	 * @param s the message
+	 * Returns the parameter value as a string
+	 *
+	 * @return the string
 	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
+	public String toString() {
+		return""+ param;
 	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
+	
 	
 	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
+	 * Returns the hashcode for the fixed parameter
+	 *
+	 * @return the hashcode
 	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
+	public int hashCode() {
+		return 2* new Double(param).hashCode();
 	}
 	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
-
-
-
+	
+	/**
+	 * Copies the fixed parameter
+	 * 
+	 * @return the copy
+	 */
+	public FixedParameter copy() {
+		return new FixedParameter(param);
+	}
 }
-
-

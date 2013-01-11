@@ -17,130 +17,113 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.inference.datastructs;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.bn.values.Value;
+
 
 /**
- * Utility for logging on the standard output (console).  
+ * Representation of a weighted sample, which consists of an assignment
+ * of values together with a weight (here in logarithmic form) and utility.
+ * 
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public class WeightedSample {
 
-	
+	// logger
+	public static Logger log = new Logger("WeightedSample", Logger.Level.NORMAL);
+
+	// the sample
+	Assignment sample;
+
+	// logarithmic weight (+- equiv. of probability)
+	double logWeight = 0.0f;
+
+	// the utility
+	double utility = 0.0f;
+
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
-	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * Creates a new, empty weighted sample
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		
+	public WeightedSample() {
+		sample = new Assignment();
 	}
 	
 	/**
-	 * Modifies the logging level of the logger
+	 * Adds a new assignment to the sample
 	 * 
-	 * @param level the new level
+	 * @param variable the variable label
+	 * @param value the value
 	 */
-	public void setLevel(Level level) {
-		this.level = level;
+	public void addPoint(String variable, Value value) {
+		sample.addPair(variable, value);
 	}
-	
+
 	/**
-	 * Log a severe error message
+	 * Adds a logarithmic weight to the current one
 	 * 
-	 * @param s the message
+	 * @param addLogWeight the weight to add
 	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
+	public void addLogWeight(double addLogWeight) {
+		logWeight += addLogWeight;
 	}
-	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
 
-	
 	/**
-	 * Log a warning message
+	 * Sets the logarithmic weight to a given value
 	 * 
-	 * @param s the message
+	 * @param weight the value for the weight
 	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
+	public void setWeight(double weight) {
+		this.logWeight = Math.log(weight);
 	}
 
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
-	
 	/**
-	 * Log an information message
+	 * Returns the sample weight (exponentiated value, not the logarithmic one!)
 	 * 
-	 * @param s the message
+	 * @return the (exponentiated) weight for the sample
 	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
+	public double getWeight() {
+		return (double)Math.exp(logWeight);
 	}
 
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
 	/**
-	 * Log a debugging message
+	 * Returns the sample
 	 * 
-	 * @param s the message
+	 * @return the sample
 	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
+	public Assignment getSample() {
+		return sample;
 	}
-	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
 
+	/**
+	 * Adds a utility to the sample
+	 * 
+	 * @param newUtil the utility to add
+	 */
+	public void addUtility(double newUtil) {
+		utility += newUtil;
+	}
 
+	/**
+	 * Returns the utility of the sample
+	 * 
+	 * @return the utility
+	 */
+	public double getUtility() {
+		return utility;
+	}
 
+	/**
+	 * Returns a string representation of the weighted sample
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		return sample + "(w=" + getWeight() + ", util=" + utility+")";
+	}
 }
-
-

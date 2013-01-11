@@ -17,130 +17,86 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
-
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+package opendial.bn.values;
 
 /**
- * Utility for logging on the standard output (console).  
+ * String value
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
 
+public final class StringVal implements Value {
+	
+	// the string
+	String str;
 	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Creates a new string value
+	 * (protected, use the ValueFactory instead)
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @param str the string
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+	protected StringVal(String str) { this.str = str; };
+	
+	/**
+	 * Returns the hashcode for the string
+	 *
+	 * @return the hashcode
+	 */
+	@Override
+	public int hashCode() { return str.hashCode(); }
+	
+	
+	/**
+	 * Returns true if the strings are equals, false otherwise
+	 *
+	 * @param o the object to compare
+	 * @return true if equals, false otherwise
+	 */
+	@Override
+	public boolean equals (Object o) {
+		return (o instanceof StringVal && ((StringVal)o).getString().equals(getString()));
+	}
+	
+	/**
+	 * Returns the string itself
+	 * 
+	 * @return
+	 */
+	public String getString() {return str; }
+	
+	/**
+	 * Returns a copy of the string value
+	 *
+	 * @return the copy
+	 */
+	@Override
+	public StringVal copy() { return new StringVal(str); }
+	
+	/**
+	 * Returns the string itself
+	 *
+	 * @return the string
+	 */
+	@Override
+	public String toString() { return str; }
+	
+	
+	/**
+	 * Compares the string value to another value
+	 * 
+	 * @return usual ordering, or hashcode if the value is not a string
+	 */
+	@Override
+	public int compareTo(Value o) {
+		if (o instanceof StringVal) {
+			return str.compareTo(((StringVal)o).getString());
 		}
-		
-		
-	}
-	
-	/**
-	 * Modifies the logging level of the logger
-	 * 
-	 * @param level the new level
-	 */
-	public void setLevel(Level level) {
-		this.level = level;
-	}
-	
-	/**
-	 * Log a severe error message
-	 * 
-	 * @param s the message
-	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
-	}
-	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
-	
-	/**
-	 * Log a warning message
-	 * 
-	 * @param s the message
-	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
-	}
-
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
-	
-	/**
-	 * Log an information message
-	 * 
-	 * @param s the message
-	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
-	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
-	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
-	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
+		else {
+			return hashCode() - o.hashCode();
 		}
 	}
 	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
-
-
-
 }
-
-

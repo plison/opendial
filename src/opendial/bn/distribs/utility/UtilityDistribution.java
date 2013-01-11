@@ -17,130 +17,76 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.bn.distribs.utility;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+
+import java.util.Set;
+
+import opendial.bn.Assignment;
+import opendial.bn.values.Value;
 
 /**
- * Utility for logging on the standard output (console).  
+ * Generic interface for an utility distribution (also called value distribution),
+ * mapping every assignment X1...Xn to a utility Q(X1....Xn).  Typically, at least
+ * one of these X1...Xn variables consist of a decision variable.
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public interface UtilityDistribution {
 
+	/**
+	 * Returns the utility associated with the specific assignment of values for
+	 * the input nodes.  If none exists, returns 0.0f.
+	 * 
+	 * @param input the value assignment for the input chance nodes
+	 * @return the associated utility
+	 */
+	public double getUtility(Assignment input);
+	
 	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Checks that the utility distribution is well-formed (all assignments are covered)
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @return true is the distribution is well-formed, false otherwise
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		
-	}
+	
+	public boolean isWellFormed();
 	
 	/**
-	 * Modifies the logging level of the logger
+	 * Creates a copy of the utility distribution
 	 * 
-	 * @param level the new level
+	 * @return the copy
 	 */
-	public void setLevel(Level level) {
-		this.level = level;
-	}
+	public UtilityDistribution copy();
+
+
+
+	/**
+	 * Returns a pretty print representation of the distribution
+	 * 
+	 * @return the pretty print for the distribution
+	 */
+	public String prettyPrint();
+
+
+	/**
+	 * Changes the variable label
+	 * 
+	 * @param nodeId the old variable label
+	 * @param newId the new variable label
+	 */
+	public void modifyVarId(String oldId, String newId);
+	
 	
 	/**
-	 * Log a severe error message
+	 * Returns the set of possible actions for the given input assignment
 	 * 
-	 * @param s the message
+	 * @param input the input assignment
+	 * @return the set of possible action values
 	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
-	}
+	public Set<Assignment> getRelevantActions(Assignment input);
 	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
 	
-	/**
-	 * Log a warning message
-	 * 
-	 * @param s the message
-	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
-	}
-
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
-	
-	/**
-	 * Log an information message
-	 * 
-	 * @param s the message
-	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
-	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
-	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
-	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
-	}
-	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
-
-
-
 }
-
-

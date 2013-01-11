@@ -17,130 +17,67 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.bn.distribs.continuous.functions;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Set;
+
+import opendial.arch.Logger;
 
 /**
- * Utility for logging on the standard output (console).  
+ * Density function for a continuous probability distribution
+ * 
+ * TODO: extend this to handle e.g. Dirichlets
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
- *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
  */
-public class Logger {
-	
-	/** Logging levels */
-	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
-	// Label of the component to log
-	String componentLabel;
-	 
-	// logging level for this particular logger
-	Level level;
-	
-	// print streams
-	PrintStream out;
-	PrintStream err;
+public interface DensityFunction {
 
+	/**
+	 * Returns the density value of the function at a given point
+	 * 
+	 * @param x the point
+	 * @return the density value for the point
+	 */
+	public double getDensity(double x);
 	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Returns the cumulative probability up to the given point
 	 * 
-	 * @param componentLabel the label for the component
-	 * @param level the logging level
+	 * @param x the point
+	 * @return the cumulative density up to the point
 	 */
-	public Logger(String componentLabel, Level level) {
-		this.componentLabel = componentLabel;
-		this.level = level;
-		try {
-			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		
-	}
+	public double getCDF(double x);
 	
 	/**
-	 * Modifies the logging level of the logger
+	 * Returns a sampled value given the point
 	 * 
-	 * @param level the new level
+	 * @return
 	 */
-	public void setLevel(Level level) {
-		this.level = level;
-	}
+	public double sample();
 	
 	/**
-	 * Log a severe error message
+	 * Returns a set of discrete values representing the function
 	 * 
-	 * @param s the message
+	 * @param nbBuckets the number of buckets for the discretisation
+	 * @return the resulting points
 	 */
-	public void severe(String s) {
-		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
-		}
-	}
-	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
-
+	public List<Double> getDiscreteValues(int nbBuckets);
 	
 	/**
-	 * Log a warning message
+	 * Returns a copy of the density function
 	 * 
-	 * @param s the message
+	 * @return the copy
 	 */
-	public void warning(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
-		}
-	}
-
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
-
+	public DensityFunction copy();
+	
 	
 	/**
-	 * Log an information message
+	 * Returns a pretty print for the function
 	 * 
-	 * @param s the message
+	 * @return the pretty print representation
 	 */
-	public void info(String s) {
-		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
-		}
-	}
-
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
-	/**
-	 * Log a debugging message
-	 * 
-	 * @param s the message
-	 */
-	public void debug(String s) {
-		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
-		}
-	}
-	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
-
-
-
+	public String prettyPrint();
 }
-
-
