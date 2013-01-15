@@ -43,7 +43,7 @@ import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.UtilQuery;
 
-public class InferenceTesting {
+public class InferenceChecks {
 
 
 	// logger

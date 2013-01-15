@@ -44,7 +44,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.common.InferenceTesting;
+import opendial.common.InferenceChecks;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -99,9 +99,9 @@ public class BasicRuleTest2 {
 		 
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
 	 			
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
@@ -111,21 +111,21 @@ public class BasicRuleTest2 {
 		waitUntilStable(system);
 		
 		query = new ProbQuery(system.getState(),"a_u^p");
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
-	 	InferenceTesting.checkProb(query, new Assignment("a_u^p", "None"), 0.041);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
+	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "None"), 0.041);
 
 	 	ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
-	 	InferenceTesting.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.080);
-	 	InferenceTesting.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9197);
+	 	InferenceChecks.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.080);
+	 	InferenceChecks.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9197);
 
 	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u'");
-	 	InferenceTesting.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	InferenceTesting.checkProb(query3, new Assignment("a_u'", "None"), 0.0820);
+	 	InferenceChecks.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	InferenceChecks.checkProb(query3, new Assignment("a_u'", "None"), 0.0820);
 
 	 	ProbQuery query4 = new ProbQuery(system.getState(),"a_u'");
-	 	InferenceTesting.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	InferenceTesting.checkProb(query4, new Assignment("a_u'", "None"), 0.0820);	
+	 	InferenceChecks.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	InferenceChecks.checkProb(query4, new Assignment("a_u'", "None"), 0.0820);	
 	}
 	
 	
@@ -137,11 +137,11 @@ public class BasicRuleTest2 {
 		 			
 		system.getState().getNetwork().getNode("u_u2^p'").setId("u_u2^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
-	 	InferenceTesting.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
-	 	InferenceTesting.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
-	 	InferenceTesting.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
-	 	InferenceTesting.checkProb(query, new Assignment("u_u2^p", "Could you do A?"), 0.162);
-	 	InferenceTesting.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
+	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
+	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
+	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
+	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Could you do A?"), 0.162);
+	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
 	 			
 	
 		SimpleTable table = new SimpleTable();
@@ -152,10 +152,10 @@ public class BasicRuleTest2 {
 		waitUntilStable(system);
 		
 		query = new ProbQuery(system.getState(),"i_u2");
-	 	InferenceTesting.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
-	 	InferenceTesting.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
-	 	InferenceTesting.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
-	 	InferenceTesting.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
+	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
+	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
+	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
+	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
 	}
 	
 	
@@ -166,8 +166,8 @@ public class BasicRuleTest2 {
 		waitUntilStable(system);
 		
 	 	UtilQuery query = new UtilQuery(system.getState(),"a_m'");
-	 	InferenceTesting.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
-	 	InferenceTesting.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
+	 	InferenceChecks.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
+	 	InferenceChecks.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
 	 
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
@@ -179,8 +179,8 @@ public class BasicRuleTest2 {
 		waitUntilStable(system);
 
 	 	query = new UtilQuery(system.getState(),"a_m''");
-	 	InferenceTesting.checkUtil(query, new Assignment("a_m''", "Do(A)"), -4.357);
-	 	InferenceTesting.checkUtil(query, new Assignment("a_m''", "Do(B)"), 2.357);	
+	 	InferenceChecks.checkUtil(query, new Assignment("a_m''", "Do(A)"), -4.357);
+	 	InferenceChecks.checkUtil(query, new Assignment("a_m''", "Do(B)"), 2.357);	
 	}
 	
 	
@@ -193,11 +193,11 @@ public class BasicRuleTest2 {
 
 		UtilQuery query = new UtilQuery(system.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
 
-	 	InferenceTesting.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "A")), 0.3);
-	 	InferenceTesting.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "B")), -2.9);
-	 	InferenceTesting.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
+	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), 0.05);
 	 	
 	 	assertEquals(6, (new ImportanceSampling()).queryUtility(query).getTable().size());
