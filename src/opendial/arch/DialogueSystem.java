@@ -55,6 +55,7 @@ public class DialogueSystem {
 	
 	public void showGUI() {
 		ConfigurationSettings.getInstance().showGUI(true);
+		GUIFrame.getSingletonInstance();
 	}
 	
 	

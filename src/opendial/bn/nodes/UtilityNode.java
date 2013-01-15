@@ -44,11 +44,12 @@ import opendial.utils.CombinatoricsUtils;
 public class UtilityNode extends BNode {
 
 	// logger
-	public static Logger log = new Logger("ValueNode", Logger.Level.DEBUG);
+	public static Logger log = new Logger("UtilityNode", Logger.Level.DEBUG);
 
 	// the utility distribution
 	UtilityDistribution distrib;
 
+	Set<Assignment> relevantActionsCache;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -179,46 +180,22 @@ public class UtilityNode extends BNode {
 			//			log.debug("combination " + combination + " and utility " + distrib.getUtility(combination));
 			factor.put(combination, distrib.getUtility(combination));
 		}
-		//		log.debug("cached factor: " + cachedFactor);
 		return factor;
 	}
 
 
 	/**
-	 * Returns the set of possible actions for the given input assignment
-	 * 
-	 * @param input the input assignment
-	 * @return the set of possible action values
-	 */
-	public Set<Assignment> getRelevantActions(Assignment input) {
-		return distrib.getRelevantActions(input);
-	}
-	
-	/**
 	 * Returns the set of all possible actions that are allowed by the node
 	 * 
 	 * @return the set of all relevant action values
 	 */
-	public Set<Assignment> getAllRelevantActions() {
-		
-		// here, we must be careful not to include the action nodes themselves 
-		// (else, we would create an infinite cycle of calls)
-		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
-		for (BNode inputNode : inputNodes.values()) {
-				if (!(inputNode instanceof ActionNode)) {
-				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
-				}
+	public Set<Assignment> getRelevantActions() {
+		if (relevantActionsCache == null) {
+			buildRelevantActionsCache();
 		}
-		Set<Assignment> possibleConditions = 
-			CombinatoricsUtils.getAllCombinations(possibleInputValues);
-		
-		Set<Assignment> relevantActions = new HashSet<Assignment>();
-		for (Assignment input : possibleConditions) {
-			relevantActions.addAll(getRelevantActions(input));
-		}
-		return relevantActions;
+		return relevantActionsCache;
 	}
-	
+
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -274,6 +251,25 @@ public class UtilityNode extends BNode {
 	}
 
 
+
+	protected void buildRelevantActionsCache() {
+
+		relevantActionsCache = new HashSet<Assignment>();
+		// here, we must be careful not to include the action nodes themselves 
+		// (else, we would create an infinite cycle of calls)
+		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
+		for (BNode inputNode : inputNodes.values()) {
+			if (!(inputNode instanceof ActionNode)) {
+				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
+			}
+		}
+		Set<Assignment> possibleConditions = 
+				CombinatoricsUtils.getAllCombinations(possibleInputValues);
+
+		for (Assignment input : possibleConditions) {
+			relevantActionsCache.addAll(distrib.getRelevantActions(input));
+		}
+	}
 
 
 }

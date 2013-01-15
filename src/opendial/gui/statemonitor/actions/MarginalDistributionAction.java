@@ -48,7 +48,8 @@ public final class MarginalDistributionAction extends AbstractAction {
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
 			ProbDistribution distrib = algorithm.queryProb(new ProbQuery(state, queryVariables));
 			String str = StringUtils.getHtmlRendering(distrib.prettyPrint().replace("\n", "\n<br>"));
-			this.graphViewerPopupMenu.getViewer().getStateMonitorTab().writeToLogArea("<html><font face=\"helvetica\">"+ str + "</font></html>");
+			this.graphViewerPopupMenu.getViewer().getStateMonitorTab().writeToLogArea(
+					"<html><font face=\"helvetica\">"+ str + "</font></html>");
 			for (String queryVariable: new HashSet<String>(queryVariables)) {
 			this.graphViewerPopupMenu.getViewer().getPickedVertexState().pick(queryVariable, false);
 			}

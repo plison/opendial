@@ -95,4 +95,6 @@ public class ProbQuery extends Query {
 	public String toString() {
 		return "P("+super.toString() +")";
 	}
+	
+	
 }

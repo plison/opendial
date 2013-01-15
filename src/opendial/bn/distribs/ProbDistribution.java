@@ -19,6 +19,8 @@
 
 package opendial.bn.distribs;
 
+import java.util.Collection;
+
 import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
@@ -98,4 +100,13 @@ public interface ProbDistribution  {
 	 * @throws DialException 
 	 */
 	public ContinuousProbDistribution toContinuous() throws DialException;
+	
+	
+	
+	/**
+	 * Returns the labels for the random variables the distribution is defined on.
+	 * 
+	 * @return the collection of variable labels
+	 */
+	public Collection<String> getHeadVariables();
 }

@@ -35,6 +35,7 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.DerivedActionNode;
+import opendial.bn.nodes.NodeIdChangeListener;
 import opendial.bn.nodes.UtilityNode;
 import opendial.inference.queries.Query;
 
@@ -47,7 +48,7 @@ import opendial.inference.queries.Query;
  * @version $Date:: 2012-06-11 18:13:11 #$
  *
  */
-public class BNetwork {
+public class BNetwork implements NodeIdChangeListener {
 
 	// logger
 	public static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
@@ -90,7 +91,7 @@ public class BNetwork {
 			Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
-		node.setIncludingNetwork(this);
+		node.addNodeIdChangeListener(this);
 
 		// adding the node in the type-specific collections
 		if (node instanceof ChanceNode) {
@@ -143,7 +144,7 @@ public class BNetwork {
 		}
 		else {
 			BNode node = nodes.get(nodeId);
-			node.setIncludingNetwork(null);
+			node.addNodeIdChangeListener(null);
 
 			for (BNode inputNode : node.getInputNodes()) {
 				node.removeInputNode(inputNode.getId());
@@ -187,6 +188,7 @@ public class BNetwork {
 	 * @param oldNodeId the old node identifier
 	 * @param newNodeId the new node identifier
 	 */
+	@Override
 	public synchronized void modifyNodeId(String oldNodeId, String newNodeId) {
 		BNode node = nodes.remove(oldNodeId);
 		chanceNodes.remove(oldNodeId);

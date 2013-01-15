@@ -19,6 +19,7 @@
 
 package opendial.bn.distribs.continuous;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -123,6 +124,21 @@ public class ContinuousProbabilityTable
 		else {
 			return 0.0;
 		}
+	}
+	
+	
+	
+	/**
+	 * Returns the labels for the random variables the distribution is defined on.
+	 * 
+	 * @return the collection of variable labels
+	 */
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>();
+		for (FunctionBasedDistribution subdistrib : table.values()) {
+			headVars.addAll(subdistrib.getHeadVariables());
+		}
+		return headVars;
 	}
 	
 	

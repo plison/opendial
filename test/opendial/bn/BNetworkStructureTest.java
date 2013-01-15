@@ -39,6 +39,7 @@ import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.common.NetworkExamples;
  
 /**
  * 
@@ -280,14 +281,14 @@ public class BNetworkStructureTest {
 	@Test
 	public void sortedNodes() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		assertEquals("Burglary", bn.getSortedNodes().get(7).getId());
-		assertEquals("Earthquake", bn.getSortedNodes().get(6).getId());
-		assertEquals("Alarm", bn.getSortedNodes().get(5).getId());
-		assertEquals("JohnCalls", bn.getSortedNodes().get(4).getId());
-		assertEquals("MaryCalls", bn.getSortedNodes().get(3).getId());
-		assertEquals("Action", bn.getSortedNodes().get(2).getId());
-		assertEquals("Util1", bn.getSortedNodes().get(1).getId());
-		assertEquals("Util2", bn.getSortedNodes().get(0).getId());
+		assertEquals("Action", bn.getSortedNodes().get(7).getId());
+		assertEquals("Burglary", bn.getSortedNodes().get(6).getId());
+		assertEquals("Earthquake", bn.getSortedNodes().get(5).getId());
+		assertEquals("Alarm", bn.getSortedNodes().get(4).getId());
+		assertEquals("Util1", bn.getSortedNodes().get(3).getId());
+		assertEquals("Util2", bn.getSortedNodes().get(2).getId());
+		assertEquals("JohnCalls", bn.getSortedNodes().get(1).getId());
+		assertEquals("MaryCalls", bn.getSortedNodes().get(0).getId());
 		ActionNode d1 = new ActionNode("a_m'");
 		ActionNode d2 = new ActionNode("a_m.obj'");
 		ActionNode d3 = new ActionNode("a_m.place'");
@@ -305,11 +306,8 @@ public class BNetworkStructureTest {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = NetworkExamples.constructBasicNetwork3();
 		assertTrue(bn2.getActionNode("Action") instanceof DerivedActionNode);
-		assertEquals(2, bn2.getUtilityNode("Util1").getAllRelevantActions().size());
-		assertEquals(1, bn2.getUtilityNode("Util1").getRelevantActions(new Assignment("Burglary", false)).size());
-		assertEquals(2, bn.getUtilityNode("Util1").getRelevantActions(new Assignment("Burglary", false)).size());
-		assertEquals(2, bn.getUtilityNode("Util2").getRelevantActions(new Assignment("Burglary", true)).size());
-		assertEquals(2, bn2.getUtilityNode("Util2").getRelevantActions(new Assignment("Burglary", true)).size());
+		assertEquals(2, bn2.getUtilityNode("Util1").getRelevantActions().size());
+		assertEquals(2, bn2.getUtilityNode("Util2").getRelevantActions().size());
 		assertEquals(bn.getActionNode("Action").getValues(), bn2.getActionNode("Action").getValues());
 	}
 }

@@ -50,7 +50,7 @@ import opendial.bn.values.ValueFactory;
 public class Output implements Value {
 
 	// logger
-	public static Logger log = new Logger("Output", Logger.Level.NORMAL);
+	public static Logger log = new Logger("Output", Logger.Level.DEBUG);
 	
 	// a value to set for a variable
 	// (there can only at most one per variable)
@@ -148,6 +148,16 @@ public class Output implements Value {
 	public void setValuesForVariables(Map<String,Value> newSetValues) {
 		setValues.putAll(newSetValues);
 	}
+
+	/**
+	 * Sets the values for specific variables
+	 * 
+	 * @param newSetValues the (variable,value) pairs as an assignment
+	 */
+	public void setValuesForVariables(Assignment newSetValues) {
+		setValues.putAll(newSetValues.getPairs());
+	}
+	
 	
 	/**
 	 * Sets values to discard for specific variables 
@@ -218,7 +228,7 @@ public class Output implements Value {
 		Set<String> oldToClear = new HashSet<String>(toClear);
 		toClear.clear();
 		for (String toClearVar : oldToClear) {
-			toClear.add(toClearVar+"'");
+			toClear.add(toClearVar+ending);
 		}
 	}
 	
@@ -391,8 +401,10 @@ public class Output implements Value {
 		
 		// all the discard values must be satisfied
 		for (String var : discardValues.keySet()) {
-			if (!actions.containsVar(var)) { return false; }
-			else if (actions.getValue(var).equals(discardValues.get(var))) { return false; }
+			if (actions.containsVar(var) && discardValues.get(var).
+					contains(actions.getValue(var))) {
+				return false; 
+			}
 		}
 		
 		// finally, all the other action assignment must be equal to none
@@ -438,7 +450,7 @@ public class Output implements Value {
 		}
 		for (String var : discardValues.keySet()) {
 			for (Value val : discardValues.get(var)) {
-				str += var + "-=" + val + " ^ ";
+				str += var + "!=" + val + " ^ ";
 			}
 		}
 		for (String var : addValues.keySet()) {

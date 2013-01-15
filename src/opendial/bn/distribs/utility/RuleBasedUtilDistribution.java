@@ -27,6 +27,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.statechange.AnchoredRule;
+import opendial.arch.statechange.Rule.RuleType;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
@@ -34,7 +35,6 @@ import opendial.domains.datastructs.Output;
 import opendial.domains.rules.DecisionRule;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
-import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.StochasticParameter;
@@ -49,7 +49,7 @@ import opendial.domains.rules.parameters.StochasticParameter;
 public class RuleBasedUtilDistribution implements UtilityDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleBasedDistribution", Logger.Level.NORMAL);
+	public static Logger log = new Logger("RuleBasedUtilDistribution", Logger.Level.DEBUG);
 
 	// An anchored rule
 	AnchoredRule rule;
@@ -57,7 +57,8 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	// a cache with the utility assignments
 	Map<Assignment,Double> cache;
 	
-	
+	Map<Assignment, Set<Assignment>> relevantActionsCache;
+		
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
 	// ===================================
@@ -79,6 +80,7 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 		}
 		
 		cache = new HashMap<Assignment,Double>();
+		relevantActionsCache = new HashMap<Assignment,Set<Assignment>>();
 	}
 	
 	
@@ -96,7 +98,6 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	// ===================================
 	
 	
-
 	/**
 	 * Returns the utility for Q(input), where input is the assignment
 	 * of values for both the chance nodes and the action nodes
@@ -106,11 +107,11 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 */
 	@Override
 	public double getUtility(Assignment input) {
-		if (!cache.containsKey(input)) {
-			fillCacheForCondition(input);
+		Assignment input2 = new Assignment(input);
+		if (!cache.containsKey(input2)) {
+			fillCacheForCondition(input2);
 		}
-		
-		return cache.get(input);
+		return cache.get(input2);
 	}
 	
 
@@ -124,16 +125,10 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 */
 	@Override
 	public Set<Assignment> getRelevantActions(Assignment input) {
-	
-		Assignment input2 = input.removeSpecifiers();
-
-		Set<Assignment> relevantActions = new HashSet<Assignment>();
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input2);
-		for (Output effectOutput : effectOutputs.keySet()) {
-			relevantActions.add(new Assignment(effectOutput.getAllSetValues()));
+		if (!relevantActionsCache.containsKey(input)) {
+			fillRelevantActionsCache(input);
 		}
-		
-		return relevantActions;
+		return relevantActionsCache.get(input);
 	}
 	
 	
@@ -174,6 +169,18 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	}
 
 	
+	/**
+	 * Returns the pretty print for the rule
+	 * 
+	 * @return the pretty print
+	 */
+	@Override
+	public String toString() {
+		return rule.toString();
+	}
+
+	
+	
 	
 	// ===================================
 	//  PRIVATE METHODS
@@ -187,11 +194,10 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * @param fullInput the conditional assignment
 	 */
 	private void fillCacheForCondition(Assignment fullInput) {
-		
-		Assignment input = fullInput.getTrimmed(rule.getInputVariables()).removeSpecifiers();
-		Assignment actions = new Assignment(fullInput);
+		 
+		Assignment input = fullInput.removeSpecifiers().getTrimmed(rule.getInputVariables());
+		Assignment actions = new Assignment(fullInput).removeSpecifiers().getTrimmed(rule.getOutputVariables());
 		actions.removePairs(input.getVariables());
-				
 		try {
 		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
 		for (Output effectOutput : effectOutputs.keySet()) {
@@ -201,12 +207,26 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 				cache.put(fullInput, parameterValue);
 			}
 		}
+		if (!cache.containsKey(fullInput)) {
+			cache.put(fullInput, 0.0);
+		}
 		}
 		catch (DialException e) {
 			log.warning("could not fill cache for condition " + fullInput + ": " + e.toString());
 		}
 	}
 	
+	
+	private void fillRelevantActionsCache(Assignment input) {
+		Assignment input2 = input.removeSpecifiers();
+
+		Set<Assignment> relevantActions = new HashSet<Assignment>();
+		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input2);
+		for (Output effectOutput : effectOutputs.keySet()) {
+			relevantActions.add(new Assignment(effectOutput.getAllSetValues()));
+		}
+		relevantActionsCache.put(input, relevantActions);
+	}
 
 
 }

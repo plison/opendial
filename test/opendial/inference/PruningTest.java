@@ -30,7 +30,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.NetworkExamples;
+import opendial.common.NetworkExamples;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.VariableElimination;
 import opendial.inference.queries.ProbQuery;

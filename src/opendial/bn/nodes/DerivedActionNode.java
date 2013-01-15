@@ -29,6 +29,8 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
 
 /**
  * Decision node whose action values are not explicitly specified, but are provided
@@ -41,10 +43,12 @@ import opendial.bn.values.Value;
 public class DerivedActionNode extends ActionNode {
 
 	// logger
-	public static Logger log = new Logger("AttachedDecisionNode", Logger.Level.DEBUG);
-	
+	public static Logger log = new Logger("DerivedActionNode", Logger.Level.DEBUG);
+
 	Set<Value> valueCache;
 	
+	Map<Assignment, Set<Value>> relevantActionsCache;
+
 	/**
 	 * Creates a new derived action node, with the given node identifier
 	 * 
@@ -52,9 +56,10 @@ public class DerivedActionNode extends ActionNode {
 	 */
 	public DerivedActionNode(String nodeId) {
 		super(nodeId);
+		relevantActionsCache = new HashMap<Assignment, Set<Value>>();
 	}
-	
-	
+
+
 	@Override
 	public void addOutputNode_internal(BNode node) {
 		super.addOutputNode_internal(node);
@@ -73,12 +78,12 @@ public class DerivedActionNode extends ActionNode {
 	public void removeValue(Value value) {
 		log.info("functionality not available, decision node is derived");
 	} 
-	
+
 	public void removeValues(Set<Object> values) {
 		log.info("functionality not available, decision node is derived");
 	} 
-	
-	
+
+
 	/**
 	 * Returns the factor matrix for the action node.  The matrix lists the possible
 	 * actions for the node, along with a uniform probability distribution over
@@ -90,11 +95,11 @@ public class DerivedActionNode extends ActionNode {
 	public Map<Assignment,Double> getFactor() {
 		Map<Assignment,Double> factor = new HashMap<Assignment,Double>();
 		for (Value value : getValues()) {
-			factor.put(new Assignment(nodeId, value), 1.0 / getValues().size());
+			factor.put(new Assignment(nodeId, value), 1.0 / (getValues().size()));
 		}
 		return factor;
 	}
-	
+
 	/**
 	 * Returns a probability uniformly distributed on the alternative values.
 	 * @param actionValue
@@ -112,9 +117,9 @@ public class DerivedActionNode extends ActionNode {
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
-	
-	
+
+
+
 	/**
 	 * Returns the list of values currently listed in the node
 	 * 
@@ -126,8 +131,8 @@ public class DerivedActionNode extends ActionNode {
 		}
 		return valueCache;
 	}
-	
-	
+
+
 	/**
 	 * Returns a sample point for the action, assuming a uniform distribution
 	 * over the action values
@@ -138,8 +143,8 @@ public class DerivedActionNode extends ActionNode {
 		int index = sampler.nextInt(getValues().size());
 		return new ArrayList<Value>(getValues()).get(index);
 	}
-	
-	
+
+
 	/**
 	 * Returns a sample point for the action, assuming a uniform distribution
 	 * over the action values.  The input assignment might constrain the
@@ -149,28 +154,27 @@ public class DerivedActionNode extends ActionNode {
 	 * @return
 	 */
 	public Value sample(Assignment input) {
-		
-		Set<Value> allActions = new HashSet<Value>();
-		for (BNode output : getOutputNodes()) {
-			if (output instanceof UtilityNode) {
-				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions(input);	
-				for (Assignment relevantAction : relevantActions) {
-					if (relevantAction.containsVar(nodeId)) {
-						allActions.add(relevantAction.getValue(nodeId));
-					}
-				}
-			}
+
+		if (!relevantActionsCache.containsKey(input)) {
+			buildRelevantActionsCache(input);
 		}
 		
-		int index = sampler.nextInt(allActions.size());
-		return new ArrayList<Value>(allActions).get(index);
+		Set<Value> allActions = relevantActionsCache.get(input);
+		if (!allActions.isEmpty()) {
+			int index = sampler.nextInt(allActions.size());
+			return new ArrayList<Value>(allActions).get(index);
+		}
+		else {
+		//	log.warning("cannot sample for action " + nodeId + " (no relevant actions found)");
+			return ValueFactory.none();
+		}
 	}
-	
+
 
 	// ===================================
 	//  UTILITIES
 	// ===================================
-	
+
 
 	/**
 	 * Copies the action node
@@ -183,7 +187,7 @@ public class DerivedActionNode extends ActionNode {
 		return nodeCopy;
 	}
 
-	
+
 	/**
 	 * Returns a pretty print representation of the node, which enumerates
 	 * the action values
@@ -194,8 +198,8 @@ public class DerivedActionNode extends ActionNode {
 	public String prettyPrint() {
 		return getValues().toString() + "\n";
 	}
-	
-	
+
+
 	/**
 	 * Returns a string representation of the node, which states the node identifier
 	 * followed by the action values
@@ -206,8 +210,8 @@ public class DerivedActionNode extends ActionNode {
 	public String toString() {
 		return nodeId + ": " + getValues().toString();
 	}
-	
-	
+
+
 	/**
 	 * Returns the hashcode corresponding to the action node
 	 *
@@ -218,22 +222,47 @@ public class DerivedActionNode extends ActionNode {
 		return nodeId.hashCode() + getValues().hashCode();
 	}
 
-	
+
 	/**
 	 * Builds the cache of possible action values
 	 */
 	private synchronized void buildValueCache() {
 		Set<Value> valueCacheTemp = new HashSet<Value>();
+		String formattedId = StringUtils.removeSpecifiers(nodeId);
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
-				Set<Assignment> relevantActions = ((UtilityNode)output).getAllRelevantActions();	
+				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();
 				for (Assignment relevantAction : relevantActions) {
-					if (relevantAction.containsVar(nodeId)) {
-						valueCacheTemp.add(relevantAction.getValue(nodeId));
+					if (relevantAction.containsVar(formattedId)) {
+						valueCacheTemp.add(relevantAction.getValue(formattedId));
+					}
+					else {
+						valueCacheTemp.add(ValueFactory.none());						
 					}
 				}
 			}
 		}
 		valueCache = valueCacheTemp;
+	}
+	
+	
+	private synchronized void buildRelevantActionsCache(Assignment input) {
+		String formattedId = StringUtils.removeSpecifiers(nodeId);
+		Set<Value> allActions = new HashSet<Value>();
+		for (BNode output : getOutputNodes()) {
+			if (output instanceof UtilityNode) {
+				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();	
+				for (Assignment relevantAction : relevantActions) {
+					if (relevantAction.containsVar(formattedId) &&
+							relevantAction.consistentWith(input.removeSpecifiers())) {
+						allActions.add(relevantAction.getValue(formattedId));
+					}
+					else {
+						allActions.add(ValueFactory.none());
+					}
+				}
+			}
+		}
+		relevantActionsCache.put(new Assignment(input), allActions);
 	}
 }

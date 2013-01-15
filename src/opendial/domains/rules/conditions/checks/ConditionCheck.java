@@ -78,7 +78,8 @@ final class Equal extends ConditionCheck {
 
 	public Equal (Value value) { this.expected = value; }
 	public boolean isSatisfied (Value value) { 	
-		return this.expected.equals(value); }
+		return this.expected.equals(value);
+	}
 }
 
 

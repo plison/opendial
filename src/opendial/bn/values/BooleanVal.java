@@ -28,7 +28,7 @@ package opendial.bn.values;
  * @version $Date::                      $
  *
  */
- final class BooleanVal implements Value {
+ public final class BooleanVal implements Value {
 	
 	 // the boolean
 	boolean b;
@@ -65,7 +65,7 @@ package opendial.bn.values;
 	 * 
 	 * @return
 	 */
-	public Boolean getBoolean() {return b; }
+	public boolean getBoolean() {return b; }
 	
 	/**
 	 * Copies the boolean value

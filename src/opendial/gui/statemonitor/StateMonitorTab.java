@@ -94,7 +94,7 @@ public class StateMonitorTab extends JComponent {
 	Map<String,DialogueState> states;
 
 	// the Bayesian Network viewer
-	GraphViewer visualisation;
+	DialogueStateViewer visualisation;
 
 	// the logging area at the bottom
 	JEditorPane logArea;
@@ -116,7 +116,7 @@ public class StateMonitorTab extends JComponent {
 		JPanel leftPanel = createLeftSide();
 		
 		// create the main visualisation window
-		visualisation = new GraphViewer(this);
+		visualisation = new DialogueStateViewer(this);
 		
 		// create the logging area
 		logArea = createLogArea();

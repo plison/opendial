@@ -31,9 +31,11 @@ import opendial.arch.DialException;
 import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
+import opendial.arch.statechange.Rule.RuleType;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.discrete.OutputDistribution;
 import opendial.bn.distribs.discrete.RuleBasedDistribution;
 import opendial.bn.distribs.utility.RuleBasedUtilDistribution;
@@ -44,10 +46,11 @@ import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.Value;
-import opendial.domains.rules.Rule;
-import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.PredictionRule;
+import opendial.domains.rules.UpdateRule;
 import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.StringUtils;
 
 /**
  * 
@@ -63,26 +66,21 @@ public class RuleInstantiator extends Thread {
 
 	// the dialogue state
 	DialogueState state;
-	
-	// the dialogue state controller
-	StateController controller;
 
 	// the Bayesian network for the state
 	BNetwork network;
 
 	// the rule to apply
 	Rule rule;
-	
 
-	public RuleInstantiator (DialogueState state,
-			StateController controller, Rule rule) {
+
+	public RuleInstantiator (DialogueState state, Rule rule) {
 		this.state = state;
-		this.controller = controller;
 		this.network = state.getNetwork();
 		this.rule = rule;
 	}
-		
-		
+
+
 	@Override
 	public void run() {
 		try {
@@ -94,29 +92,29 @@ public class RuleInstantiator extends Thread {
 					addRule(arule);
 				}
 			}	
-		
+
 		}
 		catch (DialException e) {
 			log.warning("could not apply rule "+ rule.getRuleId() + ", aborting: " + e.toString());
 		} 
-		
-		controller.setAsCompleted(this);
+
+		state.getController().setAsCompleted(this);
 	}
-	
-	
+
+
 	private List<AnchoredRule> anchorRule (Rule rule) {
 		List<AnchoredRule> anchoredRules = new ArrayList<AnchoredRule>();
-		
-		AnchoredRule arule = new AnchoredRule(rule, state, controller, new Assignment());
-			
+
+		AnchoredRule arule = new AnchoredRule(rule, state, new Assignment());
+
 		anchoredRules.add(arule);
-		
+
 		return anchoredRules;
 	}
 
 
 	private void addRule(AnchoredRule arule) throws DialException {
-		
+
 		BNode ruleNode = createRuleNode(arule);
 
 		// if the node already exists, it is removed 
@@ -170,44 +168,70 @@ public class RuleInstantiator extends Thread {
 
 
 	private Set<BNode> getOutputNodes(AnchoredRule arule) throws DialException {
+
 		Set<BNode> outputNodes = new HashSet<BNode>();
 
-		Set<String> outputVariables =  arule.getOutputVariables();
-
 		synchronized (network) {
-		if (arule.getRule().getRuleType() == RuleType.PROB) {
-			for (String outputVariable : outputVariables) {
-				
-				// if the node does not exist yet, it is created
-				if (!network.hasChanceNode(outputVariable)) {
-					ChanceNode outputNode = 
-							new ChanceNode(outputVariable, new OutputDistribution(outputVariable));
-					network.addNode(outputNode);
-					controller.setVariableAsNew(outputVariable);
+			for (String outputVariable : arule.getOutputVariables()) {
+				boolean isAttached = false;
+				for (int i = 1 ; i < 4 && !isAttached ; i++) {
+					String specifiedVar = outputVariable + StringUtils.createNbPrimes(i);
 
-					// adding the connection to the previous version of the variable (if any)
-					if (network.hasChanceNode(outputVariable.replaceFirst("'", ""))) {
-						outputNode.addInputNode(network.
-								getChanceNode(outputVariable.replaceFirst("'", "")));
+					// if the node does not exist yet, it is created
+					if (!network.hasNode(specifiedVar)) {
+						BNode newNode = createNewNode(specifiedVar);
+						outputNodes.add(newNode);
+						isAttached = true;
+					}
+
+					else if (state.getController().hasNewVariable(specifiedVar)){
+						outputNodes.add(network.getNode(specifiedVar));
+						isAttached = true;
 					}
 				}
-				else {
-					
-				}
-				outputNodes.add(network.getChanceNode(outputVariable));
 			}
+		}
+
+		return outputNodes;
+	}
+
+
+	public BNode createNewNode(String outputVar) throws DialException {
+		
+		if (rule.getRuleType() == RuleType.PROB) {
+			
+			ChanceNode outputNode = 
+					new ChanceNode(outputVar, new OutputDistribution(outputVar));
+			network.addNode(outputNode);
+			state.getController().setVariableAsNew(outputVar);
+
+			// adding the connection to the previous version of the variable (if any)
+			if (network.hasChanceNode(outputVar.replaceFirst("'", "")) && !(rule instanceof PredictionRule)) {
+				outputNode.addInputNode(network.
+						getChanceNode(outputVar.replaceFirst("'", "")));
+			}
+			
+			// adding the connection between the predicted and observed values
+			String predictEquiv = StringUtils.removeSpecifiers(outputVar) + "^p";
+			if (network.hasChanceNode(predictEquiv) && 
+					!outputVar.equals(predictEquiv) && !outputVar.contains("^p")) {
+				ChanceNode equalityNode = new ChanceNode(network.getUniqueNodeId("="));
+				equalityNode.addInputNode(outputNode);
+				equalityNode.addInputNode(network.getNode(predictEquiv));
+				equalityNode.setDistrib(new EqualityDistribution(equalityNode.getId(), 
+						StringUtils.removeSpecifiers(outputVar)));
+				state.addEvidence(new Assignment(equalityNode.getId(), true));
+				network.addNode(equalityNode);
+			}
+			return outputNode;
+			
 		}
 		else {
-			for (String outputVariable : outputVariables) {
-				if (!network.hasActionNode(outputVariable)) {
-					DerivedActionNode outputNode = new DerivedActionNode(outputVariable);
-					network.addNode(outputNode);
-				}
-				outputNodes.add(network.getActionNode(outputVariable));
-			}
+			DerivedActionNode actionNode = new DerivedActionNode(outputVar);
+			network.addNode(actionNode);
+			state.getController().setVariableAsNew(outputVar);
+			return actionNode;
 		}
-		}	
-		return outputNodes;
 	}
 
 }

@@ -19,6 +19,7 @@
 
 package opendial.bn.distribs.discrete;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.AbstractProbabilityTable;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
+import opendial.bn.distribs.continuous.FunctionBasedDistribution;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
 
@@ -285,7 +287,21 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	}
 
 
-
+	/**
+	 * Returns the labels for the random variables the distribution is defined on.
+	 * 
+	 * @return the collection of variable labels
+	 */
+	@Override
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>();
+		for (SimpleTable subdistrib : table.values()) {
+			headVars.addAll(subdistrib.getHeadVariables());
+		}
+		return headVars;
+	}
+	
+	
 	// ===================================
 	//  UTILITIES
 	// ===================================

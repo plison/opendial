@@ -37,6 +37,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
@@ -101,7 +102,7 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 	 * @throws DialException if the inference operation failed
 	 */
 	@Override
-	public UtilityDistribution queryUtility(UtilQuery query) throws DialException {
+	public UtilityTable queryUtility(UtilQuery query) throws DialException {
 		
 		// do a hybrid probability/utility query
 		DistributionCouple couple = queryJoint(query);

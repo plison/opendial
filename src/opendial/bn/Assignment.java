@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of an assignment of variables (expressed via their unique identifiers) 
@@ -413,7 +414,7 @@ public class Assignment {
 	public Assignment removeSpecifiers() {
 		Assignment a = new Assignment();
 		for (String var : map.keySet()) {
-			String s = var.replace("'", "").replace("^p", "").replace("^o", "");
+			String s = StringUtils.removeSpecifiers(var);
 			a.addPair(s, map.get(var));
 		}
 		return a;
@@ -604,6 +605,7 @@ public class Assignment {
 		return map.get(var);
 	}
 	
+
 	
 	/**
 	 * Returns the values corresponding to the variable labels given as argument.

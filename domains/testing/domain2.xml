@@ -1,10 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <domain>
 
-<initialstate>
-<variable label="i_u">
+	<initialstate>
+		<variable id="i_u">
+			<value prob="0.7">Want(A)</value>
+			<value prob="0.3">Want(B)</value>
+		</variable>
+		
+		<variable id="i_u2">
+			<value prob="0.6">Want(A)</value>
+			<value prob="0.2">Want(B)</value>
+			<value prob="0.1">Want(C)</value>
+		</variable>
+		
+				
+	</initialstate>
+
+	<model type="prediction" trigger="i_u">
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+				</condition>
+				<effect prob="0.9">
+					<set var="a_u" value="Ask({X})" />
+				</effect>
+				<effect prob="0.1">
+					<clear var="a_u"/>
+				</effect>
+			</case>
+		</rule>
+	</model>
 
 
-</variable>
-</initialstate>
+	<model type="prediction" trigger="i_u2">
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u2" value="Want({X})" />
+				</condition>
+				<effect prob="0.9">
+					<set var="a_u2" value="Ask({X})" />
+				</effect>
+				<effect prob="0.1">
+					<clear var="a_u2"/>
+				</effect>
+			</case>
+		</rule>
+	</model>
+	
+	
+	<model type="prediction" trigger="a_u2^p">
+	
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u2^p" value="Ask({X})" />
+				</condition>
+				<effect prob="0.4">
+					<set var="u_u2" value="Do {X}" />
+				</effect>
+				<effect prob="0.3">
+					<set var="u_u2" value="Please do {X}" />
+				</effect>
+				<effect prob="0.3">
+					<set var="u_u2" value="Could you do {X}?" />
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
 
+
+	<model type="decision" trigger="i_u">
+	
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+				</condition>
+				<effect util="3">
+					<set var="a_m" value="Do({X})"/>
+				</effect>
+			</case>
+		</rule>
+		
+		
+				<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+				</condition>
+				<effect util="-5">
+					<set var="a_m" value="Do({X})"  relation="!="/>
+				</effect>
+			</case>
+		</rule>
+			
+	
+	</model>
+
+ 
 </domain>

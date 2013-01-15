@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import java.util.List;
 import java.util.Map;
@@ -138,6 +139,21 @@ public class EmpiricalDistribution implements ProbDistribution {
 		return samples.size();
 	}
 
+	
+	/**
+	 * Returns the labels for the random variables the distribution is defined on.
+	 * 
+	 * @return the collection of variable labels
+	 */
+	@Override
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>();
+		for (Assignment a : samples) {
+			headVars.addAll(a.getVariables());
+		}
+		return headVars;
+	}
+	
 	
 	// ===================================
 	//  CONVERSION METHODS

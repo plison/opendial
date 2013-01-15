@@ -27,12 +27,14 @@ import java.util.Set;
 import java.util.Stack;
 
 import opendial.arch.Logger;
+import opendial.arch.statechange.DistributionRule;
+import opendial.arch.statechange.Rule;
 import opendial.arch.statechange.StateController;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.BNode;
-import opendial.domains.rules.Rule;
-import opendial.modules.AttachedModule;
+import opendial.modules.SynchronousModule;
 
 /**
  * 
@@ -52,6 +54,7 @@ public class DialogueState {
 
 	StateController controller;
 
+	boolean isFictive = false;
 	
 	public DialogueState() {
 		this(new BNetwork());
@@ -78,31 +81,17 @@ public class DialogueState {
 		return network;
 	}
 
-	public void attachModule(AttachedModule module) {
+	public void attachModule(SynchronousModule module) {
 		controller.attachModule(module);
 	}
 
-	public synchronized void addNode(BNode node) {
-		if (!network.hasNode(node.getId())) {
-		network.addNode(node);
-		}
-		else if (!network.hasNode(node.getId()+"'")) {
-			node.setId(node.getId()+"'");
-			network.addNode(node);
-		}
-		else if (!network.hasNode(node.getId()+"''")) {
-			node.setId(node.getId()+"''");
-			network.addNode(node);
-		}
-		else {
-			return;
-		}
-		controller.setVariableAsNew(node.getId());
-		controller.triggerUpdates();
+	public void addContent(ProbDistribution distrib, String origin) 
+			throws DialException {
+		origin = network.getUniqueNodeId(origin);
+		applyRule(new DistributionRule(distrib, origin));
 	}
-	
 		
-	public synchronized void applyRule(Rule rule) throws DialException {
+	public void applyRule(Rule rule) throws DialException {
 		controller.applyRule(rule);
 	}
 
@@ -114,13 +103,37 @@ public class DialogueState {
 		return stateCopy;
 	}
 	
-	public synchronized void triggerUpdates() {
+	public void triggerUpdates() {
 		controller.triggerUpdates();
 	}
 	
 	
-	public synchronized boolean isStable() {
+	public boolean isStable() {
 		return controller.isStable();
+	}
+	
+	public void setAsFictive(boolean fictive) {
+		this.isFictive = fictive;
+	}
+	
+	public boolean isFictive() {
+		return isFictive;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "Current network: ";
+		s += network.toString();
+		if (!evidence.isEmpty()) {
+			s += " (with evidence " + evidence + ")";
+		}
+		s += "\n" + controller.toString();
+		return s;
+	}
+
+	
+	public StateController getController() {
+		return controller;
 	}
 
 	

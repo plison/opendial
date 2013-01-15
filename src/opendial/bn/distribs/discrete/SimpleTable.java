@@ -19,6 +19,7 @@
 
 package opendial.bn.distribs.discrete;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -394,6 +395,16 @@ public class SimpleTable implements DiscreteProbDistribution {
 	}
 
 
+	
+	/**
+	 * Returns the set of variable labels used in the table
+	 * 
+	 * @return the variable labels in the table
+	 */
+	@Override
+	public Collection<String> getHeadVariables() {
+		return new HashSet<String>(headVars);
+	}
 
 	// ===================================
 	//  UTILITIES

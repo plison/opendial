@@ -41,7 +41,7 @@ public class DistributionCouple {
 	ProbDistribution probDistrib;
 	
 	// utility distribution
-	UtilityDistribution utilityDistrib;
+	UtilityTable utilityDistrib;
 
 	/**
 	 * Creates a new couple of probability / utility distributions
@@ -49,7 +49,7 @@ public class DistributionCouple {
 	 * @param probDistrib the probability distribution
 	 * @param valueDistrib the utility distribution
 	 */
-	public DistributionCouple(ProbDistribution probDistrib, UtilityDistribution valueDistrib) {
+	public DistributionCouple(ProbDistribution probDistrib, UtilityTable valueDistrib) {
 		this.probDistrib = probDistrib;
 		this.utilityDistrib = valueDistrib;
 	}
@@ -80,7 +80,7 @@ public class DistributionCouple {
 	 * 
 	 * @return the utility distribution
 	 */
-	public UtilityDistribution getUtilityDistrib() {
+	public UtilityTable getUtilityDistrib() {
 		return utilityDistrib;
 	}
 }

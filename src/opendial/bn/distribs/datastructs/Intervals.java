@@ -89,13 +89,34 @@ public class Intervals<T> {
 			}
 			switch (intervals[mid].compareTo(rand)) {
 			case +1: max = mid - 1; break;
-			case 0: return intervals[mid].getObject(); 
+			case 0: 
+				T result = intervals[mid].getObject(); 
+				if (result == null) {
+					log.warning("result of sampling with intervals is null (mid=" + mid+")");
+					log.warning("intervals: " + this);
+				}
+				return result;
 			case -1 : min = mid + 1; break;
 			}
 		}
 		
 		throw new DialException("could not sample given the intervals");
 		
+	}
+	
+	
+	/**
+	 * Returns a string representation of the intervals
+	 * 
+	 * @return the string representation
+	 */
+	@Override
+	public String toString() {
+		String s =  "";
+		for (int i=0; i< intervals.length ; i++) {
+			s += intervals[i].toString()  + "\n";
+		}
+		return s;
 	}
 }
 
@@ -171,6 +192,6 @@ final class Interval<T> {
 	 * @return the string representation
 	 */
 	public String toString() {
-		return "[" + start + "," + end + "]";
+		return a + "[" + start + "," + end + "]";
 	}
 }

@@ -55,12 +55,12 @@ implements MouseListener {
 	// logger
 	public static Logger log = new Logger("GraphViewerPopupMenu", Logger.Level.DEBUG);
 	
-	private GraphViewer viewer;
+	private DialogueStateViewer viewer;
 	
-    public GraphViewerPopupMenu(GraphViewer viewer) {
+    public GraphViewerPopupMenu(DialogueStateViewer viewer) {
         this(viewer, MouseEvent.BUTTON3_MASK);
     }
-    public GraphViewerPopupMenu(GraphViewer viewer, int modifiers) {
+    public GraphViewerPopupMenu(DialogueStateViewer viewer, int modifiers) {
         super(modifiers);
     	this.setViewer(viewer);
     }
@@ -142,10 +142,10 @@ implements MouseListener {
 	}
     
 
-	public GraphViewer getViewer() {
+	public DialogueStateViewer getViewer() {
 		return viewer;
 	}
-	public void setViewer(GraphViewer viewer) {
+	public void setViewer(DialogueStateViewer viewer) {
 		this.viewer = viewer;
 	}
 

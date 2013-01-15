@@ -19,9 +19,11 @@
 
 package opendial.domains.rules;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import opendial.arch.Logger;
+import opendial.arch.statechange.Rule;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.conditions.VoidCondition;
@@ -74,9 +76,12 @@ public class PredictionRule extends CaseBasedRule implements Rule {
 	 */
 	@Override
 	public Map<Output,Parameter> getEffectOutputs (Assignment input) {
-		Map<Output,Parameter> outputs = super.getEffectOutputs(input);
-		for (Output o : outputs.keySet()) {
-			o.addEndingToVariables("^p");
+		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
+		for (Output o : super.getEffectOutputs(input).keySet()) {
+			Output o2 = o.copy();
+			o2.addEndingToVariables("^p");
+			log.debug("output: " + o2);
+			outputs.put(o2, super.getEffectOutputs(input).get(o));
 		}
 		return outputs;
 	}
