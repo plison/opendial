@@ -45,7 +45,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.common.InferenceTesting;
+import opendial.common.InferenceChecks;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -82,8 +82,8 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u'");
 		
-		InferenceTesting.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
-		InferenceTesting.checkProb(query, new Assignment("a_u'", "None"), 0.2);
+		InferenceChecks.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
+		InferenceChecks.checkProb(query, new Assignment("a_u'", "None"), 0.2);
 	}
 
 
@@ -95,8 +95,8 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"i_u'");
 		
-		InferenceTesting.checkProb(query, new Assignment("i_u'", "Inform"), 0.7*0.8);
-		InferenceTesting.checkProb(query, new Assignment("i_u'", "None"), 1-0.7*0.8);
+		InferenceChecks.checkProb(query, new Assignment("i_u'", "Inform"), 0.7*0.8);
+		InferenceChecks.checkProb(query, new Assignment("i_u'", "None"), 1-0.7*0.8);
 	}
 
 	@Test
@@ -107,9 +107,9 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"direction'");
 		
-		InferenceTesting.checkProb(query, new Assignment("direction'", "straight"), 0.79);
-		InferenceTesting.checkProb(query, new Assignment("direction'", "left"), 0.20);
-		InferenceTesting.checkProb(query, new Assignment("direction'", "right"), 0.01);
+		InferenceChecks.checkProb(query, new Assignment("direction'", "straight"), 0.79);
+		InferenceChecks.checkProb(query, new Assignment("direction'", "left"), 0.20);
+		InferenceChecks.checkProb(query, new Assignment("direction'", "right"), 0.01);
 		
 	}
 
@@ -122,9 +122,9 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o'");
 
-		InferenceTesting.checkProb(query, new Assignment("o'", "and we have var1=value2"), 0.3);
-		InferenceTesting.checkProb(query, new Assignment("o'", "and we have localvar=value1"), 0.20);
-		InferenceTesting.checkProb(query, new Assignment("o'", "and we have localvar=value3"), 0.28);
+		InferenceChecks.checkProb(query, new Assignment("o'", "and we have var1=value2"), 0.3);
+		InferenceChecks.checkProb(query, new Assignment("o'", "and we have localvar=value1"), 0.20);
+		InferenceChecks.checkProb(query, new Assignment("o'", "and we have localvar=value3"), 0.28);
 	}
 
 
@@ -136,9 +136,9 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o2'");
 	
-		InferenceTesting.checkProb(query, new Assignment("o2'", "here is value1"), 0.35);
-		InferenceTesting.checkProb(query, new Assignment("o2'", "and value2 is over there"), 0.07);
-		InferenceTesting.checkProb(query, new Assignment("o2'", "value3, finally"), 0.28);
+		InferenceChecks.checkProb(query, new Assignment("o2'", "here is value1"), 0.35);
+		InferenceChecks.checkProb(query, new Assignment("o2'", "and value2 is over there"), 0.07);
+		InferenceChecks.checkProb(query, new Assignment("o2'", "value3, finally"), 0.28);
 
 	}
 
@@ -154,9 +154,9 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o''");
 		
-		InferenceTesting.checkProb(query, new Assignment("o''", "and we have var1=value2"), 0.93);
-		InferenceTesting.checkProb(query, new Assignment("o''", "and we have localvar=value1"), 0.02);
-		InferenceTesting.checkProb(query, new Assignment("o''", "and we have localvar=value3"), 0.028);
+		InferenceChecks.checkProb(query, new Assignment("o''", "and we have var1=value2"), 0.93);
+		InferenceChecks.checkProb(query, new Assignment("o''", "and we have localvar=value1"), 0.02);
+		InferenceChecks.checkProb(query, new Assignment("o''", "and we have localvar=value3"), 0.028);
 
 	}
 
@@ -169,9 +169,9 @@ public class BasicRuleTest {
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u2'");
 		
-		InferenceTesting.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
-		InferenceTesting.checkProb(query, new Assignment("a_u2'", "none"), 0.1);
-		InferenceTesting.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
+		InferenceChecks.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
+		InferenceChecks.checkProb(query, new Assignment("a_u2'", "none"), 0.1);
+		InferenceChecks.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
 
 	}
 
@@ -216,16 +216,16 @@ public class BasicRuleTest {
 		ProbQuery query6 = new ProbQuery(system.getState().getNetwork(),greetNode+"'");
 		ProbQuery query7 = new ProbQuery(system.getState().getNetwork(),howareyouNode+"'");
 
-		InferenceTesting.checkProb(query, new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]"), 0.7);
-		InferenceTesting.checkProb(query, new Assignment("a_u3'", "none"), 0.1);
-		InferenceTesting.checkProb(query, new Assignment("a_u3'", "[" + howareyouNode + "]"), 0.2);
-		InferenceTesting.checkProb(query2, new Assignment(greetNode+".start'", 0), 0.7);
-		InferenceTesting.checkProb(query3, new Assignment(greetNode+".end'", 5), 0.7);
-		InferenceTesting.checkProb(query4, new Assignment(howareyouNode+".start'", 12), 0.7);
-		InferenceTesting.checkProb(query5, new Assignment(howareyouNode+".end'", 23), 0.7);
-		InferenceTesting.checkProb(query5, new Assignment(howareyouNode+".end'", 22), 0.2);
-		InferenceTesting.checkProb(query6,  new Assignment(greetNode+"'", "Greet"), 0.7);
-		InferenceTesting.checkProb(query7,  new Assignment(howareyouNode+"'", "HowAreYou"), 0.9);
+		InferenceChecks.checkProb(query, new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]"), 0.7);
+		InferenceChecks.checkProb(query, new Assignment("a_u3'", "none"), 0.1);
+		InferenceChecks.checkProb(query, new Assignment("a_u3'", "[" + howareyouNode + "]"), 0.2);
+		InferenceChecks.checkProb(query2, new Assignment(greetNode+".start'", 0), 0.7);
+		InferenceChecks.checkProb(query3, new Assignment(greetNode+".end'", 5), 0.7);
+		InferenceChecks.checkProb(query4, new Assignment(howareyouNode+".start'", 12), 0.7);
+		InferenceChecks.checkProb(query5, new Assignment(howareyouNode+".end'", 23), 0.7);
+		InferenceChecks.checkProb(query5, new Assignment(howareyouNode+".end'", 22), 0.2);
+		InferenceChecks.checkProb(query6,  new Assignment(greetNode+"'", "Greet"), 0.7);
+		InferenceChecks.checkProb(query7,  new Assignment(howareyouNode+"'", "HowAreYou"), 0.9);
 		
 	}
 
