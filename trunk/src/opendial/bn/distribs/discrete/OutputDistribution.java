@@ -20,6 +20,7 @@
 package opendial.bn.distribs.discrete;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,7 +38,6 @@ import opendial.domains.datastructs.Output;
 
 
 /**
- * HERE, THE SAMPLING IS TERRIBLY INEFFICIENT!
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -270,6 +270,18 @@ public class OutputDistribution implements DiscreteProbDistribution {
 		else {
 			return outputVar+"^o";
 		}
+	}
+	
+	
+	/**
+	 * Returns a singleton set with the label of the output
+	 * 
+	 * @return the singleton set with the output label
+	 */
+	@Override
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>(Arrays.asList(outputVar+primes));
+		return headVars;
 	}
 
 }

@@ -153,5 +153,33 @@ public class StringUtils {
 		}
 		return rawString;
 	}
+
+
+	/**
+	 * Returns a reduced version of the label, where all optional specifiers
+	 * are removed
+	 * 
+	 * @param label the original variable label
+	 * @return the corrected label
+	 */
+	public static String removeSpecifiers(String label) {
+		return label.replace("'", "");
+	}
+	
+
+	/**
+	 * Create a string with a specific number of primes
+	 * 
+	 * @param nbPrimes the number of primes
+	 * @return the generated string
+	 */
+	public static String createNbPrimes(int nbPrimes) {
+		String s = "";
+		for (int i = 0 ; i < nbPrimes ; i++) {
+			s+= "'";
+		}
+		return s;
+	}
+
 	
 }

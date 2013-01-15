@@ -19,6 +19,9 @@
 
 package opendial.bn.distribs.continuous;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -255,6 +258,17 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	}
 
 
+	/**
+	 * Returns a singleton set with the variable label
+	 * 
+	 * @return a singleton set with the variable label
+	 */
+	@Override
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>(Arrays.asList(variable));
+		return headVars;
+	}
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================

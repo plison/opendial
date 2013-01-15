@@ -53,7 +53,6 @@ public class ConditionCheckFactory {
 				
 		// we first fill the possible slots in the expected value
 		TemplateString filledExpectedVal = expectedVal.fillSlotsPartial(input);
-		
 		// creating a string match check
 		if (rel == Relation.EXACT_MATCH) {
 		 return new StringMatch(filledExpectedVal, false);
@@ -79,6 +78,9 @@ public class ConditionCheckFactory {
 		}
 		else if (rel == Relation.UNEQUAL || rel == Relation.NOT_CONTAINS) {
 			return new True();
+		}
+		else if (rel == Relation.EQUAL){
+			return new StringMatch(filledExpectedVal, false);
 		}
 		return new False();
 	}

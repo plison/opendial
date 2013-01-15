@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.arch.statechange.Rule;
 import opendial.bn.Assignment;
 import opendial.bn.values.DoubleVal;
 import opendial.domains.datastructs.Output;

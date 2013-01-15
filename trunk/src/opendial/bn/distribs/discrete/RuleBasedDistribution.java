@@ -19,13 +19,18 @@
 
 package opendial.bn.distribs.discrete;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.statechange.AnchoredRule;
+import opendial.arch.statechange.Rule.RuleType;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
@@ -33,7 +38,6 @@ import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
-import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.StochasticParameter;
@@ -179,7 +183,17 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	}
 
 	
+	/**
+	 * Returns a singleton set with the label of the anchored rule
+	 * 
+	 * @return a singleton set with the label of the anchored rule
+	 */
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>(Arrays.asList(id));
+		return headVars;
+	}
 
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -228,6 +242,7 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	}
 
 	
+	
 	/**
 	 * Returns the pretty print for the rule
 	 * 
@@ -239,13 +254,22 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	}
 
 	
+	/**
+	 * Returns the pretty print for the rule
+	 * 
+	 * @return the pretty print
+	 */
+	@Override
+	public String toString() {
+		return rule.toString();
+	}
+
+	
 	
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
 	
-	int nbLeft = 0;
-	int nbRight = 0;
 
 	/**
 	 * Fills the cache with the SimpleTable representing the rule output for the

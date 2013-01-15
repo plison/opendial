@@ -30,6 +30,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.statechange.Rule.RuleType;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
@@ -246,9 +247,7 @@ public class Case {
 		for (Effect e : effects.keySet()) {
 			str += e.toString();
 			if (effects.get(e) instanceof FixedParameter) {
-				if (((FixedParameter)effects.get(e)).getParameterValue() < 0.99) {
 				str += " [" + effects.get(e) + "]";
-			}
 			}
 			else if (effects.get(e) instanceof StochasticParameter) {
 				str += " [" + effects.get(e) + "]";

@@ -62,8 +62,8 @@ public abstract class BNode implements Comparable<BNode> {
 	// set of nodes with outgoing relations to the node
 	Map<String,BNode> outputNodes;
 
-	// Bayesian Network including the network, if any
-	BNetwork includingNetwork;
+	// objects listening to changes of identifiers for this node
+	List<NodeIdChangeListener> nodeIdChangeListeners;
 
 
 	// ===================================
@@ -81,6 +81,7 @@ public abstract class BNode implements Comparable<BNode> {
 		this.nodeId = nodeId;
 		inputNodes = new HashMap<String,BNode>();
 		outputNodes = new HashMap<String,BNode>();
+		nodeIdChangeListeners = new LinkedList<NodeIdChangeListener>();
 	}
 
 	/**
@@ -159,20 +160,20 @@ public abstract class BNode implements Comparable<BNode> {
 		for (BNode outputNode : outputNodes.values()) {
 			outputNode.modifyNodeId(oldNodeId, newNodeId);
 		}
-		if (includingNetwork != null) {
-			includingNetwork.modifyNodeId(oldNodeId, newNodeId);
+		for (NodeIdChangeListener listener : 
+			new HashSet<NodeIdChangeListener>(nodeIdChangeListeners)) {
+			listener.modifyNodeId(oldNodeId, newNodeId);
 		}
 	}
 
 
 	/**
-	 * Specifies that the given network includes the node (useful when the node
-	 * label needs to be changed)
+	 * Adds the given listener on node identifier changes
 	 * 
-	 * @param network the Bayesian Network
+	 * @param listener the listener to add
 	 */
-	public synchronized void setIncludingNetwork(BNetwork network) {
-		includingNetwork = network;
+	public synchronized void addNodeIdChangeListener(NodeIdChangeListener listener) {
+		nodeIdChangeListeners.add(listener);
 	}
 
 
@@ -427,25 +428,6 @@ public abstract class BNode implements Comparable<BNode> {
 	@Override
 	public synchronized int compareTo(BNode otherNode) {
 
-
-		// ensure that the utility nodes are last, and that the decision
-		// nodes next-to-last in the ordering
-		if (this instanceof UtilityNode) {
-			return (otherNode instanceof UtilityNode)? 0 : -1000;
-		}
-		else if (otherNode instanceof UtilityNode) { return +1000;	}
-
-		else if (this instanceof ActionNode) {
-			if (otherNode instanceof ActionNode) {
-				return (nodeId.compareTo(otherNode.getId()) < 0) ? +1 : -1; 
-			}
-			else { return -500; }
-		}
-		else if (otherNode instanceof ActionNode) {
-			return 500;
-		}
-
-
 		// if one node has no incoming nodes, the answer is straightforward
 		if (!otherNode.getInputNodeIds().isEmpty() && getInputNodeIds().isEmpty()) {
 			return +100;
@@ -455,7 +437,14 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 
 		// if both nodes have no ancestors, rely on lexicographic ordering
+		// (and put action nodes first)
 		else if (otherNode.getInputNodeIds().isEmpty() && getInputNodeIds().isEmpty()) {
+			if (this instanceof ActionNode && !(otherNode instanceof ActionNode)) {
+				return +10;
+			}
+			else if (otherNode instanceof ActionNode && !(this instanceof ActionNode)) {
+				return -10;
+			}
 			return (nodeId.compareTo(otherNode.getId()) < 0) ? +1 : -1;
 		} 
 

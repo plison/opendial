@@ -122,4 +122,9 @@ public abstract class Query {
 	}
 
 	
+	public int hashCode() {
+		return queryVars.hashCode() - network.hashCode() 
+				+2*evidence.hashCode() -3*conditionalVars.hashCode();
+	}
+	
 }

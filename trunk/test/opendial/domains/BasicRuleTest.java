@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 
 import org.junit.Test;
@@ -34,13 +36,16 @@ import opendial.arch.DialException;
 import opendial.arch.DialogueState;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
+import opendial.arch.statechange.DistributionRule;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.common.InferenceTesting;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -66,7 +71,7 @@ public class BasicRuleTest {
 
 	static {
 		try { domain = XMLDomainReader.extractDomain(domainFile); } 
-		catch (DialException e) { log.warning ("domain cannot be read"); }
+		catch (DialException e) { log.warning ("domain cannot be read " + e); }
 	}
 
 	@Test
@@ -76,38 +81,22 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u'");
-		InferenceAlgorithm inference;
-		inference= new VariableElimination();
-		ProbDistribution distrib = inference.queryProb(query);
-		assertEquals(0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u'", "Greeting")), 0.01);
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u'", "None")), 0.01);
-
-		inference = new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u'", "Greeting")), 0.1);
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u'", "None")), 0.1);
+		
+		InferenceTesting.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
+		InferenceTesting.checkProb(query, new Assignment("a_u'", "None"), 0.2);
 	}
 
 
-	@Test
+	@Test 
 	public void test2() throws DialException {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem(); 
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"i_u'");
-		ProbDistribution distrib = null;
-		InferenceAlgorithm inference;
-		inference= new VariableElimination();
-		distrib = inference.queryProb(query);
-		assertEquals(0.7*0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("i_u'", "Inform")), 0.01);
-		assertEquals(1-0.7*0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("i_u'", "None")), 0.01);
-
-		inference = new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.7*0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("i_u'", "Inform")), 0.1);
-		assertEquals(1-0.7*0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("i_u'", "None")), 0.1);
-
+		
+		InferenceTesting.checkProb(query, new Assignment("i_u'", "Inform"), 0.7*0.8);
+		InferenceTesting.checkProb(query, new Assignment("i_u'", "None"), 1-0.7*0.8);
 	}
 
 	@Test
@@ -117,20 +106,11 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"direction'");
-		ProbDistribution distrib = null;
-		InferenceAlgorithm inference;
-		inference= new VariableElimination();
-		distrib = inference.queryProb(query);
-		assertEquals(0.79, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "straight")), 0.01);
-		assertEquals(0.20, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "left")), 0.01);		
-		assertEquals(0.01, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "right")), 0.01);		
-
-		inference= new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.77, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "straight")), 0.1);
-		assertEquals(0.22, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "left")), 0.1);		
-		assertEquals(0.01, distrib.toDiscrete().getProb(new Assignment(), new Assignment("direction'", "right")), 0.1);		
-
+		
+		InferenceTesting.checkProb(query, new Assignment("direction'", "straight"), 0.79);
+		InferenceTesting.checkProb(query, new Assignment("direction'", "left"), 0.20);
+		InferenceTesting.checkProb(query, new Assignment("direction'", "right"), 0.01);
+		
 	}
 
 
@@ -141,19 +121,10 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o'");
-		ProbDistribution distrib = null;
-		InferenceAlgorithm inference;
-		inference= new VariableElimination();
-		distrib = inference.queryProb(query);
-		assertEquals(0.3, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have var1=value2")), 0.01);
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value1")), 0.01);		
-		assertEquals(0.28, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value3")), 0.01);		
 
-		inference= new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.3, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have var1=value2")), 0.1);
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value1")), 0.1);		
-		assertEquals(0.28, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value3")), 0.1);		
+		InferenceTesting.checkProb(query, new Assignment("o'", "and we have var1=value2"), 0.3);
+		InferenceTesting.checkProb(query, new Assignment("o'", "and we have localvar=value1"), 0.20);
+		InferenceTesting.checkProb(query, new Assignment("o'", "and we have localvar=value3"), 0.28);
 	}
 
 
@@ -164,19 +135,11 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o2'");
-		ProbDistribution distrib = null;	
-		InferenceAlgorithm inference;
-		inference= new VariableElimination();
-		distrib = inference.queryProb(query);
-		assertEquals(0.35, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "here is value1")), 0.01);
-		assertEquals(0.07, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "and value2 is over there")), 0.01);		
-		assertEquals(0.28, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "value3, finally")), 0.01);		
+	
+		InferenceTesting.checkProb(query, new Assignment("o2'", "here is value1"), 0.35);
+		InferenceTesting.checkProb(query, new Assignment("o2'", "and value2 is over there"), 0.07);
+		InferenceTesting.checkProb(query, new Assignment("o2'", "value3, finally"), 0.28);
 
-		inference= new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.35, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "here is value1")), 0.1);
-		assertEquals(0.07, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "and value2 is over there")), 0.1);		
-		assertEquals(0.28, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o2'", "value3, finally")), 0.1);		
 	}
 
 	@Test
@@ -185,37 +148,16 @@ public class BasicRuleTest {
 		system.startSystem(); 
 		waitUntilStable(system);
 
-		// Making up for the lack of pruner for the moment
-		for (BNode n : new ArrayList<BNode>(
-				system.getState().getNetwork().getNodes())) {
-			if (!n.getId().contains("'")) {
-				n.setId(n.getId()+"^o");
-			}
-			else {
-				n.setId(n.getId().replace("'", ""));
-			}
-		}
-		ChanceNode node = new ChanceNode("var1");
-		node.addProb(ValueFactory.create("value2"), 0.9);
-		system.getState().addNode(node);
-
+		SimpleTable table = new SimpleTable();
+		table.addRow(new Assignment("var1", "value2"), 0.9);
+		system.getState().addContent(table, "test6");
 		waitUntilStable(system);
+		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o''");
+		
+		InferenceTesting.checkProb(query, new Assignment("o''", "and we have var1=value2"), 0.93);
+		InferenceTesting.checkProb(query, new Assignment("o''", "and we have localvar=value1"), 0.02);
+		InferenceTesting.checkProb(query, new Assignment("o''", "and we have localvar=value3"), 0.028);
 
-		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o'");
-		ProbDistribution distrib = null;	
-		InferenceAlgorithm inference;
-
-		inference= new VariableElimination(); 
-		distrib = inference.queryProb(query);
-		assertEquals(0.93, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have var1=value2")), 0.01);
-		assertEquals(0.02, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value1")), 0.01);		
-		assertEquals(0.03, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value3")), 0.01);		
-
-		inference= new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.93, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have var1=value2")), 0.1);
-		assertEquals(0.02, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value1")), 0.1);		
-		assertEquals(0.03, distrib.toDiscrete().getProb(new Assignment(), new Assignment("o'", "and we have localvar=value3")), 0.1);		
 	}
 
 
@@ -226,22 +168,10 @@ public class BasicRuleTest {
 		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u2'");
-		ProbDistribution distrib = null;	
-		InferenceAlgorithm inference;
-
-		inference= new VariableElimination(); 
-		distrib = inference.queryProb(query);
-
-		distrib = inference.queryProb(query);
-		assertEquals(0.7, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "[HowAreYou, Greet]")), 0.01);
-		assertEquals(0.1, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "none")), 0.01);		
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "[HowAreYou]")), 0.01);		
-
-		inference= new ImportanceSampling();
-		distrib = inference.queryProb(query);
-		assertEquals(0.7, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "[HowAreYou, Greet]")), 0.1);
-		assertEquals(0.1, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "none")), 0.1);		
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u2'", "[HowAreYou]")), 0.1);		
+		
+		InferenceTesting.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
+		InferenceTesting.checkProb(query, new Assignment("a_u2'", "none"), 0.1);
+		InferenceTesting.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
 
 	}
 
@@ -286,51 +216,33 @@ public class BasicRuleTest {
 		ProbQuery query6 = new ProbQuery(system.getState().getNetwork(),greetNode+"'");
 		ProbQuery query7 = new ProbQuery(system.getState().getNetwork(),howareyouNode+"'");
 
-		ProbDistribution distrib2 = inference.queryProb(query2);
-		ProbDistribution distrib3 = inference.queryProb(query3);
-		ProbDistribution distrib4 = inference.queryProb(query4);
-		ProbDistribution distrib5 = inference.queryProb(query5);
-		ProbDistribution distrib6 = inference.queryProb(query6);
-		ProbDistribution distrib7 = inference.queryProb(query7);
-		assertEquals(0.7, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]")), 0.01);
-		assertEquals(0.1, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "none")), 0.01);		
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "[" + howareyouNode + "]")), 0.01); 		
-		assertEquals(0.7, distrib2.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+".start'", 0)), 0.01);
-		assertEquals(0.7, distrib3.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+".end'", 5)), 0.01);
-		assertEquals(0.7, distrib4.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".start'", 12)), 0.01);
-		assertEquals(0.7, distrib5.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".end'", 23)), 0.01);
-		assertEquals(0.2, distrib5.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".end'", 22)), 0.01);
-		assertEquals(0.7, distrib6.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+"'", "Greet")), 0.01);
-		assertEquals(0.9, distrib7.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+"'", "HowAreYou")), 0.01);
-
-		inference= new ImportanceSampling();
-		distrib2 = inference.queryProb(query2);
-		distrib3 = inference.queryProb(query3);
-		distrib4 = inference.queryProb(query4);
-		distrib5 = inference.queryProb(query5);
-		distrib6 = inference.queryProb(query6);
-		distrib7 = inference.queryProb(query7);
-		assertEquals(0.7, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]")), 0.1);
-		assertEquals(0.1, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "none")), 0.1);		
-		assertEquals(0.2, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u3'", "[" + howareyouNode + "]")), 0.1); 		
-		assertEquals(0.7, distrib2.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+".start'", 0)), 0.1);
-		assertEquals(0.7, distrib3.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+".end'", 5)), 0.1);
-		assertEquals(0.7, distrib4.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".start'", 12)), 0.1);
-		assertEquals(0.7, distrib5.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".end'", 23)), 0.1);
-		assertEquals(0.2, distrib5.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+".end'", 22)), 0.1);
-		assertEquals(0.7, distrib6.toDiscrete().getProb(new Assignment(), new Assignment(greetNode+"'", "Greet")), 0.1);
-		assertEquals(0.9, distrib7.toDiscrete().getProb(new Assignment(), new Assignment(howareyouNode+"'", "HowAreYou")), 0.1);
-
+		InferenceTesting.checkProb(query, new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]"), 0.7);
+		InferenceTesting.checkProb(query, new Assignment("a_u3'", "none"), 0.1);
+		InferenceTesting.checkProb(query, new Assignment("a_u3'", "[" + howareyouNode + "]"), 0.2);
+		InferenceTesting.checkProb(query2, new Assignment(greetNode+".start'", 0), 0.7);
+		InferenceTesting.checkProb(query3, new Assignment(greetNode+".end'", 5), 0.7);
+		InferenceTesting.checkProb(query4, new Assignment(howareyouNode+".start'", 12), 0.7);
+		InferenceTesting.checkProb(query5, new Assignment(howareyouNode+".end'", 23), 0.7);
+		InferenceTesting.checkProb(query5, new Assignment(howareyouNode+".end'", 22), 0.2);
+		InferenceTesting.checkProb(query6,  new Assignment(greetNode+"'", "Greet"), 0.7);
+		InferenceTesting.checkProb(query7,  new Assignment(howareyouNode+"'", "HowAreYou"), 0.9);
+		
 	}
-
 
 	private void waitUntilStable(DialogueSystem system) {
 		try {
 			Thread.sleep(30);
+			int i = 0 ;
 			while (!system.getState().isStable()) {
-				Thread.sleep(50);
+				Thread.sleep(30);
+				i++;
+				if (i > 30) {
+					log.debug("dialogue state: " + system.getState().toString());
+				}
 			}
 		}
-		catch (InterruptedException e) { }
+		catch (InterruptedException e) { 
+			log.debug ("interrupted exception: " + e.toString());
+		}
 	}
 }

@@ -20,6 +20,7 @@
 package opendial.arch.statechange;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -38,10 +39,10 @@ import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.CaseBasedRule;
-import opendial.domains.rules.Rule;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.StringUtils;
 
 /**
  * 
@@ -57,32 +58,29 @@ public class AnchoredRule {
 
 	Rule rule;
 	Assignment anchor;
-	
-	DialogueState state;
-	StateController controller;
-	
-	Set<ChanceNode> inputNodes;	
+
+	Map<String, ChanceNode> inputNodes;	
 
 	AnchoredRuleCache cache;
-	
+
 	String id;
 
-	public AnchoredRule(Rule rule, DialogueState state, 
-			StateController controller, Assignment anchor) {
+	public AnchoredRule(Rule rule, DialogueState state, Assignment anchor) {
 		this.rule = rule;
 		this.anchor = anchor;
 		if (rule.getInputVariables().contains(new TemplateString("random"))) {
 			anchor.addPair("random", ValueFactory.create((new Random()).nextInt(10000)));
 		}
-		this.state = state;
-		this.controller = controller;
-		
+
 		String base = ((anchor.isEmpty())? rule.getRuleId() :
 			rule.getRuleId() + "-" + anchor.toString());
 		this.id = state.getNetwork().getUniqueNodeId(base);
-		
+
+		inputNodes = extractInputNodes(state);
+
 		cache = new AnchoredRuleCache(this);
 	}
+
 
 
 
@@ -90,15 +88,12 @@ public class AnchoredRule {
 		return rule;
 	}
 
-	public Assignment getAnchor() {
-		return anchor;
-	}
 
 
 	public String getId() {
 		return id;
 	}
-	
+
 	public void renewCache() {
 		cache = new AnchoredRuleCache(this);
 	}
@@ -120,21 +115,16 @@ public class AnchoredRule {
 	}
 
 
-
 	public Collection<ChanceNode> getParameters() {
 		return cache.getParameters();
 	}
 
 
 	public Set<String> getOutputVariables() {
-		Set<String> inputVariables = getInputVariables();
 		Set<String> outputVariables = new HashSet<String>();		
 		for (Output output : cache.getOutputs()) {
 			for (String outputVariable : output.getVariables()) {
-				outputVariable = outputVariable + "'";
-				if (!inputVariables.contains(outputVariable)) {
-					outputVariables.add(outputVariable);
-				}
+				outputVariables.add(outputVariable);	
 			}
 		}
 		return outputVariables;
@@ -162,6 +152,9 @@ public class AnchoredRule {
 	}
 
 
+	public Set<Assignment> getPossibleConditions() {
+		return cache.getPossibleConditions();
+	}
 
 
 	public String toString() {
@@ -179,19 +172,27 @@ public class AnchoredRule {
 
 
 
-	public Set<ChanceNode> getInputNodes() {
-		inputNodes = new HashSet<ChanceNode>();
-		for (String inputVar : getInputVariables()) {
-			if (state.getNetwork().hasChanceNode(inputVar+"'") 
-					&& !controller.hasNewVariable(inputVar+"'")) {
-				inputNodes.add(state.getNetwork().getChanceNode(inputVar + "'"));
-			}
-			else if (state.getNetwork().hasChanceNode(inputVar)) {
-				inputNodes.add(state.getNetwork().getChanceNode(inputVar));
+	private Map<String, ChanceNode> extractInputNodes(DialogueState state) {
+		Map<String, ChanceNode> tempInputNodes = new HashMap<String, ChanceNode>();
+		for (String inputVar : getInputVariables()) {	
+			boolean isAttached = false;
+			for (int i = 4 ; i >= 0 && !isAttached ; i--) {
+				String specifiedVar = inputVar + StringUtils.createNbPrimes(i);
+				if (state.getNetwork().hasChanceNode(specifiedVar) 
+						&& !state.getController().hasNewVariable(specifiedVar)) {
+					tempInputNodes.put(specifiedVar, state.getNetwork().getChanceNode(specifiedVar));
+					isAttached = true;
+				}
 			}
 		}
-		return inputNodes;
+		return tempInputNodes;
 	}
-	
+
+
+
+	public Collection<ChanceNode> getInputNodes() {
+		return inputNodes.values();
+	}
+
 
 }

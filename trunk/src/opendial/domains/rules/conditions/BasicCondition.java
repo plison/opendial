@@ -81,7 +81,7 @@ public class BasicCondition implements Condition {
 		// fill the input and local output variables
 		inputVariables = new HashSet<TemplateString>(Arrays.asList(this.variable));
 		localOutputVariables = new HashSet<String>();
-		if (relation == Relation.PARTIAL_MATCH || relation == Relation.EXACT_MATCH) {
+		if (relation == Relation.PARTIAL_MATCH || relation == Relation.EXACT_MATCH ) {
 			for (String slot : this.expectedValue.getSlots()) {
 				localOutputVariables.add(slot);
 			}
@@ -176,14 +176,13 @@ public class BasicCondition implements Condition {
 	public boolean isSatisfiedBy(Assignment input) {
 
 		ConditionCheck check = ConditionCheckFactory.createCheck(expectedValue, relation, input);
-		
 		Value value = ValueFactory.none();
 		TemplateString instantiatedVar = variable.fillSlotsPartial(input);
 		if (instantiatedVar.getSlots().isEmpty() 
 				&& input.containsVar(instantiatedVar.getRawString())) {
 			value = input.getValue(instantiatedVar.getRawString());
 		}
-		
+
 		return check.isSatisfied(value);		
 	}
 

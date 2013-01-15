@@ -95,7 +95,7 @@ public class AnchoredRuleCache {
 	 * 
 	 * @return the (unordered) list of possible conditions.  
 	 */
-	private Set<Assignment> getPossibleConditions() {
+	protected Set<Assignment> getPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (ChanceNode inputNode : rule.getInputNodes()) {
 				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
@@ -115,8 +115,16 @@ public class AnchoredRuleCache {
 			for (int i = 0 ; i < 50 ; i++) {
 				Assignment sampledA = new Assignment();
 				for (ChanceNode inputNode: rule.getInputNodes()) {
-					try { sampledA.addPair(inputNode.getId(), inputNode.sample()); }
+					Value sampledValue = null;
+					try { 
+						sampledValue = inputNode.sample();
+						sampledA.addPair(inputNode.getId(), sampledValue); }
 					catch (DialException e) { log.warning("cannot sample " + inputNode.getId()+")"); }
+					catch (NullPointerException f) { 
+						log.debug("sampledA: " + sampledA);
+						log.debug(", inputNodeId: " + inputNode.getId());
+						log.debug(", sampled: " + sampledValue); 
+					}
 				}
 				possibleConditions.add(sampledA);
 			}

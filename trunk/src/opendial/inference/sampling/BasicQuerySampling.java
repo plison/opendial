@@ -37,6 +37,7 @@ import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.empirical.EmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
+import opendial.bn.values.ValueFactory;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.Query;
@@ -79,6 +80,7 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 	@Override
 	protected void compileResults() {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
+				
 		synchronized(samples) {
 		for (WeightedSample sample : samples) {
 			double relativeWeight = sample.getWeight()/totalWeight;
@@ -86,7 +88,7 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 		}
 		}
 		Intervals<WeightedSample> intervals = new Intervals<WeightedSample>(table);
-
+	
 		EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
 		UtilityTable empiricalUtilityDistrib = new UtilityTable();
 

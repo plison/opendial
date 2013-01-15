@@ -47,7 +47,7 @@ import opendial.utils.CombinatoricsUtils;
 public class UtilityRuleNode extends UtilityNode {
 
 	// logger
-	public static Logger log = new Logger("RuleNode", Logger.Level.NORMAL);
+	public static Logger log = new Logger("RuleNode", Logger.Level.DEBUG);
 
 	AnchoredRule rule;
 
@@ -60,5 +60,29 @@ public class UtilityRuleNode extends UtilityNode {
 		}
 	}
 
+
+	/**
+	 * Returns the set of all possible actions that are allowed by the node
+	 * 
+	 * @return the set of all relevant action values
+	 */
+	@Override
+	public void buildRelevantActionsCache() {
+	
+		relevantActionsCache = new HashSet<Assignment>();
+
+		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
+		for (BNode inputNode : rule.getInputNodes()) {
+				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
+		}
+		Set<Assignment> possibleConditions = 
+			CombinatoricsUtils.getAllCombinations(possibleInputValues);
+		
+		for (Assignment input : possibleConditions) {
+			relevantActionsCache.addAll(distrib.getRelevantActions(input));
+		}
+	}
+	
+	
 	
 }

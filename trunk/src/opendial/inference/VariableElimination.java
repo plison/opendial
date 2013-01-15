@@ -90,8 +90,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		queryFactor.normalise();
 
-		SimpleTable expandedTable = addEvidencePairs (query.getNetwork(), 
-				queryFactor.getProbMatrix(), query.getQueryVars(), query.getEvidence());
+		SimpleTable expandedTable = addEvidencePairs (query, queryFactor.getProbMatrix());
 
 		return new DistributionCouple(expandedTable,
 				new UtilityTable(queryFactor.getUtilityMatrix()));
@@ -296,36 +295,30 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	 * when a variable specified in the evidence also appears in the query), extends 
 	 * the distribution to add the evidence assignment pairs.
 	 * 
-	 * @param bn the Bayesian network
+	 * @param query the query
 	 * @param distribution the computed distribution
-	 * @param queryVars the query variables
-	 * @param evidence the evidence
 	 * @return the extended distribution
 	 */
-	private SimpleTable addEvidencePairs(BNetwork bn, 
-			Map<Assignment,Double> probDistrib, 
-			Collection<String> queryVars,
-			Assignment evidence) {
+	private SimpleTable addEvidencePairs(Query query, Map<Assignment,Double> probDistrib) {
 
 		SimpleTable table = new SimpleTable();
-		table.addRows(probDistrib);
+	//	table.addRows(probDistrib);
 
 		// first, check if there is an overlap between the query variables and
 		// the evidence variables
 		TreeMap<String,Set<Value>> valuesToAdd = new TreeMap<String,Set<Value>>();
-		for (String queryVar : queryVars) {
-			if (evidence.getPairs().containsKey(queryVar)) {
-				valuesToAdd.put(queryVar, bn.getNode(queryVar).getValues());
+		for (String queryVar : query.getQueryVars()) {
+			if (query.getEvidence().getPairs().containsKey(queryVar)) {
+				valuesToAdd.put(queryVar, query.getNetwork().getNode(queryVar).getValues());
 			}
 		}
 
 		Set<Assignment> possibleExtensions = CombinatoricsUtils.getAllCombinations(valuesToAdd);
-
 		for (Assignment a : probDistrib.keySet()) {
 			for (Assignment b: possibleExtensions) {
 
 				// if the assignment b agrees with the evidence, reuse the probability value
-				if (evidence.contains(b)) {
+				if (query.getEvidence().contains(b)) {
 					table.addRow(new Assignment(a, b), probDistrib.get(a));
 				}
 

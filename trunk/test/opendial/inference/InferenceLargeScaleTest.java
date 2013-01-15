@@ -36,9 +36,9 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.NetworkExamples;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.Value;
+import opendial.common.NetworkExamples;
 import opendial.inference.queries.ProbQuery;
 
 /**

@@ -30,7 +30,9 @@ import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.ChanceNode;
 import opendial.domains.rules.CaseBasedRule;
-import opendial.modules.AttachedModule;
+import opendial.domains.rules.PredictionRule;
+import opendial.modules.SynchronousModule;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of a rule model -- that is, a collection of rules of 
@@ -41,7 +43,7 @@ import opendial.modules.AttachedModule;
  * @version $Date::                      $
  *
  */
-public class Model<T extends CaseBasedRule> implements AttachedModule {
+public class Model<T extends CaseBasedRule> implements SynchronousModule {
 
 	static Logger log = new Logger("Model", Logger.Level.DEBUG);
 
@@ -179,12 +181,18 @@ public class Model<T extends CaseBasedRule> implements AttachedModule {
 
 		BNetwork network = state.getNetwork();
 
+		String trimmedNodeId = newNodeId.replaceAll("'", "");
+		
 		// direct triggers
 		for (String trigger : triggers) {
-			if (newNodeId.replace("'", "").equals(trigger) && 
+			if (trimmedNodeId.equals(trigger) && 
 					network.getNode(newNodeId) instanceof ChanceNode) {
-		//		log.debug("model " + id + " triggered");
-				return true;
+				
+				// we make sure that predictive nodes only trigger prediction rules
+				if (!trimmedNodeId.contains("^p") ||
+						getModelType().equals(PredictionRule.class)) {
+					return true;
+				}
 			}
 		}
 
@@ -199,6 +207,17 @@ public class Model<T extends CaseBasedRule> implements AttachedModule {
 			}
 		}
 
+		return false;
+	}
+	
+	
+	/**
+	 * Returns false (a model only changes the dialogue state)
+	 * 
+	 * @return false
+	 */
+	@Override
+	public boolean isExternal() {
 		return false;
 	}
 
@@ -253,7 +272,7 @@ public class Model<T extends CaseBasedRule> implements AttachedModule {
 		List<String> influencedNodes = new ArrayList<String>();
 
 		// indirect trigger, in case the new node is related to an older prediction
-		String predictionEquiv = newNodeId.replace("'", "")+ "^p";
+		String predictionEquiv = StringUtils.removeSpecifiers(newNodeId)+ "^p";
 		if (network.hasNode(predictionEquiv) && 
 				network.getNode(predictionEquiv).getOutputNodes().equals(network.getNode(newNodeId).getOutputNodes())) {
 
@@ -267,5 +286,16 @@ public class Model<T extends CaseBasedRule> implements AttachedModule {
 			}
 		}
 		return influencedNodes;
+	}
+	
+	
+	private Class<? extends CaseBasedRule> getModelType() {
+		if (rules.isEmpty()) {
+			log.warning("cannot determine model type");
+			return CaseBasedRule.class;
+		}
+		else {
+			return rules.iterator().next().getClass();
+		}
 	}
 }
