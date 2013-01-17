@@ -134,7 +134,7 @@ public class UtilityNode extends BNode {
 	 * @return the associated utility
 	 */
 	public double getUtility(Assignment input) {
-		return distrib.getUtility(input);
+		return distrib.getUtility(new Assignment(input));
 	}
 
 	/**

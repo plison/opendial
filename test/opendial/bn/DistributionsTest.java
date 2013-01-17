@@ -31,6 +31,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
@@ -41,6 +42,8 @@ import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
+import opendial.common.InferenceChecks;
+import opendial.gui.statemonitor.DistributionViewer;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.VariableElimination;
 import opendial.inference.queries.ProbQuery;
@@ -63,7 +66,7 @@ public class DistributionsTest {
 		SimpleTable.log.setLevel(Level.MIN);
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("var1", "val1"), 0.7);
-		assertFalse(table.isWellFormed());
+		assertTrue(table.isWellFormed());
 		table.addRow(new Assignment("var1", "val2"), 0.3);
 		assertTrue(table.isWellFormed());
 		assertEquals(table.getProb(new Assignment("var1", "val1")), 0.7, 0.001);
@@ -289,5 +292,36 @@ public class DistributionsTest {
 				distrib2.toContinuous().getProbDensity(new Assignment(), new Assignment("var1", 1.8)), 0.1);	
 		assertEquals(continuous.getProbDensity(new Assignment(), new Assignment("var1", 3.2)), 
 				distrib2.toContinuous().getProbDensity(new Assignment(), new Assignment("var1", 3.2)), 0.1);	
+	}
+	
+	
+	@Test
+	public void depEmpiricalDistribContinuous() throws DialException, InterruptedException {
+		BNetwork bn = new BNetwork();
+		ChanceNode var1 = new ChanceNode("var1");
+		var1.addProb(ValueFactory.create("one"), 0.7);
+		var1.addProb(ValueFactory.create("two"), 0.3);
+		bn.addNode(var1);
+		
+		FunctionBasedDistribution continuous = new FunctionBasedDistribution("var2", new UniformDensityFunction(-1,3));
+		FunctionBasedDistribution continuous2 = new FunctionBasedDistribution("var2", new GaussianDensityFunction(3,10));
+		ContinuousProbabilityTable table = new ContinuousProbabilityTable();
+		table.addDistrib(new Assignment("var1", "one"), continuous);
+		table.addDistrib(new Assignment("var1", "two"), continuous2);
+		ChanceNode var2 = new ChanceNode("var2");
+		var2.addInputNode(var1);
+		var2.setDistrib(table);
+		bn.addNode(var2);
+		
+		ProbQuery query = new ProbQuery(bn, Arrays.asList("var2"));
+		InferenceChecks inference = new InferenceChecks();
+		inference.checkCDF(query, new Assignment("var2", -1.5), 0.021);
+		inference.checkCDF(query, new Assignment("var2", 0), 0.22);
+		inference.checkCDF(query, new Assignment("var2", 2), 0.632);
+		inference.checkCDF(query, new Assignment("var2", 8), 0.98);
+		
+	/**	ProbDistribution distrib = (new ImportanceSampling()).queryProb(query);
+		DistributionViewer.showDistributionViewer(distrib);
+		Thread.sleep(300000000); */
 	}
 }

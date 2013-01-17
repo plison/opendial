@@ -49,7 +49,7 @@ import opendial.gui.statemonitor.options.NodeEditPanel;
  * @version $Date::                      $
  *
  */
-public class GraphViewerPopupMenu extends AbstractPopupGraphMousePlugin 
+public class DialogueStatePopup extends AbstractPopupGraphMousePlugin 
 implements MouseListener {
 
 	// logger
@@ -57,10 +57,10 @@ implements MouseListener {
 	
 	private DialogueStateViewer viewer;
 	
-    public GraphViewerPopupMenu(DialogueStateViewer viewer) {
+    public DialogueStatePopup(DialogueStateViewer viewer) {
         this(viewer, MouseEvent.BUTTON3_MASK);
     }
-    public GraphViewerPopupMenu(DialogueStateViewer viewer, int modifiers) {
+    public DialogueStatePopup(DialogueStateViewer viewer, int modifiers) {
         super(modifiers);
     	this.setViewer(viewer);
     }

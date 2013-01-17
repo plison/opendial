@@ -20,12 +20,81 @@
 package opendial.arch.statechange;
 
 
-import opendial.arch.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-public class ForwardPlanner {
+import opendial.arch.ConfigurationSettings;
+import opendial.arch.DialException;
+import opendial.arch.DialogueState;
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
+import opendial.inference.ImportanceSampling;
+import opendial.inference.InferenceAlgorithm;
+import opendial.inference.queries.UtilQuery;
+import opendial.utils.CombinatoricsUtils;
+
+public class ForwardPlanner extends Thread {
 	
 	// logger
-	public static Logger log = new Logger("ForwardPlanner", Logger.Level.NORMAL);
+	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
 
+	DialogueState state;
+	
+	public ForwardPlanner(DialogueState state) {
+		this.state = state;
+	}
+	
+	@Override
+	public void run() {
+		log.debug("planner is running...");
+		
+		Set<String> actionNodes = state.getNetwork().getActionNodeIds();
+		
+		try {
+		InferenceAlgorithm inference = ConfigurationSettings.getInstance().
+				getInferenceAlgorithm().newInstance();
+		
+		UtilQuery query = new UtilQuery(state, actionNodes);
+		UtilityTable distrib = inference.queryUtility(query);
+		
+		double highestUtility = 0;
+		Assignment bestAction = getDefaultAssign();
+		for (Assignment a : distrib.getTable().keySet()) {
+			double utility = distrib.getUtility(a);
+			if (utility > highestUtility) {
+				bestAction = a;
+				highestUtility = utility;
+			}
+		}
+		
+		state.getNetwork().removeNodes(bestAction.getVariables());
+		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
+		for (String actionVar: bestAction.getVariables()) {
+			ChanceNode newNode = new ChanceNode(actionVar);
+			newNode.addProb(bestAction.getValue(actionVar), 1.0);
+			state.getNetwork().addNode(newNode);
+		}
+		log.debug("planning is finished, selected action: " + bestAction + "(Q=" + highestUtility+")");
+		}
+		catch (Exception e) {
+			log.warning("cannot select optimal action: " + e);
+		}
+		state.getController().setAsCompleted(this);		
+	}
+
+	
+	private Assignment getDefaultAssign() {
+		Assignment a = new Assignment();
+		for (String actionNode: state.getNetwork().getActionNodeIds()) {
+			a.addPair(actionNode, ValueFactory.none());
+		}
+		return a;
+	}
 }
 

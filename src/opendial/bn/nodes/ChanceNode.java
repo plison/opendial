@@ -47,7 +47,7 @@ import opendial.bn.values.ValueFactory;
 public class ChanceNode extends BNode {
 
 	// logger
-	public static Logger log = new Logger("ChanceNode", Logger.Level.NORMAL);
+	public static Logger log = new Logger("ChanceNode", Logger.Level.DEBUG);
 
 	// the probability distribution for the node
 	protected ProbDistribution distrib;
@@ -185,7 +185,7 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public void setId(String newId) {
-		log.debug("changing id from " + this.nodeId + " to " + nodeId);
+	//	log.debug("changing id from " + this.nodeId + " to " + nodeId);
 		String oldId = nodeId;
 		super.setId(newId);
 		distrib.modifyVarId(oldId, newId);
@@ -345,11 +345,9 @@ public class ChanceNode extends BNode {
 		Map<Assignment,Double> factor = new HashMap<Assignment,Double>();
 
 		Set<Assignment> combinations = getPossibleConditions();
-
 		for (Assignment combination : combinations) {
 			try {
-				SimpleTable condTable = 
-						((ProbDistribution)distrib).toDiscrete().getProbTable(combination);
+				SimpleTable condTable = distrib.toDiscrete().getProbTable(combination);
 				for (Assignment head : condTable.getRows()) {
 					factor.put(new Assignment(combination, head), condTable.getProb(head));
 				}

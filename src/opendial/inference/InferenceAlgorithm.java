@@ -26,7 +26,9 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.queries.ProbQuery;
+import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
 
 /**
@@ -56,7 +58,15 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 */
-	public UtilityDistribution queryUtility (UtilQuery query) throws DialException;
+	public UtilityTable queryUtility (UtilQuery query) throws DialException;
+
+	/**
+	 * Reduces the Bayesian network to a subset of its variables
+	 * 
+	 * @param reductionQuery the reduction query
+	 * @return the reduced query
+	 */
+	public BNetwork reduceNetwork(ReductionQuery reductionQuery) throws DialException;
 	
 	
 }

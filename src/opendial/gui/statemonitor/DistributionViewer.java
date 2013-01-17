@@ -79,8 +79,15 @@ public class DistributionViewer extends JDialog {
 		new HashMap<String,DistributionViewer>();
 	
 	
-	public static void showDistributionViewer(ProbDistribution distrib) throws DialException {
-		String variableName = getVariableName(distrib);
+	
+	public static void showDistributionViewer(ProbDistribution distrib) {
+		if (distrib.getHeadVariables().size() != 1) {
+			log.warning("distribution must have a single head variable " +
+					"to be shown, but we have : " + distrib.getHeadVariables());
+		}
+		else {
+			try {
+		String variableName = distrib.getHeadVariables().iterator().next();
 		if (!viewers.containsKey(variableName)) {
 			
 			DistributionViewer newViewer;
@@ -99,6 +106,12 @@ public class DistributionViewer extends JDialog {
 			DistributionViewer viewer = viewers.get(variableName);
 			viewer.setVisible(true);
 		}
+		}
+			catch (DialException e) {
+				log.warning("could not show distribution: " + e);
+			}
+		}
+		
 	}
 	
 	
@@ -130,7 +143,7 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.EAST);
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
-		final String variableName = getVariableName(distrib);
+		final String variableName = distrib.getHeadVariables().iterator().next();
 		Map<Value,Double> simpleDistrib = getSimplifiedDistrib(distrib, variableName);
 		
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
@@ -188,12 +201,14 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.EAST);
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
-		final String variableName = getVariableName(distrib);
+		String variableName = distrib.getHeadVariables().iterator().next();
 		Set<Assignment> points = distrib.toDiscrete().getProbTable(new Assignment()).getRows();
+		log.debug("points:  " + points.size());
 		XYSeries serie = new XYSeries("density");
 		for (Assignment point : points) {
 			if (point.getValue(variableName) instanceof DoubleVal) {
-				serie.add((double) ((DoubleVal)point.getValue(variableName)).getDouble(),distrib.getProbDensity(new Assignment(), point));
+				serie.add((double) ((DoubleVal)point.getValue(variableName)).getDouble(),
+						distrib.getProbDensity(new Assignment(), point));
 			}
 		}
 		
@@ -237,17 +252,6 @@ public class DistributionViewer extends JDialog {
 		setMinimumSize(new Dimension(500,400));
 		setPreferredSize(new Dimension(500,400));
 		pack();
-	}
-	
-	private static String getVariableName(ProbDistribution distrib) throws DialException {
-		Set<Assignment> values = distrib.toDiscrete().getProbTable(new Assignment()).getRows();
-		if (!values.isEmpty() && values.iterator().next().getVariables().size() == 1) {
-			return values.iterator().next().getVariables().iterator().next();
-		}
-		else {
-			log.warning("problem extracting the variable name for "  + distrib + " (values " + distrib + ")");
-		}
-		return "defaultVar";
 	}
 	
 	

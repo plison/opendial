@@ -61,6 +61,10 @@ public class AnchoredRule {
 
 	Map<String, ChanceNode> inputNodes;	
 
+	Set<String> inputVariables;
+	
+	Set<String> outputVariables;
+	
 	AnchoredRuleCache cache;
 
 	String id;
@@ -76,9 +80,13 @@ public class AnchoredRule {
 			rule.getRuleId() + "-" + anchor.toString());
 		this.id = state.getNetwork().getUniqueNodeId(base);
 
-		inputNodes = extractInputNodes(state);
+		inputVariables = extractInputVariables();
 
+		inputNodes = extractInputNodes(state);
+	
 		cache = new AnchoredRuleCache(this);
+		
+		outputVariables = extractOutputVariables();
 	}
 
 
@@ -99,7 +107,7 @@ public class AnchoredRule {
 	}
 
 
-	public Set<String> getInputVariables() {
+	private Set<String> extractInputVariables() {
 		Set<TemplateString> templatedVariables = rule.getInputVariables();
 		Set<String> filledVariables = new HashSet<String>();
 		for (TemplateString templatedVar : templatedVariables) {
@@ -113,20 +121,29 @@ public class AnchoredRule {
 		}
 		return filledVariables;
 	}
-
+	
+	
+	public Set<String> getInputVariables() {
+		return inputVariables;
+	}
 
 	public Collection<ChanceNode> getParameters() {
 		return cache.getParameters();
 	}
 
 
-	public Set<String> getOutputVariables() {
+	private Set<String> extractOutputVariables() {
 		Set<String> outputVariables = new HashSet<String>();		
 		for (Output output : cache.getOutputs()) {
 			for (String outputVariable : output.getVariables()) {
 				outputVariables.add(outputVariable);	
 			}
 		}
+		return outputVariables;
+	}
+	
+	
+	public Set<String> getOutputVariables() {
 		return outputVariables;
 	}
 

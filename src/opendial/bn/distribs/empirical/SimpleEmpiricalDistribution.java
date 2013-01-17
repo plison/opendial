@@ -34,50 +34,34 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
-import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
-import opendial.bn.values.ValueFactory;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
  * variables.  This distribution can then be explicitly converted into a table 
- * or a continuous distribution (depending on the variable type).
- * 
- * This distribution has a set of conditional variables X1,...Xn.
+ * or a continuous distribution (depending on the variable type)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class DepEmpiricalDistribution implements EmpiricalDistribution {
+public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 	// logger
-	public static Logger log = new Logger("DepEmpiricalDistribution", Logger.Level.DEBUG);
-	
-	// list of "flat" samples for the empirical distribution
+	public static Logger log = new Logger("EmpiricalDistribution",
+			Logger.Level.DEBUG);
+
+	// list of samples for the empirical distribution
 	protected List<Assignment> samples;
 
-	// structured samples according to the condition/head distinction
-	Map<Assignment, SimpleEmpiricalDistribution> conditionedSamples;
-
-	// the sampler
 	Random sampler;
 	
-	// cache for the discrete and continuous distributions
 	DiscreteProbDistribution discreteCache;
-	ContinuousProbabilityTable continuousCache;
-	
-	// the head variables
-	Set<String> headVars;
-	
-	// the conditionalVars variables
-	Set<String> condVars;
-
+	FunctionBasedDistribution continuousCache;
 	
 	// ===================================
 	//  CONSTRUCTION METHODS
@@ -87,12 +71,9 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * Constructs a new empirical distribution, initially with a empty set of
 	 * samples
 	 */
-	public DepEmpiricalDistribution(Collection<String> headVars, Collection<String> condVars) {
+	public SimpleEmpiricalDistribution() {
 		samples = new ArrayList<Assignment>(3000);
 		sampler = new Random();
-		this.headVars = new HashSet<String>(headVars);
-		this.condVars = new HashSet<String>(condVars);
-		conditionedSamples = new HashMap<Assignment, SimpleEmpiricalDistribution>();
 	}
 	
 	/**
@@ -100,15 +81,12 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param samples the samples for the distribution
 	 */
-	public DepEmpiricalDistribution(Collection<String> headVars, 
-			Collection<String> condVars, List<Assignment> samples) {
-		this(headVars, condVars);
-		for (Assignment a : samples) {
-			addSample(a);
-		}
+	public SimpleEmpiricalDistribution(Collection<Assignment> samples) {
+		this();
+		this.samples.addAll(samples);
 	}
 	
-	
+
 	/**
 	 * Adds a new sample to the distribution
 	 * 
@@ -116,49 +94,63 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public void addSample(Assignment sample) {
 		samples.add(sample);
-		Assignment condition = sample.getTrimmed(condVars);
-		if (!conditionedSamples.containsKey(condition)) {
-			conditionedSamples.put(condition, new SimpleEmpiricalDistribution());
-		}
-		conditionedSamples.get(condition).addSample(sample.getTrimmed(headVars));
+		discreteCache = null;
+		continuousCache = null;
 	}
-	
 	
 	// ===================================
 	//  GETTERS
 	// ===================================
 	
-
-	 
 	
 	/**
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
 	 * 
-	 * @param condition the conditional assignment 
+	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
 	 */
 	@Override
 	public Assignment sample(Assignment condition) {
-		if (conditionedSamples.containsKey(condition)) {
-			SimpleEmpiricalDistribution headSamples = conditionedSamples.get(condition);
-			return headSamples.sample(condition);
-		}
-				
-		log.debug("cannot sample dependent empirical distribution for condition: " + condition);
-		return getDefaultAssignment();
+		int selection = sampler.nextInt(samples.size());
+		Assignment selected = samples.get(selection);
+		return selected;
 	}
 
 	
-
+	/**
+	 * Checks whether the distribution is well-formed or not.  The only requirement
+	 * we have here is that the set of samples must be non-empty
+	 * 
+	 * @return true if well-formed, false otherwise
+	 */
 	@Override
 	public boolean isWellFormed() {
-		return !conditionedSamples.isEmpty();
+		return !samples.isEmpty();
 	}
 	
 
+	/**
+	 * Returns the size of the set of samples defining the distribution
+	 * 
+	 * @return the set of samples
+	 */
+	public int getSize() {
+		return samples.size();
+	}
+
+	
+	/**
+	 * Returns the labels for the random variables the distribution is defined on.
+	 * 
+	 * @return the collection of variable labels
+	 */
 	@Override
 	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>();
+		for (Assignment a : samples) {
+			headVars.addAll(a.getVariables());
+		}
 		return headVars;
 	}
 	
@@ -167,6 +159,13 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	//  CONVERSION METHODS
 	// ===================================
 	
+	
+	/**
+	 * Converts the distribution into a SimpleTable, by counting the number of 
+	 * occurrences for each distinct value of a variable.
+	 * 
+	 * @return the resulting discrete distribution
+	 */
 	@Override
 	public DiscreteProbDistribution toDiscrete() {
 		if (discreteCache == null) {
@@ -176,65 +175,65 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	}
 	
 	
-	/**
-	 * Converts the distribution into a DiscreteProbabilityTable, by counting the number of 
-	 * occurrences for each distinct value of a variable.
-	 * 
-	 * @return the resulting discrete distribution
-	 */
-	public void computeDiscreteCache() {
+	protected void computeDiscreteCache() {
+
+		SimpleTable discreteCache = new SimpleTable();
 		
-		DiscreteProbabilityTable discreteCache = new DiscreteProbabilityTable();
-			
-		for (Assignment condition : conditionedSamples.keySet()) {
-			discreteCache.addRows(condition, (SimpleTable)(conditionedSamples.get(condition).toDiscrete()));
+		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
+		
+		for (Assignment sample : samples) {
+			if (counts.containsKey(sample)) {
+				counts.put(sample, counts.get(sample) + 1);
+			}
+			else {
+				counts.put(sample,1);
+			}
+		}
+		for (Assignment value : counts.keySet()) {
+			discreteCache.addRow(value, 1.0 * counts.get(value) / samples.size());
 		}
 		this.discreteCache = discreteCache;
 	}
 
 	
+	/**
+	 * Converts the distribution into a continuous distribution based on a kernel
+	 * density function.  This conversion will only work if:<ol>
+	 * <li> the samples only relate to a single random variable
+	 * <li> the value space of this random variable is continuous (double)
+	 * </ol>
+	 * 
+	 * @return the converted continuous distribution
+	 * @throws DialException if the above requirements are not met
+	 */
 	@Override
-	public ContinuousProbDistribution toContinuous() throws DialException {
+	public FunctionBasedDistribution toContinuous()
+			throws DialException {
+		
 		if (continuousCache == null) {
 			computeContinuousCache();
 		}
 		return continuousCache;
 	}
 	
-	/**
-	 * Converts the distribution into a continuous probability table.
-	 * 
-	 * @return the converted continuous distribution
-	 * @throws DialException if the above requirements are not met
-	 */
-	public synchronized void computeContinuousCache() throws DialException {
-		
-		continuousCache = new ContinuousProbabilityTable();
-		for (Assignment condition : conditionedSamples.keySet()) {
-			SimpleEmpiricalDistribution subdistrib = conditionedSamples.get(condition);
-			FunctionBasedDistribution continuousEquiv = subdistrib.toContinuous();
-			continuousCache.addDistrib(condition, continuousEquiv);
+	
+	protected void computeContinuousCache() throws DialException {
+		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
+			String headVar = samples.get(0).getVariables().iterator().next();
+			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
+				List<Double> values = new ArrayList<Double>(samples.size());
+				for (Assignment sample : samples) {
+					values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
+				}
+				continuousCache = new FunctionBasedDistribution(headVar, new KernelDensityFunction(values));
+			}
+		}
+		if (continuousCache == null) {
+			throw new DialException ("empirical distribution could not be converted to a " +
+					"continuous distribution");
 		}
 	}
 
-	
-	// ===================================
-	//  PRIVATE METHODS
-	// ===================================
-	
-	
-	/**
-	 * Returns a default assignment with default values
-	 * 
-	 * @return the default assignment
-	 */
-	private Assignment getDefaultAssignment() {
-		Assignment defaultA = new Assignment();
-		for (String headVar : headVars) {
-			defaultA.addPair(headVar, ValueFactory.none());
-		}
-		return defaultA;
-	}
 
 	// ===================================
 	//  UTILITY METHODS
@@ -247,23 +246,51 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * @return the copy
 	 */
 	@Override
-	public DepEmpiricalDistribution copy() {
-		DepEmpiricalDistribution copy = new DepEmpiricalDistribution(headVars, condVars, samples);
+	public SimpleEmpiricalDistribution copy() {
+		SimpleEmpiricalDistribution copy = new SimpleEmpiricalDistribution(samples);
 		return copy;
 	}
 
 	/**
 	 * Returns a pretty print representation of the distribution: here, 
-	 * tries to convert it to a discrete distribution, and displays its content.
+	 * tries to convert it to a continuous or discrete distribution,
+	 * and displays its content.
 	 * 
 	 * @return the pretty print
 	 */
 	@Override
 	public String prettyPrint() {
-		return toDiscrete().prettyPrint();
+		try {
+			return toContinuous().prettyPrint();
+		}
+		catch (DialException e) {
+			return toDiscrete().prettyPrint();
+		}
+	}
+	
+	/**
+	 * Returns a pretty print representation of the distribution: here, 
+	 * tries to convert it to a continuous or discrete distribution,
+	 * and displays its content.
+	 * 
+	 * @return the pretty print
+	 */
+	@Override
+	public String toString() {
+		return prettyPrint();
 	}
 
+	
+	/**
+	 * Returns the hashcode for the distribution
+	 * 
+	 * @return the hashcode
+	 */
+	public int hashCode() {
+		return samples.hashCode();
+	}
 
+	
 	/**
 	 * Replace a variable label by a new one
 	 * 
@@ -272,8 +299,6 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
-		
-		// change the raw samples
 		List<Assignment> newSamples = new ArrayList<Assignment>(samples.size());
 		for (Assignment a : samples) {
 			Assignment b = new Assignment();
@@ -284,21 +309,6 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			newSamples.add(b);
 		}
 		samples = newSamples; 
-		
-		// change the structured samples
-		Map<Assignment, SimpleEmpiricalDistribution> newCondSamples = 
-				new HashMap<Assignment, SimpleEmpiricalDistribution>();
-		for (Assignment a: conditionedSamples.keySet()) {
-			SimpleEmpiricalDistribution condSample = conditionedSamples.get(a);
-			condSample.modifyVarId(oldId, newId);
-			Assignment b = new Assignment();
-			for (String var : a.getVariables()) {
-				String newVar = (var.equals(oldId))? newId : var;
-				b.addPair(newVar, a.getValue(var));
-			}
-			newCondSamples.put(b, condSample);
-		}
-		conditionedSamples = newCondSamples;
 	}
-
+	
 }

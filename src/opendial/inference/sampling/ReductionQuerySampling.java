@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,9 +36,11 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.empirical.EmpiricalDistribution;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -63,7 +66,11 @@ import opendial.inference.queries.Query;
  */
 public class ReductionQuerySampling extends AbstractQuerySampling {
 
+	// logger
+	public static Logger log = new Logger("ReductionQuerySampling", Logger.Level.DEBUG);
 
+	
+	
 	// the result (is null until the query is finished)
 	BNetwork results;
 
@@ -86,7 +93,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	 */
 	@Override
 	protected void compileResults() {
-
+		
 		try {
 			results = query.getNetwork().getReducedCopy(query.getQueryVars());
 
@@ -106,21 +113,6 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 			results = new BNetwork();
 		}
 		
-		/** 
-		EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
-		UtilityTable empiricalUtilityDistrib = new UtilityTable();
-
-		while (empiricalDistrib.getSamples().size() < samples.size()) {
-			try {
-				WeightedSample sample = intervals.sample();
-				Assignment trimmedSample = sample.getSample().getTrimmed(query.getQueryVars());
-				empiricalDistrib.addSample(trimmedSample);
-				empiricalUtilityDistrib.addUtility(trimmedSample, sample.getUtility());
-			} 
-			catch (DialException e) {
-				log.warning("error compiling the results: " + e.toString());
-			}
-		} */
 
 	}
 	
@@ -148,7 +140,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 
 		EmpiricalDistribution eDistrib;
 		if (node.getInputNodes().isEmpty()) {
-			eDistrib = new EmpiricalDistribution();
+			eDistrib = new SimpleEmpiricalDistribution();
 		}
 		else {
 			eDistrib = new DepEmpiricalDistribution(Arrays.asList(node.getId()), node.getInputNodeIds());
@@ -157,7 +149,9 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
 		trimmedVariables.addAll(node.getInputNodeIds());
 
-		for (WeightedSample a : samples) {
+		Iterator<WeightedSample> it = samples.iterator();
+		while (it.hasNext()) {
+			WeightedSample a = it.next();
 			Assignment trimmedSample = a.getSample().getTrimmed(trimmedVariables);
 			eDistrib.addSample(trimmedSample);
 		}
@@ -172,7 +166,9 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
 		trimmedVariables.addAll(node.getInputNodeIds());
 
-		for (WeightedSample a : samples) {
+		Iterator<WeightedSample> it = samples.iterator();
+		while (it.hasNext()) {
+			WeightedSample a = it.next();
 			Assignment trimmedSample = a.getSample().getTrimmed(trimmedVariables);
 			utilityTable.addUtility(trimmedSample, a.getUtility());
 		}
