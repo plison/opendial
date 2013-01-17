@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
@@ -47,7 +49,7 @@ public class DerivedActionNode extends ActionNode {
 
 	Set<Value> valueCache;
 	
-	Map<Assignment, Set<Value>> relevantActionsCache;
+	Map<Assignment, Intervals<Value>> relevantActionsCache;
 
 	/**
 	 * Creates a new derived action node, with the given node identifier
@@ -56,7 +58,7 @@ public class DerivedActionNode extends ActionNode {
 	 */
 	public DerivedActionNode(String nodeId) {
 		super(nodeId);
-		relevantActionsCache = new HashMap<Assignment, Set<Value>>();
+		relevantActionsCache = new HashMap<Assignment, Intervals<Value>>();
 	}
 
 
@@ -159,10 +161,19 @@ public class DerivedActionNode extends ActionNode {
 			buildRelevantActionsCache(input);
 		}
 		
-		Set<Value> allActions = relevantActionsCache.get(input);
+		Intervals<Value> allActions = relevantActionsCache.get(input);
+		if (allActions == null) {
+			log.debug("action is " + nodeId + " input is " +input);
+			log.debug("relevant actions " + relevantActionsCache.keySet());
+		}
 		if (!allActions.isEmpty()) {
-			int index = sampler.nextInt(allActions.size());
-			return new ArrayList<Value>(allActions).get(index);
+			try {
+			return allActions.sample();
+			}
+			catch (DialException e) {
+				log.warning("action sampling problem: " + e);
+				return ValueFactory.none();
+			}
 		}
 		else {
 		//	log.warning("cannot sample for action " + nodeId + " (no relevant actions found)");
@@ -248,21 +259,33 @@ public class DerivedActionNode extends ActionNode {
 	
 	private synchronized void buildRelevantActionsCache(Assignment input) {
 		String formattedId = StringUtils.removeSpecifiers(nodeId);
-		Set<Value> allActions = new HashSet<Value>();
+		Map<Value, Double> frequencies = new HashMap<Value,Double>();
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
 				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();	
 				for (Assignment relevantAction : relevantActions) {
 					if (relevantAction.containsVar(formattedId) &&
 							relevantAction.consistentWith(input.removeSpecifiers())) {
-						allActions.add(relevantAction.getValue(formattedId));
+						Value val = relevantAction.getValue(formattedId);
+						if (!frequencies.containsKey(val)) {
+							frequencies.put(val, 0.0);
+						}
+						frequencies.put(val, frequencies.get(val)+1.0);
 					}
 					else {
-						allActions.add(ValueFactory.none());
+						frequencies.put(ValueFactory.none(), 1.0);
 					}
 				}
 			}
 		}
-		relevantActionsCache.put(new Assignment(input), allActions);
+		
+		double total = 0.0;
+		for (Value val : frequencies.keySet()) {
+			total += frequencies.get(val);
+		}
+		for (Value val : new HashSet<Value>(frequencies.keySet())) {
+			frequencies.put(val, frequencies.get(val)/total);
+		}
+		relevantActionsCache.put(new Assignment(input), new Intervals<Value>(frequencies));
 	}
 }

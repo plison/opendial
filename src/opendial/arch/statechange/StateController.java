@@ -22,6 +22,7 @@ package opendial.arch.statechange;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -42,10 +43,7 @@ public class StateController {
 	Stack<String> newVariables;
 
 	List<SynchronousModule> modules;
-	
-	ForwardPlanner planner;
-	
-	StatePruner pruner;
+
 
 	// number of processes currently working on the dialogue state
 	List<Object> busyProcesses;
@@ -62,6 +60,7 @@ public class StateController {
 
 		busyProcesses = new ArrayList<Object>();
 		completedProcesses = new ArrayList<Object>();
+
 	}
 
 
@@ -105,11 +104,39 @@ public class StateController {
 			if (!newVariables.isEmpty()) {
 				triggerUpdates();
 			}
-			else {
-				stabilise();
+			else {	
+				finishOperations();
 			}
 		}
 
+	}
+
+	protected synchronized void finishOperations() {
+		busyProcesses.add(this);
+		boolean pruningNeeded = false;
+		for (String nodeId: state.getNetwork().getNodeIds()) {
+			if (nodeId.contains("'")) {
+				pruningNeeded = true;
+			}
+		}
+		if (ConfigurationSettings.getInstance().isPruningActivated() && pruningNeeded) {
+			StatePruner pruner = new StatePruner(state);
+			setAsBusy(pruner);
+			pruner.start();
+		}	
+		else if (ConfigurationSettings.getInstance().isPlannerActivated() && 
+				!state.getNetwork().getActionNodeIds().isEmpty()) {	
+			ForwardPlanner planner = new ForwardPlanner(state);
+			setAsBusy(planner);
+			planner.start();
+		}	
+		else {
+			completedProcesses.clear();	
+			if (ConfigurationSettings.getInstance().isGUIShown()) {
+				GUIFrame.getSingletonInstance().updateCurrentState(state);
+			}
+		}
+		busyProcesses.remove(this);
 	}
 
 
@@ -121,7 +148,7 @@ public class StateController {
 
 				if (!(state.isFictive() && module.isExternal()) && 
 						!state.getNetwork().hasActionNode(newVariable)) {
-					
+
 					// trying to avoid infinite loops of triggers
 					if (Collections.frequency(completedProcesses, module) < 2) {
 						module.trigger(state, newVariable);
@@ -141,24 +168,17 @@ public class StateController {
 	}
 
 
-	private synchronized void stabilise () {
-		completedProcesses.clear();	
-		if (ConfigurationSettings.getInstance().isGUIShown()) {
-			GUIFrame.getSingletonInstance().updateCurrentState(state);
-		}
-		//	synchronized (state) { state.notify(); }
-	}
 
 
-	public String toString() {
+	public synchronized String toString() {
 		String s = "";
 		s += "Busy processes: [";
-		for (Object p : busyProcesses) {
+		for (Object p : new HashSet<Object>(busyProcesses)) {
 			s += p.getClass().getSimpleName() + ",";
 		}
 		s = (s + "]").replace(",]", "]")+ "\n";
 		s += "Completed processes: [";
-		for (Object p : completedProcesses) {
+		for (Object p : new HashSet<Object>(completedProcesses)) {
 			s += p.getClass().getSimpleName() + ",";
 		}
 		s = (s + "]").replace(",]", "]") + "\n";

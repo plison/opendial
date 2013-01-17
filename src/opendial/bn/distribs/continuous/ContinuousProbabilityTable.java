@@ -81,6 +81,7 @@ public class ContinuousProbabilityTable
 	 */
 	public void addDistrib (Assignment condition, FunctionBasedDistribution distrib) {
 		table.put(condition, distrib);
+		conditionalVars.addAll(condition.getVariables());
 	}
 
 
@@ -187,6 +188,15 @@ public class ContinuousProbabilityTable
 		return s;
 	}
 
+	
+	/**
+	 * Returns a pretty print of the distribution
+	 * 
+	 * @return the pretty print
+	 */
+	public String toString() {
+		return prettyPrint();
+	}
 	
 
 	/**

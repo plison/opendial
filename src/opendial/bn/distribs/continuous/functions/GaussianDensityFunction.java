@@ -63,6 +63,9 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	public GaussianDensityFunction(double mean, double variance) {
 		this.mean = mean;
+		if (variance < 0) {
+			log.warning("variance should not be negative, but is : " + variance);
+		}
 		this.variance = variance;
 		stdDev = Math.sqrt(variance);
 		sampler = new Random();
@@ -90,6 +93,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double sample() {
+		long time1 = System.nanoTime();
 		if (spareready) {
 			spareready = false;
 			return spare * stdDev + mean;

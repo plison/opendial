@@ -487,7 +487,7 @@ public class BNetwork implements NodeIdChangeListener {
 		}
 
 		for (String var : variablesToRetain) {
-			List<String> ancestorIds = nodes.get(var).getAncestorsIds(variablesToRetain);
+			Set<String> ancestorIds = nodes.get(var).getAncestorsIds(variablesToRetain);
 			for (String inputDepId : ancestorIds) {
 				if (network.hasNode(inputDepId)) {
 					network.getNode(var).addInputNode(network.getNode(inputDepId));

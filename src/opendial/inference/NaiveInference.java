@@ -162,7 +162,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @param query the full query
 	 */
 	@Override
-	public UtilityDistribution queryUtility(UtilQuery query) {
+	public UtilityTable queryUtility(UtilQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();

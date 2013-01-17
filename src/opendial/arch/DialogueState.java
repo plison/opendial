@@ -136,6 +136,11 @@ public class DialogueState {
 		return controller;
 	}
 
+	public synchronized void reset(BNetwork network, Assignment evidence) {
+		this.network = network;
+		this.evidence = evidence;
+	}
+
 	
 }
 

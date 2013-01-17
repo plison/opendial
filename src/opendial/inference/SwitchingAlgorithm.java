@@ -17,79 +17,80 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.bn.distribs.utility;
+package opendial.inference;
 
-
-import java.util.Map;
-import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.bn.Assignment;
-import opendial.bn.values.Value;
+import opendial.arch.Logger;
+import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.inference.queries.ProbQuery;
+import opendial.inference.queries.Query;
+import opendial.inference.queries.ReductionQuery;
+import opendial.inference.queries.UtilQuery;
 
-/**
- * Generic interface for an utility distribution (also called value distribution),
- * mapping every assignment X1...Xn to a utility Q(X1....Xn).  Typically, at least
- * one of these X1...Xn variables consist of a decision variable.
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public interface UtilityDistribution {
+public class SwitchingAlgorithm implements InferenceAlgorithm {
 
-	/**
-	 * Returns the utility associated with the specific assignment of values for
-	 * the input nodes.  If none exists, returns 0.0f.
-	 * 
-	 * @param input the value assignment for the input chance nodes
-	 * @return the associated utility
-	 */
-	public double getUtility(Assignment input);
-	
-	
-	/**
-	 * Checks that the utility distribution is well-formed (all assignments are covered)
-	 * 
-	 * @return true is the distribution is well-formed, false otherwise
-	 */
-	
-	public boolean isWellFormed();
-	
-	/**
-	 * Creates a copy of the utility distribution
-	 * 
-	 * @return the copy
-	 */
-	public UtilityDistribution copy();
+	// logger
+	public static Logger log = new Logger("SwitchingAlgorithm",
+			Logger.Level.NORMAL);
 
+	@Override
+	public ProbDistribution queryProb(ProbQuery query) throws DialException {
+		return selectBestAlgorithm(query).queryProb(query);
+	}
 
+	@Override
+	public UtilityTable queryUtility(UtilQuery query) throws DialException {
+		return selectBestAlgorithm(query).queryUtility(query);
+	}
 
-	/**
-	 * Returns a pretty print representation of the distribution
-	 * 
-	 * @return the pretty print for the distribution
-	 */
-	public String prettyPrint();
+	@Override
+	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
+		return selectBestAlgorithm(query).reduceNetwork(query);
+	}
+	
+	
+	private InferenceAlgorithm selectBestAlgorithm (Query query) {
+			
+		int branchingFactor = 0;
+		int nbContinuous = 0;
+		for (BNode node : query.getNetwork().getNodes()) {
+			if (node.getInputNodeIds().size() > branchingFactor) {
+				branchingFactor = node.getInputNodeIds().size();
+			}
+			if (node instanceof ChanceNode && node.getInputNodeIds().isEmpty()) {
+				if (isContinuous(((ChanceNode)node).getDistrib())) {
+					nbContinuous++;
+				}
+			}
+		}
+		
+		if (nbContinuous > 1 || branchingFactor > 3 || query.getQueryVars().size() > 2) {
+			return new ImportanceSampling();
+		}
+		else {
+			return new VariableElimination();
+		}
+	}
+	
+	
+	private boolean isContinuous(ProbDistribution distrib) {
+		if (distrib instanceof ContinuousProbDistribution) {
+			return true;
+		}
+		try {
+			distrib.toContinuous();
+			return true;
+		}
+		catch (DialException e) {
+			return false;
+		}
+	}
 
-
-	/**
-	 * Changes the variable label
-	 * 
-	 * @param nodeId the old variable label
-	 * @param newId the new variable label
-	 */
-	public void modifyVarId(String oldId, String newId);
-	
-	
-	/**
-	 * Returns the set of possible actions for the given input assignment
-	 * 
-	 * @param input the input assignment
-	 * @return the set of possible action values
-	 */
-	public Set<Assignment> getRelevantActions(Assignment input);
-	
-	
-	
 }
+

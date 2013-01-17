@@ -12,7 +12,8 @@ import opendial.inference.queries.Query;
 public abstract class AbstractQuerySampling extends Thread {
 
 	// logger
-	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
+	public static Logger log = new Logger("AbstractQuerySampling", Logger.Level.DEBUG);
+	
 
 	// number of sampling threads to run in parallel
 	public static int NB_THREADS = 2;
@@ -31,6 +32,8 @@ public abstract class AbstractQuerySampling extends Thread {
 
 	// the query
 	Query query;
+	
+	boolean inCompilation = false;
 	
 	
 
@@ -55,7 +58,7 @@ public abstract class AbstractQuerySampling extends Thread {
 		this.nbSamples = nbSamples;
 
 		Timer timer = new Timer();
-		timer.schedule(new StopSamplingTask(this), maxSamplingTime);
+		timer.schedule(new StopSamplingTask(this, maxSamplingTime), maxSamplingTime);
 	}
 
 
@@ -79,9 +82,11 @@ public abstract class AbstractQuerySampling extends Thread {
 	 */
 	protected void addSample (WeightedSample sample) {
 		if (samples.size() < nbSamples) {
+			if (!inCompilation) {
 			samples.add(sample);
 			totalWeight += sample.getWeight();
 			//	log.debug("adding sample " + samples.size());
+			}
 		}
 		else {
 			terminateThreads();
@@ -95,6 +100,7 @@ public abstract class AbstractQuerySampling extends Thread {
 	 * the sampling algorithm.
 	 */
 	public synchronized void terminateThreads() {
+		inCompilation = true;
 		if (!isTerminated()) {
 			for (SampleCollector thread : new ArrayList<SampleCollector>(threads)) {
 				thread.terminate();
@@ -102,6 +108,7 @@ public abstract class AbstractQuerySampling extends Thread {
 			compileResults();
 			notifyAll(); 
 		}
+		inCompilation = false;
 	}
 
 	protected abstract void compileResults();

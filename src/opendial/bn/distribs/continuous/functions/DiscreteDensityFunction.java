@@ -130,11 +130,17 @@ public class DiscreteDensityFunction implements DensityFunction {
 	@Override
 	public List<Double> getDiscreteValues(int nbBuckets) {
 		List<Double> values = new ArrayList<Double>();
+		int nbLoops = 1;
+		while (values.size() < nbBuckets && nbLoops < 5) {
 		for (double val : points.keySet()) {
-			double nbToPick = points.get(val) * nbBuckets;
+			double nbToPick = points.get(val) * nbBuckets * nbLoops;
 				for (int i = 0 ; i <nbToPick && nbToPick >= 1.0 ; i++) {
-					values.add(val);
+					if (!values.contains(val)) {
+						values.add(val);
+					}
 				}
+		}
+		nbLoops++;
 		}
 		return values;
 	}

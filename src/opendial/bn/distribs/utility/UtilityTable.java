@@ -178,6 +178,7 @@ public class UtilityTable implements UtilityDistribution {
 	}
 
 	
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -263,7 +264,6 @@ public class UtilityTable implements UtilityDistribution {
 	//  INNER CLASS
 	// ===================================
 
-
 	/**
 	 * Estimate of an utility value, defined by the averaged estimate itself,
 	 * and the number of values that have contributed to it (in order to 
@@ -291,6 +291,7 @@ public class UtilityTable implements UtilityDistribution {
 			updateEstimate(firstValue);
 		}
 
+		
 		/**
 		 * Updates the current estimate with a new value
 		 * 
@@ -298,8 +299,8 @@ public class UtilityTable implements UtilityDistribution {
 		 */
 		public void updateEstimate(double newValue) {
 			double prevUtil = averagedEstimate;
-			averagedEstimate = prevUtil + (newValue - prevUtil) / (nbValues +1);
 			nbValues++;
+			averagedEstimate = prevUtil + (newValue - prevUtil) / (nbValues);
 		}
 
 

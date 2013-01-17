@@ -201,7 +201,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 			List<String> influencedNodes = getInfluencedNodeIds(network, newNodeId);
 			for (String trigger : triggers) {
 				if (influencedNodes.contains(trigger)) {
-					log.debug("model " + id + " indirectly triggered via " + newNodeId);
+		//			log.debug("model " + id + " indirectly triggered via " + newNodeId);
 					return true;
 				}
 			}

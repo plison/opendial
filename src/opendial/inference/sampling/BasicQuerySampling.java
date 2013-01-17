@@ -34,7 +34,7 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.datastructs.Intervals;
-import opendial.bn.distribs.empirical.EmpiricalDistribution;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.values.ValueFactory;
@@ -89,22 +89,21 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 		}
 		Intervals<WeightedSample> intervals = new Intervals<WeightedSample>(table);
 	
-		EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
-		UtilityTable empiricalUtilityDistrib = new UtilityTable();
-
+		SimpleEmpiricalDistribution empiricalDistrib = new SimpleEmpiricalDistribution();
+		UtilityTable utilityTable = new UtilityTable();
 		while (empiricalDistrib.getSize() < samples.size()) {
 			try {
 				WeightedSample sample = intervals.sample();
 				Assignment trimmedSample = sample.getSample().getTrimmed(query.getQueryVars());
 				empiricalDistrib.addSample(trimmedSample);
-				empiricalUtilityDistrib.addUtility(trimmedSample, sample.getUtility());
+				 
+				utilityTable.addUtility(trimmedSample, sample.getUtility());
 			} 
 			catch (DialException e) {
 				log.warning("error compiling the results: " + e.toString());
 			}
 		}
-
-		results = new DistributionCouple(empiricalDistrib,empiricalUtilityDistrib);
+		results = new DistributionCouple(empiricalDistrib,utilityTable);
 	}
 
 

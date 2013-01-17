@@ -19,6 +19,7 @@
 
 package opendial.inference;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -31,6 +32,14 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
+import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
+import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.ValueFactory;
 import opendial.common.NetworkExamples;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
@@ -45,8 +54,7 @@ import opendial.inference.queries.UtilQuery;
 public class InferenceTest {
 
 	// logger
-	public static Logger log = new Logger("BNetworkInferenceTest",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("InferenceTest", Logger.Level.DEBUG);
 		
 	
 	public static void main(String[] args) throws DialException {
@@ -63,7 +71,6 @@ public class InferenceTest {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		Map<Assignment,Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 
-		
 		assertEquals(0.000628f, fullJoint.get(new Assignment(
 				Arrays.asList("JohnCalls", "MaryCalls", "Alarm", "!Burglary",
 						"!Earthquake"))), 0.000001f);
@@ -129,12 +136,12 @@ public class InferenceTest {
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		
-		ProbDistribution query = ve.queryProb(new ProbQuery(bn, Arrays.asList("Burglary"), 
+		ProbDistribution distrib = ve.queryProb(new ProbQuery(bn, Arrays.asList("Burglary"), 
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
 		
-		assertEquals(0.713676, query.toDiscrete().getProb(new Assignment(), 
+		assertEquals(0.713676, distrib.toDiscrete().getProb(new Assignment(), 
 				new Assignment("Burglary", false)), 0.0001f);
-		assertEquals(0.286323, query.toDiscrete().getProb(new Assignment(), 
+		assertEquals(0.286323, distrib.toDiscrete().getProb(new Assignment(), 
 				new Assignment("Burglary", true)), 0.0001f);
 		
 		ProbDistribution query2 = ve.queryProb(new ProbQuery(bn, Arrays.asList("Alarm", "Burglary"), 
@@ -170,7 +177,7 @@ public class InferenceTest {
 	@Test
 	public void bayesianNetworkTest3bis() throws DialException {
 		
-		ImportanceSampling is = new ImportanceSampling(6000, 200);
+		ImportanceSampling is = new ImportanceSampling(4000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		
 		ProbDistribution query = is.queryProb(new ProbQuery(bn, Arrays.asList("Burglary"), 
@@ -207,7 +214,7 @@ public class InferenceTest {
 				distrib2.toDiscrete().getProb(new Assignment("Burglary"), 
 						new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls"))), 0.001);
 		
-		ProbDistribution distrib3 = new ImportanceSampling(6000, 200).queryProb(query);
+		ProbDistribution distrib3 = new ImportanceSampling(4000, 300).queryProb(query);
 		
 		assertEquals(distrib3.toDiscrete().getProb(new Assignment("Burglary"), 
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls"))), 
@@ -222,7 +229,7 @@ public class InferenceTest {
 
 		VariableElimination ve = new VariableElimination();
 		NaiveInference naive = new NaiveInference();
-		ImportanceSampling is = new ImportanceSampling(5000, 400);
+		ImportanceSampling is = new ImportanceSampling(3000, 300);
 		UtilQuery query1 = new UtilQuery(network, Arrays.asList("Action"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls")));
 
@@ -243,6 +250,48 @@ public class InferenceTest {
 		assertEquals(-5.25, naive.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
 		assertEquals(-5.25, is.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.8);
 	
+	}
+	
+	
+	@Test
+	public void switchingTest() throws DialException {
+		
+		BNetwork network = NetworkExamples.constructBasicNetwork2();
+
+		ProbQuery query = new ProbQuery(network, Arrays.asList("Burglary"), 
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		
+		ProbDistribution distrib = (new SwitchingAlgorithm()).queryProb(query);
+		assertTrue(distrib instanceof SimpleTable);
+		
+		ChanceNode n1 = new ChanceNode("n1");
+		n1.addProb(ValueFactory.create("aha"), 1.0);
+		network.addNode(n1);
+		ChanceNode n2 = new ChanceNode("n2");
+		n2.addProb(ValueFactory.create("oho"), 0.7);
+		network.addNode(n2);
+		network.getNode("Alarm").addInputNode(n1);
+		network.getNode("Alarm").addInputNode(n2);
+		
+		distrib = (new SwitchingAlgorithm()).queryProb(query);
+		assertTrue(distrib instanceof SimpleEmpiricalDistribution); 
+		
+		network.removeNode(n1.getId());
+		network.removeNode(n2.getId());
+		
+		distrib = (new SwitchingAlgorithm()).queryProb(query);
+		assertTrue(distrib instanceof SimpleTable);
+
+		n1 = new ChanceNode("n1");
+		n1.setDistrib(new FunctionBasedDistribution("n1", new UniformDensityFunction(-2, 2)));
+		n2 = new ChanceNode("n2");
+		n1.setDistrib(new FunctionBasedDistribution("n2", new GaussianDensityFunction(-1, 3)));
+		network.addNode(n1);
+		network.addNode(n2);
+		
+		distrib = (new SwitchingAlgorithm()).queryProb(query);
+		assertTrue(distrib instanceof SimpleEmpiricalDistribution); 
+
 	}
 	
 }

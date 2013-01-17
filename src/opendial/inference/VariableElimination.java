@@ -124,6 +124,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 				// create the basic factor for every variable
 				DoubleFactor basicFactor = makeFactor(n, evidence);
+				
 				if (!basicFactor.isEmpty()) {
 					factors.add(basicFactor);
 
@@ -267,7 +268,6 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		// generates all possible assignments for the node content
 		Map<Assignment,Double> flatTable = node.getFactor();
-
 		for (Assignment a: flatTable.keySet()) {
 
 			// verify that the assignment is consistent with the evidence

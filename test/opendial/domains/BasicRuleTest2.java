@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import opendial.arch.ConfigurationSettings;
 import opendial.arch.DialException;
 import opendial.arch.DialogueState;
 import opendial.arch.DialogueSystem;
@@ -45,6 +46,7 @@ import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
+import opendial.common.MiscUtils;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -70,78 +72,75 @@ public class BasicRuleTest2 {
 	public static final String domainFile2 = "domains//testing//domain3.xml";
 
 	static Domain domain;
-	static Domain domain2;
-	
-	VariableElimination ve;
-	ImportanceSampling is;
-	NaiveInference naive;
-	
 
-
-	public BasicRuleTest2() throws DialException {
-		ve = new VariableElimination();
-		is = new ImportanceSampling(5000, 200);
-		naive = new NaiveInference();
-	}
+	static InferenceChecks inference;
+	static DialogueSystem system;
 
 	static {
-		try { domain = XMLDomainReader.extractDomain(domainFile); 
-		domain2 = XMLDomainReader.extractDomain(domainFile2); } 
-		catch (DialException e) { log.warning ("domain cannot be read: " + e); }
+		try { 
+			domain = XMLDomainReader.extractDomain(domainFile); 
+			inference = new InferenceChecks();
+			ConfigurationSettings.getInstance().activatePlanner(false);
+			ConfigurationSettings.getInstance().activatePruning(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
 
 	@Test
 	public void test() throws DialException, InterruptedException {
-		
-		DialogueSystem system = new DialogueSystem(domain);
+				
+		system = new DialogueSystem(domain);
 		system.startSystem(); 
-		 waitUntilStable(system);
-		 
+		MiscUtils.waitUntilStable(system);
+		
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
+	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
 	 			
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
 		 
 		system.getState().addContent(table, "test");
-		waitUntilStable(system);
+		MiscUtils.waitUntilStable(system);
 		
 		query = new ProbQuery(system.getState(),"a_u^p");
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
-	 	InferenceChecks.checkProb(query, new Assignment("a_u^p", "None"), 0.041);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
+	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.041);
 
 	 	ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
-	 	InferenceChecks.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.080);
-	 	InferenceChecks.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9197);
+	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.080);
+	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9197);
 
 	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u'");
-	 	InferenceChecks.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	InferenceChecks.checkProb(query3, new Assignment("a_u'", "None"), 0.0820);
+	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.0820);
 
 	 	ProbQuery query4 = new ProbQuery(system.getState(),"a_u'");
-	 	InferenceChecks.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	InferenceChecks.checkProb(query4, new Assignment("a_u'", "None"), 0.0820);	
+	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.0820);	
 	}
 	
 	
 	@Test
 	public void test2() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		 waitUntilStable(system);
 		 			
+		system = new DialogueSystem(domain);
+		system.startSystem(); 
+		MiscUtils.waitUntilStable(system);
+		
 		system.getState().getNetwork().getNode("u_u2^p'").setId("u_u2^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
-	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
-	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
-	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
-	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "Could you do A?"), 0.162);
-	 	InferenceChecks.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
+	 	inference.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
+	 	inference.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
+	 	inference.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
+	 	inference.checkProb(query, new Assignment("u_u2^p", "Could you do A?"), 0.162);
+	 	inference.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
 	 			
 	
 		SimpleTable table = new SimpleTable();
@@ -149,25 +148,26 @@ public class BasicRuleTest2 {
 		table.addRow(new Assignment("u_u2", "Do B"), 0.4); 
 		 
 		system.getState().addContent(table, "test2");
-		waitUntilStable(system);
+		MiscUtils.waitUntilStable(system);
 		
 		query = new ProbQuery(system.getState(),"i_u2");
-	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
-	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
-	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
-	 	InferenceChecks.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
+	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
+	 	inference.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
+	 	inference.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
+	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
 	}
 	
 	
 	@Test
 	public void test3() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain);
+
+		system = new DialogueSystem(domain);
 		system.startSystem(); 
-		waitUntilStable(system);
+		MiscUtils.waitUntilStable(system);
 		
 	 	UtilQuery query = new UtilQuery(system.getState(),"a_m'");
-	 	InferenceChecks.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
-	 	InferenceChecks.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
 	 
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
@@ -176,49 +176,35 @@ public class BasicRuleTest2 {
 		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getUtilityNodeIds());
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 		system.getState().addContent(table, "test");
-		waitUntilStable(system);
+		MiscUtils.waitUntilStable(system);
 
 	 	query = new UtilQuery(system.getState(),"a_m''");
-	 	InferenceChecks.checkUtil(query, new Assignment("a_m''", "Do(A)"), -4.357);
-	 	InferenceChecks.checkUtil(query, new Assignment("a_m''", "Do(B)"), 2.357);	
+	 	inference.checkUtil(query, new Assignment("a_m''", "Do(A)"), -4.357);
+	 	inference.checkUtil(query, new Assignment("a_m''", "Do(B)"), 2.357);	
 	}
 	
 	
 
 	@Test
 	public void test4() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain2);
-		system.startSystem(); 
-		waitUntilStable(system);
+		
+		Domain domain2 = XMLDomainReader.extractDomain(domainFile2); 
+		DialogueSystem system2 = new DialogueSystem(domain2);
+		system2.startSystem(); 
+		MiscUtils.waitUntilStable(system2);
 
-		UtilQuery query = new UtilQuery(system.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
+		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
 
-	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "A")), 0.3);
-	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
-	 			new Assignment("obj(a_m3)'", "B")), -2.9);
-	 	InferenceChecks.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
-	 			new Assignment("obj(a_m3)'", "None")), 0.05);
+	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+	 			new Assignment("obj(a_m3)'", "B")), -1.7);
+	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
+	 			new Assignment("obj(a_m3)'", "None")), -0.9);
 	 	
 	 	assertEquals(6, (new ImportanceSampling()).queryUtility(query).getTable().size());
 	}
 	
 
 
-	private void waitUntilStable(DialogueSystem system) {
-		try {
-			Thread.sleep(30);
-			int i = 0 ;
-			while (!system.getState().isStable()) {
-				Thread.sleep(20);
-				i++;
-				if (i > 30) {
-					log.debug("dialogue state: " + system.getState().toString());
-				}
-			}
-		}
-		catch (InterruptedException e) { 
-			log.debug ("interrupted exception: " + e.toString());
-		}
-	}
 }

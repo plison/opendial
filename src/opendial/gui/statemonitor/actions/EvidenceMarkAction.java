@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 
 import opendial.arch.ConfigurationSettings;
 import opendial.bn.nodes.ChanceNode;
-import opendial.gui.statemonitor.GraphViewerPopupMenu;
+import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.gui.statemonitor.options.EvidenceMarkPanel;
 
 @SuppressWarnings("serial")
@@ -16,10 +16,10 @@ public final class EvidenceMarkAction extends AbstractAction {
 	/**
 	 * 
 	 */
-	private final GraphViewerPopupMenu graphViewerPopupMenu;
+	private final DialogueStatePopup graphViewerPopupMenu;
 	String evidenceVariable;
 	
-	public EvidenceMarkAction(GraphViewerPopupMenu graphViewerPopupMenu, String name, String evidenceVariable) {
+	public EvidenceMarkAction(DialogueStatePopup graphViewerPopupMenu, String name, String evidenceVariable) {
 		super(name);
 		this.graphViewerPopupMenu = graphViewerPopupMenu;
 		this.evidenceVariable = evidenceVariable;
@@ -38,7 +38,7 @@ public final class EvidenceMarkAction extends AbstractAction {
 			this.graphViewerPopupMenu.getViewer().getPickedVertexState().pick(evidenceVariable, false);
 			
 		} catch (Exception e) {
-			GraphViewerPopupMenu.log.debug("problem performing the inference for P(" + evidenceVariable +") " +
+			DialogueStatePopup.log.debug("problem performing the inference for P(" + evidenceVariable +") " +
 					"aborting action: " + e.toString());
 		}	
 	}

@@ -124,6 +124,7 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	}
 
 
+	@Override
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
 
 		// creates a new query thread

@@ -12,7 +12,7 @@ import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.gui.statemonitor.DistributionViewer;
-import opendial.gui.statemonitor.GraphViewerPopupMenu;
+import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
 
@@ -25,10 +25,10 @@ public final class DistributionChartAction extends AbstractAction {
 	/**
 	 * 
 	 */
-	private GraphViewerPopupMenu graphViewerPopupMenu;
+	private DialogueStatePopup graphViewerPopupMenu;
 	String queryVariable;
 	
-	public DistributionChartAction(GraphViewerPopupMenu graphViewerPopupMenu, String name, String queryVariable) {
+	public DistributionChartAction(DialogueStatePopup graphViewerPopupMenu, String name, String queryVariable) {
 		super(name);
 		this.graphViewerPopupMenu = graphViewerPopupMenu;
 		this.queryVariable = queryVariable;
@@ -47,7 +47,7 @@ public final class DistributionChartAction extends AbstractAction {
 			DistributionViewer.showDistributionViewer(distrib);
 			this.graphViewerPopupMenu.getViewer().getPickedVertexState().pick(queryVariable, false);
 		} catch (Exception e) {
-			GraphViewerPopupMenu.log.debug("problem performing the inference for P(" + queryVariable +") " +
+			DialogueStatePopup.log.debug("problem performing the inference for P(" + queryVariable +") " +
 					"aborting action: " + e.toString());
 		}
 		
