@@ -46,7 +46,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.gui.ToolkitMenu;
 import opendial.inference.ImportanceSampling;
@@ -100,14 +100,13 @@ public class InferenceOptionsPanel extends JDialog {
 		importanceSampling.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
 				samplingOptionBox.setVisible(true); repaint(); }});
-		final ConfigurationSettings settings = ConfigurationSettings.getInstance();
-		if (settings.getInferenceAlgorithm().equals(NaiveInference.class)) {
+		if (Settings.inferenceAlgorithm.equals(NaiveInference.class)) {
 			naiveInference.setSelected(true);
 		}
-		else if (settings.getInferenceAlgorithm().equals(VariableElimination.class)) {
+		else if (Settings.inferenceAlgorithm.equals(VariableElimination.class)) {
 			variableElimination.setSelected(true);
 		}
-		else if (settings.getInferenceAlgorithm().equals(ImportanceSampling.class)) {
+		else if (Settings.inferenceAlgorithm.equals(ImportanceSampling.class)) {
 			importanceSampling.setSelected(true);
 		}
 		ButtonGroup group = new ButtonGroup();
@@ -137,7 +136,7 @@ public class InferenceOptionsPanel extends JDialog {
 		
 	//	NumberFormat format = NumberFormat.getNumberInstance();
 		final JFormattedTextField sampleNumber = new JFormattedTextField();
-		sampleNumber.setText(""+settings.getNbSamples());
+		sampleNumber.setText(""+Settings.nbSamples);
 		samplingOptionBox.add(sampleNumber, BorderLayout.CENTER);
 		samplingOptionBox.add(new JLabel("                          "),BorderLayout.EAST);
 		samplingOptionBox.add(new JLabel(" "),BorderLayout.SOUTH);
@@ -161,16 +160,16 @@ public class InferenceOptionsPanel extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				if (naiveInference.isSelected()) {
-					settings.setInferenceAlgorithm(NaiveInference.class);
+					Settings.inferenceAlgorithm = NaiveInference.class;
 				}
 				else if (variableElimination.isSelected()) {
-					settings.setInferenceAlgorithm(VariableElimination.class);
+					Settings.inferenceAlgorithm = VariableElimination.class;
 				}
 				else if (importanceSampling.isSelected()) {
-					settings.setInferenceAlgorithm(ImportanceSampling.class);
+					Settings.inferenceAlgorithm = ImportanceSampling.class;
 					try {
 						int number = Integer.parseInt(sampleNumber.getText());
-						settings.setNbSamples(number);
+						Settings.nbSamples = number;
 					}
 					catch (NumberFormatException e2) {
 						log.warning("number of samples has an invalid format: " + sampleNumber.getText());

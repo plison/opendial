@@ -35,7 +35,7 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.DerivedActionNode;
-import opendial.bn.nodes.NodeIdChangeListener;
+import opendial.bn.nodes.IdChangeListener;
 import opendial.bn.nodes.UtilityNode;
 import opendial.inference.queries.Query;
 
@@ -48,7 +48,7 @@ import opendial.inference.queries.Query;
  * @version $Date:: 2012-06-11 18:13:11 #$
  *
  */
-public class BNetwork implements NodeIdChangeListener {
+public class BNetwork implements IdChangeListener {
 
 	// logger
 	public static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
@@ -88,10 +88,10 @@ public class BNetwork implements NodeIdChangeListener {
 	public synchronized void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			Thread.dumpStack();
+	//		Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
-		node.addNodeIdChangeListener(this);
+		node.addIdChangeListener(this);
 
 		// adding the node in the type-specific collections
 		if (node instanceof ChanceNode) {
@@ -144,7 +144,7 @@ public class BNetwork implements NodeIdChangeListener {
 		}
 		else {
 			BNode node = nodes.get(nodeId);
-			node.addNodeIdChangeListener(null);
+			node.addIdChangeListener(null);
 
 			for (BNode inputNode : node.getInputNodes()) {
 				node.removeInputNode(inputNode.getId());
@@ -209,7 +209,8 @@ public class BNetwork implements NodeIdChangeListener {
 	 * 
 	 * @throws DialException if the merge operation failed
 	 */
-	protected void mergeUtilityNodes() throws DialException {
+	/**
+	private void mergeUtilityNodes() throws DialException {
 
 		// we need to merge the utility nodes together
 		if (!getUtilityNodeIds().isEmpty()) {
@@ -226,7 +227,7 @@ public class BNetwork implements NodeIdChangeListener {
 			totalNode.setId(totalNode.getId().substring(0, totalNode.getId().length()-1));
 			addNode(totalNode);
 		}
-	}
+	} */
 
 
 
@@ -474,14 +475,9 @@ public class BNetwork implements NodeIdChangeListener {
 				if (getNode(var) instanceof ChanceNode) {
 					network.addNode(new ChanceNode(var));
 				}
-				else if (getNode(var) instanceof UtilityNode) {
-					network.addNode(new UtilityNode(var));
-				}
-				else if (getNode(var) instanceof DerivedActionNode) {
-					network.addNode(new DerivedActionNode(var));
-				}
-				else if (getNode(var) instanceof ActionNode) {
-					network.addNode(getActionNode(var).copy());
+				else if (getNode(var) instanceof UtilityNode 
+						|| getNode(var) instanceof ActionNode) {
+					throw new DialException("retained variables can only be chance nodes");
 				}
 			}
 		}
@@ -494,13 +490,33 @@ public class BNetwork implements NodeIdChangeListener {
 				}
 			}
 		}
-		
-		network.mergeUtilityNodes();
-		
+				
 		return network;
-
 	}
 
+	
+
+	/**
+	 * Returns the identifiers for the node that remain identical in this network and the one
+	 * given as argument, taking into account the evidence.
+	 * 
+	 * @param otherNetwork the other network
+	 * @param evidence the evidence to consider as well
+	 * @return the set of node identifiers that remain identical
+	 */
+	public Set<String> getIdenticalNodes(BNetwork otherNetwork, Assignment evidence) {
+		Set<String> identicalNodes = new HashSet<String>();
+		for (ChanceNode node : otherNetwork.getChanceNodes()) {
+			ChanceNode initNode = getChanceNode(node.getId());
+				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
+						&& node.getOutputNodesIds().equals(initNode.getOutputNodesIds()) 
+						&& node.hasDescendant(evidence.getVariables())) {
+					identicalNodes.add(node.getId());
+			}	
+		}	
+		return identicalNodes;
+	}
+	
 
 	// ===================================
 	//  UTILITIES
@@ -534,7 +550,8 @@ public class BNetwork implements NodeIdChangeListener {
 			BNode nodeCopy = node.copy();
 			for (BNode inputNode : node.getInputNodes()) {
 				if (!copyNetwork.hasNode(inputNode.getId())) {
-					throw new DialException("cannot copy the network: structure is corrupt (" + inputNode.getId() + " is not present)");
+					throw new DialException("cannot copy the network: structure " +
+							"is corrupt (" + inputNode.getId() + " is not present)");
 				}
 				nodeCopy.addInputNode(copyNetwork.getNode(inputNode.getId()));
 			}
@@ -604,6 +621,19 @@ public class BNetwork implements NodeIdChangeListener {
 			}
 		}
 		return leaves;
+	}
+
+	public void addNetwork(BNetwork network) throws DialException {
+		for (BNode node : network.getNodes()) {
+			addNode(node.copy());
+		}
+		for (BNode oldNode : network.getNodes()) {
+			BNode newNode = getNode(oldNode.getId());
+			for (String inputNodeId : oldNode.getInputNodeIds()) {
+				BNode newInputNode = getNode(inputNodeId);
+				newNode.addInputNode(newInputNode);
+			}
+		}
 	}
 
 

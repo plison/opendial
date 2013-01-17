@@ -229,6 +229,18 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		return result;
 	}
 
+	
+	
+	/**
+	 * Returns true if the table contains a distribution for the given assignment of
+	 * conditional variables, and false otherwise
+	 * 
+	 * @param condition the conditional assignment
+	 * @return true if the table contains a distribution, false otherwise
+	 */
+	public boolean hasProbTable(Assignment condition) {
+		return table.containsKey(condition);
+	}
 
 	
 	/**

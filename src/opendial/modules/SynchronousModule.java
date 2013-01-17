@@ -19,8 +19,8 @@
 
 package opendial.modules;
 
-import opendial.arch.DialogueState;
 import opendial.bn.BNetwork;
+import opendial.state.DialogueState;
 
 
 /**
@@ -32,9 +32,8 @@ import opendial.bn.BNetwork;
  */
 public interface SynchronousModule {
 
-	public boolean isExternal();
+	public void trigger(DialogueState state);
 
-	public void trigger(DialogueState state, String newNodeId);
+	public boolean isTriggered(DialogueState state);
 
-	
 }

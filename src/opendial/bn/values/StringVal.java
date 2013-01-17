@@ -19,6 +19,8 @@
 
 package opendial.bn.values;
 
+import opendial.arch.Logger;
+
 /**
  * String value
  *
@@ -29,6 +31,8 @@ package opendial.bn.values;
 
 public final class StringVal implements Value {
 	
+	public static Logger log = new Logger("StringVal", Logger.Level.DEBUG);
+
 	// the string
 	String str;
 	

@@ -49,10 +49,14 @@ public class ConditionCheckFactory {
 	 * @return the condition check
 	 */
 	public static ConditionCheck createCheck(TemplateString expectedVal, 
-			Relation rel, Assignment input) {
-				
+			Relation rel, Assignment input) {			
+		
 		// we first fill the possible slots in the expected value
-		TemplateString filledExpectedVal = expectedVal.fillSlotsPartial(input);
+		TemplateString filledExpectedVal = expectedVal;
+		if (!expectedVal.getSlots().isEmpty()) {
+			filledExpectedVal = expectedVal.fillSlotsPartial(input);
+		}
+		
 		// creating a string match check
 		if (rel == Relation.EXACT_MATCH) {
 		 return new StringMatch(filledExpectedVal, false);
@@ -76,12 +80,17 @@ public class ConditionCheckFactory {
 			case NOT_CONTAINS: return new Contains(value, false) ;
 		}
 		}
-		else if (rel == Relation.UNEQUAL || rel == Relation.NOT_CONTAINS) {
-			return new True();
-		}
 		else if (rel == Relation.EQUAL){
 			return new StringMatch(filledExpectedVal, false);
 		}
+
+		else if (rel == Relation.UNEQUAL) {
+			return new Neg(new StringMatch(filledExpectedVal, false));
+		}
+		else if (rel == Relation.NOT_CONTAINS) {
+			return new True();
+		}
+
 		return new False();
 	}
 	

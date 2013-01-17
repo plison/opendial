@@ -28,8 +28,6 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.statechange.AnchoredRule;
-import opendial.arch.statechange.Rule.RuleType;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
@@ -39,7 +37,10 @@ import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.rules.AnchoredRule;
+import opendial.state.rules.Rule.RuleType;
+import opendial.utils.StringUtils;
 
 /**
  * Utility distribution based on a rule specification.
@@ -48,29 +49,32 @@ import opendial.domains.rules.parameters.StochasticParameter;
  * @version $Date::                      $
  *
  */
-public class RuleBasedUtilDistribution implements UtilityDistribution {
+public class RuleUtilDistribution implements UtilityDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleBasedUtilDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleUtilDistribution", Logger.Level.DEBUG);
 
 	// An anchored rule
 	AnchoredRule rule;
-	
+
 	// a cache with the utility assignments
-	Map<Assignment,Map<Assignment, Double>> cache;
-			
+	Map<Assignment,UtilityTable> cache;
+
+	Set<String> actionVars;
+
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
 	// ===================================
-	
-	
+
+
 	/**
 	 * Creates a new rule-based utility distribution, based on an anchored rule
 	 * 
 	 * @param rule the anchored rule
 	 * @throws DialException if the rule is not a decision rule
 	 */
-	public RuleBasedUtilDistribution(AnchoredRule rule) throws DialException {
+	public RuleUtilDistribution(AnchoredRule rule) throws DialException {
+
 		if ((rule.getRule().getRuleType() == RuleType.UTIL)) {
 			this.rule = rule;
 		}
@@ -78,25 +82,52 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 			throw new DialException("only utility rules can define a " +
 					"rule-based utility distribution");
 		}
-		
-		cache = new HashMap<Assignment,Map<Assignment, Double>>();
+
+		this.actionVars = new HashSet<String>();
+
+		cache = new HashMap<Assignment,UtilityTable>();
 	}
-	
-	
+
+
+	/**
+	 * Creates a new rule-based utility distribution, based on an anchored rule
+	 * 
+	 * @param rule the anchored rule
+	 * @param the set of action vars to attach to the distribution
+	 * @throws DialException if the rule is not a decision rule
+	 */
+	public RuleUtilDistribution(AnchoredRule rule, Set<String> actionVars) throws DialException {
+		this(rule);
+		this.actionVars.addAll(actionVars);
+	}
+
+
+
+	public void addActionVariable(String actionVar) {
+		actionVars.add(actionVar);
+	}
+
+
 	/**
 	 * Does nothing.
 	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
-		return;
+		if (actionVars.contains(oldId)) {
+			actionVars.remove(oldId);
+			actionVars.add(newId);
+		}
+		for (UtilityTable table : cache.values()) {
+			table.modifyVarId(oldId, newId);
+		}
 	}
 
-	
+
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns the utility for Q(input), where input is the assignment
 	 * of values for both the chance nodes and the action nodes
@@ -105,22 +136,18 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * @return the corresponding utility
 	 */
 	@Override
-	public double getUtility(Assignment fullInput) {
-				
-		Assignment input = extractChanceVariables(fullInput);
-		Assignment actions = extractActionVariables(fullInput);
-		
-		if (!cache.containsKey(input) || !cache.get(input).containsKey(actions)) {
+	public synchronized double getUtility(Assignment fullInput) {
+		Assignment input = fullInput.getTrimmedInverse(actionVars);
+		Assignment actions = fullInput.getTrimmed(actionVars);
+
+	
+		if (cache.get(input) == null || !cache.get(input).hasUtility(actions)) {
 			fillCacheForCondition(input, actions);
 		}
-		Double result = cache.get(input).get(actions);
-		if (result == null) {
-			log.warning("something is wrong with the cache: " + input);
-			Thread.dumpStack();
-		}
-		return result.doubleValue();
+		
+		return cache.get(input).getUtility(actions);
 	}
-	
+
 
 
 	/**
@@ -131,27 +158,33 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * @return the set of corresponding relevant actions
 	 */
 	@Override
-	public Set<Assignment> getRelevantActions(Assignment fullInput) {
+	public synchronized Set<Assignment> getRelevantActions(Assignment fullInput) {
+
+		Assignment condition = fullInput.getTrimmedInverse(actionVars);
 		
-		Assignment input = extractChanceVariables(fullInput);
+		Set<Assignment> relevantActions = new HashSet<Assignment>();
 		
-		if (!cache.containsKey(input)) {
-			fillCacheForCondition(input);
+		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition);
+		for (Output effectOutput : effectOutputs.keySet()) {
+			
+			// only fill the cache for effects that are fully specified
+			if (effectOutput.getAllDiscardValues().isEmpty() && 
+					!effectOutput.getAllSetValues().isEmpty()) {
+
+				Assignment concreteAction = new Assignment(effectOutput.getAllSetValues());
+				relevantActions.add(formatAction(concreteAction));
+			}
 		}
-		Set<Assignment> result = cache.get(input).keySet();
-		if (result == null) {
-			log.warning("something is wrong with the cache: " + input);
-			Thread.dumpStack();
-		}
-		return result;
+
+		return relevantActions;
 	}
-	
-	
+
+
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns true
 	 * @return true
@@ -167,12 +200,12 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * @return the copy
 	 */
 	@Override
-	public RuleBasedUtilDistribution copy() {
-		try { return new RuleBasedUtilDistribution (rule); } 
+	public RuleUtilDistribution copy() {
+		try { return new RuleUtilDistribution (rule, actionVars); } 
 		catch (DialException e) { e.printStackTrace(); return null; }
 	}
 
-	
+
 	/**
 	 * Returns the pretty print for the rule
 	 * 
@@ -183,7 +216,7 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 		return rule.toString();
 	}
 
-	
+
 	/**
 	 * Returns the pretty print for the rule
 	 * 
@@ -194,11 +227,11 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 		return rule.toString();
 	}
 
-	
+
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
-	
+
 
 	/**
 	 * Fills the cache with the utility value representing the rule output for the
@@ -206,66 +239,44 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * 
 	 * @param fullInput the conditional assignment
 	 */
-	private void fillCacheForCondition(Assignment input, Assignment actions) {
-		
+	private synchronized void fillCacheForCondition(Assignment input, Assignment actions) {
+
 		if (!cache.containsKey(input)) {
-			cache.put(input, new HashMap<Assignment,Double>());
+			cache.put(input, new UtilityTable());
 		}
 		try {
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
-		for (Output effectOutput : effectOutputs.keySet()) {
-			if (effectOutput.isCompatibleWith(actions)) {
-				Parameter param = effectOutputs.get(effectOutput);
-				double parameterValue = param.getParameterValue(input);
-				cache.get(input).put(actions, parameterValue);
+			Assignment formattedAction = actions.removeSpecifiers();
+			Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
+			
+			for (Output effectOutput : effectOutputs.keySet()) {	
+				if (effectOutput.isCompatibleWith(formattedAction)) {
+					Parameter param = effectOutputs.get(effectOutput);
+					double parameterValue = param.getParameterValue(input);
+					cache.get(input).setUtility(actions, parameterValue);
+					return;
+				}
+			}
+			if (!cache.get(input).hasUtility(actions)) {
+				cache.get(input).setUtility(actions, 0.0);
+			}	
+		}
+		catch (DialException e) {
+			log.warning("could not fill cache for condition/action " + input + ": " + e.toString());
+		}
+	}
+
+
+
+
+	private Assignment formatAction (Assignment baseAction) {
+		Assignment formattedAction = new Assignment();
+		for (String actionVar : actionVars) {
+			String baseVar = actionVar.replace("'", "");
+			if (baseAction.containsVar(baseVar)) {
+				formattedAction.addPair(actionVar, baseAction.getValue(baseVar));
 			}
 		}
-		if (!cache.get(input).containsKey(actions)) {
-			cache.get(input).put(actions, 0.0);
-		}
-		}
-		catch (DialException e) {
-			log.warning("could not fill cache for condition " + input + ": " + e.toString());
-		}
+		return formattedAction;
 	}
-	
-	
 
-	/**
-	 * Fills the cache with the utility value representing the rule output for the
-	 * specific input.
-	 * 
-	 * @param fullInput the conditional assignment
-	 */
-	private void fillCacheForCondition(Assignment input) {
-		
-		if (!cache.containsKey(input)) {
-			cache.put(input, new HashMap<Assignment,Double>());
-		}
-		try {
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
-		for (Output effectOutput : effectOutputs.keySet()) {
-				Parameter param = effectOutputs.get(effectOutput);
-				double parameterValue = param.getParameterValue(input);
-				cache.get(input).put(new Assignment(effectOutput.getAllSetValues()), parameterValue);
-		}
-		}
-		catch (DialException e) {
-			log.warning("could not fill cache for condition " + input + ": " + e.toString());
-		}
-	}
-	
-	
-	private Assignment extractChanceVariables(Assignment fullInput) {	
-		Assignment corrected = fullInput.removeSpecifiers();
-		return corrected.getTrimmed(rule.getInputVariables());	
-	}
-	
-	
-
-	private Assignment extractActionVariables(Assignment fullInput) {
-		Assignment corrected = fullInput.removeSpecifiers();
-		Assignment actions = corrected.getTrimmed(rule.getOutputVariables());
-		return actions.getTrimmedInverse(rule.getInputVariables());
-	}
 }

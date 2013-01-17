@@ -28,6 +28,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.values.Value;
@@ -177,7 +178,6 @@ public class UtilityNode extends BNode {
 
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-			//			log.debug("combination " + combination + " and utility " + distrib.getUtility(combination));
 			factor.put(combination, distrib.getUtility(combination));
 		}
 		return factor;
@@ -253,7 +253,6 @@ public class UtilityNode extends BNode {
 
 
 	protected void buildRelevantActionsCache() {
-
 		relevantActionsCache = new HashSet<Assignment>();
 		// here, we must be careful not to include the action nodes themselves 
 		// (else, we would create an infinite cycle of calls)

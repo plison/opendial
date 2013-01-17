@@ -29,18 +29,21 @@ import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.arch.statechange.Rule;
 import opendial.bn.Assignment;
 import opendial.bn.values.DoubleVal;
 import opendial.domains.datastructs.Output;
 import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.domains.rules.quantification.LabelPredicate;
+import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.state.rules.Rule;
 
 /**
  * Generic representation of a case-based rule, with an identifier and an ordered list 
@@ -65,7 +68,8 @@ public abstract class CaseBasedRule implements Rule {
 	// ordered list of cases
 	protected List<Case> cases;
 	
-	
+	// quantifiers;
+	protected Set<String> quantifiers;
 
 	// ===================================
 	//  RULE CONSTRUCTION
@@ -81,6 +85,7 @@ public abstract class CaseBasedRule implements Rule {
 		cases = new LinkedList<Case>();
 		id = "r" + idCounter;
 		idCounter++;
+		quantifiers = new HashSet<String>();
 	}
 	
 	
@@ -120,6 +125,15 @@ public abstract class CaseBasedRule implements Rule {
 			newCase.addVoidEffect();
 		}
 		cases.add(newCase);
+	}
+	
+	/**
+	 * Adds a new quantifier to the rule
+	 * 
+	 * @param quantifier the quantifier to add
+	 */
+	public void addQuantifier(String quantifier) {
+		quantifiers.add(quantifier);
 	}
 	
 	
@@ -195,6 +209,27 @@ public abstract class CaseBasedRule implements Rule {
 	}
 	
 
+	/**
+	 * Returns the set of unbound predicates in the rule that include at least
+	 * one quantifier (as defined as such in the rule specification).
+	 * 
+	 * @return the set of unbound predicates
+	 */
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		Set<UnboundPredicate> predicates = new HashSet<UnboundPredicate>();
+		for (Case c : cases) {
+			Set<UnboundPredicate> initPredicates = c.getCondition().getUnboundPredicates();
+			for (UnboundPredicate pred : initPredicates) {
+				for (String quantifier : quantifiers) {
+					if (pred.getVariables().contains(quantifier)) {
+						predicates.add(pred);
+					}
+				}
+			}		
+		}
+		return predicates;
+	}
+	
 	
 	// ===================================
 	//  UTILITY METHODS
@@ -260,7 +295,6 @@ public abstract class CaseBasedRule implements Rule {
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
-	
 	
 
 	/**

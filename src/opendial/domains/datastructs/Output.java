@@ -65,6 +65,9 @@ public class Output implements Value {
 	// variables to clear
 	Set<String> toClear;
 	
+	// whether the output is "broken" (incomplete fillers)
+	boolean broken = false;
+	
 	
 	// ===================================
 	//  OUTPUT CONSTRUCTION
@@ -165,7 +168,12 @@ public class Output implements Value {
 	 * @param newDiscardValues (variable, values) pairs
 	 */
 	public void discardValuesForVariables(Map<String,Set<Value>> newDiscardValues) {
-		discardValues.putAll(newDiscardValues);
+		for (String variable: newDiscardValues.keySet()) {
+			if (!discardValues.containsKey(variable)) {
+				discardValues.put(variable, new HashSet<Value>());
+			}
+			discardValues.get(variable).addAll(newDiscardValues.get(variable));
+		}
 	}
 	
 	
@@ -175,7 +183,12 @@ public class Output implements Value {
 	 * @param newAddValues (variable, values) pairs
 	 */
 	public void addValuesForVariables(Map<String,Set<Value>> newAddValues) {
-		addValues.putAll(newAddValues);
+		for (String variable: newAddValues.keySet()) {
+			if (!addValues.containsKey(variable)) {
+				addValues.put(variable, new HashSet<Value>());
+			}
+			addValues.get(variable).addAll(newAddValues.get(variable));
+		}
 	}
 	
 	
@@ -197,10 +210,13 @@ public class Output implements Value {
 	 * @param output the output to integrate
 	 */
 	public void includeOutput(Output output) {
-		setValues.putAll(output.getAllSetValues());
-		discardValues.putAll(output.getAllDiscardValues());
-		addValues.putAll(output.getAllAddValues());
-		toClear.addAll(output.getVariablesToClear());
+		setValuesForVariables(output.getAllSetValues());
+		discardValuesForVariables(output.getAllDiscardValues());
+		addValuesForVariables(output.getAllAddValues());
+		clearVariables(output.getVariablesToClear());
+		if (output.isBroken()) {
+			broken = true;
+		}
 	}
 	
 	
@@ -232,6 +248,18 @@ public class Output implements Value {
 		}
 	}
 	
+	
+	/**
+	 * Sets the output as "broken", in case a slot could not be filled in an 
+	 * effect.  This is useful for decision rules.
+	 * 
+	 * @param broken whether the output is broken
+	 */
+	public void setAsBroken(boolean broken) {
+		this.broken = broken;
+	}
+	
+	
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -246,6 +274,14 @@ public class Output implements Value {
 		return (setValues.isEmpty() && discardValues.isEmpty() && addValues.isEmpty() && toClear.isEmpty());
 	}
 
+	/**
+	 * Returns whether the output is "broken" or not (incomplete filler).
+	 * 
+	 * @return true if broken, false otherwise.
+	 */
+	public boolean isBroken() {
+		return broken;
+	}
 	
 
 	/**
@@ -393,12 +429,15 @@ public class Output implements Value {
 	 */
 	public boolean isCompatibleWith(Assignment actions) {
 		
+		// checks whether the output is broken
+		if (broken) {
+			return false;
+		}
 		// all the set values must be satisfied
 		for (String var : setValues.keySet()) {
 			if (!actions.containsVar(var)) { return false; }
 			else if (!actions.getValue(var).equals(setValues.get(var))) { return false; }
 		}
-		
 		// all the discard values must be satisfied
 		for (String var : discardValues.keySet()) {
 			if (actions.containsVar(var) && discardValues.get(var).
@@ -408,13 +447,13 @@ public class Output implements Value {
 		}
 		
 		// finally, all the other action assignment must be equal to none
-		Assignment actionsCopy = new Assignment(actions);
+		/** Assignment actionsCopy = new Assignment(actions);
 		actionsCopy.removePairs(getVariables());
 		for (String remainingVar : actionsCopy.getVariables()) {
 			if (!actionsCopy.getValue(remainingVar).equals(ValueFactory.none())) {
 				return false;
 			}
-		}
+		} */
 		
 		return true;
 	}
@@ -424,6 +463,48 @@ public class Output implements Value {
 	//  UTILITY METHODS
 	// ===================================
 	
+	
+	
+	/**
+	 * Parses the string representing the output, and returns the output object.
+	 * 
+	 * @param outputString the string representing the output
+	 * @return the corresponding output
+	 */
+	public static Output parseOutput(String outputString) {
+		Output o = new Output();
+		if (outputString.contains(" ^ ")) {
+			for (String split : outputString.split(" \\^ ")) {
+				Output subOutput = parseOutput (split);
+				o.includeOutput(subOutput);
+			}
+		}
+		else {
+			if (outputString.contains("Void")) {
+				return new Output();
+			}
+			if (outputString.contains(":=") && outputString.contains("{}")) {
+				String var = outputString.split(":=")[0];
+				o.clearVariable(var);
+			}
+			else if (outputString.contains(":=")) {
+				String var = outputString.split(":=")[0];
+				Value val = ValueFactory.create(outputString.split(":=")[1]);
+				o.setValueForVariable(var, val);
+			}
+			else if (outputString.contains("!=")) {
+				String var = outputString.split("!=")[0];
+				Value val = ValueFactory.create(outputString.split("!=")[1]);
+				o.discardValueForVariable(var, val);
+			}
+			else if (outputString.contains("+=")) {
+				String var = outputString.split("\\+=")[0];
+				Value val = ValueFactory.create(outputString.split("\\+=")[1]);
+				o.addValueForVariable(var, val);
+			}
+		}	
+		return o;
+	}
 	
 	/**
 	 * Returns the hashcode for the output

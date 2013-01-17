@@ -17,86 +17,110 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.domains.rules.parameters;
+package opendial.state.rules;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
+import opendial.domains.datastructs.Output;
+import opendial.domains.rules.parameters.Parameter;
+import opendial.utils.CombinatoricsUtils;
 
 /**
- * Parameter represented by a single distribution over a continuous
- * variable.
+ * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class StochasticParameter implements Parameter {
+public class AnchoredRuleCache {
 
 	// logger
-	public static Logger log = new Logger("StochasticParameter", Logger.Level.NORMAL);
+	public static Logger log = new Logger("AnchoredValueCache", Logger.Level.DEBUG);
 	
-	ChanceNode distrib;
+	AnchoredRule rule;
 	
-	public StochasticParameter(ChanceNode distrib) {
-		this.distrib = distrib;
-	}
+	Map<Output,Parameter> cachedValues;
 	
-	public String toString() {
-		return distrib.toString();
-	}
-	
-	public int hashCode() {
-		return -distrib.hashCode();
-	}
-	
-	
-	public StochasticParameter copy() {
-		return new StochasticParameter(distrib);
+	public AnchoredRuleCache (AnchoredRule rule) {
+		this.rule = rule;
+		fillCache();
 	}
 
-	/**
-	 * Returns the distribution for the parameter
-	 * 
-	 * @return the distribution
-	 */
-	public ChanceNode getDistrib() {
-		return distrib;
+	
+
+	public Map<Output,Parameter> getOutputs() {
+		return cachedValues;
+	}
+	
+
+	private void fillCache() {
+		cachedValues = new HashMap<Output,Parameter>();
+		
+		Set<Assignment> conditions = getPossibleConditions();
+		for (Assignment condition : conditions) {
+			Map<Output,Parameter> outputs = rule.getEffectOutputs(condition);
+			cachedValues.putAll(outputs);
+		}
 	}
 	
 	
+
 	/**
-	 * Returns the actual value for the parameter, as given in the input assignment (as a
-	 * DoubleVal).  If the value is not given, throws an exception.
-	 *
-	 * @param input the input assignment
-	 * @return the actual value for the parameter
-	 * @throws DialException if the value is not specified in the input assignment
+	 * Returns the list of possible assignment of input values for the node.  If the
+	 * node has no input, returns a list with a single, empty assignment.
+	 * 
+	 * <p>NB: this is a combinatorially expensive operation, use with caution.
+	 * 
+	 * @return the (unordered) list of possible conditions.  
 	 */
-	public double getParameterValue(Assignment input) throws DialException {
-		String variable = distrib.getId();
-		if (input.containsVar(variable) && input.getValue(variable) instanceof DoubleVal) {
-			return ((DoubleVal)input.getValue(variable)).getDouble();
+	protected Set<Assignment> getPossibleConditions() {
+		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
+		for (ChanceNode inputNode : rule.getInputNodes()) {
+				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
+		}
+		
+		Set<Assignment> possibleConditions;
+
+		int nbCombinations = 
+				CombinatoricsUtils.getEstimatedNbCombinations(possibleInputValues);
+		
+		if (nbCombinations < 50) {
+		possibleConditions = 
+				CombinatoricsUtils.getAllCombinations(possibleInputValues);
 		}
 		else {
-			throw new DialException("input " + input + " does not contain " + variable);
+			possibleConditions = new HashSet<Assignment>();
+			for (int i = 0 ; i < 50 ; i++) {
+				Assignment sampledA = new Assignment();
+				for (ChanceNode inputNode: rule.getInputNodes()) {
+					Value sampledValue = null;
+					try { 
+						sampledValue = inputNode.sample();
+						sampledA.addPair(inputNode.getId(), sampledValue); }
+					catch (DialException e) { log.warning("cannot sample " + inputNode.getId()+")"); }
+					catch (NullPointerException f) { 
+						log.debug("sampledA: " + sampledA);
+						log.debug(", inputNodeId: " + inputNode.getId());
+						log.debug(", sampled: " + sampledValue); 
+					}
+				}
+				possibleConditions.add(sampledA);
+			}
 		}
+		
+		return possibleConditions;
 	}
+
 	
-	
-	/**
-	 * Returns a singleton with the distribution for the parameter
-	 *
-	 * @return a collection with one element: the parameter distribution
-	 */
-	public Collection<ChanceNode> getDistributions() {
-		return Arrays.asList(distrib);
-	}
 }

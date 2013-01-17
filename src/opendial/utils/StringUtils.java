@@ -162,7 +162,7 @@ public class StringUtils {
 	 * @param label the original variable label
 	 * @return the corrected label
 	 */
-	public static String removeSpecifiers(String label) {
+	public static String removePrimes(String label) {
 		return label.replace("'", "");
 	}
 	

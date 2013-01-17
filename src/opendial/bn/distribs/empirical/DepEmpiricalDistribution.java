@@ -31,6 +31,7 @@ import java.util.Random;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
@@ -88,7 +89,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * samples
 	 */
 	public DepEmpiricalDistribution(Collection<String> headVars, Collection<String> condVars) {
-		samples = new ArrayList<Assignment>(3000);
+		samples = new ArrayList<Assignment>(Settings.nbSamples);
 		sampler = new Random();
 		this.headVars = new HashSet<String>(headVars);
 		this.condVars = new HashSet<String>(condVars);
@@ -104,7 +105,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			Collection<String> condVars, List<Assignment> samples) {
 		this(headVars, condVars);
 		for (Assignment a : samples) {
-			addSample(a);
+			addSample(a.copy());
 		}
 	}
 	
@@ -114,7 +115,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param sample the sample to add
 	 */
-	public void addSample(Assignment sample) {
+	public synchronized void addSample(Assignment sample) {
 		samples.add(sample);
 		Assignment condition = sample.getTrimmed(condVars);
 		if (!conditionedSamples.containsKey(condition)) {
@@ -142,10 +143,10 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	public Assignment sample(Assignment condition) {
 		if (conditionedSamples.containsKey(condition)) {
 			SimpleEmpiricalDistribution headSamples = conditionedSamples.get(condition);
-			return headSamples.sample(condition);
+			return headSamples.sample();
 		}
 				
-		log.debug("cannot sample dependent empirical distribution for condition: " + condition);
+	//	log.debug("cannot sample dependent empirical distribution for condition: " + condition);
 		return getDefaultAssignment();
 	}
 
@@ -271,8 +272,16 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * @param newId the new variable label
 	 */
 	@Override
-	public void modifyVarId(String oldId, String newId) {
+	public synchronized void modifyVarId(String oldId, String newId) {
 		
+		if (headVars.contains(oldId)) {
+			headVars.remove(oldId);
+			headVars.add(newId);
+		}
+		if (condVars.contains(oldId)) {
+			condVars.remove(oldId);
+			condVars.add(newId);
+		}
 		// change the raw samples
 		List<Assignment> newSamples = new ArrayList<Assignment>(samples.size());
 		for (Assignment a : samples) {
@@ -299,6 +308,11 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			newCondSamples.put(b, condSample);
 		}
 		conditionedSamples = newCondSamples;
+	}
+	
+	
+	public String toString() {
+		return toDiscrete().toString();
 	}
 
 }

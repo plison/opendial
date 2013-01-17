@@ -35,11 +35,12 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.BooleanVal;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
 
 public class EqualityDistribution implements DiscreteProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("EqualityDistribution", Logger.Level.DEBUG);
 
 	String equalityId;
 
@@ -175,8 +176,15 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 
 
 	private double getProb(Assignment condition) throws DialException {
-		Assignment trimmed = condition.getTrimmed(variable+"^p", variable, 
-				variable + "'", variable+"''", variable + "'''");
+		
+		String actualVar = null;
+		for (int i = 3 ; i >= 0; i--) {
+			if (condition.containsVar(variable+StringUtils.createNbPrimes(i))) {
+				actualVar = variable+StringUtils.createNbPrimes(i);
+			}
+		}
+		
+		Assignment trimmed = condition.getTrimmed(variable+"^p",actualVar);
 
 		if (trimmed.size() == 2) {	
 			List<Value> valList = new ArrayList<Value>(trimmed.getValues());
@@ -197,8 +205,9 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 		}
 		else {
 			throw new DialException("equality distribution (with variable " + variable + 
-					") cannot process condition " + condition);
+					") cannot process condition " + trimmed);
 		}
 	}
-
+	
+	
 }

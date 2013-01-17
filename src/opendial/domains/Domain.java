@@ -26,12 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.nodes.ChanceNode;
 import opendial.domains.rules.CaseBasedRule;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.DialogueState;
 
 /**
  * 
@@ -97,17 +96,5 @@ public class Domain {
 		return initState;
 	}
 
-	
-	/**
-	 * 
-	 * @param parameters
-	 */
-	public void addParameters(BNetwork parameters) {
-		this.parameters.addNodes(parameters.getNodes());
-	}
-	
-	public BNetwork getParameters() {
-		return parameters;
-	}
 	
 }

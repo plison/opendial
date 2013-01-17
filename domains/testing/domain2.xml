@@ -49,6 +49,17 @@
 		</rule>
 	</model>
 	
+	<model type="update" trigger="a_u">
+		<rule>
+			<case>
+				<effect>
+					<set var="i_u" value="None"/>
+				</effect>
+			</case>
+		</rule>
+	
+	</model>
+	
 	
 	<model type="prediction" trigger="a_u2^p">
 	

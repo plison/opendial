@@ -22,6 +22,7 @@ package opendial.inference;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
@@ -35,9 +36,15 @@ import opendial.inference.queries.UtilQuery;
 
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 
+	
 	// logger
-	public static Logger log = new Logger("SwitchingAlgorithm",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
+	
+	public static int LIGHTWEIGHT_FACTOR = 10;
+	
+	public static int MAX_BRANCHING_FACTOR = 3;
+	public static int MAX_QUERYVARS = 2;
+	public static int MAX_CONTINUOUS = 1;
 
 	@Override
 	public ProbDistribution queryProb(ProbQuery query) throws DialException {
@@ -59,7 +66,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 			
 		int branchingFactor = 0;
 		int nbContinuous = 0;
-		for (BNode node : query.getNetwork().getNodes()) {
+		for (BNode node : query.getFilteredSortedNodes()) {
 			if (node.getInputNodeIds().size() > branchingFactor) {
 				branchingFactor = node.getInputNodeIds().size();
 			}
@@ -70,10 +77,19 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 			}
 		}
 		
-		if (nbContinuous > 1 || branchingFactor > 3 || query.getQueryVars().size() > 2) {
-			return new ImportanceSampling();
+		if (nbContinuous > MAX_CONTINUOUS ||
+				branchingFactor > MAX_BRANCHING_FACTOR || 
+				query.getQueryVars().size() > MAX_QUERYVARS) {
+	//		log.debug("query " + query + " with sampling");
+			if (query.isLightweight()) {
+				return new ImportanceSampling(Settings.nbSamples / LIGHTWEIGHT_FACTOR);
+			}
+			else {
+				return new ImportanceSampling(Settings.nbSamples);
+			}
 		}
 		else {
+	//		log.debug("query " + query + " with V.E.");
 			return new VariableElimination();
 		}
 	}

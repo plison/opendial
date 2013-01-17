@@ -29,6 +29,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 
 /**
  * Representation of an action node (sometimes also called decision node).
@@ -62,6 +63,7 @@ public class ActionNode extends BNode {
 		super(nodeId);
 		actionValues = new HashSet<Value>();
 		sampler = new Random();
+		actionValues.add(ValueFactory.none());
 	}
 	
 	/**
@@ -74,6 +76,7 @@ public class ActionNode extends BNode {
 	public ActionNode(String nodeId, Set<Value> actionValues) {
 		super(nodeId);
 		this.actionValues = new HashSet<Value>(actionValues);
+		actionValues.add(ValueFactory.none());
 		sampler = new Random();
 	}
 	

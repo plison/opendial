@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parameters>
+
+<variable id="theta_1">
+	<distrib type="gaussian">
+		<mean>0.5</mean>
+		<variance>3</variance>
+	</distrib>
+</variable>
+
+<variable id="theta_2">
+	<distrib type="gaussian">
+		<mean>2</mean>
+		<variance>0.5</variance>
+	</distrib>
+</variable>
+
+
+</parameters>

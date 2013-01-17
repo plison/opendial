@@ -23,6 +23,7 @@ import java.util.Set;
 
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.quantification.UnboundPredicate;
 
 /**
  * Generic interface for a condition used in a probability or utility rule. 
@@ -39,14 +40,12 @@ import opendial.domains.datastructs.TemplateString;
 public interface Condition {
 	
 	public Set<TemplateString> getInputVariables();
-	
-	public Set<String> getLocalOutputVariables();
-	
+		
 	public boolean isSatisfiedBy(Assignment input);
 	
 	public Assignment getLocalOutput(Assignment input);
 
-
+	public Set<UnboundPredicate> getUnboundPredicates();
 
 	
 }

@@ -29,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.statechange.AnchoredRule;
-import opendial.arch.statechange.Rule.RuleType;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
@@ -40,7 +38,9 @@ import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.rules.AnchoredRule;
+import opendial.state.rules.Rule.RuleType;
 
 /**
  * Discrete probability distribution based on a rule specification (which can be for
@@ -52,10 +52,10 @@ import opendial.domains.rules.parameters.StochasticParameter;
  * @version $Date::                      $
  *
  */
-public class RuleBasedDistribution implements DiscreteProbDistribution {
+public class RuleDistribution implements DiscreteProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleBasedDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleDistribution", Logger.Level.DEBUG);
 
 	// An anchored rule
 	AnchoredRule rule;
@@ -63,7 +63,7 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	String id;
 	
 	// a cache with the output values in a simple table
-	Map<Assignment, SimpleTable> cache;
+	DiscreteProbabilityTable cache;
 	
 	
 
@@ -78,7 +78,7 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 * @param rule the anchored rule
 	 * @throws DialException if the rule is not an update or a prediction rule
 	 */
-	public RuleBasedDistribution(AnchoredRule rule) throws DialException {
+	public RuleDistribution(AnchoredRule rule) throws DialException {
 		if (rule.getRule().getRuleType() == RuleType.PROB) {
 			this.rule = rule;
 		}
@@ -87,7 +87,7 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 					"rule-based probability distribution");
 		}
 		id = rule.getId();
-		cache = new HashMap<Assignment,SimpleTable>();
+		cache = new DiscreteProbabilityTable();
 	}
 	
 	
@@ -96,12 +96,7 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
-		for (Assignment a : cache.keySet()) {
-			if (a.containsVar(oldId)) {
-				Value v = a.removePair(oldId);
-				a.addPair(newId, v);
-			}
-		}
+		cache.modifyVarId(oldId, newId);
 		if (id.equals(oldId)) {
 			id = newId;
 		}
@@ -124,11 +119,11 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public double getProb(Assignment condition, Assignment head) {
-		if (!cache.containsKey(condition)) {
+		if (!cache.hasProbTable(condition)) {
 			fillCacheForCondition(condition);
 		}
 		
-		return cache.get(condition).getProb(head);
+		return cache.getProb(condition, head);
 	}
 	
 	
@@ -142,12 +137,16 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public boolean hasProb(Assignment condition, Assignment head) {
-		if (!cache.containsKey(condition)) {
+		if (!cache.hasProbTable(condition)) {
 			fillCacheForCondition(condition);
 		}
 		
-		return cache.get(condition).hasProb(head);
+		return cache.hasProb(condition, head);
 	}
+	
+	
+	
+	
 	
 	
 	/**
@@ -158,11 +157,11 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public SimpleTable getProbTable(Assignment condition) {
-		if (!cache.containsKey(condition)) {
+		if (!cache.hasProbTable(condition)) {
 			fillCacheForCondition(condition);
 		}
 		
-		return cache.get(condition);
+		return cache.getProbTable(condition);
 	}
 	
 	
@@ -176,10 +175,12 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	@Override
 	public Assignment sample(Assignment condition) throws DialException {
 		
-		if (!cache.containsKey(condition)) {
+		synchronized (this) {
+		if (!cache.hasProbTable(condition)) {
 			fillCacheForCondition(condition);
 		}
-		return cache.get(condition).sample();	
+		}
+		return cache.sample(condition);	
 	}
 
 	
@@ -236,8 +237,8 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 * @return the copy
 	 */
 	@Override
-	public RuleBasedDistribution copy() {
-		try { return new RuleBasedDistribution (rule); } 
+	public RuleDistribution copy() {
+		try { return new RuleDistribution (rule); } 
 		catch (DialException e) { e.printStackTrace(); return null; }
 	}
 
@@ -286,8 +287,12 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 			double parameterValue = param.getParameterValue(condition);
 			probTable.addRow(new Assignment(id, effectOutput), parameterValue);
 		}
-		if (!cache.containsKey(condition)) {
-			cache.put(new Assignment(condition), probTable);
+		if (probTable.isEmpty()) {
+			log.warning("probability table is empty (no effects) for input " +
+					condition + " and rule " + rule.toString());
+		}
+		if (!cache.hasProbTable(condition)) {
+			cache.addRows(new Assignment(condition), probTable);
 		}
 		}
 		catch (DialException e) {

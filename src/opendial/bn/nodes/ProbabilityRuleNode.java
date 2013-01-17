@@ -27,13 +27,13 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.statechange.AnchoredRule;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
-import opendial.bn.distribs.discrete.RuleBasedDistribution;
+import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.state.rules.AnchoredRule;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -53,11 +53,9 @@ public class ProbabilityRuleNode extends ChanceNode {
 	public ProbabilityRuleNode(AnchoredRule rule) throws DialException {
 		super(rule.getId());
 		this.rule = rule;
-		distrib = new RuleBasedDistribution(rule);
-		for (ChanceNode inputNode : rule.getInputNodes()) {
-			addInputNode(inputNode);
-		}
+		distrib = new RuleDistribution(rule);
 	}
+	
 
 	@Override
 	public Set<Value> getValues() {

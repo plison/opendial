@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.gui.statemonitor;
+package opendial.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -50,7 +50,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 import opendial.arch.Logger;
-import opendial.arch.DialogueState;
+import opendial.gui.statemonitor.DialogueStateViewer;
+import opendial.state.DialogueState;
 
 
 /**
@@ -77,7 +78,7 @@ public class StateMonitorTab extends JComponent {
 	public static Logger log = new Logger("DialogueStateViewer", Logger.Level.DEBUG);
 
 	// title, position and tooltip for the tab
-	public static final String TAB_TITLE = "Dialogue State Monitor";
+	public static final String TAB_TITLE = " Dialogue State Monitor ";
 	public static final String TAB_TIP = "Visual monitoring as the Bayesian Network defining the dialogue state";
 
 	// directions for zooming and translating the graph
@@ -85,7 +86,7 @@ public class StateMonitorTab extends JComponent {
 	public static enum TranslationDirection {NORTH,SOUTH,EAST,WEST}
 
 	// the frame including the tab
-	JFrame mainFrame;
+	GUIFrame mainFrame;
 	
 	// list model for the recorded networks
 	DefaultListModel listModel;
@@ -105,7 +106,7 @@ public class StateMonitorTab extends JComponent {
 	 * Bayesian Network.
 	 * 
 	 */
-	public StateMonitorTab(JFrame mainFrame) {
+	public StateMonitorTab(GUIFrame mainFrame) {
 		setLayout(new BorderLayout());
 		
 		this.mainFrame = mainFrame;
@@ -139,7 +140,8 @@ public class StateMonitorTab extends JComponent {
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public synchronized void updateCurrentState(DialogueState state) {
+	public synchronized void update() {
+		DialogueState state = mainFrame.getConnectedState();
 		recordState(state,"current");
 		visualisation.showBayesianNetwork(state);
 	}

@@ -59,7 +59,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.inference.NaiveInference;
 

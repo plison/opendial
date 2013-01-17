@@ -6,12 +6,12 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 
-import opendial.arch.ConfigurationSettings;
-import opendial.arch.DialogueState;
+import opendial.arch.Settings;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
+import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**
@@ -43,8 +43,7 @@ public final class MarginalDistributionAction extends AbstractAction {
 	public void actionPerformed(ActionEvent arg0) {
 		
 	try {
-			ConfigurationSettings settings = ConfigurationSettings.getInstance();
-			InferenceAlgorithm algorithm = settings.getInferenceAlgorithm().newInstance();
+			InferenceAlgorithm algorithm = Settings.inferenceAlgorithm.newInstance();
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
 			ProbDistribution distrib = algorithm.queryProb(new ProbQuery(state, queryVariables));
 			String str = StringUtils.getHtmlRendering(distrib.prettyPrint().replace("\n", "\n<br>"));

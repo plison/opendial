@@ -29,6 +29,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.quantification.UnboundPredicate;
 
 
 /**
@@ -143,21 +144,23 @@ public class ComplexCondition implements Condition {
 		return variables;
 	}
 
-	
+
 	/**
-	 * Returns the set of local output variables for the complex condition
+	 * Returns the set of unbound predicates for the basic condition, which could
+	 * be either associated with the variable label or its content.
 	 * 
-	 * @return the set of local output variables
+	 * @return the set of unbound predicates
 	 */
 	@Override
-	public Set<String> getLocalOutputVariables() {
-		Set<String> variables = new HashSet<String>();
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		Set<UnboundPredicate> predicates = new HashSet<UnboundPredicate>();
 		for (Condition cond: subconditions) {
-			variables.addAll(cond.getLocalOutputVariables());
-		}
-		return variables;
+			predicates.addAll(cond.getUnboundPredicates());
+		}	
+		return predicates;
 	}
 
+	
 	/**
 	 * Returns true if the complex condition is satisfied by the input assignment,
 	 * and false otherwise. 
@@ -170,13 +173,15 @@ public class ComplexCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
+		Assignment input2 = new Assignment(input);
 		for (Condition cond : subconditions) {
-			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input)) {
+			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input2)) {
 				return false;
 			}
-			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input)) {
+			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input2)) {
 				return true;
 			}
+			input2.addAssignment(cond.getLocalOutput(input2));
 		}
 		return (operator == BinaryOperator.AND);
 	}

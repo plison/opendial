@@ -51,7 +51,7 @@ public class InferenceChecks {
 
 
 	// logger
-	public static Logger log = new Logger("InferenceTesting", Logger.Level.DEBUG);
+	public static Logger log = new Logger("InferenceChecks", Logger.Level.DEBUG);
 	
 	
 	VariableElimination ve;
@@ -69,14 +69,14 @@ public class InferenceChecks {
 
 
 	public double EXACT_THRESHOLD = 0.01;
-	public double SAMPLING_THRESHOLD = 0.05;
+	public double SAMPLING_THRESHOLD = 0.08;
 	
 	
 	public InferenceChecks() {
 
 		ve = new VariableElimination();
-		is = new ImportanceSampling(600, 200);
-		is2 = new ImportanceSampling(5000, 600);
+		is = new ImportanceSampling(400, 250);
+		is2 = new ImportanceSampling(4000, 500);
 		naive = new NaiveInference();
 		probQueryCache = new HashMap<Query, Map<InferenceAlgorithm, ProbDistribution>>();
 		utilQueryCache = new HashMap<Query, Map<InferenceAlgorithm, UtilityDistribution>>();
@@ -186,16 +186,17 @@ public class InferenceChecks {
 			probQueryCache.put(query, new HashMap<InferenceAlgorithm, ProbDistribution>());			
 		}
 		
+
 		if (probQueryCache.get(query).containsKey(algo)) {
 			return probQueryCache.get(query).get(algo);
 		}
+
 		else {
 			long time1 = System.nanoTime();
 			ProbDistribution distrib = algo.queryProb(query);
 			long inferenceTime = System.nanoTime() - time1;
 			numbers.put(algo, numbers.get(algo) + 1);
 			timings.put(algo, timings.get(algo) + inferenceTime);
-			
 			probQueryCache.get(query).put(algo, distrib);
 			return distrib;
 		}

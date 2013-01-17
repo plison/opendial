@@ -17,23 +17,24 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.modules;
-
-import opendial.arch.DialogueState;
-import opendial.bn.BNetwork;
 
 
-/**
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public interface AttachedModule {
+import org.junit.runner.JUnitCore;
 
+import opendial.arch.Logger;
+import opendial.domains.PlanningTest;
+
+public class RunAllTests {
+
+	// logger
+	public static Logger log = new Logger("RunAllTests", Logger.Level.NORMAL);
 	
-	public void trigger(DialogueState state, String newNodeId);
+	public static void main(String[] args) {
+		for (int i = 0 ; i < 100 ; i++) {
+		JUnitCore junit = new JUnitCore();
+		junit.run(PlanningTest.class);
+		}
+	}
 
-	
 }
+

@@ -206,3 +206,36 @@ final class True extends ConditionCheck {
 
 	public boolean isSatisfied(Value value) { return true; }
 }
+
+
+
+/**
+ * Trivially true check, with a match
+ *
+ */
+final class TrueWithMatch extends ConditionCheck {
+
+	boolean partial = false;
+
+	TemplateString template;
+
+	public TrueWithMatch(TemplateString template, boolean partial) {
+		this.template = template;
+		this.partial =  partial;
+	}
+	
+	public boolean isSatisfied(Value value) { return true; }
+	
+	
+	@Override
+	public Assignment getLocalOutput(Value value) {
+		Assignment params =  template.extractParameters(value.toString(), partial);
+		if (partial) {
+			Assignment boundaries = template.getMatchBoundaries(value.toString(), partial);
+			return new Assignment(params, boundaries);
+		}
+		else {
+			return params;
+		}
+	}
+}
