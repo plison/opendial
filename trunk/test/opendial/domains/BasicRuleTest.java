@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import opendial.arch.ConfigurationSettings;
 import opendial.arch.DialException;
 import opendial.arch.DialogueState;
 import opendial.arch.DialogueSystem;
@@ -46,6 +47,7 @@ import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
+import opendial.common.MiscUtils;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -67,123 +69,109 @@ public class BasicRuleTest {
 
 	public static final String domainFile = "domains//testing//domain1.xml";
 
-	static Domain domain;
+	static InferenceChecks inference;
+	static DialogueSystem system;
 
 	static {
-		try { domain = XMLDomainReader.extractDomain(domainFile); } 
-		catch (DialException e) { log.warning ("domain cannot be read " + e); }
+		try { 
+			Domain domain = XMLDomainReader.extractDomain(domainFile); 
+			inference = new InferenceChecks();
+			ConfigurationSettings.getInstance().activatePlanner(false);
+			ConfigurationSettings.getInstance().activatePruning(false);
+			system = new DialogueSystem(domain);
+			system.startSystem(); 
+			MiscUtils.waitUntilStable(system);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
 
 	@Test
 	public void test() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u'");
 		
-		InferenceChecks.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
-		InferenceChecks.checkProb(query, new Assignment("a_u'", "None"), 0.2);
+		inference.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
+		inference.checkProb(query, new Assignment("a_u'", "None"), 0.2);
 	}
 
 
 	@Test 
 	public void test2() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"i_u'");
 		
-		InferenceChecks.checkProb(query, new Assignment("i_u'", "Inform"), 0.7*0.8);
-		InferenceChecks.checkProb(query, new Assignment("i_u'", "None"), 1-0.7*0.8);
+		inference.checkProb(query, new Assignment("i_u'", "Inform"), 0.7*0.8);
+		inference.checkProb(query, new Assignment("i_u'", "None"), 1-0.7*0.8);
 	}
 
 	@Test
 	public void test3() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"direction'");
 		
-		InferenceChecks.checkProb(query, new Assignment("direction'", "straight"), 0.79);
-		InferenceChecks.checkProb(query, new Assignment("direction'", "left"), 0.20);
-		InferenceChecks.checkProb(query, new Assignment("direction'", "right"), 0.01);
+		inference.checkProb(query, new Assignment("direction'", "straight"), 0.79);
+		inference.checkProb(query, new Assignment("direction'", "left"), 0.20);
+		inference.checkProb(query, new Assignment("direction'", "right"), 0.01);
 		
 	}
 
 
 	@Test
 	public void test4() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o'");
 
-		InferenceChecks.checkProb(query, new Assignment("o'", "and we have var1=value2"), 0.3);
-		InferenceChecks.checkProb(query, new Assignment("o'", "and we have localvar=value1"), 0.20);
-		InferenceChecks.checkProb(query, new Assignment("o'", "and we have localvar=value3"), 0.28);
+		inference.checkProb(query, new Assignment("o'", "and we have var1=value2"), 0.3);
+		inference.checkProb(query, new Assignment("o'", "and we have localvar=value1"), 0.20);
+		inference.checkProb(query, new Assignment("o'", "and we have localvar=value3"), 0.28);
 	}
 
 
 	@Test
 	public void test5() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o2'");
 	
-		InferenceChecks.checkProb(query, new Assignment("o2'", "here is value1"), 0.35);
-		InferenceChecks.checkProb(query, new Assignment("o2'", "and value2 is over there"), 0.07);
-		InferenceChecks.checkProb(query, new Assignment("o2'", "value3, finally"), 0.28);
+		inference.checkProb(query, new Assignment("o2'", "here is value1"), 0.35);
+		inference.checkProb(query, new Assignment("o2'", "and value2 is over there"), 0.07);
+		inference.checkProb(query, new Assignment("o2'", "value3, finally"), 0.28);
 
 	}
 
 	@Test
 	public void test6() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("var1", "value2"), 0.9);
 		system.getState().addContent(table, "test6");
-		waitUntilStable(system);
+		MiscUtils.waitUntilStable(system);
+
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o''");
 		
-		InferenceChecks.checkProb(query, new Assignment("o''", "and we have var1=value2"), 0.93);
-		InferenceChecks.checkProb(query, new Assignment("o''", "and we have localvar=value1"), 0.02);
-		InferenceChecks.checkProb(query, new Assignment("o''", "and we have localvar=value3"), 0.028);
+		inference.checkProb(query, new Assignment("o''", "and we have var1=value2"), 0.93);
+		inference.checkProb(query, new Assignment("o''", "and we have localvar=value1"), 0.02);
+		inference.checkProb(query, new Assignment("o''", "and we have localvar=value3"), 0.028);
 
 	}
 
 
 	@Test
 	public void test7() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u2'");
 		
-		InferenceChecks.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
-		InferenceChecks.checkProb(query, new Assignment("a_u2'", "none"), 0.1);
-		InferenceChecks.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
+		inference.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
+		inference.checkProb(query, new Assignment("a_u2'", "none"), 0.1);
+		inference.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
 
 	}
 
 	@Test
 	public void test8() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.startSystem(); 
-		waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u3'");
-		ProbDistribution distrib = null;	
-		InferenceAlgorithm inference;
 
 		SortedSet<String> createdNodes = new TreeSet<String>();
 		for (String nodeId: system.getState().getNetwork().getNodeIds()) {
@@ -193,9 +181,6 @@ public class BasicRuleTest {
 			}
 		}
 		assertEquals(2, createdNodes.size());
-
-		inference= new VariableElimination(); 
-		distrib = inference.queryProb(query);
 
 		String greetNode = "";
 		String howareyouNode = "";
@@ -216,33 +201,17 @@ public class BasicRuleTest {
 		ProbQuery query6 = new ProbQuery(system.getState().getNetwork(),greetNode+"'");
 		ProbQuery query7 = new ProbQuery(system.getState().getNetwork(),howareyouNode+"'");
 
-		InferenceChecks.checkProb(query, new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]"), 0.7);
-		InferenceChecks.checkProb(query, new Assignment("a_u3'", "none"), 0.1);
-		InferenceChecks.checkProb(query, new Assignment("a_u3'", "[" + howareyouNode + "]"), 0.2);
-		InferenceChecks.checkProb(query2, new Assignment(greetNode+".start'", 0), 0.7);
-		InferenceChecks.checkProb(query3, new Assignment(greetNode+".end'", 5), 0.7);
-		InferenceChecks.checkProb(query4, new Assignment(howareyouNode+".start'", 12), 0.7);
-		InferenceChecks.checkProb(query5, new Assignment(howareyouNode+".end'", 23), 0.7);
-		InferenceChecks.checkProb(query5, new Assignment(howareyouNode+".end'", 22), 0.2);
-		InferenceChecks.checkProb(query6,  new Assignment(greetNode+"'", "Greet"), 0.7);
-		InferenceChecks.checkProb(query7,  new Assignment(howareyouNode+"'", "HowAreYou"), 0.9);
+		inference.checkProb(query, new Assignment("a_u3'", "["+greetNode +"," + howareyouNode +"]"), 0.7);
+		inference.checkProb(query, new Assignment("a_u3'", "none"), 0.1);
+		inference.checkProb(query, new Assignment("a_u3'", "[" + howareyouNode + "]"), 0.2);
+		inference.checkProb(query2, new Assignment(greetNode+".start'", 0), 0.7);
+		inference.checkProb(query3, new Assignment(greetNode+".end'", 5), 0.7);
+		inference.checkProb(query4, new Assignment(howareyouNode+".start'", 12), 0.7);
+		inference.checkProb(query5, new Assignment(howareyouNode+".end'", 23), 0.7);
+		inference.checkProb(query5, new Assignment(howareyouNode+".end'", 22), 0.2);
+		inference.checkProb(query6,  new Assignment(greetNode+"'", "Greet"), 0.7);
+		inference.checkProb(query7,  new Assignment(howareyouNode+"'", "HowAreYou"), 0.9);
 		
 	}
 
-	private void waitUntilStable(DialogueSystem system) {
-		try {
-			Thread.sleep(30);
-			int i = 0 ;
-			while (!system.getState().isStable()) {
-				Thread.sleep(30);
-				i++;
-				if (i > 30) {
-					log.debug("dialogue state: " + system.getState().toString());
-				}
-			}
-		}
-		catch (InterruptedException e) { 
-			log.debug ("interrupted exception: " + e.toString());
-		}
-	}
 }

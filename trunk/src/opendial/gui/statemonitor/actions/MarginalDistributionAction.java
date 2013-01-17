@@ -9,7 +9,7 @@ import javax.swing.AbstractAction;
 import opendial.arch.ConfigurationSettings;
 import opendial.arch.DialogueState;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.gui.statemonitor.GraphViewerPopupMenu;
+import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.utils.StringUtils;
@@ -27,10 +27,10 @@ public final class MarginalDistributionAction extends AbstractAction {
 	/**
 	 * 
 	 */
-	private final GraphViewerPopupMenu graphViewerPopupMenu;
+	private final DialogueStatePopup graphViewerPopupMenu;
 	Set<String> queryVariables;
 	
-	public MarginalDistributionAction(GraphViewerPopupMenu graphViewerPopupMenu, String name, Set<String> queryVariables) {
+	public MarginalDistributionAction(DialogueStatePopup graphViewerPopupMenu, String name, Set<String> queryVariables) {
 		super(name);
 		this.graphViewerPopupMenu = graphViewerPopupMenu;
 		this.queryVariables = queryVariables;
@@ -56,7 +56,7 @@ public final class MarginalDistributionAction extends AbstractAction {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			GraphViewerPopupMenu.log.debug("problem performing the inference for P(" + queryVariables +")" +
+			DialogueStatePopup.log.debug("problem performing the inference for P(" + queryVariables +")" +
 					" aborting action");
 		}
 	}

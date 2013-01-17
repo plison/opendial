@@ -119,7 +119,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	public Assignment sample(Assignment condition) throws DialException {
 
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
-
+		
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).sample(new Assignment());
 		}
@@ -155,6 +155,10 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		// checks that all possible conditional assignments are covered in the table
 		Map<String,Set<Value>> possibleCondPairs = 
 			CombinatoricsUtils.extractPossiblePairs(table.keySet());
+		
+		// Note that here, we only check on the possible assignments in the distribution itself
+		// but a better way to do it would be to have it on the actual values given by the input nodes
+		// but would require the distribution to have some access to it.
 		Set<Assignment> possibleCondAssignments = 
 			CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 		possibleCondAssignments.remove(new Assignment());

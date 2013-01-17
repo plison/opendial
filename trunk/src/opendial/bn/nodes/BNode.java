@@ -311,9 +311,9 @@ public abstract class BNode implements Comparable<BNode> {
 	 *        possible ancestors
 	 * @return the set of dependencies for the given variable
 	 */
-	public List<String> getAncestorsIds(Collection<String> variablesToRetain) {
+	public Set<String> getAncestorsIds(Collection<String> variablesToRetain) {
 
-		List<String> ancestors = new ArrayList<String>();
+		Set<String> ancestors = new HashSet<String>();
 
 		Stack<BNode> nodesToProcess = new Stack<BNode>();
 		nodesToProcess.addAll(getInputNodes());

@@ -19,8 +19,10 @@
 
 package opendial.bn.distribs.utility;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,10 +57,8 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	AnchoredRule rule;
 	
 	// a cache with the utility assignments
-	Map<Assignment,Double> cache;
-	
-	Map<Assignment, Set<Assignment>> relevantActionsCache;
-		
+	Map<Assignment,Map<Assignment, Double>> cache;
+			
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
 	// ===================================
@@ -79,8 +79,7 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 					"rule-based utility distribution");
 		}
 		
-		cache = new HashMap<Assignment,Double>();
-		relevantActionsCache = new HashMap<Assignment,Set<Assignment>>();
+		cache = new HashMap<Assignment,Map<Assignment, Double>>();
 	}
 	
 	
@@ -106,12 +105,20 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * @return the corresponding utility
 	 */
 	@Override
-	public double getUtility(Assignment input) {
-		Assignment input2 = new Assignment(input);
-		if (!cache.containsKey(input2)) {
-			fillCacheForCondition(input2);
+	public double getUtility(Assignment fullInput) {
+				
+		Assignment input = extractChanceVariables(fullInput);
+		Assignment actions = extractActionVariables(fullInput);
+		
+		if (!cache.containsKey(input) || !cache.get(input).containsKey(actions)) {
+			fillCacheForCondition(input, actions);
 		}
-		return cache.get(input2);
+		Double result = cache.get(input).get(actions);
+		if (result == null) {
+			log.warning("something is wrong with the cache: " + input);
+			Thread.dumpStack();
+		}
+		return result.doubleValue();
 	}
 	
 
@@ -120,15 +127,23 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * Returns the set of relevant actions that are made possible given the
 	 * assignment of input values given as argument.
 	 * 
-	 * @param input the input values for the chance nodes attached to the utility
+	 * @param fullInput the input values for the chance nodes attached to the utility
 	 * @return the set of corresponding relevant actions
 	 */
 	@Override
-	public Set<Assignment> getRelevantActions(Assignment input) {
-		if (!relevantActionsCache.containsKey(input)) {
-			fillRelevantActionsCache(input);
+	public Set<Assignment> getRelevantActions(Assignment fullInput) {
+		
+		Assignment input = extractChanceVariables(fullInput);
+		
+		if (!cache.containsKey(input)) {
+			fillCacheForCondition(input);
 		}
-		return relevantActionsCache.get(input);
+		Set<Assignment> result = cache.get(input).keySet();
+		if (result == null) {
+			log.warning("something is wrong with the cache: " + input);
+			Thread.dumpStack();
+		}
+		return result;
 	}
 	
 	
@@ -180,8 +195,6 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	}
 
 	
-	
-	
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
@@ -193,40 +206,66 @@ public class RuleBasedUtilDistribution implements UtilityDistribution {
 	 * 
 	 * @param fullInput the conditional assignment
 	 */
-	private void fillCacheForCondition(Assignment fullInput) {
-		 
-		Assignment input = fullInput.removeSpecifiers().getTrimmed(rule.getInputVariables());
-		Assignment actions = new Assignment(fullInput).removeSpecifiers().getTrimmed(rule.getOutputVariables());
-		actions.removePairs(input.getVariables());
+	private void fillCacheForCondition(Assignment input, Assignment actions) {
+		
+		if (!cache.containsKey(input)) {
+			cache.put(input, new HashMap<Assignment,Double>());
+		}
 		try {
 		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
 		for (Output effectOutput : effectOutputs.keySet()) {
 			if (effectOutput.isCompatibleWith(actions)) {
 				Parameter param = effectOutputs.get(effectOutput);
 				double parameterValue = param.getParameterValue(input);
-				cache.put(fullInput, parameterValue);
+				cache.get(input).put(actions, parameterValue);
 			}
 		}
-		if (!cache.containsKey(fullInput)) {
-			cache.put(fullInput, 0.0);
+		if (!cache.get(input).containsKey(actions)) {
+			cache.get(input).put(actions, 0.0);
 		}
 		}
 		catch (DialException e) {
-			log.warning("could not fill cache for condition " + fullInput + ": " + e.toString());
+			log.warning("could not fill cache for condition " + input + ": " + e.toString());
 		}
 	}
 	
 	
-	private void fillRelevantActionsCache(Assignment input) {
-		Assignment input2 = input.removeSpecifiers();
 
-		Set<Assignment> relevantActions = new HashSet<Assignment>();
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input2);
+	/**
+	 * Fills the cache with the utility value representing the rule output for the
+	 * specific input.
+	 * 
+	 * @param fullInput the conditional assignment
+	 */
+	private void fillCacheForCondition(Assignment input) {
+		
+		if (!cache.containsKey(input)) {
+			cache.put(input, new HashMap<Assignment,Double>());
+		}
+		try {
+		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
 		for (Output effectOutput : effectOutputs.keySet()) {
-			relevantActions.add(new Assignment(effectOutput.getAllSetValues()));
+				Parameter param = effectOutputs.get(effectOutput);
+				double parameterValue = param.getParameterValue(input);
+				cache.get(input).put(new Assignment(effectOutput.getAllSetValues()), parameterValue);
 		}
-		relevantActionsCache.put(input, relevantActions);
+		}
+		catch (DialException e) {
+			log.warning("could not fill cache for condition " + input + ": " + e.toString());
+		}
 	}
+	
+	
+	private Assignment extractChanceVariables(Assignment fullInput) {	
+		Assignment corrected = fullInput.removeSpecifiers();
+		return corrected.getTrimmed(rule.getInputVariables());	
+	}
+	
+	
 
-
+	private Assignment extractActionVariables(Assignment fullInput) {
+		Assignment corrected = fullInput.removeSpecifiers();
+		Assignment actions = corrected.getTrimmed(rule.getOutputVariables());
+		return actions.getTrimmedInverse(rule.getInputVariables());
+	}
 }

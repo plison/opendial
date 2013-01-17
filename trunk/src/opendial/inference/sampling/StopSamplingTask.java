@@ -22,7 +22,8 @@ package opendial.inference.sampling;
 import java.util.TimerTask;
 
 import opendial.arch.Logger;
-import opendial.bn.distribs.empirical.EmpiricalDistribution;
+import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 
 /**
  * 
@@ -37,9 +38,11 @@ public class StopSamplingTask extends TimerTask {
 	public static Logger log = new Logger("StopSamplingTask", Logger.Level.DEBUG);
 
 	AbstractQuerySampling query;
+	long timing;
 	
-	public StopSamplingTask(AbstractQuerySampling query) {
+	public StopSamplingTask(AbstractQuerySampling query, long timing) {
 		this.query = query;
+		this.timing = timing;
 	}
 	
 	/**
@@ -48,7 +51,8 @@ public class StopSamplingTask extends TimerTask {
 	@Override
 	public void run() {
 		if (!query.isTerminated()) {
-			log.debug("time has run out, sampling thread for query " + query.getQuery() + " must terminate");
+			log.debug("time (" + timing + " ms.) has run out, sampling thread for " +
+					"query " + query.getQuery() + " must terminate");
 			log.debug(query.getSamples().size() + " samples have been collected");
 			query.terminateThreads();
 		}

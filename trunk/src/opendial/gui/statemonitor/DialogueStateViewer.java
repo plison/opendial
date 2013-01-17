@@ -43,8 +43,12 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.collections15.Transformer;
 
+import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
@@ -106,16 +110,16 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		super(getGraphLayout(new DialogueState())); 
 	
 		this.tab = tab;
-
+/**
 		// rotating the graph by 90 degrees
 		MutableTransformer modelTransformer =
 			getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
 		modelTransformer.rotate(Math.PI / 2.0, 
-				getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, new Point(120,180)));
+				getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, new Point(400, 200))); */
 
 		// scaling it by 60%
 		final ScalingControl scaler = new CrossoverScalingControl();
-	    scaler.scale(this, 0.6f, getCenter());
+	    scaler.scale(this, 0.6f, getCenter()); 
 
 	    // setting various renderers and element transformers
 		setBackground(Color.white);
@@ -130,7 +134,7 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		// connects the graph to a custom mouse listener (for selecting nodes)
 		DefaultModalGraphMouse<String,Integer> graphMouse = new DefaultModalGraphMouse<String,Integer>();
 		graphMouse.setMode(Mode.PICKING);
-		graphMouse.add(new GraphViewerPopupMenu(this));
+		graphMouse.add(new DialogueStatePopup(this));
 		setGraphMouse(graphMouse);
 		
 		nodeIdChanges = new HashMap<String,String>();
@@ -165,11 +169,12 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		Layout<String,Integer> layout = null;
 
 		// creating the DAG layout
-		layout = new DAGLayout<String,Integer>(f); 
-		((DAGLayout<String,Integer>)layout).setStretch(10);
-
-		layout.setSize(new Dimension(400,400));
-
+		layout = new SpringLayout2<String,Integer>(f); 
+		((SpringLayout2<String,Integer>)layout).setStretch(0.1);
+		((SpringLayout2<String,Integer>)layout).setRepulsionRange(100);
+		
+		layout.setSize(new Dimension(500,500));
+		
 		return layout;
 	}
 

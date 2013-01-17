@@ -445,7 +445,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 		}
 
 		// checks that the total probability is roughly equal to 1.0f
-		double totalProb = countTotalProb();
+		double totalProb = countTotalProb() + getProb(getDefaultAssign());
 		if (totalProb < 0.9999f || totalProb > 1.0001f) {
 			log.debug("total probability is " + totalProb);
 			return false;

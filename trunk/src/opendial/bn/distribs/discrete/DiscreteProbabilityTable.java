@@ -383,17 +383,13 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	 * Returns the continuous equivalent of the distribution
 	 *
 	 * @return the continuous distribution
+	 * @throws DialException 
 	 */
 	@Override
-	public ContinuousProbabilityTable toContinuous() {
+	public ContinuousProbabilityTable toContinuous() throws DialException {
 		ContinuousProbabilityTable newTable = new ContinuousProbabilityTable();
 		for (Assignment a : table.keySet()) {
-			try {
 			newTable.addDistrib(a, table.get(a).toContinuous());
-			}
-			catch (DialException e) {
-				log.debug("could not convert distribution: " + e.toString());
-			}
 		}
 		return newTable;
 	}

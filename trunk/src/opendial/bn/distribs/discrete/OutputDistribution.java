@@ -140,9 +140,10 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	 * <p>NB: the method works based on the values that have already been cached.
 	 *
 	 * @return the continuous distribution.
+	 * @throws DialException 
 	 */
 	@Override
-	public ContinuousProbDistribution toContinuous() {
+	public ContinuousProbDistribution toContinuous() throws DialException {
 		DiscreteProbabilityTable probTable = new DiscreteProbabilityTable();
 		for (Assignment condition : cache.keySet()) {
 			probTable.addRows(condition, cache.get(condition));

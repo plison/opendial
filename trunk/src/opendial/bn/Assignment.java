@@ -415,7 +415,7 @@ public class Assignment {
 		Assignment a = new Assignment();
 		for (String var : map.keySet()) {
 			String s = StringUtils.removeSpecifiers(var);
-			a.addPair(s, map.get(var));
+			a.addPair(s, map.get(var).copy());
 		}
 		return a;
 	}

@@ -23,6 +23,7 @@ package opendial.arch;
 import opendial.arch.Logger;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
+import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.VariableElimination;
 
 /**
@@ -41,7 +42,7 @@ public class ConfigurationSettings {
 	
 	Class<? extends InferenceAlgorithm> currentInferenceAlgorithm;
 	
-	int nbSamples = 1000;
+	int nbSamples = 1500;
 	
 	// maximum sampling time (in milliseconds)
 	long maximumSamplingTime = 500;
@@ -52,6 +53,11 @@ public class ConfigurationSettings {
 	
 	static ConfigurationSettings singletonSettings;
 	
+	boolean activatePlanner = false;
+	
+	boolean activatePruning = false;
+	
+	
 	public static ConfigurationSettings getInstance() {
 		if (singletonSettings == null) {
 			singletonSettings = new ConfigurationSettings();
@@ -60,7 +66,7 @@ public class ConfigurationSettings {
 	}
 
 	private ConfigurationSettings() {		
-		currentInferenceAlgorithm = VariableElimination.class;
+		currentInferenceAlgorithm = SwitchingAlgorithm.class;
 	}
 	
 	public Class<? extends InferenceAlgorithm> getInferenceAlgorithm() {
@@ -89,6 +95,14 @@ public class ConfigurationSettings {
 		this.maximumSamplingTime = maximumSamplingTime;
 	}
 	
+	public void activatePlanner(boolean activatePlanner) {
+		this.activatePlanner = activatePlanner;
+	}
+	
+	public void activatePruning(boolean activatePruning) {
+		this.activatePruning = activatePruning;
+	}
+	
 	
 	public void setNbDiscretisationBuckets(int nbDiscretisationBuckets) {
 		this.nbDiscretisationBuckets = nbDiscretisationBuckets;
@@ -109,5 +123,14 @@ public class ConfigurationSettings {
 	public long getMaximumSamplingTime() {
 		return maximumSamplingTime;
 	}
+
+	public boolean isPlannerActivated() {
+		return activatePlanner;
+	}
+	
+	public boolean isPruningActivated() {
+		return activatePruning;
+	}
+	
 		
 }

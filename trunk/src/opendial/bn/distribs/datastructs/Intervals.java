@@ -118,6 +118,15 @@ public class Intervals<T> {
 		}
 		return s;
 	}
+
+	/**
+	 * Returns true is the interval is empty (no elements), false otherwise
+	 * 
+	 * @return whether the interval is empty
+	 */
+	public boolean isEmpty() {
+		return (intervals.length == 0);
+	}
 }
 
 

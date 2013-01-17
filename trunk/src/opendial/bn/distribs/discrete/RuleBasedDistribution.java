@@ -278,14 +278,12 @@ public class RuleBasedDistribution implements DiscreteProbDistribution {
 	 * @param condition the conditional assignment
 	 */
 	private synchronized void fillCacheForCondition(Assignment condition) {
-		
-		Assignment condition2 = condition.removeSpecifiers();
 		try {
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition2);
+		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition);
 		SimpleTable probTable = new SimpleTable();
 		for (Output effectOutput : effectOutputs.keySet()) {
 			Parameter param = effectOutputs.get(effectOutput);
-			double parameterValue = param.getParameterValue(condition2);
+			double parameterValue = param.getParameterValue(condition);
 			probTable.addRow(new Assignment(id, effectOutput), parameterValue);
 		}
 		if (!cache.containsKey(condition)) {
