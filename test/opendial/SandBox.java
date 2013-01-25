@@ -1,3 +1,4 @@
+package opendial;
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     

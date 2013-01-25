@@ -1,3 +1,4 @@
+package opendial;
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
@@ -19,22 +20,32 @@
 
 
 
-import org.junit.runner.JUnitCore;
-
+import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
-import opendial.domains.PlanningTest;
+import opendial.arch.Settings;
+import opendial.common.InferenceChecks;
+import opendial.domains.Domain;
+import opendial.readers.XMLDomainReader;
 
-public class RunAllTests {
+public class Main {
 
 	// logger
-	public static Logger log = new Logger("RunAllTests", Logger.Level.NORMAL);
-	
+	public static Logger log = new Logger("Main", Logger.Level.NORMAL);
+
+
+	public static final String domainFile = "domains//testing//basicfulltest.xml";
+
 	public static void main(String[] args) {
-		for (int i = 0 ; i < 100 ; i++) {
-		JUnitCore junit = new JUnitCore();
-		junit.run(PlanningTest.class);
+		try {
+		Domain domain = XMLDomainReader.extractDomain(domainFile); 
+		Settings.showGUI = true;
+		DialogueSystem system = new DialogueSystem(domain);
+		system.startSystem(); 
+		}
+		catch (DialException e) {
+			log.warning("exception thrown " + e + ", aborting");
 		}
 	}
-
 }
 
