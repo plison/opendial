@@ -28,12 +28,16 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.rules.DecisionRule;
+import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.state.rules.Rule.RuleType;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -50,29 +54,49 @@ public class AnchoredRuleCache {
 	
 	AnchoredRule rule;
 	
-	Map<Output,Parameter> cachedValues;
+	// this table does not reflect real distributions
+	Map<Output, Set<Parameter>> cachedValues;
 	
 	public AnchoredRuleCache (AnchoredRule rule) {
 		this.rule = rule;
-		fillCache();
-	}
-
-	
-
-	public Map<Output,Parameter> getOutputs() {
-		return cachedValues;
-	}
-	
-
-	private void fillCache() {
-		cachedValues = new HashMap<Output,Parameter>();
+		
+		cachedValues = new HashMap<Output, Set<Parameter>>();
 		
 		Set<Assignment> conditions = getPossibleConditions();
 		for (Assignment condition : conditions) {
-			Map<Output,Parameter> outputs = rule.getEffectOutputs(condition);
-			cachedValues.putAll(outputs);
+			OutputTable conditionedOutput = rule.getEffectOutputs(condition);
+			if (rule.getRule().getRuleId().equals("repetition")) {
+				log.debug("input variables: " + rule.getInputVariables() + " - " + rule.getInputNodes());
+				log.debug("condoutput: " + conditionedOutput);
+			}
+			for (Output o : conditionedOutput.getOutputs()) {
+				if (!cachedValues.containsKey(o)) {
+					cachedValues.put(o, new HashSet<Parameter>());
+				}
+				cachedValues.get(o).add(conditionedOutput.getParameter(o));
+			}
+			if (conditionedOutput.getFixedMass() < 0.98 && rule.getRule().getRuleType() == RuleType.PROB) {
+				Output emptyOutput = new Output();
+				if (!cachedValues.containsKey(emptyOutput)) {
+					cachedValues.put(emptyOutput, new HashSet<Parameter>());
+				}
+				cachedValues.get(emptyOutput).add(new FixedParameter(1-conditionedOutput.getFixedMass()));
+			}
 		}
+		
 	}
+
+	
+
+	public Set<Output> getOutputs() {
+		return cachedValues.keySet();
+	}
+	
+	public Set<Parameter> getParameters(Output o) {
+		return cachedValues.get(o);
+	}
+	
+
 	
 	
 
@@ -121,6 +145,7 @@ public class AnchoredRuleCache {
 		
 		return possibleConditions;
 	}
+
 
 	
 }

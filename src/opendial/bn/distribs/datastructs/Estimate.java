@@ -34,7 +34,7 @@ package opendial.bn.distribs.datastructs;
 public class Estimate {
 
 	// averaged estimate for the utility
-	double averagedEstimate = 0.0;
+	double average = 0.0;
 
 	// number of values used for the average
 	int nbValues = 0;
@@ -45,19 +45,24 @@ public class Estimate {
 	 * @param firstValue the first value
 	 */
 	public Estimate(double firstValue) {
-		updateEstimate(firstValue);
+		update(firstValue);
 	}
 
 	
+	public Estimate() {
+		
+	}
+
+
 	/**
 	 * Updates the current estimate with a new value
 	 * 
 	 * @param newValue the new value
 	 */
-	public void updateEstimate(double newValue) {
-		double prevUtil = averagedEstimate;
+	public void update(double newValue) {
+		double prevUtil = average;
 		nbValues++;
-		averagedEstimate = prevUtil + (newValue - prevUtil) / (nbValues);
+		average = prevUtil + (newValue - prevUtil) / (nbValues);
 	}
 
 
@@ -67,7 +72,12 @@ public class Estimate {
 	 * @return the estimate
 	 */
 	public double getValue() {
-		return averagedEstimate;
+		if (nbValues > 0) {
+		return average;
+		}
+		else {
+			return 0.0;
+		}
 	}
 
 
@@ -76,7 +86,7 @@ public class Estimate {
 	}
 	
 	public String toString() {
-		return "" + averagedEstimate;
+		return "" + average;
 	}
 }
 

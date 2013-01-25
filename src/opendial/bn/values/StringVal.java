@@ -20,6 +20,7 @@
 package opendial.bn.values;
 
 import opendial.arch.Logger;
+import opendial.domains.datastructs.Template;
 
 /**
  * String value
@@ -42,7 +43,7 @@ public final class StringVal implements Value {
 	 * 
 	 * @param str the string
 	 */
-	protected StringVal(String str) { this.str = str; };
+	protected StringVal(String str) { this.str = str.trim(); };
 	
 	/**
 	 * Returns the hashcode for the string
@@ -61,7 +62,20 @@ public final class StringVal implements Value {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		return (o instanceof StringVal && ((StringVal)o).getString().equals(getString()));
+		if (o instanceof StringVal) {
+			if (((StringVal)o).getString().equalsIgnoreCase(getString())) {
+				return true;
+			}
+	/**		else if (str.contains("*")) {
+				TemplateString ts = new TemplateString(str);
+				return ts.isMatching(o.toString(), false);
+			}
+			else if (o.toString().contains("*")) {
+				TemplateString ts = new TemplateString(o.toString());
+				return ts.isMatching(str, false);
+			} */
+		}
+		return false;
 	}
 	
 	/**

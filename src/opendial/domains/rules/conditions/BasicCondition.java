@@ -25,11 +25,9 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
-import opendial.domains.datastructs.TemplateString;
-import opendial.domains.rules.conditions.checks.ConditionCheck;
-import opendial.domains.rules.conditions.checks.ConditionCheckFactory;
+import opendial.domains.datastructs.Template;
+import opendial.domains.rules.conditions.checks.AbstractCheck;
+import opendial.domains.rules.conditions.checks.CheckFactory;
 import opendial.domains.rules.quantification.LabelPredicate;
 import opendial.domains.rules.quantification.UnboundPredicate;
 import opendial.domains.rules.quantification.ValuePredicate;
@@ -46,21 +44,23 @@ public class BasicCondition implements Condition {
 	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
 
 	// possible relations used in a basic condition
-	public static enum Relation {EQUAL, UNEQUAL, EXACT_MATCH, PARTIAL_MATCH, 
-		GREATER_THAN, LOWER_THAN, CONTAINS, NOT_CONTAINS}
+	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
+		GREATER_THAN, LOWER_THAN}
 	
 	// variable label (can include slots to fill)
-	TemplateString variable;
+	Template variable;
 
 	// expected variable value (can include slots to fill)
-	TemplateString expectedValue;
+	Template expectedValue;
 
 	// set of input and local output variables
-	Set<TemplateString> inputVariables;
-
+	Set<Template> inputVariables;
+	
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
 	Relation relation = Relation.EQUAL;
+	
+	AbstractCheck check;
 	
 	// ===================================
 	//  CONDITION CONSTRUCTION
@@ -76,23 +76,17 @@ public class BasicCondition implements Condition {
 	 * @param relation the relation to hold
 	 */
 	public BasicCondition(String variable, String value, Relation relation) {
-		this.variable = new TemplateString(variable);
-		this.expectedValue = new TemplateString(value);
-		setRelation(relation);
+		this.variable = new Template(variable);
+		this.expectedValue = new Template(value);
+		this.relation = relation;
 		
 		// fill the input and local output variables
-		inputVariables = new HashSet<TemplateString>(Arrays.asList(this.variable));
+		inputVariables = new HashSet<Template>(Arrays.asList(this.variable));
+		for (String slot : expectedValue.getSlots()) {
+			inputVariables.add(new Template(slot));
+		}
+		check = CheckFactory.createCheck(this.variable, this.expectedValue, relation);
 	}
-
-	/**
-	 * Changes the relation in place in the condition
-	 * 
-	 * @param relation the relation
-	 */
-	public void setRelation(Relation relation) {
-		this.relation = relation;
-	}
-	
 	
 
 	// ===================================
@@ -115,7 +109,7 @@ public class BasicCondition implements Condition {
 	 * 
 	 * @return the variable label
 	 */
-	public TemplateString getVariable() {
+	public Template getVariable() {
 		return variable;
 	}
 	
@@ -125,7 +119,7 @@ public class BasicCondition implements Condition {
 	 * 
 	 * @return the expected variable value
 	 */
-	public TemplateString getValue() {
+	public Template getValue() {
 		return expectedValue;
 	}
 	
@@ -155,7 +149,7 @@ public class BasicCondition implements Condition {
 	 * @return the input variables
 	 */
 	@Override
-	public Set<TemplateString> getInputVariables() {
+	public Set<Template> getInputVariables() {
 		return inputVariables;
 	}
 
@@ -174,21 +168,7 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-
-		ConditionCheck check = ConditionCheckFactory.createCheck(expectedValue, relation, input);
-		
-		Value value = ValueFactory.none();
-		if (variable.getSlots().isEmpty()) {
-			value = input.getValue(variable.getRawString());
-		}
-		else {
-			TemplateString instantiatedVar = variable.fillSlotsPartial(input);
-			if (instantiatedVar.getSlots().isEmpty() 
-					&& input.containsVar(instantiatedVar.getRawString())) {
-				value = input.getValue(instantiatedVar.getRawString());
-			}
-		}
-		return check.isSatisfied(value);		
+		return check.isSatisfied(input);		
 	}
 
 	
@@ -201,16 +181,7 @@ public class BasicCondition implements Condition {
 	@Override
 	public Assignment getLocalOutput(Assignment input) {	
 	
-		ConditionCheck check = ConditionCheckFactory.createCheck(expectedValue, relation, input);
-		
-		Value value = ValueFactory.none();
-		TemplateString instantiatedVar = variable.fillSlotsPartial(input);
-		if (instantiatedVar.getSlots().isEmpty() 
-				&& input.containsVar(instantiatedVar.getRawString())) {
-			value = input.getValue(instantiatedVar.getRawString());
-		}
-		
-		return check.getLocalOutput(value);	
+		return check.getLocalOutput(input);
 	}
 
 
@@ -235,8 +206,6 @@ public class BasicCondition implements Condition {
 		case LOWER_THAN : return variable + "<" + expectedValue; 
 		case CONTAINS: return expectedValue + " in " + variable; 
 		case NOT_CONTAINS: return expectedValue + " !in " + variable;
-		case EXACT_MATCH: return variable + " matches exact pattern \"" + expectedValue + "\"";
-		case PARTIAL_MATCH: return variable + " matches partial pattern \"" + expectedValue + "\"";
 		default: return ""; 
 		}
 	}

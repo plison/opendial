@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+<initialstate>
+
+<variable id="floor">
+<value>start</value>
+</variable>
+
+<variable id="asrScore">
+<distrib type="dirichlet">
+<alpha>5.42</alpha>
+<alpha>0.515</alpha>
+<alpha>1.597</alpha>
+</distrib>
+</variable>
+
+<variable id="a_uother">
+<value prob="0.07">Move(Left)</value>
+<value prob="0.07">Move(Right)</value>
+<value prob="0.07">Move(Forward)</value>
+<value prob="0.07">Move(Backward)</value>
+<value prob="0.07">PickUp(o1)</value>
+<value prob="0.07">PickUp(o2)</value>
+<value prob="0.07">Release(o1)</value>
+<value prob="0.07">Release(o2)</value>
+<value prob="0.07">DoYouSee(o1)</value>
+<value prob="0.07">DoYouSee(o2)</value>
+<value prob="0.07">WhatDoYouSee</value>
+<value prob="0.07">Confirm</value>
+<value prob="0.07">Disconfirm</value>
+<value prob="0.07">RepeatLast</value>
+</variable>
+
+
+<variable id="perceived"><value>[]</value></variable>
+<variable id="carried"><value>[]</value></variable>
+
+</initialstate>
+
+<import href="domain_effects.xml"/>
+
+<import href="domain_observation.xml"/>
+
+<import href="domain_prior.xml"/>
+
+<import href="domain_rewards.xml"/>
+
+<import href="domain_user.xml"/>
+
+
+</domain>

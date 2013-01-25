@@ -24,7 +24,13 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -55,11 +61,12 @@ import opendial.bn.Assignment;
 
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.VectorVal;
 
 /**
  * 
@@ -193,6 +200,10 @@ public class DistributionViewer extends JDialog {
 		
 		super(null,Dialog.ModalityType.DOCUMENT_MODAL);
 		setTitle("Distribution Viewer");
+			
+		if (distrib.getDimensionality() > 4) {
+			throw new DialException("dimensionality is too high " + distrib.getDimensionality());
+		}
 				
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
@@ -202,25 +213,45 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
 		String variableName = distrib.getHeadVariables().iterator().next();
-		Set<Assignment> points = distrib.toDiscrete().getProbTable(new Assignment()).getRows();
-		log.debug("points:  " + points.size());
-		XYSeries serie = new XYSeries("density");
-		for (Assignment point : points) {
-			if (point.getValue(variableName) instanceof DoubleVal) {
-				serie.add((double) ((DoubleVal)point.getValue(variableName)).getDouble(),
+		
+		List<Assignment> samples = new ArrayList<Assignment>();
+		for (int i = 0 ; i < 300 ; i++) {
+			samples.add(distrib.sample(new Assignment()));
+		}
+		
+		List<XYSeries> series = new ArrayList<XYSeries>(); 
+
+		for (int i = 0 ; i < distrib.getDimensionality() ; i++) {
+			series.add(new XYSeries("dimension "+i));
+		}
+		
+		Collections.sort(samples, new AssignmentComparator());
+		for (Assignment point : samples) {
+			Value value = point.getValue(variableName);
+			if (value instanceof DoubleVal) {
+				series.get(0).add((double) ((DoubleVal)value).getDouble(),
 						distrib.getProbDensity(new Assignment(), point));
+			}
+			
+			else if (value instanceof VectorVal) {
+				for (int i = 0 ; i < ((VectorVal)value).getVector().size(); i++) {
+					double subval = ((VectorVal)value).getVector().get(i).doubleValue();
+					series.get(i).add(subval,distrib.getProbDensity(new Assignment(), point));		
+				}
 			}
 		}
 		
 		XYSeriesCollection dataset = new XYSeriesCollection(); 
-		dataset.addSeries(serie);
+		for (XYSeries serie : series) {
+			dataset.addSeries(serie);
+		}
 		
 		JFreeChart chart = ChartFactory.createXYLineChart( "P(" + variableName + ")", // chart title 
 				"Value", // domain axis label 
 				"Probability density", // range axis label
 				dataset, // data 
 				PlotOrientation.VERTICAL, // orientation
-				false, // include legend 
+				(distrib.getDimensionality() > 1), // include legend 
 				true, // tooltips? 
 				false // URLs?
 		);
@@ -240,29 +271,43 @@ public class DistributionViewer extends JDialog {
 		
 		plot.setBackgroundPaint(Color.white); plot.setRangeGridlinePaint(Color.white);
 		NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-		domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+	//	domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		domainAxis.setAutoTickUnitSelection(true);
 		
+			
 		ChartPanel chartPanel = new ChartPanel(chart, false); 
-		chartPanel.setPreferredSize(new Dimension(500, 270)); 
+		chartPanel.setPreferredSize(new Dimension(500, 300)); 
 		
-		container.add(chartPanel, BorderLayout.CENTER);
+		container.add(chartPanel);
 
 		setContentPane(container);
 		
-		setMinimumSize(new Dimension(500,400));
-		setPreferredSize(new Dimension(500,400));
 		pack();
 	}
 	
 	
-	private SortedMap<Value,Double> getSimplifiedDistrib(DiscreteProbDistribution distrib, String variableName) throws DialException {
-		Set<Assignment> assignments = distrib.toDiscrete().getProbTable(new Assignment()).getRows();
-		SortedMap<Value,Double> simpleDistrib = new TreeMap<Value,Double>();
+	private SortedMap<Value,Double> getSimplifiedDistrib(DiscreteProbDistribution distrib, 
+			String variableName) throws DialException {
 		
+		Set<Assignment> assignments = distrib.getProbTable(new Assignment()).getRows();
+		SortedMap<Value,Double> simpleDistrib = new TreeMap<Value,Double>();
 		for (Assignment assignment : assignments) {
 			Value value = assignment.getValue(variableName);
-			simpleDistrib.put(value, distrib.toDiscrete().getProb(new Assignment(), assignment));
+			simpleDistrib.put(value, distrib.getProb(new Assignment(), assignment));
 		}
 		return simpleDistrib;
+	}
+	
+	
+	final class AssignmentComparator implements Comparator<Assignment> {
+		
+		public int compare(Assignment a, Assignment b) {
+			if (a.getVariables().size() == 1 && a.getVariables().equals(b.getVariables())) {
+				String var = a.getVariables().iterator().next();
+				return a.getValue(var).compareTo(b.getValue(var));
+			}
+		//	log.warning("problem comparing " + a + " and " + b);
+			return 0;
+		}
 	}
 }

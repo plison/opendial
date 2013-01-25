@@ -19,24 +19,37 @@
 
 package opendial.bn.distribs.discrete;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.continuous.MultivariateDistribution;
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
+import opendial.bn.distribs.continuous.functions.MultiDiscreteDensityFunction;
+import opendial.bn.distribs.continuous.functions.ProductKernelDensityFunction;
+import opendial.bn.distribs.datastructs.EntryComparator;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.MathUtils;
 
 /**
  * Traditional probability distribution represented as a probability table. 
@@ -65,8 +78,6 @@ public class SimpleTable implements DiscreteProbDistribution {
 	// sampler
 	Random sampler;
 	
-	// if search for a "close" row in the table, minimum distance
-	public static final double MIN_PROXIMITY_DISTANCE = 0.1;
 
 	// ===================================
 	//  TABLE CONSTRUCTION
@@ -198,9 +209,11 @@ public class SimpleTable implements DiscreteProbDistribution {
 			}
 			newTable.put(newHead, table.get(head));
 		}
-
-		headVars.remove(oldVarId);
-		headVars.add(newVarId);
+		
+		if (headVars.contains(oldVarId)) {
+			headVars.remove(oldVarId);
+			headVars.add(newVarId);
+		}
 
 		table = newTable;
 		resetIntervals();
@@ -300,9 +313,9 @@ public class SimpleTable implements DiscreteProbDistribution {
 			return table.get(trimmedHead);
 		}
 
-		else if (trimmedHead.size() == 1 && trimmedHead.getEntrySet().iterator().next().getValue() instanceof DoubleVal){
-			//	log.debug("exact value cannot be found in table, must use proximity: " + trimmedHead);
-			Assignment closest = getClosestRow(trimmedHead);
+		else {
+		//	log.debug("exact value cannot be found in table, must use proximity: " + trimmedHead);
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmedHead);
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}
@@ -360,26 +373,75 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @throws DialException 
 	 */
 	@Override
-	public FunctionBasedDistribution toContinuous() throws DialException {
+	public ContinuousProbDistribution toContinuous() throws DialException {
 		if (headVars.size() == 1 && !table.keySet().isEmpty()) {
 			String headVar = headVars.iterator().next();
-			Map<Double,Double> values = new HashMap<Double,Double>();		
-			double total = countTotalProb();		
-			for (Assignment a : table.keySet()) {
-				if (a.getValue(headVar) instanceof DoubleVal) {
-					DoubleVal val = (DoubleVal)a.getValue(headVar);
-					values.put(val.getDouble(), table.get(a)/total);	
-				}
-				else if (!(a.getValue(headVar) instanceof NoneVal)) {
-					throw new DialException("conversion error: " + a.getValue(headVar));
-				}
+			if (getTypicalValueType(headVar).equals(DoubleVal.class)) {
+				return extractUnivariateDistribution(headVar);
 			}
-			DiscreteDensityFunction function = new DiscreteDensityFunction(values);
-			return new FunctionBasedDistribution(headVar, function);
+			if (getTypicalValueType(headVar).equals(VectorVal.class)) {
+				return extractMultivariateDistribution(headVar);
+			}
+
 		}
 		throw new DialException("Distribution could not be converted to a continuous distribution: " + headVars);
 	}
+	
+	
+	private Class<? extends Value> getTypicalValueType(String headVar) {
+		for (Assignment a : table.keySet()) {
+			if (!(a.getValue(headVar) instanceof NoneVal)) {
+				return a.getValue(headVar).getClass();
+			}
+		}
+		return NoneVal.class;
+	}
 
+	
+	
+	private UnivariateDistribution extractUnivariateDistribution(String headVar) throws DialException {
+		Map<Double,Double> values = new HashMap<Double,Double>();		
+		double total = countTotalProb();		
+		for (Assignment a : table.keySet()) {
+			if (a.getValue(headVar) instanceof DoubleVal) {
+				DoubleVal val = (DoubleVal)a.getValue(headVar);
+				values.put(val.getDouble(), table.get(a)/total);	
+			}
+			else if (!(a.getValue(headVar) instanceof NoneVal)) {
+				throw new DialException("conversion error: " + a.getValue(headVar));
+			}
+		}
+		DiscreteDensityFunction function = new DiscreteDensityFunction(values);
+		return new UnivariateDistribution(headVar, function);
+	}
+	
+	
+	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
+	/**	Map<double[],Double> values = new HashMap<double[],Double>();		
+		double total = countTotalProb();		
+		for (Assignment a : table.keySet()) {
+			if (a.getValue(headVar) instanceof VectorVal) {
+				VectorVal val = (VectorVal)a.getValue(headVar);
+				values.put(val.getArray(), table.get(a)/total);	
+			}
+			else if (!(a.getValue(headVar) instanceof NoneVal)) {
+				throw new DialException("conversion error: " + a.getValue(headVar));
+			}
+		}
+		MultiDiscreteDensityFunction function = new MultiDiscreteDensityFunction(values);
+		return new MultivariateDistribution(headVar, function); */
+		
+		List<double[]> samples = new ArrayList<double[]>(Settings.getInstance().nbSamples);
+		for (int i = 0 ; i < Settings.getInstance().nbSamples ;i++) {
+			Value val = sample().getValue(headVar);
+			if (val instanceof VectorVal) {
+				samples.add(((VectorVal)val).getArray());
+			}
+		}
+		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(samples);
+		pkde.setAsBounded(true);
+		return new MultivariateDistribution(headVar, pkde);
+	}
 
 	/**
 	 * Returns the head values for the table
@@ -428,6 +490,37 @@ public class SimpleTable implements DiscreteProbDistribution {
 				equals(Assignment.createDefault(headVars)));
 	}
 
+	
+	
+	/**
+	 * Creates a table with a subset of the probability values, namely the nbest highest
+	 * ones.  
+	 * 
+	 * @param nbest the number of values to keep in the filtered table
+	 * @return the table of values, of size nbest
+	 * @throws DialException if nbest is < 1
+	 */
+	public SimpleTable getNBest(int nbest) throws DialException {
+		if (nbest < 1) {
+			throw new DialException("nbest must be >= 1");
+		}
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet());
+		
+		Collections.sort(entries, new EntryComparator());
+		Collections.reverse(entries);
+				
+		SimpleTable nbestTable = new SimpleTable();
+		int incr = 0;
+		for (Map.Entry<Assignment, Double> entry : entries) {
+			if (incr < nbest) {
+				nbestTable.addRow(entry.getKey(), entry.getValue());
+			}
+			incr++;
+		}
+		return nbestTable;
+	}
+	
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -487,7 +580,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	public String toString() {
 		String str = "";
 		for (Assignment head: table.keySet()) {
-			double prob = Math.round(table.get(head)*10000.0)/10000.0;
+			double prob = MathUtils.shorten(table.get(head));
 			str += "P("+head + "):=" + prob + "\n";
 		}
 
@@ -555,34 +648,5 @@ public class SimpleTable implements DiscreteProbDistribution {
 	}
 
 
-	/**
-	 * Returns the closest row for the given value.  This method only works
-	 * if the head values are defined as doubles.
-	 * 
-	 * @param head the head assignment
-	 * @return the closest row, if any.  Else, an empty assignment
-	 */
-	private Assignment getClosestRow(Assignment head) {
-
-		String variable = head.getVariables().iterator().next();
-		Value value = head.getValue(variable);
-
-		Assignment closestHead = new Assignment();
-		double minDistance = MIN_PROXIMITY_DISTANCE;
-
-		for (Assignment possHead : table.keySet()) {
-			Value curVal = possHead.getValue(head.getVariables().iterator().next());
-
-			double curDistance = Double.MAX_VALUE;
-			if (value instanceof DoubleVal && curVal instanceof DoubleVal) {
-				curDistance = Math.abs(((DoubleVal)value).getDouble() - ((DoubleVal)curVal).getDouble()) ;
-			}
-			if (curDistance < minDistance) {
-				closestHead = possHead;
-				minDistance = curDistance;
-			}
-		}
-		return closestHead;
-	}
 
 }

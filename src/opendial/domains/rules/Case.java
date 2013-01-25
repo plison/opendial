@@ -30,11 +30,15 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.domains.datastructs.TemplateString;
+import opendial.bn.Assignment;
+import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
+import opendial.domains.rules.parameters.DirichletParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
@@ -121,28 +125,7 @@ public class Case {
 	public void addEffect(Effect effect, Parameter param) {
 		effects.put(effect, param);
 	}
-
-
-	/**
-	 * Adds a new void effect if the cumulative probability is lower than one,
-	 * or if the distribution has model uncertainty (i.e. expressed as Dirichlets)
-	 */
-	public void addVoidEffect() {
-		boolean isFixed = true;
-		double total = 0.0;
-		for (Parameter param : effects.values()) {
-			if (!(param instanceof FixedParameter)) {
-				isFixed = false;
-			}
-			else {
-				total += ((FixedParameter)param).getParameterValue();
-			}
-		}
-		if (isFixed && total < 0.99) {
-			effects.put(new VoidEffect(), new FixedParameter(1.0 - total));
-	//		log.debug("void effect with probability " + (1.0-total) + " added to condition " +condition );
-		}
-	}
+	
 
 	
 	// ===================================
@@ -150,6 +133,24 @@ public class Case {
 	// ===================================
 	
 	
+
+	public OutputTable getEffectOutputs(Assignment input) {
+		
+		OutputTable outputs = new OutputTable();
+			
+		// add up the local condition output and the remaining input 
+		Assignment localOutput = getCondition().getLocalOutput(input);
+		Assignment totalInput = new Assignment(input, localOutput);
+				
+		// fill up the mapping with the outputs
+		for (Effect effect : effects.keySet()) {
+			
+			Output output = effect.createOutput(totalInput);
+			outputs.addOutput(output, effects.get(effect));
+		}
+		
+		return outputs;
+	}
 	
 	/**
 	 * Returns the condition for the case
@@ -166,7 +167,7 @@ public class Case {
 	 * 
 	 * @return the list of alternative effects
 	 */
-	public List<Effect> getEffects() {
+	private List<Effect> getEffects() {
 		List<Effect> effectList = new ArrayList<Effect>(effects.keySet());
 		
 		Collections.sort(effectList, new Comparator<Effect>() 
@@ -185,7 +186,7 @@ public class Case {
 	 * @param effect the effect
 	 * @return the probability
 	 */
-	public Parameter getParameter(Effect effect) {
+	private Parameter getParameter(Effect effect) {
 		if (effects.containsKey(effect)) {
 			return effects.get(effect);
 		}
@@ -201,12 +202,12 @@ public class Case {
 	 * 
 	 * @return the set of input variables for the case
 	 */
-	public Set<TemplateString> getInputVariables() {
-		Set<TemplateString> inputVariables = new HashSet<TemplateString>();
+	public Set<Template> getInputVariables() {
+		Set<Template> inputVariables = new HashSet<Template>();
 		inputVariables.addAll(condition.getInputVariables());
 		for (Effect effect : effects.keySet()) {
 			for (String inputVariable: effect.getAdditionalInputVariables()) {
-				inputVariables.add(new TemplateString(inputVariable));
+				inputVariables.add(new Template(inputVariable));
 			}
 		}
 		return inputVariables;
@@ -219,8 +220,8 @@ public class Case {
 	 * 
 	 * @return the set of output variables defined in the case's effects
 	 */
-	public Set<TemplateString> getOutputVariables() {
-		Set<TemplateString> outputVariables = new HashSet<TemplateString>();
+	public Set<Template> getOutputVariables() {
+		Set<Template> outputVariables = new HashSet<Template>();
 		for (Effect effect : effects.keySet()) {
 			outputVariables.addAll(effect.getOutputVariables());
 		}

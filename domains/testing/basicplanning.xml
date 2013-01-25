@@ -41,7 +41,7 @@
 				<condition>
 					<if var="i_u" value="Want({X})"/>
 				</condition>
-				<effect util="1">
+				<effect util="2">
 					<set var="a_m" value="Do({X})"/>
 				</effect>
 			</case>
@@ -69,7 +69,7 @@
 				</effect>
 			</case>
 			<case>
-				<effect util="-0.6">
+				<effect util="-0.3">
 					<set var="a_m" value="AskRepeat"/>
 				</effect>
 			</case>
@@ -85,10 +85,21 @@
 				<if var="a_m" value="AskRepeat"/>
 			</condition>
 			<effect prob="0.95">
-				<set var="a_u" var2="a_u"/>
+				<set var="a_u0" var2="a_u"/>
 			</effect>
 			</case>
 		</rule>
 	</model>
  
+ 	
+	<model type="prediction" trigger="a_u0^p">
+		<rule>
+			<case>
+			<effect prob="0.8">
+				<set var="a_u" var2="a_u0^p"/>
+			</effect>
+			</case>
+		</rule>
+	</model>
+	
 </domain>

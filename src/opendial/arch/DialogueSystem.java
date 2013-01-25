@@ -27,6 +27,7 @@ import opendial.bn.nodes.BNode;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
+import opendial.simulation.UserSimulator;
 import opendial.state.DialogueState;
 
 /**
@@ -47,15 +48,26 @@ public class DialogueSystem {
 	
 	DialogueState curState;
 	
+	GUIFrame gui;
+	
+	UserSimulator simulator;
+	
+	boolean paused = false;
+		
 	public DialogueSystem(Domain domain) throws DialException {
-		this.domain = domain;
+		this (Settings.getInstance(), domain);
+	}
+	
+	public DialogueSystem(Settings settings, Domain domain) throws DialException {
+		Settings.loadSettings(settings);
 		curState = domain.getInitialState().copy();
+		curState.setName("current");
 		for (Model<?> model : domain.getModels()) {
 			curState.attachModule(model);
 		}
-		if (Settings.showGUI) {
-			GUIFrame frame = new GUIFrame(curState);
-			curState.addListener(frame);
+		if (Settings.getInstance().gui.showGUI) {
+			gui = new GUIFrame(this);
+			curState.addListener(gui);
 		}
 	}
 	
@@ -68,6 +80,9 @@ public class DialogueSystem {
 	
 	public void startSystem() {
 		curState.startState();
+		if (simulator != null) {
+			simulator.startSimulator();
+		}
 	}
 
 	/**
@@ -77,6 +92,28 @@ public class DialogueSystem {
 	public DialogueState getState() {
 		return curState;
 	}
+
+	public GUIFrame getGUI() {
+		return gui;
+	}
+
+	public void attachSimulator(Domain simulatorDomain) throws DialException {
+		simulator = new UserSimulator(curState, simulatorDomain);
+		if (Settings.getInstance().gui.showGUI) {
+			simulator.getRealState().addListener(gui);
+		}
+	}
 	
+	
+	public void pause(boolean shouldBePaused) {
+		paused = shouldBePaused;
+		if (simulator != null) {
+			simulator.pause(shouldBePaused);
+		}
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
 	
 }

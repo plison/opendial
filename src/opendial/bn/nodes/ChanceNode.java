@@ -96,6 +96,9 @@ public class ChanceNode extends BNode {
 	 */
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
+		if (distrib.getHeadVariables().size() != 1) {
+			throw new DialException("Distribution should have only one head variable, but is has: " + distrib.getHeadVariables());
+		}
 		if (!distrib.isWellFormed()) {
 			throw new DialException("Distribution for node " + nodeId + " (type " +
 					distrib.getClass().getSimpleName() + ") is not well-formed");

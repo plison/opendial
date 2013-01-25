@@ -17,23 +17,86 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
+package opendial.bn.distribs.continuous.functions;
 
-package opendial.bn.nodes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import opendial.arch.Logger;
 
 /**
- * Object listening to changes of identifiers on a node
+ * Density function for a continuous probability distribution
  * 
- * @author plison
+ * TODO: extend this to handle e.g. Dirichlets
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
  *
  */
-public interface NodeIdChangeListener {
+public interface UnivariateDensityFunction{
 
+	
 	/**
-	 * Takes note of the following change of node identifier
+	 * Returns the density value of the function at a given point
 	 * 
-	 * @param oldNodeId the old node identifier
-	 * @param newNodeId the new node identifier
+	 * @param x the point
+	 * @return the density value for the point
 	 */
-	public void modifyNodeId(String oldNodeId, String newNodeId);
+	public abstract double getDensity(double x);
+	
+	/**
+	 * Returns the cumulative probability up to the given point
+	 * 
+	 * @param x the point
+	 * @return the cumulative density up to the point
+	 */
+	public abstract double getCDF(double x);
+	
+	/**
+	 * Returns a sampled value given the point
+	 * 
+	 * @return
+	 */
+	public abstract double sample();
+	
+	/**
+	 * Returns a set of discrete values representing the function
+	 * 
+	 * @param nbBuckets the number of buckets for the discretisation
+	 * @return the resulting points
+	 */
+	public abstract List<Double> getDiscreteValues(int nbBuckets);
+	
+	/**
+	 * Returns a copy of the density function
+	 * 
+	 * @return the copy
+	 */
+	public UnivariateDensityFunction copy();
+	
+	
+	/**
+	 * Returns a pretty print for the function
+	 * 
+	 * @return the pretty print representation
+	 */
+	public String prettyPrint();
+	
+	
+	/**
+	 * Calculates the mean of the density function
+	 * 
+	 * @return the mean
+	 */
+	public double getMean();
+	
+	
+	/**
+	 * Calculates the variance of the density function
+	 * 
+	 * @return the variance
+	 */
+	public double getVariance();
+	
 }

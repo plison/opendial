@@ -40,21 +40,6 @@ public class UpdateRule extends CaseBasedRule implements Rule {
 
 	
 	/**
-	 * Returns the default case for the rule, which is a void effect with 
-	 * probability 1.0
-	 * 
-	 * @return the default case
-	 */
-	@Override
-	protected Case getDefaultCase() {	
-			Case defaultCase = new Case();
-			defaultCase.setCondition(new VoidCondition());
-			defaultCase.addEffect(new VoidEffect(), 1.0f);
-			return defaultCase;
-	}
-	
-	
-	/**
 	 * Returns the string representation for the update rule
 	 *
 	 * @return the string representation

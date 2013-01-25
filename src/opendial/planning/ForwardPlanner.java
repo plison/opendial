@@ -34,10 +34,13 @@ import java.util.Timer;
 import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings.PlanSettings;
 import opendial.arch.timing.AnytimeProcess;
 import opendial.arch.timing.StopProcessTask;
 import opendial.bn.Assignment;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.datastructs.Estimate;
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
@@ -57,136 +60,177 @@ public class ForwardPlanner implements AnytimeProcess {
 
 	// logger
 	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
- 
-	public static long MAX_DELAY = 10000;
 
-	DialogueState state;
+	public static long MAX_DELAY = 6000;
+
+	public static int NB_BEST_ACTIONS = 5;
+	public static int NB_BEST_OBSERVATIONS = 3;
+	public static double MIN_OBSERVATION_PROB = 0.1;
+
+	DialogueState currentState;
 
 	boolean isTerminated = false;
 
-	InteractionModel interactionModel;
-	
-	Map<List<Assignment>, Estimate> sequences;
-
 
 	public ForwardPlanner(DialogueState state) {
-		this.state = state;
-		interactionModel = new InteractionModel();
-		sequences = new HashMap<List<Assignment>, Estimate>();
+		this.currentState = state;
 	}
-	
+
 
 	@Override
 	public void run() {
 		isTerminated = false;
-	//	log.debug("planner is running... (" + getNbTrajectories() + " trajectories to collect)");
 		Timer timer = new Timer();
 		timer.schedule(new StopProcessTask(this, MAX_DELAY), MAX_DELAY);
-		
-		for (int i = 0 ; i < getNbTrajectories() && !isTerminated ; i++) {	
-			try {
-				Trajectory trajectory = new Trajectory(this);
-		//		log.debug("trajectory " + trajectory + " finished");
-				List<Assignment> actionSequence = trajectory.getActionSequence();
-				double utility = trajectory.getCumulativeUtility();
-				if (sequences.containsKey(actionSequence)) {
-					sequences.get(actionSequence).updateEstimate(utility);
-				}
-				else {
-					sequences.put(actionSequence, new Estimate(utility));
-				}
-			}
-			catch (DialException e) {
-				log.warning("could not generate trajectory: " + e);
-			}
-		}
-		timer.cancel();
-		List<Assignment> optimalSequence = findOptimalSequence();
-		log.debug("optimal sequence is : " + optimalSequence + " with Q=" + sequences.get(optimalSequence).getValue());
-		
-		sequences.clear();
 
-		if (!optimalSequence.isEmpty()) {
-			Assignment bestAction = optimalSequence.get(0);
-			addAction(bestAction);
-		}
-		else {
-			log.warning("optimal sequence has no action");
-			addAction(new Assignment());
-		}
-		
-	}
-	
-	
-	
-	private int getNbTrajectories() {
-		if (Settings.planningHorizon <=1) {
-			return 1;
-		}
-		else {		
-			return 30* Settings.planningHorizon;
-		}
-	}
-	
-	
-	private void addAction(Assignment bestAction) {
-		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
-		this.state.getNetwork().removeNodes(this.state.getNetwork().getUtilityNodeIds());
 		try {
-			state.addContent(bestAction, "planner");
+			Set<String> actionNodes = currentState.getNetwork().getActionNodeIds();
+			int horizon = Settings.getInstance().planning.getHorizon(actionNodes);
+			//		log.debug("planner is running for action nodes: " + actionNodes + "with horizon " + horizon);
+
+			double discountFactor = Settings.getInstance().planning.getDiscountFactor(actionNodes);
+
+			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
+	//		log.debug("Q values: " + qValues);
+			Assignment bestAction = qValues.getBest();
+	//		log.debug("best action: " + bestAction);
+
+			recordAction(currentState, bestAction);
+		}
+		catch (Exception e) {
+			log.warning("could not perform planning, aborting action selection: " + e);
+		}
+		timer.cancel();	
+
+	}
+
+
+
+	private UtilityTable getQValues (DialogueState state, int horizon, double discountFactor) throws DialException {
+
+		UtilityTable rewards = getRewardValues(state);
+
+		UtilityTable qValues = new UtilityTable();
+		for (Assignment action : rewards.getRows()) {
+			double reward = rewards.getUtil(action);
+			qValues.setUtil(action, reward);
+
+			if (horizon > 1 && !isTerminated) {
+				DialogueState copy = state.copy();
+				copy.setAsFictive(true);
+				copy.activateDecisions(false);
+				recordAction(copy, action);
+				copy.activateDecisions(true);
+
+				double expected = 0;
+				if (!action.isDefault()) {
+					expected = discountFactor * getExpectedValue(copy, horizon-1, discountFactor);
+				}
+
+				qValues.setUtil(action, qValues.getUtil(action) + expected);
+			}
+		}
+
+		return qValues;
+	}
+
+
+
+	private UtilityTable getRewardValues(DialogueState state) throws DialException {
+
+		Set<String> actionNodes = state.getNetwork().getActionNodeIds();
+
+		try {
+			InferenceAlgorithm inference = Settings.getInstance().inferenceAlgorithm.newInstance();
+			UtilQuery query = new UtilQuery(state, actionNodes);
+
+			UtilityTable distrib = inference.queryUtil(query);
+
+			return distrib.getNBest(NB_BEST_ACTIONS);
+		}
+		catch (Exception e) {
+			throw new DialException("could not sample action: " + e);
+		}		
+	}
+
+
+
+	private double getExpectedValue(DialogueState state, int horizon, double discountFactor) throws DialException {
+
+		SimpleTable observations = getObservations(state);
+		SimpleTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
+		double expectedValue = 0.0;
+		for (Assignment obs : nbestObs.getRows()) {
+			double obsProb = nbestObs.getProb(obs);
+			if (obsProb > MIN_OBSERVATION_PROB) {
+				DialogueState copy = state.copy();
+				copy.setAsFictive(true);
+
+				copy.addContent(obs, "planner");
+
+				UtilityTable qValues = getQValues(copy, horizon, discountFactor);
+				Assignment bestAction = qValues.getBest();
+				double afterObs = qValues.getUtil(bestAction);
+				expectedValue += obsProb * afterObs;
+			}
+		}	
+		return expectedValue;
+	}
+
+
+
+
+	private void recordAction(DialogueState state, Assignment action) {
+		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
+		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
+		try {
+			state.addContent(action.removeSpecifiers(), "planner");
 		}
 		catch (DialException e) {
 			log.warning("cannot add selected action to state");
 		}
 	}
-	
-	
-	private List<Assignment> findOptimalSequence() {
-		
-		List<Assignment> bestSequence = new LinkedList<Assignment>();
-		double maxUtility = - Double.MAX_VALUE;
-		for (List<Assignment> sequence : sequences.keySet()) {
-			double estimate = sequences.get(sequence).getValue();
-			if (estimate > maxUtility) {
-				maxUtility = estimate;
-				bestSequence = sequence;
-			}
-	//		log.debug("Q("+sequence + ")=" + estimate + " with " + sequences.get(sequence).getNbCounts() + " counts");
-		}
-		return bestSequence;
-	}
-	
-	
-	public Map<Assignment,Estimate> getEstimates(List<Assignment> partialSequence) {
-		
-		Map<Assignment, Estimate> relevantSequences = 
-				new HashMap<Assignment, Estimate>();
-		
-		for (List<Assignment> sequence : sequences.keySet()) {
-			if (sequence.containsAll(partialSequence) && sequence.size() > partialSequence.size()) {
-				relevantSequences.put(sequence.get(partialSequence.size()), sequences.get(sequence));
-			}
-		}
-		return relevantSequences;
-	}
-	
-	
 
-	@Override
-	public boolean isTerminated() {
-		return isTerminated;
+
+	public SimpleTable getObservations (DialogueState state) throws DialException {
+		Set<String> predictionNodes = new HashSet<String>();
+		for (String nodeId: state.getNetwork().getChanceNodeIds()) {
+			if (nodeId.contains("^p")) {
+				predictionNodes.add(nodeId);
+			}
+		}
+		// intermediary observations
+		for (String nodeId: new HashSet<String>(predictionNodes)) {
+			if (state.getNetwork().getChanceNode(nodeId).hasDescendant(predictionNodes)) {
+				predictionNodes.remove(nodeId);
+			}
+		}
+
+		ProbDistribution observations = state.getContent(predictionNodes, true);
+		SimpleTable table = observations.toDiscrete().getProbTable(new Assignment());
+
+		SimpleTable modified = new SimpleTable();
+		for (Assignment a : table.getRows()) {
+			Assignment newA = new Assignment();
+			for (String var : a.getVariables()) {
+				newA.addPair(var.replace("^p", ""), a.getValue(var));
+			}
+			modified.addRow(newA, table.getProb(a));
+		}
+		return modified;
 	}
+
 
 	@Override
 	public void terminate() {
 		isTerminated = true;
 	}
 
-	
-	
+
+
 	public boolean isPlanningNeeded() {
-		return (Settings.activatePlanner 
-				&& !state.getNetwork().getActionNodeIds().isEmpty() && !state.isFictive());
+		return (Settings.getInstance().activatePlanner 
+				&& !currentState.getNetwork().getActionNodeIds().isEmpty() && !currentState.isFictive());
 	}
 
 
@@ -194,17 +238,6 @@ public class ForwardPlanner implements AnytimeProcess {
 		return "Forward planner (give more useful information here)";
 	}
 
-	protected InteractionModel getInteractionModel() {
-		return interactionModel;
-	}
-
-	public DialogueState getState() {
-		return state;
-	}
-	
-	public int getPlanningHorizon() {
-		return Settings.planningHorizon;
-	}
 
 }
 

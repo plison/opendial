@@ -17,72 +17,43 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.inference;
+package opendial.domains.rules.conditions.checks;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.BNetwork;
-import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
-import opendial.inference.queries.UtilQuery;
-import opendial.utils.CombinatoricsUtils;
 
-/**
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public class BasicPlanner {
+public class LowerThanCheck extends AbstractCheck {
 
 	// logger
-	public static Logger log = new Logger("BasicPlanner", Logger.Level.NORMAL);
+	public static Logger log = new Logger("BasicEqualCheck",
+			Logger.Level.NORMAL);
 	
-
-	InferenceAlgorithm algo;
+	DoubleVal expectedVal;
+	String variable;
 	
-	public BasicPlanner() {
-		algo = new ImportanceSampling(200, 500);
+	
+	public LowerThanCheck(String variable, DoubleVal expectedVal) {
+		this.variable = variable;
+		this.expectedVal = expectedVal;
 	}
 	
-	public BasicPlanner(InferenceAlgorithm algo) {
-		this.algo = algo;
-	}
 	
-	
-	/**
-	 *
-	 * @param network
-	 * @param evidence
-	 * @return
-	 * @throws DialException 
-	 */
-	public Assignment getOptimalActions(BNetwork network, Assignment evidence) throws DialException {
-
-		UtilityDistribution distrib = algo.queryUtility(new UtilQuery(network, network.getActionNodeIds(), evidence));
-
-		Assignment bestAssign = new Assignment();
-		double bestValue= - Float.MAX_VALUE;
-
-		Map<String,Set<Value>> actionValues = new HashMap<String,Set<Value>>();
-		for (String actionVar : network.getActionNodeIds()) {
-			actionValues.put(actionVar, network.getActionNode(actionVar).getValues());
-		}
-		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(actionValues);
-		for (Assignment a : combinations) {
-			if (distrib.getUtility(a) > bestValue) {
-				bestAssign = a;
-				bestValue = distrib.getUtility(a);
+	@Override
+	public boolean isSatisfied(Assignment input) {
+		if (input.containsVar(variable)) {
+			Value actualVal = input.getValue(variable);
+			if (actualVal instanceof DoubleVal) {
+				DoubleVal actualVal2 = (DoubleVal)actualVal;
+				return actualVal2.getDouble() < expectedVal.getDouble();
 			}
-		}
-		return bestAssign;
+ 		}
+		return false;
 	}
-
+	
+	
 
 }
+

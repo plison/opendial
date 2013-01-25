@@ -17,120 +17,48 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial.domains.rules.conditions.checks;
 
 
 import opendial.arch.Logger;
-import opendial.inference.ImportanceSampling;
-import opendial.inference.InferenceAlgorithm;
-import opendial.inference.SwitchingAlgorithm;
-import opendial.inference.VariableElimination;
+import opendial.bn.Assignment;
+import opendial.domains.datastructs.Template;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
-/**
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public class ConfigurationSettings {
+public class TemplateVarCheck extends AbstractCheck {
 
 	// logger
-	public static Logger log = new Logger("ConfigurationSettings",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("TemplateVarCheck",
+			Logger.Level.DEBUG);
+
+	Template variable;
+	Template expectedVal;
+	Relation rel;
+		 
+	public TemplateVarCheck(Template variable, Template expectedVal, Relation rel) {
+		this.variable = variable;
+		this.expectedVal = expectedVal;
+		this.rel = rel;
+	}
 	
-	
-	Class<? extends InferenceAlgorithm> currentInferenceAlgorithm;
-	
-	int nbSamples = 1500;
-	
-	// maximum sampling time (in milliseconds)
-	long maximumSamplingTime = 500;
-	
-	int nbDiscretisationBuckets = 100;
-	
-	boolean showGUI;
-	
-	static ConfigurationSettings singletonSettings;
-	
-	boolean activatePlanner = false;
-	
-	boolean activatePruning = false;
-	
-	
-	public static ConfigurationSettings getInstance() {
-		if (singletonSettings == null) {
-			singletonSettings = new ConfigurationSettings();
+	@Override
+	public boolean isSatisfied(Assignment input) {
+		Template partialFill = variable.fillSlotsPartial(input);
+		if (partialFill.getSlots().isEmpty()) {
+			AbstractCheck instanceCheck = CheckFactory.createCheck(partialFill.getRawString(), expectedVal, rel);
+			return instanceCheck.isSatisfied(input);
 		}
-		return singletonSettings;
+		return false;
 	}
 
-	private ConfigurationSettings() {		
-		currentInferenceAlgorithm = SwitchingAlgorithm.class;
+	@Override
+	public Assignment getLocalOutput(Assignment input) {
+		Template partialFill = variable.fillSlotsPartial(input);
+		if (partialFill.getSlots().isEmpty()) {
+			AbstractCheck instanceCheck = CheckFactory.createCheck(partialFill.getRawString(), expectedVal, rel);
+			return instanceCheck.getLocalOutput(input);
+		}
+		return new Assignment();
 	}
-	
-	public Class<? extends InferenceAlgorithm> getInferenceAlgorithm() {
-		return currentInferenceAlgorithm;
-	} 
-	
-	public int getNbSamples() {
-		return nbSamples;
-	}
-	
-	public int getNbDiscretisationBuckets() {
-		return nbDiscretisationBuckets;
-	}
-	
-	
-	public void setInferenceAlgorithm(Class<? extends InferenceAlgorithm> algorithm) {
-		log.info("Inference algorithm changed to : " + algorithm.getSimpleName());
-		currentInferenceAlgorithm = algorithm;
-	} 
-	
-	public void setNbSamples(int nbSamples) {
-		this.nbSamples = nbSamples;
-	}
-	
-	public void setMaximumSamplingtime(long maximumSamplingTime) {
-		this.maximumSamplingTime = maximumSamplingTime;
-	}
-	
-	public void activatePlanner(boolean activatePlanner) {
-		this.activatePlanner = activatePlanner;
-	}
-	
-	public void activatePruning(boolean activatePruning) {
-		this.activatePruning = activatePruning;
-	}
-	
-	
-	public void setNbDiscretisationBuckets(int nbDiscretisationBuckets) {
-		this.nbDiscretisationBuckets = nbDiscretisationBuckets;
-	}
-	
-	public void showGUI(boolean flag) {
-		showGUI = flag;
-	}
-	
-	public boolean isGUIShown() {
-		return showGUI;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public long getMaximumSamplingTime() {
-		return maximumSamplingTime;
-	}
-
-	public boolean isPlannerActivated() {
-		return activatePlanner;
-	}
-	
-	public boolean isPruningActivated() {
-		return activatePruning;
-	}
-	
-		
 }
+

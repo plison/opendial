@@ -86,7 +86,7 @@ import opendial.utils.StringUtils;
  *
  */
 @SuppressWarnings("serial")
-public class DialogueStateViewer extends VisualizationViewer<String,Integer> implements IdChangeListener {
+public class DialogueStateViewer extends VisualizationViewer<String,Integer> {
 
 	// logger
 	public static Logger log = new Logger("DialogueStateViewer", Logger.Level.DEBUG);
@@ -98,8 +98,6 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 	// the current state to display
 	DialogueState currentState;
 	
-	Map<String,String> nodeIdChanges;
-
 
 	/**
 	 * Creates a new graph viewer, connected to the component given as
@@ -138,7 +136,6 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		graphMouse.add(new DialogueStatePopup(this));
 		setGraphMouse(graphMouse);
 		
-		nodeIdChanges = new HashMap<String,String>();
 	}
 
 
@@ -210,11 +207,7 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		if (currentState.getNetwork().hasNode(nodeId)) {
 			return currentState.getNetwork().getNode(nodeId);
 		}
-		else if (nodeIdChanges.containsKey(nodeId)){
-			return getBNode(nodeIdChanges.get(nodeId));
-		}
-		
-		log.warning("node corresponding to " + verticeID + " not found");
+//		log.warning("node corresponding to " + verticeID + " not found");
 		return null;
 	}
 
@@ -229,9 +222,6 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 	 */
 	public void showBayesianNetwork(DialogueState state) {
 		currentState = state;	
-		for (BNode n : state.getNetwork().getNodes()) {
-			n.addIdChangeListener(this);
-		}
 		Layout<String,Integer> layout = getGraphLayout(state);
 		setGraphLayout(layout);
 		repaint();
@@ -303,11 +293,6 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 		return currentState;
 	}
 	
-	
-	public void modifyNodeId(String oldNodeId, String newNodeId) {
-		nodeIdChanges.put(oldNodeId, newNodeId);
-	}
-
 
 
 	/**
@@ -344,11 +329,13 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 				Object arg1, Font arg2, boolean arg3, T arg4) {
 			if (arg4 instanceof String) {
 				BNode node = getBNode((String)arg4);
+				if (node!=null) {
 				JLabel jlabel = new JLabel("<html>"+StringUtils.getHtmlRendering(node.getId())+"</html>");
 				jlabel.setFont(new Font("Arial bold", Font.PLAIN, 24));
 				return jlabel;
+			}
 			} 		
-			return null;
+			return new JLabel();
 		}
 	}
 
@@ -368,7 +355,7 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 			else if (node instanceof ActionNode) {
 				return new Color(0,100,155);
 			}
-			else if (getDialogueState().getEvidence().containsVar(node.getId())) {
+			else if (node != null && getDialogueState().getEvidence().containsVar(node.getId())) {
 					return Color.darkGray;
 			}
 			else {
@@ -402,8 +389,7 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 				return (Shape) new Rectangle2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 			else {
-				log.warning("unknown case");
-				return null;
+				return (Shape) new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 		}
 	}

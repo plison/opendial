@@ -17,54 +17,95 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.planning;
+package opendial.bn.values;
 
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.Assignment;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
-import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
-import opendial.inference.ImportanceSampling;
-import opendial.inference.queries.ProbQuery;
-import opendial.state.DialogueState;
+import opendial.utils.MathUtils;
 
-public class InteractionModel {
+public class VectorVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("InteractionModel", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DoubleVectorVal",
+			Logger.Level.DEBUG);
 	
-		
-	public SampledObservation sampleObservation(DialogueState state) throws DialException {
-		
-		Set<String> predictionNodes = new HashSet<String>();
-		for (String nodeId: state.getNetwork().getChanceNodeIds()) {
-			if (nodeId.contains("^p")) {
-				predictionNodes.add(nodeId);
-			}
+	double[] array;
+	Vector<Double> values;
+	
+	public VectorVal(double[] values) {
+		this.array = values;
+		this.values = new Vector<Double>(values.length);
+		for (int i = 0 ; i < values.length ; i++) {
+			this.values.add(values[i]);
 		}
-		
-		ProbQuery query = new ProbQuery(state, predictionNodes);
-		ImportanceSampling sampling = new ImportanceSampling(1, 200);
-		
-		ProbDistribution distrib = sampling.queryProb(query);
-		Assignment samplePrediction = distrib.sample(new Assignment());
-		Assignment sampleObservation = new Assignment();
-		for (String var : samplePrediction.getVariables()) {
-			sampleObservation.addPair(var.replace("^p", ""), samplePrediction.getValue(var));
+	}
+	
+	public VectorVal(Collection<Double> values) {
+		this.values = new Vector<Double>(values);
+		array = new double[values.size()];
+		for (int i = 0 ; i < array.length ; i++) {
+			array[i] = this.values.get(i);
 		}
-		return new SampledObservation(sampleObservation);
-
 	}
 
+	@Override
+	public int compareTo(Value arg0) {
+		if (arg0 instanceof VectorVal) {
+			Vector<Double> otherVector = ((VectorVal)arg0).getVector();
+			if (values.size() != otherVector.size()) {
+				return values.size() - otherVector.size();
+			}
+			else {
+				for (int i = 0 ; i < values.size() ; i++) {
+					double val1 = values.get(i);
+					double val2 = otherVector.get(i);
+					if (val1 != val2) {
+						return (new Double(val1).compareTo(new Double(val2)));
+					}
+				}
+			}
+		}
+		return hashCode() - arg0.hashCode();
+	}
 
-
+	@Override
+	public Value copy() {
+		return new VectorVal(values);
+	}
+	
+	public Vector<Double>  getVector() {
+		return values;
+	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof VectorVal) {
+			return ((VectorVal)o).getVector().equals(values);
+		}
+		return false;
+	}
+	
+	public double[] getArray() {
+		return array;
+	}
+	
+	public int hashCode() {
+		return values.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		String s = "(";
+		for (Double d : values) {
+			s += MathUtils.shorten(d) + ",";
+		}
+		return s.substring(0, s.length() -1) + ")";
+	}
 
 }
 

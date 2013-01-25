@@ -45,6 +45,9 @@ import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
+import opendial.bn.values.VectorVal;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.Query;
@@ -98,11 +101,20 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		
 		try {
 			reweightSamples();
-
 			for (String queryVar : query.getQueryVars()) {
 				ChanceNode node = reduced.getChanceNode(queryVar);
 				EmpiricalDistribution eDistrib = getNodeDistribution(node);
-				node.setDistrib(eDistrib);
+				if (!eDistrib.getSamples().isEmpty()) {
+					if (!node.getInputNodeIds().isEmpty() && areDiscrete(node.getInputNodeIds())) {
+						node.setDistrib(eDistrib.toDiscrete());
+					}
+					else {
+						node.setDistrib(eDistrib);						
+					}
+				}
+				else {
+					log.warning("cannot estimate " + queryVar + " (no relevant samples)");
+				}
 			}
 		}
 		catch (DialException e) {
@@ -154,23 +166,22 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		return eDistrib;
 	}
 	
-	
-	/** 
-	private UtilityTable getUtilityDistribution (UtilityNode node) {
-		
-		UtilityTable utilityTable = new UtilityTable();
-		
-		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
-		trimmedVariables.addAll(node.getInputNodeIds());
-
+	private boolean areDiscrete(Collection<String> nodeIds) {
 		Iterator<WeightedSample> it = samples.iterator();
-		while (it.hasNext()) {
+		int valuesToCheck = 0;
+		while (it.hasNext() && valuesToCheck < 20) {
 			WeightedSample a = it.next();
-			Assignment trimmedSample = a.getSample().getTrimmed(trimmedVariables);
-			utilityTable.addUtility(trimmedSample, a.getUtility());
+			for (String nodeId : nodeIds) {
+				Value val = a.getSample().getValue(nodeId);
+				if (val instanceof DoubleVal || val instanceof VectorVal) {
+					return false;
+				}
+			}
+			valuesToCheck++;
 		}
-		return utilityTable;
-	} */
+		return true;
+	}
+	
 
 	
 	/**

@@ -24,11 +24,11 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 public interface UnboundPredicate {
 
-	public TemplateString getPredicate();
+	public Template getPredicate();
 
 	public Set<String> getVariables();
 }

@@ -27,6 +27,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -48,7 +49,7 @@ import opendial.inference.queries.Query;
 public class SampleCollector extends Thread {
 
 	// logger
-	public static Logger log = new Logger("SamplingThread", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SampleCollector", Logger.Level.DEBUG);
 
 	// minimum threshold for particle weights
 	public static double WEIGHT_THRESHOLD = 0.00001f;
@@ -106,11 +107,16 @@ public class SampleCollector extends Thread {
 						}
  
 						// if the node is an evidence node, recompute the weights
-						// note that if the evidence value is continuous, an alternative would be
-						// to use the probability density as a weight
 						else {
 							Value evidenceValue = evidence.getValue(n.getId());
-							double evidenceProb = ((ChanceNode)n).getProb(sample.getSample(), evidenceValue);
+							double evidenceProb = 1.0;
+							if (((ChanceNode)n).getDistrib() instanceof ContinuousProbDistribution) {
+								evidenceProb = ((ContinuousProbDistribution)((ChanceNode)n).getDistrib()).
+										getProbDensity(sample.getSample(), evidence);
+							}
+							else {
+								evidenceProb = ((ChanceNode)n).getProb(sample.getSample(), evidenceValue);								
+							}
 							sample.addLogWeight(Math.log(evidenceProb));						
 							sample.addPoint(n.getId(), evidenceValue);
 						}

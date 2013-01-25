@@ -51,6 +51,7 @@ import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.CompositeParameter;
+import opendial.domains.rules.parameters.DirichletParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
@@ -260,15 +261,6 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
-			else if (relationStr.toLowerCase().trim().equals("exactmatch")) {
-				relation = Relation.EXACT_MATCH;
-			}
-			else if (relationStr.toLowerCase().trim().equals("partialmatch")) {
-				relation = Relation.PARTIAL_MATCH;
-			}
-			else if (relationStr.toLowerCase().trim().equals("partial")) {
-				relation = Relation.PARTIAL_MATCH;
-			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.CONTAINS;
 			}
@@ -276,6 +268,9 @@ public class XMLRuleReader {
 				relation = Relation.LENGTH;
 			} */
 			else if (relationStr.toLowerCase().trim().equals("notcontains")) {
+				relation = Relation.NOT_CONTAINS;
+			}
+			else if (relationStr.toLowerCase().trim().equals("!in")) {
 				relation = Relation.NOT_CONTAINS;
 			}
 			else if (relationStr.toLowerCase().trim().equals(">")) {
@@ -438,7 +433,7 @@ public class XMLRuleReader {
 		}
 		catch (NumberFormatException e) {
 			if (paramStr.contains("+")) {
-				String[] split = paramStr.split("+");
+				String[] split = paramStr.split("\\+");
 				CompositeParameter param = new CompositeParameter();
 				for (int i = 0 ; i < split.length ; i++) {
 					param.addParameter(split[i]);
@@ -446,7 +441,16 @@ public class XMLRuleReader {
 				return param;
 			}
 			else {
-				return new SingleParameter(paramStr);
+				Pattern p = Pattern.compile(".+(\\[[0-9]+\\])");
+				Matcher m = p.matcher(paramStr);
+				if (m.matches()) {
+					int index = Integer.parseInt(m.group(1).replace("[", "").replace("]", ""));
+					String paramId = paramStr.split("\\[")[0];
+					return new DirichletParameter(paramId, index);
+				}
+				else {
+					return new SingleParameter(paramStr);					
+				}
 			}
 		}
 	}

@@ -32,7 +32,8 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.DoubleVal;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
@@ -121,9 +122,6 @@ public abstract class CaseBasedRule implements Rule {
 			log.info("new case for rule " + id + 
 					" is unreachable (previous case is trivially true)");
 		}
-		if (getRuleType() == RuleType.PROB) {
-			newCase.addVoidEffect();
-		}
 		cases.add(newCase);
 	}
 	
@@ -158,7 +156,7 @@ public abstract class CaseBasedRule implements Rule {
 	 * 
 	 * @return the default case for the rule
 	 */
-	protected abstract Case getDefaultCase() ;
+	// protected abstract Case getDefaultCase() ;
 	
 	
 	
@@ -168,12 +166,12 @@ public abstract class CaseBasedRule implements Rule {
 	 * 
 	 * @return the set of labels for the input variables
 	 */
-	public Set<TemplateString> getInputVariables() {
-		Set<TemplateString> variables = new HashSet<TemplateString>();
+	public Set<Template> getInputVariables() {
+		Set<Template> variables = new HashSet<Template>();
 		for (Case thecase : cases) {
 			variables.addAll(thecase.getInputVariables());
 		}
-		return new HashSet<TemplateString>(variables);
+		return new HashSet<Template>(variables);
 	}
 	
 	
@@ -185,27 +183,12 @@ public abstract class CaseBasedRule implements Rule {
 	 * @param input the input assignment
 	 * @return the outputs for the effect
 	 */
-	public Map<Output,Parameter> getEffectOutputs (Assignment input) {
-		
-		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
-		
+	public OutputTable getEffectOutputs (Assignment input) {
+				
 		// search for the matching case
 		Case matchingCase = getMatchingCase(input);
 		
-		// add up the local condition output and the remaining input 
-		Assignment localOutput = matchingCase.getCondition().getLocalOutput(input);
-		Assignment totalInput = new Assignment(input, localOutput);
-		
-		// fill up the mapping with the outputs
-		for (Effect effect : matchingCase.getEffects()) {
-			
-			// adapt the output to the rule-specific format
-			Output output = effect.createOutput(totalInput);
-		//	adaptOutputToRule(output);
-			
-			outputs.put(output, matchingCase.getParameter(effect));
-		}
-		return outputs;
+		return matchingCase.getEffectOutputs(input);
 	}
 	
 
@@ -310,7 +293,7 @@ public abstract class CaseBasedRule implements Rule {
 				return ruleCase;
 			}
 		}
-		return getDefaultCase();
+		return new Case();
 	}
 	
 

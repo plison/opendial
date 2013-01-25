@@ -162,7 +162,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @param query the full query
 	 */
 	@Override
-	public UtilityTable queryUtility(UtilQuery query) {
+	public UtilityTable queryUtil(UtilQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -198,7 +198,7 @@ public class NaiveInference implements InferenceAlgorithm {
 					totalProb += fullJoint.get(jointAssign);
 				}
 			}
-			table.setUtility(actionAssign, totalUtility/totalProb);
+			table.setUtil(actionAssign, totalUtility/totalProb);
 		}
 
 		return table;	
@@ -240,7 +240,7 @@ public class NaiveInference implements InferenceAlgorithm {
 
 		BNetwork fullNetwork = query.getNetwork();
 
-		BNetwork reduced = fullNetwork.getReducedCopy(query.getQueryVars());
+		BNetwork reduced = fullNetwork.getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
 
 		// finally, sets the distribution for the nodes to retain, according
 		// to the factors generated via V.E.
@@ -251,7 +251,7 @@ public class NaiveInference implements InferenceAlgorithm {
 		}
 		for (UtilityNode node : reduced.getUtilityNodes()) {
 			UtilQuery subQuery = new UtilQuery(fullNetwork, node.getInputNodeIds(), query.getEvidence());
-			UtilityDistribution distrib = queryUtility(subQuery);
+			UtilityDistribution distrib = queryUtil(subQuery);
 			node.setDistrib(distrib);
 		}
 

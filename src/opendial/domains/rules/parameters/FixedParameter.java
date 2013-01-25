@@ -26,7 +26,7 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 
 /**
  * Representation of a parameter fixed to one single specific value.

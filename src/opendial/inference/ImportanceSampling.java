@@ -19,7 +19,9 @@
 
 package opendial.inference;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import opendial.arch.Settings;
@@ -27,11 +29,17 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.DoubleFactor;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.ReductionQuery;
+import opendial.inference.queries.UtilQuery;
 import opendial.inference.sampling.BasicQuerySampling;
 import opendial.inference.sampling.ReductionQuerySampling;
 
@@ -57,10 +65,10 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	public static Logger log = new Logger("ImportanceSampling", Logger.Level.DEBUG);
 
 	// actual number of samples for the algorithm
-	int nbSamples = Settings.nbSamples;
+	int nbSamples = Settings.getInstance().nbSamples;
 	
 	// maximum sampling time (in milliseconds)
-	long maxSamplingTime = Settings.maximumSamplingTime;
+	long maxSamplingTime = Settings.getInstance().maximumSamplingTime;
 	
 	
 	/**
@@ -120,7 +128,7 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	 */
 	@Override
 	protected DistributionCouple queryJoint(Query query) {
-
+		
 		// creates a new query thread
 		BasicQuerySampling isquery = new BasicQuerySampling(query, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);
@@ -143,15 +151,15 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	//	log.debug("reduction query " + query + " on network " + query.getNetwork().getNodeIds());
 		
 		// creating the reduced copy
-		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars());
+		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
 		
 		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
 		for (String nodeId : identicalNodes) {
 			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
 			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
 			query.removeQueryVar(nodeId);
-		} 
-		
+		}  
+				
 		// creates a new query thread
 		ReductionQuerySampling isquery = new ReductionQuerySampling(query, reduced, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);
@@ -167,6 +175,7 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 		return isquery.getResults();
 		
 	}
+
 
 
 	public int getNbOfSamples() {

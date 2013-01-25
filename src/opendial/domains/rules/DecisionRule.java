@@ -41,19 +41,6 @@ public class DecisionRule extends CaseBasedRule implements Rule {
 	// logger
 	public static Logger log = new Logger("DecisionRule", Logger.Level.NORMAL);
 	
-	/**
-	 * Returns the default case for a decision rule, which is a void effect
-	 * with utility 0.0
-	 *
-	 * @return the default case
-	 */
-	@Override
-	protected Case getDefaultCase() {	
-			Case defaultCase = new Case();
-			defaultCase.setCondition(new VoidCondition());
-			defaultCase.addEffect(new VoidEffect(), 0.0f);
-			return defaultCase;
-	}
 	
 	/**
 	 * Returns a string representation of the decision rule

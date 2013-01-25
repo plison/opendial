@@ -48,7 +48,8 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 
 	Random sampler;
 
-	public static final double PROB_WITH_NONE = 0.1;
+	public static final double PROB_WITH_SINGLE_NONE = 0.1;
+	public static final double PROB_WITH_DOUBLE_NONE = 0.3;
 
 
 	public EqualityDistribution(String equalityId, String variable) {
@@ -178,7 +179,7 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 	private double getProb(Assignment condition) throws DialException {
 		
 		String actualVar = null;
-		for (int i = 3 ; i >= 0; i--) {
+		for (int i = 3 ; i >= 0 && actualVar==null; i--) {
 			if (condition.containsVar(variable+StringUtils.createNbPrimes(i))) {
 				actualVar = variable+StringUtils.createNbPrimes(i);
 			}
@@ -190,9 +191,13 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 			List<Value> valList = new ArrayList<Value>(trimmed.getValues());
 
 			// if the none value is present, the equality is random
-			if (valList.get(0).equals(ValueFactory.none()) || 
+			if (valList.get(0).equals(ValueFactory.none()) && 
 					valList.get(1).equals(ValueFactory.none())) {	
-				return PROB_WITH_NONE;
+				return PROB_WITH_DOUBLE_NONE;
+			}
+			else if (valList.get(0).equals(ValueFactory.none()) || 
+					valList.get(1).equals(ValueFactory.none())) {	
+				return PROB_WITH_SINGLE_NONE;
 			}
 			else {
 				if (valList.get(0).equals(valList.get(1))) {

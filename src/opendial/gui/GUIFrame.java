@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.StateListener;
 import opendial.state.DialogueState;
@@ -58,17 +59,15 @@ public class GUIFrame extends JFrame implements StateListener {
 	// tab for the chat window
 	ChatWindowTab chatTab;
 	
-	DialogueState state;
+	DialogueSystem system;
+			
 	
-
 	/**
 	 * Constructs the GUI frame, with its title, menus, tabs etc.
 	 * 
 	 */
-	public GUIFrame(DialogueState state) {
-		
-		this.state = state;
-		
+	public GUIFrame(DialogueSystem system) {
+				
 		Container contentPane = getContentPane();
 
 		// TODO: add " - domain name " when a domain is loaded
@@ -85,14 +84,17 @@ public class GUIFrame extends JFrame implements StateListener {
 			{ System.exit(0); }
 		}
 		); 
-
+		
+		this.system = system;
+		
 		setJMenuBar(new ToolkitMenu(this));
 		
-		chatTab = new ChatWindowTab(this);
+		chatTab = new ChatWindowTab(system.getState());
 		tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
 
 		stateMonitorTab = new StateMonitorTab(this);
 		tabbedPane.addTab(StateMonitorTab.TAB_TITLE, null, stateMonitorTab, StateMonitorTab.TAB_TIP);
+		update(system.getState());
 		
 		setPreferredSize(new Dimension(1000,800));
 		pack();
@@ -100,6 +102,9 @@ public class GUIFrame extends JFrame implements StateListener {
 	}
 
 
+	public DialogueSystem getSystem() {
+		return system;
+	}
 
 	/**
 	 * Updates the current dialogue state displayed in the component.  The current
@@ -107,9 +112,9 @@ public class GUIFrame extends JFrame implements StateListener {
 	 * 
 	 */
 	@Override
-	public synchronized void update() {
-		chatTab.update();
-		stateMonitorTab.update();
+	public synchronized void update(DialogueState state) {
+		chatTab.update(state);
+		stateMonitorTab.update(state);
 	}
 	
 
@@ -127,9 +132,5 @@ public class GUIFrame extends JFrame implements StateListener {
 	}
 
 	
-	public DialogueState getConnectedState() {
-		return state;
-	}
-
 
 }

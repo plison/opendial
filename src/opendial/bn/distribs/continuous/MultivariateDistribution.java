@@ -21,20 +21,27 @@ package opendial.bn.distribs.continuous;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.functions.DensityFunction;
+import opendial.bn.distribs.continuous.functions.MultivariateDensityFunction;
+import opendial.bn.distribs.continuous.functions.UnivariateDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.values.VectorVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.InferenceUtils;
+import opendial.utils.MathUtils;
 
 
 /**
@@ -45,15 +52,15 @@ import opendial.bn.values.ValueFactory;
  * @version $Date::                      $
  *
  */
-public class FunctionBasedDistribution implements ContinuousProbDistribution {
+public class MultivariateDistribution implements ContinuousProbDistribution {
 
-	public static Logger log = new Logger("FunctionBasedDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("MultivariateDistribution", Logger.Level.DEBUG);
 
 	// the variable for the distribution
 	String variable;
 		
 	// density function for the distribution
-	DensityFunction function;
+	MultivariateDensityFunction function;
 	
 
 	// ===================================
@@ -67,7 +74,7 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	 * @param variable the variable
 	 * @param function the density function
 	 */
-	public FunctionBasedDistribution(String variable, DensityFunction function) {
+	public MultivariateDistribution(String variable, MultivariateDensityFunction function) {
 		this.variable = variable;
 		this.function = function;
 	}
@@ -122,29 +129,50 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	@Override
 	public SimpleTable toDiscrete() {
 	
-		int nbBuckets = Settings.nbDiscretisationBuckets;
+		int nbBuckets = Settings.getInstance().nbDiscretisationBuckets;
+				
+		List<double[]> values = function.getDiscreteValueArrays(nbBuckets);
 		
-		List<Double> values = function.getDiscreteValues(nbBuckets);
-		SimpleTable discreteVersion = new SimpleTable();
-		double prevCDF = -1.0;
-		Iterator<Double> valuesIt1 = values.iterator();
-		
-		while (valuesIt1.hasNext()) {
-			double curVal = valuesIt1.next();
-			double curCDF = function.getCDF(curVal);
+		Map<Assignment, Double> distrib = new HashMap<Assignment, Double>();
+		double minDistance = MathUtils.getMaxManhattanDistance(values)/2.0;
+		for (int i = 0 ; i < Settings.getInstance().nbSamples ; i++) {
 			
-			double leftPart = (prevCDF > 0.0)? (curCDF-prevCDF) : curCDF;
+			double[] sample = function.sample();
+			double[] closest = findClosest(values, sample, minDistance);
 			
-		//	double rightPart = (valuesIt2.hasNext()) ? (function.getCDF(valuesIt2.next()) - curCDF)/2.0 : 1.0 - curCDF; 
-			
-			double prob = leftPart; // + rightPart;
-			
-			if (!discreteVersion.hasProb(new Assignment(variable, curVal))) {
-				discreteVersion.addRow(new Assignment(variable, curVal), prob);
+			if (closest != null) {
+			Assignment a = new Assignment(variable,new VectorVal(closest));
+			if (!distrib.containsKey(a)) {
+				distrib.put(a, 0.0);
 			}
-			prevCDF = curCDF;
+			distrib.put(a, distrib.get(a) + 1.0);
+			}
 		}
+		
+		distrib = InferenceUtils.normalise(distrib);
+		SimpleTable discreteVersion = new SimpleTable();
+		discreteVersion.addRows(distrib);
 		return discreteVersion;
+	}
+	
+	
+	private static double[] findClosest (List<double[]> values, double[] value, double minDistance) {
+		
+		double closestDist = Double.MAX_VALUE;
+		double[] closestValue = null;
+		
+		for (double[] possibleVal : values) {
+			double distance = 0;
+			for (int i = 0 ; i < value.length ; i++) {
+				distance += Math.abs(possibleVal[i] - value[i]);
+			}
+			
+			if (distance < closestDist && distance < minDistance) {
+				closestDist = distance;
+				closestValue = possibleVal;
+			}
+		}
+		return closestValue;
 	}
 
 
@@ -169,8 +197,8 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	 */
 	public double getProbDensity(Assignment head) {
 		if (head.containsVar(variable)) {
-			if (head.getValue(variable) instanceof DoubleVal) {
-			return getProbDensity((DoubleVal)head.getValue(variable));
+			if (head.getValue(variable) instanceof VectorVal) {
+			return getProbDensity((VectorVal)head.getValue(variable));
 			}
 		}
 		else {
@@ -185,65 +213,19 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	 * @param value the double value
 	 * @return the resulting density
 	 */
-	public double getProbDensity(DoubleVal value) {
-		return function.getDensity(value.getDouble());
+	public double getProbDensity(VectorVal value) {
+		return function.getDensity(value.getArray());
 	}
 	
 	
-	/**
-	 * Returns the cumulative probability for the given conditional and head 
-	 * assignments
-	 * 
-	 * @param condition the conditional assignment (ignored in this case)
-	 * @param head the head assignment (must contain the distribution variable and 
-	 *        be associated with a double value)
-	 * @return the resulting cumulative probability
-	 */
-	@Override
-	public double getCumulativeProb(Assignment condition, Assignment head) {
-		return getCumulativeProb(head);
-	}
 	
-	
-
-	/**
-	 * Returns the cumulative probability for the given conditional and head 
-	 * assignments
-	 * 
-	 * @param head the head assignment (must contain the distribution variable and 
-	 *        be associated with a double value)
-	 * @return the resulting cumulative probability
-	 */
-	public double getCumulativeProb(Assignment head) {
-		if (head.containsVar(variable)) {
-			if (head.getValue(variable) instanceof DoubleVal) {
-			return function.getCDF(((DoubleVal)head.getValue(variable)).getDouble());
-			}
-		}
-		else {
-			log.warning("head does not contain variable " + variable + ", or has a wrong-typed value: " + head);
-		}
-		return 0.0;
-	}
-	
-	
-	/**
-	 * Returns the cumulative probability for the given double value
-	 * 
-	 * @param value the double value
-	 * @return the resulting cumulative probability
-	 */
-	public double getCumulativeProb(DoubleVal value) {
-		return function.getCDF(value.getDouble());
-	}
-
 	
 	/**
 	 * Returns the density function
 	 * 
 	 * @return the density function
 	 */
-	public DensityFunction getFunction() {
+	public MultivariateDensityFunction getFunction() {
 		return function;
 	}
 	
@@ -269,6 +251,10 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 		return headVars;
 	}
 	
+	public int getDimensionality() {
+		return function.getDimensionality();
+	}
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -281,10 +267,7 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	 */
 	@Override
 	public boolean isWellFormed() {
-		return function.getCDF(-Double.MAX_VALUE) >= 0.0
-		&& function.getCDF(-Double.MAX_VALUE) < 0.01 
-		&& function.getCDF(Double.MAX_VALUE) > 0.99 
-		&& function.getCDF(Double.MAX_VALUE) < 1.01;
+		return true;
 	}
 
 	
@@ -295,7 +278,7 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	 */
 	@Override
 	public ProbDistribution copy() {
-		return new FunctionBasedDistribution(variable, function.copy());
+		return new MultivariateDistribution(variable, function.copy());
 	}
 
 	
@@ -334,6 +317,24 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 		}
 	}
 
+
+
+	@Override
+	public double getCumulativeProb(Assignment condition, Assignment head) {
+		log.debug("CDF not implemented!");
+		return 0;
+	}
+
+
+
+	public double[] getMean() {
+		return function.getMean();
+	}
+	
+	
+	public double[] getVariance() {
+		return function.getVariance();
+	}
 
 
 }

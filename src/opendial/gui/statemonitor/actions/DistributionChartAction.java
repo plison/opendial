@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 
 import org.jfree.util.Log;
 
+import opendial.arch.DialException;
 import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ProbDistribution;
@@ -40,12 +41,11 @@ public final class DistributionChartAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
-			InferenceAlgorithm algorithm = Settings.inferenceAlgorithm.newInstance();
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
-			ProbDistribution distrib = algorithm.queryProb(new ProbQuery(state, queryVariable)); 
+			ProbDistribution distrib = state.getContent(queryVariable, true);
 			DistributionViewer.showDistributionViewer(distrib);
 			this.graphViewerPopupMenu.getViewer().getPickedVertexState().pick(queryVariable, false);
-		} catch (Exception e) {
+		} catch (DialException e) {
 			DialogueStatePopup.log.debug("problem performing the inference for P(" + queryVariable +") " +
 					"aborting action: " + e.toString());
 		}

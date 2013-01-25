@@ -140,9 +140,8 @@ public class StateMonitorTab extends JComponent {
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public synchronized void update() {
-		DialogueState state = mainFrame.getConnectedState();
-		recordState(state,"current");
+	public synchronized void update(DialogueState state) {
+		recordState(state, state.getName());
 		visualisation.showBayesianNetwork(state);
 	}
 	

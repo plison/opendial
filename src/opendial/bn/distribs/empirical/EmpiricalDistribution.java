@@ -20,6 +20,8 @@
 package opendial.bn.distribs.empirical;
 
 
+import java.util.Collection;
+
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 
@@ -27,6 +29,8 @@ public interface EmpiricalDistribution extends ProbDistribution {
 
 
 	public void addSample(Assignment sample);
+
+	public Collection<Assignment> getSamples();
 
 }
 

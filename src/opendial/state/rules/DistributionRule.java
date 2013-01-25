@@ -29,8 +29,10 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.quantification.UnboundPredicate;
@@ -41,47 +43,51 @@ public class DistributionRule implements Rule {
 	public static Logger log = new Logger("DistributionRule", Logger.Level.DEBUG);
 
 	ProbDistribution distrib;
-	
+
 	String ruleId;
-	
-	public DistributionRule(ProbDistribution distrib, String ruleId) {
+
+	boolean clearPrevious = true;
+
+	public DistributionRule(ProbDistribution distrib, String ruleId, boolean clearPrevious) {
 		this.distrib = distrib;
 		this.ruleId = ruleId;
+		this.clearPrevious = clearPrevious;
 	}
-	
+
 	@Override
-	public Set<TemplateString> getInputVariables() {
-		return new HashSet<TemplateString>();
+	public Set<Template> getInputVariables() {
+		return new HashSet<Template>();
 	}
-	
-	
+
+
 	public Set<UnboundPredicate> getUnboundPredicates() {
 		return new HashSet<UnboundPredicate>();
 	}
 
-	
+
 	@Override
-	public Map<Output, Parameter> getEffectOutputs(Assignment input) {
-		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
+	public OutputTable getEffectOutputs(Assignment input) {
+		OutputTable outputs = new OutputTable();
 		try {
 			SimpleTable tableOutput = distrib.toDiscrete().getProbTable(input);
-			double total = 0;
 			for (Assignment a : tableOutput.getRows()) {
 				Output o = new Output();
-				o.setValuesForVariables(a);
+				for (String var : a.getVariables()) {
+					if (!a.getValue(var).equals(ValueFactory.none())) {
+						o.setValueForVariable(var, a.getValue(var));
+					}
+					else if (clearPrevious) {
+						o.clearVariable(var);
+					}
+				}
 				double param = tableOutput.getProb(a);
-				outputs.put(o, new FixedParameter(param));
-				total += param;
+				outputs.addOutput(o, new FixedParameter(param));
 			}
-			if (total < 0.98) {
-				outputs.put(new Output(), new FixedParameter(1-total));
-			}
-			
 		}
 		catch (DialException e) {
 			log.warning("cannot construct outputs for distribution rule: " + e);
 		}
-		
+
 		return outputs;
 	}
 
@@ -94,7 +100,7 @@ public class DistributionRule implements Rule {
 	public RuleType getRuleType() {
 		return RuleType.PROB;
 	}
-	
+
 	public String toString() {
 		return ruleId + ": " + distrib.toString();
 	}

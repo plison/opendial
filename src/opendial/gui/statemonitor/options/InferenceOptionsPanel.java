@@ -100,13 +100,13 @@ public class InferenceOptionsPanel extends JDialog {
 		importanceSampling.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
 				samplingOptionBox.setVisible(true); repaint(); }});
-		if (Settings.inferenceAlgorithm.equals(NaiveInference.class)) {
+		if (Settings.getInstance().inferenceAlgorithm.equals(NaiveInference.class)) {
 			naiveInference.setSelected(true);
 		}
-		else if (Settings.inferenceAlgorithm.equals(VariableElimination.class)) {
+		else if (Settings.getInstance().inferenceAlgorithm.equals(VariableElimination.class)) {
 			variableElimination.setSelected(true);
 		}
-		else if (Settings.inferenceAlgorithm.equals(ImportanceSampling.class)) {
+		else if (Settings.getInstance().inferenceAlgorithm.equals(ImportanceSampling.class)) {
 			importanceSampling.setSelected(true);
 		}
 		ButtonGroup group = new ButtonGroup();
@@ -136,7 +136,7 @@ public class InferenceOptionsPanel extends JDialog {
 		
 	//	NumberFormat format = NumberFormat.getNumberInstance();
 		final JFormattedTextField sampleNumber = new JFormattedTextField();
-		sampleNumber.setText(""+Settings.nbSamples);
+		sampleNumber.setText(""+Settings.getInstance().nbSamples);
 		samplingOptionBox.add(sampleNumber, BorderLayout.CENTER);
 		samplingOptionBox.add(new JLabel("                          "),BorderLayout.EAST);
 		samplingOptionBox.add(new JLabel(" "),BorderLayout.SOUTH);
@@ -160,16 +160,16 @@ public class InferenceOptionsPanel extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				if (naiveInference.isSelected()) {
-					Settings.inferenceAlgorithm = NaiveInference.class;
+					Settings.getInstance().inferenceAlgorithm = NaiveInference.class;
 				}
 				else if (variableElimination.isSelected()) {
-					Settings.inferenceAlgorithm = VariableElimination.class;
+					Settings.getInstance().inferenceAlgorithm = VariableElimination.class;
 				}
 				else if (importanceSampling.isSelected()) {
-					Settings.inferenceAlgorithm = ImportanceSampling.class;
+					Settings.getInstance().inferenceAlgorithm = ImportanceSampling.class;
 					try {
 						int number = Integer.parseInt(sampleNumber.getText());
-						Settings.nbSamples = number;
+						Settings.getInstance().nbSamples = number;
 					}
 					catch (NumberFormatException e2) {
 						log.warning("number of samples has an invalid format: " + sampleNumber.getText());
