@@ -41,7 +41,7 @@
 	</initialstate>
 
 
-	<model type="update" trigger="u_u">
+	<model type="update" trigger="u_u" id="firstmodel">
 
 		<rule>
 			<case>

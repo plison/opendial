@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,10 +54,10 @@ public class Assignment {
 	public static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
 	
 	// the hashmap encoding the assignment
-	HashMap<String,Value> map;
+	Map<String,Value> map;
 	
 	// the initial size of the hash
-	public static final int MAP_SIZE = 2;
+	public static final int MAP_SIZE = 3;
 	
 	int hashCodeCache = Integer.MAX_VALUE;
 		
@@ -288,6 +289,22 @@ public class Assignment {
 		addPair(var1, val1);
 		addPair(var2, val2);
 	}
+	
+	
+	/**
+	 * Creates an assignment with only none values for the variable labels
+	 * given as argument.
+	 * 
+	 * @param variables the collection of variable labels
+	 * @return the resulting default assignment
+	 */
+	public static Assignment createDefault (Collection<String> variables) {
+		Assignment a = new Assignment();
+		for (String var : variables) {
+			a.addPair(var, ValueFactory.none());
+		}
+		return a;
+	}
 
 	
 	// ===================================
@@ -414,11 +431,20 @@ public class Assignment {
 	public Assignment removeSpecifiers() {
 		Assignment a = new Assignment();
 		for (String var : map.keySet()) {
-			String s = StringUtils.removeSpecifiers(var);
-			a.addPair(s, map.get(var).copy());
+			String newVar = StringUtils.removePrimes(var);
+			if (a.containsVar(newVar)) {
+				log.debug("duplicate in assignment: " + toString());
+				if (var.contains("''")) {
+					a.addPair(newVar, map.get(var).copy());
+				}
+			}
+			else {
+				a.addPair(newVar, map.get(var).copy());
+			}
 		}
 		return a;
 	}
+	
 	
 
 	// ===================================
@@ -489,7 +515,7 @@ public class Assignment {
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
 		Assignment a = new Assignment();
-		for (String var : variables) {
+		for (String var : new LinkedList<String>(variables)) {
 			if (map.containsKey(var)) {
 				a.addPair(var, map.get(var));
 			}
@@ -688,6 +714,20 @@ public class Assignment {
 	}
 
 	
+	/**
+	 * Returns true if the assignment only contains none values for all variables,
+	 * and false if at least one has a different value.
+	 * 
+	 * @return true if all variables have none values, false otherwise
+	 */
+	public boolean isDefault() {
+		for (String var : map.keySet()) {
+			if (!map.get(var).equals(ValueFactory.none())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// ===================================
 	//  UTILITY FUNCTIONS

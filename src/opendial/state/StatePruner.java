@@ -17,15 +17,14 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
+package opendial.state;
 
 
 import java.util.HashSet;
 import java.util.Set;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
@@ -39,8 +38,9 @@ import opendial.bn.values.ValueFactory;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ReductionQuery;
+import opendial.utils.StringUtils;
 
-public class StatePruner extends Thread {
+public class StatePruner implements Runnable {
 
 	// logger
 	public static Logger log = new Logger("StatePruner", Logger.Level.DEBUG);
@@ -54,13 +54,12 @@ public class StatePruner extends Thread {
 	@Override
 	public void run() {
 
-	//	log.debug("start pruning");
+	//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
 		Set<String> nodesToKeep = getNodesToKeep();
-
 		try {
 			BNetwork reduced = reduceNetwork(nodesToKeep);
-			reinsertActionAndUtilityNodes(reduced);
 			removePrimes(reduced);
+			reinsertActionAndUtilityNodes(reduced);
 			removeEmptyNodes(reduced);
 			state.reset(reduced, new Assignment());
 		}
@@ -69,9 +68,19 @@ public class StatePruner extends Thread {
 		}
 
 	//	log.debug("finished pruning");
-		state.getController().setAsCompleted(this);
+	//	state.getController().setAsCompleted(this);
 	}
 
+	
+	public boolean isPruningNeeded() {
+		boolean pruningNeeded = false;
+		for (String nodeId: state.getNetwork().getNodeIds()) {
+			if (nodeId.contains("'") && !state.getNetwork().hasActionNode(nodeId)) {
+				pruningNeeded = true;
+			}
+		}
+		return (Settings.activatePruning && pruningNeeded);
+	}
 
 	private Set<String> getNodesToKeep() {
 
@@ -88,7 +97,10 @@ public class StatePruner extends Thread {
 					!(state.getEvidence().containsVar(node.getId()))) {
 
 				// here, still have to check whether to keep parameter nodes or not
-				if (!state.getNetwork().hasChanceNode(node.getId()+"'")){
+				if (!state.getNetwork().hasNode(node.getId()+"'")){
+					nodesToKeep.add(node.getId());
+				}
+				else if (state.getNetwork().hasActionNode(node.getId() + "'")) {
 					nodesToKeep.add(node.getId());
 				}
 				else {
@@ -111,8 +123,12 @@ public class StatePruner extends Thread {
 			throws DialException, InstantiationException, IllegalAccessException {
 		
 		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
-		InferenceAlgorithm inference = ConfigurationSettings.getInstance().
-				getInferenceAlgorithm().newInstance();
+		InferenceAlgorithm inference = Settings.inferenceAlgorithm.newInstance();
+		
+		if (state.isFictive()) {
+			reductionQuery.setAsLightweight(true);
+		}
+
 		BNetwork reduced = inference.reduceNetwork(reductionQuery);
 		return reduced;
 		
@@ -121,31 +137,40 @@ public class StatePruner extends Thread {
 
 	private void reinsertActionAndUtilityNodes(BNetwork reduced) throws DialException {
 		for (ActionNode an : state.getNetwork().getActionNodes()) {
+			an.removeAllRelations();
+			an.clearListeners();
 			reduced.addNode(an.copy());
 		}
 		for (UtilityNode un : state.getNetwork().getUtilityNodes()) {
-			UtilityNode copy = un.copy();
-			for (String inputNodeId: un.getInputNodeIds()) {
-				if (reduced.hasNode(inputNodeId)) {
-					copy.addInputNode(reduced.getNode(inputNodeId));
+			Set<String> inputNodeIds = new HashSet<String>(un.getInputNodeIds());
+			un.removeAllRelations();
+			un.clearListeners();
+			for (String inputNodeId: inputNodeIds) {
+				String formattedId = StringUtils.removePrimes(inputNodeId);	
+				if (reduced.hasActionNode(inputNodeId)) {
+					un.addInputNode(reduced.getNode(inputNodeId));
 				}
+				else if (reduced.hasChanceNode(formattedId)) {
+					un.addInputNode(reduced.getNode(formattedId));
+				}
+
 				else {
-					log.warning("node " + inputNodeId + " is not in the reduced network");
+					log.warning("node " + inputNodeId + " is not in the reduced network: " + reduced.getNodeIds());
 				}
 			}
-			reduced.addNode(copy);
+			reduced.addNode(un);
 		}
 	}
 
 
 	private void removePrimes(BNetwork reduced) {
-		for (String nodeId: new HashSet<String>(reduced.getNodeIds())) {
+		for (String nodeId: new HashSet<String>(reduced.getChanceNodeIds())) {
 			if (nodeId.contains("'")) {
 				if (!reduced.hasChanceNode(nodeId.replace("'", ""))) {
 					reduced.getNode(nodeId).setId(nodeId.replace("'", ""));
 				}
 				else {
-					log.warning("reduced network still contain duplicates");
+					log.warning("reduced network still contains duplicates: " + reduced.getNodeIds());
 				}
 			}
 		}
@@ -156,8 +181,7 @@ public class StatePruner extends Thread {
 	private void removeEmptyNodes(BNetwork reduced) {
 		for (ChanceNode node: new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 			if (node.getInputNodes().isEmpty()) {
-				if (node.getDistrib() instanceof DiscreteProbDistribution && 
-						node.getProb(ValueFactory.none())> 0.99) {
+				if (node.getProb(ValueFactory.none())> 0.99) {
 					reduced.removeNode(node.getId());
 				}
 			}

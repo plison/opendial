@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.junit.Test;
@@ -39,7 +40,9 @@ import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
+import opendial.common.InferenceChecks;
 import opendial.common.NetworkExamples;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
@@ -238,17 +241,17 @@ public class InferenceTest {
 		assertEquals(-0.680, is.queryUtility(query1).getUtility(new Assignment("Action", "CallPolice")), 0.5);
 		assertEquals(-6.213, ve.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 0.001);
 		assertEquals(-6.213, naive.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 0.001);
-		assertEquals(-6.213, is.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 0.8);
+		assertEquals(-6.213, is.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 1.0);
 		
 		UtilQuery query2 = new UtilQuery(network, Arrays.asList("Burglary"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls")));
 		
-		assertEquals(-0.25, ve.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
-		assertEquals(-0.25, naive.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.1667, ve.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.1667, naive.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
 		assertEquals(-0.25, is.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.5);
-		assertEquals(-5.25, ve.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
-		assertEquals(-5.25, naive.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
-		assertEquals(-5.25, is.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.8);
+		assertEquals(-3.5, ve.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, naive.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, is.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.8);
 	
 	}
 	
@@ -285,13 +288,36 @@ public class InferenceTest {
 		n1 = new ChanceNode("n1");
 		n1.setDistrib(new FunctionBasedDistribution("n1", new UniformDensityFunction(-2, 2)));
 		n2 = new ChanceNode("n2");
-		n1.setDistrib(new FunctionBasedDistribution("n2", new GaussianDensityFunction(-1, 3)));
+		n2.setDistrib(new FunctionBasedDistribution("n2", new GaussianDensityFunction(-1, 3)));
 		network.addNode(n1);
 		network.addNode(n2);
+		network.getNode("Earthquake").addInputNode(n1);
+		network.getNode("Earthquake").addInputNode(n2);
 		
 		distrib = (new SwitchingAlgorithm()).queryProb(query);
 		assertTrue(distrib instanceof SimpleEmpiricalDistribution); 
 
+	}
+	
+	@Test
+	public void specialUtilQueryTest() throws DialException {
+		
+		BNetwork network = new BNetwork();
+		ChanceNode n = new ChanceNode("s");
+		n.addProb(ValueFactory.create("val1"), 0.3);
+		n.addProb(ValueFactory.create("val2"), 0.7);
+		network.addNode(n);
+		
+		UtilityNode u = new UtilityNode("u");
+		u.addUtility(new Assignment("s", "val1"), +2);
+		u.addUtility(new Assignment("s", "val2"), -1);
+		u.addInputNode(n);
+		network.addNode(u);
+		
+		UtilQuery query = new UtilQuery(network, new LinkedList<String>());
+		InferenceChecks inference = new InferenceChecks();
+		inference.checkUtil(query, new Assignment(), -0.1);
+		
 	}
 	
 }

@@ -22,11 +22,11 @@ package opendial.domains.rules;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.arch.statechange.Rule;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.state.rules.Rule;
 
 /**
  * Class representing a decision rule, mapping conditions to assignment

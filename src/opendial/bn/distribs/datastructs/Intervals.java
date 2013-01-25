@@ -39,16 +39,19 @@ import opendial.arch.Logger;
  *
  */
 public class Intervals<T> {
-	
+
 	// logger
-	public static Logger log = new Logger("Intervals", Logger.Level.NORMAL);
+	public static Logger log = new Logger("Intervals", Logger.Level.DEBUG);
 
 	// the intervals
 	Interval<T>[] intervals;
-	
+
 	// sampler for the interval collection
 	Random sampler ;
-	
+
+	double totalProb;
+
+
 	/**
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
@@ -56,17 +59,18 @@ public class Intervals<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Map<T,Double> table) {
-			 
-			intervals = new Interval[table.size()];
-			int i = 0;
-			double total = 0.0f;
-			for (T a : table.keySet()) {
-				double prob = table.get(a);
-				intervals[i++] = new Interval<T>(a,total, total+prob);
-				total += prob;
-			}
-			
-			sampler = new Random();
+
+		intervals = new Interval[table.size()];
+		int i = 0;
+		totalProb = 0.0f;
+
+		for (T a : table.keySet()) {
+			double prob = table.get(a);
+			intervals[i++] = new Interval<T>(a,totalProb, totalProb+prob);
+			totalProb += prob;
+		}
+
+		sampler = new Random();
 	}
 
 	/**
@@ -77,14 +81,23 @@ public class Intervals<T> {
 	 * @throws DialException if the sampling could not be performed
 	 */
 	public T sample() throws DialException {
+
+		if (intervals.length == 0) {
+			throw new DialException("could not sample: empty interval");	
+		}
+
+		if (sampler == null) {
+			log.debug("sampler is null");
+			sampler = new Random();
+		}
 		
-		double rand = sampler.nextDouble();
-		
+		double rand = sampler.nextDouble()*totalProb;
+
 		int min = 0;
-		int max = intervals.length;
+		int max = intervals.length ;
 		while (min <= max) {
 			int mid = min + (max - min) / 2;
-			if (mid < 0 || mid > intervals.length) {
+			if (mid < 0 || mid > intervals.length -1) {
 				throw new DialException("could not sample: (min=" + min + ", max=" + max + ", length=" + intervals.length+")");
 			}
 			switch (intervals[mid].compareTo(rand)) {
@@ -99,12 +112,12 @@ public class Intervals<T> {
 			case -1 : min = mid + 1; break;
 			}
 		}
-		
+
 		throw new DialException("could not sample given the intervals");
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Returns a string representation of the intervals
 	 * 
@@ -127,6 +140,7 @@ public class Intervals<T> {
 	public boolean isEmpty() {
 		return (intervals.length == 0);
 	}
+
 }
 
 
@@ -141,16 +155,16 @@ public class Intervals<T> {
  * @param <T>
  */
 final class Interval<T> {
-	
+
 	// the interval content
 	T a ;
-	
+
 	// the start value
 	double start;
-	
+
 	// the end value
 	double end;
-	
+
 	/**
 	 * Creates a new interval
 	 * 
@@ -163,7 +177,7 @@ final class Interval<T> {
 		this.start = start;
 		this.end = end;
 	}
-	
+
 	/**
 	 * Returns the object associated with the interval
 	 * 
@@ -192,9 +206,9 @@ final class Interval<T> {
 		else {
 			return +1;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns a string representation for the interval
 	 *

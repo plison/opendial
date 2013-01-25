@@ -26,21 +26,21 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import opendial.arch.Settings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
-import opendial.arch.statechange.AnchoredRule;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.nodes.ChanceNode;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.common.NetworkExamples;
 import opendial.domains.Domain;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.UpdateRule;
 import opendial.gui.GUIFrame;
-import opendial.gui.statemonitor.StateMonitorTab;
+import opendial.gui.StateMonitorTab;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.NaiveInference;
 import opendial.inference.VariableElimination;
@@ -48,6 +48,8 @@ import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.sampling.SampleCollector;
 import opendial.readers.XMLDomainReader;
+import opendial.state.DialogueState;
+import opendial.state.rules.AnchoredRule;
 
 /**
  * 
@@ -64,7 +66,29 @@ public class SandBox {
 	public static final String domainFile = "domains//testing//domain1.xml";
 
 
+
 	public static void main(String[] args) throws DialException, InterruptedException {
+		Domain domain = XMLDomainReader.extractDomain("domains//testing//basicPlanning.xml");
+		DialogueSystem system = new DialogueSystem(domain);
+		system.startSystem();
+		Thread.sleep(300000000);
+	}
+	
+
+	public static void main11(String[] args) throws DialException, InterruptedException {
+		Domain domain = XMLDomainReader.extractDomain("domains//testing//basicPlanning.xml");
+		Settings.activatePruning=false;
+		DialogueSystem system = new DialogueSystem(domain);
+		system.startSystem();
+		SimpleTable table = new SimpleTable();
+		table.addRow(new Assignment("a_m", "AskRepeat"), 1.0);
+		system.getState().addContent(table, "blabla");
+//		Settings.activatePlanner(true);
+		Thread.sleep(300000000);
+	}
+
+	
+	public static void main10(String[] args) throws DialException, InterruptedException {
 		SampleCollector.log.setLevel(Level.NORMAL);
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 		ReductionQuery redQuery = new ReductionQuery(network, "Burglary", "Earthquake", "MaryCalls");
@@ -84,40 +108,7 @@ public class SandBox {
 		log.info("");
 	}
 
-	
-	public static void main6(String[] args) throws DialException {
-		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		DialogueState state = domain.getInitialState();
-		
-		GUIFrame tmf = GUIFrame.getSingletonInstance();
-		try {
-		tmf.updateCurrentState(state);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-		state.applyRule(domain.getModels().get(0).getRules().iterator().next());
-		
-		try {
-			tmf.updateCurrentState(state);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-	}
 
-	
-	public static void main3(String[] args) {
-		GUIFrame tmf = GUIFrame.getSingletonInstance();
-		try {
-		tmf.updateCurrentState(new DialogueState(NetworkExamples.constructBasicNetwork4()));
-		}
-		catch (DialException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public static void main2(String[] args) {
 		String distribString = "PDF(blabla=(dd))=";

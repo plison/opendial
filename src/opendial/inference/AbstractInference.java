@@ -20,6 +20,7 @@
 package opendial.inference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,13 +64,13 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 
 	// logger
 	public static Logger log = new Logger("AbstractInference", Logger.Level.DEBUG);
-	
+
 
 	// ===================================
 	//  GENERIC METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Queries for the probability distribution of the set of random variables in 
 	 * the Bayesian network, given the provided evidence
@@ -79,19 +80,19 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 	 */
 	@Override
 	public ProbDistribution queryProb(ProbQuery query) throws DialException {
-		
+
 		if (!query.getConditionalVars().isEmpty()) {
 			return queryConditionalProb(query);
 		}
-		
+
 		// do a hybrid probability/utility query
 		DistributionCouple couple = queryJoint(query);
-		
+
 		// only returns the probability distribution
 		return couple.getProbDistrib();
 
 	}
- 
+
 
 	/**
 	 * Queries for the utility of a particular set of (action) variables, given the
@@ -103,10 +104,10 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 	 */
 	@Override
 	public UtilityTable queryUtility(UtilQuery query) throws DialException {
-		
+
 		// do a hybrid probability/utility query
 		DistributionCouple couple = queryJoint(query);
-		
+
 		// only returns the utility distributon
 		return couple.getUtilityDistrib();
 	}
@@ -135,13 +136,13 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 		List<String> queryAndCondVars = new ArrayList<String>(queryVars.size()+condVars.size());
 		queryAndCondVars.addAll(queryVars);
 		queryAndCondVars.addAll(condVars);
-		
+
 		// 1) compute P(X_1,...X_n, Y_1, .... Y_n | evidence)
 		ProbDistribution joint = queryProb(new ProbQuery(network, queryAndCondVars, evidence));
-		
+
 		// 2) compute P(Y_1,...Y_n | evidence) by marginalisation
 		Map<Assignment,Double> marginalConds = new HashMap<Assignment,Double>();
-		
+
 		for (Assignment jointVal : joint.toDiscrete().getProbTable(new Assignment()).getRows()) {
 			Assignment depVal = jointVal.getTrimmed(condVars);
 			if (!marginalConds.containsKey(depVal)) {
@@ -149,27 +150,27 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 			}
 			marginalConds.put(depVal, marginalConds.get(depVal) + joint.toDiscrete().getProb(new Assignment(), jointVal));
 		}
-		
+
 		// 3) calculate P(X_1,...X_n | Y_1,...Y_n, evidence) with the chain rule
 		DiscreteProbabilityTable table = new DiscreteProbabilityTable();
 		for (Assignment jointVal : joint.toDiscrete().getProbTable(new Assignment()).getRows()) {
 			Assignment depVal = jointVal.getTrimmed(condVars);
 			Assignment headVal = jointVal.getTrimmed(queryVars);
 			double prob = joint.toDiscrete().getProb(new Assignment(), jointVal) / marginalConds.get(depVal);
-			
+
 			table.addRow(depVal, headVal, prob);
 		}
-		
+
 		return table;
 	}
 
-	
+
 	// ===================================
 	//  PROTECTED METHODS
 	// ===================================
 
-	
-	
+
+
 	/**
 	 * Returns the probability and utility distributions associated with the set of query
 	 * variables, given the evidence.  

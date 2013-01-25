@@ -17,69 +17,54 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
+package opendial.planning;
 
-import java.util.HashMap;
+
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
-import opendial.domains.rules.parameters.FixedParameter;
-import opendial.domains.rules.parameters.Parameter;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.inference.ImportanceSampling;
+import opendial.inference.queries.ProbQuery;
+import opendial.state.DialogueState;
 
-public class DistributionRule implements Rule {
+public class InteractionModel {
 
 	// logger
-	public static Logger log = new Logger("DistributionRule", Logger.Level.DEBUG);
-
-	ProbDistribution distrib;
+	public static Logger log = new Logger("InteractionModel", Logger.Level.DEBUG);
 	
-	String ruleId;
-	
-	public DistributionRule(ProbDistribution distrib, String ruleId) {
-		this.distrib = distrib;
-		this.ruleId = ruleId;
-	}
-	
-	@Override
-	public Set<TemplateString> getInputVariables() {
-		return new HashSet<TemplateString>();
-	}
-
-	@Override
-	public Map<Output, Parameter> getEffectOutputs(Assignment input) {
-		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
-		try {
-			SimpleTable tableOutput = distrib.toDiscrete().getProbTable(input);
-			for (Assignment a : tableOutput.getRows()) {
-				Output o = new Output();
-				o.setValuesForVariables(a);
-				outputs.put(o, new FixedParameter(tableOutput.getProb(a)));
+		
+	public SampledObservation sampleObservation(DialogueState state) throws DialException {
+		
+		Set<String> predictionNodes = new HashSet<String>();
+		for (String nodeId: state.getNetwork().getChanceNodeIds()) {
+			if (nodeId.contains("^p")) {
+				predictionNodes.add(nodeId);
 			}
-			
-		}
-		catch (DialException e) {
-			log.warning("cannot construct outputs for distribution rule: " + e);
 		}
 		
-		return outputs;
+		ProbQuery query = new ProbQuery(state, predictionNodes);
+		ImportanceSampling sampling = new ImportanceSampling(1, 200);
+		
+		ProbDistribution distrib = sampling.queryProb(query);
+		Assignment samplePrediction = distrib.sample(new Assignment());
+		Assignment sampleObservation = new Assignment();
+		for (String var : samplePrediction.getVariables()) {
+			sampleObservation.addPair(var.replace("^p", ""), samplePrediction.getValue(var));
+		}
+		return new SampledObservation(sampleObservation);
+
 	}
 
-	@Override
-	public String getRuleId() {
-		return ruleId;
-	}
 
-	@Override
-	public RuleType getRuleType() {
-		return RuleType.PROB;
-	}
+
 
 }
+

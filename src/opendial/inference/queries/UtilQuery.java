@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import opendial.arch.DialogueState;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.state.DialogueState;
 
 public class UtilQuery extends Query {
 

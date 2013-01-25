@@ -27,14 +27,14 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.statechange.AnchoredRule;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
-import opendial.bn.distribs.discrete.RuleBasedDistribution;
-import opendial.bn.distribs.utility.RuleBasedUtilDistribution;
+import opendial.bn.distribs.discrete.RuleDistribution;
+import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.state.rules.AnchoredRule;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -47,20 +47,25 @@ import opendial.utils.CombinatoricsUtils;
 public class UtilityRuleNode extends UtilityNode {
 
 	// logger
-	public static Logger log = new Logger("RuleNode", Logger.Level.DEBUG);
+	public static Logger log = new Logger("UtilityRuleNode", Logger.Level.DEBUG);
 
 	AnchoredRule rule;
 
 	public UtilityRuleNode(AnchoredRule rule) throws DialException {
 		super(rule.getId());
 		this.rule = rule;
-		distrib = new RuleBasedUtilDistribution(rule);
-		for (ChanceNode inputNode : rule.getInputNodes()) {
-			addInputNode(inputNode);
-		}
+		distrib = new RuleUtilDistribution(rule);
 	}
 
 
+	@Override
+	public void addInputNode(BNode node) throws DialException {
+		super.addInputNode(node);
+		if (node instanceof DerivedActionNode) {
+			((RuleUtilDistribution)distrib).addActionVariable(node.getId());
+		}
+	}
+	
 	/**
 	 * Returns the set of all possible actions that are allowed by the node
 	 * 
@@ -68,7 +73,6 @@ public class UtilityRuleNode extends UtilityNode {
 	 */
 	@Override
 	public void buildRelevantActionsCache() {
-	
 		relevantActionsCache = new HashSet<Assignment>();
 
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
@@ -77,12 +81,16 @@ public class UtilityRuleNode extends UtilityNode {
 		}
 		Set<Assignment> possibleConditions = 
 			CombinatoricsUtils.getAllCombinations(possibleInputValues);
-		
 		for (Assignment input : possibleConditions) {
 			relevantActionsCache.addAll(distrib.getRelevantActions(input));
 		}
 	}
 	
+	
+	@Override
+	public UtilityRuleNode copy() throws DialException {
+		return new UtilityRuleNode(rule);
+	}
 	
 	
 }

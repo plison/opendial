@@ -21,13 +21,14 @@ package opendial.domains.rules.parameters;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 
@@ -44,15 +45,16 @@ public class CompositeParameter implements Parameter {
 	// logger
 	public static Logger log = new Logger("CompositionParameter", Logger.Level.NORMAL);
 	
+	
 	// distributions for the composite parameter, indexed by their variable name
-	Map<String, ChanceNode> distribs;
+	Set<String> distribs;
 	
 
 	/**
 	 * Creates a new composite parameter 
 	 */
 	public CompositeParameter() {
-		this.distribs = new HashMap<String,ChanceNode>();
+		this.distribs = new HashSet<String>();
 	}
 
 	
@@ -61,12 +63,9 @@ public class CompositeParameter implements Parameter {
 	 * 
 	 * @param distribs the collection of distributions
 	 */
-	public CompositeParameter(Collection<ChanceNode> distribs) {
+	public CompositeParameter(Collection<String> distribs) {
 		this();
-		
-		for (ChanceNode distrib : distribs) {
-			this.distribs.put(distrib.getId(), distrib);
-		}
+		this.distribs.addAll(distribs);
 	}
 	
 	
@@ -75,8 +74,8 @@ public class CompositeParameter implements Parameter {
 	 * 
 	 * @param param the parameter to add
 	 */
-	public void addParameter(ChanceNode param) {
-		distribs.put(param.getId(), param);
+	public void addParameter(String param) {
+		distribs.add(param);
 	}
 	
 	/**
@@ -91,8 +90,8 @@ public class CompositeParameter implements Parameter {
 	 */
 	public double getParameterValue(Assignment input) throws DialException {
 		double totalValue = 0.0;
-		if (input.containsVars(distribs.keySet())) {
-			for (String paramVar : distribs.keySet()) {
+		if (input.containsVars(distribs)) {
+			for (String paramVar : distribs) {
 				Value paramVal = input.getValue(paramVar);
 				if (paramVal instanceof DoubleVal) {
 					totalValue += ((DoubleVal)paramVal).getDouble();
@@ -106,7 +105,7 @@ public class CompositeParameter implements Parameter {
 		}
 		else {
 			throw new DialException(" input " + input + " does not contain all " +
-					"parameter variables " + distribs.keySet());
+					"parameter variables " + distribs);
 		}
 	}
 	
@@ -116,8 +115,8 @@ public class CompositeParameter implements Parameter {
 	 *
 	 * @return the collection of distributions
 	 */
-	public Collection<ChanceNode> getDistributions() {
-		return distribs.values();
+	public Collection<String> getParameterIds() {
+		return distribs;
 	}
 	
 	/**
@@ -127,7 +126,7 @@ public class CompositeParameter implements Parameter {
 	 */
 	public String toString() {
 		String str = "";
-		for (String distrib : distribs.keySet()) {
+		for (String distrib : distribs) {
 			str += distrib;
 		}
 		return str.substring(0, str.length()-1);		
@@ -140,7 +139,7 @@ public class CompositeParameter implements Parameter {
 	 * @return the copy
 	 */
 	public CompositeParameter copy() {
-		return new CompositeParameter(distribs.values());
+		return new CompositeParameter(distribs);
 	}
 	
 	/**
@@ -152,7 +151,7 @@ public class CompositeParameter implements Parameter {
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof CompositeParameter) {
-			return distribs.equals(((CompositeParameter)o).getDistributions());
+			return distribs.equals(((CompositeParameter)o).getParameterIds());
 		}
 		return false;
 	}

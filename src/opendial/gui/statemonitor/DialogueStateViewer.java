@@ -63,16 +63,17 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelRenderer;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.NodeIdChangeListener;
+import opendial.bn.nodes.IdChangeListener;
 import opendial.bn.nodes.UtilityNode;
+import opendial.gui.StateMonitorTab;
 import opendial.modules.SynchronousModule;
+import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 
@@ -85,7 +86,7 @@ import opendial.utils.StringUtils;
  *
  */
 @SuppressWarnings("serial")
-public class DialogueStateViewer extends VisualizationViewer<String,Integer> implements NodeIdChangeListener {
+public class DialogueStateViewer extends VisualizationViewer<String,Integer> implements IdChangeListener {
 
 	// logger
 	public static Logger log = new Logger("DialogueStateViewer", Logger.Level.DEBUG);
@@ -229,7 +230,7 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> imp
 	public void showBayesianNetwork(DialogueState state) {
 		currentState = state;	
 		for (BNode n : state.getNetwork().getNodes()) {
-			n.addNodeIdChangeListener(this);
+			n.addIdChangeListener(this);
 		}
 		Layout<String,Integer> layout = getGraphLayout(state);
 		setGraphLayout(layout);

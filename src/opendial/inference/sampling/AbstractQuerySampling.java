@@ -6,17 +6,19 @@ import java.util.Stack;
 import java.util.Timer;
 
 import opendial.arch.Logger;
+import opendial.arch.timing.AnytimeProcess;
+import opendial.arch.timing.StopProcessTask;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.Query;
 
-public abstract class AbstractQuerySampling extends Thread {
+public abstract class AbstractQuerySampling implements AnytimeProcess {
 
 	// logger
 	public static Logger log = new Logger("AbstractQuerySampling", Logger.Level.DEBUG);
 	
 
 	// number of sampling threads to run in parallel
-	public static int NB_THREADS = 2;
+	public static int NB_THREADS = 3;
 
 	// actual number of samples for the algorithm
 	int nbSamples = 300;
@@ -33,8 +35,9 @@ public abstract class AbstractQuerySampling extends Thread {
 	// the query
 	Query query;
 	
-	boolean inCompilation = false;
+	public static enum Status {COLLECTING, COMPILING, DONE}
 	
+	Status status = Status.COLLECTING;	
 	
 
 	/**
@@ -50,7 +53,7 @@ public abstract class AbstractQuerySampling extends Thread {
 		samples = new Stack<WeightedSample>();
 
 		// creates the sampling threads
-		for (int i =0 ; i < NB_THREADS ; i++) {
+		for (int i =0 ; i < NB_THREADS && i < nbSamples ; i++) {
 			SampleCollector newThread = new SampleCollector(this, query);
 			threads.add(newThread);
 		}
@@ -58,7 +61,7 @@ public abstract class AbstractQuerySampling extends Thread {
 		this.nbSamples = nbSamples;
 
 		Timer timer = new Timer();
-		timer.schedule(new StopSamplingTask(this, maxSamplingTime), maxSamplingTime);
+		timer.schedule(new StopProcessTask(this, maxSamplingTime), maxSamplingTime);
 	}
 
 
@@ -82,14 +85,14 @@ public abstract class AbstractQuerySampling extends Thread {
 	 */
 	protected void addSample (WeightedSample sample) {
 		if (samples.size() < nbSamples) {
-			if (!inCompilation) {
+			if (status == Status.COLLECTING) {
 			samples.add(sample);
 			totalWeight += sample.getWeight();
 			//	log.debug("adding sample " + samples.size());
 			}
 		}
 		else {
-			terminateThreads();
+			terminate();
 		}
 	}
 
@@ -99,22 +102,25 @@ public abstract class AbstractQuerySampling extends Thread {
 	 * Terminates all sampling threads, compile their results, and notifies
 	 * the sampling algorithm.
 	 */
-	public synchronized void terminateThreads() {
-		inCompilation = true;
+	@Override
+	public synchronized void terminate() {
 		if (!isTerminated()) {
+			status = Status.COMPILING;
 			for (SampleCollector thread : new ArrayList<SampleCollector>(threads)) {
 				thread.terminate();
 			}
 			compileResults();
+			status = Status.DONE;
 			notifyAll(); 
 		}
-		inCompilation = false;
 	}
 
 	protected abstract void compileResults();
 
 
-	public abstract  boolean isTerminated();
+	public boolean isTerminated() {
+		return (status == Status.DONE);
+	}
 
 
 
@@ -126,5 +132,10 @@ public abstract class AbstractQuerySampling extends Thread {
 
 	public Stack<WeightedSample> getSamples() {
 		return samples;
+	}
+	
+	
+	public String toString() {
+		return query.toString() + " (" + samples.size() + " samples already collected)";
 	}
 }

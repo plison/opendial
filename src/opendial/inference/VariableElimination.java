@@ -33,9 +33,9 @@ import java.util.TreeMap;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
-import opendial.arch.statechange.RuleInstantiator;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
@@ -52,6 +52,8 @@ import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.DoubleFactor;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.ReductionQuery;
+import opendial.inference.queries.UtilQuery;
+import opendial.state.RuleInstantiator;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.InferenceUtils;
 
@@ -86,12 +88,18 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	@Override
 	protected DistributionCouple queryJoint(Query query) throws DialException {
 
+		// special case if the query is a utility query without any query variables
+		if (query instanceof UtilQuery && query.getQueryVars().isEmpty()) {
+			return queryWithoutVars((UtilQuery)query);
+		}
+
+		// normal case
 		DoubleFactor queryFactor = createQueryFactor(query);
 
 		queryFactor.normalise();
 
 		SimpleTable expandedTable = addEvidencePairs (query, queryFactor.getProbMatrix());
-
+	
 		return new DistributionCouple(expandedTable,
 				new UtilityTable(queryFactor.getUtilityMatrix()));
 
@@ -122,22 +130,21 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		for (BNode n: query.getFilteredSortedNodes()) {
 
-				// create the basic factor for every variable
-				DoubleFactor basicFactor = makeFactor(n, evidence);
-				
-				if (!basicFactor.isEmpty()) {
-					factors.add(basicFactor);
+			// create the basic factor for every variable
+			DoubleFactor basicFactor = makeFactor(n, evidence);
+			if (!basicFactor.isEmpty()) {
+				factors.add(basicFactor);
 
-					// if the variable is hidden, we sum it out
-					if (!queryVars.contains(n.getId())) {
-						// && !evidence.containsVar(n.getId() ??
-						factors = sumOut(n.getId(), factors);
-					}
+				// if the variable is hidden, we sum it out
+				if (!queryVars.contains(n.getId())) {
+					// && !evidence.containsVar(n.getId() ??
+					factors = sumOut(n.getId(), factors);
 				}
+			}
 		}
 		// compute the final product, and normalise
 		DoubleFactor finalProduct = pointwiseProduct(factors);
-		
+
 		return finalProduct;
 	}
 
@@ -302,7 +309,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	private SimpleTable addEvidencePairs(Query query, Map<Assignment,Double> probDistrib) {
 
 		SimpleTable table = new SimpleTable();
-	//	table.addRows(probDistrib);
+		//	table.addRows(probDistrib);
 
 		// first, check if there is an overlap between the query variables and
 		// the evidence variables
@@ -333,6 +340,38 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	}
 
 
+	/**
+	 * Special handling for a special case of utility query where there is absolutely
+	 * no query variables (no actions).  In this case, we must pick up a variable in
+	 * the network, perform the inference with it, and then sum it out.
+	 * 
+	 * @param query the utility query without the query variables
+	 * @return the resulting distribution couple
+	 * @throws DialException
+	 */
+	private DistributionCouple queryWithoutVars(UtilQuery query) throws DialException {
+		List<BNode> nodes = query.getFilteredSortedNodes();
+		SimpleTable probDistrib = new SimpleTable();
+		probDistrib.addRow(new Assignment(), 1.0);
+		UtilityTable utilDistrib = new UtilityTable();
+		if (!nodes.isEmpty()) {
+			String rootNode = nodes.get(nodes.size()-1).getId();
+			Query query2 = new UtilQuery(query.getNetwork(), Arrays.asList(rootNode), query.getEvidence());
+			DistributionCouple couple = queryJoint(query2);
+			UtilityTable utable = couple.getUtilityDistrib();
+			ProbDistribution distrib = couple.getProbDistrib();
+			double utilValue = 0;
+			for (Assignment a : utable.getTable().keySet()) {
+				utilValue += utable.getUtility(a) * distrib.toDiscrete().getProb(new Assignment(), a);
+			}
+			utilDistrib.setUtility(new Assignment(), utilValue);
+		}
+		else {
+			utilDistrib.setUtility(new Assignment(), 0.0);
+		}
+		return new DistributionCouple(probDistrib, utilDistrib);
+	}
+
 
 	// ===================================
 	//  NETWORK REDUCTION METHODS
@@ -351,28 +390,33 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	 * @throws DialException if the reduction operation failed
 	 */
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
-
+		
 		// first, create the new network, without any distribution in the node
-		BNetwork network = query.getNetwork().getReducedCopy(query.getQueryVars());
-
+		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars());
+		
+		// we can simplify the query if some nodes remain identical
+		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
+		for (String nodeId : identicalNodes) {
+			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
+			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
+			query.removeQueryVar(nodeId);
+		}
+		
 		// create the factors associated with the query variables
 		DoubleFactor queryFactor = createQueryFactor(query);
-		
+
 		// finally, sets the distribution for the nodes to retain, according
 		// to the factors generated via V.E.
-		for (ChanceNode node: network.getChanceNodes()) {	
+		for (ChanceNode node: reduced.getChanceNodes()) {	
 			DoubleFactor factor = getRelevantFactor(queryFactor, node);
 			DiscreteProbDistribution distrib = createProbDistribution(factor, node.getId());	
 			node.setDistrib(distrib);
 		}
-		for (UtilityNode node: network.getUtilityNodes()) {	
-			DoubleFactor factor = getRelevantFactor(queryFactor, node);
-			UtilityDistribution distrib = createUtilityDistribution(factor, node.getId());	
-			node.setDistrib(distrib);
-		}
 
-		return network;
+		return reduced;
 	}
+	
+	
 
 
 	/**

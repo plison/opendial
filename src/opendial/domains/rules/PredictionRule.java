@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import opendial.arch.Logger;
-import opendial.arch.statechange.Rule;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.state.rules.Rule;
 
 /**
  * Representation of a prediction rule, mapping particular conditions to 
@@ -80,7 +80,6 @@ public class PredictionRule extends CaseBasedRule implements Rule {
 		for (Output o : super.getEffectOutputs(input).keySet()) {
 			Output o2 = o.copy();
 			o2.addEndingToVariables("^p");
-			log.debug("output: " + o2);
 			outputs.put(o2, super.getEffectOutputs(input).get(o));
 		}
 		return outputs;

@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
+package opendial.state.rules;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,9 +50,7 @@ public class AnchoredRuleCache {
 	
 	AnchoredRule rule;
 	
-	Set<Output> cachedValues;
-	Map<String, ChanceNode> cachedParameters;
-
+	Map<Output,Parameter> cachedValues;
 	
 	public AnchoredRuleCache (AnchoredRule rule) {
 		this.rule = rule;
@@ -61,27 +59,18 @@ public class AnchoredRuleCache {
 
 	
 
-	public Set<Output> getOutputs() {
+	public Map<Output,Parameter> getOutputs() {
 		return cachedValues;
 	}
 	
-	public Collection<ChanceNode> getParameters() {
-		return cachedParameters.values();
-	}
 
 	private void fillCache() {
-		cachedValues = new HashSet<Output>();
-		cachedParameters = new HashMap<String,ChanceNode>();
+		cachedValues = new HashMap<Output,Parameter>();
 		
 		Set<Assignment> conditions = getPossibleConditions();
 		for (Assignment condition : conditions) {
 			Map<Output,Parameter> outputs = rule.getEffectOutputs(condition);
-			cachedValues.addAll(outputs.keySet());
-			for (Parameter param : outputs.values()) {
-				for (ChanceNode distrib : param.getDistributions()) {
-					cachedParameters.put(distrib.getId(), distrib);
-				}
-			}
+			cachedValues.putAll(outputs);
 		}
 	}
 	

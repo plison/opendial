@@ -19,9 +19,9 @@
 
 package opendial.modules;
 
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
+import opendial.state.DialogueState;
 
 
 /**

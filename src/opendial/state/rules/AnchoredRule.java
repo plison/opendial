@@ -17,7 +17,7 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
+package opendial.state.rules;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +27,6 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
@@ -39,8 +38,11 @@ import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.CaseBasedRule;
+import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.DialogueState;
+import opendial.state.rules.Rule.RuleType;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.StringUtils;
 
@@ -64,7 +66,9 @@ public class AnchoredRule {
 	Set<String> inputVariables;
 	
 	Set<String> outputVariables;
-	
+
+	Map<String,ChanceNode> parameters;
+
 	AnchoredRuleCache cache;
 
 	String id;
@@ -87,9 +91,9 @@ public class AnchoredRule {
 		cache = new AnchoredRuleCache(this);
 		
 		outputVariables = extractOutputVariables();
-	}
-
-
+	
+		parameters = extractParameters(state);
+}
 
 
 	public Rule getRule() {
@@ -122,24 +126,36 @@ public class AnchoredRule {
 		return filledVariables;
 	}
 	
-	
-	public Set<String> getInputVariables() {
-		return inputVariables;
-	}
 
-	public Collection<ChanceNode> getParameters() {
-		return cache.getParameters();
+	public Collection<ChanceNode> getParameterNodes() {
+		return parameters.values();
 	}
 
 
 	private Set<String> extractOutputVariables() {
 		Set<String> outputVariables = new HashSet<String>();		
-		for (Output output : cache.getOutputs()) {
+		for (Output output : cache.getOutputs().keySet()) {
 			for (String outputVariable : output.getVariables()) {
 				outputVariables.add(outputVariable);	
 			}
 		}
 		return outputVariables;
+	}
+	
+
+	private Map<String,ChanceNode> extractParameters(DialogueState state) {
+		Map<String,ChanceNode> parameters = new HashMap<String,ChanceNode>();		
+		for (Output output : cache.getOutputs().keySet()) {
+			for (String param : cache.getOutputs().get(output).getParameterIds()) {
+				if (state.getNetwork().hasChanceNode(param)) {
+					parameters.put(param,state.getNetwork().getChanceNode(param));
+				}
+				else {
+					log.warning("parameter " + param + " is not defined!");
+				}
+			}
+		}
+		return parameters;
 	}
 	
 	
@@ -152,20 +168,28 @@ public class AnchoredRule {
 		if (cache.getOutputs().isEmpty()) {
 			return false;
 		}
-		else if (cache.getOutputs().size() == 1 && cache.getOutputs().iterator().next().isVoid()) {
-			return false;
+		else if (cache.getOutputs().size() == 1) {
+			Map.Entry<Output,Parameter> o = cache.getOutputs().entrySet().iterator().next();
+			if (o.getKey().isVoid()) {
+				if (rule.getRuleType() == RuleType.PROB) {
+					return false;
+				}
+				else if (o.getValue() instanceof FixedParameter && 
+				(((FixedParameter)o.getValue()).getParameterValue() == 0.0)) {
+					return false;
+				}
+			}
 		}
-		else {
-			return true;
-		}
+		return true;
 	}
 
 	public Set<Output> getValues() {
-		return cache.getOutputs();
+		return cache.getOutputs().keySet();
 	}
 
 	public Map<Output,Parameter> getEffectOutputs (Assignment input) {
-		return rule.getEffectOutputs(new Assignment(input.removeSpecifiers(), anchor));
+		Assignment augmentedInput = new Assignment(input.removeSpecifiers(), anchor);
+		return rule.getEffectOutputs(augmentedInput);
 	}
 
 
@@ -188,15 +212,14 @@ public class AnchoredRule {
 	}
 
 
-
 	private Map<String, ChanceNode> extractInputNodes(DialogueState state) {
 		Map<String, ChanceNode> tempInputNodes = new HashMap<String, ChanceNode>();
-		for (String inputVar : getInputVariables()) {	
+		for (String inputVar : inputVariables) {
 			boolean isAttached = false;
 			for (int i = 4 ; i >= 0 && !isAttached ; i--) {
 				String specifiedVar = inputVar + StringUtils.createNbPrimes(i);
 				if (state.getNetwork().hasChanceNode(specifiedVar) 
-						&& !state.getController().hasNewVariable(specifiedVar)) {
+						&& !state.isVariableToProcess(specifiedVar)) {
 					tempInputNodes.put(specifiedVar, state.getNetwork().getChanceNode(specifiedVar));
 					isAttached = true;
 				}

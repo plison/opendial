@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+<model type="decision" trigger="u_u">
+
+<rule>
+<case>
+<effect util="theta_1">
+<set var="u_m" value="yeah yeah talk to my hand"/>
+</effect>
+<effect util="theta_2">
+<set var="u_m" value="so interesting!"/>
+</effect>
+</case>
+</rule>
+
+
+</model>
+
+
+</domain>

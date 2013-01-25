@@ -32,28 +32,26 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
-import opendial.arch.statechange.DistributionRule;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
-import opendial.common.MiscUtils;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.VariableElimination;
 import opendial.readers.XMLDomainReader;
+import opendial.state.DialogueState;
+import opendial.state.rules.DistributionRule;
 
 /**
  * 
@@ -76,11 +74,10 @@ public class BasicRuleTest {
 		try { 
 			Domain domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
-			ConfigurationSettings.getInstance().activatePlanner(false);
-			ConfigurationSettings.getInstance().activatePruning(false);
+			Settings.activatePlanner = false;
+			Settings.activatePruning = false;
 			system = new DialogueSystem(domain);
 			system.startSystem(); 
-			MiscUtils.waitUntilStable(system);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -89,7 +86,6 @@ public class BasicRuleTest {
 
 	@Test
 	public void test() throws DialException {
-
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u'");
 		
 		inference.checkProb(query, new Assignment("a_u'", "Greeting"), 0.8);
@@ -146,7 +142,6 @@ public class BasicRuleTest {
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("var1", "value2"), 0.9);
 		system.getState().addContent(table, "test6");
-		MiscUtils.waitUntilStable(system);
 
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o''");
 		

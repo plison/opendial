@@ -83,5 +83,10 @@ public class DistributionCouple {
 	public UtilityTable getUtilityDistrib() {
 		return utilityDistrib;
 	}
+	
+	
+	public String toString() {
+		return probDistrib.toString() + " ^ " + utilityDistrib;
+	}
 }
 

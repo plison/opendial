@@ -25,7 +25,6 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
-import opendial.bn.nodes.ChanceNode;
 
 
 /**
@@ -51,12 +50,12 @@ public interface Parameter {
 	
 	
 	/**
-	 * Returns the (possibly empty) set of continuous, function-based distributions 
-	 * making up the parameter, defined as chance nodes.
+	 * Returns the (possibly empty) set of parameter identifiers used in the 
+	 * parameter object.
 	 * 
-	 * @return the collection of function-based distributions making up the parameter
+	 * @return the collection of parameter labels 
 	 */
-	public Collection<ChanceNode> getDistributions();
+	public Collection<String> getParameterIds();
 
 	
 	/**

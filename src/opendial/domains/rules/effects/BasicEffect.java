@@ -143,7 +143,9 @@ public class BasicEffect implements Effect {
 			case DISCARD: output.discardValueForVariable(variable,value); break;
 			case ADD: output.addValueForVariable(variable,value); break;
 			}
-			
+		}
+		else {
+			output.setAsBroken(true);
 		}
 		return output;
 	}

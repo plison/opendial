@@ -22,6 +22,8 @@ package opendial.bn.values;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
 import opendial.bn.nodes.BNode;
@@ -37,9 +39,12 @@ public class ValueFactory {
 
 	// logger
 	public static Logger log = new Logger("ValueFactory", Logger.Level.NORMAL);
-	
+
 	// none value (no need to recreate one everytime)
 	static NoneVal noneValue = new NoneVal();
+
+	static Pattern p = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+
 
 	/**
 	 * Creates a new value based on the provided string representation.
@@ -52,33 +57,31 @@ public class ValueFactory {
 	 */
 	public static Value create(String str) {
 		str = str.trim();
-		try {
-			double d = Double.parseDouble(str);
-			return new DoubleVal(d);
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			return new DoubleVal(Double.parseDouble(str));
 		}
-		catch (NumberFormatException e) {
-			if (str.equalsIgnoreCase("true")) {
-				return new BooleanVal(true);
-			}
-			else if (str.equalsIgnoreCase("false")) {
-				return new BooleanVal(false);
-			}
-			else if (str.equalsIgnoreCase("None")) {
-				return none();
-			}
-			// adds the converted value
-			else if (str.startsWith("[") && str.endsWith("]")) {
-				
-				Set<Value> subVals = new HashSet<Value>();
-				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
-					subVals.add(create(subVal.trim()));
-				}
-				return new SetVal(subVals);
-			}
-			return new StringVal(str);
+		else if (str.equalsIgnoreCase("true")) {
+			return new BooleanVal(true);
 		}
+		else if (str.equalsIgnoreCase("false")) {
+			return new BooleanVal(false);
+		}
+		else if (str.equalsIgnoreCase("None")) {
+			return none();
+		}
+		// adds the converted value
+		else if (str.startsWith("[") && str.endsWith("]")) {
+
+			Set<Value> subVals = new HashSet<Value>();
+			for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+				subVals.add(create(subVal.trim()));
+			}
+			return new SetVal(subVals);
+		}
+		return new StringVal(str);
 	}
-	
+
 	/**
 	 * Returns a double value given the double
 	 * 
@@ -88,7 +91,7 @@ public class ValueFactory {
 	public static DoubleVal create(double d) {
 		return new DoubleVal(d);
 	}
-	
+
 	/**
 	 * Returns the boolean value given the boolean
 	 * 
@@ -98,7 +101,7 @@ public class ValueFactory {
 	public static BooleanVal create(boolean b) {
 		return new BooleanVal(b);
 	}
-	
+
 	/**
 	 * Returns the set value given the values
 	 * 
@@ -108,7 +111,7 @@ public class ValueFactory {
 	public static SetVal create(Value...vals) {
 		return new SetVal(vals);
 	}
-	
+
 	/**
 	 * Returns the set value given the values
 	 * 
@@ -118,7 +121,7 @@ public class ValueFactory {
 	public static SetVal create(Collection<Value> vals) {
 		return new SetVal(vals);
 	}
-	
+
 
 	/**
 	 * Returns the none value

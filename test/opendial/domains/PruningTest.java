@@ -28,7 +28,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
@@ -37,15 +37,14 @@ import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
-import opendial.common.MiscUtils;
 import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
+import opendial.state.DialogueState;
 
 public class PruningTest {
 
 	// logger
 	public static Logger log = new Logger("PruningTest", Logger.Level.DEBUG);
-
 
 	public static final String domainFile = "domains//testing//domain1.xml";
 
@@ -57,12 +56,11 @@ public class PruningTest {
 		try { 
 		domain = XMLDomainReader.extractDomain(domainFile); 
 		inference = new InferenceChecks();
-		inference.EXACT_THRESHOLD = 0.05;
+		inference.EXACT_THRESHOLD = 0.08;
 		inference.SAMPLING_THRESHOLD = 0.1;
-		ConfigurationSettings.getInstance().activatePruning(true);
+		Settings.activatePruning = true;
 			system = new DialogueSystem(domain);
 			system.startSystem(); 
-			MiscUtils.waitUntilStable(system);
 		} 
 		catch (DialException e) {
 			e.printStackTrace();
@@ -134,20 +132,19 @@ public class PruningTest {
 	@Test
 	public void test6() throws DialException, InterruptedException {
 
-		DialogueSystem system2 = new DialogueSystem(domain);
-		system2.startSystem(); 
-		MiscUtils.waitUntilStable(system2);
+		DialogueState initialState = system.getState().copy();
 		
-		SimpleTable table = new SimpleTable();
+	 	SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("var1", "value2"), 0.9);
-		system2.getState().addContent(table, "test6");
-		MiscUtils.waitUntilStable(system2);
+		system.getState().addContent(table, "test6");
 
-		ProbQuery query = new ProbQuery(system2.getState().getNetwork(),"o");
+		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"o");
 		
 		inference.checkProb(query, new Assignment("o", "and we have var1=value2"), 0.93);
 		inference.checkProb(query, new Assignment("o", "and we have localvar=value1"), 0.02);
-		inference.checkProb(query, new Assignment("o", "and we have localvar=value3"), 0.028);
+		inference.checkProb(query, new Assignment("o", "and we have localvar=value3"), 0.028); 
+		
+		system.getState().reset(initialState.getNetwork(), initialState.getEvidence());
 
 	}
 
@@ -166,14 +163,12 @@ public class PruningTest {
 	@Test
 	public void test8() throws DialException, InterruptedException {
 
-		DialogueSystem system2 = new DialogueSystem(domain);
-		system2.startSystem(); 
-		MiscUtils.waitUntilStable(system2);
+		DialogueState initialState = system.getState().copy();
 		
-		ProbQuery query = new ProbQuery(system2.getState().getNetwork(),"a_u3");
+		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"a_u3");
 
 		SortedSet<String> createdNodes = new TreeSet<String>();
-		for (String nodeId: system2.getState().getNetwork().getNodeIds()) {
+		for (String nodeId: system.getState().getNetwork().getNodeIds()) {
 			if (nodeId.contains("a_u3^")) {
 				createdNodes.add(nodeId.replace(".start", "").
 						replace(".end", "").replace("", ""));
@@ -183,7 +178,7 @@ public class PruningTest {
 
 		String greetNode = "";
 		String howareyouNode = "";
-		Set<Value> values = system2.getState().getNetwork().getNode(createdNodes.first()+"").getValues();
+		Set<Value> values = system.getState().getNetwork().getNode(createdNodes.first()+"").getValues();
 		if (values.contains(ValueFactory.create("Greet"))) {
 			greetNode = createdNodes.first();
 			howareyouNode = createdNodes.last();
@@ -193,12 +188,12 @@ public class PruningTest {
 			howareyouNode = createdNodes.first();
 		}
 
-		ProbQuery query2 = new ProbQuery(system2.getState().getNetwork(),greetNode+".start");
-		ProbQuery query3 = new ProbQuery(system2.getState().getNetwork(),greetNode+".end");
-		ProbQuery query4 = new ProbQuery(system2.getState().getNetwork(),howareyouNode+".start");
-		ProbQuery query5 = new ProbQuery(system2.getState().getNetwork(),howareyouNode+".end");
-		ProbQuery query6 = new ProbQuery(system2.getState().getNetwork(),greetNode+"");
-		ProbQuery query7 = new ProbQuery(system2.getState().getNetwork(),howareyouNode+"");
+		ProbQuery query2 = new ProbQuery(system.getState().getNetwork(),greetNode+".start");
+		ProbQuery query3 = new ProbQuery(system.getState().getNetwork(),greetNode+".end");
+		ProbQuery query4 = new ProbQuery(system.getState().getNetwork(),howareyouNode+".start");
+		ProbQuery query5 = new ProbQuery(system.getState().getNetwork(),howareyouNode+".end");
+		ProbQuery query6 = new ProbQuery(system.getState().getNetwork(),greetNode+"");
+		ProbQuery query7 = new ProbQuery(system.getState().getNetwork(),howareyouNode+"");
 
 		inference.checkProb(query, new Assignment("a_u3", "["+greetNode +"," + howareyouNode +"]"), 0.7);
 		inference.checkProb(query, new Assignment("a_u3", "none"), 0.1);
@@ -211,6 +206,8 @@ public class PruningTest {
 		inference.checkProb(query6,  new Assignment(greetNode+"", "Greet"), 0.7);
 		inference.checkProb(query7,  new Assignment(howareyouNode+"", "HowAreYou"), 0.9);
 		
+		system.getState().reset(initialState.getNetwork(), initialState.getEvidence());
+
 	}
 }
 

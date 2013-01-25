@@ -22,11 +22,12 @@ package opendial.inference;
 import java.util.Collection;
 import java.util.Set;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.nodes.ChanceNode;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.DoubleFactor;
 import opendial.inference.queries.Query;
@@ -56,16 +57,27 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	public static Logger log = new Logger("ImportanceSampling", Logger.Level.DEBUG);
 
 	// actual number of samples for the algorithm
-	int nbSamples = ConfigurationSettings.getInstance().getNbSamples();
+	int nbSamples = Settings.nbSamples;
 	
 	// maximum sampling time (in milliseconds)
-	long maxSamplingTime = ConfigurationSettings.getInstance().getMaximumSamplingTime();
+	long maxSamplingTime = Settings.maximumSamplingTime;
+	
 	
 	/**
 	 * Creates a new sampling algorithm with the default number of samples
 	 * and maximum sampling time from ConfigurationSettings
 	 */
 	public ImportanceSampling() {	}
+	
+	
+	/**
+	 *  Creates a new sampling algorithm with the provided number of samples
+	 *  
+	 * @param nbSamples the number of samples to collect
+	 */
+	public ImportanceSampling(int nbSamples) {
+		this.nbSamples = nbSamples;
+	}
 	
 	
 	/**
@@ -111,10 +123,11 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 
 		// creates a new query thread
 		BasicQuerySampling isquery = new BasicQuerySampling(query, nbSamples, maxSamplingTime);
+		Thread t = new Thread(isquery);
 		
 		// waits for the results to be compiled
 		synchronized (isquery) {
-			isquery.start();
+			t.start();
 			while (isquery.getResults() == null) {
 				try { isquery.wait();  }
 				catch (InterruptedException e) {}
@@ -127,12 +140,25 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	@Override
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
 
-		// creates a new query thread
-		ReductionQuerySampling isquery = new ReductionQuerySampling(query, nbSamples, maxSamplingTime);
+	//	log.debug("reduction query " + query + " on network " + query.getNetwork().getNodeIds());
 		
+		// creating the reduced copy
+		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars());
+		
+		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
+		for (String nodeId : identicalNodes) {
+			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
+			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
+			query.removeQueryVar(nodeId);
+		} 
+		
+		// creates a new query thread
+		ReductionQuerySampling isquery = new ReductionQuerySampling(query, reduced, nbSamples, maxSamplingTime);
+		Thread t = new Thread(isquery);
+
 		// waits for the results to be compiled
 		synchronized (isquery) {
-			isquery.start();
+			t.start();
 			while (isquery.getResults() == null) {
 				try { isquery.wait();  }
 				catch (InterruptedException e) {}
@@ -140,6 +166,11 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 		}
 		return isquery.getResults();
 		
+	}
+
+
+	public int getNbOfSamples() {
+		return nbSamples;
 	}
 
 

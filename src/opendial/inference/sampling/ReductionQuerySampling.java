@@ -70,9 +70,10 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	public static Logger log = new Logger("ReductionQuerySampling", Logger.Level.DEBUG);
 
 	
-	
 	// the result (is null until the query is finished)
-	BNetwork results;
+	BNetwork reduced;
+	
+	boolean isFinished = false;
 
 
 	/**
@@ -82,8 +83,9 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	 * @param query the query to answer
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
-	public ReductionQuerySampling(Query query,int nbSamples, long maxSamplingTime) {
+	public ReductionQuerySampling(Query query, BNetwork reduced, int nbSamples, long maxSamplingTime) {
 		super(query, nbSamples, maxSamplingTime);
+		this.reduced = reduced;
 	}
 
 
@@ -95,25 +97,19 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	protected void compileResults() {
 		
 		try {
-			results = query.getNetwork().getReducedCopy(query.getQueryVars());
-
 			reweightSamples();
 
-			for (ChanceNode n : results.getChanceNodes()) {
-				EmpiricalDistribution eDistrib = getNodeDistribution(n);
-				n.setDistrib(eDistrib);
-			}
-			for (UtilityNode n : results.getUtilityNodes()) {
-				UtilityTable eDistrib = getUtilityDistribution(n);
-				n.setDistrib(eDistrib);
+			for (String queryVar : query.getQueryVars()) {
+				ChanceNode node = reduced.getChanceNode(queryVar);
+				EmpiricalDistribution eDistrib = getNodeDistribution(node);
+				node.setDistrib(eDistrib);
 			}
 		}
 		catch (DialException e) {
 			log.warning("cannot compile sampling results: " + e.toString());
-			results = new BNetwork();
 		}
 		
-
+		isFinished = true;
 	}
 	
 	
@@ -159,6 +155,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	}
 	
 	
+	/** 
 	private UtilityTable getUtilityDistribution (UtilityNode node) {
 		
 		UtilityTable utilityTable = new UtilityTable();
@@ -173,7 +170,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 			utilityTable.addUtility(trimmedSample, a.getUtility());
 		}
 		return utilityTable;
-	}
+	} */
 
 	
 	/**
@@ -183,15 +180,11 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	 * @return the distributions
 	 */
 	public BNetwork getResults() {
-		return results;
+		if (isFinished) {
+		return reduced;
+		}
+		return null;
 	}
-
-
-	@Override
-	public boolean isTerminated() {
-		return (results != null);
-	}
-
 
 
 }

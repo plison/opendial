@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
@@ -122,7 +122,7 @@ public class FunctionBasedDistribution implements ContinuousProbDistribution {
 	@Override
 	public SimpleTable toDiscrete() {
 	
-		int nbBuckets = ConfigurationSettings.getInstance().getNbDiscretisationBuckets();
+		int nbBuckets = Settings.nbDiscretisationBuckets;
 		
 		List<Double> values = function.getDiscreteValues(nbBuckets);
 		SimpleTable discreteVersion = new SimpleTable();
