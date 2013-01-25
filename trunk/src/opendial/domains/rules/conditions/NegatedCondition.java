@@ -19,11 +19,13 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.quantification.UnboundPredicate;
 
 
 /**
@@ -74,16 +76,15 @@ public class NegatedCondition implements Condition {
 		return initCondition.getInputVariables();
 	}
 
-	
 	/**
-	 * Returns the local output variables for the condition (which are the same 
-	 * as the ones for the condition to negate)
+	 * Returns the set of unbound predicates for the basic condition, which could
+	 * be either associated with the variable label or its content.
 	 * 
-	 * @return the local output variables
+	 * @return the set of unbound predicates
 	 */
 	@Override
-	public Set<String> getLocalOutputVariables() {
-		return initCondition.getLocalOutputVariables();
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		return initCondition.getUnboundPredicates();
 	}
 
 	

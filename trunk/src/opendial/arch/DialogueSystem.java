@@ -22,10 +22,12 @@ package opendial.arch;
 import java.util.HashSet;
 
 import opendial.arch.Logger;
+import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
+import opendial.state.DialogueState;
 
 /**
  *  
@@ -51,16 +53,21 @@ public class DialogueSystem {
 		for (Model<?> model : domain.getModels()) {
 			curState.attachModule(model);
 		}
+		if (Settings.showGUI) {
+			GUIFrame frame = new GUIFrame(curState);
+			curState.addListener(frame);
+		}
 	}
 	
-	public void showGUI() {
-		ConfigurationSettings.getInstance().showGUI(true);
-		GUIFrame.getSingletonInstance();
+	
+	public void addParameters(BNetwork parameterNetwork) {
+		curState.addParameters(parameterNetwork);
 	}
 	
+
 	
 	public void startSystem() {
-		curState.triggerUpdates();
+		curState.startState();
 	}
 
 	/**

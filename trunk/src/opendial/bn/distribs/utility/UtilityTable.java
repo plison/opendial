@@ -19,14 +19,20 @@
 
 package opendial.bn.distribs.utility;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.distribs.datastructs.Estimate;
 import opendial.bn.values.Value;
+import opendial.planning.ValuedAction;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -40,11 +46,10 @@ import opendial.utils.CombinatoricsUtils;
 public class UtilityTable implements UtilityDistribution {
 
 	// logger
-	public static Logger log = new Logger("EmpiricalUtilityDistribution",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("UtilityTable", Logger.Level.DEBUG);
 
 	// mapping between assignments and estimates of the utility value
-	Map<Assignment,UtilityEstimate> table;
+	Map<Assignment,Estimate> table;
 
 	// the variables of the table
 	Set<String> tableVars;
@@ -59,7 +64,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * Creates a new, empty empirical utility table
 	 */
 	public UtilityTable() {
-		table = new HashMap<Assignment,UtilityEstimate>();
+		table = new HashMap<Assignment,Estimate>();
 		tableVars = new HashSet<String>();
 	}
 	
@@ -85,7 +90,7 @@ public class UtilityTable implements UtilityDistribution {
 	 */
 	public void addUtility(Assignment sample, double utility) {
 		if (!table.containsKey(sample)) {
-			table.put(sample, new UtilityEstimate(utility));
+			table.put(sample, new Estimate(utility));
 		}
 		else {
 			table.get(sample).updateEstimate(utility);
@@ -102,7 +107,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * @param utility the resulting utility
 	 */
 	public void setUtility(Assignment input, double utility) {
-		table.put(input,new UtilityEstimate(utility));
+		table.put(input,new Estimate(utility));
 		tableVars.addAll(input.getVariables());
 	}
 	
@@ -129,18 +134,31 @@ public class UtilityTable implements UtilityDistribution {
 	@Override
 	public double getUtility(Assignment input) {
 		if (table.containsKey(input)) {
-			return table.get(input).getCurrentEstimate();
+			return table.get(input).getValue();
 		}
 		else {
 			Assignment trimmedInput = input.getTrimmed(tableVars);
 			if (table.containsKey(trimmedInput)) {
-				return table.get(trimmedInput).getCurrentEstimate();
+				return table.get(trimmedInput).getValue();
 			}
 			return 0.0f;
 		}
 	}
 
 
+
+	/**
+	 * Returns true if the table defines an utility for the specified input,
+	 * and false otherwise
+	 * 
+	 * @param input the input assignment
+	 * @return true if an utility is defined, false otherwise
+	 */
+	public boolean hasUtility(Assignment input) {
+		return table.containsKey(input);
+	}
+	
+	
 	/**
 	 * Returns the table reflecting the estimated utility values for each
 	 * assignment
@@ -154,6 +172,28 @@ public class UtilityTable implements UtilityDistribution {
 		}
 		return averageUtils;
 	} 
+	
+	
+	/**
+	 * Creates a table with a subset of the utility values, namely the nbest highest
+	 * ones.  
+	 * 
+	 * @param nbest the number of values to keep in the filtered table
+	 * @return the table of values, of size nbest
+	 * @throws DialException if nbest is < 1
+	 */
+	public List<ValuedAction> getFilteredTable(int nbest) throws DialException {
+		if (nbest < 1) {
+			throw new DialException("nbest must be >= 1");
+		}
+		List<ValuedAction> couples = new ArrayList<ValuedAction>(table.size());
+		for (Assignment a : table.keySet()) {
+			couples.add(new ValuedAction(a, table.get(a).getValue()));
+		}
+		Collections.sort(couples);
+		int fromIndex = (couples.size() >= nbest)? couples.size()-nbest : 0;
+		return couples.subList(fromIndex, couples.size());
+	}
 
 
 	/**
@@ -247,7 +287,7 @@ public class UtilityTable implements UtilityDistribution {
 	 */
 	@Override
 	public void modifyVarId(String nodeId, String newId) {
-		Map<Assignment,UtilityEstimate> utilities2 = new HashMap<Assignment,UtilityEstimate>();
+		Map<Assignment,Estimate> utilities2 = new HashMap<Assignment,Estimate>();
 		for (Assignment a : table.keySet()) {
 			Assignment b = new Assignment();
 			for (String var : a.getVariables()) {
@@ -258,62 +298,6 @@ public class UtilityTable implements UtilityDistribution {
 		}
 		table = utilities2;
 	}
-
-
-	// ===================================
-	//  INNER CLASS
-	// ===================================
-
-	/**
-	 * Estimate of an utility value, defined by the averaged estimate itself,
-	 * and the number of values that have contributed to it (in order to 
-	 * correctly compute the average)
-	 * 
-	 *
-	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
-	 *
-	 */
-	final class UtilityEstimate {
-
-		// averaged estimate for the utility
-		double averagedEstimate = 0.0;
-
-		// number of values used for the average
-		int nbValues = 0;
-
-		/**
-		 * Creates a new utility estimate, with a first value
-		 * 
-		 * @param firstValue the first value
-		 */
-		public UtilityEstimate(double firstValue) {
-			updateEstimate(firstValue);
-		}
-
-		
-		/**
-		 * Updates the current estimate with a new value
-		 * 
-		 * @param newValue the new value
-		 */
-		public void updateEstimate(double newValue) {
-			double prevUtil = averagedEstimate;
-			nbValues++;
-			averagedEstimate = prevUtil + (newValue - prevUtil) / (nbValues);
-		}
-
-
-		/**
-		 * Returns the current (averaged) estimate for the utility
-		 * 
-		 * @return the estimate
-		 */
-		public double getCurrentEstimate() {
-			return averagedEstimate;
-		}
-	}
-
 
 
 }

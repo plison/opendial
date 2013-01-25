@@ -30,7 +30,6 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.statechange.Rule.RuleType;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
@@ -38,7 +37,8 @@ import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.rules.Rule.RuleType;
 
 
 /**
@@ -209,7 +209,6 @@ public class Case {
 				inputVariables.add(new TemplateString(inputVariable));
 			}
 		}
-		inputVariables.removeAll(condition.getLocalOutputVariables());
 		return inputVariables;
 	}
 
@@ -249,7 +248,7 @@ public class Case {
 			if (effects.get(e) instanceof FixedParameter) {
 				str += " [" + effects.get(e) + "]";
 			}
-			else if (effects.get(e) instanceof StochasticParameter) {
+			else if (effects.get(e) instanceof SingleParameter) {
 				str += " [" + effects.get(e) + "]";
 			}
 			str += ",";

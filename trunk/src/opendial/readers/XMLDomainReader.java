@@ -28,11 +28,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
+import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 /**
@@ -108,7 +108,7 @@ public class XMLDomainReader {
 
 			// extracting initial state
 			if (mainNode.getNodeName().equals("initialstate")) {
-				BNetwork state = XMLInitialStateReader.getInitialState(mainNode, domain);
+				BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
 				domain.setInitialState(new DialogueState(state));
 		//		log.debug(state);
 			}
@@ -118,11 +118,6 @@ public class XMLDomainReader {
 				Model model = XMLModelReader.getModel(mainNode, domain);
 		//		log.debug(model);
 				domain.addModel(model);
-			}
-			
-			else if (mainNode.getNodeName().equals("parameters")) {
-				BNetwork parameters = XMLInitialStateReader.getInitialState(mainNode, domain);
-				domain.addParameters(parameters);
 			}
 			
 			

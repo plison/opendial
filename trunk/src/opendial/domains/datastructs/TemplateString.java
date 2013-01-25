@@ -88,6 +88,7 @@ public class TemplateString {
 		regex = regex.replace("*", "(.*)");
 		regex = regex.replace("?", "\\?");
 		regex = regex.replace("!", "\\!");
+		regex = regex.replace("^", "\\^");
 
 		for (String slot : slots.keySet()) {
 			regex = regex.replace("{"+slot+"}", "(.*)");
@@ -204,10 +205,8 @@ public class TemplateString {
 			matcher.find();
 			for (String slot : slots.keySet()) {
 				String filledSlot = matcher.group(slots.get(slot)+1).trim();
+				filledSlot = filledSlot.replaceAll("[^\\p{L}\\s0-9]", "");
 				filledSlots.addPair(slot, filledSlot);
-			}
-			if (partialMatch) {
-				filledSlots.addPair("match_position", matcher.start());
 			}
 		}		
 		return filledSlots;	
@@ -267,7 +266,6 @@ public class TemplateString {
 	 * @return another template string, with nb slots <= nb slots in current template
 	 */
 	public TemplateString fillSlotsPartial(Assignment fillers) {
-		Assignment values = new Assignment(fillers);
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
 			if (fillers.getValue(slot) != null) {

@@ -7,14 +7,14 @@ import javax.swing.AbstractAction;
 
 import org.jfree.util.Log;
 
-import opendial.arch.ConfigurationSettings;
-import opendial.arch.DialogueState;
+import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.gui.statemonitor.DistributionViewer;
 import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
+import opendial.state.DialogueState;
 
 @SuppressWarnings("serial")
 public final class DistributionChartAction extends AbstractAction {
@@ -40,8 +40,7 @@ public final class DistributionChartAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
-			ConfigurationSettings settings = ConfigurationSettings.getInstance();
-			InferenceAlgorithm algorithm = settings.getInferenceAlgorithm().newInstance();
+			InferenceAlgorithm algorithm = Settings.inferenceAlgorithm.newInstance();
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
 			ProbDistribution distrib = algorithm.queryProb(new ProbQuery(state, queryVariable)); 
 			DistributionViewer.showDistributionViewer(distrib);

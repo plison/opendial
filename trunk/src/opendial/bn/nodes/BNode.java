@@ -63,7 +63,7 @@ public abstract class BNode implements Comparable<BNode> {
 	Map<String,BNode> outputNodes;
 
 	// objects listening to changes of identifiers for this node
-	List<NodeIdChangeListener> nodeIdChangeListeners;
+	List<IdChangeListener> idChangeListeners;
 
 
 	// ===================================
@@ -81,7 +81,7 @@ public abstract class BNode implements Comparable<BNode> {
 		this.nodeId = nodeId;
 		inputNodes = new HashMap<String,BNode>();
 		outputNodes = new HashMap<String,BNode>();
-		nodeIdChangeListeners = new LinkedList<NodeIdChangeListener>();
+		idChangeListeners = new LinkedList<IdChangeListener>();
 	}
 
 	/**
@@ -160,8 +160,8 @@ public abstract class BNode implements Comparable<BNode> {
 		for (BNode outputNode : outputNodes.values()) {
 			outputNode.modifyNodeId(oldNodeId, newNodeId);
 		}
-		for (NodeIdChangeListener listener : 
-			new HashSet<NodeIdChangeListener>(nodeIdChangeListeners)) {
+		for (IdChangeListener listener : 
+			new HashSet<IdChangeListener>(idChangeListeners)) {
 			listener.modifyNodeId(oldNodeId, newNodeId);
 		}
 	}
@@ -172,8 +172,13 @@ public abstract class BNode implements Comparable<BNode> {
 	 * 
 	 * @param listener the listener to add
 	 */
-	public synchronized void addNodeIdChangeListener(NodeIdChangeListener listener) {
-		nodeIdChangeListeners.add(listener);
+	public synchronized void addIdChangeListener(IdChangeListener listener) {
+		idChangeListeners.add(listener);
+	}
+	
+	
+	public synchronized void clearListeners() {
+		idChangeListeners.clear();
 	}
 
 
@@ -378,6 +383,37 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 
+	/**
+	 * Returns true if at least one of the variables given as argument is a descendant
+	 * of this node, and false otherwise
+	 * 
+	 * @param variables the node identifiers of potential descendants
+	 * @return true if a descendant is found, false otherwise
+	 */
+	public boolean hasDescendant(Set<String> variables) {
+
+		Queue<BNode> nodesToProcess = new LinkedList<BNode>();
+		nodesToProcess.add(this);
+
+		// NB: we try to avoid recursion for efficiency reasons, and
+		// use a while loop instead
+		while (!nodesToProcess.isEmpty()) {
+			BNode currentNode = nodesToProcess.poll();
+			for (BNode descendantNode : currentNode.getOutputNodes()) {
+				if (variables.contains(descendantNode.getId())) {
+					return true;
+				}
+				if (!nodesToProcess.contains(descendantNode)) {
+					nodesToProcess.add(descendantNode);
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	
 	/**
 	 * Returns the set of distinct values that the node can take.  The
 	 * nature of those values depends on the node type.  

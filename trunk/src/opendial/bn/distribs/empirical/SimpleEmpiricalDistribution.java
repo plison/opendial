@@ -31,6 +31,7 @@ import java.util.Random;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
@@ -39,6 +40,8 @@ import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
+import opendial.bn.values.NoneVal;
+import opendial.bn.values.Value;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -59,23 +62,23 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	protected List<Assignment> samples;
 
 	Random sampler;
-	
+
 	DiscreteProbDistribution discreteCache;
 	FunctionBasedDistribution continuousCache;
-	
+
 	// ===================================
 	//  CONSTRUCTION METHODS
 	// ===================================
-	
+
 	/**
 	 * Constructs a new empirical distribution, initially with a empty set of
 	 * samples
 	 */
 	public SimpleEmpiricalDistribution() {
-		samples = new ArrayList<Assignment>(3000);
+		samples = new ArrayList<Assignment>(Settings.nbSamples);
 		sampler = new Random();
 	}
-	
+
 	/**
 	 * Constructs a new empirical distribution with the provided set of samples
 	 * 
@@ -85,7 +88,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		this();
 		this.samples.addAll(samples);
 	}
-	
+
 
 	/**
 	 * Adds a new sample to the distribution
@@ -97,12 +100,12 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		discreteCache = null;
 		continuousCache = null;
 	}
-	
+
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
@@ -112,12 +115,30 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public Assignment sample(Assignment condition) {
-		int selection = sampler.nextInt(samples.size());
-		Assignment selected = samples.get(selection);
-		return selected;
+		return sample();
 	}
 
-	
+
+	/**
+	 * Samples from the distribution.  In this case, simply selects one
+	 * arbitrary sample out of the set defining the distribution
+	 * 
+	 * @param condition the conditional assignment (ignored here)
+	 * @return the selected sample
+	 */
+	public Assignment sample() {
+		if (!samples.isEmpty()) {
+			int selection = sampler.nextInt(samples.size());
+			Assignment selected = samples.get(selection);
+			return selected;
+		}
+		else {
+			log.warning("distribution has no samples");
+			return new Assignment();
+		}
+	}
+
+
 	/**
 	 * Checks whether the distribution is well-formed or not.  The only requirement
 	 * we have here is that the set of samples must be non-empty
@@ -128,7 +149,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	public boolean isWellFormed() {
 		return !samples.isEmpty();
 	}
-	
+
 
 	/**
 	 * Returns the size of the set of samples defining the distribution
@@ -139,7 +160,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		return samples.size();
 	}
 
-	
+
 	/**
 	 * Returns the labels for the random variables the distribution is defined on.
 	 * 
@@ -153,13 +174,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		return headVars;
 	}
-	
-	
+
+
 	// ===================================
 	//  CONVERSION METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Converts the distribution into a SimpleTable, by counting the number of 
 	 * occurrences for each distinct value of a variable.
@@ -173,14 +194,14 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		return discreteCache;
 	}
-	
-	
+
+
 	protected void computeDiscreteCache() {
 
 		SimpleTable discreteCache = new SimpleTable();
-		
+
 		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
-		
+
 		for (Assignment sample : samples) {
 			if (counts.containsKey(sample)) {
 				counts.put(sample, counts.get(sample) + 1);
@@ -195,7 +216,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		this.discreteCache = discreteCache;
 	}
 
-	
+
 	/**
 	 * Converts the distribution into a continuous distribution based on a kernel
 	 * density function.  This conversion will only work if:<ol>
@@ -209,24 +230,31 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	@Override
 	public FunctionBasedDistribution toContinuous()
 			throws DialException {
-		
+
 		if (continuousCache == null) {
 			computeContinuousCache();
 		}
 		return continuousCache;
 	}
-	
-	
+
+
 	protected void computeContinuousCache() throws DialException {
 		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
 			String headVar = samples.get(0).getVariables().iterator().next();
 			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
 				List<Double> values = new ArrayList<Double>(samples.size());
 				for (Assignment sample : samples) {
+					Value value = sample.getValue(headVar);
+					if (value instanceof DoubleVal) {
 					values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
-				}
+					}
+					else {
+						throw new DialException ("value type is not allowed in " +
+								"continuous distribution: " + value.getClass().getName());
+					}
 				continuousCache = new FunctionBasedDistribution(headVar, new KernelDensityFunction(values));
 			}
+		}
 		}
 		if (continuousCache == null) {
 			throw new DialException ("empirical distribution could not be converted to a " +
@@ -238,8 +266,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns a copy of the distribution
 	 * 
@@ -267,7 +295,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			return toDiscrete().prettyPrint();
 		}
 	}
-	
+
 	/**
 	 * Returns a pretty print representation of the distribution: here, 
 	 * tries to convert it to a continuous or discrete distribution,
@@ -280,7 +308,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		return prettyPrint();
 	}
 
-	
+
 	/**
 	 * Returns the hashcode for the distribution
 	 * 
@@ -290,7 +318,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		return samples.hashCode();
 	}
 
-	
+
 	/**
 	 * Replace a variable label by a new one
 	 * 
@@ -310,5 +338,21 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		samples = newSamples; 
 	}
-	
+
+
+	public ProbDistribution compile() {
+		try {
+			if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
+				String headVar = samples.get(0).getVariables().iterator().next();
+				if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
+					return toContinuous();
+				}
+			}
+			return toDiscrete();
+		}
+		catch (DialException e) {
+			return toDiscrete();
+		}
+	}
+
 }

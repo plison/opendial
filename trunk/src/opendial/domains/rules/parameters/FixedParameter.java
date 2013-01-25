@@ -27,7 +27,6 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.FunctionBasedDistribution;
-import opendial.bn.nodes.ChanceNode;
 
 /**
  * Representation of a parameter fixed to one single specific value.
@@ -78,8 +77,8 @@ public class FixedParameter implements Parameter {
 	 *
 	 * @return an empty set of distributions
 	 */
-	public Collection<ChanceNode> getDistributions() {
-		return new LinkedList<ChanceNode>();
+	public Collection<String> getParameterIds() {
+		return new LinkedList<String>();
 	}
 	
 	

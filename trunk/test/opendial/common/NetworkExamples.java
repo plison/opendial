@@ -53,7 +53,7 @@ public class NetworkExamples {
 	public static BNetwork constructBasicNetwork() throws DialException {
 	BNetwork bn = new BNetwork();
 		
-		ChanceNode b = new ChanceNode("Burglary");
+	ChanceNode b = new ChanceNode("Burglary");
 		b.addProb(ValueFactory.create(true), 0.001f);
 		b.addProb(ValueFactory.create(false), 0.999f);
 		bn.addNode(b);

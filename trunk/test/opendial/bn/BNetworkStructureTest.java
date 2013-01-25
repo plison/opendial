@@ -80,7 +80,7 @@ public class BNetworkStructureTest {
 		
 		assertTrue(bn.getChanceNode("MaryCalls").getDistrib().isWellFormed());
 		
-		assertEquals(2, bn.getActionNode("Action").getValues().size());
+		assertEquals(3, bn.getActionNode("Action").getValues().size());
 		assertEquals(-10f, bn.getUtilityNode("Util2").getUtility(new Assignment(new Assignment("Burglary"), "Action",
 				ValueFactory.create("DoNothing"))), 0.0001f);
 	}
@@ -121,7 +121,7 @@ public class BNetworkStructureTest {
 		
 		assertTrue(bn2.getChanceNode("MaryCalls").getDistrib().isWellFormed());
 		
-		assertEquals(2, bn2.getActionNode("Action").getValues().size());
+		assertEquals(3, bn2.getActionNode("Action").getValues().size());
 		assertEquals(-10f, bn2.getUtilityNode("Util2").getUtility(new Assignment(new Assignment("Burglary"), "Action", ValueFactory.create("DoNothing"))), 0.0001f);		
 	}
 	

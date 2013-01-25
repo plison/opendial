@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import opendial.arch.DialogueState;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.state.DialogueState;
 
 public class ReductionQuery extends Query {
 
@@ -62,6 +62,13 @@ public class ReductionQuery extends Query {
 
 			Set<String> irrelevantNodesIds = new HashSet<String>();
 
+			boolean includeActionAndUtils = false;
+			for (String var : queryVars) {
+				if (network.hasActionNode(var) || network.hasUtilityNode(var)) {
+					includeActionAndUtils = true;
+				}
+			}
+			
 			boolean continueLoop = true;
 			while (continueLoop) {
 				continueLoop = false;
@@ -70,10 +77,12 @@ public class ReductionQuery extends Query {
 					if (!irrelevantNodesIds.contains(nodeId) && 
 							irrelevantNodesIds.containsAll(node.getOutputNodesIds()) && 
 							!queryVars.contains(nodeId) && 
-							!evidence.containsVar(nodeId) && 
+							!evidence.containsVar(nodeId)) {
+						if (!includeActionAndUtils ||
 							!(node instanceof UtilityNode)) {
-						irrelevantNodesIds.add(nodeId);
-						continueLoop = true;
+							irrelevantNodesIds.add(nodeId);
+							continueLoop = true;
+						}
 					}
 				}
 			}
@@ -84,4 +93,6 @@ public class ReductionQuery extends Query {
 	public String toString() {
 		return "Reduction("+super.toString() +")";
 	}
+
+	
 }

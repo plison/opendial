@@ -30,6 +30,9 @@ import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.conditions.checks.ConditionCheck;
 import opendial.domains.rules.conditions.checks.ConditionCheckFactory;
+import opendial.domains.rules.quantification.LabelPredicate;
+import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.domains.rules.quantification.ValuePredicate;
 
 /**
  * Basic condition between a variable and a value
@@ -54,7 +57,6 @@ public class BasicCondition implements Condition {
 
 	// set of input and local output variables
 	Set<TemplateString> inputVariables;
-	Set<String> localOutputVariables;
 
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
@@ -80,17 +82,6 @@ public class BasicCondition implements Condition {
 		
 		// fill the input and local output variables
 		inputVariables = new HashSet<TemplateString>(Arrays.asList(this.variable));
-		localOutputVariables = new HashSet<String>();
-		if (relation == Relation.PARTIAL_MATCH || relation == Relation.EXACT_MATCH ) {
-			for (String slot : this.expectedValue.getSlots()) {
-				localOutputVariables.add(slot);
-			}
-		}
-		else {
-			for (String slot : this.expectedValue.getSlots()) {
-				inputVariables.add(new TemplateString(slot));
-			}
-		}
 	}
 
 	/**
@@ -138,6 +129,25 @@ public class BasicCondition implements Condition {
 		return expectedValue;
 	}
 	
+
+	/**
+	 * Returns the set of unbound predicates for the basic condition, which could
+	 * be either associated with the variable label or its content.
+	 * 
+	 * @return the set of unbound predicates
+	 */
+	@Override
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		Set<UnboundPredicate> predicates = new HashSet<UnboundPredicate>();
+		if (!variable.getSlots().isEmpty()) {
+			predicates.add(new LabelPredicate(variable));
+		}
+		if (!expectedValue.getSlots().isEmpty()) {
+			predicates.add(new ValuePredicate(variable.toString(), expectedValue));
+		}
+		return predicates;
+	}
+	
 	/**
 	 * Returns the input variables for the condition (the main variable
 	 * itself, plus optional slots in the value to fill)
@@ -150,16 +160,6 @@ public class BasicCondition implements Condition {
 	}
 
 
-	/**
-	 * Returns the local output variables that can be produced by the
-	 * condition
-	 * 
-	 * @return the local output variables
-	 */
-	@Override
-	public Set<String> getLocalOutputVariables() {
-		return localOutputVariables;
-	}
 
 	
 	/**
@@ -176,13 +176,18 @@ public class BasicCondition implements Condition {
 	public boolean isSatisfiedBy(Assignment input) {
 
 		ConditionCheck check = ConditionCheckFactory.createCheck(expectedValue, relation, input);
+		
 		Value value = ValueFactory.none();
-		TemplateString instantiatedVar = variable.fillSlotsPartial(input);
-		if (instantiatedVar.getSlots().isEmpty() 
-				&& input.containsVar(instantiatedVar.getRawString())) {
-			value = input.getValue(instantiatedVar.getRawString());
+		if (variable.getSlots().isEmpty()) {
+			value = input.getValue(variable.getRawString());
 		}
-
+		else {
+			TemplateString instantiatedVar = variable.fillSlotsPartial(input);
+			if (instantiatedVar.getSlots().isEmpty() 
+					&& input.containsVar(instantiatedVar.getRawString())) {
+				value = input.getValue(instantiatedVar.getRawString());
+			}
+		}
 		return check.isSatisfied(value);		
 	}
 

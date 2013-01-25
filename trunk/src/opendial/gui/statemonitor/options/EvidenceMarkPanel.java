@@ -50,8 +50,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
-import opendial.arch.ConfigurationSettings;
-import opendial.arch.DialogueState;
+import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
@@ -59,6 +58,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.gui.ToolkitMenu;
 import opendial.inference.NaiveInference;
+import opendial.state.DialogueState;
 
 /**
  * 

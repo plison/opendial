@@ -25,13 +25,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.nodes.ChanceNode;
+import opendial.domains.datastructs.TemplateString;
 import opendial.domains.rules.CaseBasedRule;
 import opendial.domains.rules.PredictionRule;
 import opendial.modules.SynchronousModule;
+import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**
@@ -54,7 +54,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	public static int idCounter = 0;
 
 	// triggers associated with the model
-	List<String> triggers;
+	List<TemplateString> triggers;
 
 	// collection of rules for the model
 	Collection<T> rules;
@@ -71,7 +71,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param cls the rule class
 	 */
 	public Model() {
-		triggers = new LinkedList<String>();
+		triggers = new LinkedList<TemplateString>();
 		rules = new LinkedList<T>();
 		id = "model" + idCounter;
 		idCounter++;
@@ -93,8 +93,9 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param trigger the variable
 	 */
 	public void addTrigger(String trigger) {
-		triggers.add(trigger);
+		triggers.add(new TemplateString(trigger));
 	}
+
 
 
 	/**
@@ -103,7 +104,9 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param triggers the list of triggers
 	 */
 	public void addTriggers(List<String> triggers) {
-		this.triggers.addAll(triggers);
+		for (String s : triggers) {
+			addTrigger(s);
+		}
 	}
 
 
@@ -138,8 +141,8 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * 
 	 * @return the triggers
 	 */
-	public List<String> getTriggers() {
-		return new ArrayList<String>(triggers);
+	public List<TemplateString> getTriggers() {
+		return new ArrayList<TemplateString>(triggers);
 	}
 
 
@@ -154,18 +157,16 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 
 
 	@Override
-	public void trigger(DialogueState state, String newNodeId) {
-		if (isTriggered(state, newNodeId)) {
+	public void trigger(DialogueState state) {
 			for (CaseBasedRule r : rules) {
 				try {	
-			//		log.debug("applying rule " + r.getRuleId());
+					//		log.debug("applying rule " + r.getRuleId());
 					state.applyRule(r); 
 				}
 				catch (DialException e) {
 					log.warning("rule " + r.getRuleId() + " could not be applied: " + e.toString()); 
 				}				
 			}
-		}
 	}
 
 	/**
@@ -177,49 +178,40 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param newNodeId variable label for the new node in the network
 	 * @return true if the model is triggered, false otherwise
 	 */
-	public boolean isTriggered(DialogueState state, String newNodeId) {
+	public boolean isTriggered(DialogueState state) {
 
-		BNetwork network = state.getNetwork();
+		for (String newNodeId : state.getVariablesToProcess()) {
+			String trimmedNodeId = newNodeId.replaceAll("'", "");
 
-		String trimmedNodeId = newNodeId.replaceAll("'", "");
-		
-		// direct triggers
-		for (String trigger : triggers) {
-			if (trimmedNodeId.equals(trigger) && 
-					network.getNode(newNodeId) instanceof ChanceNode) {
-				
-				// we make sure that predictive nodes only trigger prediction rules
-				if (!trimmedNodeId.contains("^p") ||
-						getModelType().equals(PredictionRule.class)) {
-					return true;
+			// direct triggers
+			for (TemplateString trigger : triggers) {
+				if (trigger.isMatching(trimmedNodeId, false) 
+						&& !state.getNetwork().hasActionNode(newNodeId)) {
+
+					// we make sure that predictive nodes only trigger prediction rules
+					if (!trimmedNodeId.contains("^p") ||
+							getModelType().equals(PredictionRule.class)) {
+						//			log.debug("model " + id + "(trigger=" + trigger
+						// + ") directly triggered via " + newNodeId);
+						return true;
+					}
 				}
 			}
-		}
 
-		// indirect triggers
-		if (!network.getNode(newNodeId).getOutputNodes().isEmpty()) {
+			// indirect triggers
+			/** if (!network.getNode(newNodeId).getOutputNodes().isEmpty()) {
 			List<String> influencedNodes = getInfluencedNodeIds(network, newNodeId);
 			for (String trigger : triggers) {
 				if (influencedNodes.contains(trigger)) {
-		//			log.debug("model " + id + " indirectly triggered via " + newNodeId);
+					log.debug("model " + id + "(trigger=" + trigger + ") indirectly triggered via " + newNodeId);
 					return true;
 				}
 			}
+		} */
 		}
+		return false;
+	}
 
-		return false;
-	}
-	
-	
-	/**
-	 * Returns false (a model only changes the dialogue state)
-	 * 
-	 * @return false
-	 */
-	@Override
-	public boolean isExternal() {
-		return false;
-	}
 
 
 	// ===================================
@@ -236,7 +228,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	public String toString() {
 		String str =id;
 		str += " [triggers=";
-		for (String trigger : triggers) {
+		for (TemplateString trigger : triggers) {
 			str+= "("+trigger+")" + " v ";
 		}
 		str = str.substring(0, str.length()-3) + "] with " + rules.size() + " rules:\n";
@@ -267,7 +259,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param newNodeId the new node id
 	 * @return the list of node identifiers that may be influenced
 	 */
-	private static List<String> getInfluencedNodeIds(BNetwork network, String newNodeId) {
+	/** private static List<String> getInfluencedNodeIds(BNetwork network, String newNodeId) {
 
 		List<String> influencedNodes = new ArrayList<String>();
 
@@ -287,9 +279,9 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 		}
 		return influencedNodes;
 	}
-	
-	
-	private Class<? extends CaseBasedRule> getModelType() {
+*/
+
+	public Class<? extends CaseBasedRule> getModelType() {
 		if (rules.isEmpty()) {
 			log.warning("cannot determine model type");
 			return CaseBasedRule.class;

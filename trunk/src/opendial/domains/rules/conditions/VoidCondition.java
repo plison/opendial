@@ -25,6 +25,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.quantification.UnboundPredicate;
 
 /**
  * Representation of a void condition, which is always true.
@@ -46,16 +47,6 @@ public class VoidCondition implements Condition {
 	@Override
 	public Set<TemplateString> getInputVariables() {
 		return new HashSet<TemplateString>();
-	}
-	
-	/**
-	 * Returns an empty set
-	 *
-	 * @return an empty set
-	 */
-	@Override
-	public Set<String> getLocalOutputVariables() {
-		return new HashSet<String>();
 	}
 
 
@@ -80,6 +71,19 @@ public class VoidCondition implements Condition {
 	public Assignment getLocalOutput(Assignment input) {
 		return new Assignment();
 	}
+	
+	
+	/**
+	 * Returns the set of unbound predicates for the basic condition, which could
+	 * be either associated with the variable label or its content.
+	 * 
+	 * @return the set of unbound predicates
+	 */
+	@Override
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		return new HashSet<UnboundPredicate>();
+	}
+	
 	
 	/**
 	 * Returns the string "true" indicating that the condition is

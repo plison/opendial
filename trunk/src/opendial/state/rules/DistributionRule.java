@@ -17,84 +17,86 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
-
+package opendial.state.rules;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.ConfigurationSettings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.utility.UtilityDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
-import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
-import opendial.inference.ImportanceSampling;
-import opendial.inference.InferenceAlgorithm;
-import opendial.inference.queries.UtilQuery;
-import opendial.utils.CombinatoricsUtils;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.TemplateString;
+import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
+import opendial.domains.rules.quantification.UnboundPredicate;
 
-public class ForwardPlanner extends Thread {
-	
+public class DistributionRule implements Rule {
+
 	// logger
-	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DistributionRule", Logger.Level.DEBUG);
 
-	DialogueState state;
+	ProbDistribution distrib;
 	
-	public ForwardPlanner(DialogueState state) {
-		this.state = state;
+	String ruleId;
+	
+	public DistributionRule(ProbDistribution distrib, String ruleId) {
+		this.distrib = distrib;
+		this.ruleId = ruleId;
 	}
 	
 	@Override
-	public void run() {
-		log.debug("planner is running...");
-		
-		Set<String> actionNodes = state.getNetwork().getActionNodeIds();
-		
-		try {
-		InferenceAlgorithm inference = ConfigurationSettings.getInstance().
-				getInferenceAlgorithm().newInstance();
-		
-		UtilQuery query = new UtilQuery(state, actionNodes);
-		UtilityTable distrib = inference.queryUtility(query);
-		
-		double highestUtility = 0;
-		Assignment bestAction = getDefaultAssign();
-		for (Assignment a : distrib.getTable().keySet()) {
-			double utility = distrib.getUtility(a);
-			if (utility > highestUtility) {
-				bestAction = a;
-				highestUtility = utility;
-			}
-		}
-		
-		state.getNetwork().removeNodes(bestAction.getVariables());
-		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
-		for (String actionVar: bestAction.getVariables()) {
-			ChanceNode newNode = new ChanceNode(actionVar);
-			newNode.addProb(bestAction.getValue(actionVar), 1.0);
-			state.getNetwork().addNode(newNode);
-		}
-		log.debug("planning is finished, selected action: " + bestAction + "(Q=" + highestUtility+")");
-		}
-		catch (Exception e) {
-			log.warning("cannot select optimal action: " + e);
-		}
-		state.getController().setAsCompleted(this);		
+	public Set<TemplateString> getInputVariables() {
+		return new HashSet<TemplateString>();
+	}
+	
+	
+	public Set<UnboundPredicate> getUnboundPredicates() {
+		return new HashSet<UnboundPredicate>();
 	}
 
 	
-	private Assignment getDefaultAssign() {
-		Assignment a = new Assignment();
-		for (String actionNode: state.getNetwork().getActionNodeIds()) {
-			a.addPair(actionNode, ValueFactory.none());
+	@Override
+	public Map<Output, Parameter> getEffectOutputs(Assignment input) {
+		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
+		try {
+			SimpleTable tableOutput = distrib.toDiscrete().getProbTable(input);
+			double total = 0;
+			for (Assignment a : tableOutput.getRows()) {
+				Output o = new Output();
+				o.setValuesForVariables(a);
+				double param = tableOutput.getProb(a);
+				outputs.put(o, new FixedParameter(param));
+				total += param;
+			}
+			if (total < 0.98) {
+				outputs.put(new Output(), new FixedParameter(1-total));
+			}
+			
 		}
-		return a;
+		catch (DialException e) {
+			log.warning("cannot construct outputs for distribution rule: " + e);
+		}
+		
+		return outputs;
 	}
-}
 
+	@Override
+	public String getRuleId() {
+		return ruleId;
+	}
+
+	@Override
+	public RuleType getRuleType() {
+		return RuleType.PROB;
+	}
+	
+	public String toString() {
+		return ruleId + ": " + distrib.toString();
+	}
+
+}

@@ -17,34 +17,23 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.arch.statechange;
 
-import java.util.Map;
-import java.util.Set;
-
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
-import opendial.domains.rules.parameters.Parameter;
+package opendial.bn.nodes;
 
 
 /**
+ * Object listening to changes of identifiers on a node
  * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @author plison
  *
  */
-public interface Rule {
-	
-	public enum RuleType {PROB, UTIL}
-	
-	public Set<TemplateString> getInputVariables();
-	
-	public Map<Output,Parameter> getEffectOutputs(Assignment input);
-	
-	public String getRuleId();
-	
-	public RuleType getRuleType();
-	
+public interface IdChangeListener {
+
+	/**
+	 * Takes note of the following change of node identifier
+	 * 
+	 * @param oldNodeId the old node identifier
+	 * @param newNodeId the new node identifier
+	 */
+	public void modifyNodeId(String oldNodeId, String newNodeId);
 }

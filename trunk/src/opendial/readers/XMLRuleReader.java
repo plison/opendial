@@ -53,7 +53,7 @@ import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
 import opendial.utils.XMLUtils;
 
 /**
@@ -96,6 +96,11 @@ public class XMLRuleReader {
 		for (int i = 0 ; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
 
+			if (node.getNodeName().equals("quantifier")) {
+				String quantifier = getQuantifier(node);
+				rule.addQuantifier(quantifier);
+			}
+			
 			if (node.getNodeName().equals("case")) {
 				Case newCase = getCase(node, cls);
 				rule.addCase(newCase);
@@ -111,6 +116,17 @@ public class XMLRuleReader {
 		}
 	}
 
+
+
+	private String getQuantifier(Node node) {
+		if (node.getNodeName().equals("quantifier") && node.hasAttributes() &&
+				node.getAttributes().getNamedItem("id") != null) {
+			return node.getAttributes().getNamedItem("id").getNodeValue().replace("{", "").replace("}", "");
+		}
+		else {
+			return "";
+		}
+	}
 
 
 	/**
@@ -249,7 +265,10 @@ public class XMLRuleReader {
 			}
 			else if (relationStr.toLowerCase().trim().equals("partialmatch")) {
 				relation = Relation.PARTIAL_MATCH;
-			} 
+			}
+			else if (relationStr.toLowerCase().trim().equals("partial")) {
+				relation = Relation.PARTIAL_MATCH;
+			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.CONTAINS;
 			}
@@ -418,22 +437,16 @@ public class XMLRuleReader {
 			return new FixedParameter(weight);
 		}
 		catch (NumberFormatException e) {
-			if (domain.getParameters().hasChanceNode(paramStr)) {
-				return new StochasticParameter(domain.getParameters().getChanceNode(paramStr));
-			}
-			else if (paramStr.contains("+")) {
+			if (paramStr.contains("+")) {
 				String[] split = paramStr.split("+");
 				CompositeParameter param = new CompositeParameter();
 				for (int i = 0 ; i < split.length ; i++) {
-					if (!domain.getParameters().hasChanceNode(split[i])) {
-						throw new DialException("parameter " + split[i] + " is not defined in the domain");
-					}
-					param.addParameter(domain.getParameters().getChanceNode(split[i]));
+					param.addParameter(split[i]);
 				}
 				return param;
 			}
 			else {
-				throw new DialException("parameter " + paramStr + " is not defined in the domain");
+				return new SingleParameter(paramStr);
 			}
 		}
 	}

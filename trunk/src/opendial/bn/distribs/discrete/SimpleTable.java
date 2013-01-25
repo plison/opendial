@@ -98,7 +98,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 			totalProb += headTable.get(a);
 		}
 		if (totalProb < 0.99999) {
-			addRow(getDefaultAssign(), 1.0 - totalProb);
+			addRow(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 	}
 
@@ -110,9 +110,9 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @param head the assignment for X1...Xn
 	 * @param prob the associated probability
 	 */
-	public void addRow (Assignment head, double prob) {
+	public synchronized void addRow (Assignment head, double prob) {
 
-		if (prob < 0.0f || prob > 1.03f) {
+		if (prob < 0.0f || prob > 1.02f) {
 			log.warning("probability is not well-formed: " + prob);
 			return;
 		}
@@ -122,11 +122,11 @@ public class SimpleTable implements DiscreteProbDistribution {
 		table.put(head,prob);
 
 		double totalProb = countTotalProb();
-		if (totalProb < 0.975) {
-			table.put(getDefaultAssign(), 1.0 - totalProb);
+		if (totalProb < 0.98) {
+			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 		else {
-			table.remove(getDefaultAssign());
+			table.remove(Assignment.createDefault(headVars));
 		}
 	}
 
@@ -139,7 +139,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @param head the head assignment
 	 * @param prob the probability increment
 	 */
-	public void incrementRow(Assignment head, double prob) {
+	public synchronized void incrementRow(Assignment head, double prob) {
 		if (table.containsKey(head)) {
 			addRow(head, table.get(head) + prob);
 		}
@@ -155,7 +155,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @param condition the conditional assignment for Y1...Yn
 	 * @param heads the mappings (head assignment, probability value)
 	 */
-	public void addRows(Map<Assignment,Double> heads) {
+	public synchronized void addRows(Map<Assignment,Double> heads) {
 		for (Assignment head : heads.keySet()) {
 			addRow(head, heads.get(head));
 		}
@@ -167,13 +167,13 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @param condition conditional assignment
 	 * @param head head assignment
 	 */
-	public void removeRow(Assignment head) {
+	public synchronized void removeRow(Assignment head) {
 
 		table.remove(head);
 
 		double totalProb = countTotalProb();
 		if (totalProb < 0.99999) {
-			table.put(getDefaultAssign(), 1.0 - totalProb);
+			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 
 	}
@@ -186,7 +186,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @param oldVarId
 	 * @param newVarId
 	 */
-	public void modifyVarId(String oldVarId, String newVarId) {
+	public synchronized void modifyVarId(String oldVarId, String newVarId) {
 		//	log.debug("changing var id from " + oldVarId + " --> " + newVarId);
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
 
@@ -208,6 +208,9 @@ public class SimpleTable implements DiscreteProbDistribution {
 
 
 	private synchronized void resetIntervals() {
+		if (table.isEmpty()) {
+			log.warning("creating intervals for an empty table");
+		}
 		intervals = new Intervals<Assignment>(table);
 	}
 
@@ -337,10 +340,14 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	public Assignment sample() throws DialException {
 
-		if (intervals == null) {
+		while (intervals == null) {
 			resetIntervals();
 		}
-
+		if (intervals.isEmpty()) {
+			log.warning("interval is empty, table: " + table);
+			return new Assignment();
+		}
+		
 		return intervals.sample();
 	}
 
@@ -364,13 +371,13 @@ public class SimpleTable implements DiscreteProbDistribution {
 					values.put(val.getDouble(), table.get(a)/total);	
 				}
 				else if (!(a.getValue(headVar) instanceof NoneVal)) {
-					throw new DialException("Distribution could not be converted to a continuous distribution");
+					throw new DialException("conversion error: " + a.getValue(headVar));
 				}
 			}
 			DiscreteDensityFunction function = new DiscreteDensityFunction(values);
 			return new FunctionBasedDistribution(headVar, function);
 		}
-		throw new DialException("Distribution could not be converted to a continuous distribution");
+		throw new DialException("Distribution could not be converted to a continuous distribution: " + headVars);
 	}
 
 
@@ -404,6 +411,21 @@ public class SimpleTable implements DiscreteProbDistribution {
 	@Override
 	public Collection<String> getHeadVariables() {
 		return new HashSet<String>(headVars);
+	}
+	
+	
+	/**
+	 * Returns true if the table is empty (or contains only a default
+	 * assignment), false otherwise
+	 * 
+	 * @return true if empty, false otherwise
+	 */
+	public boolean isEmpty() {
+		if (table.isEmpty()) {
+			return true;
+		}
+		else return (table.size() == 1 && table.keySet().iterator().next().
+				equals(Assignment.createDefault(headVars)));
 	}
 
 	// ===================================
@@ -445,8 +467,8 @@ public class SimpleTable implements DiscreteProbDistribution {
 		}
 
 		// checks that the total probability is roughly equal to 1.0f
-		double totalProb = countTotalProb() + getProb(getDefaultAssign());
-		if (totalProb < 0.9999f || totalProb > 1.0001f) {
+		double totalProb = countTotalProb() + getProb(Assignment.createDefault(headVars));
+		if (totalProb < 0.975f || totalProb > 1.025f) {
 			log.debug("total probability is " + totalProb);
 			return false;
 		}
@@ -500,7 +522,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 * @return the copy of the table
 	 */
 	@Override
-	public SimpleTable copy() {
+	public synchronized SimpleTable copy() {
 		SimpleTable tableCopy = new SimpleTable();
 		for (Assignment head : table.keySet()) {
 			tableCopy.addRow(head.copy(), table.get(head));
@@ -523,27 +545,13 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	private double countTotalProb() {
 		double totalProb = 0.0f;
-		Assignment defaultA = getDefaultAssign();
+		Assignment defaultA = Assignment.createDefault(headVars);
 		for (Assignment head : table.keySet()) {
 			if (!defaultA.equals(head)) {
 				totalProb += table.get(head);
 			}
 		}
 		return totalProb;
-	}
-
-
-	/**
-	 * Returns the default assignment
-	 * 
-	 * @return the default assignment
-	 */
-	private Assignment getDefaultAssign() {
-		Assignment defaultA = new Assignment();
-		for (String var : headVars) {
-			defaultA.addPair(var, ValueFactory.none());
-		}
-		return defaultA;
 	}
 
 

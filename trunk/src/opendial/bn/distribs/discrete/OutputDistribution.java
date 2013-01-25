@@ -35,6 +35,7 @@ import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -49,7 +50,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
 
 	// output variables	
-	String outputVar;
+	String baseVar;
 	
 	// primes attached to the variable label
 	String primes;
@@ -60,8 +61,8 @@ public class OutputDistribution implements DiscreteProbDistribution {
 
 
 	public OutputDistribution(String var) {
-		this.outputVar = var.replace("'", "");
-		this.primes = var.replace(outputVar, "");
+		this.baseVar = StringUtils.removePrimes(var);
+		this.primes = var.replace(baseVar, "");
 		cache = new HashMap<Assignment,SimpleTable>();
 	}
 
@@ -80,7 +81,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public OutputDistribution copy() {
-		return new OutputDistribution(outputVar);
+		return new OutputDistribution(baseVar + primes);
 	}
 
 	/**
@@ -99,9 +100,9 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
-		if ((outputVar+primes).equals(oldId)) {
-			this.outputVar = newId.replace("'", "");
-			this.primes = newId.replace(outputVar, "");
+		if ((baseVar+primes).equals(oldId)) {
+			this.baseVar = newId.replace("'", "");
+			this.primes = newId.replace(baseVar, "");
 		}
 		cache.clear();
 	}
@@ -226,13 +227,17 @@ public class OutputDistribution implements DiscreteProbDistribution {
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Output) {
 				Output output = (Output)inputVal;
-				Value setValue = output.getSetValue(outputVar);
+				Value setValue = output.getSetValue(baseVar);
 				if (!setValue.equals(ValueFactory.none())) {
-					setValues.add(output.getSetValue(outputVar));
+					setValues.add(output.getSetValue(baseVar));
 				}
-				addValues.addAll(output.getValuesToAdd(outputVar));
-				discardValues.addAll(output.getValuesToDiscard(outputVar));
-				if (output.mustBeCleared(outputVar)) {
+				if (output.hasValuesToAdd(baseVar)) {
+					addValues.addAll(output.getValuesToAdd(baseVar));
+				}
+				if (output.hasValuesToDiscard(baseVar)) {
+					discardValues.addAll(output.getValuesToDiscard(baseVar));
+				}
+				if (output.mustBeCleared(baseVar)) {
 					previousValue = ValueFactory.none();
 				}
 			}
@@ -243,7 +248,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 		// a uniform probability on each alternative
 		if (!setValues.isEmpty()) {
 			for (Value v : setValues) {
-				probTable.addRow(new Assignment(outputVar+primes, v), 1.0 / setValues.size());
+				probTable.addRow(new Assignment(baseVar+primes, v), 1.0 / setValues.size());
 			}
 		}
 		// if the output is made from add values, concatenate the results
@@ -252,12 +257,12 @@ public class OutputDistribution implements DiscreteProbDistribution {
 			if (previousValue instanceof SetVal) {
 				addValue.addAll((SetVal)previousValue);
 			}
-			probTable.addRow(new Assignment(outputVar+primes, addValue), 1.0);
+			probTable.addRow(new Assignment(baseVar+primes, addValue), 1.0);
 		}
 		
 		// else, let the value reflect the previous one (or none)
 		else {
-			probTable.addRow(new Assignment(outputVar+primes, previousValue), 1.0);
+			probTable.addRow(new Assignment(baseVar+primes, previousValue), 1.0);
 		} 
 		
 		cache.put(new Assignment(condition), probTable);
@@ -266,10 +271,10 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	
 	private String getPreviousLabel() {
 		if (!primes.isEmpty()) {
-			return outputVar+primes.substring(0, primes.length()-1);
+			return baseVar+primes.substring(0, primes.length()-1);
 		}
 		else {
-			return outputVar+"^o";
+			return baseVar+"^o";
 		}
 	}
 	
@@ -281,7 +286,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public Collection<String> getHeadVariables() {
-		Set<String> headVars = new HashSet<String>(Arrays.asList(outputVar+primes));
+		Set<String> headVars = new HashSet<String>(Arrays.asList(baseVar+primes));
 		return headVars;
 	}
 

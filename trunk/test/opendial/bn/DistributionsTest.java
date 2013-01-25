@@ -26,7 +26,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
@@ -168,7 +168,7 @@ public class DistributionsTest {
 		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2", 1.2)), 1/5.0, 0.001);
 		assertEquals(continuous2.getCumulativeProb(new Assignment(), new Assignment("var2", 2)), 4/5.0, 0.001);
 		assertEquals(continuous2.toDiscrete().getHeadValues().size(),
-				ConfigurationSettings.getInstance().getNbDiscretisationBuckets());
+				Settings.nbDiscretisationBuckets);
 		assertEquals(continuous2.toDiscrete().getProb(new Assignment(), new Assignment("var2", 1.2)), 0.01, 0.001);
 		
 		double sum = 0;
@@ -187,7 +187,7 @@ public class DistributionsTest {
 		assertEquals(continuous2.getCumulativeProb(new Assignment(), new Assignment("var2", 2)), 0.5, 0.001);
 		assertEquals(continuous2.getCumulativeProb(new Assignment(), new Assignment("var2", 3)), 0.7181, 0.001);
 		assertEquals(continuous2.toDiscrete().getHeadValues().size(),
-				ConfigurationSettings.getInstance().getNbDiscretisationBuckets());
+				Settings.nbDiscretisationBuckets);
 		assertEquals(continuous2.toDiscrete().getProb(new Assignment(), new Assignment("var2", 2)), 0.031805, 0.001);
 		
 		double sum = 0;

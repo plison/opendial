@@ -20,10 +20,10 @@
 package opendial.domains.rules;
 
 import opendial.arch.Logger;
-import opendial.arch.statechange.Rule;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.VoidEffect;
+import opendial.state.rules.Rule;
 
 /**
  * Representation of an update rule, mapping conditions to probabilistic effects

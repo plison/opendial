@@ -1,0 +1,304 @@
+// =================================================================                                                                   
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+//                                                                                                                                     
+// This library is free software; you can redistribute it and/or                                                                       
+// modify it under the terms of the GNU Lesser General Public License                                                                  
+// as published by the Free Software Foundation; either version 2.1 of                                                                 
+// the License, or (at your option) any later version.                                                                                 
+//                                                                                                                                     
+// This library is distributed in the hope that it will be useful, but                                                                 
+// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
+// Lesser General Public License for more details.                                                                                     
+//                                                                                                                                     
+// You should have received a copy of the GNU Lesser General Public                                                                    
+// License along with this program; if not, write to the Free Software                                                                 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
+// 02111-1307, USA.                                                                                                                    
+// =================================================================                                                                   
+
+package opendial.bn.distribs.discrete;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
+import opendial.domains.datastructs.Output;
+import opendial.domains.rules.PredictionRule;
+import opendial.domains.rules.UpdateRule;
+import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.rules.AnchoredRule;
+import opendial.state.rules.Rule.RuleType;
+
+/**
+ * Discrete probability distribution based on a rule specification (which can be for
+ * an update rule or a prediction rule).
+ * 
+ * <p>The distribution exploits a cache to speed up the inference.
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ *
+ */
+public class RuleDistribution implements DiscreteProbDistribution {
+
+	// logger
+	public static Logger log = new Logger("RuleDistribution", Logger.Level.DEBUG);
+
+	// An anchored rule
+	AnchoredRule rule;
+	
+	String id;
+	
+	// a cache with the output values in a simple table
+	DiscreteProbabilityTable cache;
+	
+	
+
+	// ===================================
+	//  DISTRIBUTION CONSTRUCTION
+	// ===================================
+	
+	
+	/**
+	 * Creates a new rule-base distribution, based on an anchored rule
+	 * 
+	 * @param rule the anchored rule
+	 * @throws DialException if the rule is not an update or a prediction rule
+	 */
+	public RuleDistribution(AnchoredRule rule) throws DialException {
+		if (rule.getRule().getRuleType() == RuleType.PROB) {
+			this.rule = rule;
+		}
+		else {
+			throw new DialException("only probabilistic rules can define a " +
+					"rule-based probability distribution");
+		}
+		id = rule.getId();
+		cache = new DiscreteProbabilityTable();
+	}
+	
+	
+	/**
+	 * Does nothing.
+	 */
+	@Override
+	public void modifyVarId(String oldId, String newId) {
+		cache.modifyVarId(oldId, newId);
+		if (id.equals(oldId)) {
+			id = newId;
+		}
+	}
+
+	
+	// ===================================
+	//  GETTERS
+	// ===================================
+	
+	
+
+	/**
+	 * Returns the probability for P(head|condition), where head is 
+	 * an assignment of an output value for the rule node.
+	 * 
+	 * @param condition the conditional assignment
+	 * @param head the head assignment
+	 * @return the probability
+	 */
+	@Override
+	public double getProb(Assignment condition, Assignment head) {
+		if (!cache.hasProbTable(condition)) {
+			fillCacheForCondition(condition);
+		}
+		
+		return cache.getProb(condition, head);
+	}
+	
+	
+	/**
+	 * Returns true if a probability is explicitly defined for P(head|condition),
+	 * where head is an assignment of an output value for the rule node.
+	 * 
+	 * @param condition the conditional assignment
+	 * @param head the head assignment
+	 * @return true if a probability is explicitly defined, false otherwise
+	 */
+	@Override
+	public boolean hasProb(Assignment condition, Assignment head) {
+		if (!cache.hasProbTable(condition)) {
+			fillCacheForCondition(condition);
+		}
+		
+		return cache.hasProb(condition, head);
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Returns the probability table associated with the given input assignment
+	 * 
+	 * @param condition the conditional assignment
+	 * @return the associated probability table (as a SimpleTable)
+	 */
+	@Override
+	public SimpleTable getProbTable(Assignment condition) {
+		if (!cache.hasProbTable(condition)) {
+			fillCacheForCondition(condition);
+		}
+		
+		return cache.getProbTable(condition);
+	}
+	
+	
+	/**
+	 * Samples one possible output value given the input assignment
+	 * 
+	 * @param condition the input assignment
+	 * @return the sampled value
+	 * @throws DialException if sampling returned an error
+	 */
+	@Override
+	public Assignment sample(Assignment condition) throws DialException {
+		
+		synchronized (this) {
+		if (!cache.hasProbTable(condition)) {
+			fillCacheForCondition(condition);
+		}
+		}
+		return cache.sample(condition);	
+	}
+
+	
+	/**
+	 * Returns a singleton set with the label of the anchored rule
+	 * 
+	 * @return a singleton set with the label of the anchored rule
+	 */
+	public Collection<String> getHeadVariables() {
+		Set<String> headVars = new HashSet<String>(Arrays.asList(id));
+		return headVars;
+	}
+
+	
+	// ===================================
+	//  UTILITY METHODS
+	// ===================================
+	
+	
+	/**
+	 * Returns itself
+	 * 
+	 * @return itself
+	 */
+	@Override
+	public DiscreteProbDistribution toDiscrete() {
+		return this;
+	}
+
+	/**
+	 * Throws an exception (the distribution cannot be converted)
+	 * 
+	 * @throws DialException always thrown
+	 */
+	@Override
+	public ContinuousProbDistribution toContinuous()
+			throws DialException {
+		throw new DialException ("cannot convert to a continuous distribution");
+	}
+	
+	
+	/**
+	 * Returns true
+	 * @return true
+	 */
+	@Override
+	public boolean isWellFormed() {
+		return true;
+	}
+
+	/**
+	 * Returns a copy of the distribution
+	 * 
+	 * @return the copy
+	 */
+	@Override
+	public RuleDistribution copy() {
+		try { return new RuleDistribution (rule); } 
+		catch (DialException e) { e.printStackTrace(); return null; }
+	}
+
+	
+	
+	/**
+	 * Returns the pretty print for the rule
+	 * 
+	 * @return the pretty print
+	 */
+	@Override
+	public String prettyPrint() {
+		return rule.toString();
+	}
+
+	
+	/**
+	 * Returns the pretty print for the rule
+	 * 
+	 * @return the pretty print
+	 */
+	@Override
+	public String toString() {
+		return rule.toString();
+	}
+
+	
+	
+	// ===================================
+	//  PRIVATE METHODS
+	// ===================================
+	
+
+	/**
+	 * Fills the cache with the SimpleTable representing the rule output for the
+	 * specific condition.
+	 * 
+	 * @param condition the conditional assignment
+	 */
+	private synchronized void fillCacheForCondition(Assignment condition) {
+		try {
+		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition);
+		SimpleTable probTable = new SimpleTable();
+		for (Output effectOutput : effectOutputs.keySet()) {
+			Parameter param = effectOutputs.get(effectOutput);
+			double parameterValue = param.getParameterValue(condition);
+			probTable.addRow(new Assignment(id, effectOutput), parameterValue);
+		}
+		if (probTable.isEmpty()) {
+			log.warning("probability table is empty (no effects) for input " +
+					condition + " and rule " + rule.toString());
+		}
+		if (!cache.hasProbTable(condition)) {
+			cache.addRows(new Assignment(condition), probTable);
+		}
+		}
+		catch (DialException e) {
+			log.warning("could not fill cache for condition " + condition + ": " + e.toString());
+		}
+	}
+	
+
+}

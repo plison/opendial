@@ -19,8 +19,8 @@
 
 package opendial.modules;
 
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
+import opendial.state.DialogueState;
 
 public class ASRModule extends AsynchronousModule {
 

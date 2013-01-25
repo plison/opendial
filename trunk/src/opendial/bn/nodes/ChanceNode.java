@@ -56,7 +56,7 @@ public class ChanceNode extends BNode {
 	// NB: if the node has a continuous range, these values are based on 
 	// a discretisation procedure defined by the distribution
 	Set<Value> cachedValues;
-
+	
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -463,6 +463,7 @@ public class ChanceNode extends BNode {
 		}
 		cachedValues = cachedValuesTemp;
 	}
+
 
 
 }

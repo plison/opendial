@@ -48,7 +48,7 @@ public class DerivedActionNode extends ActionNode {
 	public static Logger log = new Logger("DerivedActionNode", Logger.Level.DEBUG);
 
 	Set<Value> valueCache;
-	
+
 	Map<Assignment, Intervals<Value>> relevantActionsCache;
 
 	/**
@@ -156,11 +156,10 @@ public class DerivedActionNode extends ActionNode {
 	 * @return
 	 */
 	public Value sample(Assignment input) {
-
 		if (!relevantActionsCache.containsKey(input)) {
 			buildRelevantActionsCache(input);
 		}
-		
+
 		Intervals<Value> allActions = relevantActionsCache.get(input);
 		if (allActions == null) {
 			log.debug("action is " + nodeId + " input is " +input);
@@ -168,7 +167,7 @@ public class DerivedActionNode extends ActionNode {
 		}
 		if (!allActions.isEmpty()) {
 			try {
-			return allActions.sample();
+				return allActions.sample();
 			}
 			catch (DialException e) {
 				log.warning("action sampling problem: " + e);
@@ -176,7 +175,7 @@ public class DerivedActionNode extends ActionNode {
 			}
 		}
 		else {
-		//	log.warning("cannot sample for action " + nodeId + " (no relevant actions found)");
+			//	log.warning("cannot sample for action " + nodeId + " (no relevant actions found)");
 			return ValueFactory.none();
 		}
 	}
@@ -239,13 +238,13 @@ public class DerivedActionNode extends ActionNode {
 	 */
 	private synchronized void buildValueCache() {
 		Set<Value> valueCacheTemp = new HashSet<Value>();
-		String formattedId = StringUtils.removeSpecifiers(nodeId);
+	//	String formattedId = StringUtils.removeSpecifiers(nodeId);
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
 				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();
 				for (Assignment relevantAction : relevantActions) {
-					if (relevantAction.containsVar(formattedId)) {
-						valueCacheTemp.add(relevantAction.getValue(formattedId));
+					if (relevantAction.containsVar(nodeId)) {
+						valueCacheTemp.add(relevantAction.getValue(nodeId));
 					}
 					else {
 						valueCacheTemp.add(ValueFactory.none());						
@@ -253,32 +252,38 @@ public class DerivedActionNode extends ActionNode {
 				}
 			}
 		}
+		// seems necessary for complex cases with multiple actions
+		valueCacheTemp.add(ValueFactory.none());
 		valueCache = valueCacheTemp;
 	}
-	
+
 	
 	private synchronized void buildRelevantActionsCache(Assignment input) {
-		String formattedId = StringUtils.removeSpecifiers(nodeId);
+	//	String formattedId = StringUtils.removeSpecifiers(nodeId);
+	//	Assignment input2 = input.removeSpecifiers();
 		Map<Value, Double> frequencies = new HashMap<Value,Double>();
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
-				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();	
-				for (Assignment relevantAction : relevantActions) {
-					if (relevantAction.containsVar(formattedId) &&
-							relevantAction.consistentWith(input.removeSpecifiers())) {
-						Value val = relevantAction.getValue(formattedId);
+				Set<Assignment> possibleActions = ((UtilityNode)output).getRelevantActions();	
+				Set<Assignment> compatibleActions = new HashSet<Assignment>();
+				for (Assignment action : possibleActions) {
+					if (action.consistentWith(input)) {
+						compatibleActions.add(action);
+					}
+				}
+				for (Assignment compatibleAction: compatibleActions) {
+					if (compatibleAction.containsVar(nodeId)) {
+						Value val = compatibleAction.getValue(nodeId);
 						if (!frequencies.containsKey(val)) {
 							frequencies.put(val, 0.0);
 						}
 						frequencies.put(val, frequencies.get(val)+1.0);
 					}
-					else {
-						frequencies.put(ValueFactory.none(), 1.0);
-					}
+	
 				}
 			}
 		}
-		
+		frequencies.put(ValueFactory.none(), 1.0);
 		double total = 0.0;
 		for (Value val : frequencies.keySet()) {
 			total += frequencies.get(val);

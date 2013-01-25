@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Settings;
 import opendial.bn.nodes.ChanceNode;
 import opendial.gui.statemonitor.DialogueStatePopup;
 import opendial.gui.statemonitor.options.EvidenceMarkPanel;
@@ -31,7 +31,6 @@ public final class EvidenceMarkAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
-			ConfigurationSettings settings = ConfigurationSettings.getInstance();
 			JFrame frame = this.graphViewerPopupMenu.getViewer().getStateMonitorTab().getMainFrame();
 			ChanceNode node = this.graphViewerPopupMenu.getViewer().getDialogueState().getNetwork().getChanceNode(evidenceVariable);
 			new EvidenceMarkPanel(frame, node, this.graphViewerPopupMenu.getViewer().getDialogueState());

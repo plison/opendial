@@ -31,9 +31,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
-import opendial.gui.statemonitor.StateMonitorTab;
+import opendial.arch.StateListener;
+import opendial.state.DialogueState;
 
 /**
  * Main GUI frame for the openDial toolkit, encompassing various tabs and
@@ -44,7 +44,7 @@ import opendial.gui.statemonitor.StateMonitorTab;
  *
  */
 @SuppressWarnings("serial")
-public class GUIFrame extends JFrame {
+public class GUIFrame extends JFrame implements StateListener {
 
 	// logger
 	public static Logger log = new Logger("GUIFrame", Logger.Level.NORMAL);
@@ -55,24 +55,19 @@ public class GUIFrame extends JFrame {
 	// tab for the state monitor
 	StateMonitorTab stateMonitorTab;
 	
-	/**
-	 * Returns the singleton instance of the GUI frame (which is created only
-	 * once for the application).
-	 * 
-	 * @return the GUI frame object
-	 */
-	public static GUIFrame getSingletonInstance() {
-		if (guiFrameInstance == null) {
-			guiFrameInstance = new GUIFrame();
-		}
-		return guiFrameInstance;
-	}
+	// tab for the chat window
+	ChatWindowTab chatTab;
+	
+	DialogueState state;
+	
 
 	/**
 	 * Constructs the GUI frame, with its title, menus, tabs etc.
 	 * 
 	 */
-	private GUIFrame() {
+	public GUIFrame(DialogueState state) {
+		
+		this.state = state;
 		
 		Container contentPane = getContentPane();
 
@@ -93,6 +88,9 @@ public class GUIFrame extends JFrame {
 
 		setJMenuBar(new ToolkitMenu(this));
 		
+		chatTab = new ChatWindowTab(this);
+		tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
+
 		stateMonitorTab = new StateMonitorTab(this);
 		tabbedPane.addTab(StateMonitorTab.TAB_TITLE, null, stateMonitorTab, StateMonitorTab.TAB_TIP);
 		
@@ -107,10 +105,11 @@ public class GUIFrame extends JFrame {
 	 * Updates the current dialogue state displayed in the component.  The current
 	 * dialogue state is name "current" in the selection list.
 	 * 
-	 * @param state the updated Bayesian Network
 	 */
-	public synchronized void updateCurrentState(DialogueState state) {
-		stateMonitorTab.updateCurrentState(state);
+	@Override
+	public synchronized void update() {
+		chatTab.update();
+		stateMonitorTab.update();
 	}
 	
 
@@ -127,6 +126,10 @@ public class GUIFrame extends JFrame {
 		stateMonitorTab.recordState(state, name);
 	}
 
+	
+	public DialogueState getConnectedState() {
+		return state;
+	}
 
 
 }

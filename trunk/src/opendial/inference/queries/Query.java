@@ -23,11 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.DialogueState;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
+import opendial.state.DialogueState;
 
 public abstract class Query {
 	
@@ -37,6 +37,8 @@ public abstract class Query {
 	Collection<String> queryVars;
 	Assignment evidence;
 	Collection<String> conditionalVars;
+	
+	boolean lightweight = false;
 
 	
 	protected Query (BNetwork network, Collection<String> queryVars, 
@@ -101,7 +103,9 @@ public abstract class Query {
 		for (String q : queryVars) {
 			str+= q + ",";
 		}
-		str = str.substring(0, str.length()-1);
+		if (!queryVars.isEmpty()) {
+			str = str.substring(0, str.length()-1);
+		}
 		if (!evidence.isEmpty() || !conditionalVars.isEmpty()) {
 			str += "|";
 			if (!evidence.isEmpty()) {
@@ -123,8 +127,22 @@ public abstract class Query {
 
 	
 	public int hashCode() {
-		return queryVars.hashCode() - network.hashCode() 
+		return queryVars.hashCode() - network.getNodeIds().hashCode() 
 				+2*evidence.hashCode() -3*conditionalVars.hashCode();
+	}
+	
+	
+	public void removeQueryVar(String queryVar) {
+		queryVars.remove(queryVar);
+	}
+	
+	public void setAsLightweight(boolean lightweight) {
+		this.lightweight = lightweight;
+	}
+	
+	
+	public boolean isLightweight() {
+		return lightweight;
 	}
 	
 }

@@ -32,21 +32,19 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import opendial.arch.ConfigurationSettings;
+import opendial.arch.Logger.Level;
+import opendial.arch.Settings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueState;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
-import opendial.common.MiscUtils;
 import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
@@ -55,6 +53,7 @@ import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.inference.VariableElimination;
 import opendial.readers.XMLDomainReader;
+import opendial.state.DialogueState;
 
 /**
  * 
@@ -66,10 +65,11 @@ import opendial.readers.XMLDomainReader;
 public class BasicRuleTest2 {
 
 	// logger
-	public static Logger log = new Logger("BasicRuleTest", Logger.Level.DEBUG);
+	public static Logger log = new Logger("BasicRuleTest2", Logger.Level.DEBUG);
 
 	public static final String domainFile = "domains//testing//domain2.xml";
 	public static final String domainFile2 = "domains//testing//domain3.xml";
+	public static final String domainFile3 = "domains//testing//domain4.xml";
 
 	static Domain domain;
 
@@ -80,8 +80,8 @@ public class BasicRuleTest2 {
 		try { 
 			domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
-			ConfigurationSettings.getInstance().activatePlanner(false);
-			ConfigurationSettings.getInstance().activatePruning(false);
+			Settings.activatePlanner = false;
+			Settings.activatePruning = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,7 +93,6 @@ public class BasicRuleTest2 {
 				
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
-		MiscUtils.waitUntilStable(system);
 		
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
@@ -105,8 +104,7 @@ public class BasicRuleTest2 {
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
 		 
-		system.getState().addContent(table, "test");
-		MiscUtils.waitUntilStable(system);
+		system.getState().addContent(table, "test");;
 		
 		query = new ProbQuery(system.getState(),"a_u^p");
 	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
@@ -132,7 +130,6 @@ public class BasicRuleTest2 {
 		 			
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
-		MiscUtils.waitUntilStable(system);
 		
 		system.getState().getNetwork().getNode("u_u2^p'").setId("u_u2^p");
 	 	ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
@@ -148,7 +145,6 @@ public class BasicRuleTest2 {
 		table.addRow(new Assignment("u_u2", "Do B"), 0.4); 
 		 
 		system.getState().addContent(table, "test2");
-		MiscUtils.waitUntilStable(system);
 		
 		query = new ProbQuery(system.getState(),"i_u2");
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
@@ -163,7 +159,6 @@ public class BasicRuleTest2 {
 
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
-		MiscUtils.waitUntilStable(system);
 		
 	 	UtilQuery query = new UtilQuery(system.getState(),"a_m'");
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
@@ -172,15 +167,17 @@ public class BasicRuleTest2 {
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
-		 
+		 		
+		Assignment.log.setLevel(Level.NONE);
 		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getUtilityNodeIds());
+		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getActionNodeIds());
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 		system.getState().addContent(table, "test");
-		MiscUtils.waitUntilStable(system);
 
-	 	query = new UtilQuery(system.getState(),"a_m''");
-	 	inference.checkUtil(query, new Assignment("a_m''", "Do(A)"), -4.357);
-	 	inference.checkUtil(query, new Assignment("a_m''", "Do(B)"), 2.357);	
+	 	query = new UtilQuery(system.getState(),"a_m'");
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.357);
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.357);	
+		Assignment.log.setLevel(Level.NORMAL);
 	}
 	
 	
@@ -191,20 +188,40 @@ public class BasicRuleTest2 {
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
 		system2.startSystem(); 
-		MiscUtils.waitUntilStable(system2);
 
 		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
-
-	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+		
+		inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "A")), 0.3);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
 	 	
-	 	assertEquals(6, (new ImportanceSampling()).queryUtility(query).getTable().size());
+	 	assertEquals(6, (new ImportanceSampling()).queryUtility(query).getTable().size()); 
 	}
 	
 
+
+	@Test
+	public void test5() throws DialException, InterruptedException {
+		
+		Domain domain2 = XMLDomainReader.extractDomain(domainFile3); 
+		DialogueSystem system2 = new DialogueSystem(domain2);
+		system2.startSystem(); 
+
+		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"));
+
+	//	log.debug((new VariableElimination()).queryUtility(query));
+
+		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+	 			new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "None")), 2.4);
+		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+	 			new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "DanceAround")), -0.6);
+		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+	 			new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")), 1.6);
+	 	
+	}
+	
 
 }

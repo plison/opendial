@@ -87,23 +87,24 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 			table.put(sample, relativeWeight);
 		}
 		}
+		
+		try {
 		Intervals<WeightedSample> intervals = new Intervals<WeightedSample>(table);
 	
 		SimpleEmpiricalDistribution empiricalDistrib = new SimpleEmpiricalDistribution();
 		UtilityTable utilityTable = new UtilityTable();
 		while (empiricalDistrib.getSize() < samples.size()) {
-			try {
 				WeightedSample sample = intervals.sample();
 				Assignment trimmedSample = sample.getSample().getTrimmed(query.getQueryVars());
 				empiricalDistrib.addSample(trimmedSample);
 				 
 				utilityTable.addUtility(trimmedSample, sample.getUtility());
 			} 
-			catch (DialException e) {
-				log.warning("error compiling the results: " + e.toString());
-			}
+		results = new DistributionCouple(empiricalDistrib, utilityTable);
 		}
-		results = new DistributionCouple(empiricalDistrib,utilityTable);
+		catch (DialException e) {
+			log.warning("error compiling the results: " + e.toString());
+		}
 	}
 
 
@@ -116,13 +117,6 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 	public DistributionCouple getResults() {
 		return results;
 	}
-
-
-	@Override
-	public boolean isTerminated() {
-		return (results != null);
-	}
-
 
 	
 }
