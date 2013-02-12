@@ -265,12 +265,12 @@ public class NetworkReductionTest {
 		UtilQuery query3 = new UtilQuery(reducedNet2, Arrays.asList("Action"));
 		UtilQuery query4 = new UtilQuery(reducedNet3, Arrays.asList("Action"));
 
-		assertEquals(ve.queryUtility(query1).getUtility(new Assignment("Action")), 
-				ve.queryUtility(query2).getUtility(new Assignment("Action")), 0.0001);
-		assertEquals(ve.queryUtility(query1).getUtility(new Assignment("Action")), 
-				naive.queryUtility(query3).getUtility(new Assignment("Action")), 0.0001);
-		assertEquals(ve.queryUtility(query2).getUtility(new Assignment("Action")), 
-				is.queryUtility(query4).getUtility(new Assignment("Action")), 0.05);
+		assertEquals(ve.queryUtil(query1).getUtil(new Assignment("Action")), 
+				ve.queryUtil(query2).getUtil(new Assignment("Action")), 0.0001);
+		assertEquals(ve.queryUtil(query1).getUtil(new Assignment("Action")), 
+				naive.queryUtil(query3).getUtil(new Assignment("Action")), 0.0001);
+		assertEquals(ve.queryUtil(query2).getUtil(new Assignment("Action")), 
+				is.queryUtil(query4).getUtil(new Assignment("Action")), 0.05);
 
 		UtilQuery query5 = new UtilQuery(network, Arrays.asList("Burglary"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls")));
@@ -278,12 +278,12 @@ public class NetworkReductionTest {
 		UtilQuery query7 = new UtilQuery(reducedNet2, Arrays.asList("Burglary"));
 		UtilQuery query8 = new UtilQuery(reducedNet3, Arrays.asList("Burglary"));
 
-		assertEquals(ve.queryUtility(query5).getUtility(new Assignment("Burglary")), 
-				ve.queryUtility(query6).getUtility(new Assignment("Burglary")), 0.0001); 
-		assertEquals(ve.queryUtility(query5).getUtility(new Assignment("Burglary")), 
-				naive.queryUtility(query7).getUtility(new Assignment("Burglary")), 0.0001); 
-		assertEquals(ve.queryUtility(query5).getUtility(new Assignment("Burglary")), 
-				naive.queryUtility(query8).getUtility(new Assignment("Burglary")), 0.05); 
+		assertEquals(ve.queryUtil(query5).getUtil(new Assignment("Burglary")), 
+				ve.queryUtil(query6).getUtil(new Assignment("Burglary")), 0.0001); 
+		assertEquals(ve.queryUtil(query5).getUtil(new Assignment("Burglary")), 
+				naive.queryUtil(query7).getUtil(new Assignment("Burglary")), 0.0001); 
+		assertEquals(ve.queryUtil(query5).getUtil(new Assignment("Burglary")), 
+				naive.queryUtil(query8).getUtil(new Assignment("Burglary")), 0.05); 
 
 	}
 	
@@ -308,11 +308,11 @@ public class NetworkReductionTest {
 		UtilQuery query2 = new UtilQuery(network, Arrays.asList("Action"), 
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		
-		UtilityTable table1 = ve.queryUtility(query);
-		UtilityTable table2 = ve.queryUtility(query2);
+		UtilityTable table1 = ve.queryUtil(query);
+		UtilityTable table2 = ve.queryUtil(query2);
 		
 		for (Assignment a : table1.getTable().keySet()) {
-			assertEquals(table1.getUtility(a), table2.getUtility(a), 0.01);
+			assertEquals(table1.getUtil(a), table2.getUtil(a), 0.01);
 		}
 		
 		reducedNet2.addNode(network.getNode("Action").copy());
@@ -324,10 +324,10 @@ public class NetworkReductionTest {
 		reducedNet2.getNode("Util2").addInputNode(reducedNet2.getNode("Action"));
 		
 		UtilQuery query3 = new UtilQuery(reducedNet2, "Action");
-		UtilityTable table3 = ve.queryUtility(query3);
+		UtilityTable table3 = ve.queryUtil(query3);
 		
 		for (Assignment a : table1.getTable().keySet()) {
-			assertEquals(table1.getUtility(a), table3.getUtility(a), 0.6);
+			assertEquals(table1.getUtil(a), table3.getUtil(a), 0.6);
 		}
 	}
 	

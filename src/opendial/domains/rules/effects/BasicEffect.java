@@ -27,7 +27,7 @@ import opendial.bn.Assignment;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 /**
  * Representation of a basic effect of a rule.  A basic effect is formally
@@ -46,10 +46,10 @@ public class BasicEffect implements Effect {
 	static Logger log = new Logger("BasicEffect", Logger.Level.DEBUG);
 	
 	// variable label for the basic effect
-	TemplateString variableLabel;
+	Template variableLabel;
 	
 	// variable value for the basic effect
-	TemplateString variableValue;
+	Template variableValue;
 
 	// enumeration of the four possible effect operations
 	public static enum EffectType {
@@ -78,8 +78,8 @@ public class BasicEffect implements Effect {
 	 * @param type type of effect
 	 */
 	public BasicEffect(String variable, String value, EffectType type){
-		this.variableLabel = new TemplateString(variable);
-		this.variableValue = new TemplateString(value);
+		this.variableLabel = new Template(variable);
+		this.variableValue = new Template(value);
 		additionalInputVariables = new HashSet<String>();
 		additionalInputVariables.addAll(this.variableLabel.getSlots());
 		additionalInputVariables.addAll(this.variableValue.getSlots());
@@ -111,8 +111,8 @@ public class BasicEffect implements Effect {
 	 * @return a singleton set with the variable label
 	 */
 	@Override
-	public Set<TemplateString> getOutputVariables() {
-		Set<TemplateString> variables = new HashSet<TemplateString>();
+	public Set<Template> getOutputVariables() {
+		Set<Template> variables = new HashSet<Template>();
 		variables.add(variableLabel);
 		return variables;
 	}
@@ -130,8 +130,8 @@ public class BasicEffect implements Effect {
 		
 		Output output = new Output();
 		
-		TemplateString filledVariable = variableLabel.fillSlotsPartial(additionalInput);
-		TemplateString filledValue = variableValue.fillSlotsPartial(additionalInput);
+		Template filledVariable = variableLabel.fillSlotsPartial(additionalInput);
+		Template filledValue = variableValue.fillSlotsPartial(additionalInput);
 		
 		// check if all the slots are filled
 		if (filledVariable.getSlots().isEmpty() && filledValue.getSlots().isEmpty()) {
@@ -156,7 +156,7 @@ public class BasicEffect implements Effect {
 	 * 
 	 * @return the variable label
 	 */
-	public TemplateString getVariable() {
+	public Template getVariable() {
 		return variableLabel;
 	}
 	
@@ -166,7 +166,7 @@ public class BasicEffect implements Effect {
 	 * 
 	 * @return the variable value
 	 */
-	public TemplateString getValue() {
+	public Template getValue() {
 		return variableValue;
 	}
 	

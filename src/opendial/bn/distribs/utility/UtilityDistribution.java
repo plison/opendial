@@ -45,7 +45,7 @@ public interface UtilityDistribution {
 	 * @param input the value assignment for the input chance nodes
 	 * @return the associated utility
 	 */
-	public double getUtility(Assignment input);
+	public double getUtil(Assignment input);
 	
 	
 	/**

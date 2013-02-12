@@ -58,7 +58,7 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 */
-	public UtilityTable queryUtility (UtilQuery query) throws DialException;
+	public UtilityTable queryUtil (UtilQuery query) throws DialException;
 
 	/**
 	 * Reduces the Bayesian network to a subset of its variables

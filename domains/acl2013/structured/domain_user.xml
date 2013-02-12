@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="i_u" type="prediction">
+
+<rule>
+<case>
+<condition>
+<if var="a_m" value="Ground({X})"/>
+<if var="i_u" value="{X}"/>
+</condition>
+<effect prob="0.2">
+<set var="a_u0" value="Confirm"/>
+</effect></case>
+<case>
+<condition>
+<if var="a_m" value="Ground({X})"/>
+<if var="i_u" value="{X}" relation="!="/>
+<if var="i_u" value="None" relation="!="/>
+</condition>
+<effect prob="0.98">
+<set var="a_u0" value="Disconfirm"/>
+</effect></case>
+<case>
+<condition>
+<if var="a_m" value="Confirm({X})"/>
+<if var="i_u" value="{X}"/>
+</condition>
+<effect prob="0.98">
+<set var="a_u0" value="Confirm"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_m" value="Confirm({X})"/>
+<if var="i_u" value="{X}" relation="!="/>
+<if var="i_u" value="None" relation="!="/>
+</condition>
+<effect prob="0.98">
+<set var="a_u0" value="Disconfirm"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_m" value="Do({X})"/>
+<if var="i_u" value="{X}"/>
+</condition>
+<effect prob="0.45">
+<set var="a_u0" value="RepeatLast"/>
+</effect>
+<effect prob="0.53">
+<set var="a_u0" var2="i_u"/>
+</effect>
+</case>
+<case>
+<effect prob="0.98">
+<set var="a_u0" var2="i_u"/>
+</effect></case>
+</rule>
+
+</model>

@@ -87,7 +87,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	 */
 	@Override
 	protected DistributionCouple queryJoint(Query query) throws DialException {
-
+		
 		// special case if the query is a utility query without any query variables
 		if (query instanceof UtilQuery && query.getQueryVars().isEmpty()) {
 			return queryWithoutVars((UtilQuery)query);
@@ -95,11 +95,11 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		// normal case
 		DoubleFactor queryFactor = createQueryFactor(query);
-
+		
 		queryFactor.normalise();
 
 		SimpleTable expandedTable = addEvidencePairs (query, queryFactor.getProbMatrix());
-	
+
 		return new DistributionCouple(expandedTable,
 				new UtilityTable(queryFactor.getUtilityMatrix()));
 
@@ -126,8 +126,8 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 
-		//	log.debug("query P("+queryVars + "|" + evidence+"), ignoring " + nodesToIgnore);
-
+	//	log.debug("VE Query: " + query);
+		
 		for (BNode n: query.getFilteredSortedNodes()) {
 
 			// create the basic factor for every variable
@@ -144,7 +144,6 @@ public class VariableElimination extends AbstractInference implements InferenceA
 		}
 		// compute the final product, and normalise
 		DoubleFactor finalProduct = pointwiseProduct(factors);
-
 		return finalProduct;
 	}
 
@@ -340,39 +339,6 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	}
 
 
-	/**
-	 * Special handling for a special case of utility query where there is absolutely
-	 * no query variables (no actions).  In this case, we must pick up a variable in
-	 * the network, perform the inference with it, and then sum it out.
-	 * 
-	 * @param query the utility query without the query variables
-	 * @return the resulting distribution couple
-	 * @throws DialException
-	 */
-	private DistributionCouple queryWithoutVars(UtilQuery query) throws DialException {
-		List<BNode> nodes = query.getFilteredSortedNodes();
-		SimpleTable probDistrib = new SimpleTable();
-		probDistrib.addRow(new Assignment(), 1.0);
-		UtilityTable utilDistrib = new UtilityTable();
-		if (!nodes.isEmpty()) {
-			String rootNode = nodes.get(nodes.size()-1).getId();
-			Query query2 = new UtilQuery(query.getNetwork(), Arrays.asList(rootNode), query.getEvidence());
-			DistributionCouple couple = queryJoint(query2);
-			UtilityTable utable = couple.getUtilityDistrib();
-			ProbDistribution distrib = couple.getProbDistrib();
-			double utilValue = 0;
-			for (Assignment a : utable.getTable().keySet()) {
-				utilValue += utable.getUtility(a) * distrib.toDiscrete().getProb(new Assignment(), a);
-			}
-			utilDistrib.setUtility(new Assignment(), utilValue);
-		}
-		else {
-			utilDistrib.setUtility(new Assignment(), 0.0);
-		}
-		return new DistributionCouple(probDistrib, utilDistrib);
-	}
-
-
 	// ===================================
 	//  NETWORK REDUCTION METHODS
 	// ===================================
@@ -392,7 +358,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
 		
 		// first, create the new network, without any distribution in the node
-		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars());
+		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
 		
 		// we can simplify the query if some nodes remain identical
 		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
@@ -437,7 +403,10 @@ public class VariableElimination extends AbstractInference implements InferenceA
 		for (String otherVar : new ArrayList<String>(factor.getVariables())) {
 			if (!otherVar.equals(node.getId()) 
 					&& ! node.getInputNodeIds().contains(otherVar)) {
-				factor = sumOut(otherVar, Arrays.asList(factor)).get(0);
+				List<DoubleFactor> summedOut = sumOut(otherVar, Arrays.asList(factor));
+				if (!summedOut.isEmpty()) {
+					factor = summedOut.get(0);
+				}
 			}
 		}
 
@@ -496,7 +465,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 			String variable) {
 		UtilityTable table = new UtilityTable();
 		for (Assignment a : factor.getMatrix().keySet()) {
-			table.addUtility(a, factor.getUtilityEntry(a));
+			table.incrementUtil(a, factor.getUtilityEntry(a));
 		}
 		return table;
 

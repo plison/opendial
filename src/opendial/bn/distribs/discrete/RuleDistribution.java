@@ -34,6 +34,7 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.OutputTable;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
 import opendial.domains.rules.parameters.FixedParameter;
@@ -59,19 +60,19 @@ public class RuleDistribution implements DiscreteProbDistribution {
 
 	// An anchored rule
 	AnchoredRule rule;
-	
+
 	String id;
-	
+
 	// a cache with the output values in a simple table
 	DiscreteProbabilityTable cache;
-	
-	
+
+
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
 	// ===================================
-	
-	
+
+
 	/**
 	 * Creates a new rule-base distribution, based on an anchored rule
 	 * 
@@ -89,8 +90,8 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		id = rule.getId();
 		cache = new DiscreteProbabilityTable();
 	}
-	
-	
+
+
 	/**
 	 * Does nothing.
 	 */
@@ -102,12 +103,12 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		}
 	}
 
-	
+
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
-	
+
+
 
 	/**
 	 * Returns the probability for P(head|condition), where head is 
@@ -119,14 +120,21 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public double getProb(Assignment condition, Assignment head) {
-		if (!cache.hasProbTable(condition)) {
-			fillCacheForCondition(condition);
+
+		if (rule.getParameterNodes().isEmpty()) {
+			if (!cache.hasProbTable(condition)) {
+				SimpleTable outputTable = getOutputTable(condition);
+				cache.addRows(new Assignment(condition), outputTable);
+			}
+			return cache.getProb(condition, head);
 		}
-		
-		return cache.getProb(condition, head);
+
+		else {
+			return getOutputTable(condition).getProb(head);
+		}
 	}
-	
-	
+
+
 	/**
 	 * Returns true if a probability is explicitly defined for P(head|condition),
 	 * where head is an assignment of an output value for the rule node.
@@ -137,18 +145,25 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public boolean hasProb(Assignment condition, Assignment head) {
-		if (!cache.hasProbTable(condition)) {
-			fillCacheForCondition(condition);
+
+		if (rule.getParameterNodes().isEmpty()) {
+			if (!cache.hasProbTable(condition)) {
+				SimpleTable outputTable = getOutputTable(condition);
+				cache.addRows(new Assignment(condition), outputTable);
+			}
+			return cache.hasProb(condition, head);
 		}
-		
-		return cache.hasProb(condition, head);
+
+		else {
+			return getOutputTable(condition).hasProb(head);
+		}
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Returns the probability table associated with the given input assignment
 	 * 
@@ -157,14 +172,20 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public SimpleTable getProbTable(Assignment condition) {
-		if (!cache.hasProbTable(condition)) {
-			fillCacheForCondition(condition);
+		if (rule.getParameterNodes().isEmpty()) {
+			if (!cache.hasProbTable(condition)) {
+				SimpleTable outputTable = getOutputTable(condition);
+				cache.addRows(new Assignment(condition), outputTable);
+			}
+			return cache.getProbTable(condition);
 		}
-		
-		return cache.getProbTable(condition);
+
+		else {
+			return getOutputTable(condition);
+		}
 	}
-	
-	
+
+
 	/**
 	 * Samples one possible output value given the input assignment
 	 * 
@@ -174,16 +195,24 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	 */
 	@Override
 	public Assignment sample(Assignment condition) throws DialException {
+
+		if (rule.getParameterNodes().isEmpty()) {
+			synchronized (this) {
+			if (!cache.hasProbTable(condition)) {
+				SimpleTable outputTable = getOutputTable(condition);
+				cache.addRows(new Assignment(condition), outputTable);
+			}
+			return cache.sample(condition);
+			}
+		}
+
+		else {
+			return getOutputTable(condition).sample();
+		}
 		
-		synchronized (this) {
-		if (!cache.hasProbTable(condition)) {
-			fillCacheForCondition(condition);
-		}
-		}
-		return cache.sample(condition);	
 	}
 
-	
+
 	/**
 	 * Returns a singleton set with the label of the anchored rule
 	 * 
@@ -194,12 +223,12 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		return headVars;
 	}
 
-	
+
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns itself
 	 * 
@@ -220,8 +249,8 @@ public class RuleDistribution implements DiscreteProbDistribution {
 			throws DialException {
 		throw new DialException ("cannot convert to a continuous distribution");
 	}
-	
-	
+
+
 	/**
 	 * Returns true
 	 * @return true
@@ -242,8 +271,8 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		catch (DialException e) { e.printStackTrace(); return null; }
 	}
 
-	
-	
+
+
 	/**
 	 * Returns the pretty print for the rule
 	 * 
@@ -254,7 +283,7 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		return rule.toString();
 	}
 
-	
+
 	/**
 	 * Returns the pretty print for the rule
 	 * 
@@ -265,40 +294,35 @@ public class RuleDistribution implements DiscreteProbDistribution {
 		return rule.toString();
 	}
 
-	
-	
+
+
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
-	
 
-	/**
-	 * Fills the cache with the SimpleTable representing the rule output for the
-	 * specific condition.
-	 * 
-	 * @param condition the conditional assignment
-	 */
-	private synchronized void fillCacheForCondition(Assignment condition) {
+
+
+
+	private SimpleTable getOutputTable(Assignment condition) {
 		try {
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition);
-		SimpleTable probTable = new SimpleTable();
-		for (Output effectOutput : effectOutputs.keySet()) {
-			Parameter param = effectOutputs.get(effectOutput);
-			double parameterValue = param.getParameterValue(condition);
-			probTable.addRow(new Assignment(id, effectOutput), parameterValue);
-		}
-		if (probTable.isEmpty()) {
-			log.warning("probability table is empty (no effects) for input " +
-					condition + " and rule " + rule.toString());
-		}
-		if (!cache.hasProbTable(condition)) {
-			cache.addRows(new Assignment(condition), probTable);
-		}
+			OutputTable outputs = rule.getEffectOutputs(condition);
+			Map<Output,Double> probs = outputs.getProbTable(condition);
+			SimpleTable probTable = new SimpleTable();
+			
+			for (Output o : probs.keySet()) {
+				probTable.addRow(new Assignment(id, o), probs.get(o));
+			}
+			if (probTable.isEmpty()) {
+				log.warning("probability table is empty (no effects) for input " +
+						condition + " and rule " + rule.toString());
+			}
+			return probTable;
 		}
 		catch (DialException e) {
-			log.warning("could not fill cache for condition " + condition + ": " + e.toString());
+			log.warning("could not extract output table for condition" + condition + ": " + e.toString());
+			return new SimpleTable();
 		}
 	}
-	
+
 
 }

@@ -51,7 +51,7 @@ import opendial.utils.StringUtils;
 public class Assignment {
 
 	// logger
-	public static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
+	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
 	
 	// the hashmap encoding the assignment
 	Map<String,Value> map;
@@ -136,6 +136,17 @@ public class Assignment {
 	 * @param val the value (as a boolean)
 	 */
 	public Assignment(String var, boolean val) {
+		this();
+		addPair(var, val);
+	}
+	
+	/**
+	 * Creates a new assignment, with a single <var,value> pair
+	 * 
+	 * @param var the variable label
+	 * @param val the value (as a double array)
+	 */
+	public Assignment(String var, double[] val) {
 		this();
 		addPair(var, val);
 	}
@@ -359,6 +370,18 @@ public class Assignment {
 	
 	
 	/**
+	 * Adds a new <var, value> pair to the assignment
+	 * 
+	 * @param var the variable
+	 * @param val the value, as a double array
+	 */
+	public void addPair(String var, double[] val) {
+		map.put(var, ValueFactory.create(val));
+		resetHashCodeCache();
+	}
+	
+	
+	/**
 	 * Adds a new <var,Object pair as determined by the form of the argument.  
 	 * If the argument starts with an exclamation mark, the value is set to
 	 * False, else the value is set to True.
@@ -433,7 +456,6 @@ public class Assignment {
 		for (String var : map.keySet()) {
 			String newVar = StringUtils.removePrimes(var);
 			if (a.containsVar(newVar)) {
-				log.debug("duplicate in assignment: " + toString());
 				if (var.contains("''")) {
 					a.addPair(newVar, map.get(var).copy());
 				}
@@ -445,7 +467,7 @@ public class Assignment {
 		return a;
 	}
 	
-	
+	 
 
 	// ===================================
 	//  GETTERS

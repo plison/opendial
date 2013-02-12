@@ -33,7 +33,8 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.distribs.discrete.SimpleTable;
@@ -187,9 +188,9 @@ public class InferenceTest {
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
 		
 		assertEquals(0.362607f, query.toDiscrete().getProb(new Assignment(), 
-				new Assignment("Burglary", false)), 0.05f);
+				new Assignment("Burglary", false)), 0.06f);
 		assertEquals(0.637392, query.toDiscrete().getProb(new Assignment(), 
-				new Assignment("Burglary", true)), 0.05f);
+				new Assignment("Burglary", true)), 0.06f);
 		
 		ProbDistribution query2 = is.queryProb(new ProbQuery(bn, Arrays.asList("Alarm", "Burglary"), 
 				new Assignment(Arrays.asList("Alarm", "MaryCalls"))));
@@ -236,22 +237,22 @@ public class InferenceTest {
 		UtilQuery query1 = new UtilQuery(network, Arrays.asList("Action"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls")));
 
-		assertEquals(-0.680, ve.queryUtility(query1).getUtility(new Assignment("Action", "CallPolice")), 0.001);
-		assertEquals(-0.680, naive.queryUtility(query1).getUtility(new Assignment("Action", "CallPolice")), 0.001);
-		assertEquals(-0.680, is.queryUtility(query1).getUtility(new Assignment("Action", "CallPolice")), 0.5);
-		assertEquals(-6.213, ve.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 0.001);
-		assertEquals(-6.213, naive.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 0.001);
-		assertEquals(-6.213, is.queryUtility(query1).getUtility(new Assignment("Action", "DoNothing")), 1.0);
+		assertEquals(-0.680, ve.queryUtil(query1).getUtil(new Assignment("Action", "CallPolice")), 0.001);
+		assertEquals(-0.680, naive.queryUtil(query1).getUtil(new Assignment("Action", "CallPolice")), 0.001);
+		assertEquals(-0.680, is.queryUtil(query1).getUtil(new Assignment("Action", "CallPolice")), 0.5);
+		assertEquals(-6.213, ve.queryUtil(query1).getUtil(new Assignment("Action", "DoNothing")), 0.001);
+		assertEquals(-6.213, naive.queryUtil(query1).getUtil(new Assignment("Action", "DoNothing")), 0.001);
+		assertEquals(-6.213, is.queryUtil(query1).getUtil(new Assignment("Action", "DoNothing")), 1.0);
 		
 		UtilQuery query2 = new UtilQuery(network, Arrays.asList("Burglary"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls")));
 		
-		assertEquals(-0.1667, ve.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
-		assertEquals(-0.1667, naive.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.001);
-		assertEquals(-0.25, is.queryUtility(query2).getUtility(new Assignment("!Burglary")), 0.5);
-		assertEquals(-3.5, ve.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
-		assertEquals(-3.5, naive.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.001);
-		assertEquals(-3.5, is.queryUtility(query2).getUtility(new Assignment("Burglary")), 0.8);
+		assertEquals(-0.1667, ve.queryUtil(query2).getUtil(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.1667, naive.queryUtil(query2).getUtil(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.25, is.queryUtil(query2).getUtil(new Assignment("!Burglary")), 0.5);
+		assertEquals(-3.5, ve.queryUtil(query2).getUtil(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, naive.queryUtil(query2).getUtil(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, is.queryUtil(query2).getUtil(new Assignment("Burglary")), 1.0);
 	
 	}
 	
@@ -286,9 +287,9 @@ public class InferenceTest {
 		assertTrue(distrib instanceof SimpleTable);
 
 		n1 = new ChanceNode("n1");
-		n1.setDistrib(new FunctionBasedDistribution("n1", new UniformDensityFunction(-2, 2)));
+		n1.setDistrib(new UnivariateDistribution("n1", new UniformDensityFunction(-2, 2)));
 		n2 = new ChanceNode("n2");
-		n2.setDistrib(new FunctionBasedDistribution("n2", new GaussianDensityFunction(-1, 3)));
+		n2.setDistrib(new UnivariateDistribution("n2", new GaussianDensityFunction(-1, 3)));
 		network.addNode(n1);
 		network.addNode(n2);
 		network.getNode("Earthquake").addInputNode(n1);

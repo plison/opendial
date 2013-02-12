@@ -206,7 +206,7 @@ public class NodeEditPanel extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 			//	if (button.isSelected()) {
-			//		settings.setInferenceAlgorithm(NaiveInference.class);
+			//		Settings.getInstance().setInferenceAlgorithm(NaiveInference.class);
 			//	}
 				setVisible(false); } 
 			});

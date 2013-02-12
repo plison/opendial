@@ -23,9 +23,11 @@ package opendial.inference;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -40,20 +42,35 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	// logger
 	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
 	
-	public static int LIGHTWEIGHT_FACTOR = 10;
+	public static int LIGHTWEIGHT_FACTOR = 3;
 	
 	public static int MAX_BRANCHING_FACTOR = 3;
 	public static int MAX_QUERYVARS = 2;
-	public static int MAX_CONTINUOUS = 1;
+	public static int MAX_CONTINUOUS = 0;
 
 	@Override
 	public ProbDistribution queryProb(ProbQuery query) throws DialException {
+		
+		if (query.getQueryVars().size() == 1 && query.getEvidence().isEmpty()) {
+			String queryVar = query.getQueryVars().iterator().next();
+			if (query.getNetwork().hasChanceNode(queryVar) && query.getNetwork().
+					getChanceNode(queryVar).getInputNodeIds().isEmpty()) {
+				ProbDistribution distrib = query.getNetwork().getChanceNode(queryVar).getDistrib().copy();
+				if (distrib instanceof DiscreteProbabilityTable) {
+					return distrib.toDiscrete().getProbTable(new Assignment());
+				}
+				else {
+					return distrib;
+				}
+			}
+		}
+		
 		return selectBestAlgorithm(query).queryProb(query);
 	}
 
 	@Override
-	public UtilityTable queryUtility(UtilQuery query) throws DialException {
-		return selectBestAlgorithm(query).queryUtility(query);
+	public UtilityTable queryUtil(UtilQuery query) throws DialException {
+		return selectBestAlgorithm(query).queryUtil(query);
 	}
 
 	@Override
@@ -82,10 +99,10 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 				query.getQueryVars().size() > MAX_QUERYVARS) {
 	//		log.debug("query " + query + " with sampling");
 			if (query.isLightweight()) {
-				return new ImportanceSampling(Settings.nbSamples / LIGHTWEIGHT_FACTOR);
+				return new ImportanceSampling(Settings.getInstance().nbSamples / LIGHTWEIGHT_FACTOR);
 			}
 			else {
-				return new ImportanceSampling(Settings.nbSamples);
+				return new ImportanceSampling(Settings.getInstance().nbSamples);
 			}
 		}
 		else {

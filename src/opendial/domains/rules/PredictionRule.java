@@ -25,6 +25,7 @@ import java.util.Map;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.OutputTable;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.Parameter;
@@ -43,19 +44,6 @@ public class PredictionRule extends CaseBasedRule implements Rule {
 	// logger
 	public static Logger log = new Logger("PredictionRule", Logger.Level.NORMAL);
 	
-	/**
-	 * Returns the default case for a prediction rule, which is a void effect
-	 * with a probability 1.0
-	 *
-	 * @return the default case
-	 */
-	@Override
-	protected Case getDefaultCase() {	
-			Case defaultCase = new Case();
-			defaultCase.setCondition(new VoidCondition());
-			defaultCase.addEffect(new VoidEffect(), 1.0f);
-			return defaultCase;
-	}
 	
 	/**
 	 * Returns the string representation of the prediction rule
@@ -75,13 +63,9 @@ public class PredictionRule extends CaseBasedRule implements Rule {
 	 * @return the parametrised effects
 	 */
 	@Override
-	public Map<Output,Parameter> getEffectOutputs (Assignment input) {
-		Map<Output,Parameter> outputs = new HashMap<Output,Parameter>();
-		for (Output o : super.getEffectOutputs(input).keySet()) {
-			Output o2 = o.copy();
-			o2.addEndingToVariables("^p");
-			outputs.put(o2, super.getEffectOutputs(input).get(o));
-		}
+	public OutputTable getEffectOutputs (Assignment input) {
+		OutputTable outputs = super.getEffectOutputs(input);
+		outputs.setAsPrediction();
 		return outputs;
 	}
 	

@@ -33,7 +33,7 @@ import opendial.arch.Logger;
 public class StopProcessTask extends TimerTask {
 
 	// logger
-	public static Logger log = new Logger("StopSamplingTask", Logger.Level.DEBUG);
+	public static Logger log = new Logger("StopProcessTask", Logger.Level.NORMAL);
 
 	AnytimeProcess process;
 	long timing;
@@ -48,9 +48,7 @@ public class StopProcessTask extends TimerTask {
 	 */
 	@Override
 	public void run() {
-		if (!process.isTerminated()) {
-			log.debug("time (" + timing + " ms.) has run out for process " + process.toString());
-			process.terminate();
-		}
+		log.debug("time (" + timing + " ms.) has run out for process " + process.toString());
+		process.terminate();
 	}
 }

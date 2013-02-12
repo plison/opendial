@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.gui.statemonitor.options.InferenceOptionsPanel;
 
 /**
@@ -46,7 +47,7 @@ public class ToolkitMenu extends JMenuBar {
 	public static Logger log = new Logger("DialogueMonitorMenu",
 			Logger.Level.DEBUG);
 	
-	public ToolkitMenu(final JFrame frame) {
+	public ToolkitMenu(final GUIFrame frame) {
 		JMenu domainMenu = new JMenu("Domain");
 		JMenuItem newDomain = new JMenuItem("New");
 		JMenuItem openDomain = new JMenuItem("Open");
@@ -115,8 +116,13 @@ public class ToolkitMenu extends JMenuBar {
 		add(viewMenu);
 		viewMenu.add(stateDisplayMenu);
 		JMenu traceMenu = new JMenu("Interaction");
-		JMenuItem freezeItem = new JMenuItem("Pause");
-		JMenuItem resumeItem = new JMenuItem("Resume Previous Trace");
+		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
+		freezeItem.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				frame.getSystem().pause(!frame.getSystem().isPaused());
+			}
+		});
+		JMenuItem resumeItem = new JMenuItem("Import Previous Trace");
 		JMenuItem saveTraceItem = new JMenuItem("Save Trace As...");
 		traceMenu.add(freezeItem);
 		traceMenu.add(resumeItem);

@@ -80,8 +80,6 @@ public class BasicRuleTest2 {
 		try { 
 			domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
-			Settings.activatePlanner = false;
-			Settings.activatePruning = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -91,6 +89,7 @@ public class BasicRuleTest2 {
 	@Test
 	public void test() throws DialException, InterruptedException {
 				
+		start();	
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
 		
@@ -108,26 +107,29 @@ public class BasicRuleTest2 {
 		
 		query = new ProbQuery(system.getState(),"a_u^p");
 	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
-	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.041);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.893);
+	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.056);
 
 	 	ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
-	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.080);
-	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9197);
+	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.090);
+	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9097);
 
 	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.0820);
+	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.903);
+	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.096);
 
 	 	ProbQuery query4 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.0820);	
-	}
+	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.903);
+	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.096);	
+
+		finish();
+}
 	
 	
 	@Test
 	public void test2() throws DialException, InterruptedException {
 		 			
+		start();	
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
 		
@@ -147,16 +149,19 @@ public class BasicRuleTest2 {
 		system.getState().addContent(table, "test2");
 		
 		query = new ProbQuery(system.getState(),"i_u2");
-	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.6542);
+	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.609);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
-	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
+	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1502);
+
+	 	finish();
 	}
 	
 	
 	@Test
 	public void test3() throws DialException, InterruptedException {
 
+		start();	
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
 		
@@ -168,23 +173,24 @@ public class BasicRuleTest2 {
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
 		 		
-		Assignment.log.setLevel(Level.NONE);
 		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getUtilityNodeIds());
 		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getActionNodeIds());
 		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
 		system.getState().addContent(table, "test");
 
 	 	query = new UtilQuery(system.getState(),"a_m'");
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.357);
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.357);	
-		Assignment.log.setLevel(Level.NORMAL);
-	}
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.278);
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.277);	
+
+		finish();
+}
 	
 	
 
 	@Test
 	public void test4() throws DialException, InterruptedException {
 		
+		start();	
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
 		system2.startSystem(); 
@@ -198,14 +204,17 @@ public class BasicRuleTest2 {
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
 	 	
-	 	assertEquals(6, (new ImportanceSampling()).queryUtility(query).getTable().size()); 
-	}
+	 	assertEquals(6, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+
+		finish();
+}
 	
 
 
 	@Test
 	public void test5() throws DialException, InterruptedException {
 		
+		start();	
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile3); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
 		system2.startSystem(); 
@@ -221,7 +230,18 @@ public class BasicRuleTest2 {
 		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")), 1.6);
 	 	
+		finish();
 	}
 	
+	
+	public void start() {
+		Settings.getInstance().activatePlanner = false;
+		Settings.getInstance().activatePruning = false;
+	}
+
+	public void finish() {
+		Settings.getInstance().activatePlanner = true;
+		Settings.getInstance().activatePruning = true;
+	}
 
 }

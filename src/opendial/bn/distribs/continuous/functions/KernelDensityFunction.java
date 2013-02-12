@@ -39,13 +39,13 @@ import opendial.bn.values.Value;
  * @version $Date::                      $
  *
  */
-public class KernelDensityFunction implements DensityFunction {
+public class KernelDensityFunction implements UnivariateDensityFunction {
 
 	// logger
 	public static Logger log = new Logger("KernelDensityFunction", Logger.Level.DEBUG);
 
 	// bandwidth for the kernel
-	double bandwidth = 0.3;
+	double bandwidth = 1.0;
 	
 	// the kernel function
 	GaussianDensityFunction kernel = new GaussianDensityFunction(0.0, 1.0);
@@ -58,26 +58,27 @@ public class KernelDensityFunction implements DensityFunction {
 	
 	
 	/**
-	 * Creates a new kernel density function
-	 * 
-	 */
-	public KernelDensityFunction() {
-		points = new ArrayList<Double>();		
-		sampler = new Random();
-	}
-	
-	/**
 	 * Creates a new kernel density function with the given points
 	 * 
 	 * @param points the points
 	 */
 	public KernelDensityFunction(Collection<Double> points) {
-		this();
+		this.points = new ArrayList<Double>();		
+		sampler = new Random();
 		this.points.addAll(points);
 		Collections.sort(this.points);
 		sampler = new Random();
+		estimateBandwidth();
 	}
 	
+	
+	// Silverman's rule of thumb
+	private void estimateBandwidth() {
+		double std = Math.sqrt(getVariance());		
+		bandwidth = 1.06 * std * Math.pow(points.size(), -1/5.0);
+	}
+	
+
 	
 	/**
 	 * Changes the bandwidth for the KDE
@@ -88,10 +89,6 @@ public class KernelDensityFunction implements DensityFunction {
 		this.bandwidth = bandwidth;
 	}
 	
-	
-	public void addPoint(double point) {
-		points.add(point);
-	}
 	
 	
 	/**
@@ -188,7 +185,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * @return the copy
 	 */
 	@Override
-	public DensityFunction copy() {
+	public UnivariateDensityFunction copy() {
 		KernelDensityFunction copy = new KernelDensityFunction(points);
 		copy.setBandwidth(bandwidth);
 		return copy;
@@ -212,6 +209,35 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	public int hashCode() {
 		return points.hashCode();
+	}
+
+
+	@Override
+	public double getMean() {
+		double mean = 0.0;
+		for (double point :points) {
+			mean += point;
+		}
+		mean = mean / points.size();
+		return mean;
+	}
+
+
+	public double getVariance() {
+		double mean = 0;
+		for (Double point : points) {
+			mean += point.doubleValue();
+		}
+		mean = mean / points.size();
+		
+		double variance = 0;
+		
+		for (Double point : points) {
+			variance += Math.pow(point.doubleValue() - mean, 2);
+		}
+		variance = variance / points.size();
+		
+		return variance;
 	}
 
 }

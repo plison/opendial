@@ -98,7 +98,7 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 				Assignment trimmedSample = sample.getSample().getTrimmed(query.getQueryVars());
 				empiricalDistrib.addSample(trimmedSample);
 				 
-				utilityTable.addUtility(trimmedSample, sample.getUtility());
+				utilityTable.incrementUtil(trimmedSample, sample.getUtility());
 			} 
 		results = new DistributionCouple(empiricalDistrib, utilityTable);
 		}

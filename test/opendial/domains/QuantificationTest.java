@@ -46,9 +46,7 @@ public class QuantificationTest {
 		try { 
 			Domain domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
-			Settings.activatePlanner = false;
-			Settings.activatePruning =true;
-			inference.EXACT_THRESHOLD = 0.05;
+			inference.EXACT_THRESHOLD = 0.06;
 			system = new DialogueSystem(domain);
 			system.startSystem(); 
 		} catch (Exception e) {
@@ -60,12 +58,16 @@ public class QuantificationTest {
 	@Test
 	public void test() throws DialException {
 
+		Settings.getInstance().activatePlanner = false;
+
 		ProbQuery query = new ProbQuery(system.getState().getNetwork(),"found");
 		inference.checkProb(query, new Assignment("found", "A"), 0.7);
 
 		query = new ProbQuery(system.getState().getNetwork(),"found2");
 		inference.checkProb(query, new Assignment("found2", "D"), 0.3);
 		inference.checkProb(query, new Assignment("found2", "C"), 0.5);
+		
+		Settings.getInstance().activatePlanner = true;
 }
 
 }

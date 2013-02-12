@@ -156,6 +156,7 @@ public class DerivedActionNode extends ActionNode {
 	 * @return
 	 */
 	public Value sample(Assignment input) {
+
 		if (!relevantActionsCache.containsKey(input)) {
 			buildRelevantActionsCache(input);
 		}

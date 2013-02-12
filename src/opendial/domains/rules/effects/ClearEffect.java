@@ -26,7 +26,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 /**
  * Effect that is clearing all current values for a variable.
@@ -41,7 +41,7 @@ public class ClearEffect implements Effect {
 	public static Logger log = new Logger("ClearEffect", Logger.Level.NORMAL);
 
 	// the variable to clear
-	TemplateString variable;
+	Template variable;
 	
 	/**
 	 * Creates a new clear effect with the given variable
@@ -50,7 +50,7 @@ public class ClearEffect implements Effect {
 	 * @param variable the raw string for the variable label
 	 */
 	public ClearEffect(String variable) {
-		this.variable = new TemplateString(variable);
+		this.variable = new Template(variable);
 	}
 	
 	
@@ -71,8 +71,8 @@ public class ClearEffect implements Effect {
 	 * @return the output variable
 	 */
 	@Override
-	public Set<TemplateString> getOutputVariables() {
-		return new HashSet<TemplateString>(Arrays.asList(variable));
+	public Set<Template> getOutputVariables() {
+		return new HashSet<Template>(Arrays.asList(variable));
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class ClearEffect implements Effect {
 	@Override
 	public Output createOutput(Assignment input) {
 		Output o = new Output();
-		TemplateString filledVariable = variable.fillSlotsPartial(input);
+		Template filledVariable = variable.fillSlotsPartial(input);
 		if (filledVariable.getSlots().isEmpty()) {
 			o.clearVariable(filledVariable.getRawString());			
 		}

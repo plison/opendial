@@ -45,7 +45,6 @@ public class DialogueStateTest {
 		try { 
 			domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
-			Settings.activatePlanner = false;	
 		} 
 		catch (DialException e) {
 			e.printStackTrace();
@@ -56,7 +55,8 @@ public class DialogueStateTest {
 	@Test
 	public void stateCopyTest() throws DialException, InterruptedException {
 
-		Settings.activatePruning = false;
+		Settings.getInstance().activatePlanner = false;	
+		Settings.getInstance().activatePruning = false;
 		DialogueSystem	system = new DialogueSystem(domain);
 		system.startSystem(); 
 
@@ -64,7 +64,7 @@ public class DialogueStateTest {
 		
 		String ruleId = "";
 		for (String id : system.getState().getNetwork().getNode("u_u2").getOutputNodesIds()) {
-			if (system.getState().getContent(id).toString().contains("+=HowAreYou")) {
+			if (system.getState().getContent(id, true).toString().contains("+=HowAreYou")) {
 				ruleId = id;
 			}
 		}
@@ -78,6 +78,9 @@ public class DialogueStateTest {
 		inference.checkProb(query, new Assignment("a_u2'", "[HowAreYou]"), 0.2);
 		inference.checkProb(query, new Assignment("a_u2'", "[HowAreYou, Greet]"), 0.7);
 		inference.checkProb(query, new Assignment("a_u2'", "None"), 0.1); 	
+		
+		Settings.getInstance().activatePlanner = true;	
+		Settings.getInstance().activatePruning = true;
 	}
 
 
@@ -85,8 +88,8 @@ public class DialogueStateTest {
 	public void stateCopyTest2() throws DialException, InterruptedException {
 
 		DialogueSystem	system = new DialogueSystem(domain);
-		Settings.activatePruning = true;
-		inference.EXACT_THRESHOLD = 0.06;
+		Settings.getInstance().activatePlanner = false;	
+		inference.EXACT_THRESHOLD = 0.08;
 		system.startSystem(); 
 
 		DialogueState initialState = system.getState().copy();
@@ -96,6 +99,8 @@ public class DialogueStateTest {
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
 		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 	
+		
+		Settings.getInstance().activatePlanner = true;	
 	}
 
 }

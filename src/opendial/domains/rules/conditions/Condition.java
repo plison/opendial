@@ -22,7 +22,7 @@ package opendial.domains.rules.conditions;
 import java.util.Set;
 
 import opendial.bn.Assignment;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.quantification.UnboundPredicate;
 
 /**
@@ -39,14 +39,13 @@ import opendial.domains.rules.quantification.UnboundPredicate;
  */
 public interface Condition {
 	
-	public Set<TemplateString> getInputVariables();
+	public Set<Template> getInputVariables();
 		
 	public boolean isSatisfiedBy(Assignment input);
 	
 	public Assignment getLocalOutput(Assignment input);
 
 	public Set<UnboundPredicate> getUnboundPredicates();
-
 	
 }
 

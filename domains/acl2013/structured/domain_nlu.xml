@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model type="update" trigger="u_u">
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="go * forward" relation="contains"/>
+	<if var="u_u" value="go * forwards" relation="contains"/>
+	<if var="u_u" value="move * forward" relation="contains"/>
+	<if var="u_u" value="move * forwards" relation="contains"/>
+	<if var="u_u" value="move * straight" relation="contains"/>
+	<if var="u_u" value="go * straight" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Move(Forward)"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="go * backward" relation="contains"/>
+	<if var="u_u" value="go * backwards" relation="contains"/>
+	<if var="u_u" value="move * backward" relation="contains"/>
+	<if var="u_u" value="move * backwards" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Move(Backward)"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="turn * left" relation="contains"/>
+	<if var="u_u" value="move * left" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Move(Left)"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="turn * right" relation="contains"/>
+	<if var="u_u" value="move * right" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Move(Right)"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="pick up {X}" relation="contains"/>
+	<if var="u_u" value="take {X}" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="PickUp({X})"/>
+	</effect>
+</case>
+</rule>
+
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="release {X}" relation="contains"/>
+	<if var="u_u" value="put down {X}" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Release({X})"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="what * you see" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="WhatDoYouSee"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="do you see {X}" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="DoYouSee({X})"/>
+	</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="yes" relation="contains"/>
+	<if var="u_u" value="ok" relation="contains"/>
+	<if var="u_u" value="exactly" relation="contains"/>
+	<if var="u_u" value="correct" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Confirm"/>
+	</effect>
+</case>
+</rule>
+
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="no" relation="contains"/>
+	<if var="u_u" value="wrong" relation="contains"/>
+	<if var="u_u" value="incorrect" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="Disconfirm"/>
+	</effect>
+</case>
+</rule>
+
+
+<rule>
+<case>
+	<condition operator="or">
+	<if var="u_u" value="one more time" relation="contains"/>
+	<if var="u_u" value="repeat" relation="contains"/>
+	<if var="u_u" value="again" relation="contains"/>
+	</condition>
+	<effect>
+		<set var="a_u" value="RepeatLast"/>
+	</effect>
+</case>
+</rule>
+
+
+<rule>
+<case>
+	<effect>
+		<clear var="a_u"/>
+	</effect>
+</case></rule>
+
+
+</model>

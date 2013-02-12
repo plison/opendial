@@ -27,7 +27,7 @@ import java.util.List;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.CaseBasedRule;
 import opendial.domains.rules.PredictionRule;
 import opendial.modules.SynchronousModule;
@@ -54,7 +54,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	public static int idCounter = 0;
 
 	// triggers associated with the model
-	List<TemplateString> triggers;
+	List<Template> triggers;
 
 	// collection of rules for the model
 	Collection<T> rules;
@@ -71,7 +71,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param cls the rule class
 	 */
 	public Model() {
-		triggers = new LinkedList<TemplateString>();
+		triggers = new LinkedList<Template>();
 		rules = new LinkedList<T>();
 		id = "model" + idCounter;
 		idCounter++;
@@ -93,7 +93,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * @param trigger the variable
 	 */
 	public void addTrigger(String trigger) {
-		triggers.add(new TemplateString(trigger));
+		triggers.add(new Template(trigger));
 	}
 
 
@@ -141,8 +141,8 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	 * 
 	 * @return the triggers
 	 */
-	public List<TemplateString> getTriggers() {
-		return new ArrayList<TemplateString>(triggers);
+	public List<Template> getTriggers() {
+		return new ArrayList<Template>(triggers);
 	}
 
 
@@ -184,15 +184,15 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 			String trimmedNodeId = newNodeId.replaceAll("'", "");
 
 			// direct triggers
-			for (TemplateString trigger : triggers) {
+			for (Template trigger : triggers) {
 				if (trigger.isMatching(trimmedNodeId, false) 
 						&& !state.getNetwork().hasActionNode(newNodeId)) {
 
 					// we make sure that predictive nodes only trigger prediction rules
 					if (!trimmedNodeId.contains("^p") ||
 							getModelType().equals(PredictionRule.class)) {
-						//			log.debug("model " + id + "(trigger=" + trigger
-						// + ") directly triggered via " + newNodeId);
+			//						log.debug("model " + id + "(trigger=" + trigger
+			//			 + ") directly triggered via " + newNodeId);
 						return true;
 					}
 				}
@@ -228,7 +228,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 	public String toString() {
 		String str =id;
 		str += " [triggers=";
-		for (TemplateString trigger : triggers) {
+		for (Template trigger : triggers) {
 			str+= "("+trigger+")" + " v ";
 		}
 		str = str.substring(0, str.length()-3) + "] with " + rules.size() + " rules:\n";

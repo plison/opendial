@@ -39,6 +39,8 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 	
 	Status status = Status.COLLECTING;	
 	
+	Timer timer;
+	
 
 	/**
 	 * Creates a new sampling query with the given arguments
@@ -60,7 +62,7 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 
 		this.nbSamples = nbSamples;
 
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.schedule(new StopProcessTask(this, maxSamplingTime), maxSamplingTime);
 	}
 
@@ -112,6 +114,7 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 			compileResults();
 			status = Status.DONE;
 			notifyAll(); 
+			timer.cancel();
 		}
 	}
 

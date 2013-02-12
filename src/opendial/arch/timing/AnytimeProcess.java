@@ -23,9 +23,7 @@ package opendial.arch.timing;
 
 public interface AnytimeProcess extends Runnable {
 
-	
-	public boolean isTerminated();
-	
+		
 	public void terminate() ;
 }
 

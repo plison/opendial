@@ -23,7 +23,7 @@ import java.util.Set;
 
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 /**
  * Generic representation of an effect. An effect is used to create an output
@@ -47,7 +47,7 @@ public interface Effect {
 	 * 
 	 * @return the output variables
 	 */
-	public Set<TemplateString> getOutputVariables();
+	public Set<Template> getOutputVariables();
 	
 	
 	/**

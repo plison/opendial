@@ -28,7 +28,7 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.quantification.UnboundPredicate;
 
 
@@ -136,8 +136,8 @@ public class ComplexCondition implements Condition {
 	 * @return the set of input variables
 	 */
 	@Override
-	public Set<TemplateString> getInputVariables() {
-		Set<TemplateString> variables = new HashSet<TemplateString>();
+	public Set<Template> getInputVariables() {
+		Set<Template> variables = new HashSet<Template>();
 		for (Condition cond: subconditions) {
 			variables.addAll(cond.getInputVariables());
 		}
@@ -174,6 +174,7 @@ public class ComplexCondition implements Condition {
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
 		Assignment input2 = new Assignment(input);
+
 		for (Condition cond : subconditions) {
 			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input2)) {
 				return false;
@@ -182,6 +183,7 @@ public class ComplexCondition implements Condition {
 				return true;
 			}
 			input2.addAssignment(cond.getLocalOutput(input2));
+
 		}
 		return (operator == BinaryOperator.AND);
 	}

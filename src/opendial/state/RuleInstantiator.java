@@ -33,7 +33,7 @@ import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.discrete.OutputDistribution;
 import opendial.bn.distribs.discrete.RuleDistribution;
@@ -233,7 +233,7 @@ public class RuleInstantiator implements Runnable {
 
 		//	synchronized (network) {
 		for (String outputVariable : arule.getOutputVariables()) {
-			String updatedVar = getOutputLabel(outputVariable);
+			String updatedVar = getOutputLabel(outputVariable, arule);
 
 			// if the node does not exist yet, it is created
 			if (!network.hasNode(updatedVar)) {
@@ -250,7 +250,7 @@ public class RuleInstantiator implements Runnable {
 	}
 
 
-	protected String getOutputLabel(String baseOutput) throws DialException {
+	protected String getOutputLabel(String baseOutput, AnchoredRule arule) throws DialException {
 		for (int i = 1 ; i < 4 ; i++) {
 			String updatedLabel = baseOutput + StringUtils.createNbPrimes(i);
 
@@ -259,7 +259,7 @@ public class RuleInstantiator implements Runnable {
 				return updatedLabel;
 			}
 
-			else if (state.isVariableToProcess(updatedLabel)){
+			else if (!arule.getInputVariables().contains(updatedLabel)){
 				return updatedLabel;
 			}
 		}
@@ -281,7 +281,6 @@ public class RuleInstantiator implements Runnable {
 	public BNode createNewNode(String outputVar) throws DialException {
 
 		if (rule.getRuleType() == RuleType.PROB) {
-
 			ChanceNode outputNode = 
 					new ChanceNode(outputVar, new OutputDistribution(outputVar));
 			network.addNode(outputNode);

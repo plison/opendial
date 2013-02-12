@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 
 import java.util.List;
 import java.util.Map;
@@ -36,13 +37,16 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
+import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
+import opendial.inference.datastructs.WeightedSample;
+import opendial.utils.MathUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -59,43 +63,39 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 	// logger
 	public static Logger log = new Logger("DepEmpiricalDistribution", Logger.Level.DEBUG);
-	
+
 	// list of "flat" samples for the empirical distribution
 	protected List<Assignment> samples;
 
-	// structured samples according to the condition/head distinction
-	Map<Assignment, SimpleEmpiricalDistribution> conditionedSamples;
-
 	// the sampler
 	Random sampler;
-	
+
 	// cache for the discrete and continuous distributions
 	DiscreteProbDistribution discreteCache;
 	ContinuousProbabilityTable continuousCache;
-	
+
 	// the head variables
 	Set<String> headVars;
-	
+
 	// the conditionalVars variables
 	Set<String> condVars;
 
-	
+
 	// ===================================
 	//  CONSTRUCTION METHODS
 	// ===================================
-	
+
 	/**
 	 * Constructs a new empirical distribution, initially with a empty set of
 	 * samples
 	 */
 	public DepEmpiricalDistribution(Collection<String> headVars, Collection<String> condVars) {
-		samples = new ArrayList<Assignment>(Settings.nbSamples);
+		samples = new ArrayList<Assignment>(Settings.getInstance().nbSamples);
 		sampler = new Random();
 		this.headVars = new HashSet<String>(headVars);
 		this.condVars = new HashSet<String>(condVars);
-		conditionedSamples = new HashMap<Assignment, SimpleEmpiricalDistribution>();
 	}
-	
+
 	/**
 	 * Constructs a new empirical distribution with the provided set of samples
 	 * 
@@ -108,8 +108,8 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			addSample(a.copy());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Adds a new sample to the distribution
 	 * 
@@ -117,21 +117,16 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public synchronized void addSample(Assignment sample) {
 		samples.add(sample);
-		Assignment condition = sample.getTrimmed(condVars);
-		if (!conditionedSamples.containsKey(condition)) {
-			conditionedSamples.put(condition, new SimpleEmpiricalDistribution());
-		}
-		conditionedSamples.get(condition).addSample(sample.getTrimmed(headVars));
 	}
-	
-	
+
+
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
 
-	 
-	
+
+
+
 	/**
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
@@ -141,33 +136,42 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public Assignment sample(Assignment condition) {
-		if (conditionedSamples.containsKey(condition)) {
-			SimpleEmpiricalDistribution headSamples = conditionedSamples.get(condition);
-			return headSamples.sample();
+
+		Assignment trimmed = condition.getTrimmed(condVars);
+
+		Map<Assignment,Double> values = MathUtils.getClosestElements(samples, trimmed);
+		
+		try {
+			if (!values.isEmpty()) {
+				Intervals<Assignment> interval = new Intervals<Assignment>(values);
+				Assignment result = interval.sample();
+				return result;
+			}
 		}
-				
-	//	log.debug("cannot sample dependent empirical distribution for condition: " + condition);
+		catch (DialException e) {
+			log.warning("could not sample with intervals with inverse distance weights");
+		}
 		return getDefaultAssignment();
 	}
 
-	
+
 
 	@Override
 	public boolean isWellFormed() {
-		return !conditionedSamples.isEmpty();
+		return !samples.isEmpty();
 	}
-	
+
 
 	@Override
 	public Collection<String> getHeadVariables() {
 		return headVars;
 	}
-	
-	
+
+
 	// ===================================
 	//  CONVERSION METHODS
 	// ===================================
-	
+
 	@Override
 	public DiscreteProbDistribution toDiscrete() {
 		if (discreteCache == null) {
@@ -175,8 +179,8 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		return discreteCache;
 	}
-	
-	
+
+
 	/**
 	 * Converts the distribution into a DiscreteProbabilityTable, by counting the number of 
 	 * occurrences for each distinct value of a variable.
@@ -184,16 +188,27 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * @return the resulting discrete distribution
 	 */
 	public void computeDiscreteCache() {
-		
+
 		DiscreteProbabilityTable discreteCache = new DiscreteProbabilityTable();
+		
+		Map<Assignment,SimpleEmpiricalDistribution> temp = new HashMap<Assignment,SimpleEmpiricalDistribution>();
+		for (Assignment sample: samples) {
+			Assignment condition = sample.getTrimmed(condVars);
+			Assignment head = sample.getTrimmed(headVars);
+			if (!temp.containsKey(condition)) {
+				temp.put(condition, new SimpleEmpiricalDistribution());
+			}
 			
-		for (Assignment condition : conditionedSamples.keySet()) {
-			discreteCache.addRows(condition, (SimpleTable)(conditionedSamples.get(condition).toDiscrete()));
+			temp.get(condition).addSample(head);
+		}
+		
+		for (Assignment condition : temp.keySet()) {
+			discreteCache.addRows(condition, (SimpleTable)(temp.get(condition).toDiscrete()));
 		}
 		this.discreteCache = discreteCache;
 	}
 
-	
+
 	@Override
 	public ContinuousProbDistribution toContinuous() throws DialException {
 		if (continuousCache == null) {
@@ -201,7 +216,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		return continuousCache;
 	}
-	
+
 	/**
 	 * Converts the distribution into a continuous probability table.
 	 * 
@@ -209,21 +224,31 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * @throws DialException if the above requirements are not met
 	 */
 	public synchronized void computeContinuousCache() throws DialException {
-		
+
 		continuousCache = new ContinuousProbabilityTable();
-		for (Assignment condition : conditionedSamples.keySet()) {
-			SimpleEmpiricalDistribution subdistrib = conditionedSamples.get(condition);
-			FunctionBasedDistribution continuousEquiv = subdistrib.toContinuous();
+		
+		Map<Assignment,SimpleEmpiricalDistribution> temp = new HashMap<Assignment,SimpleEmpiricalDistribution>();
+		for (Assignment sample: samples) {
+			Assignment condition = sample.getTrimmed(condVars);
+			if (!temp.containsKey(condition)) {
+				temp.put(condition, new SimpleEmpiricalDistribution());
+			}
+			temp.get(condition).addSample(sample.getTrimmed(headVars));
+		}
+		
+		for (Assignment condition : temp.keySet()) {
+			SimpleEmpiricalDistribution subdistrib = temp.get(condition);
+			ContinuousProbDistribution continuousEquiv = subdistrib.toContinuous();
 			continuousCache.addDistrib(condition, continuousEquiv);
 		}
 	}
 
-	
+
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns a default assignment with default values
 	 * 
@@ -240,8 +265,8 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns a copy of the distribution
 	 * 
@@ -273,7 +298,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public synchronized void modifyVarId(String oldId, String newId) {
-		
+
 		if (headVars.contains(oldId)) {
 			headVars.remove(oldId);
 			headVars.add(newId);
@@ -293,8 +318,9 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			newSamples.add(b);
 		}
 		samples = newSamples; 
-		
+
 		// change the structured samples
+		/** 
 		Map<Assignment, SimpleEmpiricalDistribution> newCondSamples = 
 				new HashMap<Assignment, SimpleEmpiricalDistribution>();
 		for (Assignment a: conditionedSamples.keySet()) {
@@ -307,12 +333,17 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			}
 			newCondSamples.put(b, condSample);
 		}
-		conditionedSamples = newCondSamples;
+		conditionedSamples = newCondSamples; */
 	}
-	
-	
+
+
 	public String toString() {
 		return toDiscrete().toString();
+	}
+
+	@Override
+	public Collection<Assignment> getSamples() {
+		return samples;
 	}
 
 }

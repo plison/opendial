@@ -25,7 +25,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.nodes.ActionNode;
@@ -144,7 +145,7 @@ public class NetworkExamples {
 	public static BNetwork constructBasicNetwork4() throws DialException {
 		BNetwork network = constructBasicNetwork();
 		ChanceNode node = new ChanceNode("gaussian");
-		node.setDistrib(new FunctionBasedDistribution("gaussian", new UniformDensityFunction(-2,3)));
+		node.setDistrib(new UnivariateDistribution("gaussian", new UniformDensityFunction(-2,3)));
 		network.addNode(node);
 		return network;
 	}

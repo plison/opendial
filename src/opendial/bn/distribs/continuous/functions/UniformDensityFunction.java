@@ -32,7 +32,7 @@ import opendial.arch.Logger;
  * @version $Date::                      $
  *
  */
-public class UniformDensityFunction implements DensityFunction {
+public class UniformDensityFunction implements UnivariateDensityFunction {
 
 	// logger
 	public static Logger log = new Logger("UniformDensityFunction", Logger.Level.NORMAL);
@@ -131,7 +131,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the copy
 	 */
 	@Override
-	public DensityFunction copy() {
+	public UnivariateDensityFunction copy() {
 		return new UniformDensityFunction(minimum,maximum);
 	}
 
@@ -154,6 +154,18 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	public int hashCode() {
 		return (new Double(maximum)).hashCode() - (new Double(minimum)).hashCode();
+	}
+
+
+	@Override
+	public double getMean() {
+		return (minimum + maximum)/2.0;
+	}
+
+
+	@Override
+	public double getVariance() {
+		return Math.pow(maximum - minimum, 2) / 12.0;
 	}
 	
 }

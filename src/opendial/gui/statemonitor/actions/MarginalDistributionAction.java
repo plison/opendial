@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 
+import opendial.arch.DialException;
 import opendial.arch.Settings;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.gui.statemonitor.DialogueStatePopup;
@@ -43,9 +44,8 @@ public final class MarginalDistributionAction extends AbstractAction {
 	public void actionPerformed(ActionEvent arg0) {
 		
 	try {
-			InferenceAlgorithm algorithm = Settings.inferenceAlgorithm.newInstance();
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
-			ProbDistribution distrib = algorithm.queryProb(new ProbQuery(state, queryVariables));
+			ProbDistribution distrib = state.getContent(queryVariables, true);
 			String str = StringUtils.getHtmlRendering(distrib.prettyPrint().replace("\n", "\n<br>"));
 			this.graphViewerPopupMenu.getViewer().getStateMonitorTab().writeToLogArea(
 					"<html><font face=\"helvetica\">"+ str + "</font></html>");
@@ -53,7 +53,7 @@ public final class MarginalDistributionAction extends AbstractAction {
 			this.graphViewerPopupMenu.getViewer().getPickedVertexState().pick(queryVariable, false);
 			}
 
-		} catch (Exception e) {
+		} catch (DialException e) {
 			e.printStackTrace();
 			DialogueStatePopup.log.debug("problem performing the inference for P(" + queryVariables +")" +
 					" aborting action");

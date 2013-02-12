@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -144,7 +145,7 @@ public class BNetwork implements IdChangeListener {
 		}
 		else {
 			BNode node = nodes.get(nodeId);
-			node.addIdChangeListener(null);
+			node.removeIdChangeListener(this);
 
 			for (BNode inputNode : node.getInputNodes()) {
 				node.removeInputNode(inputNode.getId());
@@ -280,6 +281,25 @@ public class BNetwork implements IdChangeListener {
 	public boolean hasChanceNode(String nodeId) {
 		return chanceNodes.containsKey(nodeId);
 	}
+	
+	/**
+	 * Returns true if the network contains chance nodes for all the given
+	 * identifiers, and false otherwise
+	 * 
+	 * @param nodeIds the node identifiers to check
+	 * @return true if all the chance nodes is found, false otherwise
+	 */
+	
+	public boolean hasChanceNodes(Collection<String> nodeIds) {
+		for (String nodeId: nodeIds) {
+			if (!chanceNodes.containsKey(nodeId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	
 
 	/**
 	 * Returns the chance node associated with the identifier, if one
@@ -466,7 +486,8 @@ public class BNetwork implements IdChangeListener {
 	 * @return the new, reduced Bayesian network
 	 * @throws DialException if a problem arises in the copy operation
 	 */
-	public BNetwork getReducedCopy(Collection<String> variablesToRetain) throws DialException {
+	public BNetwork getReducedCopy(Collection<String> variablesToRetain, 
+			Collection<String> variablesToIsolate) throws DialException {
 
 		BNetwork network = new BNetwork();
 
@@ -490,6 +511,12 @@ public class BNetwork implements IdChangeListener {
 				}
 			}
 		}
+		
+		for (String var : network.getNodeIds()) {
+			if (variablesToIsolate.contains(var)) {
+				network.getNode(var).removeAllRelations();
+			}
+		}
 				
 		return network;
 	}
@@ -500,18 +527,21 @@ public class BNetwork implements IdChangeListener {
 	 * Returns the identifiers for the node that remain identical in this network and the one
 	 * given as argument, taking into account the evidence.
 	 * 
-	 * @param otherNetwork the other network
+	 * @param reducedNetwork the other network
 	 * @param evidence the evidence to consider as well
 	 * @return the set of node identifiers that remain identical
 	 */
-	public Set<String> getIdenticalNodes(BNetwork otherNetwork, Assignment evidence) {
+	public Set<String> getIdenticalNodes(BNetwork reducedNetwork, Assignment evidence) {
 		Set<String> identicalNodes = new HashSet<String>();
-		for (ChanceNode node : otherNetwork.getChanceNodes()) {
+		for (ChanceNode node : reducedNetwork.getChanceNodes()) {
 			ChanceNode initNode = getChanceNode(node.getId());
 				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
-						&& node.getOutputNodesIds().equals(initNode.getOutputNodesIds()) 
-						&& node.hasDescendant(evidence.getVariables())) {
+						&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
+						&& !initNode.hasDescendant(evidence.getVariables())
+						&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))) {
 					identicalNodes.add(node.getId());
+				//	log.debug("identical node: " + node.getId() + " since descendants " 
+				//	+ initNode.getDescendantIds() + " and evidence " + evidence);
 			}	
 		}	
 		return identicalNodes;

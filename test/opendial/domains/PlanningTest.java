@@ -38,7 +38,6 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.inference.queries.ProbQuery;
-import opendial.planning.Trajectory;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 
@@ -62,8 +61,6 @@ public class PlanningTest {
 			domain2 = XMLDomainReader.extractDomain(domainFile2); 
 			domain3 = XMLDomainReader.extractDomain(domainFile3); 
 			inference = new InferenceChecks();
-			Settings.activatePlanner = true;
-			Settings.activatePruning = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -73,10 +70,8 @@ public class PlanningTest {
 	@Test
 	public void planning() throws DialException, InterruptedException {
 
-		Settings.planningHorizon = 1;
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem(); 
-		
 		assertEquals(3, system.getState().getNetwork().getNodes().size());
 		assertEquals(3, system.getState().getNetwork().getChanceNodes().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
@@ -88,40 +83,20 @@ public class PlanningTest {
 	public void planning2() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
-		Settings.planningHorizon =1;
 		system.startSystem(); 
-
 		assertEquals(2, system.getState().getNetwork().getNodeIds().size());
 		assertFalse(system.getState().getNetwork().hasChanceNode("a_m"));
-		
-		system = new DialogueSystem(domain2);
-		Settings.planningHorizon =2;
-		system.startSystem(); 
-		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
+
 	}
-	
 	
 	@Test
 	public void planning3() throws DialException, InterruptedException {
-		inference = new InferenceChecks();
-
-		DialogueSystem system = new DialogueSystem(domain3);
-		Settings.planningHorizon =3;
+		
+		DialogueSystem system = new DialogueSystem(domain2);
+		Settings.getInstance().planning.horizon =2;
 		system.startSystem(); 
-		
-		SimpleTable t1 = new SimpleTable();
-		t1.addRow(new Assignment("a_u", "Ask(Coffee)"), 0.9);
-		t1.addRow(new Assignment("a_u", "Ask(Tea)"), 0.02);
-		system.getState().addContent(t1, "planning3");
-		
-		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "Do(Coffee)"), 1.0);
-		
-		
-		log.info("action sampling time: " + Trajectory.actionSamplingTime/1000000.0  + " .ms");
-		log.info("action recording time: " + Trajectory.actionRecordingTime/1000000.0  + " .ms");
-		log.info("observation sampling time: " + Trajectory.observationSamplingTime/1000000.0  + " .ms");
-		log.info("observation recording time: " + Trajectory.observationRecordingTime/1000000.0  + " .ms");
-		
+		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
+		Settings.getInstance().planning.horizon =1;
 	}
 	
 	
@@ -130,7 +105,26 @@ public class PlanningTest {
 		inference = new InferenceChecks();
 
 		DialogueSystem system = new DialogueSystem(domain3);
-		Settings.planningHorizon = 3;
+		Settings.getInstance().planning.horizon =3;
+		system.startSystem(); 
+		
+		SimpleTable t1 = new SimpleTable();
+		t1.addRow(new Assignment("a_u", "Ask(Coffee)"), 0.95);
+		t1.addRow(new Assignment("a_u", "Ask(Tea)"), 0.02);
+		system.getState().addContent(t1, "planning3");
+		
+		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "Do(Coffee)"), 1.0);
+				
+		Settings.getInstance().planning.horizon =1;
+	}
+	
+	
+	@Test
+	public void planning5() throws DialException, InterruptedException {
+		inference = new InferenceChecks();
+
+		DialogueSystem system = new DialogueSystem(domain3);
+		Settings.getInstance().planning.horizon = 3;
 		system.startSystem(); 
 		
 		SimpleTable t1 = new SimpleTable();
@@ -140,6 +134,7 @@ public class PlanningTest {
 
 		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
 		
+		Settings.getInstance().planning.horizon =1;
 	}
 
 }

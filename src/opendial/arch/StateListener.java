@@ -21,10 +21,11 @@ package opendial.arch;
 
 
 import opendial.arch.Logger;
+import opendial.state.DialogueState;
 
 public interface StateListener {
 
-	public void update();
+	public void update(DialogueState state);
 
 }
 

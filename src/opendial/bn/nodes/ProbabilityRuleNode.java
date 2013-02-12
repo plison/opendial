@@ -28,7 +28,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
@@ -60,6 +60,11 @@ public class ProbabilityRuleNode extends ChanceNode {
 	@Override
 	public Set<Value> getValues() {
 		return new HashSet<Value>(rule.getValues());
+	}
+
+
+	public AnchoredRule getRule() {
+		return rule;
 	}
 
 

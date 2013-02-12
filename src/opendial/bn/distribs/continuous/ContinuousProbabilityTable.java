@@ -35,7 +35,9 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.values.Value;
+import opendial.utils.MathUtils;
 
 /**
  * Table mapping conditional assignments to continuous probability distributions.
@@ -50,7 +52,7 @@ import opendial.bn.values.Value;
  *
  */
 public class ContinuousProbabilityTable 
-	extends AbstractProbabilityTable<FunctionBasedDistribution>
+	extends AbstractProbabilityTable<ContinuousProbDistribution>
 	implements ContinuousProbDistribution {
 
 	// logger
@@ -67,7 +69,7 @@ public class ContinuousProbabilityTable
 	 * 
 	 */
 	public ContinuousProbabilityTable() {
-		table = new HashMap<Assignment,FunctionBasedDistribution>();
+		table = new HashMap<Assignment,ContinuousProbDistribution>();
 		conditionalVars = new HashSet<String>();
 	}
 	
@@ -79,7 +81,7 @@ public class ContinuousProbabilityTable
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based representation)
 	 */
-	public void addDistrib (Assignment condition, FunctionBasedDistribution distrib) {
+	public void addDistrib (Assignment condition, ContinuousProbDistribution distrib) {
 		table.put(condition, distrib);
 		conditionalVars.addAll(condition.getVariables());
 	}
@@ -100,12 +102,20 @@ public class ContinuousProbabilityTable
 	 */
 	@Override
 	public double getProbDensity(Assignment condition, Assignment head) {
-		if (table.containsKey(condition)) {
-			return table.get(condition).getProbDensity(new Assignment(), head);
+		
+		Assignment trimmed = condition.getTrimmed(conditionalVars);
+
+		if (table.containsKey(trimmed)) {
+			return table.get(trimmed).getProbDensity(new Assignment(), head);
 		}
 		else {
-			return 0.0;
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			if (!closest.isEmpty()) {
+				ContinuousProbDistribution distrib = table.get(closest);
+				return distrib.getProbDensity(new Assignment(), head);
+			}		
 		}
+		return 0.0;
 	}
 
 	
@@ -119,12 +129,20 @@ public class ContinuousProbabilityTable
 	 */
 	@Override
 	public double getCumulativeProb(Assignment condition, Assignment head) {
-		if (table.containsKey(condition)) {
-			return table.get(condition).getCumulativeProb(new Assignment(), head);
+		
+		Assignment trimmed = condition.getTrimmed(conditionalVars);
+
+		if (table.containsKey(trimmed)) {
+			return table.get(trimmed).getCumulativeProb(new Assignment(), head);
 		}
 		else {
-			return 0.0;
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			if (!closest.isEmpty()) {
+				ContinuousProbDistribution distrib = table.get(closest);
+				return distrib.getCumulativeProb(new Assignment(), head);
+			}	
 		}
+		return 0.0;
 	}
 	
 	
@@ -136,7 +154,7 @@ public class ContinuousProbabilityTable
 	 */
 	public Collection<String> getHeadVariables() {
 		Set<String> headVars = new HashSet<String>();
-		for (FunctionBasedDistribution subdistrib : table.values()) {
+		for (ContinuousProbDistribution subdistrib : table.values()) {
 			headVars.addAll(subdistrib.getHeadVariables());
 		}
 		return headVars;
@@ -208,7 +226,7 @@ public class ContinuousProbabilityTable
 	public DiscreteProbDistribution toDiscrete() {
 		DiscreteProbabilityTable newTable = new DiscreteProbabilityTable();
 		for (Assignment condition : table.keySet()) {
-			newTable.addRows(condition, table.get(condition).toDiscrete());
+			newTable.addRows(condition, (SimpleTable)table.get(condition).toDiscrete());
 		}
 		return newTable;
 	}
@@ -224,7 +242,11 @@ public class ContinuousProbabilityTable
 		return this;
 	}
 
-	
+
+	@Override
+	public int getDimensionality() {
+		return 1;
+	}
 	
 	
 }

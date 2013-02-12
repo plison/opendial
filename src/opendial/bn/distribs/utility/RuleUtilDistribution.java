@@ -24,14 +24,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.values.DoubleVal;
+import opendial.bn.values.StringVal;
+import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.DecisionRule;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
@@ -136,16 +142,24 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 * @return the corresponding utility
 	 */
 	@Override
-	public synchronized double getUtility(Assignment fullInput) {
+	public synchronized double getUtil(Assignment fullInput) {
+
 		Assignment input = fullInput.getTrimmedInverse(actionVars);
 		Assignment actions = fullInput.getTrimmed(actionVars);
 
-	
-		if (cache.get(input) == null || !cache.get(input).hasUtility(actions)) {
-			fillCacheForCondition(input, actions);
+		if (rule.getParameterNodes().isEmpty()) {
+			if (!cache.containsKey(input)) {
+					cache.put(input, new UtilityTable());
+			}
+			if (!cache.get(input).hasUtil(actions)) {
+				double util = getUtil(input, actions);
+				cache.get(input).setUtil(actions, util);
+			}
+			return cache.get(input).getUtil(actions);
 		}
-		
-		return cache.get(input).getUtility(actions);
+		else {
+			return getUtil(input, actions);
+		}
 	}
 
 
@@ -159,23 +173,27 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 */
 	@Override
 	public synchronized Set<Assignment> getRelevantActions(Assignment fullInput) {
-
 		Assignment condition = fullInput.getTrimmedInverse(actionVars);
 		
 		Set<Assignment> relevantActions = new HashSet<Assignment>();
 		
-		Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(condition);
-		for (Output effectOutput : effectOutputs.keySet()) {
-			
+		OutputTable outputs = rule.getEffectOutputs(condition);
+		for (Output o : outputs.getOutputs()) {
+		
 			// only fill the cache for effects that are fully specified
-			if (effectOutput.getAllDiscardValues().isEmpty() && 
-					!effectOutput.getAllSetValues().isEmpty()) {
+			if (o.getAllDiscardValues().isEmpty()) {
 
-				Assignment concreteAction = new Assignment(effectOutput.getAllSetValues());
+				Assignment concreteAction = new Assignment();
+				for (Entry<String,Value> entry : o.getAllSetValues().entrySet()) {
+					if (!(entry.getValue() instanceof StringVal) || !(new Template(((StringVal)
+							entry.getValue()).toString())).containsTemplate()) {
+						concreteAction.addPair(entry.getKey(), entry.getValue());
+					}
+				}
 				relevantActions.add(formatAction(concreteAction));
 			}
 		}
-
+		
 		return relevantActions;
 	}
 
@@ -233,38 +251,26 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	// ===================================
 
 
-	/**
-	 * Fills the cache with the utility value representing the rule output for the
-	 * specific input.
-	 * 
-	 * @param fullInput the conditional assignment
-	 */
-	private synchronized void fillCacheForCondition(Assignment input, Assignment actions) {
+	
 
-		if (!cache.containsKey(input)) {
-			cache.put(input, new UtilityTable());
-		}
+	private double getUtil(Assignment input, Assignment actions) {
+
 		try {
 			Assignment formattedAction = actions.removeSpecifiers();
-			Map<Output,Parameter> effectOutputs = rule.getEffectOutputs(input);
+			OutputTable effectOutputs = rule.getEffectOutputs(input);
+			Map<Output,Double> utilities = effectOutputs.getRawTable(input);
 			
-			for (Output effectOutput : effectOutputs.keySet()) {	
+			for (Output effectOutput : utilities.keySet()) {
 				if (effectOutput.isCompatibleWith(formattedAction)) {
-					Parameter param = effectOutputs.get(effectOutput);
-					double parameterValue = param.getParameterValue(input);
-					cache.get(input).setUtility(actions, parameterValue);
-					return;
+					return utilities.get(effectOutput);
 				}
 			}
-			if (!cache.get(input).hasUtility(actions)) {
-				cache.get(input).setUtility(actions, 0.0);
-			}	
 		}
 		catch (DialException e) {
-			log.warning("could not fill cache for condition/action " + input + ": " + e.toString());
+			log.warning("error extracting utility: " + e);
 		}
+		return 0.0;	
 	}
-
 
 
 

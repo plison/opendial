@@ -56,9 +56,8 @@ public class PruningTest {
 		try { 
 		domain = XMLDomainReader.extractDomain(domainFile); 
 		inference = new InferenceChecks();
-		inference.EXACT_THRESHOLD = 0.08;
+		inference.EXACT_THRESHOLD = 0.1;
 		inference.SAMPLING_THRESHOLD = 0.1;
-		Settings.activatePruning = true;
 			system = new DialogueSystem(domain);
 			system.startSystem(); 
 		} 

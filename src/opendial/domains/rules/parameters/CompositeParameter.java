@@ -28,7 +28,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 
@@ -78,6 +78,13 @@ public class CompositeParameter implements Parameter {
 		distribs.add(param);
 	}
 	
+	
+	
+	public double getParameterValue(Assignment input) throws DialException {
+		return getUnnormalisedParameterValue(input);
+	}
+	
+	
 	/**
 	 * Returns the parameter value for the composition, by extracting the values
 	 * for each individual parameter in the input assignment, and then adding
@@ -88,7 +95,7 @@ public class CompositeParameter implements Parameter {
 	 * @return the combined value for the parameters
 	 * @throws DialException if the parameters are not all specified
 	 */
-	public double getParameterValue(Assignment input) throws DialException {
+	public double getUnnormalisedParameterValue(Assignment input) throws DialException {
 		double totalValue = 0.0;
 		if (input.containsVars(distribs)) {
 			for (String paramVar : distribs) {
@@ -127,7 +134,7 @@ public class CompositeParameter implements Parameter {
 	public String toString() {
 		String str = "";
 		for (String distrib : distribs) {
-			str += distrib;
+			str += distrib + "+";
 		}
 		return str.substring(0, str.length()-1);		
 	}
