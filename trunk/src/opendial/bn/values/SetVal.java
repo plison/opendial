@@ -73,7 +73,7 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		return (o instanceof SetVal && ((SetVal)o).getSet().equals(getSet()));
+		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
 	}
 	
 	
@@ -110,6 +110,10 @@ public final class SetVal implements Value {
 		set.addAll(values.getSet());
 	}
 	
+	public void removeAll(Set<Value> discardValues) {
+		set.removeAll(discardValues);
+	}
+	
 	/**
 	 * Compares the set value to another value
 	 * 
@@ -119,5 +123,7 @@ public final class SetVal implements Value {
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
 	}
+
+
 	
 }

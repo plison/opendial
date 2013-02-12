@@ -34,14 +34,19 @@ import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.UnivariateDistribution;
+import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.common.NetworkExamples;
 import opendial.domains.Domain;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.UpdateRule;
 import opendial.gui.GUIFrame;
 import opendial.gui.StateMonitorTab;
+import opendial.gui.statemonitor.DistributionViewer;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.NaiveInference;
 import opendial.inference.VariableElimination;
@@ -62,29 +67,69 @@ import opendial.state.rules.AnchoredRule;
 public class SandBox {
 
 	// logger
-	public static Logger log = new Logger("SandBox", Logger.Level.NORMAL);
+	public static Logger log = new Logger("SandBox", Logger.Level.DEBUG);
 	
 	public static final String domainFile = "domains//testing//domain1.xml";
 
+	
+	
 
+	public static void main(String[] args) {
+		Pattern p = Pattern.compile("turn (.* )?left");
+		Matcher m = p.matcher("turn left");
+		log.debug(m.find());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static void main22(String[] args) throws DialException, InterruptedException {
+		UnivariateDistribution distrib = new UnivariateDistribution("x", new GaussianDensityFunction(0, 0.36));
+		ChanceNode x = new ChanceNode("x");
+		x.setDistrib(distrib);
+		BNetwork network = new BNetwork();
+		network.addNode(x);
+		ProbDistribution distrib2 = (new ImportanceSampling()).queryProb(new ProbQuery(network, "x"));
+		DistributionViewer.showDistributionViewer(distrib);
+		Thread.sleep(3000000);
+	}
+	
 
-	public static void main(String[] args) throws DialException, InterruptedException {
+	public static void main21(String[] args) throws DialException, InterruptedException {
+		
+		Pattern p = Pattern.compile("\\(([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\)");
+		Matcher m = p.matcher("(6)");
+		log.debug("match " + m.matches());
+		/**
 		Domain domain = XMLDomainReader.extractDomain("domains//testing//basicPlanning.xml");
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem();
-		Thread.sleep(300000000);
+		Thread.sleep(300000000); */
 	}
 	
 
 	public static void main11(String[] args) throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain("domains//testing//basicPlanning.xml");
-		Settings.activatePruning=false;
+		Settings.getInstance().activatePruning=false;
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem();
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("a_m", "AskRepeat"), 1.0);
 		system.getState().addContent(table, "blabla");
-//		Settings.activatePlanner(true);
+//		Settings.getInstance().activatePlanner(true);
 		Thread.sleep(300000000);
 	}
 

@@ -119,7 +119,7 @@
 			<case>
 				<condition operator="and">
 					<if var="var1" value="value1" />
-					<if var="var2" value="here is {localvar}" relation="partialmatch" />
+					<if var="var2" value="here is {localvar}" relation="in" />
 				</condition>
 				<effect>
 					<set var="o" value="and we have localvar={localvar}" />
@@ -128,7 +128,7 @@
 			<case>
 				<condition operator="or">
 					<if var="var1" value="value1" relation="!" />
-					<if var="var2" value="{localvar}, finally" relation="exactmatch" />
+					<if var="var2" value="{localvar}, finally" relation="in" />
 				</condition>
 				<effect>
 					<set var="o" value="and we have localvar={localvar}" />
@@ -162,8 +162,8 @@
 		<rule>
 			<case>
 				<condition operator="or">
-					<if var="u_u2" value="hello" relation="partialmatch" />
-					<if var="u_u2" value="hi" relation="partialmatch" />
+					<if var="u_u2" value="hello" relation="in" />
+					<if var="u_u2" value="hi" relation="in" />
 				</condition>
 				<effect>
 					<add var="a_u2" value="Greet" />
@@ -174,7 +174,7 @@
 		<rule>
 			<case>
 				<condition operator="or">
-					<if var="u_u2" value="how are you" relation="partialmatch" />
+					<if var="u_u2" value="how are you" relation="in" />
 				</condition>
 				<effect>
 					<add var="a_u2" value="HowAreYou" />
@@ -186,8 +186,8 @@
 		<rule>
 			<case>
 				<condition operator="or">
-					<if var="u_u2" value="hello" relation="partialmatch" />
-					<if var="u_u2" value="hi" relation="partialmatch" />
+					<if var="u_u2" value="hello" relation="in" />
+					<if var="u_u2" value="hi" relation="in" />
 				</condition>
 				<effect>
 					<set var="a_u3^{random}" value="Greet" />
@@ -201,7 +201,7 @@
 		<rule>
 			<case>
 				<condition operator="or">
-					<if var="u_u2" value="how are you" relation="partialmatch" />
+					<if var="u_u2" value="how are you" relation="in" />
 				</condition>
 				<effect>
 					<set var="a_u3^{random}" value="HowAreYou" />

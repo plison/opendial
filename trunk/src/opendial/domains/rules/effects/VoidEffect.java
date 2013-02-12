@@ -26,7 +26,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 /**
  * A void effect, having no effect on any variable.
@@ -57,8 +57,8 @@ public class VoidEffect implements Effect {
 	 * @return an empty set
 	 */
 	@Override
-	public Set<TemplateString> getOutputVariables() {
-		return new HashSet<TemplateString>();
+	public Set<Template> getOutputVariables() {
+		return new HashSet<Template>();
 	}
 
 	/**

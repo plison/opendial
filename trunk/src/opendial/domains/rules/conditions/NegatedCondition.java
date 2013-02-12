@@ -24,7 +24,7 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.quantification.UnboundPredicate;
 
 
@@ -72,7 +72,7 @@ public class NegatedCondition implements Condition {
 	 * @return the input variables
 	 */
 	@Override
-	public Set<TemplateString> getInputVariables() {
+	public Set<Template> getInputVariables() {
 		return initCondition.getInputVariables();
 	}
 

@@ -252,11 +252,12 @@ public class OutputDistribution implements DiscreteProbDistribution {
 			}
 		}
 		// if the output is made from add values, concatenate the results
-		else if (!addValues.isEmpty()) {
+		else if (!addValues.isEmpty() || !discardValues.isEmpty()) {
 			SetVal addValue = ValueFactory.create(addValues);
 			if (previousValue instanceof SetVal) {
 				addValue.addAll((SetVal)previousValue);
-			}
+			} 
+			addValue.removeAll(discardValues);
 			probTable.addRow(new Assignment(baseVar+primes, addValue), 1.0);
 		}
 		

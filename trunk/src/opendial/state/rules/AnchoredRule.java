@@ -30,14 +30,16 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.CaseBasedRule;
+import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
@@ -76,7 +78,7 @@ public class AnchoredRule {
 	public AnchoredRule(Rule rule, DialogueState state, Assignment anchor) {
 		this.rule = rule;
 		this.anchor = anchor;
-		if (rule.getInputVariables().contains(new TemplateString("random"))) {
+		if (rule.getInputVariables().contains(new Template("random"))) {
 			anchor.addPair("random", ValueFactory.create((new Random()).nextInt(10000)));
 		}
 
@@ -87,7 +89,7 @@ public class AnchoredRule {
 		inputVariables = extractInputVariables();
 
 		inputNodes = extractInputNodes(state);
-	
+
 		cache = new AnchoredRuleCache(this);
 		
 		outputVariables = extractOutputVariables();
@@ -112,9 +114,12 @@ public class AnchoredRule {
 
 
 	private Set<String> extractInputVariables() {
-		Set<TemplateString> templatedVariables = rule.getInputVariables();
+		Set<Template> templatedVariables = rule.getInputVariables();
+if (rule.getRuleId().equals("repetition")) {
+	log.debug("templated variables: " + templatedVariables);
+}
 		Set<String> filledVariables = new HashSet<String>();
-		for (TemplateString templatedVar : templatedVariables) {
+		for (Template templatedVar : templatedVariables) {
 			try {
 				String filledVar = templatedVar.fillSlots(anchor);
 				filledVariables.add(filledVar);
@@ -134,7 +139,7 @@ public class AnchoredRule {
 
 	private Set<String> extractOutputVariables() {
 		Set<String> outputVariables = new HashSet<String>();		
-		for (Output output : cache.getOutputs().keySet()) {
+		for (Output output : cache.getOutputs()) {
 			for (String outputVariable : output.getVariables()) {
 				outputVariables.add(outputVariable);	
 			}
@@ -145,13 +150,16 @@ public class AnchoredRule {
 
 	private Map<String,ChanceNode> extractParameters(DialogueState state) {
 		Map<String,ChanceNode> parameters = new HashMap<String,ChanceNode>();		
-		for (Output output : cache.getOutputs().keySet()) {
-			for (String param : cache.getOutputs().get(output).getParameterIds()) {
-				if (state.getNetwork().hasChanceNode(param)) {
-					parameters.put(param,state.getNetwork().getChanceNode(param));
+		for (Output output : cache.getOutputs()) {
+			
+			for (Parameter param : cache.getParameters(output)) {
+				for (String paramId : param.getParameterIds()) {
+				if (state.getNetwork().hasChanceNode(paramId)) {
+					parameters.put(paramId,state.getNetwork().getChanceNode(paramId));
 				}
 				else {
 					log.warning("parameter " + param + " is not defined!");
+				}
 				}
 			}
 		}
@@ -162,20 +170,28 @@ public class AnchoredRule {
 	public Set<String> getOutputVariables() {
 		return outputVariables;
 	}
+	
+	
+	public Set<String> getInputVariables() {
+		return inputVariables;
+	}
 
 
 	public boolean isRelevant() {
+
 		if (cache.getOutputs().isEmpty()) {
 			return false;
 		}
 		else if (cache.getOutputs().size() == 1) {
-			Map.Entry<Output,Parameter> o = cache.getOutputs().entrySet().iterator().next();
-			if (o.getKey().isVoid()) {
+			Output firstOutput = cache.getOutputs().iterator().next();
+			Set<Parameter> params = cache.getParameters(firstOutput);
+			Parameter firstParam = params.iterator().next();
+			if (firstOutput.isVoid()) {
 				if (rule.getRuleType() == RuleType.PROB) {
 					return false;
 				}
-				else if (o.getValue() instanceof FixedParameter && 
-				(((FixedParameter)o.getValue()).getParameterValue() == 0.0)) {
+				else if (params.size() ==1 && firstParam instanceof FixedParameter && 
+				(((FixedParameter)firstParam).getParameterValue() == 0.0)) {
 					return false;
 				}
 			}
@@ -184,12 +200,13 @@ public class AnchoredRule {
 	}
 
 	public Set<Output> getValues() {
-		return cache.getOutputs().keySet();
+		return cache.getOutputs();
 	}
 
-	public Map<Output,Parameter> getEffectOutputs (Assignment input) {
+	public OutputTable getEffectOutputs (Assignment input) {
 		Assignment augmentedInput = new Assignment(input.removeSpecifiers(), anchor);
-		return rule.getEffectOutputs(augmentedInput);
+		OutputTable table= rule.getEffectOutputs(augmentedInput);
+		return table;
 	}
 
 
@@ -219,7 +236,7 @@ public class AnchoredRule {
 			for (int i = 4 ; i >= 0 && !isAttached ; i--) {
 				String specifiedVar = inputVar + StringUtils.createNbPrimes(i);
 				if (state.getNetwork().hasChanceNode(specifiedVar) 
-						&& !state.isVariableToProcess(specifiedVar)) {
+						&& !state.isVariableToProcess(specifiedVar)) {		// CHANGE THIS!!
 					tempInputNodes.put(specifiedVar, state.getNetwork().getChanceNode(specifiedVar));
 					isAttached = true;
 				}

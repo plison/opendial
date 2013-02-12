@@ -87,7 +87,7 @@ public class UtilityNode extends BNode {
 	 */
 	public void addUtility(Assignment input, double value) {
 		if (distrib instanceof UtilityTable) {
-			((UtilityTable)distrib).setUtility(input, value);
+			((UtilityTable)distrib).setUtil(input, value);
 		}
 		else {
 			log.warning("utility distribution is not a table, cannot add value");
@@ -101,7 +101,7 @@ public class UtilityNode extends BNode {
 	 */
 	public void removeUtility(Assignment input) {
 		if (distrib instanceof UtilityTable) {
-			((UtilityTable)distrib).removeUtility(input);
+			((UtilityTable)distrib).removeUtil(input);
 		}
 		else {
 			log.warning("utility distribution is not a table, cannot remove value");
@@ -135,7 +135,7 @@ public class UtilityNode extends BNode {
 	 * @return the associated utility
 	 */
 	public double getUtility(Assignment input) {
-		return distrib.getUtility(new Assignment(input));
+		return distrib.getUtil(new Assignment(input));
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class UtilityNode extends BNode {
 
 		Set<Assignment> possibleConditions = getPossibleConditions();
 		for (Assignment condition : possibleConditions) {
-			double value = distrib.getUtility(condition);
+			double value = distrib.getUtil(condition);
 			utilities.add(ValueFactory.create(value));
 		}
 		return utilities;
@@ -178,7 +178,7 @@ public class UtilityNode extends BNode {
 
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-			factor.put(combination, distrib.getUtility(combination));
+			factor.put(combination, distrib.getUtil(combination));
 		}
 		return factor;
 	}

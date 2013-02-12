@@ -20,6 +20,7 @@
 package opendial.bn.distribs.continuous.functions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.arch.Logger;
+import opendial.utils.MathUtils;
 
 /**
  * Density function defined via a set of discrete points
@@ -37,7 +39,7 @@ import opendial.arch.Logger;
  * @version $Date::                      $
  *
  */
-public class DiscreteDensityFunction implements DensityFunction {
+public class DiscreteDensityFunction implements UnivariateDensityFunction {
 
 	// logger
 	public static Logger log = new Logger("DiscreteDensityFunction", Logger.Level.DEBUG);
@@ -61,19 +63,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 		this.points = new TreeMap<Double,Double>();
 		this.points.putAll(points);
 		sampler = new Random();
-		minDistance = Double.MAX_VALUE;
-		Iterator<Double> it = points.keySet().iterator();
-		if (it.hasNext()) {
-			double prev = it.next();
-			while (it.hasNext()) {
-				double cur = it.next();
-				double dist = Math.abs(cur-prev);
-				if (dist < minDistance) {
-					minDistance = dist;
-				}
-				prev = cur;
-			}
-		}
+		minDistance = MathUtils.getMinDistance(points.keySet());
 	}
 	
 	
@@ -169,7 +159,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * @return the copy
 	 */
 	@Override
-	public DensityFunction copy() {
+	public UnivariateDensityFunction copy() {
 		return new DiscreteDensityFunction(points);
 	}
 
@@ -196,6 +186,21 @@ public class DiscreteDensityFunction implements DensityFunction {
 	}
 	
 	
+	public double getMean() {
+		double mean = 0;
+		for (double point : points.keySet()) {
+			mean += point * points.get(point);
+		}
+		return mean;
+	}
 	
+	public double getVariance() {
+		double variance = 0;
+		double mean = getMean();
+		for (double point : points.keySet()) {
+			variance += Math.pow(point - mean, 2) * points.get(point);
+		}
+		return variance;
+	}
 	
 }

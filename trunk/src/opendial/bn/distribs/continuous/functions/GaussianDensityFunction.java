@@ -32,7 +32,7 @@ import opendial.arch.Logger;
  * @version $Date::                      $
  *
  */
-public class GaussianDensityFunction implements DensityFunction {
+public class GaussianDensityFunction implements UnivariateDensityFunction {
 
 	// logger
 	public static Logger log = new Logger("GaussianDensityFunction", Logger.Level.DEBUG);
@@ -78,7 +78,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * @param x the point
 	 * @return the density at the point
 	 */
-	public double getDensity(double x) {		
+	public double getDensity(double x) {
 		double spread = 1.0/( stdDev * Math.sqrt(2*Math.PI));
 		double exp = Math.exp(-Math.pow(x-mean,2) / (2*variance));
 		double result = spread*exp;
@@ -93,7 +93,6 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double sample() {
-		long time1 = System.nanoTime();
 		if (spareready) {
 			spareready = false;
 			return spare * stdDev + mean;
@@ -205,5 +204,14 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	public int hashCode() {
 		return (new Double(mean)).hashCode() + (new Double(variance)).hashCode();
+	}
+	
+	
+	public double getMean() {
+		return mean;
+	}
+	
+	public double getVariance() {
+		return variance;
 	}
 }

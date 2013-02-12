@@ -19,8 +19,10 @@
 
 package opendial.bn.values;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +46,8 @@ public class ValueFactory {
 	static NoneVal noneValue = new NoneVal();
 
 	static Pattern p = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+	static Pattern p2 = Pattern.compile("\\(([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
+			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\)");
 
 
 	/**
@@ -75,10 +79,23 @@ public class ValueFactory {
 
 			Set<Value> subVals = new HashSet<Value>();
 			for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+				if (subVal.length() > 0) {
 				subVals.add(create(subVal.trim()));
+				}
 			}
 			return new SetVal(subVals);
 		}
+		// adds the converted value
+			else {
+				Matcher m2 = p2.matcher(str);
+				if (m2.matches()){
+					List<Double> subVals = new ArrayList<Double>();
+					for (String subVal : str.replace("(", "").replace(")", "").split(",")) {
+						subVals.add(Double.parseDouble(subVal));
+					}
+					return new VectorVal(subVals);
+				}
+			}
 		return new StringVal(str);
 	}
 
@@ -90,6 +107,11 @@ public class ValueFactory {
 	 */
 	public static DoubleVal create(double d) {
 		return new DoubleVal(d);
+	}
+	
+	
+	public static VectorVal create(double[] d) {
+		return new VectorVal(d);
 	}
 
 	/**

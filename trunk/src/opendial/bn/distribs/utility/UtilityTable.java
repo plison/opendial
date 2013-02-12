@@ -30,9 +30,9 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.distribs.datastructs.EntryComparator;
 import opendial.bn.distribs.datastructs.Estimate;
 import opendial.bn.values.Value;
-import opendial.planning.ValuedAction;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -77,7 +77,7 @@ public class UtilityTable implements UtilityDistribution {
 	public UtilityTable(Map<Assignment,Double> values) {
 		this();
 		for (Assignment a : values.keySet()) {
-			setUtility(a, values.get(a));
+			setUtil(a, values.get(a));
 		}
 	}
 
@@ -88,12 +88,12 @@ public class UtilityTable implements UtilityDistribution {
 	 * @param sample the sample assignment
 	 * @param utility the utility value for the sample
 	 */
-	public void addUtility(Assignment sample, double utility) {
+	public void incrementUtil(Assignment sample, double utility) {
 		if (!table.containsKey(sample)) {
 			table.put(sample, new Estimate(utility));
 		}
 		else {
-			table.get(sample).updateEstimate(utility);
+			table.get(sample).update(utility);
 		}
 		tableVars.addAll(sample.getVariables());
 	}
@@ -106,7 +106,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * @param input the value assignment for the input nodes
 	 * @param utility the resulting utility
 	 */
-	public void setUtility(Assignment input, double utility) {
+	public void setUtil(Assignment input, double utility) {
 		table.put(input,new Estimate(utility));
 		tableVars.addAll(input.getVariables());
 	}
@@ -117,7 +117,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * 
 	 * @param input the assignment associated with the utility to be removed
 	 */
-	public void removeUtility(Assignment input) {
+	public void removeUtil(Assignment input) {
 		table.remove(input);
 	}
 	
@@ -132,7 +132,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * @return the utility for the assignment
 	 */
 	@Override
-	public double getUtility(Assignment input) {
+	public double getUtil(Assignment input) {
 		if (table.containsKey(input)) {
 			return table.get(input).getValue();
 		}
@@ -154,7 +154,7 @@ public class UtilityTable implements UtilityDistribution {
 	 * @param input the input assignment
 	 * @return true if an utility is defined, false otherwise
 	 */
-	public boolean hasUtility(Assignment input) {
+	public boolean hasUtil(Assignment input) {
 		return table.containsKey(input);
 	}
 	
@@ -168,7 +168,7 @@ public class UtilityTable implements UtilityDistribution {
 	public Map<Assignment, Double> getTable() {
 		Map<Assignment,Double> averageUtils = new HashMap<Assignment,Double>();
 		for (Assignment a : table.keySet()) {
-			averageUtils.put(a, getUtility(a));
+			averageUtils.put(a, getUtil(a));
 		}
 		return averageUtils;
 	} 
@@ -182,17 +182,39 @@ public class UtilityTable implements UtilityDistribution {
 	 * @return the table of values, of size nbest
 	 * @throws DialException if nbest is < 1
 	 */
-	public List<ValuedAction> getFilteredTable(int nbest) throws DialException {
+	public UtilityTable getNBest(int nbest) throws DialException {
 		if (nbest < 1) {
 			throw new DialException("nbest must be >= 1");
 		}
-		List<ValuedAction> couples = new ArrayList<ValuedAction>(table.size());
-		for (Assignment a : table.keySet()) {
-			couples.add(new ValuedAction(a, table.get(a).getValue()));
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(getTable().entrySet());
+		
+		Collections.sort(entries, new EntryComparator());
+		Collections.reverse(entries);
+				
+		UtilityTable nbestTable = new UtilityTable();
+		int incr = 0;
+		for (Map.Entry<Assignment, Double> entry : entries) {
+			if (incr < nbest) {
+				nbestTable.setUtil(entry.getKey(), entry.getValue());
+			}
+			incr++;
 		}
-		Collections.sort(couples);
-		int fromIndex = (couples.size() >= nbest)? couples.size()-nbest : 0;
-		return couples.subList(fromIndex, couples.size());
+		return nbestTable;
+	}
+	
+	
+	public Assignment getBest() {
+		double maxValue = - Double.MAX_VALUE;
+		Assignment best = new Assignment();
+		for (Assignment a : table.keySet()) {
+			double value = table.get(a).getValue();
+			if (value > maxValue) {
+				maxValue = value;
+				best = a;
+			}
+		}
+		return best;
 	}
 
 
@@ -218,6 +240,11 @@ public class UtilityTable implements UtilityDistribution {
 	}
 
 	
+
+	public Set<Assignment> getRows() {
+		return table.keySet();
+	}
+
 	
 	// ===================================
 	//  UTILITY METHODS

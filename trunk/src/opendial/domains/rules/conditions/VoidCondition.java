@@ -24,7 +24,7 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.quantification.UnboundPredicate;
 
 /**
@@ -45,8 +45,8 @@ public class VoidCondition implements Condition {
 	 * @return an empty set
 	 */
 	@Override
-	public Set<TemplateString> getInputVariables() {
-		return new HashSet<TemplateString>();
+	public Set<Template> getInputVariables() {
+		return new HashSet<Template>();
 	}
 
 

@@ -79,7 +79,7 @@ public class XMLUtils {
 
 			builder.setErrorHandler(new XMLErrorHandler());
 			Document doc = builder.parse(new InputSource(filename));
-			log.info("XML parsing of file: " + filename + " successful!");
+	//		log.info("XML parsing of file: " + filename + " successful!");
 			return doc;
 		}
 		catch (SAXException e) {

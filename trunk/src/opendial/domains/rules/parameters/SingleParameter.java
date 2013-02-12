@@ -26,7 +26,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.values.DoubleVal;
 
 /**

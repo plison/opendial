@@ -22,21 +22,21 @@ package opendial.domains.rules.quantification;
 
 import java.util.Set;
 
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 
 // free (unbound) predicate
 
 public class LabelPredicate implements UnboundPredicate {
 
-	TemplateString predicate;
+	Template predicate;
 	
-	public LabelPredicate(TemplateString predicate) {
+	public LabelPredicate(Template predicate) {
 		this.predicate = predicate;
 	}
 
 	@Override
-	public TemplateString getPredicate() {
+	public Template getPredicate() {
 		return predicate;
 	}
 	

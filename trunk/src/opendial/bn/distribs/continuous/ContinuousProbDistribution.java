@@ -37,4 +37,6 @@ public interface ContinuousProbDistribution extends ProbDistribution {
 	
 	public abstract double getCumulativeProb (Assignment condition, Assignment head);
 	
+	public abstract int getDimensionality();
+	
 }

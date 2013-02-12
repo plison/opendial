@@ -31,8 +31,10 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,16 +95,18 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 
 	JList listBox;
 
-	GUIFrame mainFrame;
+	DialogueState state;
 	
 	Map<String,String> variablesToMonitor;
+	
+	Map<String,Long> updateStamps;
 
 	/**
 	 * Start up the window
 	 * 
 	 * @param tester reference to the live-testing environment
 	 */
-	public ChatWindowTab (GUIFrame mainFrame) 
+	public ChatWindowTab (DialogueState state) 
 	{
 		setLayout(new BorderLayout());
 		// Create the area where the utterances appear
@@ -134,13 +138,18 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 
 		inputField.addActionListener(this);	
 		
-		this.mainFrame = mainFrame;
+		this.state = state;
 
-		variablesToMonitor = new HashMap<String,String>();
-		variablesToMonitor.put(Settings.userUtteranceVar, "user");
-		variablesToMonitor.put(Settings.systemUtteranceVar, "system");
-		for (String var : Settings.varsToMonitor) {
+		variablesToMonitor = new LinkedHashMap<String,String>();
+		variablesToMonitor.put(Settings.getInstance().gui.userUtteranceVar, "user");
+		for (String var : Settings.getInstance().gui.varsToMonitor) {
 			variablesToMonitor.put(var, var);
+		}
+		variablesToMonitor.put(Settings.getInstance().gui.systemUtteranceVar, "system");
+		
+		updateStamps = new HashMap<String,Long>();
+		for (String var : variablesToMonitor.keySet()) {
+			updateStamps.put(var, 0l);
 		}
 		
 		kit = new HTMLEditorKit();
@@ -214,8 +223,8 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 			String newText =  "<p style=\"font-size: 2px;\"><table><tr><td width=100><font size=4>" + guiLabel +
 					"</font></td><td><font size=4>" + formattedTable + "</font></td></tr></table></p>";
 			
-			if (!variable.equals(Settings.userUtteranceVar) && 
-					!variable.equals(Settings.systemUtteranceVar)) {
+			if (!variable.equals(Settings.getInstance().gui.userUtteranceVar) && 
+					!variable.equals(Settings.getInstance().gui.systemUtteranceVar)) {
 				newText = newText.replace("<font", "<i><font").replace("<b>", "")
 						.replace("</b>", "").replace("</font>", "</font></i>");
 			}
@@ -297,10 +306,10 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 			String[] splitText = rawText.split(";");
 			String var  ="";
 			if (getCurrentAgent().equals("user")) {
-				var = Settings.userUtteranceVar;
+				var = Settings.getInstance().gui.userUtteranceVar;
 			}
 			else if (getCurrentAgent().equals("system")) {
-				var = Settings.systemUtteranceVar;
+				var = Settings.getInstance().gui.systemUtteranceVar;
 			}
 
 			SimpleTable table = new SimpleTable();
@@ -313,14 +322,9 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 				table.addRow(new Assignment(var, split.trim()), probValue);
 			}
 
-			try {
-				insertLine(table);
-				setInputText("");
-				(new StateUpdater(mainFrame.getConnectedState(), table)).start();
-			}
-			catch (DialException e) {
-				log.warning("cannot add utterance " + table + " to dialogue state");
-			}
+			setInputText("");
+			(new StateUpdater(state, table)).start();
+			
 		}
 	}
 
@@ -350,22 +354,24 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 
 
 	@Override
-	public void update() {
-		DialogueState state = mainFrame.getConnectedState();
-		for (String updatedVar : state.getUpdatedVariables()) {
-			String baseVar = updatedVar.replace("'", "");
-			if (variablesToMonitor.containsKey(baseVar) && 
-					!baseVar.equals(Settings.userUtteranceVar)) {
+	public void update(DialogueState state) {
+		if (state.getName().equals(this.state.getName())) {
+		for (String varToMonitor : variablesToMonitor.keySet()) {
+			long lastUpdate = state.getUpdateStamp(varToMonitor);
+			if (state.getNetwork().hasChanceNode(varToMonitor) && 
+					lastUpdate - updateStamps.get(varToMonitor) > 0) {
+				updateStamps.put(varToMonitor, lastUpdate);
 				try {
-					ProbDistribution distrib = state.getContent(baseVar);
-					if (distrib.toDiscrete() instanceof SimpleTable) {
-						insertLine((SimpleTable)distrib.toDiscrete());
-					}
+				ProbDistribution distrib = state.getContent(varToMonitor, false);
+				if (distrib.toDiscrete() instanceof SimpleTable) {
+					insertLine((SimpleTable)distrib.toDiscrete());
+				}
 				}
 				catch (DialException e) {
-					log.warning("cannot update " + updatedVar + " in the chat window: " + e);
+					log.warning("cannot update GUI: " + e);
 				}
 			}
+		}
 		}
 	}
 

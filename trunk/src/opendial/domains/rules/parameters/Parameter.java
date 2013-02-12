@@ -24,7 +24,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 
 
 /**

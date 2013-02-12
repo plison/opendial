@@ -22,14 +22,14 @@ package opendial.domains.rules.quantification;
 
 import java.util.Set;
 
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 public class ValuePredicate implements UnboundPredicate {
 
 	String variable;
-	TemplateString predicate;
+	Template predicate;
 	
-	public ValuePredicate (String variable, TemplateString predicate) {
+	public ValuePredicate (String variable, Template predicate) {
 		this.predicate = predicate;
 		this.variable = variable;
 	}
@@ -40,7 +40,7 @@ public class ValuePredicate implements UnboundPredicate {
 	}
 	
 	@Override
-	public TemplateString getPredicate() {
+	public Template getPredicate() {
 		return predicate;
 	}
 	

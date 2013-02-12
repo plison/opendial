@@ -33,6 +33,7 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.MathUtils;
 
 /**
  * Traditional probability distribution represented as a probability table.  The table
@@ -93,8 +94,10 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			newTable.put(newCondition, table.get(condition));
 		}
 		
-		conditionalVars.remove(oldVarId);
-		conditionalVars.add(newVarId);
+		if (conditionalVars.contains(oldVarId)) {
+			conditionalVars.remove(oldVarId);
+			conditionalVars.add(newVarId);
+		}
 		
 		table = newTable;
 	}
@@ -122,6 +125,12 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).sample(new Assignment());
+		}
+		else  {
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);
+			if (!closest.isEmpty()) {
+				return table.get(trimmed).sample(new Assignment());
+			}	
 		}
 		log.debug("could not find the corresponding condition for " + condition + " (vars: " + conditionalVars + ")");
 		return new Assignment();

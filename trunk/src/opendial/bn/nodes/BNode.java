@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -134,12 +136,36 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 
+
 	/**
-	 * Removes all input relations to the node
+	 * Removes a relation between an output node and the current node.  
+	 * 
+	 * @param nodeId the identifier for the outgoing node to remove
+	 * @return true if a relation between the nodes existed, false otherwise
+	 */
+	public synchronized boolean removeOutputNode (String outputNode) {
+		if (!outputNodes.containsKey(outputNode)) {
+			log.warning("node " + outputNode + " is not an input node for " + nodeId);
+		}
+		boolean removal1 = outputNodes.containsKey(outputNode) && outputNodes.get(outputNode).removeInputNode_internal(nodeId);
+		boolean removal2 = removeOutputNode_internal(outputNode);
+		if (removal1!=removal2) {
+			log.warning("inconsistency between the input and output links for " + outputNode + " and " + nodeId);
+		}
+
+		return removal2;
+	}
+
+	
+	/**
+	 * Removes all input and output relations to the node
 	 */
 	public synchronized void removeAllRelations() {
 		for (BNode inputNode: new LinkedList<BNode>(inputNodes.values())) {
 			removeInputNode(inputNode.getId());
+		}
+		for (BNode outputNode: new LinkedList<BNode>(outputNodes.values())) {
+			removeOutputNode(outputNode.getId());
 		}
 	}
 
@@ -176,6 +202,9 @@ public abstract class BNode implements Comparable<BNode> {
 		idChangeListeners.add(listener);
 	}
 	
+	public void removeIdChangeListener(IdChangeListener listener) {
+		idChangeListeners.remove(listener);
+	}
 	
 	public synchronized void clearListeners() {
 		idChangeListeners.clear();
@@ -258,6 +287,22 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 
+
+	/**
+	 * Returns the identifiers for the set of output nodes that are chance nodes
+	 * 
+	 * @return the ids for the input nodes
+	 */
+	public Set<String> getChanceOutputNodesIds() {
+		Set<String> chanceOutputNodes = new HashSet<String>();
+		for (BNode node : outputNodes.values()) {
+			if (node instanceof ChanceNode) {
+				chanceOutputNodes.add(node.getId());
+			}
+		}
+		return chanceOutputNodes;
+	}
+	
 
 	/**
 	 * Returns an ordered list of nodes which are the ancestors
@@ -413,6 +458,47 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 	
 	
+	/**
+	 * Returns true if at there exists at least one descendant whose 
+	 * identifier matches the regular expression pattern, and false otherwise
+	 * 
+	 * @param the regular expression pattern to look for
+	 * @return true if a descendant is found, false otherwise
+	 */
+	public boolean hasDescendant(Pattern pattern) {
+
+		Queue<BNode> nodesToProcess = new LinkedList<BNode>();
+		nodesToProcess.add(this);
+
+		// NB: we try to avoid recursion for efficiency reasons, and
+		// use a while loop instead
+		while (!nodesToProcess.isEmpty()) {
+			BNode currentNode = nodesToProcess.poll();
+			for (BNode descendantNode : currentNode.getOutputNodes()) {
+				Matcher matcher = pattern.matcher(descendantNode.getId());
+				if (matcher.matches()){
+					return true;
+				}
+				if (!nodesToProcess.contains(descendantNode)) {
+					nodesToProcess.add(descendantNode);
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
+
+	public boolean hasOutputNode(Set<String> variables) {
+		for (String outputNode : getOutputNodesIds()) {
+			if (variables.contains(outputNode)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	
 	/**
 	 * Returns the set of distinct values that the node can take.  The
@@ -662,6 +748,8 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 		return false;
 	}
+
+
 
 
 }

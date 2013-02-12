@@ -103,7 +103,7 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 	 * @throws DialException if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtility(UtilQuery query) throws DialException {
+	public UtilityTable queryUtil(UtilQuery query) throws DialException {
 
 		// do a hybrid probability/utility query
 		DistributionCouple couple = queryJoint(query);
@@ -164,6 +164,40 @@ public abstract class AbstractInference implements InferenceAlgorithm {
 		return table;
 	}
 
+	
+
+	/**
+	 * Special handling for a special case of utility query where there is absolutely
+	 * no query variables (no actions).  In this case, we must pick up a variable in
+	 * the network, perform the inference with it, and then sum it out.
+	 * 
+	 * @param query the utility query without the query variables
+	 * @return the resulting distribution couple
+	 * @throws DialException
+	 */
+	protected DistributionCouple queryWithoutVars(UtilQuery query) throws DialException {
+		List<BNode> nodes = query.getFilteredSortedNodes();
+		SimpleTable probDistrib = new SimpleTable();
+		probDistrib.addRow(new Assignment(), 1.0);
+		UtilityTable utilDistrib = new UtilityTable();
+		if (!nodes.isEmpty()) {
+			String rootNode = nodes.get(nodes.size()-1).getId();
+			Query query2 = new UtilQuery(query.getNetwork(), Arrays.asList(rootNode), query.getEvidence());
+			DistributionCouple couple = queryJoint(query2);
+			UtilityTable utable = couple.getUtilityDistrib();
+			ProbDistribution distrib = couple.getProbDistrib();
+			double utilValue = 0;
+			for (Assignment a : utable.getTable().keySet()) {
+				utilValue += utable.getUtil(a) * distrib.toDiscrete().getProb(new Assignment(), a);
+			}
+			utilDistrib.setUtil(new Assignment(), utilValue);
+		}
+		else {
+			utilDistrib.setUtil(new Assignment(), 0.0);
+		}
+		return new DistributionCouple(probDistrib, utilDistrib);
+	}
+	
 
 	// ===================================
 	//  PROTECTED METHODS

@@ -28,7 +28,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+
 import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.values.Value;
@@ -90,6 +90,11 @@ public class UtilityRuleNode extends UtilityNode {
 	@Override
 	public UtilityRuleNode copy() throws DialException {
 		return new UtilityRuleNode(rule);
+	}
+
+
+	public AnchoredRule getRule() {
+		return rule;
 	}
 	
 	

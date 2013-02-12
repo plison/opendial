@@ -24,7 +24,8 @@ import java.util.Set;
 
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.OutputTable;
+import opendial.domains.datastructs.Template;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.quantification.UnboundPredicate;
 
@@ -40,11 +41,11 @@ public interface Rule {
 	
 	public enum RuleType {PROB, UTIL}
 	
-	public Set<TemplateString> getInputVariables();
+	public Set<Template> getInputVariables();
 	
 	public Set<UnboundPredicate> getUnboundPredicates();
 	
-	public Map<Output,Parameter> getEffectOutputs(Assignment input);
+	public OutputTable getEffectOutputs(Assignment input);
 	
 	public String getRuleId();
 	

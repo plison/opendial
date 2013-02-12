@@ -28,7 +28,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 
 /**
@@ -105,8 +105,8 @@ public class ComplexEffect implements Effect {
 	 * @return the set of all output variables
 	 */
 	@Override
-	public Set<TemplateString> getOutputVariables() {
-		Set<TemplateString> variables = new HashSet<TemplateString>();
+	public Set<Template> getOutputVariables() {
+		Set<Template> variables = new HashSet<Template>();
 		for (Effect e : subeffects) {
 			variables.addAll(e.getOutputVariables());
 		}

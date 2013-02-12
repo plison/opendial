@@ -30,7 +30,7 @@ import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.datastructs.TemplateString;
+import opendial.domains.datastructs.Template;
 
 /**
  * 
@@ -49,14 +49,14 @@ public class TemplateStringTest {
 
 	@Test
 	public void SurfaceTemplateTest1() {
-		TemplateString template = new TemplateString("this is a first test");
+		Template template = new Template("this is a first test");
 		String utterance = "bla bla this is a first test bla";
 		assertTrue(template.isMatching(utterance, true));
 	}
 	
 	@Test
 	public void SurfaceTemplateTest2() {
-		TemplateString template = new TemplateString("hi my name is {name}");
+		Template template = new Template("hi my name is {name}");
 		String utterance1 = "hi my name is Pierre, how are you?";
 		assertTrue(template.isMatching(utterance1, true));
 		String utterance2 = "hello how are you?";
@@ -68,7 +68,7 @@ public class TemplateStringTest {
 	
 	@Test
 	public void SurfaceTemplateTest3() {
-		TemplateString template = new TemplateString("hi my name is {name} and I need coffee");
+		Template template = new Template("hi my name is {name} and I need coffee");
 		String utterance1 = " hi my name is Pierre and i need coffee ";
 		String utterance2 = "hi my name is Pierre and I need coffee right now";
 		assertTrue(template.isMatching(utterance1, true));
@@ -82,20 +82,20 @@ public class TemplateStringTest {
 	 
 	@Test
 	public void SurfaceTemplateTest4() {
-		TemplateString template1 = new TemplateString("hi my name is {name}");
+		Template template1 = new Template("hi my name is {name}");
 		assertEquals("Pierre Lison", template1.extractParameters("hi my name is Pierre Lison ", true).getValue("name").toString());
 
-		TemplateString template2 = new TemplateString("{name} is my name");
+		Template template2 = new Template("{name} is my name");
 		assertEquals("Pierre Lison", template2.extractParameters("Pierre Lison is my name", true).getValue("name").toString());
 
 		
-		TemplateString template3 = new TemplateString("hi my name is {name} and I need coffee");
+		Template template3 = new Template("hi my name is {name} and I need coffee");
 		assertEquals("Pierre", template3.extractParameters("hi my name is Pierre and I need coffee ", true).getValue("name").toString());
 	}
 	
 	@Test
 	public void SurfaceTemplateTest5() {
-		TemplateString template1 = new TemplateString("hi this is {A} and this is {B}");
+		Template template1 = new Template("hi this is {A} and this is {B}");
 		assertEquals("an apple", template1.extractParameters("hi this is an apple and this is a banana", true).getValue("A").toString());
 		assertEquals("a banana", template1.extractParameters("hi this is an apple and this is a banana", true).getValue("B").toString());
 	}
@@ -103,16 +103,16 @@ public class TemplateStringTest {
 	
 	@Test
 	public void SurfaceTemplateTest6() {
-		TemplateString template1 = new TemplateString("{anything}");
+		Template template1 = new Template("{anything}");
 		assertEquals("bla bla bla", template1.extractParameters("bla bla bla", true).getValue("anything").toString());
 		
-		TemplateString template2 = new TemplateString("{anything} is good");
+		Template template2 = new Template("{anything} is good");
 		assertEquals("bla bla bla", template2.extractParameters("bla bla bla is good", true).getValue("anything").toString());
 		assertFalse(template2.isMatching("blo blo", true));
 		assertFalse(template2.extractParameters("bla bla bla is bad", true).containsVar("anything"));
 		assertTrue(template2.isMatching("blo is good", true));
 		
-		TemplateString template3 = new TemplateString("this could be {anything}");
+		Template template3 = new Template("this could be {anything}");
 		assertEquals("pretty much anything", template3.extractParameters("this could be pretty much anything", true).getValue("anything").toString());
 		assertFalse(template3.isMatching("but not this", true));
 		assertFalse(template3.isMatching("this could beA", true));		
@@ -124,14 +124,14 @@ public class TemplateStringTest {
 	
 	@Test
 	public void SurfaceTemplateTest7() throws Exception {
-		TemplateString template1 = new TemplateString("here we have slot {A} and slot {B}");
+		Template template1 = new Template("here we have slot {A} and slot {B}");
 		Assignment fillers = new Assignment();
 		fillers.addPair("A", "apple");
 		fillers.addPair("B", "banana");
 		assertEquals("here we have slot apple and slot banana", template1.fillSlots(fillers));
 		fillers.removePair("B");
 		try {
-			TemplateString.log.setLevel(Level.MIN);
+			Template.log.setLevel(Level.MIN);
 			assertEquals("here we have slot apple and slot banana", template1.fillSlots(fillers));	
 			throw new Exception("?");
 		}
@@ -140,13 +140,13 @@ public class TemplateStringTest {
 	
 	@Test
 	public void SurfaceTemplateTest8() throws Exception {
-		TemplateString template = new TemplateString("here we have a test");
+		Template template = new Template("here we have a test");
 		assertFalse(template.isMatching("here we have a test2", false));
 		assertFalse(template.isMatching("here we have a test2", true));
 		assertTrue(template.isMatching("here we have a test that is working", true));
 		assertFalse(template.isMatching("here we have a test that is working", false));
 	
-		TemplateString template2 = new TemplateString("bla");
+		Template template2 = new Template("bla");
 		assertFalse(template2.isMatching("bla2", true));
 		assertFalse(template2.isMatching("blabla", true));
 		assertTrue(template2.isMatching("bla bla", true));
@@ -155,12 +155,12 @@ public class TemplateStringTest {
 	
 	@Test
 	public void SurfaceTemplateTest9() {
-		TemplateString template1 = new TemplateString("{anything}");
+		Template template1 = new Template("{anything}");
 		assertEquals(ValueFactory.create(0), template1.getMatchBoundaries
 				("bla bla bla", false).getValue("match.start"));
 		assertEquals(ValueFactory.create(11), template1.getMatchBoundaries
 				("bla bla bla", false).getValue("match.end"));
-		TemplateString template2 = new TemplateString("this could be {anything}, right");
+		Template template2 = new Template("this could be {anything}, right");
 		assertEquals(ValueFactory.create(4), template2.getMatchBoundaries
 				("and this could be pretty much anything, right", true).getValue("match.start"));
 		assertEquals(ValueFactory.create("and this could be pretty much anything, right".length()), 

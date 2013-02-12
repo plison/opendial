@@ -163,16 +163,16 @@ public class InferenceChecks {
 		UtilityDistribution distrib1 = compute(query, ve);
 		UtilityDistribution distrib2 = compute(query, is);
 
-			assertEquals(expected, distrib1.getUtility(a), EXACT_THRESHOLD);
-			try { assertEquals(expected, distrib2.getUtility(a), SAMPLING_THRESHOLD * 5);	}
+			assertEquals(expected, distrib1.getUtil(a), EXACT_THRESHOLD);
+			try { assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);	}
 			catch (AssertionError e) {
 				distrib2 = compute(query, is2);
-				assertEquals(expected, distrib2.getUtility(a), SAMPLING_THRESHOLD * 5);
+				assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);
 			}
 
 			if (includeNaive) {
 				UtilityDistribution distrib3 = compute(query, naive);
-				assertEquals(expected, distrib3.getUtility(a), EXACT_THRESHOLD);
+				assertEquals(expected, distrib3.getUtil(a), EXACT_THRESHOLD);
 			}
 		}
 	
@@ -214,7 +214,7 @@ public class InferenceChecks {
 		}
 		else {
 			long time1 = System.nanoTime();
-			UtilityDistribution distrib = algo.queryUtility(query);
+			UtilityDistribution distrib = algo.queryUtil(query);
 			long inferenceTime = System.nanoTime() - time1;
 			numbers.put(algo, numbers.get(algo) + 1);
 			timings.put(algo, timings.get(algo) + inferenceTime);

@@ -19,6 +19,8 @@
 
 package opendial.bn.values;
 
+import opendial.utils.MathUtils;
+
 
 /**
  * Representation of a double value
@@ -85,11 +87,7 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public String toString() { 
-		String s = ""+d;
-		if (s.endsWith(".0")) {
-			s = s.replace(".0", "");
-		}
-		return s;
+		return "" + MathUtils.shorten(d);
 	}
 
 

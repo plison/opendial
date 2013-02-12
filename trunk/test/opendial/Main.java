@@ -39,7 +39,6 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 		Domain domain = XMLDomainReader.extractDomain(domainFile); 
-		Settings.showGUI = true;
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem(); 
 		}

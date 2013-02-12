@@ -33,9 +33,9 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.AbstractProbabilityTable;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.MathUtils;
 
 /**
  * Traditional probability distribution represented as a discrete probability table.  
@@ -193,6 +193,12 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
 		}
+		else  {
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			if (!closest.isEmpty()) {
+				return table.get(closest).getProb(head);
+			}	
+		}
 		return 0.0f;
 	}
 
@@ -273,8 +279,12 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 			return table.get(trimmed);
 		}	
 		else {
-				return new SimpleTable();
-			}
+			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			if (!closest.isEmpty()) {
+				return table.get(closest);
+			}	
+		}
+		return new SimpleTable();
 	}
 
 
@@ -329,7 +339,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		String str = "";
 		for (Assignment cond: table.keySet()) {
 			for (Assignment head: table.get(cond).getRows()) {
-				double prob = Math.round(table.get(cond).getProb(head)*10000.0)/10000.0;
+				double prob = MathUtils.shorten(table.get(cond).getProb(head));
 				if (cond.size() > 0) {
 					str += "P(" + head + " | " + cond 
 					+ "):="  + prob + "\n";

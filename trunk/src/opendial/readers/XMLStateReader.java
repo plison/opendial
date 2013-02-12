@@ -32,10 +32,16 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.continuous.MultivariateDistribution;
+import opendial.bn.distribs.continuous.UnivariateDistribution;
+
+import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
+import opendial.bn.distribs.continuous.functions.UnivariateDensityFunction;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
+import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.domains.Domain;
 import opendial.utils.XMLUtils;
 
@@ -127,11 +133,6 @@ public class XMLStateReader {
 	//  INDIVIDUAL VarNodeS
 	// ===================================
 
-	
-	public static Set<ChanceNode> createVariableNodes (Node node) throws DialException {
-		return createVariableNodes(node, "");
-	}
-
 	/**
 	 * 
 	 * 
@@ -141,12 +142,12 @@ public class XMLStateReader {
 	 * @return
 	 * @throws DialException
 	 */
-	public static Set<ChanceNode> createVariableNodes (Node node, String baseName) throws DialException {
+	public static Set<ChanceNode> createVariableNodes (Node node) throws DialException {
 
 		Set<ChanceNode> nodes = new HashSet<ChanceNode>();
 		
 		if (node.hasAttributes() && node.getAttributes().getNamedItem("id")!=null) {
-			String label = baseName + node.getAttributes().getNamedItem("id").getNodeValue();
+			String label = node.getAttributes().getNamedItem("id").getNodeValue();
 			ChanceNode variable = new ChanceNode(label);
 			nodes.add(variable);
 			
@@ -170,24 +171,24 @@ public class XMLStateReader {
 					
 					if (subnode.getAttributes().getNamedItem("type")!=null) {
 						String distribType = subnode.getAttributes().getNamedItem("type").getNodeValue().trim();
+						
 						if (distribType.equalsIgnoreCase("gaussian")) {
-							double mean = Double.MAX_VALUE;
-							double variance = Double.MAX_VALUE;
-							for (int j = 0 ; j < subnode.getChildNodes().getLength() ; j++) {
-								Node subsubnode = subnode.getChildNodes().item(j);
-								if (subsubnode.getNodeName().equals("mean")) {
-									mean = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
-								}
-								if (subsubnode.getNodeName().equals("variance")) {
-									variance = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
-								}
-							}
-							if (mean!= Double.MAX_VALUE && variance != Double.MAX_VALUE) {
-								ContinuousProbDistribution distrib = new FunctionBasedDistribution(label, 
-										new GaussianDensityFunction(mean, variance));
-								variable.setDistrib(distrib);
-							}
+							UnivariateDistribution distrib = new UnivariateDistribution(label, getGaussian(subnode));
+							variable.setDistrib(distrib);
 						}
+						
+						else if (distribType.equalsIgnoreCase("uniform")) {
+							UnivariateDistribution distrib = new UnivariateDistribution(label, getUniform(subnode));
+							variable.setDistrib(distrib);
+						}
+						else if (distribType.equalsIgnoreCase("dirichlet")) {
+							MultivariateDistribution distrib = new MultivariateDistribution(label, getDirichlet(subnode));
+							variable.setDistrib(distrib);
+						}
+						else {
+							throw new DialException("distribution is not recognised: " + distribType);
+						}
+
 					}
 				}
 				
@@ -200,17 +201,62 @@ public class XMLStateReader {
 			throw new DialException("variable id is mandatory");
 		}
 		
-		
-		// existence probability
-	//	if (node.hasAttributes() && node.getAttributes().getNamedItem("prob")!=null) {
-	//		float existsProb = XMLUtils.getProbability(node);
-		//	VarNode.setExistenceProb(existsProb);
-	//	}
-		
-		// adds full features
-		
+	}
+	
+	
+	private static GaussianDensityFunction getGaussian(Node node) throws DialException {
+		double mean = Double.MAX_VALUE;
+		double variance = Double.MAX_VALUE;
+		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
+			Node subsubnode = node.getChildNodes().item(j);
+			if (subsubnode.getNodeName().equals("mean")) {
+				mean = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+			}
+			if (subsubnode.getNodeName().equals("variance")) {
+				variance = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+			}
+		}
+		if (mean!= Double.MAX_VALUE && variance != Double.MAX_VALUE) {
+			return new GaussianDensityFunction(mean, variance);
+		}
+		throw new DialException("gaussian must specify both mean and variance");
 	}
 
+
+	private static UniformDensityFunction getUniform(Node node) throws DialException {
+		double min = Double.MAX_VALUE;
+		double max = Double.MAX_VALUE;
+		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
+			Node subsubnode = node.getChildNodes().item(j);
+			if (subsubnode.getNodeName().equals("min")) {
+				min = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+			}
+			if (subsubnode.getNodeName().equals("max")) {
+				max = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+			}
+		}
+		if (min!= Double.MAX_VALUE && max != Double.MAX_VALUE) {
+			return new UniformDensityFunction(min, max);
+		}
+		throw new DialException("uniform must specify both min and max");
+	}
+	
+	
+	
+	private static DirichletDensityFunction getDirichlet(Node node) throws DialException {
+		List<Double> alphas = new LinkedList<Double>();
+		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
+			Node subsubnode = node.getChildNodes().item(j);
+			if (subsubnode.getNodeName().equals("alpha")) {
+				double alpha = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+				alphas.add(alpha);
+			}
+		}
+		if (!alphas.isEmpty()) {
+			return new DirichletDensityFunction((new VectorVal(alphas)).getArray());
+		}
+		throw new DialException("Dirichlet must have at least one alpha count");
+	}
 	
 	// ===================================
 	//  FULL AND PARTIAL FEATURES
@@ -236,9 +282,9 @@ public class XMLStateReader {
 
 			Node subnode = node.getChildNodes().item(i);
 
-			if (subnode.getNodeName().equals("feature") && subnode.hasAttributes()) {		
+			/** if (subnode.getNodeName().equals("feature") && subnode.hasAttributes()) {		
 				nodes.addAll(createVariableNodes(subnode, baseNodeVar));			
-			}
+			} */
 		}
 		return nodes;
 	}

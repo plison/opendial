@@ -21,6 +21,7 @@ package opendial.inference.queries;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import opendial.bn.Assignment;
@@ -31,6 +32,8 @@ import opendial.state.DialogueState;
 
 public class ReductionQuery extends Query {
 
+	List<String> nodesToIsolate = new ArrayList<String>();
+	
 	public ReductionQuery (BNetwork network, String... queryVars) {
 		this(network, getCollection(queryVars));
 	}
@@ -38,6 +41,12 @@ public class ReductionQuery extends Query {
 	public ReductionQuery (DialogueState state, String... queryVars) {
 		this(state, getCollection(queryVars));
 	}
+	
+	public ReductionQuery(DialogueState state, Collection<String> queryVars, Collection<String> nodesToIsolate) {
+		this(state.getNetwork(), queryVars, state.getEvidence());
+		setNodesToIsolate(nodesToIsolate);
+	}
+	
 	public ReductionQuery (DialogueState state, Collection<String> queryVars) {
 		this(state.getNetwork(), queryVars, state.getEvidence());
 	}
@@ -51,7 +60,13 @@ public class ReductionQuery extends Query {
 		super(network, queryVars, evidence, new ArrayList<String>());
 	}
 	
-
+	public void setNodesToIsolate (Collection<String> nodesToIsolate) {
+		this.nodesToIsolate.addAll(nodesToIsolate);
+	}
+	
+	public Collection<String> getNodesToIsolate() {
+		return nodesToIsolate;
+	}
 
 	/**
 	 * Returns the nodes that are irrelevant for answering the given query

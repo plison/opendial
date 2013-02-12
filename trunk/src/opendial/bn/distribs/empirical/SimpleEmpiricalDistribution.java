@@ -35,13 +35,17 @@ import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.FunctionBasedDistribution;
+import opendial.bn.distribs.continuous.MultivariateDistribution;
+
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
+import opendial.bn.distribs.continuous.functions.ProductKernelDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.VectorVal;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -64,7 +68,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	Random sampler;
 
 	DiscreteProbDistribution discreteCache;
-	FunctionBasedDistribution continuousCache;
+	ContinuousProbDistribution continuousCache;
 
 	// ===================================
 	//  CONSTRUCTION METHODS
@@ -75,7 +79,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * samples
 	 */
 	public SimpleEmpiricalDistribution() {
-		samples = new ArrayList<Assignment>(Settings.nbSamples);
+		samples = new ArrayList<Assignment>(Settings.getInstance().nbSamples);
 		sampler = new Random();
 	}
 
@@ -147,6 +151,10 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public boolean isWellFormed() {
+		if (samples.isEmpty()) {
+			Thread.dumpStack();
+			System.exit(0);
+		}
 		return !samples.isEmpty();
 	}
 
@@ -228,7 +236,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * @throws DialException if the above requirements are not met
 	 */
 	@Override
-	public FunctionBasedDistribution toContinuous()
+	public ContinuousProbDistribution toContinuous()
 			throws DialException {
 
 		if (continuousCache == null) {
@@ -242,26 +250,51 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
 			String headVar = samples.get(0).getVariables().iterator().next();
 			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
-				List<Double> values = new ArrayList<Double>(samples.size());
-				for (Assignment sample : samples) {
-					Value value = sample.getValue(headVar);
-					if (value instanceof DoubleVal) {
-					values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
-					}
-					else {
-						throw new DialException ("value type is not allowed in " +
-								"continuous distribution: " + value.getClass().getName());
-					}
-				continuousCache = new FunctionBasedDistribution(headVar, new KernelDensityFunction(values));
-			}
+				continuousCache = extractUnivariateDistribution(headVar);
 		}
+			else if (samples.get(0).getValue(headVar) instanceof VectorVal) {
+				continuousCache = extractMultivariateDistribution(headVar);				
+			}
 		}
 		if (continuousCache == null) {
 			throw new DialException ("empirical distribution could not be converted to a " +
 					"continuous distribution");
 		}
 	}
+	
+	
+	private UnivariateDistribution extractUnivariateDistribution(String headVar) throws DialException {
+		List<Double> values = new ArrayList<Double>(samples.size());
+		for (Assignment sample : samples) {
+			Value value = sample.getValue(headVar);
+			if (value instanceof DoubleVal) {
+			values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
+			}
+			else {
+				throw new DialException ("value type is not allowed in " +
+						"continuous distribution: " + value.getClass().getName());
+			}
+	}
+		return new UnivariateDistribution(headVar, new KernelDensityFunction(values));
+	}
 
+
+	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
+		List<double[]> values = new ArrayList<double[]>(samples.size());
+		for (Assignment sample : samples) {
+			Value value = sample.getValue(headVar);
+			if (value instanceof VectorVal) {
+			values.add(((VectorVal)sample.getValue(headVar)).getArray());
+			}
+			else {
+				throw new DialException ("value type is not allowed in " +
+						"continuous distribution: " + value.getClass().getName());
+			}
+	}
+		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(values);
+		pkde.setAsBounded(true);
+		return new MultivariateDistribution(headVar, pkde);
+	}
 
 	// ===================================
 	//  UTILITY METHODS
@@ -353,6 +386,11 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		catch (DialException e) {
 			return toDiscrete();
 		}
+	}
+
+	@Override
+	public Collection<Assignment> getSamples() {
+		return samples;
 	}
 
 }

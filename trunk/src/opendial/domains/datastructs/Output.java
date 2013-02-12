@@ -28,6 +28,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.DoubleVal;
+import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 
@@ -436,7 +437,16 @@ public class Output implements Value {
 		// all the set values must be satisfied
 		for (String var : setValues.keySet()) {
 			if (!actions.containsVar(var)) { return false; }
-			else if (!actions.getValue(var).equals(setValues.get(var))) { return false; }
+			else {
+				Value expectedVal = setValues.get(var);
+				if (expectedVal instanceof StringVal) {
+					Template expectedValStr = new Template(expectedVal.toString());
+					if (!expectedValStr.isMatching(actions.getValue(var).toString(), false)) {
+						return false;
+					}
+				}
+				else if	(!actions.getValue(var).equals(expectedVal)) { return false; }
+			}
 		}
 		// all the discard values must be satisfied
 		for (String var : discardValues.keySet()) {
