@@ -123,7 +123,7 @@ public class UserSimulator extends Thread {
 		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
-	//		log.debug("return value: " + returnValue);
+			log.debug("return value: " + returnValue);
 				
 			Assignment sampled = addSystemAction(action);
 			
