@@ -97,7 +97,11 @@ public class ChanceNode extends BNode {
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
 		if (distrib.getHeadVariables().size() != 1) {
-			throw new DialException("Distribution should have only one head variable, but is has: " + distrib.getHeadVariables());
+		
+			log.debug("Distribution for " + nodeId + 
+					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
+					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
+			System.exit(0);
 		}
 		if (!distrib.isWellFormed()) {
 			throw new DialException("Distribution for node " + nodeId + " (type " +
@@ -321,7 +325,7 @@ public class ChanceNode extends BNode {
 			fillCachedValues();
 		}
 
-		return cachedValues;
+		return new HashSet<Value>(cachedValues);
 	}
 
 
@@ -466,7 +470,6 @@ public class ChanceNode extends BNode {
 		}
 		cachedValues = cachedValuesTemp;
 	}
-
 
 
 }

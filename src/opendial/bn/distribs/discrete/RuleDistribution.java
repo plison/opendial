@@ -319,8 +319,13 @@ public class RuleDistribution implements DiscreteProbDistribution {
 			return probTable;
 		}
 		catch (DialException e) {
-			log.warning("could not extract output table for condition" + condition + ": " + e.toString());
-			return new SimpleTable();
+			log.warning("could not extract output table for condition " + condition + ": " + e.toString());
+			log.debug("rule is " + rule.toString());
+			Thread.dumpStack();
+			System.exit(0);
+			SimpleTable probTable = new SimpleTable();
+			probTable.addRow(new Assignment(id, new Output()), 1.0);
+			return probTable;
 		}
 	}
 

@@ -2,15 +2,27 @@
 
 <model trigger="a_u0^p" type="prediction" id="observationNoise">
 
-<rule>
-<case>
-<effect prob="0.8">
-<set var="a_u" var2="a_u0^p"/>
-</effect>
-<effect prob="0.2">
-<clear var="a_u"/>
-</effect>
-</case>
-</rule>
+	<rule id="observation">
+		<case>
+			<condition>
+				<if var="a_u0^p" value="None" relation="!=" />
+			</condition>
+			<effect prob="theta_6[0]">
+				<set var="a_u" var2="a_u0^p" />
+			</effect>
+			<effect prob="theta_6[1]">
+				<set var="a_u" var2="a_uother" />
+			</effect>
+			<effect prob="theta_6[2]">
+				<clear var="a_u" />
+			</effect>
+		</case>
+		<case>
+			<effect>
+				<clear var="a_u" />
+			</effect>
+		</case>
+	</rule>
+
 
 </model>

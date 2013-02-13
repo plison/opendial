@@ -119,8 +119,9 @@ public class UserSimulator extends Thread {
 	public void performTurn() {
 
 		try {
+			log.debug("--------");
 			Assignment action = getSystemAction();
-		//	log.debug("system action: " + action);
+			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
 			log.debug("return value: " + returnValue);
@@ -128,20 +129,21 @@ public class UserSimulator extends Thread {
 			Assignment sampled = addSystemAction(action);
 			
 			DiscreteProbDistribution obs = getNextObservation(sampled);
-
+			log.debug("sampled elements: " + sampled);
 			Assignment evidence = new Assignment();
 			evidence.addPair("i_u", sampled.getValue("i_u"));
 			evidence.addPair("perceived", sampled.getValue("perceived"));
 			evidence.addPair("carried", sampled.getValue("carried"));
 			realState.addContent(evidence, "evidence");
 
-			//		log.debug("adding observation: " + obs);
+			log.debug("adding observation: " + obs);
 			systemState.addContent(obs, "simulator");
 
 			nbTurns++;
 			
-			if (nbTurns == 100) {
-				log.debug("Current estimate for theta_1: " + systemState.getContent("theta_1", true));
+			if (nbTurns == 20) {
+				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
+				log.debug("===> estimate for theta_6: " + systemState.getContent("theta_6", true));
 				nbTurns = 0;
 			}
 			

@@ -42,7 +42,7 @@ public class MathUtils {
 	// logger
 	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
 
-	public static final double MIN_PROXIMITY_DISTANCE = 0.6;
+	public static final double MIN_PROXIMITY_DISTANCE = 0.1;
 
 
 	/**
@@ -61,7 +61,6 @@ public class MathUtils {
 			for (Assignment element : elements) {
 			if (element.size() != head.size() || !element.getVariables().equals(head.getVariables())) {
 				log.debug("searching for closest element on non-comparable assignments: " + head + " and " + element);
-				Thread.dumpStack();
 				continue outer;
 			}
 			double totalDistance = 0;
@@ -70,7 +69,6 @@ public class MathUtils {
 				Value elVal = element.getValue(var);
 				if (headVal instanceof DoubleVal && elVal instanceof DoubleVal) {
 					totalDistance += Math.abs(((DoubleVal)headVal).getDouble() - ((DoubleVal)elVal).getDouble()) ;
-					log.debug("UH??");
 				}
 				else if (headVal instanceof VectorVal && elVal instanceof VectorVal) {
 					totalDistance += MathUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
@@ -95,6 +93,7 @@ public class MathUtils {
 		int incr = 0;
 		Collections.shuffle(elements);
 		
+		double minDistance = MIN_PROXIMITY_DISTANCE*5.0;
 		outer: 
 			for (Assignment element : elements) {
 			if (!element.getVariables().containsAll(head.getVariables())) {
@@ -115,10 +114,10 @@ public class MathUtils {
 					continue outer;
 				}
 			}
-			if (totalDistance < MIN_PROXIMITY_DISTANCE) {
+			if (totalDistance < minDistance) {
 				incr++;
 				Assignment value = element.getTrimmedInverse(head.getVariables());
-				double weight = MIN_PROXIMITY_DISTANCE - totalDistance/2.0;
+				double weight = minDistance - totalDistance/2.0;
 				if (values.containsKey(value)) {
 					values.put(value, values.get(value) + weight);
 				}

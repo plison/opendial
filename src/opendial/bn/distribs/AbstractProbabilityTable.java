@@ -132,7 +132,8 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 				return table.get(trimmed).sample(new Assignment());
 			}	
 		}
-		log.debug("could not find the corresponding condition for " + condition + " (vars: " + conditionalVars + ")");
+		log.debug("could not find the corresponding condition for " + condition + 
+				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
 		return new Assignment();
 	}
 	

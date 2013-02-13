@@ -92,4 +92,20 @@ public class ClearEffect implements Effect {
 		}
 		return o;
 	}
+	
+	
+	public String toString() {
+		return "clear " + variable;
+	}
+	
+
+	/**
+	 * Returns the hashcode for the basic effect
+	 *
+	 * @return the hashcode
+	 */
+	@Override
+	public int hashCode() {
+		return -9*variable.hashCode();
+	}
 }
