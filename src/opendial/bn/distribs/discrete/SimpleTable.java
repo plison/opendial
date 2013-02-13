@@ -49,7 +49,7 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.bn.values.VectorVal;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Traditional probability distribution represented as a probability table. 
@@ -224,7 +224,12 @@ public class SimpleTable implements DiscreteProbDistribution {
 		if (table.isEmpty()) {
 			log.warning("creating intervals for an empty table");
 		}
+		try {
 		intervals = new Intervals<Assignment>(table);
+		}
+		catch (DialException e) {
+			log.warning("could not reset intervals: " + e);
+		}
 	}
 
 
@@ -315,7 +320,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 
 		else {
 		//	log.debug("exact value cannot be found in table, must use proximity: " + trimmedHead);
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmedHead);
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmedHead);
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}
@@ -580,11 +585,11 @@ public class SimpleTable implements DiscreteProbDistribution {
 	public String toString() {
 		String str = "";
 		for (Assignment head: table.keySet()) {
-			double prob = MathUtils.shorten(table.get(head));
+			double prob = DistanceUtils.shorten(table.get(head));
 			str += "P("+head + "):=" + prob + "\n";
 		}
 
-		return str;
+		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
 	}
 
 

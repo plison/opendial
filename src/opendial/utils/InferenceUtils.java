@@ -124,6 +124,34 @@ public class InferenceUtils {
 		return flatTable;
 	}
 
+
+	public static double[] normalise(double[] initProbs) {
+		for (int i = 0 ; i < initProbs.length; i++) {
+			if (initProbs[i] < 0) {
+				initProbs[i] = 0;
+			}
+		}
+		double sum = 0.0;
+		for (double prob: initProbs) {
+			sum += prob;
+		}
+		
+		double[] result = new double[initProbs.length];
+		
+		if (sum > 0.001) {
+		for (int i = 0 ; i < initProbs.length; i++) {
+			result[i] = initProbs[i] / sum;
+		}
+		}
+		else {
+			for (int i = 0 ; i < initProbs.length; i++) {
+				result[i] = 1.0 / initProbs.length;
+			}
+		}
+				
+		return result;
+	}
+
 	
 	
 	

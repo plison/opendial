@@ -102,9 +102,12 @@ public class XMLRuleReader {
 				rule.addQuantifier(quantifier);
 			}
 			
-			if (node.getNodeName().equals("case")) {
+			else if (node.getNodeName().equals("case")) {
 				Case newCase = getCase(node, cls);
 				rule.addCase(newCase);
+			}
+			else if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
+				throw new DialException("Ill-formed rule: " + node.getNodeName() + " not accepted");
 			}
 		}
 
@@ -157,6 +160,9 @@ public class XMLRuleReader {
 				Effect effect = getFullEffect(node);
 				Parameter prob = getParameter(node, cls);
 				newCase.addEffect(effect, prob);
+			}
+			else if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
+				throw new DialException("Ill-formed rule: " + node.getNodeName() + " not accepted");
 			}
 		}
 		
@@ -232,6 +238,14 @@ public class XMLRuleReader {
 			else {
 				throw new DialException("unrecognized format for condition ");
 			}
+			
+			for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
+				Node attr = node.getAttributes().item(i);
+				if (!attr.getNodeName().equals("var") && !attr.getNodeName().equals("var2")
+						&& !attr.getNodeName().equals("value") && !attr.getNodeName().equals("relation")) {
+					throw new DialException("unrecognized attribute: " + attr.getNodeName());
+				}
+			}
 		}
 		return condition;
 	}
@@ -241,8 +255,9 @@ public class XMLRuleReader {
 	 * 
 	 * @param node
 	 * @return
+	 * @throws DialException 
 	 */
-	private static Relation getRelation(Node node) {
+	private static Relation getRelation(Node node) throws DialException {
 		Relation relation = Relation.EQUAL;
 		if (node.hasAttributes() && node.getAttributes().getNamedItem("relation")!=null) {
 			String relationStr = node.getAttributes().getNamedItem("relation").getNodeValue();
@@ -259,6 +274,9 @@ public class XMLRuleReader {
 				relation = Relation.UNEQUAL;
 			}
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
+				relation = Relation.CONTAINS;
+			}
+			else if (relationStr.toLowerCase().trim().equals("partial")) {
 				relation = Relation.CONTAINS;
 			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
@@ -279,6 +297,9 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("<")) {
 				relation = Relation.LOWER_THAN;
 			}
+			else {
+				throw new DialException("unrecognized relation: " + relationStr);
+			}
 			
 		}
 		return relation;
@@ -294,6 +315,14 @@ public class XMLRuleReader {
 			}
 			else if (operatorStr.toLowerCase().trim().equals("or")) {
 				operator = BinaryOperator.OR;
+			}
+			else {
+				try {
+					throw new DialException("unrecognized relation: " + operatorStr);
+				} catch (DialException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return operator;
@@ -391,14 +420,23 @@ public class XMLRuleReader {
 			else if ((node.getNodeName().equalsIgnoreCase("remove"))) {
 				effect = new BasicEffect(variable, valueStr, EffectType.DISCARD);
 			}
-			
+			else if (!node.getNodeName().equals("clear") && !node.getNodeName().equals("#text") 
+					&& ! node.getNodeName().equals("#comment")) {
+				throw new DialException("unrecognized effect: " + node.getNodeName());
+			}
+		}
+	
+		else {
+			throw new DialException("invalid format for effect: " + node.getNodeName() +
+					" and var " + node.getAttributes().getNamedItem("var"));
 		}
 		
-		
-	
-		
-		else {
-			throw new DialException("invalid format for effect: " + node.getNodeName() + " and var " + node.getAttributes().getNamedItem("var"));
+		for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
+			Node attr = node.getAttributes().item(i);
+			if (!attr.getNodeName().equals("var") && !attr.getNodeName().equals("var2")
+					&& !attr.getNodeName().equals("value") && !attr.getNodeName().equals("relation")) {
+				throw new DialException("unrecognized attribute: " + attr.getNodeName());
+			}
 		}
 		
 		return effect;
@@ -445,7 +483,7 @@ public class XMLRuleReader {
 				Matcher m = p.matcher(paramStr);
 				if (m.matches()) {
 					int index = Integer.parseInt(m.group(1).replace("[", "").replace("]", ""));
-					String paramId = paramStr.split("\\[")[0];
+					String paramId = paramStr.replace(m.group(1), "").trim();
 					return new DirichletParameter(paramId, index);
 				}
 				else {

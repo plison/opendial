@@ -84,6 +84,7 @@ public class PlanningTest {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.startSystem(); 
+		log.debug("Nodes: " + system.getState().getNetwork().getNodeIds());
 		assertEquals(2, system.getState().getNetwork().getNodeIds().size());
 		assertFalse(system.getState().getNetwork().hasChanceNode("a_m"));
 

@@ -40,10 +40,14 @@ import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ProbabilityRuleNode;
+import opendial.bn.values.VectorVal;
 import opendial.common.NetworkExamples;
 import opendial.domains.Domain;
 import opendial.domains.datastructs.Template;
 import opendial.domains.rules.UpdateRule;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
+import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.gui.GUIFrame;
 import opendial.gui.StateMonitorTab;
 import opendial.gui.statemonitor.DistributionViewer;
@@ -56,6 +60,7 @@ import opendial.inference.sampling.SampleCollector;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.state.rules.AnchoredRule;
+import opendial.utils.InferenceUtils;
 
 /**
  * 
@@ -73,11 +78,20 @@ public class SandBox {
 
 	
 	
-
 	public static void main(String[] args) {
-		Pattern p = Pattern.compile("turn (.* )?left");
-		Matcher m = p.matcher("turn left");
-		log.debug(m.find());
+		double[] point = new double[]{-0.3, 0.4};
+		log.debug("result " + new VectorVal(InferenceUtils.normalise(point)));
+	}
+	
+
+	public static void main0(String[] args) {
+		ComplexCondition ccond = new ComplexCondition();
+		BasicCondition cond1 = new BasicCondition("a_m", "Ground(*)", Relation.EQUAL);
+		BasicCondition cond2 = new BasicCondition("a_m", "Ground({i_u})", Relation.UNEQUAL);
+		ccond.addCondition(cond1);
+		ccond.addCondition(cond2);
+		log.debug("IS SATIF??" + ccond.isSatisfiedBy(new Assignment(new Assignment("i_u", "Move(Left)"), new Assignment("a_m", "Ground(Move(Left))"))));
+		
 	}
 	
 	
@@ -134,7 +148,7 @@ public class SandBox {
 	}
 
 	
-	public static void main10(String[] args) throws DialException, InterruptedException {
+	/**public static void main10(String[] args) throws DialException, InterruptedException {
 		SampleCollector.log.setLevel(Level.NORMAL);
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 		ReductionQuery redQuery = new ReductionQuery(network, "Burglary", "Earthquake", "MaryCalls");
@@ -147,7 +161,7 @@ public class SandBox {
 		long t1 = System.nanoTime();
 		is.queryProb(query8).toDiscrete().getProb(new Assignment(), new Assignment("Earthquake"));
 		log.info("query time " + (System.nanoTime() - t1)/1000000000.0);
-	}
+	} */
 
 	
 	public static void main8(String[] args) throws DialException {

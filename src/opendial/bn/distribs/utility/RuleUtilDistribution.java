@@ -260,11 +260,13 @@ public class RuleUtilDistribution implements UtilityDistribution {
 			OutputTable effectOutputs = rule.getEffectOutputs(input);
 			Map<Output,Double> utilities = effectOutputs.getRawTable(input);
 			
+			double totalUtil = 0;
 			for (Output effectOutput : utilities.keySet()) {
 				if (effectOutput.isCompatibleWith(formattedAction)) {
-					return utilities.get(effectOutput);
+					totalUtil += utilities.get(effectOutput);
 				}
 			}
+			return totalUtil;
 		}
 		catch (DialException e) {
 			log.warning("error extracting utility: " + e);

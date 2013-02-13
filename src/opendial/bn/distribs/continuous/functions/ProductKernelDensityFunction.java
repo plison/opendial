@@ -22,17 +22,22 @@ package opendial.bn.distribs.continuous.functions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
+import opendial.utils.InferenceUtils;
 
 /**
  * Density function represented as a kernel of points
@@ -135,23 +140,51 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public double[] sample() {
 		double[] point = points.get(sampler.nextInt(points.size()));
+
 		double[] newPoint = new double[point.length];
 
-		if (!isBounded) {
-			for (int i = 0 ; i < newPoint.length ; i++) {
-				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+		if (isBounded) {
+			int indexToChange = selectIndexToChange(point);
+			for (int i = 0 ; i < point.length ; i++) {
+				if (i != indexToChange) {
+					newPoint[i] = point[i];
+				}
+				else {
+					newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i] / (bandwidths.length)).sample();
+				}
 			}
+			newPoint = InferenceUtils.normalise(newPoint);
+
 		}
 		else {
-			double sum = 0;
-			for (int i = 0 ; i < newPoint.length -1 ; i++) {
-				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-				sum += newPoint[i];
+			for (int i = 0 ; i < newPoint.length ; i++) {
+				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i] / (bandwidths.length)).sample();
 			}
-			newPoint[newPoint.length-1] = 1.0 - sum;
 		}
+
 		return newPoint;
+
 	}
+
+
+	private int selectIndexToChange(double[] point) {
+			int indexWithMaxProb = -1;
+			double maxProb = - Double.MAX_VALUE;
+			for (int i = 0 ; i < point.length ; i++) {
+				if (point[i] > maxProb) {
+					maxProb = point[i];
+					indexWithMaxProb = i;
+				}
+			}
+			if (indexWithMaxProb != -1) {
+				return indexWithMaxProb;
+			}
+			else {
+				log.warning("could not extract index with max prob");
+				return (new Random()).nextInt(point.length);
+			}
+	}
+	
 
 	/**
 	 * Returns a set of discrete values for the density function.  This set
@@ -191,6 +224,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public ProductKernelDensityFunction copy() {
 		ProductKernelDensityFunction copy = new ProductKernelDensityFunction(points);
+		copy.setAsBounded(isBounded);
 		return copy;
 	}
 
@@ -204,14 +238,16 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		String s = "MKDE(mean=[";
 		double[] means = getMean();
 		for (double mean : means) {
-			s += MathUtils.shorten(mean) +", ";
+			s += DistanceUtils.shorten(mean) +", ";
 		}
-		s = s.substring(0, s.length()-2) + "])"; /** ,variance=[";
-		double[] variances = getVariance();
-		for (double variance : variances) {
-			s += MathUtils.shorten(variance) +", ";
-		} */
-		return s.substring(0, s.length()-2) + "])";
+		s = s.substring(0, s.length()-2) + "]) , avg. std=";
+		double avgstd = 0.0;
+		for (double std : getStandardDeviations()) {
+			avgstd += std;
+		} 
+		s += DistanceUtils.shorten((avgstd / means.length));
+		s += ") with " + points.size() + " kernels ";
+		return s;
 	}
 
 

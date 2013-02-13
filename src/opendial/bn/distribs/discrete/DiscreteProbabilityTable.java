@@ -35,7 +35,7 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Traditional probability distribution represented as a discrete probability table.  
@@ -52,7 +52,7 @@ import opendial.utils.MathUtils;
  *
  */
 public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTable>
- 		implements DiscreteProbDistribution {
+implements DiscreteProbDistribution {
 
 	// logger
 	public static Logger log = new Logger("DiscreteProbabilityTable", Logger.Level.DEBUG);
@@ -90,7 +90,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		if (!table.containsKey(condition)) {
 			table.put(condition, new SimpleTable());
 		}
-		
+
 		conditionalVars.addAll(condition.getVariables());
 
 		table.get(condition).addRow(head, prob);
@@ -108,7 +108,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		incrementRow(new Assignment(), head, prob);
 	}
 
-	
+
 	/**
 	 * Increments the probability specified in the table for the given condition and
 	 * head assignments.  If none exists, simply assign the probability.
@@ -126,7 +126,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		}
 	}
 
-	
+
 	/**
 	 * Add a new set of rows to the probability table, given the conditional 
 	 * assignment and the mappings (head assignment, probability value).
@@ -136,11 +136,11 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	 */
 	public void addRows(Assignment condition, SimpleTable heads) {
 		for (Assignment head : heads.getRows()) {
-				addRow(condition, head, heads.getProb(head));
-			}
+			addRow(condition, head, heads.getProb(head));
+		}
 	}
 
-	
+
 	/**
 	 * Add a new set of rows to the probability table, given the mapping between
 	 * conditional assignments and (value assignment, prob) pairs
@@ -171,6 +171,27 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	}
 
 
+
+	public void fillConditionalHoles() {
+		Map<String,Set<Value>> possibleCondPairs = 
+				CombinatoricsUtils.extractPossiblePairs(table.keySet());
+		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 400)  {				
+			Set<Assignment> possibleCondAssignments = 
+					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
+			possibleCondAssignments.remove(new Assignment());
+
+			Assignment defaultA = new Assignment();
+			if (!table.isEmpty()) {
+				defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());
+			}
+			for (Assignment possibleCond: possibleCondAssignments) {
+				if (!table.containsKey(possibleCond)) {
+					addRow(possibleCond, defaultA, 1.0);
+				}
+			}
+		}
+	}
+
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -187,14 +208,14 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	 */
 	@Override
 	public double getProb(Assignment condition, Assignment head) {
-		
+
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
 		}
 		else  {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest).getProb(head);
 			}	
@@ -235,8 +256,8 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		return result;
 	}
 
-	
-	
+
+
 	/**
 	 * Returns true if the table contains a distribution for the given assignment of
 	 * conditional variables, and false otherwise
@@ -248,7 +269,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		return table.containsKey(condition);
 	}
 
-	
+
 	/**
 	 * Returns whether the distribution has a well-defined probability for the
 	 * given assignment (assuming no conditional variables)
@@ -272,19 +293,23 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	 */
 	@Override
 	public SimpleTable getProbTable(Assignment condition)  {
-	
+
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		
+
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
 		}	
 		else {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}	
 		}
-		return new SimpleTable();
+		SimpleTable defaultTable = new SimpleTable();
+	/**	if (!table.isEmpty()) {
+			defaultTable.addRow(Assignment.createDefault(table.values().iterator().next().getHeadVariables()), 1.0);
+		} */
+		return defaultTable;
 	}
 
 
@@ -322,8 +347,8 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		}
 		return headVars;
 	}
-	
-	
+
+
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -339,10 +364,10 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		String str = "";
 		for (Assignment cond: table.keySet()) {
 			for (Assignment head: table.get(cond).getRows()) {
-				double prob = MathUtils.shorten(table.get(cond).getProb(head));
+				double prob = DistanceUtils.shorten(table.get(cond).getProb(head));
 				if (cond.size() > 0) {
 					str += "P(" + head + " | " + cond 
-					+ "):="  + prob + "\n";
+							+ "):="  + prob + "\n";
 				}
 				else {
 					str += "P(" + head + "):="  + prob + "\n";
@@ -400,7 +425,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		return this;
 	}
 
-	
+
 	/**
 	 * Returns the continuous equivalent of the distribution
 	 *

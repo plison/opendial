@@ -67,9 +67,10 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 	Random sampler;
 
+	boolean cacheCreated = false;
 	DiscreteProbDistribution discreteCache;
 	ContinuousProbDistribution continuousCache;
-
+	
 	// ===================================
 	//  CONSTRUCTION METHODS
 	// ===================================
@@ -79,7 +80,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * samples
 	 */
 	public SimpleEmpiricalDistribution() {
-		samples = new ArrayList<Assignment>(Settings.getInstance().nbSamples);
+		samples = new ArrayList<Assignment>();
 		sampler = new Random();
 	}
 
@@ -116,9 +117,10 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
+	 * @throws DialException 
 	 */
 	@Override
-	public Assignment sample(Assignment condition) {
+	public Assignment sample(Assignment condition) throws DialException {
 		return sample();
 	}
 
@@ -129,8 +131,18 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
+	 * @throws DialException 
 	 */
-	public Assignment sample() {
+	public Assignment sample() throws DialException {
+		
+		if (!cacheCreated) {
+			try { computeContinuousCache(); } catch (DialException e) { }
+			cacheCreated = true;
+		}
+		if (continuousCache != null && !getHeadVariables().contains("theta_1")) {
+			return continuousCache.sample(new Assignment());
+		} 
+		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
 			Assignment selected = samples.get(selection);
@@ -243,34 +255,35 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	protected void computeContinuousCache() throws DialException {
+		String headVar = "";
 		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
-			String headVar = samples.get(0).getVariables().iterator().next();
+			headVar = samples.get(0).getVariables().iterator().next();
 			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
 				continuousCache = extractUnivariateDistribution(headVar);
-		}
+			}
 			else if (samples.get(0).getValue(headVar) instanceof VectorVal) {
 				continuousCache = extractMultivariateDistribution(headVar);				
 			}
 		}
 		if (continuousCache == null) {
-			throw new DialException ("empirical distribution could not be converted to a " +
-					"continuous distribution");
+			throw new DialException ("empirical distribution for " + headVar + " could not be " +
+					"converted to a continuous distribution");
 		}
 	}
-	
-	
+
+
 	private UnivariateDistribution extractUnivariateDistribution(String headVar) throws DialException {
 		List<Double> values = new ArrayList<Double>(samples.size());
 		for (Assignment sample : samples) {
 			Value value = sample.getValue(headVar);
 			if (value instanceof DoubleVal) {
-			values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
+				values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
 			}
 			else {
 				throw new DialException ("value type is not allowed in " +
 						"continuous distribution: " + value.getClass().getName());
 			}
-	}
+		}
 		return new UnivariateDistribution(headVar, new KernelDensityFunction(values));
 	}
 
@@ -280,13 +293,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		for (Assignment sample : samples) {
 			Value value = sample.getValue(headVar);
 			if (value instanceof VectorVal) {
-			values.add(((VectorVal)sample.getValue(headVar)).getArray());
+				values.add(((VectorVal)sample.getValue(headVar)).getArray());
 			}
 			else {
 				throw new DialException ("value type is not allowed in " +
 						"continuous distribution: " + value.getClass().getName());
 			}
-	}
+		}
 		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(values);
 		pkde.setAsBounded(true);
 		return new MultivariateDistribution(headVar, pkde);
@@ -334,7 +347,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String toString() {
-		return prettyPrint();
+		int nbEmptys = 0;
+		for (Assignment s : samples) {
+			if (s.isDefault()) {
+				nbEmptys++;
+			}
+		}
+		return "(empirical) " + prettyPrint() + " [nb emptys: " + nbEmptys +"]";
 	}
 
 

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import opendial.arch.Settings;
 import opendial.arch.DialException;
@@ -31,10 +32,12 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.DoubleFactor;
 import opendial.inference.queries.Query;
@@ -147,21 +150,9 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 
 	@Override
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
-
-	//	log.debug("reduction query " + query + " on network " + query.getNetwork().getNodeIds());
-		
-		// creating the reduced copy
-		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
-		
-		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
-		for (String nodeId : identicalNodes) {
-			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
-			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
-			query.removeQueryVar(nodeId);
-		}  
 				
-		// creates a new query thread
-		ReductionQuerySampling isquery = new ReductionQuerySampling(query, reduced, nbSamples, maxSamplingTime);
+		query.filterIdenticalNodes();
+		ReductionQuerySampling isquery = new ReductionQuerySampling(query, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);
 
 		// waits for the results to be compiled
@@ -172,8 +163,8 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 				catch (InterruptedException e) {}
 			}
 		}
-		return isquery.getResults();
-		
+		BNetwork result = isquery.getResults();
+		return result;
 	}
 
 

@@ -41,7 +41,7 @@ import opendial.bn.values.VectorVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.InferenceUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 
 /**
@@ -134,7 +134,7 @@ public class MultivariateDistribution implements ContinuousProbDistribution {
 		List<double[]> values = function.getDiscreteValueArrays(nbBuckets);
 		
 		Map<Assignment, Double> distrib = new HashMap<Assignment, Double>();
-		double minDistance = MathUtils.getMaxManhattanDistance(values)/2.0;
+		double minDistance = DistanceUtils.getMaxManhattanDistance(values)/2.0;
 		for (int i = 0 ; i < Settings.getInstance().nbSamples ; i++) {
 			
 			double[] sample = function.sample();

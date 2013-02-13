@@ -41,6 +41,8 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.domains.rules.PredictionRule;
 import opendial.gui.GUIFrame;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
@@ -70,6 +72,8 @@ public class DialogueState {
 
 	Assignment evidence;
 
+	Set<String> parameterIds;
+	
 	Stack<String> variablesToProcess;
 
 	Map<String,Long> updateStamps;
@@ -83,6 +87,7 @@ public class DialogueState {
 	boolean isFictive = false;
 
 	boolean activateDecisions = true;
+	boolean activatePredictions = true;
 
 	List<StateListener> listeners;
 
@@ -102,6 +107,8 @@ public class DialogueState {
 		planner = new ForwardPlanner(this);
 
 		listeners = new LinkedList<StateListener>();
+		
+		parameterIds = new HashSet<String>();
 	}
 
 	
@@ -145,6 +152,9 @@ public class DialogueState {
 	
 	public void applyRule(Rule rule) throws DialException {
 		if (!activateDecisions && rule.getRuleType() == RuleType.UTIL) {
+			return;
+		}
+		else if (!activatePredictions && rule instanceof PredictionRule) {
 			return;
 		}
 		RuleInstantiator instantiator = new RuleInstantiator(this, rule);
@@ -213,6 +223,17 @@ public class DialogueState {
 					toContinue = true;
 			}	
 			else if (planner.isPlanningNeeded()) {	
+				try { 
+					if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
+					log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
+					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
+				} 
+					if (network.hasChanceNode("history") && !isFictive()) { 
+						log.debug("history : " + getContent("history", true).toString().replace("\n", ", "));
+					}
+				}
+				catch (DialException e) { e.printStackTrace(); } 
+				
 				planner.run();
 				toContinue = true;
 			}	
@@ -292,12 +313,17 @@ public class DialogueState {
 		for (SynchronousModule module : modules) {
 			stateCopy.attachModule(module);
 		}
+		stateCopy.parameterIds = parameterIds;
 		return stateCopy;
 	}
 
 
 	public void activateDecisions(boolean activateDecisions) {
 		this.activateDecisions = activateDecisions;
+	}
+	
+	public void activatePredictions(boolean activatePredictions) {
+		this.activatePredictions = activatePredictions;
 	}
 
 
@@ -331,6 +357,7 @@ public class DialogueState {
 	}
 
 
+	// ONE SHOULD HAVE a getUpdated(long refererencetime) instead
 	public long getUpdateStamp(String varId) {
 		if (updateStamps.containsKey(varId)) {
 			return updateStamps.get(varId).longValue();
@@ -343,10 +370,15 @@ public class DialogueState {
 	public void addParameters(BNetwork parameterNetwork) {
 		try {
 			network.addNetwork(parameterNetwork);
+			parameterIds.addAll(parameterNetwork.getNodeIds());
 		}
 		catch (DialException e) {
 			log.warning ("cannot add parameters to the dialogue state: " + e);
 		}
+	}
+	
+	public boolean isParameter(String nodeId) {
+		return parameterIds.contains(nodeId);
 	}
 
 	public String getName() {

@@ -46,7 +46,7 @@ import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
 import opendial.inference.datastructs.WeightedSample;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -131,26 +131,61 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
 	 * 
+	 * @param condition the conditional assignment (ignored here)
+	 * @return the selected sample
+	 */
+	public Assignment sample() {
+		if (!samples.isEmpty()) {
+			int selection = sampler.nextInt(samples.size());
+			Assignment selected = samples.get(selection);
+			return selected;
+		}
+		else {
+			log.warning("distribution has no samples");
+			return new Assignment();
+		}
+	}
+	
+
+	/**
+	 * Samples from the distribution.  In this case, simply selects one
+	 * arbitrary sample out of the set defining the distribution
+	 * 
 	 * @param condition the conditional assignment 
 	 * @return the selected sample
 	 */
 	@Override
 	public Assignment sample(Assignment condition) {
-
+		
 		Assignment trimmed = condition.getTrimmed(condVars);
 
-		Map<Assignment,Double> values = MathUtils.getClosestElements(samples, trimmed);
-		
-		try {
-			if (!values.isEmpty()) {
-				Intervals<Assignment> interval = new Intervals<Assignment>(values);
-				Assignment result = interval.sample();
-				return result;
+		if (trimmed.isEmpty() && !samples.isEmpty()) {
+			int selection = sampler.nextInt(samples.size());
+			Assignment selected = samples.get(selection);
+			return selected;
+		}
+		else if (trimmed.isDiscrete()) {
+			List<Assignment> relevantSamples = new ArrayList<Assignment>();
+			for (Assignment a : samples) {
+				if (a.consistentWith(trimmed)) {
+					relevantSamples.add(a);
+				}
+			}
+			if (!relevantSamples.isEmpty()) {
+			int selection = sampler.nextInt(relevantSamples.size());
+			Assignment selected = relevantSamples.get(selection);
+			return selected;
 			}
 		}
-		catch (DialException e) {
-			log.warning("could not sample with intervals with inverse distance weights");
+		log.debug("for node " + samples.iterator().next().getTrimmedInverse(condVars) + ", using distance measure for " + trimmed);
+		int poolSize = (samples.size() > 10)? samples.size()/10 : samples.size();
+		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
+		if (!closeValues.isEmpty()) {
+			int selection = sampler.nextInt(closeValues.size());
+			Assignment selected = closeValues.get(selection);
+			return selected;
 		}
+		
 		return getDefaultAssignment();
 	}
 
@@ -205,6 +240,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 		for (Assignment condition : temp.keySet()) {
 			discreteCache.addRows(condition, (SimpleTable)(temp.get(condition).toDiscrete()));
 		}
+		discreteCache.fillConditionalHoles();
 		this.discreteCache = discreteCache;
 	}
 
@@ -286,7 +322,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		return toDiscrete().prettyPrint();
+		return "dependent empirical distribution P(" + headVars + "|" + condVars + ")";
 	}
 
 
@@ -338,7 +374,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	public String toString() {
-		return toDiscrete().toString();
+		return prettyPrint();
 	}
 
 	@Override

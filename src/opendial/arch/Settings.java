@@ -64,13 +64,13 @@ public class Settings {
 	
 	public Class<? extends InferenceAlgorithm> inferenceAlgorithm = SwitchingAlgorithm.class;;
 	
-	public int nbSamples = 1500;
+	public int nbSamples = 3000;
 	
 	// maximum sampling time (in milliseconds)
-	public long maximumSamplingTime = 300;
+	public long maximumSamplingTime = 1500;
 	
 	public int nbDiscretisationBuckets = 100;
-			
+			 
 	public boolean activatePlanner = true;
 	
 	public boolean activatePruning = true;

@@ -30,7 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.arch.Logger;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Density function defined via a set of discrete points
@@ -63,7 +63,7 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 		this.points = new HashMap<double[],Double>();
 		this.points.putAll(points);
 		sampler = new Random();
-		avgDistance = MathUtils.getAverageDistance(points.keySet());
+		avgDistance = DistanceUtils.getAverageDistance(points.keySet());
 	}
 	
 	
@@ -77,7 +77,7 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 		double[] closest = null;
 		double closestDist = - Double.MAX_VALUE;
 		for (double[] point : points.keySet()) {
-			double curDist = MathUtils.getDistance(point, x);
+			double curDist = DistanceUtils.getDistance(point, x);
 			if (closest == null || curDist < closestDist) {
 				closest = point;
 				closestDist = curDist;
@@ -161,9 +161,9 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 		for (double[] point : points.keySet()) {
 			s += "(";
 			for (int i = 0 ; i < point.length; i++) {
-				s += MathUtils.shorten(point[i]) + ",";
+				s += DistanceUtils.shorten(point[i]) + ",";
 			}
-			s = s.substring(0, s.length()-1)+"):=" + MathUtils.shorten(points.get(point));
+			s = s.substring(0, s.length()-1)+"):=" + DistanceUtils.shorten(points.get(point));
 		}
 		return s + ")";
 	}

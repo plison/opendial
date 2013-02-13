@@ -181,5 +181,31 @@ public class StringUtils {
 		return s;
 	}
 
+
+	
+	public static void checkForm(String rawString) {
+
+		int nbParenthesisLeft = (rawString+" ").split("\\(").length - 1;
+		int nbParenthesisRight = (rawString+" ").split("\\)").length - 1;
+		if (nbParenthesisLeft != nbParenthesisRight) {
+			log.warning("Unequal number of parenthesis in string: " + rawString 
+					+ "(" + nbParenthesisLeft + " vs. " + nbParenthesisRight + ") Problems ahead!");
+		}
+		int nbBracesLeft = (rawString+" ").split("\\{").length - 1;
+		int nbBracesRight = (rawString+" ").split("\\}").length - 1;
+		if (nbBracesLeft != nbBracesRight) {
+			log.warning("Unequal number of braces in string: " + rawString + 
+					"(" + nbBracesLeft + " vs. " + nbBracesRight + "). Problems ahead!");
+		}
+		
+		int nbBracketsLeft = (rawString+" ").split("\\{").length - 1;
+		int nbBracketsRight = (rawString+" ").split("\\}").length - 1;
+		if (nbBracketsLeft != nbBracketsRight) {
+			log.warning("Unequal number of brackets in string: " + rawString + 
+					"(" + nbBracketsLeft + " vs. " + nbBracketsRight + "). Problems ahead!");
+		}
+		
+	}
+
 	
 }

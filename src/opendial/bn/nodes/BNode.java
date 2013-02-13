@@ -21,6 +21,7 @@ package opendial.bn.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -362,7 +363,6 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the set of dependencies for the given variable
 	 */
 	public Set<String> getAncestorsIds(Collection<String> variablesToRetain) {
-
 		Set<String> ancestors = new HashSet<String>();
 
 		Stack<BNode> nodesToProcess = new Stack<BNode>();
@@ -376,11 +376,28 @@ public abstract class BNode implements Comparable<BNode> {
 				nodesToProcess.addAll(inputNode.getInputNodes());
 			}
 		}
-
 		return ancestors;
 	}
 
 
+
+	public int getAncestorDistance(String ancestorId) {
+	
+		if (inputNodes.containsKey(ancestorId)) {
+			return 1;
+		}
+		else if (!inputNodes.isEmpty()){
+			List<Integer> distances = new LinkedList<Integer>();
+			for (BNode inputNode : inputNodes.values()) {
+				distances.add(1 + inputNode.getAncestorDistance(ancestorId));
+			}
+			Collections.sort(distances);
+			return distances.get(0);
+		}
+		return Integer.MAX_VALUE;
+	}
+	
+	
 	/**
 	 * Returns an ordered list of nodes which are the descendants
 	 * (via the relations) of the current node.  The ordering
@@ -671,7 +688,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * 
 	 * @return the (unordered) list of possible conditions.  
 	 */
-	protected Set<Assignment> getPossibleConditions() {
+	public Set<Assignment> getPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (BNode inputNode : inputNodes.values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
@@ -748,6 +765,19 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 		return false;
 	}
+
+	public void addInputNodes(Collection<BNode> inputNodes) throws DialException {
+		for (BNode node : inputNodes) {
+			addInputNode(node);
+		}
+	}
+	
+	public void addOutputNodes(Collection<BNode> outputNodes) throws DialException {
+		for (BNode node : outputNodes) {
+			node.addInputNode(this);
+		}
+	}
+
 
 
 

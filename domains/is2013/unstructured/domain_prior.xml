@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="floor" type="update">
+
+	<rule>
+		<case>
+			<condition>
+				<if var="floor" value="start" />
+			</condition>
+			<effect>
+				<clear var="i_u" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="floor" value="continue" />
+			</condition>
+			<effect>
+				<set var="i_u" value="{i_u}" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="floor" value="start" />
+			</condition>
+			<effect prob="theta_1[0]">
+				<set var="i_u" value="Move(Left)" />
+			</effect>
+			<effect prob="theta_1[1]">
+				<set var="i_u" value="Move(Forward)" />
+			</effect>
+			<effect prob="theta_1[2]">
+				<set var="i_u" value="Move(Backward)" />
+			</effect>
+			<effect prob="theta_1[3]">
+				<set var="i_u" value="Move(Right)" />
+			</effect>
+			<effect prob="theta_1[4]">
+				<set var="i_u" value="DoYouSee(o1)" />
+			</effect>
+			<effect prob="theta_1[5]">
+				<set var="i_u" value="DoYouSee(o2)" />
+			</effect>
+			<effect prob="theta_1[6]">
+				<set var="i_u" value="WhatDoYouSee" />
+			</effect>
+			<effect prob="theta_1[7]">
+				<set var="i_u" value="Release(o1)" />
+			</effect>
+			<effect prob="theta_1[8]">
+				<set var="i_u" value="Release(o2)" />
+			</effect>
+			<effect prob="theta_1[9]">
+				<set var="i_u" value="PickUp(o1)" />
+			</effect>
+			<effect prob="theta_1[10]">
+				<set var="i_u" value="PickUp(o2)" />
+			</effect>
+			<effect prob="theta_1[11]" />
+		</case>
+	</rule>
+
+
+</model>

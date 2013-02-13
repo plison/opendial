@@ -31,8 +31,10 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import opendial.arch.Logger;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.utils.StringUtils;
 
 /**
@@ -444,6 +446,12 @@ public class Assignment {
 		}
 	}
 	
+
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+
 	
 	/**
 	 * Returns a new assignment with all the accessory specifiers such as primes,
@@ -468,13 +476,6 @@ public class Assignment {
 	}
 	
 	 
-
-	// ===================================
-	//  GETTERS
-	// ===================================
-
-
-	
 	/**
 	 * Returns whether the assignment is empty
 	 */
@@ -527,6 +528,15 @@ public class Assignment {
 	}
 	
 	
+	public boolean containsAVar(Collection<String> vars) {
+		for (String var : vars) {
+			if (map.containsKey(var)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Returns a trimmed version of the assignment, where only the
@@ -537,7 +547,7 @@ public class Assignment {
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
 		Assignment a = new Assignment();
-		for (String var : new LinkedList<String>(variables)) {
+		for (String var : new ArrayList<String>(variables)) {
 			if (map.containsKey(var)) {
 				a.addPair(var, map.get(var));
 			}
@@ -751,6 +761,32 @@ public class Assignment {
 		return true;
 	}
 
+
+
+	public boolean isDiscrete() {
+		for (String var : map.keySet()) {
+			Value val = map.get(var);
+			if (val instanceof DoubleVal || val instanceof VectorVal) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+
+
+	public Assignment getDiscrete() {
+		Assignment discrete = new Assignment();
+		for (String var : map.keySet()) {
+			Value val = map.get(var);
+			if (!(val instanceof DoubleVal) && !(val instanceof VectorVal)) {
+				discrete.addPair(var, val);
+			}
+		}
+		return discrete;
+	}
+
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================

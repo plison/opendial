@@ -19,7 +19,7 @@
 
 package opendial.bn.values;
 
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 
 /**
@@ -87,7 +87,7 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public String toString() { 
-		return "" + MathUtils.shorten(d);
+		return "" + DistanceUtils.shorten(d);
 	}
 
 

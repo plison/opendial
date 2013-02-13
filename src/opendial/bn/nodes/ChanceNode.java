@@ -31,6 +31,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 
@@ -97,7 +98,10 @@ public class ChanceNode extends BNode {
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
 		if (distrib.getHeadVariables().size() != 1) {
-			throw new DialException("Distribution should have only one head variable, but is has: " + distrib.getHeadVariables());
+		
+			log.debug("Distribution for " + nodeId + 
+					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
+					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
 		}
 		if (!distrib.isWellFormed()) {
 			throw new DialException("Distribution for node " + nodeId + " (type " +
@@ -299,8 +303,8 @@ public class ChanceNode extends BNode {
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 		if (!result.containsVar(nodeId)) {
-			log.warning("result of sampling does not contain " + nodeId +": " + 
-					result + " distrib is " + distrib.getClass().getSimpleName());
+	//		log.warning("result of sampling does not contain " + nodeId +": " + 
+	//				result + " distrib is " + distrib.getClass().getSimpleName());
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);
@@ -321,9 +325,8 @@ public class ChanceNode extends BNode {
 			fillCachedValues();
 		}
 
-		return cachedValues;
+		return new HashSet<Value>(cachedValues);
 	}
-
 
 
 	/**
@@ -445,6 +448,7 @@ public class ChanceNode extends BNode {
 
 		Set<Value> cachedValuesTemp = new HashSet<Value>();
 
+		if (! (distrib instanceof DepEmpiricalDistribution)) {
 		Set<Assignment> possibleConditions = getPossibleConditions();
 
 		for (Assignment condition : possibleConditions) {
@@ -453,6 +457,8 @@ public class ChanceNode extends BNode {
 				for (Assignment head : table.getRows()) {
 					if (!head.containsVar(nodeId)) {
 						log.warning("head assignment " + head + " should contain " + nodeId);
+						log.debug("condition was " + condition);
+						log.debug("distrib is " + distrib.getClass().getName() + " " + distrib);
 					}
 					else {
 						Value value = head.getValue(nodeId);
@@ -464,9 +470,16 @@ public class ChanceNode extends BNode {
 				log.warning("exception thrown: "+ e.toString());
 			}
 		}
+		}
+		else {
+			for (Assignment s : ((DepEmpiricalDistribution)distrib).getSamples()) {
+				if (s.containsVar(nodeId)) {
+					cachedValuesTemp.add(s.getValue(nodeId));
+				}
+			}
+		}
 		cachedValues = cachedValuesTemp;
 	}
-
 
 
 }

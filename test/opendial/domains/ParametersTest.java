@@ -143,8 +143,8 @@ public class ParametersTest {
 		assertEquals(0.36, ((MultivariateDistribution)system.getState().
 				getContent("theta_4", true).toContinuous()).getMean()[0], 0.1);
 		
-		assertEquals(0.64, ((SimpleTable)system.getState().getContent("a_u", true)).
-				getProb(new Assignment("a_u", "Disapproval")), 0.1);
+		assertEquals(0.64, system.getState().getContent("a_u", true).toDiscrete().
+				getProb(new Assignment(), new Assignment("a_u", "Disapproval")), 0.1);
 	}
 	
 	

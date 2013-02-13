@@ -31,9 +31,10 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Traditional probability distribution represented as a probability table.  The table
@@ -58,7 +59,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	
 	// the probability table
 	protected HashMap<Assignment,T> table;
-
+	
 	// ===================================
 	//  TABLE CONSTRUCTION
 	// ===================================
@@ -127,13 +128,23 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			return table.get(trimmed).sample(new Assignment());
 		}
 		else  {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);
 			if (!closest.isEmpty()) {
 				return table.get(trimmed).sample(new Assignment());
 			}	
 		}
-		log.debug("could not find the corresponding condition for " + condition + " (vars: " + conditionalVars + ")");
-		return new Assignment();
+		
+		String text = "could not find the corresponding condition for " + condition + 
+				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")";
+		log.debug(text);
+	//	log.debug("table: " + toString());
+		
+		Assignment defaultA = new Assignment();
+	/**	if (!table.isEmpty()) {
+			defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());
+		} */
+		return defaultA;
+				
 	}
 	
 
@@ -150,6 +161,20 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	}
 
 
+	public void fillConditionalHoles() {
+				Map<String,Set<Value>> possibleCondPairs = 
+					CombinatoricsUtils.extractPossiblePairs(table.keySet());
+				
+				Set<Assignment> possibleCondAssignments = 
+					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
+				possibleCondAssignments.remove(new Assignment());
+				
+				for (Assignment a: possibleCondAssignments) {
+					if (!table.containsKey(a)) {
+						
+					}
+				}
+	}
 
 	/**
 	 * Returns true if the probability table is well-formed.  The method checks that all 
@@ -165,6 +190,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		Map<String,Set<Value>> possibleCondPairs = 
 			CombinatoricsUtils.extractPossiblePairs(table.keySet());
 		
+		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 100) {
 		// Note that here, we only check on the possible assignments in the distribution itself
 		// but a better way to do it would be to have it on the actual values given by the input nodes
 		// but would require the distribution to have some access to it.
@@ -179,6 +205,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			log.debug("possible conditional assignments: " + possibleCondAssignments);
 			log.debug("actual assignments: "+ table.keySet());
 			return false;
+		}
 		}
 
 		for (Assignment condition : table.keySet()) {

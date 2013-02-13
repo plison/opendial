@@ -24,50 +24,92 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.state.DialogueState;
 
 public class ReductionQuery extends Query {
 
-	List<String> nodesToIsolate = new ArrayList<String>();
+	BNetwork reduced;
 	
-	public ReductionQuery (BNetwork network, String... queryVars) {
+	Set<String> identicalNodes;
+
+	
+	public ReductionQuery (BNetwork network, String... queryVars) throws DialException {
 		this(network, getCollection(queryVars));
 	}
 	
-	public ReductionQuery (DialogueState state, String... queryVars) {
+	public ReductionQuery (DialogueState state, String... queryVars) throws DialException {
 		this(state, getCollection(queryVars));
 	}
 	
-	public ReductionQuery(DialogueState state, Collection<String> queryVars, Collection<String> nodesToIsolate) {
-		this(state.getNetwork(), queryVars, state.getEvidence());
-		setNodesToIsolate(nodesToIsolate);
-	}
 	
-	public ReductionQuery (DialogueState state, Collection<String> queryVars) {
+	public ReductionQuery (DialogueState state, Collection<String> queryVars) throws DialException {
 		this(state.getNetwork(), queryVars, state.getEvidence());
 	}
 	
-	public ReductionQuery (BNetwork network, Collection<String> queryVars) {
+	public ReductionQuery (BNetwork network, Collection<String> queryVars) throws DialException {
 		this(network, queryVars, new Assignment());
 	}
 	
 	public ReductionQuery (BNetwork network, Collection<String> queryVars, 
-			Assignment evidence) {
+			Assignment evidence) throws DialException {
 		super(network, queryVars, evidence, new ArrayList<String>());
+		createReducedNetwork();
 	}
 	
-	public void setNodesToIsolate (Collection<String> nodesToIsolate) {
-		this.nodesToIsolate.addAll(nodesToIsolate);
-	}
 	
-	public Collection<String> getNodesToIsolate() {
-		return nodesToIsolate;
-	}
 
+	private void createReducedNetwork() throws DialException {
+
+		reduced = new BNetwork();
+
+		for (String var : queryVars) {
+			if (!reduced.hasNode(var)) {
+				if (network.getNode(var) instanceof ProbabilityRuleNode) {
+					reduced.addNode(new ProbabilityRuleNode(((ProbabilityRuleNode)network.getNode(var)).getRule()));
+				}
+				else if (network.getNode(var) instanceof ChanceNode) {
+					reduced.addNode(new ChanceNode(var));
+				}
+				else if (network.getNode(var) instanceof UtilityNode 
+						|| network.getNode(var) instanceof ActionNode) {
+					throw new DialException("retained variables can only be chance nodes");
+				}
+			}
+		}
+ 
+		for (String var : queryVars) {
+			Set<String> ancestorIds = network.getNode(var).getAncestorsIds(queryVars);
+
+			for (String inputDepId : ancestorIds) {
+				if (reduced.hasNode(inputDepId)) {
+					reduced.getNode(var).addInputNode(reduced.getNode(inputDepId));
+				}
+			}
+		}
+		
+		identicalNodes = network.getIdenticalNodes(reduced, evidence);
+		for (String nodeId : identicalNodes) {
+			ChanceNode originalNode = network.getChanceNode(nodeId);
+			Collection<BNode> inputNodesInReduced = reduced.getNode(nodeId).getInputNodes();
+			Collection<BNode> outputNodesInReduced = reduced.getNode(nodeId).getOutputNodes();
+			reduced.replaceNode(originalNode.copy());
+			reduced.getNode(nodeId).addInputNodes(inputNodesInReduced);
+			reduced.getNode(nodeId).addOutputNodes(outputNodesInReduced);
+		}  
+	
+	}
+	
+	
+
+	
 	/**
 	 * Returns the nodes that are irrelevant for answering the given query
 	 *
@@ -105,9 +147,27 @@ public class ReductionQuery extends Query {
 	}
 
 	
+	public void removeRelation(String inputNodeId, String outputNodeId) {
+		if (reduced.hasNode(inputNodeId) && reduced.hasNode(outputNodeId)) {
+			reduced.getNode(inputNodeId).removeOutputNode(outputNodeId);
+		}
+		else {
+			log.debug("cannot remove " + inputNodeId + " --> " + outputNodeId);
+		}
+	}
+	
 	public String toString() {
 		return "Reduction("+super.toString() +")";
 	}
 
+	public BNetwork getReducedCopy() throws DialException {
+		return reduced.copy();
+	}
+
+	public void filterIdenticalNodes() {
+		for (String identicalNode: identicalNodes) {
+			removeQueryVar(identicalNode);
+		}
+	}
 	
 }

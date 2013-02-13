@@ -246,12 +246,7 @@ public class Case {
 		}
 		for (Effect e : effects.keySet()) {
 			str += e.toString();
-			if (effects.get(e) instanceof FixedParameter) {
-				str += " [" + effects.get(e) + "]";
-			}
-			else if (effects.get(e) instanceof SingleParameter) {
-				str += " [" + effects.get(e) + "]";
-			}
+			str += " [" + effects.get(e) + "]";
 			str += ",";
 		}
 		if (!effects.isEmpty()) {

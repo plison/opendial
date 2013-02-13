@@ -37,6 +37,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.IdChangeListener;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.inference.queries.Query;
 
@@ -442,13 +443,13 @@ public class BNetwork implements IdChangeListener {
 	 * @param baseId the base identifier
 	 * @return the unique node identifier, with baseVar+counter
 	 */
-	public String getUniqueNodeId(String baseId) {
+	public synchronized String getUniqueNodeId(String baseId) {
 		if (!nodes.containsKey(baseId)) {
 			return baseId;
 		}
 		else {
 			int counter = 2;
-			while (nodes.containsKey(baseId+counter)) {
+			while (nodes.containsKey(baseId +"^" + counter)) {
 				counter++;
 			}
 			return baseId +"^" +counter;
@@ -472,55 +473,6 @@ public class BNetwork implements IdChangeListener {
 		Collections.sort(nodesList);
 		return nodesList;
 	}
-
-
-
-	/**
-	 * Returns a new Bayesian Network with only the subset of variables given as 
-	 * argument.  This method only copies the network structure, but leaves the nodes
-	 * empty (no distribution).
-	 * 
-	 * NB: Action nodes that are *not* derived have their action values copied.
-	 * 
-	 * @param variablesToRetain the variables to retain in the new network
-	 * @return the new, reduced Bayesian network
-	 * @throws DialException if a problem arises in the copy operation
-	 */
-	public BNetwork getReducedCopy(Collection<String> variablesToRetain, 
-			Collection<String> variablesToIsolate) throws DialException {
-
-		BNetwork network = new BNetwork();
-
-		for (String var : variablesToRetain) {
-			if (!network.hasNode(var)) {
-				if (getNode(var) instanceof ChanceNode) {
-					network.addNode(new ChanceNode(var));
-				}
-				else if (getNode(var) instanceof UtilityNode 
-						|| getNode(var) instanceof ActionNode) {
-					throw new DialException("retained variables can only be chance nodes");
-				}
-			}
-		}
-
-		for (String var : variablesToRetain) {
-			Set<String> ancestorIds = nodes.get(var).getAncestorsIds(variablesToRetain);
-			for (String inputDepId : ancestorIds) {
-				if (network.hasNode(inputDepId)) {
-					network.getNode(var).addInputNode(network.getNode(inputDepId));
-				}
-			}
-		}
-		
-		for (String var : network.getNodeIds()) {
-			if (variablesToIsolate.contains(var)) {
-				network.getNode(var).removeAllRelations();
-			}
-		}
-				
-		return network;
-	}
-
 	
 
 	/**
@@ -538,7 +490,8 @@ public class BNetwork implements IdChangeListener {
 				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
 						&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
 						&& !initNode.hasDescendant(evidence.getVariables())
-						&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))) {
+				//		&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))
+						) {
 					identicalNodes.add(node.getId());
 				//	log.debug("identical node: " + node.getId() + " since descendants " 
 				//	+ initNode.getDescendantIds() + " and evidence " + evidence);

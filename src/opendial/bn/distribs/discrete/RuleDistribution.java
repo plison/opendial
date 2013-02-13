@@ -306,7 +306,9 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	private SimpleTable getOutputTable(Assignment condition) {
 		try {
 			OutputTable outputs = rule.getEffectOutputs(condition);
+
 			Map<Output,Double> probs = outputs.getProbTable(condition);
+
 			SimpleTable probTable = new SimpleTable();
 			
 			for (Output o : probs.keySet()) {
@@ -319,8 +321,11 @@ public class RuleDistribution implements DiscreteProbDistribution {
 			return probTable;
 		}
 		catch (DialException e) {
-			log.warning("could not extract output table for condition" + condition + ": " + e.toString());
-			return new SimpleTable();
+			log.warning("could not extract output table for condition " + condition + ": " + e.toString());
+			log.debug("rule is " + rule.toString());
+			SimpleTable probTable = new SimpleTable();
+			probTable.addRow(new Assignment(id, new Output()), 1.0);
+			return probTable;
 		}
 	}
 

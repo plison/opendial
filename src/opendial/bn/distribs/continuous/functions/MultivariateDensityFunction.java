@@ -32,7 +32,7 @@ import opendial.arch.Logger;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
- */
+ */ 
 public interface MultivariateDensityFunction {
 
 	/**
@@ -43,7 +43,7 @@ public interface MultivariateDensityFunction {
 	 */
 	public double getDensity(double[] x);
 	
-	
+	 
 	/**
 	 * Returns a sampled value given the point
 	 * 

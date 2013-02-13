@@ -101,7 +101,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	@Override
 	public void modifyVarId(String oldId, String newId) {
 		if ((baseVar+primes).equals(oldId)) {
-			this.baseVar = newId.replace("'", "");
+			this.baseVar = StringUtils.removePrimes(newId);
 			this.primes = newId.replace(baseVar, "");
 		}
 		cache.clear();
@@ -248,7 +248,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 		// a uniform probability on each alternative
 		if (!setValues.isEmpty()) {
 			for (Value v : setValues) {
-				probTable.addRow(new Assignment(baseVar+primes, v), 1.0 / setValues.size());
+				probTable.addRow(new Assignment(baseVar+primes, v), (1.0 / setValues.size()));
 			}
 		}
 		// if the output is made from add values, concatenate the results

@@ -37,9 +37,11 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
@@ -68,7 +70,14 @@ public class UserSimulator extends Thread {
 	long systemActionStamp = 0;
 	
 	int nbTurns = 0;
-
+	
+	boolean startup = true;
+	
+	double accReturn = 0;
+	
+	ProbDistribution asrScore;
+	ProbDistribution a_uother;
+	
 	public UserSimulator(DialogueState systemState, Domain domain) throws DialException {
 		this.systemState = systemState;
 		this.realState = domain.getInitialState().copy();
@@ -93,6 +102,12 @@ public class UserSimulator extends Thread {
 		realState.startState();
 
 		this.start();
+		
+		try {
+		asrScore = realState.getContent("asrScore", true);
+		a_uother = realState.getContent("a_uother", true);
+		}
+		catch (DialException e) { e.printStackTrace() ; }
 	}
 
 	
@@ -102,7 +117,7 @@ public class UserSimulator extends Thread {
 		while (true) {
 			try {
 			while (!systemState.isStable() || paused) {
-				Thread.sleep(100);
+				Thread.sleep(50);
 			}
 			performTurn();
 			}
@@ -118,31 +133,71 @@ public class UserSimulator extends Thread {
 
 	public void performTurn() {
 
-		try {
-			Assignment action = getSystemAction();
-		//	log.debug("system action: " + action);
+		try {	
+			
+			Assignment action = getSystemAction();		
+			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
-			log.debug("return value: " + returnValue);
-				
-			Assignment sampled = addSystemAction(action);
+			if (startup) {
+				log.debug("STARTING UP SIMULATOR...");
+				action = new Assignment("a_m", "AskRepeat");
+				startup = false;
+			}
+			else {
+				log.debug("reward value: " + returnValue);
+				accReturn += returnValue;						
+			}
+			
+			nbTurns++;
+			
+			showParameterState();
+			
+			log.debug("--------");
+
+			if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+				log.debug("expected next user action: " + systemState.getContent("a_u^p", 
+						true).toString().replace("\n", ", "));
+			}
+			realState.addContent(asrScore, "renew1");
+			realState.addContent(a_uother, "renew2");
+			
+			realState.addContent(action, "systemAction");
+			
+			String error = "ERROR";
+			if (systemState.getNetwork().hasChanceNode(error)) {
+				log.debug("===> ERROR: " + systemState.getContent(error, true));	
+			}
+			
+			log.debug("K-L divergence: " + getKLDivergence());
+			
+			Assignment sampled = sampleNextState(action);
+			log.debug("Elements sampled from simulation: " + sampled);
+			
+			if (realState.getNetwork().hasChanceNode("floor")) {
+				double prob = realState.getContent("floor", true).toDiscrete().getProb(
+						new Assignment(), new Assignment("floor", "start"));
+				if (prob > 0.98) {
+					log.debug("accumulated return: " + accReturn);
+					accReturn = 0;
+				}
+			}
 			
 			DiscreteProbDistribution obs = getNextObservation(sampled);
-
 			Assignment evidence = new Assignment();
 			evidence.addPair("i_u", sampled.getValue("i_u"));
 			evidence.addPair("perceived", sampled.getValue("perceived"));
 			evidence.addPair("carried", sampled.getValue("carried"));
+		
 			realState.addContent(evidence, "evidence");
-
-			//		log.debug("adding observation: " + obs);
-			systemState.addContent(obs, "simulator");
-
-			nbTurns++;
-			
-			if (nbTurns == 100) {
-				log.debug("Current estimate for theta_1: " + systemState.getContent("theta_1", true));
-				nbTurns = 0;
+			log.debug("==> Adding observation: " + obs.toString().replace("\n", ", "));
+			log.debug("waiting for system processing...");
+		
+	//		systemState.addContent(realState.getContent("a_uother", true), "sim2");
+			systemState.addContent(obs, "sim1");
+			if (systemState.getNetwork().hasChanceNode("i_u")) {
+				log.debug("i_u after system action: " + systemState.getContent("i_u", true)
+						.toString().replace("\n", ", "));
 			}
 			
 		}
@@ -154,7 +209,8 @@ public class UserSimulator extends Thread {
 
 
 	private Assignment getSystemAction() throws DialException {
-		if (systemState.getUpdateStamp("a_m") - systemActionStamp > 0) {
+		if (systemState.getNetwork().hasChanceNode("a_m") && 
+				systemState.getUpdateStamp("a_m") - systemActionStamp > 0) {
 			systemActionStamp = System.currentTimeMillis();
 			SimpleTable actionDistrib = systemState.getContent("a_m", true).
 					toDiscrete().getProbTable(new Assignment());
@@ -165,22 +221,68 @@ public class UserSimulator extends Thread {
 		return new Assignment("a_m", ValueFactory.none());
 	}
 
-
 	
-	private Assignment addSystemAction(Assignment action) throws DialException {
+	
+	private double getKLDivergence() throws DialException {
+		SimpleTable expectedDis = systemState.getContent("a_u^p", true).toDiscrete().getProbTable(new Assignment());
+		SimpleTable realDis = realState.getContent("a_u^p", true).toDiscrete().getProbTable(new Assignment());
+		double distance = 0.0;
+		for (Assignment a : expectedDis.getRows()) {
+			 distance += Math.log(realDis.getProb(a) / expectedDis.getProb(a)) * realDis.getProb(a);
+		}
+		return distance;
+	}
+	
 
-		realState.addContent(action, "systemAction");
+	private void showParameterState() throws DialException {
+		if (nbTurns == 5) {
+			for (int i = 1 ; i < 15 ;i++) {
+				if (systemState.getNetwork().hasChanceNode("theta_"+i)) {
+					log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
+				}
+			}
+			String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+				log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
+			}
+			String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+				log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
+			}
+			String fullTheta3 = "theta_(a_m=Confirm(Move(Left))^i_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta3)) {
+				log.debug("===> estimate for " + fullTheta3 +": " + systemState.getContent(fullTheta3, true));
+			}
+			String fullTheta4 = "theta_(a_m=AskRepeat^i_u=Move(Right))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta4)) {
+				log.debug("===> estimate for " + fullTheta4 +": " + systemState.getContent(fullTheta4, true));	
+			}
+			String fullTheta5 = "theta_(a_m=Do(*)^i_u=WhatDoYouSee)";
+			if (systemState.getNetwork().hasChanceNode(fullTheta5)) {
+				log.debug("===> estimate for " + fullTheta5 +": " + systemState.getContent(fullTheta5, true));	
+			}
+			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
+				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
+			}
+			String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
+				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
+			}
+			nbTurns = 0;
+		}
+	}
+	private Assignment sampleNextState(Assignment action) throws DialException {
 		
 		Assignment sampled = new Assignment();
 		List<BNode> sequence = realState.getNetwork().getSortedNodes();
 		Collections.reverse(sequence);
 		for (BNode n : sequence) {
-			if (n instanceof ChanceNode && !n.getId().equals("a_u^p")) {
+			if (n instanceof ChanceNode && !n.getId().equals("a_u^p") && !(n instanceof ProbabilityRuleNode)) {
 				Value val = ((ChanceNode)n).sample(sampled);
 				sampled.addPair(n.getId(), val);
 			}	
 		}
-
 		return sampled;
 	}
 	
@@ -194,6 +296,7 @@ public class UserSimulator extends Thread {
 			ProbDistribution distrib = algo.queryProb(query);
 			distrib.modifyVarId("a_u^p", "a_u");
 	//		log.debug("resulting distrib: " + distrib);
+			
 			return distrib.toDiscrete();
 		}
 		catch (Exception e) {

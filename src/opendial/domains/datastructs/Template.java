@@ -32,6 +32,7 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of a string object containing a variable number (from 0 to n) of slots
@@ -81,6 +82,9 @@ public class Template {
 	public Template(String value) {
 
 		rawString = value.trim();
+		
+		StringUtils.checkForm(rawString);
+		
 		slots = extractSlots(rawString);
 
 		// string processing to avoid special characters for the pattern
@@ -99,7 +103,6 @@ public class Template {
 			pattern = Pattern.compile("bogus pattern");
 		}
 	}
-	
 	
 	
 	private String format(String init) {

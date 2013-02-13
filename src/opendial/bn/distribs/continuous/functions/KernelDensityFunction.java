@@ -31,6 +31,7 @@ import java.util.TreeSet;
 
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
+import opendial.utils.DistanceUtils;
 
 /**
  * Density function represented as a kernel of points
@@ -198,7 +199,13 @@ public class KernelDensityFunction implements UnivariateDensityFunction {
 	 */
 	@Override
 	public String prettyPrint() {
-		return "KDE("+points.toString()+")";
+		String s = "KDE(mean=";
+		double mean = getMean();
+		s += DistanceUtils.shorten(mean) +", ";
+		s = s.substring(0, s.length()-2) + ", std=";
+		s += DistanceUtils.shorten(Math.sqrt(getVariance()));
+		s += ") with " + points.size() + " kernels ";
+		return s;
 	}
 	
 	
