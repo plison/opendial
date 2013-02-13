@@ -331,6 +331,7 @@ public class DialogueState {
 	}
 
 
+	// ONE SHOULD HAVE a getUpdated(long refererencetime) instead
 	public long getUpdateStamp(String varId) {
 		if (updateStamps.containsKey(varId)) {
 			return updateStamps.get(varId).longValue();

@@ -102,6 +102,7 @@ public class RuleInstantiator implements Runnable {
 		}
 		catch (DialException e) {
 			log.warning("could not apply rule "+ rule.getRuleId() + ", aborting: " + e.toString());
+			log.debug("rule: " + rule.toString());
 		} 
 
 	}

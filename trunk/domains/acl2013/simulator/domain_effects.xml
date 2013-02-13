@@ -2,7 +2,7 @@
 
 <model trigger="a_m" type="update">
 
-	<rule>
+	<rule id="temp_a_m">
 		<case>
 			<effect>
 				<set var="a_mtemp" value="{a_m}" />
@@ -12,7 +12,7 @@
 	</rule>
 
 
-	<rule>
+	<rule id="perception1">
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move(*))" />
@@ -32,7 +32,7 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="perception2">
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move(*))" />
@@ -53,7 +53,7 @@
 	</rule>
 
 
-	<rule>
+	<rule id="carriedstuff">
 		<case>
 			<condition>
 				<if var="a_m" value="Do(PickUp({X}))" />
@@ -74,14 +74,13 @@
 	</rule>
 
 
-	<rule id="nextintention">
+	<rule id="nextintention_sim">
 		<case>
 			<condition operator="and">
 				<if var="a_m" value="Do({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
 			<effect prob="1.0">
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
@@ -90,7 +89,6 @@
 				<if var="a_m" value="Excuse(*)" />
 			</condition>
 			<effect prob="1.0">
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
@@ -100,7 +98,6 @@
 				<if var="i_u" value="DoYouSee(*)" />
 			</condition>
 			<effect prob="1.0">
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
@@ -110,7 +107,6 @@
 				<if var="i_u" value="DoYouSee(*)" />
 			</condition>
 			<effect prob="1.0">
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
@@ -120,7 +116,6 @@
 				<if var="i_u" value="WhatDoYouSee" />
 			</condition>
 			<effect prob="1.0">
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
@@ -129,13 +124,12 @@
 				<if var="i_u" value="None" />
 			</condition>
 			<effect>
-				<clear var="i_u" />
 				<set var="floor" value="start" />
 			</effect>
 		</case>
 		<case>
 			<effect prob="1.0">
-				<set var="i_u" value="{i_u}" />
+				<set var="floor" value="continue" />
 			</effect>
 		</case>
 	</rule>

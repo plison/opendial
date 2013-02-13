@@ -671,7 +671,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * 
 	 * @return the (unordered) list of possible conditions.  
 	 */
-	protected Set<Assignment> getPossibleConditions() {
+	public Set<Assignment> getPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (BNode inputNode : inputNodes.values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());

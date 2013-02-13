@@ -2,6 +2,28 @@
 
 <model trigger="floor" type="update">
 
+<rule id="clear_start">
+<case>
+<condition>
+<if var="floor" value="start"/>
+</condition>
+<effect>
+<clear var="i_u"/>
+</effect>
+</case>
+</rule>
+
+<rule id="continue">
+<case>
+<condition>
+<if var="floor" value="continue"/>
+</condition>
+<effect>
+<set var="i_u" value="{i_u}"/>
+</effect>
+</case>
+</rule>
+
 <rule>
 <case>
 <condition>

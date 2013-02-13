@@ -31,8 +31,10 @@ import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 
+import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
@@ -115,9 +117,7 @@ public class AnchoredRule {
 
 	private Set<String> extractInputVariables() {
 		Set<Template> templatedVariables = rule.getInputVariables();
-if (rule.getRuleId().equals("repetition")) {
-	log.debug("templated variables: " + templatedVariables);
-}
+
 		Set<String> filledVariables = new HashSet<String>();
 		for (Template templatedVar : templatedVariables) {
 			try {
@@ -149,7 +149,8 @@ if (rule.getRuleId().equals("repetition")) {
 	
 
 	private Map<String,ChanceNode> extractParameters(DialogueState state) {
-		Map<String,ChanceNode> parameters = new HashMap<String,ChanceNode>();		
+		Map<String,ChanceNode> parameters = new HashMap<String,ChanceNode>();	
+
 		for (Output output : cache.getOutputs()) {
 			
 			for (Parameter param : cache.getParameters(output)) {
@@ -232,13 +233,12 @@ if (rule.getRuleId().equals("repetition")) {
 	private Map<String, ChanceNode> extractInputNodes(DialogueState state) {
 		Map<String, ChanceNode> tempInputNodes = new HashMap<String, ChanceNode>();
 		for (String inputVar : inputVariables) {
-			boolean isAttached = false;
-			for (int i = 4 ; i >= 0 && !isAttached ; i--) {
+			for (int i = 4 ; i >= 0 ; i--) {
 				String specifiedVar = inputVar + StringUtils.createNbPrimes(i);
 				if (state.getNetwork().hasChanceNode(specifiedVar) 
 						&& !state.isVariableToProcess(specifiedVar)) {		// CHANGE THIS!!
 					tempInputNodes.put(specifiedVar, state.getNetwork().getChanceNode(specifiedVar));
-					isAttached = true;
+					break;
 				}
 			}
 		}

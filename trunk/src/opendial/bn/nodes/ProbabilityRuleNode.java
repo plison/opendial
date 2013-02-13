@@ -46,7 +46,7 @@ import opendial.utils.CombinatoricsUtils;
 public class ProbabilityRuleNode extends ChanceNode {
 
 	// logger
-	public static Logger log = new Logger("RuleNode", Logger.Level.NORMAL);
+	public static Logger log = new Logger("RuleNode", Logger.Level.DEBUG);
 
 	AnchoredRule rule;
 
@@ -66,7 +66,5 @@ public class ProbabilityRuleNode extends ChanceNode {
 	public AnchoredRule getRule() {
 		return rule;
 	}
-
-
 	
 }
