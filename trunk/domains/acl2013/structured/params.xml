@@ -52,22 +52,4 @@
 </distrib>
 </variable>
 
-<variable id="a_uother">
-<value prob="0.07">Move(Left)</value>
-<value prob="0.07">Move(Right)</value>
-<value prob="0.07">Move(Forward)</value>
-<value prob="0.07">Move(Backward)</value>
-<value prob="0.07">PickUp(o1)</value>
-<value prob="0.07">PickUp(o2)</value>
-<value prob="0.07">Release(o1)</value>
-<value prob="0.07">Release(o2)</value>
-<value prob="0.07">DoYouSee(o1)</value>
-<value prob="0.07">DoYouSee(o2)</value>
-<value prob="0.07">WhatDoYouSee</value>
-<value prob="0.07">Confirm</value>
-<value prob="0.07">Disconfirm</value>
-<value prob="0.07">RepeatLast</value>
-</variable>
-
-
 </parameters>
