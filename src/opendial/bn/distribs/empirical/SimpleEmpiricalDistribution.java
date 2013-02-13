@@ -151,10 +151,6 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public boolean isWellFormed() {
-		if (samples.isEmpty()) {
-			Thread.dumpStack();
-			System.exit(0);
-		}
 		return !samples.isEmpty();
 	}
 
