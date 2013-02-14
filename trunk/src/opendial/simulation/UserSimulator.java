@@ -121,12 +121,12 @@ public class UserSimulator extends Thread {
 		try {
 			log.debug("--------");
 			
-			if (systemState.getNetwork().hasChanceNode("i_u")) {
+		/**	if (systemState.getNetwork().hasChanceNode("i_u")) {
 				log.debug("system-estimated intention: " + systemState.getContent("i_u", true));
 			}
 			if (systemState.getNetwork().hasChanceNode("a_u")) {
 				log.debug("system-estimated a_u: " + systemState.getContent("a_u", true));
-			}
+			} */
 			
 			Assignment action = getSystemAction();
 			log.debug("system action: " + action);

@@ -25,7 +25,7 @@
 			<condition operator="and">
 				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
-				<if var="carried" value="None"/>
+				<if var="carried" value="[]"/>
 				<if var="a_m" value="Do({i_u})" />
 			</condition>
 			<effect util="3"/>
@@ -34,7 +34,7 @@
 			<condition operator="and">
 				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
-				<if var="carried" value="None"/>
+				<if var="carried" value="[]"/>
 				<if var="a_m" value="Ground({i_u})" />
 			</condition>
 			<effect util="1"/>
