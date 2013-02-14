@@ -79,7 +79,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * samples
 	 */
 	public SimpleEmpiricalDistribution() {
-		samples = new ArrayList<Assignment>(Settings.getInstance().nbSamples);
+		samples = new ArrayList<Assignment>();
 		sampler = new Random();
 	}
 
