@@ -70,7 +70,7 @@ public class Settings {
 	public long maximumSamplingTime = 800;
 	
 	public int nbDiscretisationBuckets = 100;
-			
+			 
 	public boolean activatePlanner = true;
 	
 	public boolean activatePruning = true;
