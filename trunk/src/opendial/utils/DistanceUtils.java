@@ -118,7 +118,7 @@ public class DistanceUtils {
 				}
 			}
 			if (totalDistance < curMinDistance) {
-				double weight = 1.0 / (totalDistance + 0.01);
+				double weight = 1.0 / (totalDistance + 0.001);
 				curMinDistance = totalDistance;
 				Assignment value = element.getTrimmedInverse(head.getVariables());
 				if (values.containsKey(value)) {

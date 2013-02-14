@@ -334,7 +334,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String toString() {
-		return prettyPrint();
+		return "(empirical) " + prettyPrint();
 	}
 
 
