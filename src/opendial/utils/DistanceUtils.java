@@ -133,7 +133,7 @@ public class DistanceUtils {
 		if (values.isEmpty()) {
 	//		log.warning("no closer element found for assignment " + head);
 		}
-		// log.debug("number of relevant elements: " + incr + " on a total of " + elements.size());
+		log.debug("number of relevant elements: " + values.size() + " on a total of " + elements.size());
 		return values;
 	}
 		
