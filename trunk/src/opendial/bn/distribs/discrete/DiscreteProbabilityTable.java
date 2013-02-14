@@ -35,7 +35,7 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Traditional probability distribution represented as a discrete probability table.  
@@ -194,7 +194,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 			return table.get(trimmed).getProb(head);
 		}
 		else  {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest).getProb(head);
 			}	
@@ -279,7 +279,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 			return table.get(trimmed);
 		}	
 		else {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}	
@@ -339,7 +339,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 		String str = "";
 		for (Assignment cond: table.keySet()) {
 			for (Assignment head: table.get(cond).getRows()) {
-				double prob = MathUtils.shorten(table.get(cond).getProb(head));
+				double prob = DistanceUtils.shorten(table.get(cond).getProb(head));
 				if (cond.size() > 0) {
 					str += "P(" + head + " | " + cond 
 					+ "):="  + prob + "\n";

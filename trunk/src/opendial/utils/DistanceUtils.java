@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
 import opendial.inference.datastructs.WeightedSample;
 
-public class MathUtils {
+public class DistanceUtils {
 
 	// logger
 	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
@@ -71,7 +72,7 @@ public class MathUtils {
 					totalDistance += Math.abs(((DoubleVal)headVal).getDouble() - ((DoubleVal)elVal).getDouble()) ;
 				}
 				else if (headVal instanceof VectorVal && elVal instanceof VectorVal) {
-					totalDistance += MathUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
+					totalDistance += DistanceUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
 				}
 				else if (!headVal.equals(elVal)) {
 					continue outer;
@@ -88,12 +89,11 @@ public class MathUtils {
 	
 	public static Map<Assignment,Double> getClosestElements (List<Assignment> elements, Assignment head) {
 		
-		Map<Assignment,Double> values = new HashMap<Assignment,Double>();
+		LinkedHashMap<Assignment,Double> values = new LinkedHashMap<Assignment,Double>();
 		
-		int incr = 0;
 		Collections.shuffle(elements);
 		
-		double minDistance = MIN_PROXIMITY_DISTANCE*5.0;
+		double curMinDistance = Double.MAX_VALUE/2.0;
 		outer: 
 			for (Assignment element : elements) {
 			if (!element.getVariables().containsAll(head.getVariables())) {
@@ -108,16 +108,19 @@ public class MathUtils {
 					totalDistance += Math.abs(((DoubleVal)headVal).getDouble() - ((DoubleVal)elVal).getDouble()) ;
 				}
 				else if (headVal instanceof VectorVal && elVal instanceof VectorVal) {
-					totalDistance += MathUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
+					totalDistance += DistanceUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
 				}
 				else if (!headVal.equals(elVal)) {
 					continue outer;
 				}
+				if (totalDistance > curMinDistance) {
+					continue outer;
+				}
 			}
-			if (totalDistance < minDistance) {
-				incr++;
+			if (totalDistance < curMinDistance) {
+				double weight = 1.0 / (totalDistance + 0.1);
+				curMinDistance = totalDistance;
 				Assignment value = element.getTrimmedInverse(head.getVariables());
-				double weight = minDistance - totalDistance/2.0;
 				if (values.containsKey(value)) {
 					values.put(value, values.get(value) + weight);
 				}

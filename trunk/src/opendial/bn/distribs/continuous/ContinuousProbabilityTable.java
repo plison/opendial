@@ -37,7 +37,7 @@ import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.values.Value;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Table mapping conditional assignments to continuous probability distributions.
@@ -109,7 +109,7 @@ public class ContinuousProbabilityTable
 			return table.get(trimmed).getProbDensity(new Assignment(), head);
 		}
 		else {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				ContinuousProbDistribution distrib = table.get(closest);
 				return distrib.getProbDensity(new Assignment(), head);
@@ -136,7 +136,7 @@ public class ContinuousProbabilityTable
 			return table.get(trimmed).getCumulativeProb(new Assignment(), head);
 		}
 		else {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);		
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				ContinuousProbDistribution distrib = table.get(closest);
 				return distrib.getCumulativeProb(new Assignment(), head);

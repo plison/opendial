@@ -120,6 +120,14 @@ public class UserSimulator extends Thread {
 
 		try {
 			log.debug("--------");
+			
+			if (systemState.getNetwork().hasChanceNode("i_u")) {
+				log.debug("system-estimated intention: " + systemState.getContent("i_u", true));
+			}
+			if (systemState.getNetwork().hasChanceNode("a_u")) {
+				log.debug("system-estimated a_u: " + systemState.getContent("a_u", true));
+			}
+			
 			Assignment action = getSystemAction();
 			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
@@ -127,9 +135,9 @@ public class UserSimulator extends Thread {
 			log.debug("return value: " + returnValue);
 				
 			Assignment sampled = addSystemAction(action);
+			log.debug("sampled elements after action: " + sampled);
 			
 			DiscreteProbDistribution obs = getNextObservation(sampled);
-			log.debug("sampled elements: " + sampled);
 			Assignment evidence = new Assignment();
 			evidence.addPair("i_u", sampled.getValue("i_u"));
 			evidence.addPair("perceived", sampled.getValue("perceived"));
@@ -144,6 +152,10 @@ public class UserSimulator extends Thread {
 			
 			if (nbTurns == 20) {
 				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
+				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
+				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
+				log.debug("===> estimate for theta_4: " + systemState.getContent("theta_4", true));
+				log.debug("===> estimate for theta_5: " + systemState.getContent("theta_5", true));
 				log.debug("===> estimate for theta_6: " + systemState.getContent("theta_6", true));
 				nbTurns = 0;
 			}

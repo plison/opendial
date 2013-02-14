@@ -46,7 +46,7 @@ import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
 import opendial.inference.datastructs.WeightedSample;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -139,7 +139,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 		Assignment trimmed = condition.getTrimmed(condVars);
 
-		Map<Assignment,Double> values = MathUtils.getClosestElements(samples, trimmed);
+		Map<Assignment,Double> values = DistanceUtils.getClosestElements(samples, trimmed);
 		
 		try {
 			if (!values.isEmpty()) {
@@ -149,7 +149,8 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			}
 		}
 		catch (DialException e) {
-			log.warning("could not sample with intervals with inverse distance weights");
+			log.warning("could not sample with intervals with inverse distance weights: " + e);
+			log.debug(values);
 		}
 		return getDefaultAssignment();
 	}

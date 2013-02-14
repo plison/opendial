@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 import opendial.arch.Logger;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 public class VectorVal implements Value {
 
@@ -102,7 +102,7 @@ public class VectorVal implements Value {
 	public String toString() {
 		String s = "(";
 		for (Double d : values) {
-			s += MathUtils.shorten(d) + ",";
+			s += DistanceUtils.shorten(d) + ",";
 		}
 		return s.substring(0, s.length() -1) + ")";
 	}
