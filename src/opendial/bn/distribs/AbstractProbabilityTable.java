@@ -151,7 +151,6 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	}
 
 
-
 	/**
 	 * Returns true if the probability table is well-formed.  The method checks that all 
 	 * possible assignments for the condition and head parts are covered in the table, 
