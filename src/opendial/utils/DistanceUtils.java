@@ -41,7 +41,7 @@ import opendial.inference.datastructs.WeightedSample;
 public class DistanceUtils {
 
 	// logger
-	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DistanceUtils", Logger.Level.DEBUG);
 
 	public static final double MIN_PROXIMITY_DISTANCE = 0.1;
 
@@ -118,7 +118,7 @@ public class DistanceUtils {
 				}
 			}
 			if (totalDistance < curMinDistance) {
-				double weight = 1.0 / (totalDistance + 0.1);
+				double weight = 1.0 / (totalDistance + 0.01);
 				curMinDistance = totalDistance;
 				Assignment value = element.getTrimmedInverse(head.getVariables());
 				if (values.containsKey(value)) {
@@ -133,7 +133,6 @@ public class DistanceUtils {
 		if (values.isEmpty()) {
 	//		log.warning("no closer element found for assignment " + head);
 		}
-		log.debug("number of relevant elements: " + values.size() + " on a total of " + elements.size());
 		return values;
 	}
 		
