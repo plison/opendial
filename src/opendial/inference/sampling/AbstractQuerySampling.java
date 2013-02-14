@@ -18,7 +18,7 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 	
 
 	// number of sampling threads to run in parallel
-	public static int NB_THREADS = 3;
+	public static int NB_THREADS = 1;
 
 	// actual number of samples for the algorithm
 	int nbSamples = 300;

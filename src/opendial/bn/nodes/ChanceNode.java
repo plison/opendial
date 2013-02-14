@@ -31,6 +31,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 
@@ -329,7 +330,6 @@ public class ChanceNode extends BNode {
 	}
 
 
-
 	/**
 	 * Returns the probability distribution attached to the node
 	 * 
@@ -449,6 +449,7 @@ public class ChanceNode extends BNode {
 
 		Set<Value> cachedValuesTemp = new HashSet<Value>();
 
+		if (! (distrib instanceof DepEmpiricalDistribution)) {
 		Set<Assignment> possibleConditions = getPossibleConditions();
 
 		for (Assignment condition : possibleConditions) {
@@ -466,6 +467,14 @@ public class ChanceNode extends BNode {
 			}
 			catch (DialException e) {
 				log.warning("exception thrown: "+ e.toString());
+			}
+		}
+		}
+		else {
+			for (Assignment s : ((DepEmpiricalDistribution)distrib).getSamples()) {
+				if (s.containsVar(nodeId)) {
+					cachedValuesTemp.add(s.getValue(nodeId));
+				}
 			}
 		}
 		cachedValues = cachedValuesTemp;

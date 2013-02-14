@@ -51,7 +51,7 @@ public class DirichletParameter implements Parameter {
 			Value val = input.getValue(paramId);
 			if (val instanceof VectorVal ) {
 				if (((VectorVal)val).getVector().size() > index) {
-				return ((VectorVal)val).getVector().get(index);
+				return ((VectorVal)val).getArray()[index];
 				}
 				else {
 					throw new DialException("cannot extract index " + index + " of " + val);
@@ -77,7 +77,7 @@ public class DirichletParameter implements Parameter {
 
 	
 	public String toString() {
-		return "Dirichlet(" + paramId + ")";
+		return "Dirichlet(" + paramId + ")[" + index + "]";
 	}
 }
 

@@ -151,6 +151,21 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	}
 
 
+	public void fillConditionalHoles() {
+				Map<String,Set<Value>> possibleCondPairs = 
+					CombinatoricsUtils.extractPossiblePairs(table.keySet());
+				
+				Set<Assignment> possibleCondAssignments = 
+					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
+				possibleCondAssignments.remove(new Assignment());
+				
+				for (Assignment a: possibleCondAssignments) {
+					if (!table.containsKey(a)) {
+						
+					}
+				}
+	}
+
 	/**
 	 * Returns true if the probability table is well-formed.  The method checks that all 
 	 * possible assignments for the condition and head parts are covered in the table, 
