@@ -10,7 +10,7 @@
 
 <variable id="asrScore">
 <distrib type="dirichlet">
-<alpha>5.42</alpha>
+<alpha>8.42</alpha>
 <alpha>0.515</alpha>
 <alpha>1.597</alpha>
 </distrib>
