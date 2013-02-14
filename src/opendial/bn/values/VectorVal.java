@@ -36,39 +36,39 @@ public class VectorVal implements Value {
 			Logger.Level.DEBUG);
 	
 	double[] array;
-	Vector<Double> values;
 	
 	public VectorVal(double[] values) {
-		this.array = values;
-		this.values = new Vector<Double>(values.length);
-		for (int i = 0 ; i < values.length ; i++) {
-			this.values.add(values[i]);
+		this.array = new double[values.length];
+		for (int i = 0 ; i < array.length ; i++) {
+			array[i] = values[i];
 		}
 	}
 	
 	public VectorVal(Collection<Double> values) {
-		this.values = new Vector<Double>(values);
 		array = new double[values.size()];
-		for (int i = 0 ; i < array.length ; i++) {
-			array[i] = this.values.get(i);
+		int incr = 0;
+		for (Double value : values) {
+			array[incr] = value.doubleValue();
+			incr++;
 		}
 	}
 
 	@Override
 	public int compareTo(Value arg0) {
 		if (arg0 instanceof VectorVal) {
-			Vector<Double> otherVector = ((VectorVal)arg0).getVector();
-			if (values.size() != otherVector.size()) {
-				return values.size() - otherVector.size();
+			double[] otherVector = ((VectorVal)arg0).getArray();
+			if (array.length != otherVector.length) {
+				return array.length - otherVector.length;
 			}
 			else {
-				for (int i = 0 ; i < values.size() ; i++) {
-					double val1 = values.get(i);
-					double val2 = otherVector.get(i);
-					if (val1 != val2) {
+				for (int i = 0 ; i < array.length ; i++) {
+					double val1 = array[i];
+					double val2 = otherVector[i];
+					if (Math.abs(val1 - val2) > 0.0001) {
 						return (new Double(val1).compareTo(new Double(val2)));
 					}
 				}
+				return 0;
 			}
 		}
 		return hashCode() - arg0.hashCode();
@@ -76,16 +76,20 @@ public class VectorVal implements Value {
 
 	@Override
 	public Value copy() {
-		return new VectorVal(values);
+		return new VectorVal(array);
 	}
 	
-	public Vector<Double>  getVector() {
-		return values;
+	public Vector<Double> getVector() {
+		Vector<Double> vector = new Vector<Double>(array.length);
+		for (int i = 0 ; i < array.length ; i++) {
+			vector.add(array[i]);
+		}
+		return vector;
 	}
 	
 	public boolean equals(Object o) {
 		if (o instanceof VectorVal) {
-			return ((VectorVal)o).getVector().equals(values);
+			return ((VectorVal)o).getVector().equals(getVector());
 		}
 		return false;
 	}
@@ -95,13 +99,14 @@ public class VectorVal implements Value {
 	}
 	
 	public int hashCode() {
-		return values.hashCode();
+		return 2* getVector().hashCode();
 	}
+	
 	
 	@Override
 	public String toString() {
 		String s = "(";
-		for (Double d : values) {
+		for (Double d : getVector()) {
 			s += DistanceUtils.shorten(d) + ",";
 		}
 		return s.substring(0, s.length() -1) + ")";

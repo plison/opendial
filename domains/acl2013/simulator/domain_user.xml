@@ -9,7 +9,7 @@
 				<if var="i_u" value="{X}" />
 			</condition>
 			<effect>
-				<clear var="a_u0" />
+				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
 		<case>
@@ -25,7 +25,7 @@
 				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="0.25">
-				<clear var="a_u0" />
+				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
 		<case>
@@ -40,7 +40,7 @@
 				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="0.08">
-				<clear var="a_u0" />
+				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
 		<case>
@@ -53,7 +53,7 @@
 				<set var="a_u0" value="Disconfirm" />
 			</effect>
 			<effect prob="0.98">
-				<clear var="a_u0" />
+				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
 		<case>
@@ -73,7 +73,7 @@
 				<set var="a_u0" var2="i_u" />
 			</effect>
 			<effect prob="0.015">
-				<clear var="a_u0" />
+				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
 	</rule>
