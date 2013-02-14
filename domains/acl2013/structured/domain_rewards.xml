@@ -21,7 +21,7 @@
 			<condition operator="and">
 				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
-				<if var="carried" value="None"/>
+				<if var="carried" value="[]"/>
 			</condition>
 			<effect util="3">
 				<set var="a_m" value="Do({i_u})" />

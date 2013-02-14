@@ -30,7 +30,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.arch.Logger;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Density function defined via a set of discrete points
@@ -63,7 +63,7 @@ public class DiscreteDensityFunction implements UnivariateDensityFunction {
 		this.points = new TreeMap<Double,Double>();
 		this.points.putAll(points);
 		sampler = new Random();
-		minDistance = MathUtils.getMinDistance(points.keySet());
+		minDistance = DistanceUtils.getMinDistance(points.keySet());
 	}
 	
 	

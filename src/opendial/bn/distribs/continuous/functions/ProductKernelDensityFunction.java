@@ -32,7 +32,7 @@ import java.util.TreeSet;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Density function represented as a kernel of points
@@ -204,7 +204,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		String s = "MKDE(mean=[";
 		double[] means = getMean();
 		for (double mean : means) {
-			s += MathUtils.shorten(mean) +", ";
+			s += DistanceUtils.shorten(mean) +", ";
 		}
 		s = s.substring(0, s.length()-2) + "])"; /** ,variance=[";
 		double[] variances = getVariance();

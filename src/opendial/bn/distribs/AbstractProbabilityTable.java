@@ -33,7 +33,7 @@ import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.MathUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Traditional probability distribution represented as a probability table.  The table
@@ -127,7 +127,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			return table.get(trimmed).sample(new Assignment());
 		}
 		else  {
-			Assignment closest = MathUtils.getClosestElement(table.keySet(), trimmed);
+			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);
 			if (!closest.isEmpty()) {
 				return table.get(trimmed).sample(new Assignment());
 			}	
