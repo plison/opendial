@@ -206,6 +206,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 		for (Assignment condition : temp.keySet()) {
 			discreteCache.addRows(condition, (SimpleTable)(temp.get(condition).toDiscrete()));
 		}
+		discreteCache.fillConditionalHoles();
 		this.discreteCache = discreteCache;
 	}
 
