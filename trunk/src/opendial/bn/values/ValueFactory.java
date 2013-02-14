@@ -40,7 +40,7 @@ import opendial.bn.nodes.BNode;
 public class ValueFactory {
 
 	// logger
-	public static Logger log = new Logger("ValueFactory", Logger.Level.NORMAL);
+	public static Logger log = new Logger("ValueFactory", Logger.Level.DEBUG);
 
 	// none value (no need to recreate one everytime)
 	static NoneVal noneValue = new NoneVal();

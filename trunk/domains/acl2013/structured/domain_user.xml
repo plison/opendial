@@ -72,10 +72,10 @@
 			<effect prob="theta_12[0]">
 				<set var="a_u0" var2="i_u" />
 			</effect>
+			<effect prob="theta_12[1]">
+				<set var="a_u0" value="Nothing" />
+			</effect>
 		</case>
-		<effect prob="theta_12[1]">
-			<set var="a_u0" value="Nothing" />
-		</effect>
 	</rule>
 
 </model>

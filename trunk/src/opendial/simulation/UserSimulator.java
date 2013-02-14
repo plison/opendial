@@ -37,6 +37,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -158,6 +159,7 @@ public class UserSimulator extends Thread {
 
 			log.debug("adding observation: " + obs);
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
+			
 			systemState.addContent(obs, "sim2");
 
 			nbTurns++;
@@ -213,7 +215,8 @@ public class UserSimulator extends Thread {
 				sampled.addPair(n.getId(), val);
 			}	
 		}
-
+		sampled.addPair("i_u", "Move(Forward)");
+		sampled.addPair("a_u0", "Move(Forward)");
 		return sampled;
 	}
 	
@@ -227,6 +230,7 @@ public class UserSimulator extends Thread {
 			ProbDistribution distrib = algo.queryProb(query);
 			distrib.modifyVarId("a_u^p", "a_u");
 	//		log.debug("resulting distrib: " + distrib);
+			
 			return distrib.toDiscrete();
 		}
 		catch (Exception e) {

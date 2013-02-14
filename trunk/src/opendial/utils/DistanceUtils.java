@@ -108,7 +108,7 @@ public class DistanceUtils {
 					totalDistance += Math.abs(((DoubleVal)headVal).getDouble() - ((DoubleVal)elVal).getDouble()) ;
 				}
 				else if (headVal instanceof VectorVal && elVal instanceof VectorVal) {
-					totalDistance += DistanceUtils.getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
+					totalDistance += getDistance(((VectorVal)headVal).getArray(), ((VectorVal)elVal).getArray());
 				}
 				else if (!headVal.equals(elVal)) {
 					continue outer;
@@ -117,8 +117,8 @@ public class DistanceUtils {
 					continue outer;
 				}
 			}
-			if (totalDistance < curMinDistance) {
-				double weight = 1.0 / (totalDistance + 0.001);
+			if (totalDistance <= curMinDistance) {
+				double weight = 1.0 / (totalDistance + 0.1);
 				curMinDistance = totalDistance;
 				Assignment value = element.getTrimmedInverse(head.getVariables());
 				if (values.containsKey(value)) {

@@ -7,6 +7,9 @@
 <value>start</value>
 </variable>
 
+<variable id="perceived"><value>[]</value></variable>
+<variable id="carried"><value>[]</value></variable>
+
 </initialstate>
 
 <!--  <import href="domain_nlu.xml"/> -->

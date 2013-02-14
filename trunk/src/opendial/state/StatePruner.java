@@ -64,7 +64,7 @@ public class StatePruner implements Runnable {
 
 		//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
 		Set<String> nodesToKeep = getNodesToKeep();
-		Set<String> nodesToIsolate = getNodesToIsolate();
+		Set<String> nodesToIsolate = (state.isFictive())? getNodesToIsolate() : new HashSet<String>();
 		try {
 			BNetwork reduced = reduceNetwork(nodesToKeep, nodesToIsolate);
 			removePrimes(reduced);

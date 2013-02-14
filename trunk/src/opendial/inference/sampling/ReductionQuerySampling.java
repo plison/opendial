@@ -109,7 +109,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 						node.setDistrib(eDistrib.toDiscrete());
 					}
 					else {
-						node.setDistrib(eDistrib);						
+						node.setDistrib(eDistrib);	
 					}
 				}
 				else {

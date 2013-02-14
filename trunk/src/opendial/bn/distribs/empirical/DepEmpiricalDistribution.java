@@ -288,7 +288,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		return toDiscrete().prettyPrint();
+		return "dependent empirical distribution P(" + headVars + "|" + condVars + ")";
 	}
 
 
@@ -340,7 +340,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	public String toString() {
-		return toDiscrete().toString();
+		return prettyPrint();
 	}
 
 	@Override
