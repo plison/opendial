@@ -68,7 +68,9 @@ public class UserSimulator extends Thread {
 	long systemActionStamp = 0;
 	
 	int nbTurns = 0;
-
+	
+	double accReturn = 0;
+	
 	public UserSimulator(DialogueState systemState, Domain domain) throws DialException {
 		this.systemState = systemState;
 		this.realState = domain.getInitialState().copy();
@@ -132,10 +134,20 @@ public class UserSimulator extends Thread {
 			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
-			log.debug("return value: " + returnValue);
-				
+			log.debug("reward value: " + returnValue);
+			accReturn += returnValue;				
+			
 			Assignment sampled = addSystemAction(action);
 			log.debug("sampled elements after action: " + sampled);
+			
+			if (realState.getNetwork().hasChanceNode("floor")) {
+				double prob = realState.getContent("floor", true).toDiscrete().getProb(
+						new Assignment(), new Assignment("floor", "start"));
+				if (prob > 0.98) {
+					log.debug("accumulated return: " + accReturn);
+					accReturn = 0;
+				}
+			}
 			
 			DiscreteProbDistribution obs = getNextObservation(sampled);
 			Assignment evidence = new Assignment();
