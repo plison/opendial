@@ -247,7 +247,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			String headVar = samples.get(0).getVariables().iterator().next();
 			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
 				continuousCache = extractUnivariateDistribution(headVar);
-		}
+			}
 			else if (samples.get(0).getValue(headVar) instanceof VectorVal) {
 				continuousCache = extractMultivariateDistribution(headVar);				
 			}
@@ -257,20 +257,20 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 					"continuous distribution");
 		}
 	}
-	
-	
+
+
 	private UnivariateDistribution extractUnivariateDistribution(String headVar) throws DialException {
 		List<Double> values = new ArrayList<Double>(samples.size());
 		for (Assignment sample : samples) {
 			Value value = sample.getValue(headVar);
 			if (value instanceof DoubleVal) {
-			values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
+				values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
 			}
 			else {
 				throw new DialException ("value type is not allowed in " +
 						"continuous distribution: " + value.getClass().getName());
 			}
-	}
+		}
 		return new UnivariateDistribution(headVar, new KernelDensityFunction(values));
 	}
 
@@ -280,13 +280,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		for (Assignment sample : samples) {
 			Value value = sample.getValue(headVar);
 			if (value instanceof VectorVal) {
-			values.add(((VectorVal)sample.getValue(headVar)).getArray());
+				values.add(((VectorVal)sample.getValue(headVar)).getArray());
 			}
 			else {
 				throw new DialException ("value type is not allowed in " +
 						"continuous distribution: " + value.getClass().getName());
 			}
-	}
+		}
 		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(values);
 		pkde.setAsBounded(true);
 		return new MultivariateDistribution(headVar, pkde);
