@@ -124,24 +124,11 @@ public class UserSimulator extends Thread {
 		try {
 			log.debug("--------");
 			
-		/**	if (systemState.getNetwork().hasChanceNode("i_u")) {
-				log.debug("system-estimated intention: " + systemState.getContent("i_u", true));
-			}
-			if (systemState.getNetwork().hasChanceNode("a_u")) {
-				log.debug("system-estimated a_u: " + systemState.getContent("a_u", true));
-			} */
-			
 			if (systemState.getNetwork().hasChanceNode("i_u")) {
 				log.debug("i_u: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
 			}
 			if (systemState.getNetwork().hasChanceNode("a_u")) {
 				log.debug("a_u: " + systemState.getContent("a_u", true).toString().replace("\n", ", "));
-			}
-			if (systemState.getNetwork().hasChanceNode("carried")) {
-				log.debug("carried: " + systemState.getContent("carried", true).toString().replace("\n", ", "));
-			}
-			if (systemState.getNetwork().hasChanceNode("perceived")) {
-				log.debug("perceived: " + systemState.getContent("perceived", true).toString().replace("\n", ", "));
 			}
 			
 			Assignment action = getSystemAction();
@@ -202,7 +189,8 @@ public class UserSimulator extends Thread {
 
 
 	private Assignment getSystemAction() throws DialException {
-		if (systemState.getUpdateStamp("a_m") - systemActionStamp > 0) {
+		if (systemState.getNetwork().hasChanceNode("a_m") && 
+				systemState.getUpdateStamp("a_m") - systemActionStamp > 0) {
 			systemActionStamp = System.currentTimeMillis();
 			SimpleTable actionDistrib = systemState.getContent("a_m", true).
 					toDiscrete().getProbTable(new Assignment());
