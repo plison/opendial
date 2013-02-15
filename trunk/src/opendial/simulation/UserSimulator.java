@@ -131,6 +131,19 @@ public class UserSimulator extends Thread {
 				log.debug("system-estimated a_u: " + systemState.getContent("a_u", true));
 			} */
 			
+			if (systemState.getNetwork().hasChanceNode("i_u")) {
+				log.debug("i_u: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
+			}
+			if (systemState.getNetwork().hasChanceNode("a_u")) {
+				log.debug("a_u: " + systemState.getContent("a_u", true).toString().replace("\n", ", "));
+			}
+			if (systemState.getNetwork().hasChanceNode("carried")) {
+				log.debug("carried: " + systemState.getContent("carried", true).toString().replace("\n", ", "));
+			}
+			if (systemState.getNetwork().hasChanceNode("perceived")) {
+				log.debug("perceived: " + systemState.getContent("perceived", true).toString().replace("\n", ", "));
+			}
+			
 			Assignment action = getSystemAction();
 			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
@@ -157,7 +170,7 @@ public class UserSimulator extends Thread {
 			evidence.addPair("carried", sampled.getValue("carried"));
 			realState.addContent(evidence, "evidence");
 
-			log.debug("adding observation: " + obs);
+			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
 			systemState.addContent(obs, "sim2");

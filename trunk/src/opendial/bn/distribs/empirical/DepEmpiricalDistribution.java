@@ -139,7 +139,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 		Assignment trimmed = condition.getTrimmed(condVars);
 
-		int poolSize = (samples.size() > 10)? samples.size()/10 : samples.size();
+		int poolSize = (samples.size() > 5)? samples.size()/5 : samples.size();
 		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		
 		if (!closeValues.isEmpty()) {
