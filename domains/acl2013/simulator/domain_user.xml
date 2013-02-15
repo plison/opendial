@@ -4,7 +4,7 @@
 
 	<rule>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Ground({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
@@ -13,7 +13,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Ground({X})" />
 				<if var="i_u" value="{X}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
@@ -29,7 +29,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Confirm({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
@@ -44,7 +44,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Confirm({X})" />
 				<if var="i_u" value="{X}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
@@ -57,7 +57,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Do({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>

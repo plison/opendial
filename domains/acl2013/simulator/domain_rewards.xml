@@ -55,14 +55,14 @@
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="a_m" value="Excuse(AlreadyCarryObject)" />
 			</condition>
-			<effect util="4"/>
+			<effect util="3"/>
 		</case>
 		<case>
 			<condition>
 				<if var="i_u" value="PickUp(*)" />
 				<if var="a_m" value="Excuse(DoNotSeeObject)" />
 			</condition>
-			<effect util="4"/>
+			<effect util="3"/>
 		</case>
 		<case>
 			<condition>
@@ -103,7 +103,7 @@
 				<if var="i_u" value="Release(*)" />
 				<if var="a_m" value="Excuse(DoNotCarryObject)" />
 			</condition>
-			<effect util="4"/>
+			<effect util="3"/>
 		</case>
 		<case>
 			<condition operator="and">
