@@ -184,7 +184,14 @@ public class ForwardPlanner implements AnytimeProcess {
 		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
 		try {
+			if (!action.isDefault()) {
 			state.addContent(action.removeSpecifiers(), "planner");
+			}
+			else {
+				for (String var : action.getVariables()) {
+					state.setVariableToProcess(var+"'");
+				}
+			}
 		}
 		catch (DialException e) {
 			log.warning("cannot add selected action to state");
