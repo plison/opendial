@@ -216,8 +216,6 @@ public class UserSimulator extends Thread {
 				sampled.addPair(n.getId(), val);
 			}	
 		}
-		sampled.addPair("i_u", "Move(Forward)");
-		sampled.addPair("a_u0", "Move(Forward)");
 		return sampled;
 	}
 	

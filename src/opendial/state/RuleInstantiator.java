@@ -44,6 +44,8 @@ import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.nodes.UtilityRuleNode;
+import opendial.bn.values.NoneVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
@@ -161,13 +163,20 @@ public class RuleInstantiator implements Runnable {
 		
 		Map<String,Set<Value>> possibleAnchors = new HashMap<String,Set<Value>>();
 
-		boolean isAttached = false;
-		for (int i = 4 ; i >= 0 && !isAttached; i--) {
+		for (int i = 4 ; i >= 0; i--) {
 			String variable2 = predicate.getVariable() + StringUtils.createNbPrimes(i);
 			if (network.hasChanceNode(variable2)) {
-				isAttached=true;
 				Set<Value> values = network.getChanceNode(variable2).getValues();
+				Set<Value> values2 = new HashSet<Value>();
 				for (Value val : values) {
+					if (val instanceof SetVal) {
+						values2.addAll(((SetVal)val).getSet());
+					}
+					else if (!(val instanceof NoneVal)) {
+						values.add(val);
+					}
+				}
+				for (Value val : values2) {
 					if (predicate.getPredicate().isMatching(val.toString(), false)) {
 						Assignment extracted = predicate.getPredicate().extractParameters(val.toString(), false);
 						for (String extractedVar : extracted.getVariables()) {
@@ -178,6 +187,7 @@ public class RuleInstantiator implements Runnable {
 						}
 					}
 				}
+				break;
 			}
 		}
 		
