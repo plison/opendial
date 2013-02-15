@@ -187,7 +187,7 @@ public class ForwardPlanner implements AnytimeProcess {
 			if (!action.isDefault()) {
 			state.addContent(action.removeSpecifiers(), "planner");
 			}
-			else {
+			else if (!state.isFictive()){
 				for (String var : action.getVariables()) {
 					state.setVariableToProcess(var+"'");
 				}
