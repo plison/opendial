@@ -173,7 +173,7 @@ public class RuleInstantiator implements Runnable {
 						values2.addAll(((SetVal)val).getSet());
 					}
 					else if (!(val instanceof NoneVal)) {
-						values.add(val);
+						values2.add(val);
 					}
 				}
 				for (Value val : values2) {
