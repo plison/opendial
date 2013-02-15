@@ -82,7 +82,10 @@
 				<if var="a_m" value="None" />
 				<if var="prev(a_m)" value="None" />
 			</condition>
-			<effect prob="1.0">
+			<effect prob="0.3">
+				<set var="floor" value="start" />
+			</effect>
+			<effect prob="0.7">
 				<set var="floor" value="start" />
 			</effect>
 		</case>
