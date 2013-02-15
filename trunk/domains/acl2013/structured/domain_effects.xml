@@ -2,15 +2,6 @@
 
 <model trigger="a_m" type="update">
 
-	<rule id="temp_a_m">
-		<case>
-			<effect>
-				<set var="a_mtemp" value="{a_m}" />
-				<set var="prev(a_m)" value="{a_mtemp}" />
-			</effect>
-		</case>
-	</rule>
-	
 	<rule>
 		<case>
 			<condition>
