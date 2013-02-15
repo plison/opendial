@@ -69,6 +69,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 	DiscreteProbDistribution discreteCache;
 	ContinuousProbDistribution continuousCache;
+	
+	public long stamp;
 
 	// ===================================
 	//  CONSTRUCTION METHODS
@@ -81,6 +83,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	public SimpleEmpiricalDistribution() {
 		samples = new ArrayList<Assignment>();
 		sampler = new Random();
+		stamp = System.currentTimeMillis();
 	}
 
 	/**
@@ -305,6 +308,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	@Override
 	public SimpleEmpiricalDistribution copy() {
 		SimpleEmpiricalDistribution copy = new SimpleEmpiricalDistribution(samples);
+		copy.stamp = this.stamp;
 		return copy;
 	}
 
@@ -334,7 +338,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String toString() {
-		return "(empirical) " + prettyPrint();
+		int nbEmptys = 0;
+		for (Assignment s : samples) {
+			if (s.isDefault()) {
+				nbEmptys++;
+			}
+		}
+		return "(empirical) " + prettyPrint() + " [stamp: " + stamp + ", nb emptys: " + nbEmptys +"]";
 	}
 
 

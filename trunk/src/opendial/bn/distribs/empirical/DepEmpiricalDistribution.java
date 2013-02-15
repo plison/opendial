@@ -139,19 +139,15 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 		Assignment trimmed = condition.getTrimmed(condVars);
 
-		Map<Assignment,Double> values = DistanceUtils.getClosestElements(samples, trimmed);
+		int poolSize = (samples.size() > 10)? samples.size()/10 : samples.size();
+		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		
-		try {
-			if (!values.isEmpty()) {
-				Intervals<Assignment> interval = new Intervals<Assignment>(values);
-				Assignment result = interval.sample();
-				return result;
-			}
+		if (!closeValues.isEmpty()) {
+			int selection = sampler.nextInt(closeValues.size());
+			Assignment selected = closeValues.get(selection);
+			return selected;
 		}
-		catch (DialException e) {
-			log.warning("could not sample with intervals with inverse distance weights: " + e);
-			log.debug(values);
-		}
+		
 		return getDefaultAssignment();
 	}
 

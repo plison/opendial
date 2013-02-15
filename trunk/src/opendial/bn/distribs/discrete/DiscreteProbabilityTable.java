@@ -175,7 +175,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 	public void fillConditionalHoles() {
 				Map<String,Set<Value>> possibleCondPairs = 
 					CombinatoricsUtils.extractPossiblePairs(table.keySet());
-				
+			if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 100)  {				
 				Set<Assignment> possibleCondAssignments = 
 					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 				possibleCondAssignments.remove(new Assignment());
@@ -184,6 +184,7 @@ public class DiscreteProbabilityTable extends AbstractProbabilityTable<SimpleTab
 					if (!table.containsKey(possibleCond)) {
 						addRow(possibleCond, new Assignment(), 1.0);
 					}
+				}
 				}
 	}
 

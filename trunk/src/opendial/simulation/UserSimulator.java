@@ -159,7 +159,7 @@ public class UserSimulator extends Thread {
 
 			log.debug("adding observation: " + obs);
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
-			
+
 			systemState.addContent(obs, "sim2");
 
 			nbTurns++;

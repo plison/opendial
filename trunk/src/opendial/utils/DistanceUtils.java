@@ -87,13 +87,10 @@ public class DistanceUtils {
 	}
 	
 	
-	public static Map<Assignment,Double> getClosestElements (List<Assignment> elements, Assignment head) {
+	public static List<? extends Assignment> getClosestElements (List<Assignment> elements, Assignment head, int number) {
 		
-		LinkedHashMap<Assignment,Double> values = new LinkedHashMap<Assignment,Double>();
-		
-		Collections.shuffle(elements);
-		
-		double curMinDistance = Double.MAX_VALUE/2.0;
+		List<WeightedAssignment> values = new ArrayList<WeightedAssignment>(elements.size());
+				
 		outer: 
 			for (Assignment element : elements) {
 			if (!element.getVariables().containsAll(head.getVariables())) {
@@ -113,27 +110,17 @@ public class DistanceUtils {
 				else if (!headVal.equals(elVal)) {
 					continue outer;
 				}
-				if (totalDistance > curMinDistance) {
-					continue outer;
-				}
+
 			}
-			if (totalDistance <= curMinDistance) {
-				double weight = 1.0 / (totalDistance + 0.1);
-				curMinDistance = totalDistance;
-				Assignment value = element.getTrimmedInverse(head.getVariables());
-				if (values.containsKey(value)) {
-					values.put(value, values.get(value) + weight);
-				}
-				else {
-					values.put(value, weight);
-				}
-			}
+			
+			Assignment a = element.getTrimmedInverse(head.getVariables());
+			WeightedAssignment wa = new WeightedAssignment(a, totalDistance);
+			values.add(wa);
 		}
 		
-		if (values.isEmpty()) {
-	//		log.warning("no closer element found for assignment " + head);
-		}
-		return values;
+		Collections.sort(values);
+		int nbToSelect = (values.size() > number)? number : values.size();
+		return values.subList(0, nbToSelect);
 	}
 		
 		
@@ -179,7 +166,7 @@ public class DistanceUtils {
 		for (int i = 0 ; i < point1.length ; i++) {
 			dist += Math.pow(point1[i]-point2[i], 2);
 		}
-		return Math.sqrt(dist);
+		return Math.sqrt(dist) / point1.length;
 	}
 	
 	public static double getMinManhattanDistance(Collection<double[]> points) {
@@ -240,6 +227,28 @@ public class DistanceUtils {
 	}
 
 
+}
 
+
+final class WeightedAssignment extends Assignment implements Comparable<WeightedAssignment> {
+	
+	double distance;
+	
+	public WeightedAssignment (Assignment a, double distance) {
+		super(a);
+		this.distance = distance;
+	}
+	
+	public double getDistance() {
+		return distance;
+	}
+	
+	public Assignment getAssignment() {
+		return this;
+	}
+	
+	public int compareTo(WeightedAssignment other) {
+		return (int)((distance - other.getDistance())*10000000);
+	}
 }
 

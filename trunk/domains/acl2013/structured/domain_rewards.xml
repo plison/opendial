@@ -35,7 +35,7 @@
 				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
 			</condition>
-			<effect util="4">
+			<effect util="3">
 				<set var="a_m" value="Excuse(AlreadyCarryObject)" />
 			</effect>
 			<effect util="-3">
@@ -49,7 +49,7 @@
 			<condition>
 				<if var="i_u" value="PickUp(*)" />
 			</condition>
-			<effect util="4">
+			<effect util="3">
 				<set var="a_m" value="Excuse(DoNotSeeObject)" />
 			</effect>
 			<effect util="-3">
@@ -79,7 +79,7 @@
 			<condition>
 				<if var="i_u" value="Release(*)" />
 			</condition>
-			<effect util="4">
+			<effect util="3">
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 			<effect util="-3">
