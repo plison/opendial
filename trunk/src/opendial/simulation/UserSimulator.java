@@ -158,18 +158,20 @@ public class UserSimulator extends Thread {
 		
 			realState.addContent(evidence, "evidence");
 			
-			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
-			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
+		log.debug("adding observation: " + obs.toString().replace("\n", ", "));
+	
+		/**			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
 			systemState.addEvidence(new Assignment("theta_1", "(1.0, 0, 0, 0, 0, 0, 0, 0)"));
 			log.debug("TESTING " + systemState.getContent("i_u", true));
 			log.debug("TESTING 2 " + systemState.getContent("a_u^p", true));
-			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			
-			systemState.addContent(obs, "sim2");
+			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			*/
+		
+		systemState.addContent(obs, "sim2");
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
 			nbTurns++;
 			
-			if (nbTurns == 1) {
+			if (nbTurns == 10) {
 				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
 				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
 				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
@@ -185,7 +187,6 @@ public class UserSimulator extends Thread {
 				nbTurns = 0;
 			}
 			
-			System.exit(0);
 		}
 		catch (Exception e) {
 			log.warning("could not update simulator: " + e.toString());
