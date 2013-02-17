@@ -37,6 +37,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.IdChangeListener;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.inference.queries.Query;
 
@@ -493,7 +494,10 @@ public class BNetwork implements IdChangeListener {
 
 		for (String var : variablesToRetain) {
 			if (!network.hasNode(var)) {
-				if (getNode(var) instanceof ChanceNode) {
+				if (getNode(var) instanceof ProbabilityRuleNode) {
+					network.addNode(new ProbabilityRuleNode(((ProbabilityRuleNode)getNode(var)).getRule()));
+				}
+				else if (getNode(var) instanceof ChanceNode) {
 					network.addNode(new ChanceNode(var));
 				}
 				else if (getNode(var) instanceof UtilityNode 
@@ -538,7 +542,8 @@ public class BNetwork implements IdChangeListener {
 				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
 						&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
 						&& !initNode.hasDescendant(evidence.getVariables())
-						&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))) {
+				//		&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))
+						) {
 					identicalNodes.add(node.getId());
 				//	log.debug("identical node: " + node.getId() + " since descendants " 
 				//	+ initNode.getDescendantIds() + " and evidence " + evidence);

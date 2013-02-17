@@ -172,8 +172,8 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 				catch (InterruptedException e) {}
 			}
 		}
-		return isquery.getResults();
-		
+		BNetwork result = isquery.getResults();
+		return result;
 	}
 
 

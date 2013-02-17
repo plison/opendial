@@ -120,6 +120,7 @@ public class StatePruner implements Runnable {
 
 		Set<String> nodesToKeep = new HashSet<String>();
 		Set<String> nodesToRemove = new HashSet<String>();
+
 		for (BNode node : state.getNetwork().getNodes()) {
 
 			if (node instanceof ActionNode || node instanceof UtilityNode  || 
