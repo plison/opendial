@@ -134,7 +134,7 @@ public class UserSimulator extends Thread {
 
 			
 			Assignment sampled = addSystemAction(action);
-			log.debug("sampled elements after action: " + sampled);
+			log.debug("Elements sampled from simulation: " + sampled);
 			
 			if (realState.getNetwork().hasChanceNode("floor")) {
 				double prob = realState.getContent("floor", true).toDiscrete().getProb(
@@ -153,28 +153,25 @@ public class UserSimulator extends Thread {
 		
 			realState.addContent(evidence, "evidence");
 			
-		log.debug("adding observation: " + obs.toString().replace("\n", ", "));
-	
-		/**			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
+			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
+			log.debug("waiting for system processing...");
+			
+			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
 			systemState.addEvidence(new Assignment("theta_1", "(1.0, 0, 0, 0, 0, 0, 0, 0)"));
 			log.debug("TESTING " + systemState.getContent("i_u", true));
 			log.debug("TESTING 2 " + systemState.getContent("a_u^p", true));
-			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			*/
+			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			
 		
 			systemState.addContent(obs, "sim2");
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
-
 			
 			if (systemState.getNetwork().hasChanceNode("i_u")) {
-				log.debug("i_u after observation: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
-			}
-			if (systemState.getNetwork().hasChanceNode("a_u")) {
-				log.debug("a_u: " + systemState.getContent("a_u", true).toString().replace("\n", ", "));
+				log.debug("i_u after system action: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
 			}
 			
 			nbTurns++;
 			
-			if (nbTurns == 10) {
+			if (nbTurns == 5) {
 				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
 				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
 				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
