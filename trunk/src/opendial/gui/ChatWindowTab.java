@@ -29,11 +29,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -313,13 +315,10 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 			}
 
 			SimpleTable table = new SimpleTable();
-			for (String split : Arrays.asList(splitText)) {
-				double probValue = 1.0;
-				if (split.contains("(") && split.contains(")")) {
-					probValue = getProbabilityValueInParenthesis(split);
-					split = split.substring(0, split.indexOf('('));
-				}
-				table.addRow(new Assignment(var, split.trim()), probValue);
+			
+			for (String split : Arrays.asList(splitText)) {				
+				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
+				table.addRow(new Assignment(var, split2.getKey()), split2.getValue());
 			}
 
 			setInputText("");
@@ -336,18 +335,21 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	 * @param text the string where the probability value might be                                                                                                     
 	 * @return the probability value if a valid one is entered, else 1.0f                                                                                              
 	 */
-	private float getProbabilityValueInParenthesis (String text) {
+	private Map.Entry<String, Float> getProbabilityValueInParenthesis (String text) {
 
 		try {
 			Pattern p = Pattern.compile(".*\\((\\d\\.\\d+)\\).*");
 			Matcher m = p.matcher(text);
 			if (m.find()) {
-				return Float.parseFloat(m.group(1));
+				String probValueStr = m.group(1);
+				float probValue = Float.parseFloat(probValueStr);
+				String remainingStr = text.replace(probValueStr, "").trim();
+				return new AbstractMap.SimpleEntry<String,Float>(remainingStr, probValue);
 			}
-			return 1.0f;
+			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
 		}
 		catch (Exception e) {
-			return 1.0f;
+			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
 		}
 	}
 
