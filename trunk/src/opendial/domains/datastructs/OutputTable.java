@@ -77,7 +77,6 @@ public class OutputTable {
 				table.put(new Output(), 1 - totalMass);
 			}
 		} 
-		
 		return table;
 	}
 	

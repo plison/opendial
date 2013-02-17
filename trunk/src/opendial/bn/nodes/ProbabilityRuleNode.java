@@ -67,4 +67,8 @@ public class ProbabilityRuleNode extends ChanceNode {
 		return rule;
 	}
 	
+	public ProbabilityRuleNode copy() throws DialException {
+		return new ProbabilityRuleNode(rule);
+	}
+	
 }

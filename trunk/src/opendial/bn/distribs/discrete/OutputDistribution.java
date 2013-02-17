@@ -101,7 +101,7 @@ public class OutputDistribution implements DiscreteProbDistribution {
 	@Override
 	public void modifyVarId(String oldId, String newId) {
 		if ((baseVar+primes).equals(oldId)) {
-			this.baseVar = newId.replace("'", "");
+			this.baseVar = StringUtils.removePrimes(newId);
 			this.primes = newId.replace(baseVar, "");
 		}
 		cache.clear();

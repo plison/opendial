@@ -306,7 +306,9 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	private SimpleTable getOutputTable(Assignment condition) {
 		try {
 			OutputTable outputs = rule.getEffectOutputs(condition);
+
 			Map<Output,Double> probs = outputs.getProbTable(condition);
+
 			SimpleTable probTable = new SimpleTable();
 			
 			for (Output o : probs.keySet()) {

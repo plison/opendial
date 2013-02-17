@@ -211,6 +211,9 @@ public class RuleInstantiator implements Runnable {
 		for (BNode outputNode : outputNodes) {
 			if (outputNode instanceof ChanceNode) {
 				outputNode.addInputNode(ruleNode);
+				if (ruleNode.getId().contains("^2") && outputNode.getInputNodeIds().contains(ruleNode.getId().replace("^2", ""))) {
+					log.warning("output node " + outputNode.getId() + " contains duplicates: " + ruleNode.getId());
+				}
 			}
 			else if (outputNode instanceof DerivedActionNode) {
 				ruleNode.addInputNode(outputNode);
