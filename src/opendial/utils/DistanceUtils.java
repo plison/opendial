@@ -166,7 +166,7 @@ public class DistanceUtils {
 		for (int i = 0 ; i < point1.length ; i++) {
 			dist += Math.pow(point1[i]-point2[i], 2);
 		}
-		return Math.sqrt(dist) / point1.length;
+		return dist / point1.length;
 	}
 	
 	public static double getMinManhattanDistance(Collection<double[]> points) {
@@ -249,6 +249,10 @@ final class WeightedAssignment extends Assignment implements Comparable<Weighted
 	
 	public int compareTo(WeightedAssignment other) {
 		return (int)((distance - other.getDistance())*10000000);
+	}
+	
+	public String toString() {
+		return super.toString() + " (distance " + distance + ")";
 	}
 }
 
