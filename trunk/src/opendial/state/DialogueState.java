@@ -214,8 +214,8 @@ public class DialogueState {
 			}	
 			else if (planner.isPlanningNeeded()) {	
 				if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u")) { try {
-				log.debug("interpreted a_u : " + getContent("a_u", true));
-				log.debug("interpreted i_u (before action) : " +  getContent("i_u", true));
+				log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
+				log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
 				}
 				catch (DialException e) { e.printStackTrace(); } }
 				planner.run();

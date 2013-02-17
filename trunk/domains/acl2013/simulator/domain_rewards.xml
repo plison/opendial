@@ -64,20 +64,6 @@
 			</condition>
 			<effect util="3"/>
 		</case>
-		<case>
-			<condition>
-				<if var="i_u" value="PickUp(*)" />
-				<if var="a_m" value="Do({i_u})" />
-			</condition>
-			<effect util="-3"/>
-		</case>
-		<case>
-			<condition>
-				<if var="i_u" value="PickUp(*)" />
-				<if var="a_m" value="Ground({i_u})" />
-			</condition>
-			<effect util="-1"/>
-		</case>
 	</rule>
 	
 	
@@ -104,20 +90,6 @@
 				<if var="a_m" value="Excuse(DoNotCarryObject)" />
 			</condition>
 			<effect util="3"/>
-		</case>
-		<case>
-			<condition operator="and">
-				<if var="i_u" value="Release(*)" />
-				<if var="a_m" value="Do({i_u})" />
-			</condition>
-			<effect util="-3"/>
-		</case>	
-			<case>
-			<condition operator="and">
-				<if var="i_u" value="Release(*)" />
-				<if var="a_m" value="Ground({i_u})" />
-			</condition>
-			<effect util="-1"/>
 		</case>		
 	</rule>
 	
@@ -135,7 +107,7 @@
 				<if var="a_m" value="Ground(*)" />
 				<if var="a_m" value="Ground({i_u})" relation="!=" />			
 			</condition>
-			<effect util="-1"/>
+			<effect util="-1.0"/>
 		</case>
 		<case>
 			<condition>
