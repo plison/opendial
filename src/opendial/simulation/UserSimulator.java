@@ -153,7 +153,7 @@ public class UserSimulator extends Thread {
 		
 			realState.addContent(evidence, "evidence");
 			
-			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
+			log.debug("==> Adding observation: " + obs.toString().replace("\n", ", "));
 			log.debug("waiting for system processing...");
 			
 		/**	log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());

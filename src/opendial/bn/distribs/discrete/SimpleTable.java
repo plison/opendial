@@ -584,7 +584,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 			str += "P("+head + "):=" + prob + "\n";
 		}
 
-		return str;
+		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
 	}
 
 
