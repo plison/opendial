@@ -91,7 +91,7 @@ public class ForwardPlanner implements AnytimeProcess {
 			double discountFactor = Settings.getInstance().planning.getDiscountFactor(actionNodes);
 
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
-	//		log.debug("Q values: " + qValues);
+			log.debug("Q values: " + qValues);
 			Assignment bestAction = qValues.getBest();
 	//		log.debug("best action: " + bestAction);
 

@@ -165,7 +165,7 @@ public class UserSimulator extends Thread {
 
 			nbTurns++;
 			
-			if (nbTurns == 10) {
+			if (nbTurns == 1) {
 				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
 				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
 				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
