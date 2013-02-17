@@ -161,12 +161,9 @@ public class UserSimulator extends Thread {
 			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
 			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
 
-			systemState.addContent(realState.getContent("a_uother", true), "sim1");
-
-			log.debug("adding observation2: " + obs.toString().replace("\n", ", "));
-			log.debug("theta descendants2: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
 			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			
 			systemState.addContent(obs, "sim2");
+			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
 			nbTurns++;
 			
