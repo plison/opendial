@@ -494,10 +494,7 @@ public class BNetwork implements IdChangeListener {
 
 		for (String var : variablesToRetain) {
 			if (!network.hasNode(var)) {
-				if (getNode(var) instanceof ProbabilityRuleNode) {
-					network.addNode(new ProbabilityRuleNode(((ProbabilityRuleNode)getNode(var)).getRule()));
-				}
-				else if (getNode(var) instanceof ChanceNode) {
+				if (getNode(var) instanceof ChanceNode) {
 					network.addNode(new ChanceNode(var));
 				}
 				else if (getNode(var) instanceof UtilityNode 

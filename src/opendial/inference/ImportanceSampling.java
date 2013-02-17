@@ -156,7 +156,11 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
 		for (String nodeId : identicalNodes) {
 			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
-			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
+			Collection<BNode> inputNodesInReduced = reduced.getNode(nodeId).getInputNodes();
+			Collection<BNode> outputNodesInReduced = reduced.getNode(nodeId).getOutputNodes();
+			reduced.replaceNode(originalNode.copy());
+			reduced.getNode(nodeId).addInputNodes(inputNodesInReduced);
+			reduced.getNode(nodeId).addOutputNodes(outputNodesInReduced);
 			query.removeQueryVar(nodeId);
 		}  
 				
