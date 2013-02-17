@@ -26,7 +26,7 @@
 
 	<rule>
 		<case>
-			<condition>
+			<condition operator="or">
 				<if var="floor" value="start" />
 			</condition>
 			<effect prob="theta_1[0]">

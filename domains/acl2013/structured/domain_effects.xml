@@ -69,14 +69,10 @@
 			</effect>
 		</case>
 		<case>
-			<condition operator="and">
-				<if var="a_m" value="None" />
-				<if var="prev(a_m)" value="None" />
+			<condition>
+				<if var="i_u" value="None" />
 			</condition>
-			<effect prob="0.3">
-				<set var="floor" value="start" />
-			</effect>
-			<effect prob="0.7">
+			<effect prob="1.0">
 				<set var="floor" value="start" />
 			</effect>
 		</case>
