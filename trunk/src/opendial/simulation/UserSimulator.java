@@ -121,15 +121,7 @@ public class UserSimulator extends Thread {
 
 	public void performTurn() {
 
-		try {
-			log.debug("--------");
-			
-			if (systemState.getNetwork().hasChanceNode("i_u")) {
-				log.debug("i_u: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
-			}
-			if (systemState.getNetwork().hasChanceNode("a_u")) {
-				log.debug("a_u: " + systemState.getContent("a_u", true).toString().replace("\n", ", "));
-			}
+		try {	
 			
 			Assignment action = getSystemAction();
 			log.debug("system action: " + action);
@@ -137,6 +129,9 @@ public class UserSimulator extends Thread {
 			
 			log.debug("reward value: " + returnValue);
 			accReturn += returnValue;				
+			
+			log.debug("--------");
+
 			
 			Assignment sampled = addSystemAction(action);
 			log.debug("sampled elements after action: " + sampled);
@@ -166,9 +161,17 @@ public class UserSimulator extends Thread {
 			log.debug("TESTING 2 " + systemState.getContent("a_u^p", true));
 			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			*/
 		
-		systemState.addContent(obs, "sim2");
+			systemState.addContent(obs, "sim2");
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
+			
+			if (systemState.getNetwork().hasChanceNode("i_u")) {
+				log.debug("i_u after observation: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
+			}
+			if (systemState.getNetwork().hasChanceNode("a_u")) {
+				log.debug("a_u: " + systemState.getContent("a_u", true).toString().replace("\n", ", "));
+			}
+			
 			nbTurns++;
 			
 			if (nbTurns == 10) {
