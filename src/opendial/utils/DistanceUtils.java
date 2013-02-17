@@ -114,12 +114,14 @@ public class DistanceUtils {
 			}
 			
 			Assignment a = element.getTrimmedInverse(head.getVariables());
-			WeightedAssignment wa = new WeightedAssignment(a, totalDistance);
+			Assignment b = element.getTrimmed(head.getVariables());
+			WeightedAssignment wa = new WeightedAssignment(a, b, totalDistance);
 			values.add(wa);
 		}
 		
 		Collections.sort(values);
 		int nbToSelect = (values.size() > number)? number : values.size();
+
 		return values.subList(0, nbToSelect);
 	}
 		
@@ -232,11 +234,17 @@ public class DistanceUtils {
 
 final class WeightedAssignment extends Assignment implements Comparable<WeightedAssignment> {
 	
+	Assignment b;
 	double distance;
 	
-	public WeightedAssignment (Assignment a, double distance) {
+	public WeightedAssignment (Assignment a, Assignment b, double distance) {
 		super(a);
+		this.b = b;
 		this.distance = distance;
+	}
+	
+	public Assignment getB() {
+		return b;
 	}
 	
 	public double getDistance() {

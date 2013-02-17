@@ -102,7 +102,6 @@ public class ChanceNode extends BNode {
 			log.debug("Distribution for " + nodeId + 
 					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
 					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
-			System.exit(0);
 		}
 		if (!distrib.isWellFormed()) {
 			throw new DialException("Distribution for node " + nodeId + " (type " +
@@ -458,6 +457,8 @@ public class ChanceNode extends BNode {
 				for (Assignment head : table.getRows()) {
 					if (!head.containsVar(nodeId)) {
 						log.warning("head assignment " + head + " should contain " + nodeId);
+						log.debug("condition was " + condition);
+						log.debug("distrib is " + distrib);
 					}
 					else {
 						Value value = head.getValue(nodeId);

@@ -180,6 +180,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		Map<String,Set<Value>> possibleCondPairs = 
 			CombinatoricsUtils.extractPossiblePairs(table.keySet());
 		
+		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 100) {
 		// Note that here, we only check on the possible assignments in the distribution itself
 		// but a better way to do it would be to have it on the actual values given by the input nodes
 		// but would require the distribution to have some access to it.
@@ -194,6 +195,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			log.debug("possible conditional assignments: " + possibleCondAssignments);
 			log.debug("actual assignments: "+ table.keySet());
 			return false;
+		}
 		}
 
 		for (Assignment condition : table.keySet()) {

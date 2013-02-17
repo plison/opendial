@@ -442,13 +442,13 @@ public class BNetwork implements IdChangeListener {
 	 * @param baseId the base identifier
 	 * @return the unique node identifier, with baseVar+counter
 	 */
-	public String getUniqueNodeId(String baseId) {
+	public synchronized String getUniqueNodeId(String baseId) {
 		if (!nodes.containsKey(baseId)) {
 			return baseId;
 		}
 		else {
 			int counter = 2;
-			while (nodes.containsKey(baseId+counter)) {
+			while (nodes.containsKey(baseId +"^" + counter)) {
 				counter++;
 			}
 			return baseId +"^" +counter;
