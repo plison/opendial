@@ -156,12 +156,14 @@ public class UserSimulator extends Thread {
 			evidence.addPair("perceived", sampled.getValue("perceived"));
 			evidence.addPair("carried", sampled.getValue("carried"));
 			realState.addContent(evidence, "evidence");
-
+			
 			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
 			systemState.addContent(obs, "sim2");
 
+
+			
 			nbTurns++;
 			
 			if (nbTurns == 10) {

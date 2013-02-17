@@ -122,10 +122,18 @@ public class StatePruner implements Runnable {
 		Set<String> nodesToRemove = new HashSet<String>();
 		for (BNode node : state.getNetwork().getNodes()) {
 
-			if (node instanceof ActionNode || node instanceof UtilityNode 
-					|| node instanceof ProbabilityRuleNode  
-					|| state.getEvidence().containsVar(node.getId())) {
+			if (node instanceof ActionNode || node instanceof UtilityNode  || 
+					state.getEvidence().containsVar(node.getId())) {
 				nodesToRemove.add(node.getId());
+			}
+			else if (node instanceof ProbabilityRuleNode) {
+				if (!node.getOutputNodesIds().isEmpty() && node.getOutputNodesIds().iterator().next().contains("'") && 
+						!((ProbabilityRuleNode)node).getRule().getParameterNodes().isEmpty()) {
+					nodesToKeep.add(node.getId());
+				}
+				else {
+					nodesToRemove.add(node.getId());					
+				}
 			}
 
 			// removing the prediction nodes once they have been used
