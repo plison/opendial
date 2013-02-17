@@ -158,9 +158,10 @@ public class UserSimulator extends Thread {
 		
 			realState.addContent(evidence, "evidence");
 			
-			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 
+			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
+			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
 			systemState.addContent(obs, "sim2");
 
 			nbTurns++;
