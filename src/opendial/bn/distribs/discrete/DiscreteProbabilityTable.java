@@ -175,7 +175,7 @@ implements DiscreteProbDistribution {
 	public void fillConditionalHoles() {
 		Map<String,Set<Value>> possibleCondPairs = 
 				CombinatoricsUtils.extractPossiblePairs(table.keySet());
-		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 100)  {				
+		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 400)  {				
 			Set<Assignment> possibleCondAssignments = 
 					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 			possibleCondAssignments.remove(new Assignment());
@@ -306,9 +306,9 @@ implements DiscreteProbDistribution {
 			}	
 		}
 		SimpleTable defaultTable = new SimpleTable();
-		if (!table.isEmpty()) {
+	/**	if (!table.isEmpty()) {
 			defaultTable.addRow(Assignment.createDefault(table.values().iterator().next().getHeadVariables()), 1.0);
-		}
+		} */
 		return defaultTable;
 	}
 

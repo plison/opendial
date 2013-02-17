@@ -134,14 +134,14 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			}	
 		}
 		
-	//	log.debug("could not find the corresponding condition for " + condition + 
-	//			" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+		log.debug("could not find the corresponding condition for " + condition + 
+				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
 
 		
 		Assignment defaultA = new Assignment();
-		if (!table.isEmpty()) {
+	/**	if (!table.isEmpty()) {
 			defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());
-		}
+		} */
 		return defaultA;
 				
 	}
