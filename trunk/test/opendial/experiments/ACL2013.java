@@ -52,7 +52,7 @@ public class ACL2013 {
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
 		system.addParameters(params);
-	//	system.attachSimulator(simulatorDomain);
+		system.attachSimulator(simulatorDomain);
 		system.startSystem(); 
 		
 		}
