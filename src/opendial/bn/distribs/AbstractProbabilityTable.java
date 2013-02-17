@@ -31,6 +31,7 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.DistanceUtils;
@@ -132,9 +133,17 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 				return table.get(trimmed).sample(new Assignment());
 			}	
 		}
-		log.debug("could not find the corresponding condition for " + condition + 
-				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
-		return new Assignment();
+		
+	//	log.debug("could not find the corresponding condition for " + condition + 
+	//			" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+
+		
+		Assignment defaultA = new Assignment();
+		if (!table.isEmpty()) {
+			defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());
+		}
+		return defaultA;
+				
 	}
 	
 
