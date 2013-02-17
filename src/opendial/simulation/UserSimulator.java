@@ -160,7 +160,9 @@ public class UserSimulator extends Thread {
 			
 			log.debug("adding observation: " + obs.toString().replace("\n", ", "));
 			log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
-
+			systemState.addEvidence(new Assignment("theta_1", "(1.0, 0, 0, 0, 0, 0, 0, 0)"));
+			log.debug("TESTING " + systemState.getContent("i_u", true));
+			log.debug("TESTING 2 " + systemState.getContent("a_u^p", true));
 			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));			
 			systemState.addContent(obs, "sim2");
 			systemState.addContent(realState.getContent("a_uother", true), "sim1");
@@ -183,6 +185,7 @@ public class UserSimulator extends Thread {
 				nbTurns = 0;
 			}
 			
+			System.exit(0);
 		}
 		catch (Exception e) {
 			log.warning("could not update simulator: " + e.toString());
