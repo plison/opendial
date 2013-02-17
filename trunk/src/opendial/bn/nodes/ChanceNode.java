@@ -458,7 +458,7 @@ public class ChanceNode extends BNode {
 					if (!head.containsVar(nodeId)) {
 						log.warning("head assignment " + head + " should contain " + nodeId);
 						log.debug("condition was " + condition);
-						log.debug("distrib is " + distrib);
+						log.debug("distrib is " + distrib.getClass().getName() + " " + distrib);
 					}
 					else {
 						Value value = head.getValue(nodeId);
