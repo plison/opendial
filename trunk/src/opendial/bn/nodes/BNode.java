@@ -749,6 +749,19 @@ public abstract class BNode implements Comparable<BNode> {
 		return false;
 	}
 
+	public void addInputNodes(Collection<BNode> inputNodes) throws DialException {
+		for (BNode node : inputNodes) {
+			addInputNode(node);
+		}
+	}
+	
+	public void addOutputNodes(Collection<BNode> outputNodes) throws DialException {
+		for (BNode node : outputNodes) {
+			node.addInputNode(this);
+		}
+	}
+	
+
 
 
 
