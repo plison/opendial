@@ -171,17 +171,20 @@ public class SampleCollector extends Thread {
 	
 	
 	
-	private Assignment getComboSamples() {
+	private Assignment getComboSamples() throws DialException {
 		
-		Assignment comboSample = new Assignment();
+		Assignment comboSample = new Assignment(evidence);
 		
-		for (ChanceNode n : network.getChanceNodes()) {
-			if (n.getDistrib() instanceof DepEmpiricalDistribution 
-					&& !evidence.containsVar(n.getId()) 
-					&& !evidence.containsAVar(n.getAncestorIds())) {
-				comboSample.addAssignment(((DepEmpiricalDistribution)n.getDistrib()).sample());
+		for (BNode n : sortedNodes) {
+			if (n instanceof ChanceNode && ((ChanceNode)n).getDistrib() 
+					instanceof DepEmpiricalDistribution) {
+				Assignment sample = ((ChanceNode)n).getDistrib().sample(comboSample);
+				comboSample.addAssignment(sample);
 			}
 		}
+	/**	if (!comboSample.isEmpty()) {
+			log.debug("combo sample: " + comboSample);
+		} */
 		return comboSample;
 	}
 

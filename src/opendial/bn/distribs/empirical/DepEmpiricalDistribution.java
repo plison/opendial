@@ -156,9 +156,26 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public Assignment sample(Assignment condition) {
-
+		
 		Assignment trimmed = condition.getTrimmed(condVars);
 
+		if (trimmed.isEmpty() && !samples.isEmpty()) {
+			int selection = sampler.nextInt(samples.size());
+			Assignment selected = samples.get(selection);
+			return selected;
+		}
+		else if (trimmed.isDiscrete()) {
+			List<Assignment> relevantSamples = new ArrayList<Assignment>();
+			for (Assignment a : samples) {
+				if (a.consistentWith(condition)) {
+					relevantSamples.add(a);
+				}
+			}
+			int selection = sampler.nextInt(relevantSamples.size());
+			Assignment selected = relevantSamples.get(selection);
+			return selected;
+		}
+		
 		int poolSize = (samples.size() > 20)? samples.size()/20 : samples.size();
 		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		if (!closeValues.isEmpty()) {

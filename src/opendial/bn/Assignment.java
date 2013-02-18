@@ -31,8 +31,10 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import opendial.arch.Logger;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.utils.StringUtils;
 
 /**
@@ -444,6 +446,12 @@ public class Assignment {
 		}
 	}
 	
+
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+
 	
 	/**
 	 * Returns a new assignment with all the accessory specifiers such as primes,
@@ -468,13 +476,6 @@ public class Assignment {
 	}
 	
 	 
-
-	// ===================================
-	//  GETTERS
-	// ===================================
-
-
-	
 	/**
 	 * Returns whether the assignment is empty
 	 */
@@ -761,6 +762,18 @@ public class Assignment {
 		return true;
 	}
 
+
+
+	public boolean isDiscrete() {
+		for (String var : map.keySet()) {
+			Value val = map.get(var);
+			if (val instanceof DoubleVal || val instanceof VectorVal) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -839,6 +852,7 @@ public class Assignment {
 	private void resetHashCodeCache() {
 		hashCodeCache = Integer.MAX_VALUE;;
 	}
+
 
 
 	
