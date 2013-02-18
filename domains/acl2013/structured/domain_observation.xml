@@ -11,6 +11,9 @@
 				<set var="a_u" var2="a_u0^p" />
 			</effect>
 			<effect prob="theta_6[1]">
+				<set var="a_u" var2="a_uother" />
+			</effect>
+			<effect prob="theta_6[2]">
 				<clear var="a_u" />
 			</effect>
 		</case>
