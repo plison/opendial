@@ -127,7 +127,7 @@
 			</case>
 			<case>
 				<condition operator="or">
-					<if var="var1" value="value1" relation="!" />
+					<if var="var1" value="value1" relation="!=" />
 					<if var="var2" value="{localvar}, finally" relation="in" />
 				</condition>
 				<effect>

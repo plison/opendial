@@ -26,7 +26,7 @@
 
 	<rule>
 		<case>
-			<condition operator="or">
+			<condition>
 				<if var="floor" value="start" />
 			</condition>
 			<effect prob="theta_1[0]">
@@ -56,14 +56,23 @@
 	
 	
 	<rule>
-		<quantifier id="X" />
 		<case>
 			<condition>
 				<if var="floor" value="start" />
-				<if var="carried" value="{X}" relation="contains" />
+				<if var="carried" value="o1" relation="contains" />
 			</condition>
 			<effect prob="theta_2[0]">
-				<set var="i_u" value="Release({X})" />
+				<set var="i_u" value="Release(o1)" />
+			</effect>
+			<effect prob="theta_2[1]" />
+		</case>
+			<case>
+			<condition>
+				<if var="floor" value="start" />
+				<if var="carried" value="o2" relation="contains" />
+			</condition>
+			<effect prob="theta_2[0]">
+				<set var="i_u" value="Release(o2)" />
 			</effect>
 			<effect prob="theta_2[1]" />
 		</case>
@@ -72,7 +81,7 @@
 				<if var="floor" value="start" />
 			</condition>
 			<effect prob="theta_3[0]">
-				<set var="i_u" value="Release({X})" />
+				<set var="i_u" value="Release(o1)" />
 			</effect>
 			<effect prob="theta_3[1]" />
 		</case>
