@@ -124,17 +124,8 @@ public class StatePruner implements Runnable {
 		for (BNode node : state.getNetwork().getNodes()) {
 
 			if (node instanceof ActionNode || node instanceof UtilityNode  || 
-					state.getEvidence().containsVar(node.getId())) {
+					state.getEvidence().containsVar(node.getId()) || node instanceof ProbabilityRuleNode) {
 				nodesToRemove.add(node.getId());
-			}
-			else if (node instanceof ProbabilityRuleNode) {
-				if (!node.getOutputNodesIds().isEmpty() && node.getOutputNodesIds().iterator().next().contains("'") && 
-						!((ProbabilityRuleNode)node).getRule().getParameterNodes().isEmpty()) {
-					nodesToKeep.add(node.getId());
-				}
-				else {
-					nodesToRemove.add(node.getId());					
-				}
 			}
 
 			// removing the prediction nodes once they have been used
@@ -152,6 +143,7 @@ public class StatePruner implements Runnable {
 			}
 
 		}
+		
 
 		//	log.debug("keeping : " + nodesToKeep);
 		//	log.debug("removing : " + nodesToRemove);

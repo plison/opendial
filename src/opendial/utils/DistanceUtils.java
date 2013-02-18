@@ -110,7 +110,9 @@ public class DistanceUtils {
 				else if (!headVal.equals(elVal)) {
 					continue outer;
 				}
-
+				else if (totalDistance > MIN_PROXIMITY_DISTANCE) {
+					continue outer;
+				}
 			}
 			
 			Assignment a = element.getTrimmedInverse(head.getVariables());

@@ -362,7 +362,6 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the set of dependencies for the given variable
 	 */
 	public Set<String> getAncestorsIds(Collection<String> variablesToRetain) {
-
 		Set<String> ancestors = new HashSet<String>();
 
 		Stack<BNode> nodesToProcess = new Stack<BNode>();
@@ -376,7 +375,6 @@ public abstract class BNode implements Comparable<BNode> {
 				nodesToProcess.addAll(inputNode.getInputNodes());
 			}
 		}
-
 		return ancestors;
 	}
 

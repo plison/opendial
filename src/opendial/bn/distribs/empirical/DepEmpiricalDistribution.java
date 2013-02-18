@@ -131,6 +131,26 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
 	 * 
+	 * @param condition the conditional assignment (ignored here)
+	 * @return the selected sample
+	 */
+	public Assignment sample() {
+		if (!samples.isEmpty()) {
+			int selection = sampler.nextInt(samples.size());
+			Assignment selected = samples.get(selection);
+			return selected;
+		}
+		else {
+			log.warning("distribution has no samples");
+			return new Assignment();
+		}
+	}
+	
+
+	/**
+	 * Samples from the distribution.  In this case, simply selects one
+	 * arbitrary sample out of the set defining the distribution
+	 * 
 	 * @param condition the conditional assignment 
 	 * @return the selected sample
 	 */
@@ -139,7 +159,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 
 		Assignment trimmed = condition.getTrimmed(condVars);
 
-		int poolSize = (samples.size() > 10)? samples.size()/10 : samples.size();
+		int poolSize = (samples.size() > 20)? samples.size()/20 : samples.size();
 		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		if (!closeValues.isEmpty()) {
 			int selection = sampler.nextInt(closeValues.size());

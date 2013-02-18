@@ -152,7 +152,7 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 		
 		// creating the reduced copy
 		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
-		
+
 		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
 		for (String nodeId : identicalNodes) {
 			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);

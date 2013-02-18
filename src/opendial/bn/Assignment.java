@@ -527,6 +527,16 @@ public class Assignment {
 	}
 	
 	
+	public boolean containsAVar(Collection<String> vars) {
+		for (String var : vars) {
+			if (map.containsKey(var)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	
 	/**
 	 * Returns a trimmed version of the assignment, where only the

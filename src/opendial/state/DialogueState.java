@@ -41,6 +41,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
 import opendial.gui.GUIFrame;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
@@ -214,12 +215,10 @@ public class DialogueState {
 					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib());
 					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib().getClass());
 					log.debug("output nodes for theta_1: " + network.getChanceNode("theta_1").getOutputNodesIds());
-					if (!network.getChanceNode("theta_1").getOutputNodesIds().isEmpty()) {
-					log.debug("distrib output nodes for theta_1: " + network.getChanceNode(network.getChanceNode("theta_1").
-							getOutputNodesIds().iterator().next()).getDistrib());
-					log.debug("distrib output nodes for theta_1: " + network.getChanceNode(network.getChanceNode("theta_1").
-							getOutputNodesIds().iterator().next()).getDistrib().getClass());
-					} }  } catch (Exception e) { e.printStackTrace(); } */
+					for (BNode oNode : network.getChanceNode("theta_1").getOutputNodes()) {
+						log.debug("distrib output nodes for theta_1: " + ((ChanceNode)oNode).getDistrib());
+						log.debug("distrib output nodes for theta_1: " + ((ChanceNode)oNode).getDistrib().getClass());
+					} }  } catch (Exception e) { e.printStackTrace(); }  */
 				
 					pruner.run();
 					toContinue = true;
@@ -229,7 +228,7 @@ public class DialogueState {
 				log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
 				log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
 				}
-				catch (DialException e) { e.printStackTrace(); } } 
+				catch (DialException e) { e.printStackTrace(); } }  
 				planner.run();
 				toContinue = true;
 			}	
