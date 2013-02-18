@@ -182,9 +182,9 @@ public class UserSimulator extends Thread {
 		
 			systemState.addContent(obs, "sim1");
 			systemState.addContent(realState.getContent("a_uother", true), "sim2");
-
 			if (systemState.getNetwork().hasChanceNode("i_u")) {
-				log.debug("i_u after system action: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
+				log.debug("i_u after system action: " + systemState.getContent("i_u", true)
+						.toString().replace("\n", ", "));
 			}
 			
 		}
