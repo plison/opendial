@@ -171,9 +171,11 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 					relevantSamples.add(a);
 				}
 			}
+			if (!relevantSamples.isEmpty()) {
 			int selection = sampler.nextInt(relevantSamples.size());
 			Assignment selected = relevantSamples.get(selection);
 			return selected;
+			}
 		}
 		
 		int poolSize = (samples.size() > 20)? samples.size()/20 : samples.size();
