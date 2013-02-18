@@ -14,6 +14,7 @@
 			<effect prob="theta_7[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_7[2]"/>
 		</case>
 		<case>
 			<condition>
@@ -25,8 +26,12 @@
 				<set var="a_u0" value="Disconfirm" />
 			</effect>
 			<effect prob="theta_8[1]">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="theta_8[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_8[3]"/>			
 		</case>
 		<case>
 			<condition>
@@ -37,8 +42,12 @@
 				<set var="a_u0" value="Confirm" />
 			</effect>
 			<effect prob="theta_9[1]">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="theta_9[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_9[3]"/>
 		</case>
 		<case>
 			<condition>
@@ -52,6 +61,7 @@
 			<effect prob="theta_10[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_10[2]"/>
 		</case>
 		<case>
 			<condition>
@@ -62,19 +72,21 @@
 				<set var="a_u0" value="RepeatLast" />
 			</effect>
 			<effect prob="theta_11[1]">
-				<set var="a_u0" var2="i_u" />
+				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="theta_11[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_11[3]"/>
 		</case>
 		<case>
 			<effect prob="theta_12[0]">
-				<set var="a_u0" var2="i_u" />
+				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="theta_12[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
+			<effect prob="theta_12[2]"/>
 		</case>
 	</rule>
 

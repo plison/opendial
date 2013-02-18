@@ -2,15 +2,7 @@
 
 <model trigger="a_m" type="decision">
 
-	<rule>
-		<case>
-			<condition>
-				<if var="a_m" value="None"/>
-			</condition>
-			<effect util="-0.5"/>
-		</case>
-	</rule>
-	
+
 	
 	<rule id="movements">
 		<case>
@@ -91,6 +83,13 @@
 			</condition>
 			<effect util="3"/>
 		</case>		
+		<case>
+			<condition operator="and">
+				<if var="a_u" value="None" relation="!="/>
+				<if var="a_m" value="None"/>
+			</condition>
+			<effect util="-1.0"/>
+		</case>
 	</rule>
 	
 

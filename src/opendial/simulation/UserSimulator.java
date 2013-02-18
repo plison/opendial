@@ -130,6 +130,24 @@ public class UserSimulator extends Thread {
 			log.debug("reward value: " + returnValue);
 			accReturn += returnValue;				
 			
+			nbTurns++;
+			
+			if (nbTurns == 5) {
+				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
+				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
+				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
+				log.debug("===> estimate for theta_4: " + systemState.getContent("theta_4", true));
+				log.debug("===> estimate for theta_5: " + systemState.getContent("theta_5", true));
+				log.debug("===> estimate for theta_6: " + systemState.getContent("theta_6", true));
+				log.debug("===> estimate for theta_7: " + systemState.getContent("theta_7", true));
+				log.debug("===> estimate for theta_8: " + systemState.getContent("theta_8", true));
+				log.debug("===> estimate for theta_9: " + systemState.getContent("theta_9", true));
+				log.debug("===> estimate for theta_10: " + systemState.getContent("theta_10", true));
+				log.debug("===> estimate for theta_11: " + systemState.getContent("theta_11", true));
+				log.debug("===> estimate for theta_12: " + systemState.getContent("theta_12", true));
+				nbTurns = 0;
+			}
+			
 			log.debug("--------");
 
 			
@@ -167,24 +185,6 @@ public class UserSimulator extends Thread {
 			
 			if (systemState.getNetwork().hasChanceNode("i_u")) {
 				log.debug("i_u after system action: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));
-			}
-			
-			nbTurns++;
-			
-			if (nbTurns == 5) {
-				log.debug("===> estimate for theta_1: " + systemState.getContent("theta_1", true));
-				log.debug("===> estimate for theta_2: " + systemState.getContent("theta_2", true));
-				log.debug("===> estimate for theta_3: " + systemState.getContent("theta_3", true));
-				log.debug("===> estimate for theta_4: " + systemState.getContent("theta_4", true));
-				log.debug("===> estimate for theta_5: " + systemState.getContent("theta_5", true));
-				log.debug("===> estimate for theta_6: " + systemState.getContent("theta_6", true));
-				log.debug("===> estimate for theta_7: " + systemState.getContent("theta_7", true));
-				log.debug("===> estimate for theta_8: " + systemState.getContent("theta_8", true));
-				log.debug("===> estimate for theta_9: " + systemState.getContent("theta_9", true));
-				log.debug("===> estimate for theta_10: " + systemState.getContent("theta_10", true));
-				log.debug("===> estimate for theta_11: " + systemState.getContent("theta_11", true));
-				log.debug("===> estimate for theta_12: " + systemState.getContent("theta_12", true));
-				nbTurns = 0;
 			}
 			
 		}
