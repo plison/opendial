@@ -181,7 +181,6 @@ public class UserSimulator extends Thread {
 			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));	*/		
 		
 			systemState.addContent(obs, "sim2");
-			systemState.addContent(realState.getContent("a_uother", true), "sim1");
 			
 			if (systemState.getNetwork().hasChanceNode("i_u")) {
 				log.debug("i_u after system action: " + systemState.getContent("i_u", true).toString().replace("\n", ", "));

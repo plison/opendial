@@ -209,15 +209,27 @@ public class DialogueState {
 				toContinue = true;
 			}
 			else if (pruner.isPruningNeeded()) {
+			/** try {	if (network.hasChanceNode("theta_1") && !isFictive()) { 
+					log.debug("EVIDENCE " + evidence);
+					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib());
+					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib().getClass());
+					log.debug("output nodes for theta_1: " + network.getChanceNode("theta_1").getOutputNodesIds());
+					if (!network.getChanceNode("theta_1").getOutputNodesIds().isEmpty()) {
+					log.debug("distrib output nodes for theta_1: " + network.getChanceNode(network.getChanceNode("theta_1").
+							getOutputNodesIds().iterator().next()).getDistrib());
+					log.debug("distrib output nodes for theta_1: " + network.getChanceNode(network.getChanceNode("theta_1").
+							getOutputNodesIds().iterator().next()).getDistrib().getClass());
+					} }  } catch (Exception e) { e.printStackTrace(); } */
+				
 					pruner.run();
 					toContinue = true;
 			}	
 			else if (planner.isPlanningNeeded()) {	
-				if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u")) { try {
+				if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { try {
 				log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
 				log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
 				}
-				catch (DialException e) { e.printStackTrace(); } }
+				catch (DialException e) { e.printStackTrace(); } } 
 				planner.run();
 				toContinue = true;
 			}	
