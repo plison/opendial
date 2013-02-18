@@ -53,19 +53,6 @@
 			<effect prob="theta_1[7]" />
 		</case>
 	</rule>
-
-	<rule>
-	<case>
-		<condition>
-				<if var="floor" value="start" />
-				<if var="carried" value="[]"/>
-			</condition>
-			<effect prob="theta_3[0]">
-				<set var="i_u" value="Release({X})" />
-			</effect>
-			<effect prob="theta_3[1]" />
-		</case>
-	</rule>
 	
 	
 	<rule>
