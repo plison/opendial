@@ -217,7 +217,7 @@ public class UserSimulator extends Thread {
 		List<BNode> sequence = realState.getNetwork().getSortedNodes();
 		Collections.reverse(sequence);
 		for (BNode n : sequence) {
-			if (n instanceof ChanceNode && !n.getId().equals("a_u^p") && !n.getOutputNodesIds().contains("a_u^p")) {
+			if (n instanceof ChanceNode && !n.getId().equals("a_u^p")) {
 				Value val = ((ChanceNode)n).sample(sampled);
 				sampled.addPair(n.getId(), val);
 			}	

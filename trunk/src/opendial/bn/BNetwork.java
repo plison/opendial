@@ -503,9 +503,10 @@ public class BNetwork implements IdChangeListener {
 				}
 			}
 		}
-
+ 
 		for (String var : variablesToRetain) {
 			Set<String> ancestorIds = nodes.get(var).getAncestorsIds(variablesToRetain);
+
 			for (String inputDepId : ancestorIds) {
 				if (network.hasNode(inputDepId)) {
 					network.getNode(var).addInputNode(network.getNode(inputDepId));

@@ -126,4 +126,8 @@ public class WeightedSample {
 	public String toString() {
 		return sample + "(w=" + getWeight() + ", util=" + utility+")";
 	}
+
+	public void addAssign(Assignment newVals) {
+		sample.addAssignment(newVals);
+	}
 }

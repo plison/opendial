@@ -136,7 +136,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		
 		log.debug("could not find the corresponding condition for " + condition + 
 				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
-
+		log.debug("table: " + toString());
 		
 		Assignment defaultA = new Assignment();
 	/**	if (!table.isEmpty()) {

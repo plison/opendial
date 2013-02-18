@@ -153,7 +153,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		else {
 			eDistrib = new DepEmpiricalDistribution(Arrays.asList(node.getId()), node.getInputNodeIds());
 		}
-
+		
 		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
 		trimmedVariables.addAll(node.getInputNodeIds());
 
