@@ -63,6 +63,7 @@
 			<effect prob="0.09">
 				<set var="i_u" value="Release({X})" />
 			</effect>
+			<effect prob="0.91"/>
 		</case>
 	</rule>
 
@@ -78,6 +79,7 @@
 			<effect prob="0.085">
 				<set var="i_u" value="PickUp(o2)" />
 			</effect>
+			<effect prob="0.83"/>
 		</case>
 	</rule>
 
