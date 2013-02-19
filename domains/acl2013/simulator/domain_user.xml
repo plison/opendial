@@ -8,7 +8,7 @@
 				<if var="a_m" value="Ground({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
-			<effect>
+			<effect prob="1.0">
 				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
@@ -52,7 +52,7 @@
 			<effect prob="0.98">
 				<set var="a_u0" value="Disconfirm" />
 			</effect>
-			<effect prob="0.98">
+			<effect prob="0.02">
 				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
@@ -65,12 +65,12 @@
 				<set var="a_u0" value="RepeatLast" />
 			</effect>
 			<effect prob="0.79">
-				<set var="a_u0" var2="i_u" />
+				<set var="a_u0" value="{i_u}" />
 			</effect>
 		</case>
 		<case>
 			<effect prob="0.985">
-				<set var="a_u0" var2="i_u" />
+				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="0.015">
 				<set var="a_u0" value="Nothing" />
