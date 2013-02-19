@@ -33,7 +33,7 @@
 				<set var="floor" value="start" />
 			</effect>
 		</case>
-				<case>
+		<case>
 			<condition operator="and">
 				<if var="a_m" value="Do({X})" />
 				<if var="i_u" value="{X}" relation="!="/>
