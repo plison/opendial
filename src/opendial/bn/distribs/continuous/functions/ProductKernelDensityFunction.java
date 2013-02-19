@@ -212,7 +212,8 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 			avgstd += std;
 		} 
 		s += DistanceUtils.shorten((avgstd / means.length));
-		return s + ") with " + points.size() + " kernels";
+		s += ") with " + points.size() + " kernels ";
+		return s;
 	}
 
 

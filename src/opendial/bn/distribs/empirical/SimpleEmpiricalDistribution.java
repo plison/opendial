@@ -67,6 +67,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 	Random sampler;
 
+	boolean cacheCreated = false;
 	DiscreteProbDistribution discreteCache;
 	ContinuousProbDistribution continuousCache;
 	
@@ -116,9 +117,10 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
+	 * @throws DialException 
 	 */
 	@Override
-	public Assignment sample(Assignment condition) {
+	public Assignment sample(Assignment condition) throws DialException {
 		return sample();
 	}
 
@@ -129,8 +131,18 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * 
 	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
+	 * @throws DialException 
 	 */
-	public Assignment sample() {
+	public Assignment sample() throws DialException {
+		
+		if (!cacheCreated) {
+			try { computeContinuousCache(); } catch (DialException e) { }
+			cacheCreated = true;
+		}
+		if (continuousCache != null) {
+			return continuousCache.sample(new Assignment());
+		}
+		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
 			Assignment selected = samples.get(selection);
