@@ -180,7 +180,7 @@ public class SampleCollector extends Thread {
 		for (BNode n : sortedNodes) {
 			if (n instanceof ChanceNode && ((ChanceNode)n).getDistrib() 
 					instanceof DepEmpiricalDistribution) {
-				
+
 				Assignment discreteCondition = comboSample.getDiscrete();
 				Assignment sample = ((ChanceNode)n).getDistrib().sample(discreteCondition);
 	
