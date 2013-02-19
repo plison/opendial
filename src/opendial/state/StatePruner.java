@@ -163,6 +163,7 @@ public class StatePruner implements Runnable {
 		}
 
 		BNetwork reduced = inference.reduceNetwork(reductionQuery);
+
 		return reduced;
 
 	}
