@@ -72,6 +72,9 @@ public class UserSimulator extends Thread {
 	
 	double accReturn = 0;
 	
+	ProbDistribution asrScore;
+	ProbDistribution a_uother;
+	
 	public UserSimulator(DialogueState systemState, Domain domain) throws DialException {
 		this.systemState = systemState;
 		this.realState = domain.getInitialState().copy();
@@ -96,6 +99,12 @@ public class UserSimulator extends Thread {
 		realState.startState();
 
 		this.start();
+		
+		try {
+		asrScore = realState.getContent("asrScore", true);
+		a_uother = realState.getContent("a_uother", true);
+		}
+		catch (DialException e) { e.printStackTrace() ; }
 	}
 
 	
@@ -150,6 +159,8 @@ public class UserSimulator extends Thread {
 			
 			log.debug("--------");
 
+			realState.addContent(asrScore, "renew1");
+			realState.addContent(a_uother, "renew2");
 			Assignment sampled = addSystemAction(action);
 			log.debug("Elements sampled from simulation: " + sampled);
 			
@@ -169,7 +180,6 @@ public class UserSimulator extends Thread {
 			evidence.addPair("carried", sampled.getValue("carried"));
 		
 			realState.addContent(evidence, "evidence");
-			
 			log.debug("==> Adding observation: " + obs.toString().replace("\n", ", "));
 			log.debug("waiting for system processing...");
 			
