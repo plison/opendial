@@ -137,6 +137,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		double[] point = points.get(sampler.nextInt(points.size()));
 		double[] newPoint = new double[point.length];
 
+		// We also should ensure that the values remain > 0!!
 		if (!isBounded) {
 			for (int i = 0 ; i < newPoint.length ; i++) {
 				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
@@ -145,10 +146,20 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		else {
 			double sum = 0;
 			for (int i = 0 ; i < newPoint.length -1 ; i++) {
-				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+				while (newPoint[i] <= 0) {
+					newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+				}
 				sum += newPoint[i];
 			}
-			newPoint[newPoint.length-1] = 1.0 - sum;
+			if (sum >= 1.0) {
+				for (int i = 0 ; i < newPoint.length -1 ; i++) {
+					newPoint[i] = newPoint[i] / sum;
+				}
+				newPoint[newPoint.length-1] = 0.0;
+			}
+			else {
+				newPoint[newPoint.length-1] = 1.0 - sum;
+			}
 		}
 		return newPoint;
 	}
