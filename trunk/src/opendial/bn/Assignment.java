@@ -774,6 +774,20 @@ public class Assignment {
 		return true;
 	}
 	
+
+
+	public Assignment getDiscrete() {
+		Assignment discrete = new Assignment();
+		for (String var : map.keySet()) {
+			Value val = map.get(var);
+			if (!(val instanceof DoubleVal) && !(val instanceof VectorVal)) {
+				discrete.addPair(var, val);
+			}
+		}
+		return discrete;
+	}
+
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -852,7 +866,6 @@ public class Assignment {
 	private void resetHashCodeCache() {
 		hashCodeCache = Integer.MAX_VALUE;;
 	}
-
 
 
 	

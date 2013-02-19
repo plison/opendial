@@ -177,13 +177,12 @@ public class SampleCollector extends Thread {
 		Assignment comboSample = new Assignment(evidence);
 		
 		List<String> already = new LinkedList<String>();
-		List<BNode> sortedNodes2 = new LinkedList<BNode>(sortedNodes);
-		Collections.reverse(sortedNodes2);
-		for (BNode n : sortedNodes2) {
+		for (BNode n : sortedNodes) {
 			if (n instanceof ChanceNode && ((ChanceNode)n).getDistrib() 
 					instanceof DepEmpiricalDistribution) {
 				
-				Assignment sample = ((ChanceNode)n).getDistrib().sample(comboSample);
+				Assignment discreteCondition = comboSample.getDiscrete();
+				Assignment sample = ((ChanceNode)n).getDistrib().sample(discreteCondition);
 	
 				comboSample.addAssignment(sample);
 				already.add(n.getId());
