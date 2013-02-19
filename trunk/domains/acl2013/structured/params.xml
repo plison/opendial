@@ -38,7 +38,7 @@
 
 <variable id="theta_5">
 <distrib type="dirichlet">
-<alpha>5</alpha>
+<alpha>1</alpha>
 <alpha>1</alpha>
 <alpha>1</alpha>
 </distrib>

@@ -155,7 +155,7 @@
 			<if var="a_m" value="Confirm(*)" />
 			<if var="a_m" value="Confirm({i_u})" relation="!=" />			
 		</condition>
-			<effect util="-1.0"/>
+			<effect util="-0.8"/>
 		</case>
 	</rule>
 
