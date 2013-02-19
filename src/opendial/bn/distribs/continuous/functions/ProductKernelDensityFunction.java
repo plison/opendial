@@ -86,7 +86,6 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 			if (bandwidths[i] == 0.0) {
 				bandwidths[i] = 0.05;
 			}
-			bandwidths[i] = bandwidths[i] / 5.0;
 		}
 	}
 
@@ -148,7 +147,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 			double sum = 0;
 				for (int i = 0 ; i < newPoint.length; i++) {
 					while (newPoint[i] <= 0) {
-						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]/20.0).sample();
 					}
 					sum += newPoint[i];
 				}
