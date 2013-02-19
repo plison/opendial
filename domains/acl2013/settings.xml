@@ -9,7 +9,7 @@
 </planning>
 
 <gui>
-	<showgui>false</showgui>
+	<showgui>true</showgui>
 	<userUtterance>a_u</userUtterance>
 	<systemUtterance>a_m</systemUtterance>
  <toMonitor>p_m</toMonitor>
