@@ -145,20 +145,39 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		}
 		else {
 			double sum = 0;
-			for (int i = 0 ; i < newPoint.length -1 ; i++) {
-				while (newPoint[i] <= 0) {
-					newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-				}
-				sum += newPoint[i];
-			}
-			if (sum >= 1.0) {
+			if (sampler.nextBoolean()) {
 				for (int i = 0 ; i < newPoint.length -1 ; i++) {
-					newPoint[i] = newPoint[i] / sum;
+					while (newPoint[i] <= 0) {
+						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+					}
+					sum += newPoint[i];
 				}
-				newPoint[newPoint.length-1] = 0.0;
+				if (sum >= 1.0) {
+					for (int i = 0 ; i < newPoint.length -1 ; i++) {
+						newPoint[i] = newPoint[i] / sum;
+					}
+					newPoint[newPoint.length-1] = 0.0;
+				}
+				else {
+					newPoint[newPoint.length-1] = 1.0 - sum;
+				}
 			}
 			else {
-				newPoint[newPoint.length-1] = 1.0 - sum;
+				for (int i = newPoint.length -1 ; i > 0 ; i--) {
+					while (newPoint[i] <= 0) {
+						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+					}
+					sum += newPoint[i];
+				}
+				if (sum >= 1.0) {
+					for (int i = newPoint.length -1 ; i > 0 ; i--) {
+						newPoint[i] = newPoint[i] / sum;
+					}
+					newPoint[0] = 0.0;
+				}
+				else {
+					newPoint[0] = 1.0 - sum;
+				}
 			}
 		}
 		return newPoint;
