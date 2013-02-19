@@ -206,12 +206,13 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		for (double mean : means) {
 			s += DistanceUtils.shorten(mean) +", ";
 		}
-		s = s.substring(0, s.length()-2) + "])"; /** ,variance=[";
-		double[] variances = getVariance();
-		for (double variance : variances) {
-			s += MathUtils.shorten(variance) +", ";
-		} */
-		return s.substring(0, s.length()-2) + "]) with " + points.size() + " kernels";
+		s = s.substring(0, s.length()-2) + "]) , avg. std=";
+		double avgstd = 0.0;
+		for (double std : getStandardDeviations()) {
+			avgstd += std;
+		} 
+		s += (avgstd / means.length);
+		return s + ") with " + points.size() + " kernels";
 	}
 
 
