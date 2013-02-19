@@ -167,7 +167,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 		else if (trimmed.isDiscrete()) {
 			List<Assignment> relevantSamples = new ArrayList<Assignment>();
 			for (Assignment a : samples) {
-				if (a.consistentWith(condition)) {
+				if (a.consistentWith(trimmed)) {
 					relevantSamples.add(a);
 				}
 			}
@@ -177,7 +177,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			return selected;
 			}
 		}
-		
+	//	log.debug("for node " + samples.iterator().next().getTrimmedInverse(condVars) + "using distance for " + trimmed);
 		int poolSize = (samples.size() > 20)? samples.size()/20 : samples.size();
 		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		if (!closeValues.isEmpty()) {

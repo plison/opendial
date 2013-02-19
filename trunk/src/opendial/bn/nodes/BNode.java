@@ -21,6 +21,7 @@ package opendial.bn.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -379,6 +380,24 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 
+
+	public int getAncestorDistance(String ancestorId) {
+	
+		if (inputNodes.containsKey(ancestorId)) {
+			return 1;
+		}
+		else if (!inputNodes.isEmpty()){
+			List<Integer> distances = new LinkedList<Integer>();
+			for (BNode inputNode : inputNodes.values()) {
+				distances.add(1 + inputNode.getAncestorDistance(ancestorId));
+			}
+			Collections.sort(distances);
+			return distances.get(0);
+		}
+		return Integer.MAX_VALUE;
+	}
+	
+	
 	/**
 	 * Returns an ordered list of nodes which are the descendants
 	 * (via the relations) of the current node.  The ordering
@@ -758,7 +777,7 @@ public abstract class BNode implements Comparable<BNode> {
 			node.addInputNode(this);
 		}
 	}
-	
+
 
 
 

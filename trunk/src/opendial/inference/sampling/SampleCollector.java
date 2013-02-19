@@ -21,6 +21,7 @@ package opendial.inference.sampling;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import opendial.arch.DialException;
@@ -175,11 +176,17 @@ public class SampleCollector extends Thread {
 		
 		Assignment comboSample = new Assignment(evidence);
 		
-		for (BNode n : sortedNodes) {
+		List<String> already = new LinkedList<String>();
+		List<BNode> sortedNodes2 = new LinkedList<BNode>(sortedNodes);
+		Collections.reverse(sortedNodes2);
+		for (BNode n : sortedNodes2) {
 			if (n instanceof ChanceNode && ((ChanceNode)n).getDistrib() 
 					instanceof DepEmpiricalDistribution) {
+				
 				Assignment sample = ((ChanceNode)n).getDistrib().sample(comboSample);
+	
 				comboSample.addAssignment(sample);
+				already.add(n.getId());
 			}
 		}
 	/**	if (!comboSample.isEmpty()) {
