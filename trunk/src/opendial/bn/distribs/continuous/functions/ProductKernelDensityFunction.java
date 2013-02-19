@@ -86,6 +86,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 			if (bandwidths[i] == 0.0) {
 				bandwidths[i] = 0.05;
 			}
+			bandwidths[i] = bandwidths[i] / 5.0;
 		}
 	}
 
