@@ -35,18 +35,6 @@
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Do({X})" />
-				<if var="i_u" value="{X}" relation="!="/>
-			</condition>
-			<effect prob="0.5">
-				<set var="floor" value="start" />
-			</effect>
-			<effect prob="0.5">
-				<set var="floor" value="continue" />
-			</effect>
-		</case>
-		<case>
-			<condition operator="and">
 				<if var="a_m" value="Excuse(*)" />
 			</condition>
 			<effect prob="1.0">
@@ -78,6 +66,21 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="a_m" value="Do({X})" />
+				<if var="a_m" value="Excuse(*)" />
+				<if var="a_m" value="Describe(*)" />
+				<if var="a_m" value="Disconfirm" />
+				<if var="a_m" value="Confirm" />
+			</condition>
+			<effect prob="0.5">
+				<set var="floor" value="start" />
+			</effect>
+			<effect prob="0.5">
+				<set var="floor" value="continue" />
 			</effect>
 		</case>
 		<case>
