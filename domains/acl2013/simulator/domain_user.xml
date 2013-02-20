@@ -69,10 +69,21 @@
 			</effect>
 		</case>
 		<case>
+			<condition>
+				<if var="a_m" value="AskRepeat" />
+			</condition>
 			<effect prob="0.985">
 				<set var="a_u0" value="{i_u}" />
 			</effect>
 			<effect prob="0.015">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<effect prob="0.3">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="0.7">
 				<set var="a_u0" value="Nothing" />
 			</effect>
 		</case>
