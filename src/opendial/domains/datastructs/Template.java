@@ -81,6 +81,9 @@ public class Template {
 	public Template(String value) {
 
 		rawString = value.trim();
+		
+		checkForm(rawString);
+		
 		slots = extractSlots(rawString);
 
 		// string processing to avoid special characters for the pattern
@@ -97,6 +100,23 @@ public class Template {
 		catch (PatternSyntaxException e) {
 			log.warning("illegal pattern syntax: " + regex);
 			pattern = Pattern.compile("bogus pattern");
+		}
+	}
+	
+	
+	private void checkForm(String rawString) {
+
+		int nbParenthesisLeft = (rawString+" ").split("\\(").length - 1;
+		int nbParenthesisRight = (rawString+" ").split("\\)").length - 1;
+		if (nbParenthesisLeft != nbParenthesisRight) {
+			log.warning("Unequal number of parenthesis in string: " + rawString 
+					+ "(" + nbParenthesisLeft + " vs. " + nbParenthesisRight + ") Problems ahead!");
+		}
+		int nbBracketsLeft = (rawString+" ").split("\\{").length - 1;
+		int nbBracketsRight = (rawString+" ").split("\\}").length - 1;
+		if (nbBracketsLeft != nbBracketsRight) {
+			log.warning("Unequal number of brackets in string: " + rawString + 
+					"(" + nbBracketsLeft + " vs. " + nbBracketsRight + "). Problems ahead!");
 		}
 	}
 	

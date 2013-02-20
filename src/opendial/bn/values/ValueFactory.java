@@ -61,6 +61,13 @@ public class ValueFactory {
 	 */
 	public static Value create(String str) {
 		str = str.trim();
+		
+		int nbParenthesisLeft = (str+" ").split("\\(").length - 1;
+		int nbParenthesisRight = (str+" ").split("\\)").length - 1;
+		if (nbParenthesisLeft != nbParenthesisRight) {
+			log.warning("Unequal number of parenthesis in string: " + str + ". Problems ahead!");
+		}
+		
 		Matcher m = p.matcher(str);
 		if (m.matches()) {
 			return new DoubleVal(Double.parseDouble(str));
