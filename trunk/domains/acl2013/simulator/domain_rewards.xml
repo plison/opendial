@@ -94,7 +94,7 @@
 				<if var="a_u0" value="None" relation="!=" />
 				<if var="a_m" value="None" />
 			</condition>
-			<effect util="-0.4" />
+			<effect util="-0.5" />
 		</case>
 	</rule>
 
@@ -105,7 +105,7 @@
 				<if var="a_m" value="Do(*)" />
 				<if var="a_m" value="Do({i_u})" relation="!=" />
 			</condition>
-			<effect util="-3" />
+			<effect util="-2.5" />
 		</case>
 		<case>
 			<condition>
