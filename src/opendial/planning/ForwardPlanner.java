@@ -61,10 +61,10 @@ public class ForwardPlanner implements AnytimeProcess {
 	// logger
 	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
 
-	public static long MAX_DELAY = 6000;
+	public static long MAX_DELAY = 20000;
 
-	public static int NB_BEST_ACTIONS = 5;
-	public static int NB_BEST_OBSERVATIONS = 3;
+	public static int NB_BEST_ACTIONS = 6;
+	public static int NB_BEST_OBSERVATIONS = 4;
 	public static double MIN_OBSERVATION_PROB = 0.1;
 
 	DialogueState currentState;
@@ -93,7 +93,7 @@ public class ForwardPlanner implements AnytimeProcess {
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
 			log.debug("Q values: " + qValues);
 			Assignment bestAction = qValues.getBest();
-	//		log.debug("best action: " + bestAction);
+			//		log.debug("best action: " + bestAction);
 
 			recordAction(currentState, bestAction);
 		}
@@ -126,7 +126,6 @@ public class ForwardPlanner implements AnytimeProcess {
 				if (!action.isDefault()) {
 					expected = discountFactor * getExpectedValue(copy, horizon-1, discountFactor);
 				}
-
 				qValues.setUtil(action, qValues.getUtil(action) + expected);
 			}
 		}
@@ -185,15 +184,15 @@ public class ForwardPlanner implements AnytimeProcess {
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
 		try {
 			if (!action.isDefault()) {
-			state.addContent(action.removeSpecifiers(), "planner");
+				state.addContent(action.removeSpecifiers(), "planner");
 			}
 			else {
 				state.addContent(action.removeSpecifiers(), "planner");
-				
+
 				if (!state.isFictive()) {
-				for (String var : action.getVariables()) {
-					state.setVariableToProcess(var+"'");
-				}
+					for (String var : action.getVariables()) {
+						state.setVariableToProcess(var+"'");
+					}
 				}
 			}
 		}

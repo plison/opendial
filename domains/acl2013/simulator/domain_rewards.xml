@@ -118,7 +118,7 @@
 			<condition>
 				<if var="a_m" value="Excuse(*)" />
 			</condition>
-			<effect util="-2" />
+			<effect util="-2.5" />
 		</case>
 	</rule>
 
@@ -154,7 +154,7 @@
 			<condition>
 				<if var="a_m" value="Confirm({i_u})" />
 			</condition>
-			<effect util="-0.3" />
+			<effect util="-0.2" />
 		</case>
 		<case>
 			<condition>

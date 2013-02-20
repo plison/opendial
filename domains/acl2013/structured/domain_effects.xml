@@ -70,7 +70,7 @@
 		</case>
 		<case>
 			<condition operator="or">
-				<if var="a_m" value="Do({X})" />
+				<if var="a_m" value="Do(*)" />
 				<if var="a_m" value="Excuse(*)" />
 				<if var="a_m" value="Describe(*)" />
 				<if var="a_m" value="Disconfirm" />
