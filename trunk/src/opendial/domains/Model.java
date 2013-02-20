@@ -187,14 +187,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 			for (Template trigger : triggers) {
 				if (trigger.isMatching(trimmedNodeId, false) 
 						&& !state.getNetwork().hasActionNode(newNodeId)) {
-
-					// we make sure that predictive nodes only trigger prediction rules
-					if (!trimmedNodeId.contains("^p") ||
-							getModelType().equals(PredictionRule.class)) {
-			//						log.debug("model " + id + "(trigger=" + trigger
-			//			 + ") directly triggered via " + newNodeId);
 						return true;
-					}
 				}
 			}
 
