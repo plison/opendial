@@ -42,7 +42,7 @@
 		</case>
 		<case>
 			<condition>
-				<if var="i_u" value="PickUp(*)" />
+				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="notcontains" />
 			</condition>
 			<effect util="3">
