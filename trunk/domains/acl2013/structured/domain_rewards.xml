@@ -84,7 +84,7 @@
 			<condition>
 				<if var="a_u" value="None" relation="!="/>
 			</condition>
-			<effect util="-0.3">
+			<effect util="-0.4">
 				<set var="a_m" value="None" />
 			</effect>		
 		</case>
