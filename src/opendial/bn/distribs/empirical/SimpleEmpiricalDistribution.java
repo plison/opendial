@@ -141,7 +141,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		}
 		if (continuousCache != null) {
 			return continuousCache.sample(new Assignment());
-		} *&
+		} */
 		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
