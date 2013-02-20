@@ -14,7 +14,9 @@
 			<effect prob="theta_7[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_7[2]"/>
+			<effect prob="theta_7[2]">
+				<clear var="a_u0"/>		
+			</effect>
 		</case>
 		<case>
 			<condition>
@@ -31,7 +33,9 @@
 			<effect prob="theta_8[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_8[3]"/>			
+			<effect prob="theta_8[3]">
+				<clear var="a_u0"/>		
+			</effect>		
 		</case>
 		<case>
 			<condition>
@@ -47,7 +51,9 @@
 			<effect prob="theta_9[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_9[3]"/>
+			<effect prob="theta_9[3]">
+				<clear var="a_u0"/>		
+			</effect>
 		</case>
 		<case>
 			<condition>
@@ -61,7 +67,9 @@
 			<effect prob="theta_10[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_10[2]"/>
+			<effect prob="theta_10[2]">
+				<clear var="a_u0"/>		
+			</effect>
 		</case>
 		<case>
 			<condition>
@@ -77,7 +85,9 @@
 			<effect prob="theta_11[2]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_11[3]"/>
+			<effect prob="theta_11[3]">
+				<clear var="a_u0"/>		
+			</effect>
 		</case>
 		<case>
 			<effect prob="theta_12[0]">
@@ -86,7 +96,9 @@
 			<effect prob="theta_12[1]">
 				<set var="a_u0" value="Nothing" />
 			</effect>
-			<effect prob="theta_12[2]"/>
+			<effect prob="theta_12[2]">
+				<clear var="a_u0"/>		
+			</effect>
 		</case>
 	</rule>
 

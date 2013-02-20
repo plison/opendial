@@ -101,7 +101,7 @@
 				<set var="a_m" value="Ground(*)" />
 				<set var="a_m" value="Ground({i_u})" relation="!=" />
 			</effect>	
-			<effect util="-2">
+			<effect util="-2.5">
 				<set var="a_m" value="Excuse(*)" />
 			</effect>	
 		</case>

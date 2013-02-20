@@ -11,9 +11,6 @@
 				<clear var="i_u" />
 			</effect>
 		</case>
-	</rule>
-
-	<rule>
 		<case>
 			<condition>
 				<if var="floor" value="continue" />
