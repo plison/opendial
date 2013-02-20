@@ -160,6 +160,10 @@ public class UserSimulator extends Thread {
 			
 			log.debug("--------");
 
+			if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+				log.debug("expected next user action: " + systemState.getContent("a_u^p", 
+						true).toString().replace("\n", ", "));
+			}
 			realState.addContent(asrScore, "renew1");
 			realState.addContent(a_uother, "renew2");
 			Assignment sampled = addSystemAction(action);

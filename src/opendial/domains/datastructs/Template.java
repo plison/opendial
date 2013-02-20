@@ -32,6 +32,7 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of a string object containing a variable number (from 0 to n) of slots
@@ -82,7 +83,7 @@ public class Template {
 
 		rawString = value.trim();
 		
-		checkForm(rawString);
+		StringUtils.checkForm(rawString);
 		
 		slots = extractSlots(rawString);
 
@@ -102,24 +103,6 @@ public class Template {
 			pattern = Pattern.compile("bogus pattern");
 		}
 	}
-	
-	
-	private void checkForm(String rawString) {
-
-		int nbParenthesisLeft = (rawString+" ").split("\\(").length - 1;
-		int nbParenthesisRight = (rawString+" ").split("\\)").length - 1;
-		if (nbParenthesisLeft != nbParenthesisRight) {
-			log.warning("Unequal number of parenthesis in string: " + rawString 
-					+ "(" + nbParenthesisLeft + " vs. " + nbParenthesisRight + ") Problems ahead!");
-		}
-		int nbBracketsLeft = (rawString+" ").split("\\{").length - 1;
-		int nbBracketsRight = (rawString+" ").split("\\}").length - 1;
-		if (nbBracketsLeft != nbBracketsRight) {
-			log.warning("Unequal number of brackets in string: " + rawString + 
-					"(" + nbBracketsLeft + " vs. " + nbBracketsRight + "). Problems ahead!");
-		}
-	}
-	
 	
 	
 	private String format(String init) {
