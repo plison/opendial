@@ -88,13 +88,13 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule> 
 		<case>
 			<condition operator="and">
 				<if var="a_u0" value="None" relation="!=" />
 				<if var="a_m" value="None" />
 			</condition>
-			<effect util="-1.0" />
+			<effect util="-0.3" />
 		</case>
 	</rule>
 

@@ -90,6 +90,9 @@
 			</effect>
 		</case>
 		<case>
+			<condition>
+				<if var="a_m" value="AskRepeat" />
+			</condition>
 			<effect prob="theta_12[0]">
 				<set var="a_u0" value="{i_u}" />
 			</effect>
@@ -97,6 +100,17 @@
 				<set var="a_u0" value="Nothing" />
 			</effect>
 			<effect prob="theta_12[2]">
+				<clear var="a_u0"/>		
+			</effect>
+		</case>
+		<case>
+			<effect prob="theta_13[0]">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="theta_13[1]">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+			<effect prob="theta_13[2]">
 				<clear var="a_u0"/>		
 			</effect>
 		</case>
