@@ -84,7 +84,7 @@
 			<condition>
 				<if var="a_u" value="None" relation="!="/>
 			</condition>
-			<effect util="-0.4">
+			<effect util="-0.5">
 				<set var="a_m" value="None" />
 			</effect>		
 		</case>
@@ -93,7 +93,7 @@
 	
 	<rule>
 		<case>
-			<effect util="-3">
+			<effect util="-2.5">
 				<set var="a_m" value="Do(*)" />
 				<set var="a_m" value="Do({i_u})" relation="!=" />
 			</effect>
