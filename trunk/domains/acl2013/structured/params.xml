@@ -102,5 +102,12 @@
 </distrib>
 </variable>
 
+<variable id="theta_13">
+<distrib type="dirichlet">
+<alpha>1</alpha>
+<alpha>1</alpha>
+</distrib>
+</variable>
+
 
 </parameters>

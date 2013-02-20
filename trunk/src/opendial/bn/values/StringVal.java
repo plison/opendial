@@ -21,6 +21,7 @@ package opendial.bn.values;
 
 import opendial.arch.Logger;
 import opendial.domains.datastructs.Template;
+import opendial.utils.StringUtils;
 
 /**
  * String value
@@ -43,7 +44,8 @@ public final class StringVal implements Value {
 	 * 
 	 * @param str the string
 	 */
-	protected StringVal(String str) { this.str = str.trim(); };
+	protected StringVal(String str) { this.str = str.trim(); StringUtils.checkForm(str); };
+	
 	
 	/**
 	 * Returns the hashcode for the string
