@@ -5,7 +5,7 @@
 <planning>
 	<variable>a_m</variable>
 	<horizon>2</horizon>
-	<discount>0.8</discount>
+	<discount>0.9</discount>
 </planning>
 
 <gui>
