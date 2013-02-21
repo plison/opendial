@@ -137,7 +137,7 @@
 
 	<rule>
 		<case>
-			<effect util="-0.2">
+			<effect util="-0.1">
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
 			<effect util="-0.8">

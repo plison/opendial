@@ -154,7 +154,7 @@
 			<condition>
 				<if var="a_m" value="Confirm({i_u})" />
 			</condition>
-			<effect util="-0.2" />
+			<effect util="-0.1" />
 		</case>
 		<case>
 			<condition>
