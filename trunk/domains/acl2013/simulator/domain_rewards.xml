@@ -101,14 +101,14 @@
 
 	<rule>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Do(*)" />
 				<if var="a_m" value="Do({i_u})" relation="!=" />
 			</condition>
 			<effect util="-2.5" />
 		</case>
 		<case>
-			<condition>
+			<condition operator="and">
 				<if var="a_m" value="Ground(*)" />
 				<if var="a_m" value="Ground({i_u})" relation="!=" />
 			</condition>
@@ -122,7 +122,7 @@
 		</case>
 	</rule>
 
-	<rule>
+<!-- 	<rule>
 		<case>
 			<condition>
 				<if var="prev(a_m)" value="Ground({X})" />
@@ -130,7 +130,7 @@
 			</condition>
 			<effect util="-2" />
 		</case>
-	</rule>
+	</rule>  -->
 
 
 	<rule>
@@ -154,14 +154,14 @@
 			<condition>
 				<if var="a_m" value="Confirm({i_u})" />
 			</condition>
-			<effect util="-0.1" />
+			<effect util="0.2" />
 		</case>
 		<case>
 			<condition>
 				<if var="a_m" value="Confirm(*)" />
 				<if var="a_m" value="Confirm({i_u})" relation="!=" />
 			</condition>
-			<effect util="-0.8" />
+			<effect util="-0.6" />
 		</case>
 	</rule>
 

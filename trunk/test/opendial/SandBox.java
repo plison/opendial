@@ -44,6 +44,9 @@ import opendial.common.NetworkExamples;
 import opendial.domains.Domain;
 import opendial.domains.datastructs.Template;
 import opendial.domains.rules.UpdateRule;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
+import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.gui.GUIFrame;
 import opendial.gui.StateMonitorTab;
 import opendial.gui.statemonitor.DistributionViewer;
@@ -75,9 +78,13 @@ public class SandBox {
 	
 
 	public static void main(String[] args) {
-		Pattern p = Pattern.compile("turn (.* )?left");
-		Matcher m = p.matcher("turn left");
-		log.debug(m.find());
+		ComplexCondition ccond = new ComplexCondition();
+		BasicCondition cond1 = new BasicCondition("a_m", "Ground(*)", Relation.EQUAL);
+		BasicCondition cond2 = new BasicCondition("a_m", "Ground({i_u})", Relation.UNEQUAL);
+		ccond.addCondition(cond1);
+		ccond.addCondition(cond2);
+		log.debug("IS SATIF??" + ccond.isSatisfiedBy(new Assignment(new Assignment("i_u", "Move(Left)"), new Assignment("a_m", "Ground(Move(Left))"))));
+		
 	}
 	
 	

@@ -104,6 +104,14 @@
 				<clear var="a_u0"/>		
 			</effect>
 		</case>
+			<case>
+			<condition>
+				<if var="i_u" value="None"/>
+			</condition>
+			<effect prob="1.0">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
 		<case>
 			<effect prob="theta_13[0]">
 				<set var="a_u0" value="{i_u}" />
