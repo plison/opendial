@@ -84,7 +84,7 @@
 			<condition>
 				<if var="a_u" value="None" relation="!="/>
 			</condition>
-			<effect util="-0.8">
+			<effect util="-1.0">
 				<set var="a_m" value="None" />
 			</effect>		
 		</case>
@@ -93,15 +93,15 @@
 	
 	<rule>
 		<case>
-			<effect util="-2.5">
+			<effect util="-4.0">
 				<set var="a_m" value="Do(*)" />
 				<set var="a_m" value="Do({i_u})" relation="!=" />
 			</effect>
-			<effect util="-1.0">
+			<effect util="-2.0">
 				<set var="a_m" value="Ground(*)" />
 				<set var="a_m" value="Ground({i_u})" relation="!=" />
 			</effect>	
-			<effect util="-2.5">
+			<effect util="-3.0">
 				<set var="a_m" value="Excuse(*)" />
 			</effect>	
 		</case>
@@ -115,6 +115,17 @@
 			</condition>
 			<effect util="-2">
 				<set var="a_m" value="{X}" />
+			</effect>
+		</case>
+	</rule>
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="history" value="Ground({X})" relation="contains" />
+			</condition>
+			<effect util="-1">
+				<set var="a_m" value="{X}" relation="!="/>
 			</effect>
 		</case>
 	</rule>
@@ -169,10 +180,10 @@
 			</effect>
 		</case>
 		<case>
-			<effect util="-2">
+			<effect util="-3">
 				<set var="a_m" value="Confirm" />
 			</effect>
-			<effect util="-2">
+			<effect util="-3">
 				<set var="a_m" value="Disconfirm" />
 			</effect>
 		</case>
@@ -188,7 +199,7 @@
 			</effect>
 		</case>
 		<case>
-			<effect util="-2">
+			<effect util="-3">
 				<set var="a_m" value="Describe(*)" />
 			</effect>
 		</case>
