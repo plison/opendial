@@ -137,10 +137,10 @@
 
 	<rule>
 		<case>
-			<effect util="-0.1">
+			<effect util="0.2">
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
-			<effect util="-0.8">
+			<effect util="-0.6">
 				<set var="a_m" value="Confirm(*)" />
 				<set var="a_m" value="Confirm({i_u})" relation="!=" />
 			</effect>
