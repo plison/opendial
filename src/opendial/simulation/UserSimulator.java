@@ -136,8 +136,13 @@ public class UserSimulator extends Thread {
 			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
+			if (nbTurns > 0) {
 			log.debug("reward value: " + returnValue);
-			accReturn += returnValue;				
+			accReturn += returnValue;		
+			}
+			else {
+				action = new Assignment("a_m", "AskRepeat");
+			}
 			
 			nbTurns++;
 			
@@ -167,6 +172,7 @@ public class UserSimulator extends Thread {
 			}
 			realState.addContent(asrScore, "renew1");
 			realState.addContent(a_uother, "renew2");
+			
 			Assignment sampled = addSystemAction(action);
 			log.debug("Elements sampled from simulation: " + sampled);
 			
