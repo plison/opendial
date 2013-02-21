@@ -224,11 +224,17 @@ public class DialogueState {
 					toContinue = true;
 			}	
 			else if (planner.isPlanningNeeded()) {	
-				if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { try {
-				log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
-				log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
+				try { 
+					if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
+					log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
+					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
+				} 
+					if (network.hasChanceNode("history") && !isFictive()) { 
+						log.debug("history : " + getContent("history", true).toString().replace("\n", ", "));
+					}
 				}
-				catch (DialException e) { e.printStackTrace(); } }  
+				catch (DialException e) { e.printStackTrace(); } 
+				
 				planner.run();
 				toContinue = true;
 			}	

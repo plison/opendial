@@ -22,6 +22,18 @@
 		</case>
 	</rule>
 	
+	<rule>
+		<case>
+		<condition operator="or">
+			<if var="a_m" value="Ground(*)"/>
+			<if var="a_m" value="Confirm(*)"/>
+		</condition>
+		<effect>
+			<add var="history" value="{a_m}"/>
+		</effect>
+		</case>
+	</rule>
+	
 
 	<rule id="nextintention">
 		<case>

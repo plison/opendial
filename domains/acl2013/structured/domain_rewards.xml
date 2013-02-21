@@ -108,20 +108,13 @@
 	</rule>
 
 	<rule>
+		<quantifier id="X"/>
 		<case>
 			<condition>
-				<if var="a_m" value="Ground(*)" />
+				<if var="history" value="{X}" relation="contains" />
 			</condition>
 			<effect util="-2">
-				<set var="a_m" value="Ground(*)" />
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_m" value="Confirm(*)" />
-			</condition>
-			<effect util="-2">
-				<set var="a_m" value="Confirm(*)" />
+				<set var="a_m" value="{X}" />
 			</effect>
 		</case>
 	</rule>

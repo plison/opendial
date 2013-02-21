@@ -9,6 +9,7 @@
 			</condition>
 			<effect>
 				<clear var="i_u" />
+				<clear var="history"/>
 			</effect>
 		</case>
 		<case>
