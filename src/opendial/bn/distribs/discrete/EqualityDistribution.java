@@ -49,7 +49,7 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 	Random sampler;
 
 	public static final double PROB_WITH_SINGLE_NONE = 0.1;
-	public static final double PROB_WITH_DOUBLE_NONE = 0.1;
+	public static final double PROB_WITH_DOUBLE_NONE = 0.2;
 
 
 	public EqualityDistribution(String equalityId, String variable) {

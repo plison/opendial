@@ -110,10 +110,18 @@
 	<rule>
 		<case>
 			<condition>
-				<if var="a_m" value="Ground({X})" />
+				<if var="a_m" value="Ground(*)" />
 			</condition>
 			<effect util="-2">
-				<set var="a_m" value="Ground({X})" />
+				<set var="a_m" value="Ground(*)" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Confirm(*)" />
+			</condition>
+			<effect util="-2">
+				<set var="a_m" value="Ground(*)" />
 			</effect>
 		</case>
 	</rule>
@@ -140,7 +148,7 @@
 			<effect util="0.2">
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
-			<effect util="-0.6">
+			<effect util="-0.8">
 				<set var="a_m" value="Confirm(*)" />
 				<set var="a_m" value="Confirm({i_u})" relation="!=" />
 			</effect>
