@@ -43,6 +43,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -51,6 +52,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -60,6 +62,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -69,6 +72,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -78,6 +82,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -90,9 +95,11 @@
 			</condition>
 			<effect prob="theta_14[0]">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 			<effect prob="theta_14[1]">
 				<set var="floor" value="continue" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
@@ -101,6 +108,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
+				<clear var="history"/>			
 			</effect>
 		</case>
 		<case>
