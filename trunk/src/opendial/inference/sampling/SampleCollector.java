@@ -93,7 +93,7 @@ public class SampleCollector extends Thread {
 			try {
 				WeightedSample sample = new WeightedSample();
 				
-				sample.addAssign(getComboSamples());
+		//		sample.addAssign(getComboSamples());
 			
 				for (Iterator<BNode> it = sortedNodes.iterator(); 
 				it.hasNext() && (sample.getWeight() > WEIGHT_THRESHOLD); ) {

@@ -135,13 +135,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public Assignment sample() throws DialException {
 		
-	 if (!cacheCreated) {
+		/** if (!cacheCreated) {
 			try { computeContinuousCache(); } catch (DialException e) { }
 			cacheCreated = true;
 		}
 		if (continuousCache != null) {
 			return continuousCache.sample(new Assignment());
-		} 
+		} */
 		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
