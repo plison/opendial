@@ -61,7 +61,7 @@ public class ForwardPlanner implements AnytimeProcess {
 	// logger
 	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
 
-	public static long MAX_DELAY = 50000;
+	public static long MAX_DELAY = 25000;
 
 	public static int NB_BEST_ACTIONS = 6;
 	public static int NB_BEST_OBSERVATIONS = 3;
