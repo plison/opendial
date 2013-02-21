@@ -121,7 +121,7 @@
 				<if var="a_m" value="Confirm(*)" />
 			</condition>
 			<effect util="-2">
-				<set var="a_m" value="Ground(*)" />
+				<set var="a_m" value="Confirm(*)" />
 			</effect>
 		</case>
 	</rule>
