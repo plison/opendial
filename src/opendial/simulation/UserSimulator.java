@@ -139,6 +139,7 @@ public class UserSimulator extends Thread {
 			double returnValue = getReturn(action);
 			
 			if (startup) {
+				log.debug("STARTING UP SIMULATOR...");
 				action = new Assignment("a_m", "AskRepeat");
 				startup = false;
 			}
