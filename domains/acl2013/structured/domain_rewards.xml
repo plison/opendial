@@ -36,7 +36,7 @@
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="carried" value="[]" relation="!=" />
 			</condition>
-			<effect util="8">
+			<effect util="12">
 				<set var="a_m" value="Excuse(AlreadyCarryObject)" />
 			</effect>
 		</case>
@@ -45,7 +45,7 @@
 				<if var="i_u" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="notcontains" />
 			</condition>
-			<effect util="8">
+			<effect util="12">
 				<set var="a_m" value="Excuse(DoNotSeeObject)" />
 			</effect>
 		</case>
@@ -71,7 +71,7 @@
 				<if var="i_u" value="Release({X})" />
 				<if var="carried" value="{X}" relation="notcontains"/>
 			</condition>
-			<effect util="6">
+			<effect util="12">
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 		</case>
