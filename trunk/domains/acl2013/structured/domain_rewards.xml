@@ -152,7 +152,7 @@
 			<effect util="-0.2">
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
-			<effect util="-0.6">
+			<effect util="-0.8">
 				<set var="a_m" value="Confirm(*)" />
 				<set var="a_m" value="Confirm({i_u})" relation="!=" />
 			</effect>
