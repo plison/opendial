@@ -3,28 +3,28 @@
 
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_2">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_3">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
@@ -32,7 +32,7 @@
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
@@ -40,7 +40,7 @@
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
