@@ -48,7 +48,7 @@
 				<if var="carried" value="[]" relation="!=" />
 				<if var="a_m" value="Excuse(AlreadyCarryObject)" />
 			</condition>
-			<effect util="8" />
+			<effect util="12" />
 		</case>
 		<case>
 			<condition>
@@ -56,7 +56,7 @@
 				<if var="perceived" value="{X}" relation="notcontains" />
 				<if var="a_m" value="Excuse(DoNotSeeObject)" />
 			</condition>
-			<effect util="8" />
+			<effect util="12" />
 		</case>
 	</rule>
 
@@ -84,7 +84,7 @@
 				<if var="carried" value="{X}" relation="notcontains" />
 				<if var="a_m" value="Excuse(DoNotCarryObject)" />
 			</condition>
-			<effect util="8" />
+			<effect util="12" />
 		</case>
 	</rule>
 
