@@ -70,6 +70,8 @@ public class UserSimulator extends Thread {
 	
 	int nbTurns = 0;
 	
+	boolean startup = true;
+	
 	double accReturn = 0;
 	
 	ProbDistribution asrScore;
@@ -136,12 +138,13 @@ public class UserSimulator extends Thread {
 			log.debug("system action: " + action);
 			double returnValue = getReturn(action);
 			
-			if (nbTurns > 0) {
-			log.debug("reward value: " + returnValue);
-			accReturn += returnValue;		
+			if (startup) {
+				action = new Assignment("a_m", "AskRepeat");
+				startup = false;
 			}
 			else {
-				action = new Assignment("a_m", "AskRepeat");
+				log.debug("reward value: " + returnValue);
+				accReturn += returnValue;						
 			}
 			
 			nbTurns++;
