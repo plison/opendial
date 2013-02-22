@@ -146,7 +146,6 @@
 		<case>
 			<effect util="-0.5">
 				<set var="a_m" value="Confirm({i_u})" />
-				<set var="a_m" value="Confirm(None)" relation="!="/>
 			</effect>
 			<effect util="-1.5">
 				<set var="a_m" value="Confirm(*)" />
