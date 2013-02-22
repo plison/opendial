@@ -169,6 +169,9 @@
 			<effect util="3">
 				<set var="a_m" value="Confirm" />
 			</effect>
+			<effect util="-3">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
 		</case>
 		<case>
 			<condition>
@@ -177,6 +180,9 @@
 			</condition>
 			<effect util="3">
 				<set var="a_m" value="Disconfirm" />
+			</effect>
+			<effect util="-3">
+				<set var="a_m" value="Confirm" />
 			</effect>
 		</case>
 		<case>
