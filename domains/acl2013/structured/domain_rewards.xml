@@ -123,7 +123,6 @@
 		<case>
 			<condition operator="or">
 				<if var="history" value="Ground({X})" relation="contains" />
-				<if var="history" value="Confirm({X})" relation="contains" />
 			</condition>
 			<effect util="-1">
 				<set var="a_m" value="{X}" relation="!="/>

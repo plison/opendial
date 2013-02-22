@@ -24,6 +24,11 @@
 
 <import href="domain_effects.xml"/>
 
+<model type="update" trigger="a_u">
+	
+
+</model>
+
 <!-- <import href="domain_nlg.xml"/> -->
 
 <!-- <model type="decision" trigger="floor">
