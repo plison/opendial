@@ -33,16 +33,16 @@ import opendial.readers.XMLSettingsReader;
 import opendial.readers.XMLStateReader;
 import opendial.simulation.UserSimulator;
 
-public class ACL2013 {
+public class IS2013 {
 
 	// logger
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
 
 
-	public static final String domainFile = "domains//acl2013/structured/domain.xml";
-	public static final String parametersFile = "domains//acl2013/structured/params.xml";
-	public static final String simulatorFile = "domains//acl2013/simulator/simulator.xml";
-	public static final String settingsFile = "domains//acl2013/settings.xml";
+	public static final String domainFile = "domains//is2013/structured/domain.xml";
+	public static final String parametersFile = "domains//is2013/structured/params.xml";
+	public static final String simulatorFile = "domains//is2013/simulator/simulator.xml";
+	public static final String settingsFile = "domains//is2013/settings.xml";
 
 	public static void main(String[] args) {
 		try {
