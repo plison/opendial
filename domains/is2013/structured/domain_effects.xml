@@ -4,26 +4,6 @@
 
 	<rule>
 		<case>
-			<condition>
-				<if var="a_m" value="Do(PickUp({X}))" />
-			</condition>
-			<effect prob="0.9">
-				<add var="carried" value="{X}" />
-			</effect>
-		</case>
-		<case>
-			<condition operator="and">
-				<if var="a_m" value="Do(Release({X}))" />
-				<if var="carried" value="{X}" relation="contains" />
-			</condition>
-			<effect prob="0.9">
-				<clear var="carried" />
-			</effect>
-		</case>
-	</rule>
-	
-	<rule>
-		<case>
 		<condition operator="or">
 			<if var="a_m" value="Ground(*)"/>
 			<if var="a_m" value="Confirm(*)"/>
