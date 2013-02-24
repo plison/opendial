@@ -40,7 +40,7 @@ public class IS2013 {
 
 
 	public static final String domainFile = "domains//is2013/structured/domain.xml";
-	public static final String parametersFile = "domains//is2013/structured/params.xml";
+	public static final String parametersFile = "domains//is2013/structured/params_informed.xml";
 	public static final String simulatorFile = "domains//is2013/simulator/simulator.xml";
 	public static final String settingsFile = "domains//is2013/settings.xml";
 
