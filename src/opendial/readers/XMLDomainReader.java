@@ -99,7 +99,7 @@ public class XMLDomainReader {
 			Node node = firstElements.item(j);	
 			domain = extractPartialDomain(node, domain, rootpath);
 		}
-		
+		log.info("domain " + topDomainFile + " successfully extracted");
 		return domain;
 	}
 	
