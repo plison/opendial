@@ -480,7 +480,7 @@ public class XMLRuleReader {
 				Matcher m = p.matcher(paramStr);
 				if (m.matches()) {
 					int index = Integer.parseInt(m.group(1).replace("[", "").replace("]", ""));
-					String paramId = paramStr.split("\\[")[0];
+					String paramId = paramStr.replace(m.group(1), "").trim();
 					return new DirichletParameter(paramId, index);
 				}
 				else {

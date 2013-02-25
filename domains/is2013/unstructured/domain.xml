@@ -14,8 +14,6 @@
 
 <!--  <import href="domain_nlu.xml"/> -->
 
-<import href="domain_observation.xml"/>
-
 <import href="domain_user.xml"/>
 
 <import href="domain_prior.xml"/>
