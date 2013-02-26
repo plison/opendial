@@ -156,6 +156,22 @@ public class UserSimulator extends Thread {
 						log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
 					}
 				}
+				String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
+				if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+					log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));	
+				}
+				String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
+				if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+					log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
+				}
+				String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
+				if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
+					log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
+				}
+				String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
+				if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
+					log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
+				}
 				nbTurns = 0;
 			}
 			
