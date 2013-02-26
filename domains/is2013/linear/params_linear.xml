@@ -4308,1344 +4308,1344 @@
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Confirm}">
+<variable id="theta_(i_u=Move(Left)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Move(Left)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Nothing}">
+<variable id="theta_(i_u=Move(Left)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=None}">
+<variable id="theta_(i_u=Move(Left)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Move(Left)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Move(Left)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Move(Left)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Move(Left)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Move(Left)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Move(Left)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Left)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Move(Left)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Confirm}">
+<variable id="theta_(i_u=Move(Right)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Move(Right)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Nothing}">
+<variable id="theta_(i_u=Move(Right)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=None}">
+<variable id="theta_(i_u=Move(Right)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Move(Right)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Move(Right)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Move(Right)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Move(Right)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Move(Right)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Move(Right)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Right)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Move(Right)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Confirm}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Nothing}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=None}">
+<variable id="theta_(i_u=Move(Forward)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Move(Forward)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Move(Forward)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Forward)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Move(Forward)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Confirm}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Nothing}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=None}">
+<variable id="theta_(i_u=Move(Backward)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Move(Backward)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Move(Backward)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Move(Backward)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Move(Backward)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Confirm}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Disconfirm}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Nothing}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=None}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Move(Left)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Move(Right)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Release(o1)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=Release(o2)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=RepeatLast}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o1)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=PickUp(o1)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Confirm}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Disconfirm}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Nothing}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=None}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Move(Left)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Move(Right)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Release(o1)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=Release(o2)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=RepeatLast}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=PickUp(o2)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=PickUp(o2)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Confirm}">
+<variable id="theta_(i_u=Release(o1)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Release(o1)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Nothing}">
+<variable id="theta_(i_u=Release(o1)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=None}">
+<variable id="theta_(i_u=Release(o1)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Release(o1)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Release(o1)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Release(o1)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Release(o1)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Release(o1)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Release(o1)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o1)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Release(o1)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Confirm}">
+<variable id="theta_(i_u=Release(o2)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Disconfirm}">
+<variable id="theta_(i_u=Release(o2)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Nothing}">
+<variable id="theta_(i_u=Release(o2)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=None}">
+<variable id="theta_(i_u=Release(o2)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Move(Left)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Move(Right)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=Release(o2)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=Release(o2)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Release(o1)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=Release(o2)}">
+<variable id="theta_(i_u=Release(o2)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=RepeatLast}">
+<variable id="theta_(i_u=Release(o2)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=Release(o2)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=Release(o2)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=Release(o2)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=Release(o2)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Confirm}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Disconfirm}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Nothing}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=None}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Move(Left)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Move(Right)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Move(Forward)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Move(Backward)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Release(o1)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=Release(o2)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=RepeatLast}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=WhatDoYouSee^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=WhatDoYouSee^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Confirm}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Disconfirm}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Nothing}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=None}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Move(Left)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Move(Right)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Release(o1)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=Release(o2)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=RepeatLast}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o1)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=DoYouSee(o1)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Confirm}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Disconfirm}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Nothing}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=None}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Move(Left)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Move(Right)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Move(Forward)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Move(Backward)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Release(o1)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=Release(o2)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=RepeatLast}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=DoYouSee(o2)^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=DoYouSee(o2)^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Confirm}">
+<variable id="theta_(i_u=None^a_u=Confirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Disconfirm}">
+<variable id="theta_(i_u=None^a_u=Disconfirm)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Nothing}">
+<variable id="theta_(i_u=None^a_u=Nothing)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=None}">
+<variable id="theta_(i_u=None^a_u=None)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Move(Left)}">
+<variable id="theta_(i_u=None^a_u=Move(Left))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Move(Right)}">
+<variable id="theta_(i_u=None^a_u=Move(Right))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Move(Forward)}">
+<variable id="theta_(i_u=None^a_u=Move(Forward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Move(Backward)}">
+<variable id="theta_(i_u=None^a_u=Move(Backward))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=PickUp(o1)}">
+<variable id="theta_(i_u=None^a_u=PickUp(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=PickUp(o2)}">
+<variable id="theta_(i_u=None^a_u=PickUp(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Release(o1)}">
+<variable id="theta_(i_u=None^a_u=Release(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=Release(o2)}">
+<variable id="theta_(i_u=None^a_u=Release(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=RepeatLast}">
+<variable id="theta_(i_u=None^a_u=RepeatLast)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=WhatDoYouSee}">
+<variable id="theta_(i_u=None^a_u=WhatDoYouSee)">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=DoYouSee(o1)}">
+<variable id="theta_(i_u=None^a_u=DoYouSee(o1))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
 </distrib>
 </variable>
 
-<variable id="theta_{i_u=None^a_u=DoYouSee(o2)}">
+<variable id="theta_(i_u=None^a_u=DoYouSee(o2))">
 <distrib type="gaussian">
 <mean>0</mean>
 <variance>3</variance>
