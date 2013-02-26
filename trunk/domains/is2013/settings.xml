@@ -19,7 +19,7 @@
 </gui>
 
 <inference>
-	<nbsamples>1500</nbsamples>
+	<nbsamples>2500</nbsamples>
 </inference>
 
 </settings>
