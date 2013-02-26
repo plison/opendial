@@ -156,7 +156,6 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		
 		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
 		trimmedVariables.addAll(node.getInputNodeIds());
-
 		Iterator<WeightedSample> it = samples.iterator();
 		while (it.hasNext()) {
 			WeightedSample a = it.next();

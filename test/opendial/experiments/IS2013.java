@@ -39,13 +39,18 @@ public class IS2013 {
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
 
 
-	public static final String domainFile = "domains//is2013/unstructured/domain.xml";
-	public static final String parametersFile = "domains//is2013/unstructured/params_unstructured.xml";
+//	public static final String domainFile = "domains//is2013/linear/domain.xml";
+//	public static final String parametersFile = "domains//is2013/linear/params_linear.xml";
 	public static final String simulatorFile = "domains//is2013/simulator/simulator.xml";
 	public static final String settingsFile = "domains//is2013/settings.xml";
 
 	public static void main(String[] args) {
 		try {
+			if (args.length != 2) {
+				throw new DialException("must provide arguments for domain and parameter");
+			}
+			String domainFile = args[0];
+			String parametersFile = args[1];
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
 			Domain simulatorDomain = XMLDomainReader.extractDomain(simulatorFile); 

@@ -538,7 +538,6 @@ public class Assignment {
 	}
 	
 	
-	
 	/**
 	 * Returns a trimmed version of the assignment, where only the
 	 * variables given as parameters are considered
@@ -548,7 +547,7 @@ public class Assignment {
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
 		Assignment a = new Assignment();
-		for (String var : new LinkedList<String>(variables)) {
+		for (String var : new ArrayList<String>(variables)) {
 			if (map.containsKey(var)) {
 				a.addPair(var, map.get(var));
 			}

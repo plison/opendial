@@ -18,4 +18,8 @@
 	<toMonitor>perceived</toMonitor>  
 </gui>
 
+<inference>
+	<nbsamples>1500</nbsamples>
+</inference>
+
 </settings>

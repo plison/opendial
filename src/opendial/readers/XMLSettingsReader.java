@@ -117,7 +117,15 @@ public class XMLSettingsReader {
 					if (subnode.getNodeName().equalsIgnoreCase("toMonitor")) {
 						settings.gui.varsToMonitor.add(subnode.getTextContent().trim());
 					}
-					
+				}
+			}
+			if (node.getNodeName().equals("inference")) {
+				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {			
+					Node subnode = node.getChildNodes().item(k);
+					if (subnode.getNodeName().equalsIgnoreCase("nbsamples")) {
+						settings.nbSamples = Integer.parseInt(subnode.getTextContent().trim());
+						log.debug("Number of samples to use : " + settings.nbSamples);
+					}
 				}
 			}
 			
