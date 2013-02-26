@@ -61,7 +61,7 @@
 </variable>
 
 
-<variable id="theta_{a_m=AskRepeat^i_u=Move(Left)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -82,7 +82,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=Move(Right)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -103,7 +103,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=Move(Forward)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -124,7 +124,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=Move(Backward)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -145,7 +145,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=AskRepeat^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -166,7 +166,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=AskRepeat^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -187,7 +187,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=Release(o1)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -208,7 +208,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=Release(o2)}">
+<variable id="theta_(a_m=AskRepeat^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -229,7 +229,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=AskRepeat^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -250,7 +250,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=AskRepeat^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -271,7 +271,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=AskRepeat^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -292,7 +292,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=AskRepeat^i_u=None}">
+<variable id="theta_(a_m=AskRepeat^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -313,7 +313,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -334,7 +334,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -355,7 +355,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -376,7 +376,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -397,7 +397,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -418,7 +418,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -439,7 +439,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -460,7 +460,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -481,7 +481,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -502,7 +502,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -523,7 +523,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -544,7 +544,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm^i_u=None}">
+<variable id="theta_(a_m=Confirm^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -565,7 +565,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Move(Left)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -586,7 +586,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Move(Right)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -607,7 +607,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -628,7 +628,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -649,7 +649,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Disconfirm^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -670,7 +670,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Disconfirm^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -691,7 +691,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Release(o1)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -712,7 +712,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=Release(o2)}">
+<variable id="theta_(a_m=Disconfirm^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -733,7 +733,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Disconfirm^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -754,7 +754,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Disconfirm^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -775,7 +775,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Disconfirm^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -796,7 +796,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Disconfirm^i_u=None}">
+<variable id="theta_(a_m=Disconfirm^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -817,7 +817,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Move(Left)}">
+<variable id="theta_(a_m=None^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -838,7 +838,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Move(Right)}">
+<variable id="theta_(a_m=None^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -859,7 +859,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Move(Forward)}">
+<variable id="theta_(a_m=None^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -880,7 +880,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Move(Backward)}">
+<variable id="theta_(a_m=None^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -901,7 +901,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=None^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -922,7 +922,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=None^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -943,7 +943,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Release(o1)}">
+<variable id="theta_(a_m=None^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -964,7 +964,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=Release(o2)}">
+<variable id="theta_(a_m=None^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -985,7 +985,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=None^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1006,7 +1006,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=None^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1027,7 +1027,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=None^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1048,7 +1048,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=None^i_u=None}">
+<variable id="theta_(a_m=None^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1069,7 +1069,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Move(Left)}">
+<variable id="theta_(a_m=Describe([])^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1090,7 +1090,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Move(Right)}">
+<variable id="theta_(a_m=Describe([])^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1111,7 +1111,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Describe([])^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1132,7 +1132,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Describe([])^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1153,7 +1153,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Describe([])^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1174,7 +1174,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Describe([])^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1195,7 +1195,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Release(o1)}">
+<variable id="theta_(a_m=Describe([])^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1216,7 +1216,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=Release(o2)}">
+<variable id="theta_(a_m=Describe([])^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1237,7 +1237,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Describe([])^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1258,7 +1258,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Describe([])^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1279,7 +1279,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Describe([])^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1300,7 +1300,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([])^i_u=None}">
+<variable id="theta_(a_m=Describe([])^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1321,7 +1321,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Move(Left)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1342,7 +1342,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Move(Right)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1363,7 +1363,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1384,7 +1384,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1405,7 +1405,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1426,7 +1426,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1447,7 +1447,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Release(o1)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1468,7 +1468,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=Release(o2)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1489,7 +1489,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Describe([o1])^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1510,7 +1510,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1531,7 +1531,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Describe([o1])^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1552,7 +1552,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o1])^i_u=None}">
+<variable id="theta_(a_m=Describe([o1])^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1573,7 +1573,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Move(Left)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1594,7 +1594,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Move(Right)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1615,7 +1615,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1636,7 +1636,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1657,7 +1657,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1678,7 +1678,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1699,7 +1699,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Release(o1)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1720,7 +1720,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=Release(o2)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1741,7 +1741,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Describe([o2])^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1762,7 +1762,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1783,7 +1783,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Describe([o2])^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1804,7 +1804,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2])^i_u=None}">
+<variable id="theta_(a_m=Describe([o2])^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1825,7 +1825,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Move(Left)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1846,7 +1846,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Move(Right)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1867,7 +1867,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1888,7 +1888,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1909,7 +1909,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1930,7 +1930,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1951,7 +1951,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Release(o1)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1972,7 +1972,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=Release(o2)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -1993,7 +1993,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2014,7 +2014,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2035,7 +2035,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2056,7 +2056,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Describe([o2, o1])^i_u=None}">
+<variable id="theta_(a_m=Describe([o2, o1])^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2077,7 +2077,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2098,7 +2098,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2119,7 +2119,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2140,7 +2140,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2161,7 +2161,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2182,7 +2182,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2203,7 +2203,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2224,7 +2224,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2245,7 +2245,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2266,7 +2266,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2287,7 +2287,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2308,7 +2308,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Left))^i_u=None}">
+<variable id="theta_(a_m=Do(Move(Left))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2329,7 +2329,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2350,7 +2350,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2371,7 +2371,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2392,7 +2392,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2413,7 +2413,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2434,7 +2434,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2455,7 +2455,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2476,7 +2476,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2497,7 +2497,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2518,7 +2518,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2539,7 +2539,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2560,7 +2560,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Right))^i_u=None}">
+<variable id="theta_(a_m=Do(Move(Right))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2581,7 +2581,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2602,7 +2602,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2623,7 +2623,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2644,7 +2644,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2665,7 +2665,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2686,7 +2686,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2707,7 +2707,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2728,7 +2728,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2749,7 +2749,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2770,7 +2770,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2791,7 +2791,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2812,7 +2812,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Forward))^i_u=None}">
+<variable id="theta_(a_m=Do(Move(Forward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2833,7 +2833,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2854,7 +2854,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2875,7 +2875,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2896,7 +2896,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2917,7 +2917,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2938,7 +2938,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2959,7 +2959,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -2980,7 +2980,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3001,7 +3001,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3022,7 +3022,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3043,7 +3043,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3064,7 +3064,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Move(Backward))^i_u=None}">
+<variable id="theta_(a_m=Do(Move(Backward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3085,7 +3085,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3106,7 +3106,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3127,7 +3127,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3148,7 +3148,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3169,7 +3169,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3190,7 +3190,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3211,7 +3211,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3232,7 +3232,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3253,7 +3253,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3274,7 +3274,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3295,7 +3295,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3316,7 +3316,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o1))^i_u=None}">
+<variable id="theta_(a_m=Do(PickUp(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3337,7 +3337,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3358,7 +3358,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3379,7 +3379,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3400,7 +3400,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3421,7 +3421,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3442,7 +3442,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3463,7 +3463,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3484,7 +3484,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3505,7 +3505,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3526,7 +3526,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3547,7 +3547,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3568,7 +3568,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(PickUp(o2))^i_u=None}">
+<variable id="theta_(a_m=Do(PickUp(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3589,7 +3589,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3610,7 +3610,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3631,7 +3631,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3652,7 +3652,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3673,7 +3673,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3694,7 +3694,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3715,7 +3715,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3736,7 +3736,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3757,7 +3757,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3778,7 +3778,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3799,7 +3799,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3820,7 +3820,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o1))^i_u=None}">
+<variable id="theta_(a_m=Do(Release(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3841,7 +3841,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3862,7 +3862,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3883,7 +3883,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3904,7 +3904,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3925,7 +3925,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3946,7 +3946,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3967,7 +3967,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -3988,7 +3988,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4009,7 +4009,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4030,7 +4030,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4051,7 +4051,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4072,7 +4072,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Do(Release(o2))^i_u=None}">
+<variable id="theta_(a_m=Do(Release(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4093,7 +4093,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Move(Left)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4114,7 +4114,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Move(Right)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4135,7 +4135,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4156,7 +4156,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4177,7 +4177,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4198,7 +4198,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4219,7 +4219,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Release(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4240,7 +4240,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=Release(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4261,7 +4261,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4282,7 +4282,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4303,7 +4303,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4324,7 +4324,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotSeeObject)^i_u=None}">
+<variable id="theta_(a_m=Excuse(DoNotSeeObject)^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4345,7 +4345,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Move(Left)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4366,7 +4366,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Move(Right)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4387,7 +4387,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4408,7 +4408,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4429,7 +4429,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4450,7 +4450,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4471,7 +4471,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Release(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4492,7 +4492,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=Release(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4513,7 +4513,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4534,7 +4534,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4555,7 +4555,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4576,7 +4576,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(DoNotCarryObject)^i_u=None}">
+<variable id="theta_(a_m=Excuse(DoNotCarryObject)^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4597,7 +4597,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Move(Left)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4618,7 +4618,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Move(Right)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4639,7 +4639,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4660,7 +4660,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4681,7 +4681,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4702,7 +4702,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4723,7 +4723,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Release(o1)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4744,7 +4744,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=Release(o2)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4765,7 +4765,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4786,7 +4786,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4807,7 +4807,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4828,7 +4828,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Excuse(AlreadyCarryObject)^i_u=None}">
+<variable id="theta_(a_m=Excuse(AlreadyCarryObject)^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4849,7 +4849,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4870,7 +4870,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4891,7 +4891,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4912,7 +4912,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4933,7 +4933,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4954,7 +4954,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4975,7 +4975,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -4996,7 +4996,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5017,7 +5017,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5038,7 +5038,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5059,7 +5059,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5080,7 +5080,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Left))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Move(Left))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5101,7 +5101,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5122,7 +5122,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5143,7 +5143,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5164,7 +5164,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5185,7 +5185,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5206,7 +5206,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5227,7 +5227,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5248,7 +5248,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5269,7 +5269,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5290,7 +5290,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5311,7 +5311,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5332,7 +5332,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Right))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Move(Right))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5353,7 +5353,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5374,7 +5374,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5395,7 +5395,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5416,7 +5416,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5437,7 +5437,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5458,7 +5458,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5479,7 +5479,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5500,7 +5500,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5521,7 +5521,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5542,7 +5542,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5563,7 +5563,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5584,7 +5584,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Forward))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Move(Forward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5605,7 +5605,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5626,7 +5626,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5647,7 +5647,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5668,7 +5668,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5689,7 +5689,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5710,7 +5710,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5731,7 +5731,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5752,7 +5752,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5773,7 +5773,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5794,7 +5794,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5815,7 +5815,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5836,7 +5836,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Move(Backward))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Move(Backward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5857,7 +5857,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5878,7 +5878,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5899,7 +5899,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5920,7 +5920,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5941,7 +5941,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5962,7 +5962,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -5983,7 +5983,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6004,7 +6004,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6025,7 +6025,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6046,7 +6046,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6067,7 +6067,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6088,7 +6088,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o1))^i_u=None}">
+<variable id="theta_(a_m=Confirm(PickUp(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6109,7 +6109,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6130,7 +6130,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6151,7 +6151,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6172,7 +6172,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6193,7 +6193,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6214,7 +6214,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6235,7 +6235,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6256,7 +6256,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6277,7 +6277,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6298,7 +6298,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6319,7 +6319,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6340,7 +6340,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(PickUp(o2))^i_u=None}">
+<variable id="theta_(a_m=Confirm(PickUp(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6361,7 +6361,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6382,7 +6382,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6403,7 +6403,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6424,7 +6424,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6445,7 +6445,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6466,7 +6466,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6487,7 +6487,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6508,7 +6508,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6529,7 +6529,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6550,7 +6550,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6571,7 +6571,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6592,7 +6592,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o1))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Release(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6613,7 +6613,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6634,7 +6634,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6655,7 +6655,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6676,7 +6676,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6697,7 +6697,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6718,7 +6718,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6739,7 +6739,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6760,7 +6760,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6781,7 +6781,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6802,7 +6802,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6823,7 +6823,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6844,7 +6844,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(Release(o2))^i_u=None}">
+<variable id="theta_(a_m=Confirm(Release(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6865,7 +6865,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6886,7 +6886,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6907,7 +6907,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6928,7 +6928,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6949,7 +6949,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6970,7 +6970,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -6991,7 +6991,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7012,7 +7012,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7033,7 +7033,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7054,7 +7054,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7075,7 +7075,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7096,7 +7096,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Left))^i_u=None}">
+<variable id="theta_(a_m=Ground(Move(Left))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7117,7 +7117,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7138,7 +7138,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7159,7 +7159,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7180,7 +7180,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7201,7 +7201,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7222,7 +7222,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7243,7 +7243,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7264,7 +7264,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7285,7 +7285,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7306,7 +7306,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7327,7 +7327,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7348,7 +7348,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Right))^i_u=None}">
+<variable id="theta_(a_m=Ground(Move(Right))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7369,7 +7369,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7390,7 +7390,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7411,7 +7411,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7432,7 +7432,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7453,7 +7453,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7474,7 +7474,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7495,7 +7495,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7516,7 +7516,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7537,7 +7537,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7558,7 +7558,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7579,7 +7579,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7600,7 +7600,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Forward))^i_u=None}">
+<variable id="theta_(a_m=Ground(Move(Forward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7621,7 +7621,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7642,7 +7642,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7663,7 +7663,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7684,7 +7684,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7705,7 +7705,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7726,7 +7726,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7747,7 +7747,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7768,7 +7768,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7789,7 +7789,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7810,7 +7810,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7831,7 +7831,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7852,7 +7852,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Move(Backward))^i_u=None}">
+<variable id="theta_(a_m=Ground(Move(Backward))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7873,7 +7873,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7894,7 +7894,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7915,7 +7915,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7936,7 +7936,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7957,7 +7957,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7978,7 +7978,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -7999,7 +7999,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8020,7 +8020,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8041,7 +8041,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8062,7 +8062,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8083,7 +8083,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8104,7 +8104,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o1))^i_u=None}">
+<variable id="theta_(a_m=Ground(PickUp(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8125,7 +8125,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8146,7 +8146,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8167,7 +8167,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8188,7 +8188,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8209,7 +8209,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8230,7 +8230,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8251,7 +8251,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8272,7 +8272,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8293,7 +8293,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8314,7 +8314,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8335,7 +8335,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8356,7 +8356,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(PickUp(o2))^i_u=None}">
+<variable id="theta_(a_m=Ground(PickUp(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8377,7 +8377,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8398,7 +8398,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8419,7 +8419,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8440,7 +8440,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8461,7 +8461,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8482,7 +8482,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8503,7 +8503,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8524,7 +8524,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8545,7 +8545,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8566,7 +8566,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8587,7 +8587,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8608,7 +8608,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o1))^i_u=None}">
+<variable id="theta_(a_m=Ground(Release(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8629,7 +8629,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8650,7 +8650,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8671,7 +8671,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8692,7 +8692,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8713,7 +8713,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8734,7 +8734,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8755,7 +8755,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8776,7 +8776,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8797,7 +8797,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8818,7 +8818,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8839,7 +8839,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8860,7 +8860,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Ground(Release(o2))^i_u=None}">
+<variable id="theta_(a_m=Ground(Release(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8881,7 +8881,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8902,7 +8902,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8923,7 +8923,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8944,7 +8944,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8965,7 +8965,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -8986,7 +8986,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9007,7 +9007,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9028,7 +9028,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9049,7 +9049,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9070,7 +9070,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9091,7 +9091,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9112,7 +9112,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(WhatDoYouSee)^i_u=None}">
+<variable id="theta_(a_m=Confirm(WhatDoYouSee)^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9133,7 +9133,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9154,7 +9154,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9175,7 +9175,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9196,7 +9196,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9217,7 +9217,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9238,7 +9238,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9259,7 +9259,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9280,7 +9280,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9301,7 +9301,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9322,7 +9322,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9343,7 +9343,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9364,7 +9364,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o1))^i_u=None}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o1))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9385,7 +9385,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Move(Left)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9406,7 +9406,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Move(Right)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Move(Right))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9427,7 +9427,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Move(Forward)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Move(Forward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9448,7 +9448,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Move(Backward)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Move(Backward))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9469,7 +9469,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=PickUp(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=PickUp(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9490,7 +9490,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=PickUp(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=PickUp(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9511,7 +9511,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Release(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Release(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9532,7 +9532,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=Release(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=Release(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9553,7 +9553,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=WhatDoYouSee}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=WhatDoYouSee)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9574,7 +9574,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=DoYouSee(o1)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=DoYouSee(o1))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9595,7 +9595,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=DoYouSee(o2)}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=DoYouSee(o2))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -9616,7 +9616,7 @@
 </distrib>
 </variable>
 
-<variable id="theta_{a_m=Confirm(DoYouSee(o2))^i_u=None}">
+<variable id="theta_(a_m=Confirm(DoYouSee(o2))^i_u=None)">
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
