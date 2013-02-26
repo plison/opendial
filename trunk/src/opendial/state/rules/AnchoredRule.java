@@ -159,7 +159,7 @@ public class AnchoredRule {
 					parameters.put(paramId,state.getNetwork().getChanceNode(paramId));
 				}
 				else {
-					log.warning("parameter " + param + " is not defined!");
+					log.warning("parameter " + paramId + " is not defined!");
 				}
 				}
 			}
