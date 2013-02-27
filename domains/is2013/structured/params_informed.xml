@@ -70,7 +70,7 @@
 
 <variable id="theta_9">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>3</alpha>
 <alpha>1</alpha>
 <alpha>1</alpha>
 <alpha>1</alpha>
@@ -79,7 +79,7 @@
 
 <variable id="theta_10">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>3</alpha>
 <alpha>1</alpha>
 <alpha>1</alpha>
 </distrib>
@@ -96,7 +96,7 @@
 
 <variable id="theta_12">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>3</alpha>
 <alpha>1</alpha>
 <alpha>1</alpha>
 </distrib>
