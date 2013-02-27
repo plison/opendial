@@ -20,28 +20,28 @@ a_u = ["Confirm", "Disconfirm", "Nothing", "None", "Move(Left)", "Move(Right)", 
 prelude = """
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
+<alpha>4</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_2">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>2</alpha>
+<alpha>3</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_3">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>2</alpha>
+<alpha>3</alpha>
 </distrib>
 </variable>
 
@@ -49,7 +49,7 @@ prelude = """
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>2</alpha>
+<alpha>3</alpha>
 </distrib>
 </variable>
 
@@ -57,7 +57,7 @@ prelude = """
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>2</alpha>
+<alpha>3</alpha>
 </distrib>
 </variable>
 
@@ -145,8 +145,14 @@ def writePlainParams():
             text = text + "<variable id=\"" + param + "\">\n"
             text = text + "<distrib type=\"dirichlet\">\n"
             for u in a_u:
-                if u == i:
-                    text = text + "<alpha>5</alpha>\n"
+                if a == "AskRepeat" and u == i:
+                    text = text + "<alpha>6</alpha>\n"
+                elif "Confirm(" in a and i in a and u == "Confirm":
+                    text = text + "<alpha>6</alpha>\n"
+                elif "Confirm(" in a and i not in a and u == "Disconfirm":
+                    text = text + "<alpha>6</alpha>\n"
+                elif u==i:
+                    text = text + "<alpha>4</alpha>\n"
                 else:
                     text = text + "<alpha>1</alpha>\n"
             text = text + "</distrib>\n</variable>\n\n"
@@ -163,14 +169,19 @@ def writeLinearParams():
         for u in a_u:     
             param = "theta_(a_m="+a + "^a_u="+u+")"
             text = text + "<variable id=\"" + param + "\">\n"
-            text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
+            if a == "AskRepeat" and u in i_u:
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>2</max>\n"    
+            elif "Confirm(" in a and (u=="Confirm" or u=="Disconfirm") :
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>4</max>\n"                               
+            else:
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
     for i in i_u:
         for u in a_u:     
             param = "theta_(i_u="+i + "^a_u="+u+")"
             text = text + "<variable id=\"" + param + "\">\n"
             if i == u:
-                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>5</max>\n"
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>4</max>\n"
             else:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
