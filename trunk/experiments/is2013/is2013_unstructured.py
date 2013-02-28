@@ -20,28 +20,28 @@ a_u = ["Confirm", "Disconfirm", "Nothing", "None", "Move(Left)", "Move(Right)", 
 prelude = """
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
-<alpha>4</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
+<alpha>10</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_2">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>3</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_3">
 <distrib type="dirichlet">
 <alpha>1</alpha>
-<alpha>3</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
@@ -49,7 +49,7 @@ prelude = """
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>3</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
@@ -57,14 +57,14 @@ prelude = """
 <distrib type="dirichlet">
 <alpha>1</alpha>
 <alpha>1</alpha>
-<alpha>3</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_14">
 <distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>1</alpha>
+<alpha>5</alpha>
+<alpha>5</alpha>
 </distrib>
 </variable>\n\n"""
 
