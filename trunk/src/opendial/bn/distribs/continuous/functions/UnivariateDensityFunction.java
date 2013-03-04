@@ -32,7 +32,7 @@ import opendial.arch.Logger;
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *
+ * 
  */
 public interface UnivariateDensityFunction{
 

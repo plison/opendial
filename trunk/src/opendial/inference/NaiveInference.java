@@ -240,7 +240,7 @@ public class NaiveInference implements InferenceAlgorithm {
 
 		BNetwork fullNetwork = query.getNetwork();
 
-		BNetwork reduced = fullNetwork.getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
+		BNetwork reduced = query.getReducedCopy();
 
 		// finally, sets the distribution for the nodes to retain, according
 		// to the factors generated via V.E.

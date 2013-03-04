@@ -41,6 +41,7 @@ import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
@@ -116,7 +117,7 @@ public class UserSimulator extends Thread {
 		while (true) {
 			try {
 			while (!systemState.isStable() || paused) {
-				Thread.sleep(100);
+				Thread.sleep(50);
 			}
 			performTurn();
 			}
@@ -150,34 +151,7 @@ public class UserSimulator extends Thread {
 			
 			nbTurns++;
 			
-			if (nbTurns == 5) {
-				for (int i = 1 ; i < 15 ;i++) {
-					if (systemState.getNetwork().hasChanceNode("theta_"+i)) {
-						log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
-					}
-				}
-				String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
-				if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-					log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
-					log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta1).getOutputNodesIds());
-				}
-				String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
-				if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-					log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
-					log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta2).getOutputNodesIds());
-				}
-				String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
-				if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
-					log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
-					log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta1).getOutputNodesIds());
-				}
-				String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
-				if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
-					log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
-					log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta2).getOutputNodesIds());
-				}
-				nbTurns = 0;
-			}
+			showParameterState();
 			
 			log.debug("--------");
 
@@ -188,7 +162,9 @@ public class UserSimulator extends Thread {
 			realState.addContent(asrScore, "renew1");
 			realState.addContent(a_uother, "renew2");
 			
-			Assignment sampled = addSystemAction(action);
+			realState.addContent(action, "systemAction");
+
+			Assignment sampled = sampleNextState(action);
 			log.debug("Elements sampled from simulation: " + sampled);
 			
 			if (realState.getNetwork().hasChanceNode("floor")) {
@@ -209,12 +185,6 @@ public class UserSimulator extends Thread {
 			realState.addContent(evidence, "evidence");
 			log.debug("==> Adding observation: " + obs.toString().replace("\n", ", "));
 			log.debug("waiting for system processing...");
-			
-		/**	log.debug("theta descendants: " + systemState.getNetwork().getChanceNode("theta_1").getDescendantIds());
-			systemState.addEvidence(new Assignment("theta_1", "(1.0, 0, 0, 0, 0, 0, 0, 0)"));
-			log.debug("TESTING " + systemState.getContent("i_u", true));
-			log.debug("TESTING 2 " + systemState.getContent("a_u^p", true));
-			log.debug("===> estimate for theta_1 (BF): " + systemState.getContent("theta_1", true));	*/		
 		
 	//		systemState.addContent(realState.getContent("a_uother", true), "sim2");
 			systemState.addContent(obs, "sim1");
@@ -244,17 +214,45 @@ public class UserSimulator extends Thread {
 		return new Assignment("a_m", ValueFactory.none());
 	}
 
-
 	
-	private Assignment addSystemAction(Assignment action) throws DialException {
 
-		realState.addContent(action, "systemAction");
+	private void showParameterState() throws DialException {
+		if (nbTurns == 5) {
+			for (int i = 1 ; i < 15 ;i++) {
+				if (systemState.getNetwork().hasChanceNode("theta_"+i)) {
+					log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
+				}
+			}
+			String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+				log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
+				log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta1).getOutputNodesIds());
+			}
+			String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
+				log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
+				log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta2).getOutputNodesIds());
+			}
+			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
+				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
+				log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta1).getOutputNodesIds());
+			}
+			String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
+				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
+				log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta2).getOutputNodesIds());
+			}
+			nbTurns = 0;
+		}
+	}
+	private Assignment sampleNextState(Assignment action) throws DialException {
 		
 		Assignment sampled = new Assignment();
 		List<BNode> sequence = realState.getNetwork().getSortedNodes();
 		Collections.reverse(sequence);
 		for (BNode n : sequence) {
-			if (n instanceof ChanceNode && !n.getId().equals("a_u^p")) {
+			if (n instanceof ChanceNode && !n.getId().equals("a_u^p") && !(n instanceof ProbabilityRuleNode)) {
 				Value val = ((ChanceNode)n).sample(sampled);
 				sampled.addPair(n.getId(), val);
 			}	

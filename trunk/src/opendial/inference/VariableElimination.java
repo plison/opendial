@@ -358,15 +358,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
 		
 		// first, create the new network, without any distribution in the node
-		BNetwork reduced = query.getNetwork().getReducedCopy(query.getQueryVars(), query.getNodesToIsolate());
-		
-		// we can simplify the query if some nodes remain identical
-		Set<String> identicalNodes = query.getNetwork().getIdenticalNodes(reduced, query.getEvidence());
-		for (String nodeId : identicalNodes) {
-			ChanceNode originalNode = query.getNetwork().getChanceNode(nodeId);
-			reduced.getChanceNode(nodeId).setDistrib(originalNode.getDistrib());
-			query.removeQueryVar(nodeId);
-		}
+		BNetwork reduced = query.getReducedCopy();
 		
 		// create the factors associated with the query variables
 		DoubleFactor queryFactor = createQueryFactor(query);

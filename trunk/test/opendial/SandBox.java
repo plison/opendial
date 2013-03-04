@@ -141,7 +141,7 @@ public class SandBox {
 	}
 
 	
-	public static void main10(String[] args) throws DialException, InterruptedException {
+	/**public static void main10(String[] args) throws DialException, InterruptedException {
 		SampleCollector.log.setLevel(Level.NORMAL);
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 		ReductionQuery redQuery = new ReductionQuery(network, "Burglary", "Earthquake", "MaryCalls");
@@ -154,7 +154,7 @@ public class SandBox {
 		long t1 = System.nanoTime();
 		is.queryProb(query8).toDiscrete().getProb(new Assignment(), new Assignment("Earthquake"));
 		log.info("query time " + (System.nanoTime() - t1)/1000000000.0);
-	}
+	} */
 
 	
 	public static void main8(String[] args) throws DialException {

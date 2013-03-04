@@ -34,6 +34,7 @@ import java.util.Timer;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
@@ -48,9 +49,12 @@ import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
+import opendial.inference.ImportanceSampling;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.WeightedSample;
+import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
+import opendial.inference.queries.ReductionQuery;
 
 
 /**
@@ -85,10 +89,11 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	 * @param network the Bayesian network
 	 * @param query the query to answer
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
+	 * @throws DialException 
 	 */
-	public ReductionQuerySampling(Query query, BNetwork reduced, int nbSamples, long maxSamplingTime) {
+	public ReductionQuerySampling(ReductionQuery query, int nbSamples, long maxSamplingTime) throws DialException {
 		super(query, nbSamples, maxSamplingTime);
-		this.reduced = reduced;
+		this.reduced = query.getReducedCopy();
 	}
 
 

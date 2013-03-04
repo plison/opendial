@@ -2,7 +2,7 @@
 
 <model trigger="i_u" type="prediction">
 
-	<rule>
+	<rule id="userprediction">
 		<case>
 			<condition>
 				<if var="a_m" value="Ground({X})" />
