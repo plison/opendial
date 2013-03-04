@@ -23,6 +23,7 @@ package opendial.state;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import opendial.arch.Settings;
 import opendial.arch.DialException;
@@ -64,9 +65,9 @@ public class StatePruner implements Runnable {
 
 		//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
 		Set<String> nodesToKeep = getNodesToKeep();
-		Set<String> nodesToIsolate = (state.isFictive())? getNodesToIsolate() : new HashSet<String>();
+	//	Set<String> nodesToIsolate = getNodesToIsolate(nodesToKeep);
 		try {
-			BNetwork reduced = reduceNetwork(nodesToKeep, nodesToIsolate);
+			BNetwork reduced = reduceNetwork(nodesToKeep);
 			removePrimes(reduced);
 			reinsertActionAndUtilityNodes(reduced);
 			removeEmptyNodes(reduced);
@@ -74,7 +75,7 @@ public class StatePruner implements Runnable {
 
 		}
 		catch (Exception e) {
-			log.debug("nodes to keep: " + nodesToKeep + " nodes to isolate " + nodesToIsolate);
+			log.debug("nodes to keep: " + nodesToKeep); // + " nodes to isolate " + nodesToIsolate);
 			e.printStackTrace();
 			log.warning("Reduction failed: " + e);
 		}
@@ -95,22 +96,24 @@ public class StatePruner implements Runnable {
 	}
 
 
-	
-	private Set<String> getNodesToIsolate() {
-		Set<String> nodesToIsolate = new HashSet<String>();
-		if (state.getEvidence().isEmpty()) {
-		for (BNode node : state.getNetwork().getNodes()) {
-			if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
-				AnchoredRule rule = (node instanceof ProbabilityRuleNode)? 
-						((ProbabilityRuleNode)node).getRule() : ((UtilityRuleNode)node).getRule();
 
-						if (!rule.getRule().getClass().equals(PredictionRule.class)) {
-							for (BNode paramNode: rule.getParameterNodes()) {
-								nodesToIsolate.add(paramNode.getId());
-							}
-						}
-			}		
-		}
+	private Set<String> getNodesToIsolate(Set<String> nodesToKeep) {
+		Set<String> nodesToIsolate = new HashSet<String>();
+		for (BNode node : state.getNetwork().getNodes()) {
+
+			if (nodesToKeep.contains(node.getId()) && node.getInputNodeIds().isEmpty()) {
+				boolean canBeIsolated = true;
+				for (BNode oNode: node.getOutputNodes()) {
+					if (nodesToKeep.contains(oNode.getId())) {
+						canBeIsolated = false;
+					}
+				}
+				if (canBeIsolated) {
+					//				log.debug("isolating " + node.getId() + " oNodes were " + node.getOutputNodes());
+					nodesToIsolate.add(node.getId());
+				}
+
+			}
 		}
 		return nodesToIsolate;
 	}
@@ -124,26 +127,34 @@ public class StatePruner implements Runnable {
 		for (BNode node : state.getNetwork().getNodes()) {
 
 			if (node instanceof ActionNode || node instanceof UtilityNode  || 
-					state.getEvidence().containsVar(node.getId()) || node instanceof ProbabilityRuleNode) {
+					state.getEvidence().containsVar(node.getId())) {
 				nodesToRemove.add(node.getId());
+			}
+			else if (node instanceof ProbabilityRuleNode && !state.isFictive 
+					&& ((ProbabilityRuleNode)node).hasDescendant(Pattern.compile("(?:.*)\\^p'")) 
+					&& !node.getOutputNodes().isEmpty() && node.getOutputNodesIds().iterator().next().contains("'")
+					&& !((ProbabilityRuleNode)node).getRule().getParameterNodes().isEmpty() 
+					&& !node.hasDescendant(state.getEvidence().getVariables())) {
+				nodesToKeep.add(node.getId());
 			}
 
 			// removing the prediction nodes once they have been used
 			else if (node.getId().contains("^p") && 
-					node.hasOutputNode(state.getEvidence().getVariables())) {
+					node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToRemove.add(node.getId());
 			}
-			
+
 			// keeping the newest nodes
-			else if (!state.getNetwork().hasChanceNode(node.getId()+"'")) {
+			else if (!(state.getNetwork().hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {
 				nodesToKeep.add(node.getId());
 			}
 			else {
+				//		log.debug("removing node " + node.getId() + " instance? " + node.getClass().getCanonicalName() + " updated? " + state.getNetwork().hasChanceNode(node.getId()+"'"));
 				nodesToRemove.add(node.getId());
 			}
 
 		}
-		
+
 
 		//	log.debug("keeping : " + nodesToKeep);
 		//	log.debug("removing : " + nodesToRemove);
@@ -152,22 +163,33 @@ public class StatePruner implements Runnable {
 	}
 
 
-	private BNetwork reduceNetwork(Set<String> nodesToKeep, Set<String> nodesToIsolate) 
+	private BNetwork reduceNetwork(Set<String> nodesToKeep) 
 			throws DialException, InstantiationException, IllegalAccessException {
 
-		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep, nodesToIsolate);
+		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
+		BNetwork reducedCopy = reductionQuery.getReducedCopy();
+		for (BNode reducedNode : reducedCopy.getNodes()) {
+			if (state.isParameter(reducedNode.getId())) {
+				for (BNode outputNode : reducedNode.getOutputNodes()) {
+					if (!(outputNode instanceof ProbabilityRuleNode)) {
+						reductionQuery.removeRelation(reducedNode.getId(), outputNode.getId());
+					}					
+				}
+			}
+		}
+		
 		InferenceAlgorithm inference = Settings.getInstance().inferenceAlgorithm.newInstance();
 
 		if (state.isFictive()) {
 			reductionQuery.setAsLightweight(true);
 		}
-
 		BNetwork reduced = inference.reduceNetwork(reductionQuery);
 
 		return reduced;
 
 	}
-
+	
+	
 
 	private void reinsertActionAndUtilityNodes(BNetwork reduced) throws DialException {
 		for (ActionNode an : state.getNetwork().getActionNodes()) {

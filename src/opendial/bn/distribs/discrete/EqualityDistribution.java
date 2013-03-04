@@ -48,9 +48,9 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 
 	Random sampler;
 
-	public static final double PROB_WITH_SINGLE_NONE = 0.15;
-	public static final double PROB_WITH_DOUBLE_NONE = 0.15;
-
+	public static final double PROB_WITH_SINGLE_NONE = 0.1;
+	public static final double PROB_WITH_DOUBLE_NONE = 0.1;
+ 
 
 	public EqualityDistribution(String equalityId, String variable) {
 		this.variable = variable;
@@ -186,7 +186,6 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 		}
 		
 		Assignment trimmed = condition.getTrimmed(variable+"^p",actualVar);
-
 		if (trimmed.size() == 2) {	
 			List<Value> valList = new ArrayList<Value>(trimmed.getValues());
 

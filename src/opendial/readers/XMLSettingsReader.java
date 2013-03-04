@@ -126,6 +126,10 @@ public class XMLSettingsReader {
 						settings.nbSamples = Integer.parseInt(subnode.getTextContent().trim());
 						log.debug("Number of samples to use : " + settings.nbSamples);
 					}
+					if (subnode.getNodeName().equalsIgnoreCase("timeout")) {
+						settings.maximumSamplingTime = Integer.parseInt(subnode.getTextContent().trim());
+						log.debug("Timeout for sampling : " + settings.maximumSamplingTime);
+					}
 				}
 			}
 			

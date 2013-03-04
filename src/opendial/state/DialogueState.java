@@ -42,6 +42,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.domains.rules.PredictionRule;
 import opendial.gui.GUIFrame;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
@@ -71,6 +72,8 @@ public class DialogueState {
 
 	Assignment evidence;
 
+	Set<String> parameterIds;
+	
 	Stack<String> variablesToProcess;
 
 	Map<String,Long> updateStamps;
@@ -84,6 +87,7 @@ public class DialogueState {
 	boolean isFictive = false;
 
 	boolean activateDecisions = true;
+	boolean activatePredictions = true;
 
 	List<StateListener> listeners;
 
@@ -103,6 +107,8 @@ public class DialogueState {
 		planner = new ForwardPlanner(this);
 
 		listeners = new LinkedList<StateListener>();
+		
+		parameterIds = new HashSet<String>();
 	}
 
 	
@@ -146,6 +152,9 @@ public class DialogueState {
 	
 	public void applyRule(Rule rule) throws DialException {
 		if (!activateDecisions && rule.getRuleType() == RuleType.UTIL) {
+			return;
+		}
+		else if (!activatePredictions && rule instanceof PredictionRule) {
 			return;
 		}
 		RuleInstantiator instantiator = new RuleInstantiator(this, rule);
@@ -210,16 +219,6 @@ public class DialogueState {
 				toContinue = true;
 			}
 			else if (pruner.isPruningNeeded()) {
-			/** try {	if (network.hasChanceNode("theta_1") && !isFictive()) { 
-					log.debug("EVIDENCE " + evidence);
-					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib());
-					log.debug("distrib: " + network.getChanceNode("theta_1").getDistrib().getClass());
-					log.debug("output nodes for theta_1: " + network.getChanceNode("theta_1").getOutputNodesIds());
-					for (BNode oNode : network.getChanceNode("theta_1").getOutputNodes()) {
-						log.debug("distrib output nodes for theta_1: " + ((ChanceNode)oNode).getDistrib());
-						log.debug("distrib output nodes for theta_1: " + ((ChanceNode)oNode).getDistrib().getClass());
-					} }  } catch (Exception e) { e.printStackTrace(); }  */
-				
 					pruner.run();
 					toContinue = true;
 			}	
@@ -314,12 +313,17 @@ public class DialogueState {
 		for (SynchronousModule module : modules) {
 			stateCopy.attachModule(module);
 		}
+		stateCopy.parameterIds = parameterIds;
 		return stateCopy;
 	}
 
 
 	public void activateDecisions(boolean activateDecisions) {
 		this.activateDecisions = activateDecisions;
+	}
+	
+	public void activatePredictions(boolean activatePredictions) {
+		this.activatePredictions = activatePredictions;
 	}
 
 
@@ -366,10 +370,15 @@ public class DialogueState {
 	public void addParameters(BNetwork parameterNetwork) {
 		try {
 			network.addNetwork(parameterNetwork);
+			parameterIds.addAll(parameterNetwork.getNodeIds());
 		}
 		catch (DialException e) {
 			log.warning ("cannot add parameters to the dialogue state: " + e);
 		}
+	}
+	
+	public boolean isParameter(String nodeId) {
+		return parameterIds.contains(nodeId);
 	}
 
 	public String getName() {
