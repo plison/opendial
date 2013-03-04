@@ -303,8 +303,8 @@ public class ChanceNode extends BNode {
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 		if (!result.containsVar(nodeId)) {
-			log.warning("result of sampling does not contain " + nodeId +": " + 
-					result + " distrib is " + distrib.getClass().getSimpleName());
+	//		log.warning("result of sampling does not contain " + nodeId +": " + 
+	//				result + " distrib is " + distrib.getClass().getSimpleName());
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);
