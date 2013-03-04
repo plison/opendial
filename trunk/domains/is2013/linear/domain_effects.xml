@@ -73,11 +73,11 @@
 				<if var="a_m" value="Disconfirm" />
 				<if var="a_m" value="Confirm" />
 			</condition>
-			<effect prob="theta_14[0]">
+			<effect prob="0.4">
 				<set var="floor" value="start" />
 				<clear var="history"/>			
 			</effect>
-			<effect prob="theta_14[1]">
+			<effect prob="0.6">
 				<set var="floor" value="continue" />
 				<clear var="history"/>			
 			</effect>
