@@ -32,3 +32,4 @@ def getResults(type):
 print "UNSTRUCTURED: " + getResults("unstructured")
 print "LINEAR: " + getResults("linear")
 print "STRUCTURED INFORMATIVE: " + getResults("structinf")
+print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf")
