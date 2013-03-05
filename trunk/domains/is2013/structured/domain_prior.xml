@@ -2,7 +2,7 @@
 
 <model trigger="floor" type="update">
 
-	<rule>
+	<rule id="clearorcontinue">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
@@ -21,7 +21,7 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="baseprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
@@ -52,7 +52,7 @@
 	</rule>
 	
 	
-	<rule>
+	<rule id="releaseprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
@@ -84,7 +84,7 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="pickupprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
