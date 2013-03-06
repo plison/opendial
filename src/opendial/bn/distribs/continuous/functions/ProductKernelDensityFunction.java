@@ -141,7 +141,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		if (!isBounded) {
 			for (int i = 0 ; i < newPoint.length ; i++) {
 				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-			
+			}
 		}
 		else {
 			double sum = 0;
