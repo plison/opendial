@@ -20,36 +20,36 @@ a_u = ["Confirm", "Disconfirm", "Nothing", "None", "Move(Left)", "Move(Right)", 
 prelude = """
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
-<alpha>30</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_2">
 <distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>30</alpha>
+<alpha>50</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_3">
 <distrib type="dirichlet">
 <alpha>5</alpha>
-<alpha>30</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_4">
 <distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>5</alpha>
-<alpha>30</alpha>
+<alpha>50</alpha>
+<alpha>50</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>
 
@@ -57,33 +57,37 @@ prelude = """
 <distrib type="dirichlet">
 <alpha>5</alpha>
 <alpha>5</alpha>
-<alpha>30</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>
 
 <variable id="theta_14">
 <distrib type="dirichlet">
-<alpha>30</alpha>
-<alpha>30</alpha>
+<alpha>300</alpha>
+<alpha>300</alpha>
 </distrib>
 </variable>\n\n"""
 
+import os
+
 def checkCompleteness():
-    for i in range(1,30):
-        lines = open("structinf/is2013-structinf-"+str(i)+".txt").readlines()
-        for l in lines:
-            if "i_u=" in l:
-                possiu= l.split("i_u=")[1].split("):")[0].split(" ")[0]
-                if possiu not in i_u:
-                    print possiu
-            if "a_m=" in l:
-                possam = l.split("a_m=")[1].split(" ^")[0].replace("\n", "")
-                if possam not in a_m:
-                    print possam
-            if "a_u=" in l:
-                possau = l.split("a_u=")[1].split("):")[0].split(" ")[0]
-                if possau not in a_u:
-                    print possau
+    for i in range(1,300):
+ 	filename = "structinf/is2013-structinf-"+str(i)+".txt"
+        if os.path.isfile(filename):
+            lines = open(filename).readlines()
+            for l in lines:
+                if "i_u=" in l:
+                    possiu= l.split("i_u=")[1].split("):")[0].split(" ")[0]
+                    if possiu not in i_u:
+                        print possiu
+                if "a_m=" in l:
+                    possam = l.split("a_m=")[1].split(" ^")[0].replace("\n", "")
+                    if possam not in a_m:
+                        print possam
+                if "a_u=" in l:
+                    possau = l.split("a_u=")[1].split("):")[0].split(" ")[0]
+                    if possau not in a_u:
+                        print possau
 
 
 checkCompleteness()
