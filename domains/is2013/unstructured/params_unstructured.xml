@@ -2,56 +2,6 @@
 <parameters>
 
 
-<variable id="theta_1">
-<distrib type="dirichlet">
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_2">
-<distrib type="dirichlet">
-<alpha>50</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_3">
-<distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_4">
-<distrib type="dirichlet">
-<alpha>50</alpha>
-<alpha>50</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_5">
-<distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>5</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_14">
-<distrib type="dirichlet">
-<alpha>300</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
 <variable id="theta_(a_m=AskRepeat^i_u=Move(Left))">
 <distrib type="dirichlet">
 <alpha>1</alpha>
