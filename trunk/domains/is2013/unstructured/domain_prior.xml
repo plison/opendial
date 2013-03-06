@@ -2,7 +2,7 @@
 
 <model trigger="floor" type="update">
 
-	<rule>
+	<rule id="clearorcontinue">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
@@ -21,94 +21,94 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="baseprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
 			</condition>
-			<effect prob="theta_1[0]">
+			<effect prob="0.125">
 				<set var="i_u" value="Move(Left)" />
 			</effect>
-			<effect prob="theta_1[1]">
+			<effect prob="0.125">
 				<set var="i_u" value="Move(Forward)" />
 			</effect>
-			<effect prob="theta_1[2]">
+			<effect prob="0.125">
 				<set var="i_u" value="Move(Backward)" />
 			</effect>
-			<effect prob="theta_1[3]">
+			<effect prob="0.125">
 				<set var="i_u" value="Move(Right)" />
 			</effect>
-			<effect prob="theta_1[4]">
+			<effect prob="0.125">
 				<set var="i_u" value="DoYouSee(o1)" />
 			</effect>
-			<effect prob="theta_1[5]">
+			<effect prob="0.125">
 				<set var="i_u" value="DoYouSee(o2)" />
 			</effect>
-			<effect prob="theta_1[6]">
+			<effect prob="0.125">
 				<set var="i_u" value="WhatDoYouSee" />
 			</effect>
-			<effect prob="theta_1[7]" />
+			<effect prob="0.125" />
 		</case>
 	</rule>
 	
 	
-	<rule>
+	<rule id="releaseprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
 				<if var="carried" value="o1" relation="contains" />
 			</condition>
-			<effect prob="theta_2[0]">
+			<effect prob="0.15">
 				<set var="i_u" value="Release(o1)" />
 			</effect>
-			<effect prob="theta_2[1]" />
+			<effect prob="0.85" />
 		</case>
 			<case>
 			<condition>
 				<if var="floor" value="start" />
 				<if var="carried" value="o2" relation="contains" />
 			</condition>
-			<effect prob="theta_2[0]">
+			<effect prob="0.15">
 				<set var="i_u" value="Release(o2)" />
 			</effect>
-			<effect prob="theta_2[1]" />
+			<effect prob="0.85" />
 		</case>
 		<case>
 			<condition>
 				<if var="floor" value="start" />
 			</condition>
-			<effect prob="theta_3[0]">
+			<effect prob="0.0">
 				<set var="i_u" value="Release(o1)" />
 			</effect>
-			<effect prob="theta_3[1]" />
+			<effect prob="1.0" />
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="pickupprior">
 		<case>
 			<condition>
 				<if var="floor" value="start" />
 				<if var="carried" value="[]" />
 			</condition>
-			<effect prob="theta_4[0]">
+			<effect prob="0.15">
 				<set var="i_u" value="PickUp(o1)" />
 			</effect>
-			<effect prob="theta_4[1]">
+			<effect prob="0.15">
 				<set var="i_u" value="PickUp(o2)" />
 			</effect>
-			<effect prob="theta_4[2]" />
+			<effect prob="0.7" />
 		</case>
 		<case>
 			<condition>
 				<if var="floor" value="start" />
 			</condition>
-			<effect prob="theta_5[0]">
+			<effect prob="0.0">
 				<set var="i_u" value="PickUp(o1)" />
 			</effect>
-			<effect prob="theta_5[1]">
+			<effect prob="0.0">
 				<set var="i_u" value="PickUp(o2)" />
 			</effect>
-			<effect prob="theta_5[2]" />
+			<effect prob="1.0" />
 		</case>
 	</rule>
 
