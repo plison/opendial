@@ -255,8 +255,9 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	protected void computeContinuousCache() throws DialException {
+		String headVar = "";
 		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
-			String headVar = samples.get(0).getVariables().iterator().next();
+			headVar = samples.get(0).getVariables().iterator().next();
 			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
 				continuousCache = extractUnivariateDistribution(headVar);
 			}
@@ -265,8 +266,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			}
 		}
 		if (continuousCache == null) {
-			throw new DialException ("empirical distribution could not be converted to a " +
-					"continuous distribution");
+			throw new DialException ("empirical distribution for " + headVar + " could not be " +
+					"converted to a continuous distribution");
 		}
 	}
 

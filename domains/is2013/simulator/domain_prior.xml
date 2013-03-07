@@ -29,25 +29,25 @@
 			<condition>
 				<if var="floor" value="start" />
 			</condition>
-			<effect prob="0.2785">
+			<effect prob="0.6785">
 				<set var="i_u" value="Move(Left)" />
 			</effect>
-			<effect prob="0.1457">
+			<effect prob="0.0457">
 				<set var="i_u" value="Move(Forward)" />
 			</effect>
 			<effect prob="0.05">
 				<set var="i_u" value="Move(Backward)" />
 			</effect>
-			<effect prob="0.114">
+			<effect prob="0.014">
 				<set var="i_u" value="Move(Right)" />
 			</effect>
 			<effect prob="0.095">
 				<set var="i_u" value="DoYouSee(o1)" />
 			</effect>
-			<effect prob="0.12">
+			<effect prob="0.02">
 				<set var="i_u" value="DoYouSee(o2)" />
 			</effect>
-			<effect prob="0.1266">
+			<effect prob="0.0266">
 				<set var="i_u" value="WhatDoYouSee" />
 			</effect>
 		</case>
