@@ -40,6 +40,7 @@ import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ProbabilityRuleNode;
+import opendial.bn.values.VectorVal;
 import opendial.common.NetworkExamples;
 import opendial.domains.Domain;
 import opendial.domains.datastructs.Template;
@@ -59,6 +60,7 @@ import opendial.inference.sampling.SampleCollector;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.state.rules.AnchoredRule;
+import opendial.utils.InferenceUtils;
 
 /**
  * 
@@ -76,8 +78,13 @@ public class SandBox {
 
 	
 	
-
 	public static void main(String[] args) {
+		double[] point = new double[]{-0.3, 0.4};
+		log.debug("result " + new VectorVal(InferenceUtils.normalise(point)));
+	}
+	
+
+	public static void main0(String[] args) {
 		ComplexCondition ccond = new ComplexCondition();
 		BasicCondition cond1 = new BasicCondition("a_m", "Ground(*)", Relation.EQUAL);
 		BasicCondition cond2 = new BasicCondition("a_m", "Ground({i_u})", Relation.UNEQUAL);
