@@ -119,6 +119,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 				}
 				else {
 					log.warning("cannot estimate " + queryVar + " (no relevant samples)");
+					log.debug("query was: " + query + " and total nb. of samples " + samples.size());
 				}
 			}
 		}
