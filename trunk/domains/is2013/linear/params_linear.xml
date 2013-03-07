@@ -2133,14 +2133,14 @@
 <variable id="theta_(a_m=Confirm(Move(Left))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Move(Left))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2245,14 +2245,14 @@
 <variable id="theta_(a_m=Confirm(Move(Right))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Move(Right))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2357,14 +2357,14 @@
 <variable id="theta_(a_m=Confirm(Move(Forward))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Move(Forward))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2469,14 +2469,14 @@
 <variable id="theta_(a_m=Confirm(Move(Backward))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Move(Backward))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2581,14 +2581,14 @@
 <variable id="theta_(a_m=Confirm(PickUp(o1))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(PickUp(o1))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2693,14 +2693,14 @@
 <variable id="theta_(a_m=Confirm(PickUp(o2))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(PickUp(o2))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2805,14 +2805,14 @@
 <variable id="theta_(a_m=Confirm(Release(o1))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Release(o1))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -2917,14 +2917,14 @@
 <variable id="theta_(a_m=Confirm(Release(o2))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(Release(o2))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -3925,14 +3925,14 @@
 <variable id="theta_(a_m=Confirm(WhatDoYouSee)^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(WhatDoYouSee)^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4037,14 +4037,14 @@
 <variable id="theta_(a_m=Confirm(DoYouSee(o1))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(DoYouSee(o1))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4149,14 +4149,14 @@
 <variable id="theta_(a_m=Confirm(DoYouSee(o2))^a_u=Confirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
 <variable id="theta_(a_m=Confirm(DoYouSee(o2))^a_u=Disconfirm)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4289,7 +4289,7 @@
 <variable id="theta_(i_u=Move(Left)^a_u=Move(Left))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4408,7 +4408,7 @@
 <variable id="theta_(i_u=Move(Right)^a_u=Move(Right))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4527,7 +4527,7 @@
 <variable id="theta_(i_u=Move(Forward)^a_u=Move(Forward))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4646,7 +4646,7 @@
 <variable id="theta_(i_u=Move(Backward)^a_u=Move(Backward))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4765,7 +4765,7 @@
 <variable id="theta_(i_u=PickUp(o1)^a_u=PickUp(o1))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -4884,7 +4884,7 @@
 <variable id="theta_(i_u=PickUp(o2)^a_u=PickUp(o2))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5003,7 +5003,7 @@
 <variable id="theta_(i_u=Release(o1)^a_u=Release(o1))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5122,7 +5122,7 @@
 <variable id="theta_(i_u=Release(o2)^a_u=Release(o2))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5248,7 +5248,7 @@
 <variable id="theta_(i_u=WhatDoYouSee^a_u=WhatDoYouSee)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5367,7 +5367,7 @@
 <variable id="theta_(i_u=DoYouSee(o1)^a_u=DoYouSee(o1))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5486,7 +5486,7 @@
 <variable id="theta_(i_u=DoYouSee(o2)^a_u=DoYouSee(o2))">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 
@@ -5514,7 +5514,7 @@
 <variable id="theta_(i_u=None^a_u=None)">
 <distrib type="uniform">
 <min>0</min>
-<max>4</max>
+<max>3</max>
 </distrib>
 </variable>
 

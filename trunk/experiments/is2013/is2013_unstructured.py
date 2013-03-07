@@ -150,13 +150,13 @@ def writePlainParams():
             text = text + "<distrib type=\"dirichlet\">\n"
             for u in a_u:
                 if a == "AskRepeat" and u == i:
-                    text = text + "<alpha>5</alpha>\n"
+                    text = text + "<alpha>3</alpha>\n"
                 elif "Confirm(" in a and i in a and u == "Confirm":
-                    text = text + "<alpha>5</alpha>\n"
+                    text = text + "<alpha>3</alpha>\n"
                 elif "Confirm(" in a and i not in a and u == "Disconfirm":
-                    text = text + "<alpha>5</alpha>\n"
+                    text = text + "<alpha>3</alpha>\n"
                 elif u==i:
-                    text = text + "<alpha>4</alpha>\n"
+                    text = text + "<alpha>2</alpha>\n"
                 else:
                     text = text + "<alpha>1</alpha>\n"
             text = text + "</distrib>\n</variable>\n\n"
@@ -176,7 +176,7 @@ def writeLinearParams():
             if a == "AskRepeat" and u in i_u:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>2</max>\n"    
             elif "Confirm(" in a and (u=="Confirm" or u=="Disconfirm") :
-                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>4</max>\n"                               
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>3</max>\n"                               
             else:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
@@ -185,7 +185,7 @@ def writeLinearParams():
             param = "theta_(i_u="+i + "^a_u="+u+")"
             text = text + "<variable id=\"" + param + "\">\n"
             if i == u:
-                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>4</max>\n"
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>3</max>\n"
             else:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
