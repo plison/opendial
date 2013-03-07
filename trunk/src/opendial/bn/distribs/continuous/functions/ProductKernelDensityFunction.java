@@ -139,11 +139,13 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		double[] newPoint = new double[point.length];
 
 		for (int i = 0 ; i < newPoint.length ; i++) {
-			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]/(500*bandwidths.length)).sample();
+			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
 		}
 		if (isBounded) {
 			newPoint = InferenceUtils.normalise(newPoint);
-	//		log.debug("initial point was " + new VectorVal(point) + " sampled is " + new VectorVal(newPoint));
+		}
+		if (bandwidths.length > 15) {
+			log.debug("initial point was " + new VectorVal(point) + " sampled is " + new VectorVal(newPoint));
 		}
 		return newPoint;
 		
@@ -187,6 +189,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public ProductKernelDensityFunction copy() {
 		ProductKernelDensityFunction copy = new ProductKernelDensityFunction(points);
+		copy.setAsBounded(isBounded);
 		return copy;
 	}
 
