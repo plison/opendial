@@ -33,6 +33,7 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
 import opendial.utils.DistanceUtils;
+import opendial.utils.InferenceUtils;
 
 /**
  * Density function represented as a kernel of points
@@ -137,26 +138,14 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		double[] point = points.get(sampler.nextInt(points.size()));
 		double[] newPoint = new double[point.length];
 
-		// We also should ensure that the values remain > 0!!
-		if (!isBounded) {
-			for (int i = 0 ; i < newPoint.length ; i++) {
-				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-			}
+		for (int i = 0 ; i < newPoint.length ; i++) {
+			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]/bandwidths.length).sample();
 		}
-		else {
-			double sum = 0;
-				for (int i = 0 ; i < newPoint.length; i++) {
-					while (newPoint[i] <= 0) {
-						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]/(400*getDimensionality())).sample();
-					}
-					sum += newPoint[i];
-				}
-				for (int i = 0 ; i < newPoint.length ; i++) {
-					newPoint[i] = newPoint[i] / sum;
-				}
-				
+		if (isBounded) {
+			newPoint = InferenceUtils.normalise(newPoint);
 		}
 		return newPoint;
+		
 	}
 
 	/**
