@@ -138,15 +138,8 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		double[] point = points.get(sampler.nextInt(points.size()));
 		double[] newPoint = new double[point.length];
 
-		double min = 1.0;
-		for (double p: point) {
-			if (p < min) {
-				min = p;
-			}
-		}
-		double variance = Math.pow(2*min, 2);
 		for (int i = 0 ; i < newPoint.length ; i++) {
-			newPoint[i] = new GaussianDensityFunction(point[i], variance).sample();
+			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
 		}
 		if (isBounded) {
 			newPoint = InferenceUtils.normalise(newPoint);
