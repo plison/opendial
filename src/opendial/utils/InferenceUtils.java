@@ -126,15 +126,9 @@ public class InferenceUtils {
 
 
 	public static double[] normalise(double[] initProbs) {
-		double lowestNeg = 0.0;
-		for (double prob: initProbs) {
-			if (prob < lowestNeg) {
-				lowestNeg = prob;
-			}
-		}
-		if (lowestNeg != 0.0) {
-			for (int i = 0 ; i < initProbs.length; i++) {
-				initProbs[i] = initProbs[i] - lowestNeg;
+		for (int i = 0 ; i < initProbs.length; i++) {
+			if (initProbs[i] < 0) {
+				initProbs[i] = 0;
 			}
 		}
 		double sum = 0.0;
