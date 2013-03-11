@@ -163,7 +163,9 @@ public class UserSimulator extends Thread {
 			realState.addContent(a_uother, "renew2");
 			
 			realState.addContent(action, "systemAction");
-
+			
+			log.debug("K-L divergence: " + getKLDivergence());
+			
 			Assignment sampled = sampleNextState(action);
 			log.debug("Elements sampled from simulation: " + sampled);
 			
@@ -214,6 +216,17 @@ public class UserSimulator extends Thread {
 		return new Assignment("a_m", ValueFactory.none());
 	}
 
+	
+	
+	private double getKLDivergence() throws DialException {
+		SimpleTable expectedDis = systemState.getContent("a_u^p", true).toDiscrete().getProbTable(new Assignment());
+		SimpleTable realDis = realState.getContent("a_u^p", true).toDiscrete().getProbTable(new Assignment());
+		double distance = 0.0;
+		for (Assignment a : expectedDis.getRows()) {
+			 distance += Math.log(realDis.getProb(a) / expectedDis.getProb(a)) * realDis.getProb(a);
+		}
+		return distance;
+	}
 	
 
 	private void showParameterState() throws DialException {
