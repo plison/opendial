@@ -22,14 +22,18 @@ package opendial.bn.distribs.continuous.functions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
 import opendial.utils.DistanceUtils;
@@ -136,16 +140,39 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public double[] sample() {
 		double[] point = points.get(sampler.nextInt(points.size()));
+
 		double[] newPoint = new double[point.length];
 
-		for (int i = 0 ; i < newPoint.length ; i++) {
-			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-		}
 		if (isBounded) {
-			newPoint = InferenceUtils.normalise(newPoint);
+			try {
+				Map<Integer,Double> map = new HashMap<Integer,Double>();
+				for (int i = 0 ; i < point.length ; i++) {
+					map.put(i, point[i]);
+				}
+				int indexToChance = (new Intervals<Integer>(map)).sample().intValue();
+
+				for (int i = 0 ; i < point.length ; i++) {
+					if (i != indexToChance) {
+						newPoint[i] = point[i];
+					}
+					else {
+						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+					}
+				}
+				newPoint = InferenceUtils.normalise(newPoint);
+			}
+			catch (DialException e) {
+				e.printStackTrace();
+			}
 		}
+		else {
+			for (int i = 0 ; i < newPoint.length ; i++) {
+				newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+			}
+		}
+
 		return newPoint;
-		
+
 	}
 
 	/**
