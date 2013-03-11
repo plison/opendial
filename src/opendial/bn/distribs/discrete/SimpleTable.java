@@ -224,7 +224,12 @@ public class SimpleTable implements DiscreteProbDistribution {
 		if (table.isEmpty()) {
 			log.warning("creating intervals for an empty table");
 		}
+		try {
 		intervals = new Intervals<Assignment>(table);
+		}
+		catch (DialException e) {
+			log.warning("could not reset intervals: " + e);
+		}
 	}
 
 

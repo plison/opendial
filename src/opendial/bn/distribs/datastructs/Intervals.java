@@ -57,9 +57,10 @@ public class Intervals<T> {
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
 	 * @param table the tables from which to create the intervals
+	 * @throws DialException 
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Map<T,Double> table) {
+	public Intervals(Map<T,Double> table) throws DialException {
 
 		intervals = new Interval[table.size()];
 		int i = 0;
@@ -67,10 +68,16 @@ public class Intervals<T> {
 
 		for (T a : table.keySet()) {
 			double prob = table.get(a);
+			if (prob == Double.NaN) {
+				throw new DialException("probability is NaN: " + table);
+			}
 			intervals[i++] = new Interval<T>(a,totalProb, totalProb+prob);
 			totalProb += prob;
 		}
 
+		if (totalProb < 0.001) {
+			throw new DialException("total prob is null: " + table);
+		}
 		sampler = new Random();
 	}
 
