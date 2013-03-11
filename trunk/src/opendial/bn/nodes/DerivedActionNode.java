@@ -292,6 +292,11 @@ public class DerivedActionNode extends ActionNode {
 		for (Value val : new HashSet<Value>(frequencies.keySet())) {
 			frequencies.put(val, frequencies.get(val)/total);
 		}
+		try {
 		relevantActionsCache.put(new Assignment(input), new Intervals<Value>(frequencies));
+		}
+		catch (DialException e) {
+			log.warning("could not build relevant actions cache: " + e);
+		}
 	}
 }
