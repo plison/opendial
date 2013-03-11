@@ -19,6 +19,7 @@
 
 package opendial.bn.distribs.datastructs;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -98,7 +99,8 @@ public class Intervals<T> {
 		while (min <= max) {
 			int mid = min + (max - min) / 2;
 			if (mid < 0 || mid > intervals.length -1) {
-				throw new DialException("could not sample: (min=" + min + ", max=" + max + ", length=" + intervals.length+")");
+				throw new DialException("could not sample: (min=" + min + ", max=" + max +
+						", length=" + intervals.length+") -- intervals = " + Arrays.asList(intervals));
 			}
 			switch (intervals[mid].compareTo(rand)) {
 			case +1: max = mid - 1; break;
@@ -113,7 +115,7 @@ public class Intervals<T> {
 			}
 		}
 
-		throw new DialException("could not sample given the intervals");
+		throw new DialException("could not sample given the intervals: " + toString());
 
 	}
 
