@@ -144,26 +144,17 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		double[] newPoint = new double[point.length];
 
 		if (isBounded) {
-			try {
-				Map<Integer,Double> map = new HashMap<Integer,Double>();
-				for (int i = 0 ; i < point.length ; i++) {
-					map.put(i, point[i]);
+			int indexToChange = selectIndexToChange(point);
+			for (int i = 0 ; i < point.length ; i++) {
+				if (i != indexToChange) {
+					newPoint[i] = point[i];
 				}
-				int indexToChance = (new Intervals<Integer>(map)).sample().intValue();
+				else {
+					newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
+				}
+			}
+			newPoint = InferenceUtils.normalise(newPoint);
 
-				for (int i = 0 ; i < point.length ; i++) {
-					if (i != indexToChance) {
-						newPoint[i] = point[i];
-					}
-					else {
-						newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i]).sample();
-					}
-				}
-				newPoint = InferenceUtils.normalise(newPoint);
-			}
-			catch (DialException e) {
-				e.printStackTrace();
-			}
 		}
 		else {
 			for (int i = 0 ; i < newPoint.length ; i++) {
@@ -174,6 +165,23 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		return newPoint;
 
 	}
+
+
+	private int selectIndexToChange(double[] point) {
+		try {
+			Map<Integer,Double> map = new HashMap<Integer,Double>();
+			for (int i = 0 ; i < point.length ; i++) {
+				map.put(i, point[i]);
+			}
+			int indexToChange = (new Intervals<Integer>(map)).sample().intValue();
+			return indexToChange;
+		}
+		catch (DialException e) {
+			log.warning("could not select index to change, taking random index: " + e.toString());
+			return (new Random()).nextInt(point.length);
+		}
+	}
+	
 
 	/**
 	 * Returns a set of discrete values for the density function.  This set
