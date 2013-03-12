@@ -68,5 +68,6 @@ def getDivergence(type):
 #print "LINEAR: " + getResults("linear")
 #print "STRUCTURED INFORMATIVE: " + getResults("structinf")
 #print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf")
-print "divergence: " + getDivergence("unstructured")
+#print "divergence: " + getDivergence("unstructured")
 print "divergence-2: " + getDivergence("unstructured2")
+print "return-2: " + getResults("unstructured2")
