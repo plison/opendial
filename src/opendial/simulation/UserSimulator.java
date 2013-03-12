@@ -239,22 +239,27 @@ public class UserSimulator extends Thread {
 			String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
 			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
 				log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
-				log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta1).getOutputNodesIds());
 			}
 			String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
 			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
 				log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
-				log.debug("output connections: " + systemState.getNetwork().getChanceNode(fullTheta2).getOutputNodesIds());
 			}
+			String fullTheta3 = "theta_(a_m=Confirm(Move(Left))^i_u=Move(Left))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta3)) {
+				log.debug("===> estimate for " + fullTheta3 +": " + systemState.getContent(fullTheta3, true));
+			}
+			String fullTheta4 = "theta_(a_m=AskRepeat^i_u=Move(Right))";
+			if (systemState.getNetwork().hasChanceNode(fullTheta4)) {
+				log.debug("===> estimate for " + fullTheta4 +": " + systemState.getContent(fullTheta4, true));	
+			}
+			
 			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
 			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
 				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
-				log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta1).getOutputNodesIds());
 			}
 			String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
 			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
 				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
-				log.debug("output connections: " + systemState.getNetwork().getChanceNode(linearTheta2).getOutputNodesIds());
 			}
 			nbTurns = 0;
 		}
