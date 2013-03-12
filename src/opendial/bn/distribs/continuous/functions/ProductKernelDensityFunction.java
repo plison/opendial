@@ -163,23 +163,25 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		}
 
 		return newPoint;
-
 	}
 
 
 	private int selectIndexToChange(double[] point) {
-		try {
-			Map<Integer,Double> map = new HashMap<Integer,Double>();
+			int indexWithMaxProb = -1;
+			double maxProb = - Double.MAX_VALUE;
 			for (int i = 0 ; i < point.length ; i++) {
-				map.put(i, point[i]);
+				if (point[i] > maxProb) {
+					maxProb = point[i];
+					indexWithMaxProb = i;
+				}
 			}
-			int indexToChange = (new Intervals<Integer>(map)).sample().intValue();
-			return indexToChange;
-		}
-		catch (DialException e) {
-			log.warning("could not select index to change, taking random index: " + e.toString());
-			return (new Random()).nextInt(point.length);
-		}
+			if (indexWithMaxProb != -1) {
+				return indexWithMaxProb;
+			}
+			else {
+				log.warning("could not extract index with max prob");
+				return (new Random()).nextInt(point.length);
+			}
 	}
 	
 
