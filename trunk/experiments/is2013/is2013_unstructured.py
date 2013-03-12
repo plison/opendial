@@ -1,13 +1,10 @@
 
 
-a_m = ["AskRepeat", "Confirm", "Disconfirm", "None", "Describe([])", "Describe([o1])", "Describe([o2])", 
-       "Describe([o2, o1])", "Do(Move(Left))", "Do(Move(Right))", "Do(Move(Forward))", "Do(Move(Backward))", 
-       "Do(PickUp(o1))", "Do(PickUp(o2))", "Do(Release(o1))", "Do(Release(o2))", "Excuse(DoNotSeeObject)", 
-       "Excuse(DoNotCarryObject)", "Excuse(AlreadyCarryObject)", "Confirm(Move(Left))", "Confirm(Move(Right))", 
+a_m = ["AskRepeat", "Confirm", "Disconfirm", "None",
+        "Describe(*)","Do(*)", "Excuse(*)", 
+        "Confirm(Move(Left))", "Confirm(Move(Right))", 
        "Confirm(Move(Forward))", "Confirm(Move(Backward))",  "Confirm(PickUp(o1))", "Confirm(PickUp(o2))", 
-       "Confirm(Release(o1))", "Confirm(Release(o2))", "Ground(Move(Left))", "Ground(Move(Right))", 
-       "Ground(Move(Forward))", "Ground(Move(Backward))",  "Ground(PickUp(o1))", "Ground(PickUp(o2))", 
-       "Ground(Release(o1))", "Ground(Release(o2))", "Confirm(WhatDoYouSee)", "Confirm(DoYouSee(o1))", 
+       "Confirm(Release(o1))", "Confirm(Release(o2))", "Ground(*)", "Confirm(WhatDoYouSee)", "Confirm(DoYouSee(o1))", 
        "Confirm(DoYouSee(o2))"]
 
 i_u = ["Move(Left)", "Move(Right)", "Move(Forward)", "Move(Backward)", "PickUp(o1)", "PickUp(o2)", "Release(o1)", 
@@ -18,55 +15,7 @@ a_u = ["Confirm", "Disconfirm", "Nothing", "None", "Move(Left)", "Move(Right)", 
        "DoYouSee(o2)"]
 
 prelude = """
-<variable id="theta_1">
-<distrib type="dirichlet">
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_2">
-<distrib type="dirichlet">
-<alpha>50</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_3">
-<distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_4">
-<distrib type="dirichlet">
-<alpha>50</alpha>
-<alpha>50</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_5">
-<distrib type="dirichlet">
-<alpha>5</alpha>
-<alpha>5</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_14">
-<distrib type="dirichlet">
-<alpha>300</alpha>
-<alpha>300</alpha>
-</distrib>
-</variable>\n\n"""
+\n\n"""
 
 import os
 
@@ -90,7 +39,7 @@ def checkCompleteness():
                         print possau
 
 
-checkCompleteness()
+#checkCompleteness()
 
 def writePlainUserModel():
     file = open("domain_user_plain.xml", 'w')
