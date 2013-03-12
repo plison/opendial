@@ -12314,6 +12314,11 @@
 <set var="a_u" value="DoYouSee(o2)"/>
 </effect>
 </case>
+<case>
+<effect>
+<set var="ERROR" value="{a_m} and {i_u}"/>
+</effect>
+</case>
 
 </rule>
 </model>
