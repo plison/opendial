@@ -164,6 +164,11 @@ public class UserSimulator extends Thread {
 			
 			realState.addContent(action, "systemAction");
 			
+			String error = "ERROR";
+			if (systemState.getNetwork().hasChanceNode(error)) {
+				log.debug("===> ERROR: " + systemState.getContent(error, true));	
+			}
+			
 			log.debug("K-L divergence: " + getKLDivergence());
 			
 			Assignment sampled = sampleNextState(action);
@@ -252,7 +257,10 @@ public class UserSimulator extends Thread {
 			if (systemState.getNetwork().hasChanceNode(fullTheta4)) {
 				log.debug("===> estimate for " + fullTheta4 +": " + systemState.getContent(fullTheta4, true));	
 			}
-			
+			String fullTheta5 = "theta_(a_m=Do(*)^i_u=WhatDoYouSee)";
+			if (systemState.getNetwork().hasChanceNode(fullTheta5)) {
+				log.debug("===> estimate for " + fullTheta5 +": " + systemState.getContent(fullTheta5, true));	
+			}
 			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
 			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
 				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
