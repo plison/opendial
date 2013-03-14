@@ -105,7 +105,7 @@ def writePlainParams():
                 elif "Confirm(" in a and i not in a and u == "Disconfirm":
                     text = text + "<alpha>5</alpha>\n"
                 elif ("Do" in a or "Excuse" in a or "Describe" in a or a=="Confirm" or a=="Disconfirm") and u==i:
-                    text = text + "<alpha>10</alpha>\n"                    
+                    text = text + "<alpha>5</alpha>\n"                    
                 elif u==i:
                     text = text + "<alpha>2</alpha>\n"
                 else:
