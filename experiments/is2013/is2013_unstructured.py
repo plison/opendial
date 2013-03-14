@@ -126,8 +126,10 @@ def writeLinearParams():
             text = text + "<variable id=\"" + param + "\">\n"
             if a == "AskRepeat" and u in i_u:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>2</max>\n"    
+            elif ("Do" in a or "Excuse" in a or "Describe" in a or a=="Confirm" or a=="Disconfirm") and u in i_u:
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>2</max>\n"
             elif "Confirm(" in a and (u=="Confirm" or u=="Disconfirm") :
-                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>3</max>\n"                               
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>5</max>\n"                               
             else:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
@@ -136,7 +138,7 @@ def writeLinearParams():
             param = "theta_(i_u="+i + "^a_u="+u+")"
             text = text + "<variable id=\"" + param + "\">\n"
             if i == u:
-                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>3</max>\n"
+                text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>10</max>\n"
             else:
                 text = text + "<distrib type=\"uniform\">\n<min>0</min>\n<max>1</max>\n"
             text = text + "</distrib>\n</variable>\n\n"
