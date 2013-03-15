@@ -23,7 +23,6 @@ def getResults(type):
         
     
     line = ""
-    print numb
     for i in range(0,len(total)):
         val = total[i] / numb[i]
         line = line + str(val).replace(".", ",") + "\n"
@@ -54,7 +53,6 @@ def getDivergence(type):
         
     
     line = ""
-    print numb
     for i in range(0,len(total)/10):
         val = 0
         for j in range(0,9):
@@ -64,13 +62,12 @@ def getDivergence(type):
     return line
 
 
-#print "UNSTRUCTURED: " + getResults("unstructured")
+print "UNSTRUCTURED: " + getResults("unstructured").replace("\n", "\t")
+print "divergence: " + getDivergence("unstructured").replace("\n", "\t")
 #print "LINEAR: " + getResults("linear")
-#print "STRUCTURED INFORMATIVE: " + getResults("structinf")
-#print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf")
-#print "STRUCTURED divergence: " + getDivergence("structuninf")
-#print "divergence: " + getDivergence("unstructured")
-print "return-2: " + getResults("unstructured2")
-print "divergence-2: " + getDivergence("unstructured2")
+#print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf").replace("\n", "\t")
+#print "STRUCTURED divergence: " + getDivergence("structuninf").replace("\n", "\t")
+#print "return-2: " + getResults("unstructured2")
+#print "divergence-2: " + getDivergence("unstructured2")
 #print "divergence-3: " + getDivergence("unstructured3")
 #print "return-3: " + getResults("unstructured3")
