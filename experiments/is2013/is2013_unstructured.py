@@ -99,15 +99,15 @@ def writePlainParams():
             text = text + "<distrib type=\"dirichlet\">\n"
             for u in a_u:
                 if a == "AskRepeat" and u == i:
-                    text = text + "<alpha>5</alpha>\n"
-                elif "Confirm(" in a and i in a and u == "Confirm":
-                    text = text + "<alpha>5</alpha>\n"
-                elif "Confirm(" in a and i not in a and u == "Disconfirm":
-                    text = text + "<alpha>5</alpha>\n"
-                elif ("Do" in a or "Excuse" in a or "Describe" in a or a=="Confirm" or a=="Disconfirm") and u==i:
-                    text = text + "<alpha>5</alpha>\n"                    
-                elif u==i:
                     text = text + "<alpha>2</alpha>\n"
+                elif "Confirm(" in a and i in a and u == "Confirm":
+                    text = text + "<alpha>2</alpha>\n"
+                elif "Confirm(" in a and i not in a and u == "Disconfirm":
+                    text = text + "<alpha>2</alpha>\n"
+                elif ("Do" in a or "Excuse" in a or "Describe" in a or a=="Confirm" or a=="Disconfirm") and u==i:
+                    text = text + "<alpha>3</alpha>\n"                    
+                elif u==i:
+                    text = text + "<alpha>1</alpha>\n"
                 else:
                     text = text + "<alpha>1</alpha>\n"
             text = text + "</distrib>\n</variable>\n\n"
