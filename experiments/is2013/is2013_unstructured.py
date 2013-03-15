@@ -109,7 +109,7 @@ def writePlainParams():
                 elif u==i:
                     text = text + "<alpha>1</alpha>\n"
                 else:
-                    text = text + "<alpha>1</alpha>\n"
+                    text = text + "<alpha>0.5</alpha>\n"
             text = text + "</distrib>\n</variable>\n\n"
     text = text + "\n</parameters>\n"
     file.write(text)
