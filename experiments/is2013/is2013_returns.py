@@ -63,10 +63,10 @@ def getDivergence(type):
 
 
 print "UNSTRUCTURED: " + getResults("unstructured").replace("\n", "\t")
-print "divergence: " + getDivergence("unstructured").replace("\n", "\t")
+#print "divergence: " + getDivergence("unstructured")
 #print "LINEAR: " + getResults("linear")
-#print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf").replace("\n", "\t")
-#print "STRUCTURED divergence: " + getDivergence("structuninf").replace("\n", "\t")
+print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf").replace("\n", "\t")
+#print "divergence: " + getDivergence("structuninf")
 #print "return-2: " + getResults("unstructured2")
 #print "divergence-2: " + getDivergence("unstructured2")
 #print "divergence-3: " + getDivergence("unstructured3")
