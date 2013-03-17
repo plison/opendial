@@ -94,7 +94,7 @@
 				<if var="a_u0" value="None" relation="!=" />
 				<if var="a_m" value="None" />
 			</condition>
-			<effect util="-1.0" />
+			<effect util="-1.5" />
 		</case>
 	</rule>
 
