@@ -62,8 +62,8 @@ def getDivergence(type):
     return line
 
 
-#print "UNSTRUCTURED: " + getResults("unstructured").replace("\n", "\t")
-#print "divergence: " + getDivergence("unstructured")
+print "UNSTRUCTURED: " + getResults("unstructured").replace("\n", "\t")
+print "divergence: " + getDivergence("unstructured")
 #print "LINEAR: " + getResults("linear")
 print "STRUCTURED UNINFORMATIVE: " + getResults("structuninf").replace("\n", "\t")
 print "divergence: " + getDivergence("structuninf")
