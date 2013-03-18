@@ -34,11 +34,12 @@ public class Main {
 	public static Logger log = new Logger("Main", Logger.Level.NORMAL);
 
 
-	public static final String domainFile = "domains//testing//basicfulltest.xml";
+	public static final String domainFile = "domains//testing//basictest.xml";
 
 	public static void main(String[] args) {
 		try {
 		Domain domain = XMLDomainReader.extractDomain(domainFile); 
+		Settings.getInstance().gui.showGUI = true;
 		DialogueSystem system = new DialogueSystem(domain);
 		system.startSystem(); 
 		}

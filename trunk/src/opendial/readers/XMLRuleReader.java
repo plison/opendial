@@ -276,6 +276,9 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
+			else if (relationStr.toLowerCase().trim().equals("partial")) {
+				relation = Relation.CONTAINS;
+			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.CONTAINS;
 			}

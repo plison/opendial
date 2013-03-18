@@ -220,7 +220,6 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 				}
 				formattedTable += "\n";
 			}
-			
 			String guiLabel = "<b>[" + variablesToMonitor.get(variable) + "]</b>";
 			String newText =  "<p style=\"font-size: 2px;\"><table><tr><td width=100><font size=4>" + guiLabel +
 					"</font></td><td><font size=4>" + formattedTable + "</font></td></tr></table></p>";
@@ -338,12 +337,12 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	private Map.Entry<String, Float> getProbabilityValueInParenthesis (String text) {
 
 		try {
-			Pattern p = Pattern.compile(".*\\((\\d\\.\\d+)\\).*");
+			Pattern p = Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 			Matcher m = p.matcher(text);
 			if (m.find()) {
 				String probValueStr = m.group(1);
 				float probValue = Float.parseFloat(probValueStr);
-				String remainingStr = text.replace(probValueStr, "").trim();
+				String remainingStr = text.replace("(" + probValueStr + ")", "").trim();
 				return new AbstractMap.SimpleEntry<String,Float>(remainingStr, probValue);
 			}
 			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
