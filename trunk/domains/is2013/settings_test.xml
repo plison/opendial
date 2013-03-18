@@ -18,4 +18,9 @@
 	<toMonitor>perceived</toMonitor>  
 </gui>
 
+<inference>
+	<nbsamples>5000</nbsamples>
+	<timeout>1000</timeout>
+</inference>
+
 </settings>
