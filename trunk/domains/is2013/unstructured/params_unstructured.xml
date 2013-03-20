@@ -3,44 +3,18 @@
 
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_2">
-<distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>2</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_3">
-<distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>2</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_4">
-<distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>2</alpha>
-</distrib>
-</variable>
-
-<variable id="theta_5">
-<distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>1</alpha>
-<alpha>2</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
 </distrib>
 </variable>
 
