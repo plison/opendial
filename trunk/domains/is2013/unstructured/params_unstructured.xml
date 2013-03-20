@@ -3,18 +3,18 @@
 
 <variable id="theta_1">
 <distrib type="dirichlet">
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
-<alpha>2</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
+<alpha>100</alpha>
 </distrib>
 </variable>
 
