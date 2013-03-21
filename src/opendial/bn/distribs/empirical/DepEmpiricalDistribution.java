@@ -177,7 +177,7 @@ public class DepEmpiricalDistribution implements EmpiricalDistribution {
 			return selected;
 			}
 		}
-		log.debug("for node " + samples.iterator().next().getTrimmedInverse(condVars) + ", using distance measure for " + trimmed);
+	//	log.debug("for node " + samples.iterator().next().getTrimmedInverse(condVars) + ", using distance measure for " + trimmed);
 		int poolSize = (samples.size() > 10)? samples.size()/10 : samples.size();
 		List<? extends Assignment> closeValues = DistanceUtils.getClosestElements(samples, trimmed, poolSize);
 		if (!closeValues.isEmpty()) {
