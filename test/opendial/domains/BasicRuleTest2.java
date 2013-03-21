@@ -107,20 +107,20 @@ public class BasicRuleTest2 {
 		
 		query = new ProbQuery(system.getState(),"a_u^p");
 	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.893);
-	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.056);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
+	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.0409);
 
 	 	ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
 	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.090);
 	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9097);
 
 	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.903);
-	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.096);
+	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.081);
 
 	 	ProbQuery query4 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.903);
-	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.096);	
+	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
+	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.081);	
 
 		finish();
 }
@@ -149,10 +149,10 @@ public class BasicRuleTest2 {
 		system.getState().addContent(table, "test2");
 		
 		query = new ProbQuery(system.getState(),"i_u2");
-	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.609);
+	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.654);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
-	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1502);
+	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
 
 	 	finish();
 	}
@@ -179,8 +179,8 @@ public class BasicRuleTest2 {
 		system.getState().addContent(table, "test");
 
 	 	query = new UtilQuery(system.getState(),"a_m'");
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.278);
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.277);	
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.35);
+	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.357);	
 
 		finish();
 }

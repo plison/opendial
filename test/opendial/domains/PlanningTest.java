@@ -93,8 +93,8 @@ public class PlanningTest {
 	@Test
 	public void planning3() throws DialException, InterruptedException {
 		
-		DialogueSystem system = new DialogueSystem(domain2);
 		Settings.getInstance().planning.horizon =2;
+		DialogueSystem system = new DialogueSystem(domain2);
 		system.startSystem(); 
 		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
 		Settings.getInstance().planning.horizon =1;
@@ -105,8 +105,8 @@ public class PlanningTest {
 	public void planning4() throws DialException, InterruptedException {
 		inference = new InferenceChecks();
 
-		DialogueSystem system = new DialogueSystem(domain3);
 		Settings.getInstance().planning.horizon =3;
+		DialogueSystem system = new DialogueSystem(domain3);
 		system.startSystem(); 
 		
 		SimpleTable t1 = new SimpleTable();

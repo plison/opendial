@@ -17,121 +17,31 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.bn.values;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+package opendial.bn;
 
 
-/**
- * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public final class SetVal implements Value {
-	
-	// the set of values
-	Set<Value> set;
-	
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Collection<Value> values) { this.set = new HashSet<Value>(values); };
+import static org.junit.Assert.*;
 
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
-	
-	
-	/**
-	 * Returns the hashcode for the set
-	 *
-	 * @return the hashcode
-	 */
-	@Override
-	public int hashCode() { return set.hashCode(); }
-	
-	/**
-	 * Returns true if the sets are equals (contain the same elements), false
-	 * otherwise
-	 *
-	 * @param o the object to compare
-	 * @return true if equal, false otherwise
-	 */
-	@Override
-	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+import org.junit.Test;
+
+import opendial.arch.Logger;
+import opendial.bn.values.MapVal;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
+
+public class ValueTest {
+
+	// logger
+	public static Logger log = new Logger("ValueTest", Logger.Level.NORMAL);
+
+	@Test
+	public void mapTest() {
+		String stringVersion = "<feature2:333.0;feature1:blablabla>";
+		Value val = ValueFactory.create(stringVersion);
+		assertTrue(val instanceof MapVal);
+		assertEquals(((MapVal)val).getMap().size(), 2);
+		assertEquals(((MapVal)val).getMap().get("feature1").toString(), "blablabla");
+		assertEquals(val.toString(), stringVersion);
 	}
-	
-	
-	/**
-	 * Returns the set of values
-	 *  
-	 * @return the set
-	 */
-	public Set<Value> getSet() {return set; }
-	
-	/**
-	 * Returns a copy of the set
-	 *
-	 * @return the copy
-	 */
-	@Override
-	public SetVal copy() { return new SetVal(set); }
-	
-	/**
-	 * Returns a string representation of the set
-	 *
-	 * @return the string
-	 */
-	@Override
-	public String toString() { return ""+set; }
-
-	
-	/**
-	 * Adds all the values in the given SetVal to this value
-	 * 
-	 * @param values the setVal with the values to add
-	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
-	}
-	
-	public void removeAll(Set<Value> discardValues) {
-		set.removeAll(discardValues);
-	}
-	
-	/**
-	 * Compares the set value to another value
-	 * 
-	 * @return hashcode difference
-	 */
-	@Override
-	public int compareTo(Value o) {
-		return hashCode() - o.hashCode();
-	}
-
-	public void remove(Value object) {
-		set.remove(object);
-	}
-
-	public void add(Value object) {
-		set.add(object);
-	}
-
-
-	
 }
+

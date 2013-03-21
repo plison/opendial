@@ -77,8 +77,16 @@ public class SandBox {
 	public static final String domainFile = "domains//testing//domain1.xml";
 
 	
-	
 	public static void main(String[] args) {
+		Pattern p = Pattern.compile("Do\\((.*)\\)");
+		Matcher m = p.matcher("Do(bliblibli(bloblo))");
+		while (m.find()) {
+			log.debug("ACTION: " + m.group(1));
+		}
+	}
+	
+	
+	public static void main222(String[] args) {
 		double[] point = new double[]{-0.3, 0.4};
 		log.debug("result " + new VectorVal(InferenceUtils.normalise(point)));
 	}

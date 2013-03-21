@@ -17,121 +17,50 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.bn.values;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+package opendial.bn.distribs.discrete.functions;
 
 
-/**
- * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public final class SetVal implements Value {
-	
-	// the set of values
-	Set<Value> set;
-	
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Collection<Value> values) { this.set = new HashSet<Value>(values); };
+import opendial.arch.Logger;
+import opendial.bn.Assignment;
+import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
-	
-	
-	/**
-	 * Returns the hashcode for the set
-	 *
-	 * @return the hashcode
-	 */
+public class AdditionFunction implements DeterministicFunction {
+
+	// logger
+	public static Logger log = new Logger("AdditionFunction",
+			Logger.Level.NORMAL);
+
 	@Override
-	public int hashCode() { return set.hashCode(); }
-	
-	/**
-	 * Returns true if the sets are equals (contain the same elements), false
-	 * otherwise
-	 *
-	 * @param o the object to compare
-	 * @return true if equal, false otherwise
-	 */
+	public Value getFunctionValue(Assignment input) {
+		double total = 0.0;
+		for (Value val : input.getValues()) {
+			if (val instanceof DoubleVal) {
+				total += ((DoubleVal)val).getDouble();
+			}
+		}
+		return ValueFactory.create(total);
+	}
+
 	@Override
-	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+	public String prettyPrint() {
+		return "addition";
 	}
-	
-	
-	/**
-	 * Returns the set of values
-	 *  
-	 * @return the set
-	 */
-	public Set<Value> getSet() {return set; }
-	
-	/**
-	 * Returns a copy of the set
-	 *
-	 * @return the copy
-	 */
+
 	@Override
-	public SetVal copy() { return new SetVal(set); }
-	
-	/**
-	 * Returns a string representation of the set
-	 *
-	 * @return the string
-	 */
+	public DeterministicFunction copy() {
+		return new AdditionFunction();
+	}
+
 	@Override
-	public String toString() { return ""+set; }
-
-	
-	/**
-	 * Adds all the values in the given SetVal to this value
-	 * 
-	 * @param values the setVal with the values to add
-	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
+	public void modifyVarId(String oldId, String newId) {
+		return;
 	}
 	
-	public void removeAll(Set<Value> discardValues) {
-		set.removeAll(discardValues);
-	}
-	
-	/**
-	 * Compares the set value to another value
-	 * 
-	 * @return hashcode difference
-	 */
-	@Override
-	public int compareTo(Value o) {
-		return hashCode() - o.hashCode();
+	public String toString() {
+		return prettyPrint();
 	}
 
-	public void remove(Value object) {
-		set.remove(object);
-	}
-
-	public void add(Value object) {
-		set.add(object);
-	}
-
-
-	
 }
+

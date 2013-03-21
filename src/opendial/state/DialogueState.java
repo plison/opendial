@@ -22,7 +22,6 @@ package opendial.state;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,21 +33,17 @@ import java.util.Stack;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.arch.Logger.Level;
 import opendial.arch.StateListener;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.nodes.BNode;
-import opendial.bn.nodes.ChanceNode;
 import opendial.domains.rules.PredictionRule;
-import opendial.gui.GUIFrame;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.modules.SynchronousModule;
 import opendial.planning.ForwardPlanner;
-import opendial.simulation.UserSimulator;
+import opendial.planning.SARSALearner;
 import opendial.state.rules.DistributionRule;
 import opendial.state.rules.Rule;
 import opendial.state.rules.Rule.RuleType;
@@ -85,6 +80,7 @@ public class DialogueState {
 	ForwardPlanner planner;
 
 	boolean isFictive = false;
+	
 
 	boolean activateDecisions = true;
 	boolean activatePredictions = true;
@@ -104,8 +100,13 @@ public class DialogueState {
 		updateStamps = new HashMap<String,Long>();
 
 		pruner = new StatePruner(this);
-		planner = new ForwardPlanner(this);
 
+		if (Settings.getInstance().planning.isSarsa()) {
+		planner = new SARSALearner(this);
+		}
+		else {
+			planner = new ForwardPlanner(this);
+		}
 		listeners = new LinkedList<StateListener>();
 		
 		parameterIds = new HashSet<String>();
@@ -228,12 +229,8 @@ public class DialogueState {
 					log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
 					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
 				} 
-					if (network.hasChanceNode("history") && !isFictive()) { 
-						log.debug("history : " + getContent("history", true).toString().replace("\n", ", "));
-					}
 				}
-				catch (DialException e) { e.printStackTrace(); } 
-				
+				catch (DialException e) { e.printStackTrace(); } 	
 				planner.run();
 				toContinue = true;
 			}	
@@ -356,17 +353,16 @@ public class DialogueState {
 		this.evidence = evidence;
 	}
 
-
-	// ONE SHOULD HAVE a getUpdated(long refererencetime) instead
-	public long getUpdateStamp(String varId) {
+	
+	public boolean isUpdated(String varId, long referenceStamp) {
 		if (updateStamps.containsKey(varId)) {
-			return updateStamps.get(varId).longValue();
+			long updateStamp = updateStamps.get(varId).longValue();
+			return (updateStamp - referenceStamp) > 0.0;
 		}
-		else {
-			return 0;
-		}
+		return false;
 	}
- 
+
+
 	public void addParameters(BNetwork parameterNetwork) {
 		try {
 			network.addNetwork(parameterNetwork);
@@ -385,6 +381,13 @@ public class DialogueState {
 		return name;
 	}
 
+	
+	
+	public void shutdown() {
+		for (SynchronousModule module: modules) {
+			module.shutdown();
+		}
+	}
 
 }
 

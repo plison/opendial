@@ -21,51 +21,49 @@ package opendial.bn.values;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 
 /**
- * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
+ * Value that is defined as a mapping of values.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public final class SetVal implements Value {
+public final class MapVal implements Value {
 	
 	// the set of values
-	Set<Value> set;
+	Map<String,Value> map;
+	
+	
+	protected MapVal() {
+		this.map = new HashMap<String,Value>();
+	}
 	
 	/**
-	 * Creates the set of values
+	 * Creates the map of values
 	 * (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
-	protected SetVal(Collection<Value> values) { this.set = new HashSet<Value>(values); };
+	protected MapVal(Map<String,Value> values) { this.map = new HashMap<String,Value>(values); };
 
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
-	
 	
 	/**
-	 * Returns the hashcode for the set
+	 * Returns the hashcode for the map
 	 *
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return set.hashCode(); }
+	public int hashCode() { return map.hashCode(); }
 	
 	/**
-	 * Returns true if the sets are equals (contain the same elements), false
+	 * Returns true if the maps are equals (contain the same elements), false
 	 * otherwise
 	 *
 	 * @param o the object to compare
@@ -73,7 +71,7 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+		return ((o instanceof MapVal && ((MapVal)o).getMap().equals(getMap())));
 	}
 	
 	
@@ -82,40 +80,52 @@ public final class SetVal implements Value {
 	 *  
 	 * @return the set
 	 */
-	public Set<Value> getSet() {return set; }
+	public Map<String,Value> getMap() {return map; }
 	
 	/**
-	 * Returns a copy of the set
+	 * Returns a copy of the map
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public SetVal copy() { return new SetVal(set); }
+	public MapVal copy() { return new MapVal(map); }
 	
 	/**
-	 * Returns a string representation of the set
+	 * Returns a string representation of the map
 	 *
 	 * @return the string
 	 */
 	@Override
-	public String toString() { return ""+set; }
+	public String toString() { 
+		String s = "<";
+		for (String key : map.keySet()) {
+			s += key + ":"+map.get(key)+";";
+		}
+		return s.substring(0,s.length()-1)+ ">";
+	}
 
 	
+	public void put(String key, Value value) {
+		map.put(key, value);
+	}
+	
 	/**
-	 * Adds all the values in the given SetVal to this value
+	 * Adds all the values in the given MapVal to this value
 	 * 
-	 * @param values the setVal with the values to add
+	 * @param values the mapVal with the values to add
 	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
+	public void putAll(MapVal values) {
+		map.putAll(values.getMap());
 	}
 	
-	public void removeAll(Set<Value> discardValues) {
-		set.removeAll(discardValues);
+	public void removeAll(List<String> discardValues) {
+		for (String discardValue : discardValues) {
+			map.remove(discardValue);
+		}
 	}
 	
 	/**
-	 * Compares the set value to another value
+	 * Compares the map value to another value
 	 * 
 	 * @return hashcode difference
 	 */
@@ -124,12 +134,8 @@ public final class SetVal implements Value {
 		return hashCode() - o.hashCode();
 	}
 
-	public void remove(Value object) {
-		set.remove(object);
-	}
-
-	public void add(Value object) {
-		set.add(object);
+	public void remove(String key) {
+		map.remove(key);
 	}
 
 

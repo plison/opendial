@@ -1,3 +1,4 @@
+package opendial.experiments;
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
@@ -17,121 +18,52 @@
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
-package opendial.bn.values;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
+import opendial.arch.Logger;
+import opendial.arch.Settings;
+import opendial.bn.Assignment;
+import opendial.bn.BNetwork;
+import opendial.common.InferenceChecks;
+import opendial.domains.Domain;
+import opendial.gui.GUIFrame;
+import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLSettingsReader;
+import opendial.readers.XMLStateReader;
+import opendial.simulation.UserSimulator;
+
+public class ACL2013 {
+
+	// logger
+	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
 
 
-/**
- * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
- * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
- */
-public final class SetVal implements Value {
-	
-	// the set of values
-	Set<Value> set;
-	
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Collection<Value> values) { this.set = new HashSet<Value>(values); };
+//	public static final String domainFile = "domains//is2013/linear/domain.xml";
+//	public static final String parametersFile = "domains//is2013/linear/params_linear.xml";
+	public static final String simulatorFile = "domains//acl2013/simulator/simulator.xml";
+	public static final String settingsFile = "domains//acl2013/settings.xml";
 
-	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
-	 * 
-	 * @param values the values
-	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
-	
-	
-	/**
-	 * Returns the hashcode for the set
-	 *
-	 * @return the hashcode
-	 */
-	@Override
-	public int hashCode() { return set.hashCode(); }
-	
-	/**
-	 * Returns true if the sets are equals (contain the same elements), false
-	 * otherwise
-	 *
-	 * @param o the object to compare
-	 * @return true if equal, false otherwise
-	 */
-	@Override
-	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+	public static void main(String[] args) {
+		try {
+			if (args.length != 2) {
+				throw new DialException("must provide arguments for domain and parameter");
+			}
+			String domainFile = args[0];
+			String parametersFile = args[1];
+			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
+			Domain domain = XMLDomainReader.extractDomain(domainFile);
+			BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
+			Domain simulatorDomain = XMLDomainReader.extractDomain(simulatorFile); 
+		DialogueSystem system = new DialogueSystem(settings, domain);
+		system.addParameters(params);
+		system.attachSimulator(simulatorDomain);
+		system.startSystem(); 
+		
+		}
+		catch (DialException e) {
+			log.warning("exception thrown " + e + ", aborting");
+		}
 	}
-	
-	
-	/**
-	 * Returns the set of values
-	 *  
-	 * @return the set
-	 */
-	public Set<Value> getSet() {return set; }
-	
-	/**
-	 * Returns a copy of the set
-	 *
-	 * @return the copy
-	 */
-	@Override
-	public SetVal copy() { return new SetVal(set); }
-	
-	/**
-	 * Returns a string representation of the set
-	 *
-	 * @return the string
-	 */
-	@Override
-	public String toString() { return ""+set; }
-
-	
-	/**
-	 * Adds all the values in the given SetVal to this value
-	 * 
-	 * @param values the setVal with the values to add
-	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
-	}
-	
-	public void removeAll(Set<Value> discardValues) {
-		set.removeAll(discardValues);
-	}
-	
-	/**
-	 * Compares the set value to another value
-	 * 
-	 * @return hashcode difference
-	 */
-	@Override
-	public int compareTo(Value o) {
-		return hashCode() - o.hashCode();
-	}
-
-	public void remove(Value object) {
-		set.remove(object);
-	}
-
-	public void add(Value object) {
-		set.add(object);
-	}
-
-
-	
 }
+

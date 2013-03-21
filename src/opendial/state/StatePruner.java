@@ -143,6 +143,9 @@ public class StatePruner implements Runnable {
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToRemove.add(node.getId());
 			}
+			else if (node.getId().contains("^temp")) {
+				nodesToRemove.add(node.getId());
+			}
 
 			// keeping the newest nodes
 			else if (!(state.getNetwork().hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {

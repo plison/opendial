@@ -139,7 +139,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			try { computeContinuousCache(); } catch (DialException e) { }
 			cacheCreated = true;
 		}
-		if (continuousCache != null && !getHeadVariables().contains("theta_1")) {
+		if (continuousCache != null) {
 			return continuousCache.sample(new Assignment());
 		} 
 		

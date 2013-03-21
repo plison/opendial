@@ -146,6 +146,7 @@ public class UserSimulator extends Thread {
 			}
 			else {
 				log.debug("reward value: " + returnValue);
+				systemState.addEvidence(new Assignment("r", returnValue));
 				accReturn += returnValue;						
 			}
 			
@@ -155,10 +156,10 @@ public class UserSimulator extends Thread {
 			
 			log.debug("--------");
 
-			if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+		/**	if (systemState.getNetwork().hasChanceNode("a_u^p")) {
 				log.debug("expected next user action: " + systemState.getContent("a_u^p", 
 						true).toString().replace("\n", ", "));
-			}
+			} */
 			realState.addContent(asrScore, "renew1");
 			realState.addContent(a_uother, "renew2");
 			
@@ -169,7 +170,7 @@ public class UserSimulator extends Thread {
 				log.debug("===> ERROR: " + systemState.getContent(error, true));	
 			}
 			
-			log.debug("K-L divergence: " + getKLDivergence());
+	//		log.debug("K-L divergence: " + getKLDivergence());
 			
 			Assignment sampled = sampleNextState(action);
 			log.debug("Elements sampled from simulation: " + sampled);
@@ -210,7 +211,7 @@ public class UserSimulator extends Thread {
 
 	private Assignment getSystemAction() throws DialException {
 		if (systemState.getNetwork().hasChanceNode("a_m") && 
-				systemState.getUpdateStamp("a_m") - systemActionStamp > 0) {
+				systemState.isUpdated("a_m", systemActionStamp)) {
 			systemActionStamp = System.currentTimeMillis();
 			SimpleTable actionDistrib = systemState.getContent("a_m", true).
 					toDiscrete().getProbTable(new Assignment());
