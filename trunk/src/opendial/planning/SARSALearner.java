@@ -108,7 +108,19 @@ public class SARSALearner extends ForwardPlanner {
 		try {
 			lastDS = currentState.copy();
 			
-			lastDS.addEvidence(bestAction);
+			// change action node into a chance node with a single action
+			for (String var : bestAction.getVariables()) {
+				ActionNode aNode = lastDS.getNetwork().getActionNode(var);
+				ChanceNode newNode = new ChanceNode(var);
+				newNode.addProb(new Assignment(), bestAction.getValue(var), 1.0);
+				Set<String> outputNodes = new HashSet<String>(aNode.getOutputNodesIds());
+				lastDS.getNetwork().removeNode(var);
+				for (String oNodeId : outputNodes) {
+					BNode oNode = lastDS.getNetwork().getNode(oNodeId);
+					oNode.addInputNode(newNode);
+				}
+				lastDS.getNetwork().addNode(newNode);				
+			}
 			
 			if (lastDS.getNetwork().hasNode("q")) {
 			lastDS.getNetwork().removeNode("q");
