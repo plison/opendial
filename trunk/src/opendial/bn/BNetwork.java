@@ -488,7 +488,7 @@ public class BNetwork implements IdChangeListener {
 		for (ChanceNode node : reducedNetwork.getChanceNodes()) {
 			ChanceNode initNode = getChanceNode(node.getId());
 				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
-						&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
+			//			&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
 						&& !initNode.hasDescendant(evidence.getVariables())
 				//		&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))
 						) {

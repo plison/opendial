@@ -20,6 +20,8 @@
 package opendial.arch;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -27,6 +29,7 @@ import opendial.bn.nodes.BNode;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
+import opendial.modules.AsynchronousModule;
 import opendial.simulation.UserSimulator;
 import opendial.state.DialogueState;
 
@@ -52,6 +55,8 @@ public class DialogueSystem {
 	
 	UserSimulator simulator;
 	
+	List<AsynchronousModule> asyncModules;
+	
 	boolean paused = false;
 		
 	public DialogueSystem(Domain domain) throws DialException {
@@ -69,8 +74,15 @@ public class DialogueSystem {
 			gui = new GUIFrame(this);
 			curState.addListener(gui);
 		}
+		asyncModules = new LinkedList<AsynchronousModule>();
+		attachShutDownHook();
 	}
 	
+	
+	public void attachAsynchronousModule(AsynchronousModule module) {
+		asyncModules.add(module);
+		(new Thread(module)).start();
+	}
 	
 	public void addParameters(BNetwork parameterNetwork) {
 		curState.addParameters(parameterNetwork);
@@ -103,6 +115,19 @@ public class DialogueSystem {
 			simulator.getRealState().addListener(gui);
 		}
 	}
+	
+	
+	public void attachShutDownHook(){
+		  Runtime.getRuntime().addShutdownHook(new Thread() {
+		   @Override
+		   public void run() {
+		    for (AsynchronousModule module: asyncModules) {
+		    	module.shutdown();
+		    }
+			  System.out.println("Shutting down dialogue system");
+		   }
+		  });
+		 }
 	
 	
 	public void pause(boolean shouldBePaused) {

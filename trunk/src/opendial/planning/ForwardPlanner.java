@@ -83,6 +83,15 @@ public class ForwardPlanner implements AnytimeProcess {
 		Timer timer = new Timer();
 		timer.schedule(new StopProcessTask(this, MAX_DELAY), MAX_DELAY);
 
+		Assignment bestAction = findBestAction().getKey();
+		if (!bestAction.isEmpty()) {
+			recordAction(currentState, bestAction);
+		}
+		timer.cancel();	
+
+	}
+	
+	protected Map.Entry<Assignment,Double> findBestAction() {
 		try {
 			Set<String> actionNodes = currentState.getNetwork().getActionNodeIds();
 			int horizon = Settings.getInstance().planning.getHorizon(actionNodes);
@@ -92,16 +101,15 @@ public class ForwardPlanner implements AnytimeProcess {
 
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
 			log.debug("Q values: " + qValues);
-			Assignment bestAction = qValues.getBest();
-			//		log.debug("best action: " + bestAction);
+			Map.Entry<Assignment, Double> bestAction = qValues.getBest();
+			log.debug("best action: " + bestAction.getKey());
 
-			recordAction(currentState, bestAction);
+			return bestAction;
 		}
 		catch (Exception e) {
 			log.warning("could not perform planning, aborting action selection: " + e);
 		}
-		timer.cancel();	
-
+		return new UtilityTable().getBest();
 	}
 
 
@@ -129,7 +137,6 @@ public class ForwardPlanner implements AnytimeProcess {
 				qValues.setUtil(action, qValues.getUtil(action) + expected);
 			}
 		}
-
 		return qValues;
 	}
 
@@ -168,7 +175,7 @@ public class ForwardPlanner implements AnytimeProcess {
 				copy.addContent(obs, "planner");
 
 				UtilityTable qValues = getQValues(copy, horizon, discountFactor);
-				Assignment bestAction = qValues.getBest();
+				Assignment bestAction = qValues.getBest().getKey();
 				double afterObs = qValues.getUtil(bestAction);
 				expectedValue += obsProb * afterObs;
 			}
@@ -179,7 +186,7 @@ public class ForwardPlanner implements AnytimeProcess {
 
 
 
-	private void recordAction(DialogueState state, Assignment action) {
+	protected void recordAction(DialogueState state, Assignment action) {
 		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
 		try {
@@ -247,7 +254,8 @@ public class ForwardPlanner implements AnytimeProcess {
 	public String toString() {
 		return "Forward planner (give more useful information here)";
 	}
-
+	
+	
 
 }
 

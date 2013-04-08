@@ -37,5 +37,9 @@ public class ASRModule extends AsynchronousModule {
 	public void run() {
 		log.info("initialising ASR...");
 	}
+	
+	public void shutdown() {
+		log.info("shutting down ASR...");
+	}
 
 }

@@ -204,7 +204,7 @@ public class UtilityTable implements UtilityDistribution {
 	}
 	
 	
-	public Assignment getBest() {
+	public Map.Entry<Assignment, Double> getBest() {
 		double maxValue = - Double.MAX_VALUE;
 		Assignment best = new Assignment();
 		for (Assignment a : table.keySet()) {
@@ -214,7 +214,9 @@ public class UtilityTable implements UtilityDistribution {
 				best = a;
 			}
 		}
-		return best;
+		Map<Assignment,Double> result = new HashMap<Assignment,Double>();
+		result.put(best, maxValue);
+		return result.entrySet().iterator().next();
 	}
 
 

@@ -21,8 +21,10 @@ package opendial.bn.values;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +88,18 @@ public class ValueFactory {
 			}
 			return new SetVal(subVals);
 		}
+		// adds the converted value
+				else if (str.startsWith("<") && str.endsWith(">")) {
+					Map<String,Value> subVals = new HashMap<String,Value>();
+					for (String subVal : str.replace("<", "").replace(">", "").split(";")) {
+						if (subVal.length() > 0  && subVal.contains(":")) {
+							String key = subVal.split(":")[0];
+							Value value = create(subVal.split(":")[1].trim());
+							subVals.put(key, value);
+						}
+					}
+					return new MapVal(subVals);
+				}
 		// adds the converted value
 			else {
 				Matcher m2 = p2.matcher(str);

@@ -225,7 +225,7 @@ public class Template {
 			matcher.find();
 			for (String slot : slots.keySet()) {
 				String filledSlot = matcher.group(slots.get(slot)+1).trim();
-				filledSlot = filledSlot.replaceAll("[^\\p{L}\\s0-9\\(\\)]", "");
+		//		filledSlot = filledSlot.replaceAll("[^\\p{L}\\s0-9\\(\\)]", "");
 				filledSlots.addPair(slot, filledSlot);
 			}
 		}		

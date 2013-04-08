@@ -36,4 +36,6 @@ public interface SynchronousModule {
 
 	public boolean isTriggered(DialogueState state);
 
+	public void shutdown();
+
 }

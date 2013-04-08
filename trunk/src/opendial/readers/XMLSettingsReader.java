@@ -83,7 +83,8 @@ public class XMLSettingsReader {
 				String variable= null;
 				int horizon = 0;
 				double discountFactor = 0.0;
-
+				boolean sarsa = false;
+				
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
 					
 					Node subnode = node.getChildNodes().item(k);
@@ -96,10 +97,14 @@ public class XMLSettingsReader {
 					if (subnode.getNodeName().equalsIgnoreCase("discount")) {
 						discountFactor = Double.parseDouble(subnode.getTextContent());
 					}	
+					if (subnode.getNodeName().equalsIgnoreCase("sarsa")) {
+						sarsa = Boolean.parseBoolean(subnode.getTextContent());
+					}	
 				}
 				if (variable != null && horizon > 0 && discountFactor > 0.0) {
 				settings.planning.addSpecific(variable, settings.new PlanSettings(horizon, discountFactor));
 				}
+				settings.planning.setAsSarsa(sarsa);
 			}
 			if (node.getNodeName().equals("gui")) {
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
