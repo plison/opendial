@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="i_u" type="update">
+
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="1.0">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground({X})" />
+				<if var="i_u" value="{X}" relation="!=" />
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.42">
+				<set var="a_u0" value="Disconfirm" />
+			</effect>
+			<effect prob="0.33">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="0.25">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="0.75">
+				<set var="a_u0" value="Confirm" />
+			</effect>
+			<effect prob="0.17">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="0.08">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm({X})" />
+				<if var="i_u" value="{X}" relation="!=" />
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.98">
+				<set var="a_u0" value="Disconfirm" />
+			</effect>
+			<effect prob="0.02">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Do({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="0.21">
+				<set var="a_u0" value="RepeatLast" />
+			</effect>
+			<effect prob="0.79">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="a_m" value="AskRepeat" />
+				<if var="floor" value="start" />
+			</condition>
+			<effect prob="0.985">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="0.015">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="None"/>
+			</condition>
+			<effect prob="1.0">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+		<case>
+			<effect prob="0.3">
+				<set var="a_u0" value="{i_u}" />
+			</effect>
+			<effect prob="0.7">
+				<set var="a_u0" value="Nothing" />
+			</effect>
+		</case>
+	</rule>
+
+</model>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_m" type="decision">
+
+
+	<rule id="movements">
+		<case>
+			<condition>
+				<if var="i_u" value="Move(*)" />
+				<if var="a_m" value="Do({i_u})" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="Move(*)" />
+				<if var="a_m" value="Ground({i_u})" />
+			</condition>
+			<effect util="2" />
+		</case>
+	</rule>
+
+
+	<rule id="pickup">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="carried" value="[]" />
+				<if var="a_m" value="Do({i_u})" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="carried" value="[]" />
+				<if var="a_m" value="Ground({i_u})" />
+			</condition>
+			<effect util="2" />
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="carried" value="[]" relation="!=" />
+				<if var="a_m" value="Excuse(AlreadyCarryObject)" />
+			</condition>
+			<effect util="12" />
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+				<if var="a_m" value="Excuse(DoNotSeeObject)" />
+			</condition>
+			<effect util="12" />
+		</case>
+	</rule>
+
+
+	<rule id="release">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release({X})" />
+				<if var="carried" value="{X}" relation="contains" />
+				<if var="a_m" value="Do({i_u})" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release({X})" />
+				<if var="carried" value="{X}" relation="contains" />
+				<if var="a_m" value="Ground({i_u})" />
+			</condition>
+			<effect util="2" />
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release({X})" />
+				<if var="carried" value="{X}" relation="notcontains" />
+				<if var="a_m" value="Excuse(DoNotCarryObject)" />
+			</condition>
+			<effect util="12" />
+		</case>
+	</rule>
+
+	<rule> 
+		<case>
+			<condition operator="and">
+				<if var="a_u0" value="None" relation="!=" />
+				<if var="a_m" value="None" />
+			</condition>
+			<effect util="-1.5" />
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Do(*)" />
+				<if var="a_m" value="Do({i_u})" relation="!=" />
+			</condition>
+			<effect util="-6" />
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground(*)" />
+				<if var="a_m" value="Ground({i_u})" relation="!=" />
+			</condition>
+			<effect util="-6" />
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Excuse(*)" />
+			</condition>
+			<effect util="-6" />
+		</case>
+	</rule>
+
+<!-- 	<rule>
+		<case>
+			<condition>
+				<if var="prev(a_m)" value="Ground({X})" />
+				<if var="a_m" value="Ground({X})" />
+			</condition>
+			<effect util="-2" />
+		</case>
+	</rule>  -->
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="prev(a_m)" value="AskRepeat" relation="!=" />
+				<if var="a_m" value="AskRepeat" />
+			</condition>
+			<effect util="-1.0" />
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="AskRepeat" />
+			</condition>
+			<effect util="-2.0" />
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<condition>
+				<if var="a_m" value="Confirm({i_u})" />
+				<if var="i_u" value="None" relation="!="/>
+			</condition>
+			<effect util="-0.5" />
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Confirm(*)" />
+				<if var="a_m" value="Confirm({i_u})" relation="!=" />
+			</condition>
+			<effect util="-1.5" />
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="i_u" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="a_m" value="Confirm" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+				<if var="a_m" value="Disconfirm" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="a_m" value="Confirm" />
+				<if var="a_m" value="Disconfirm" />
+			</condition>
+			<effect util="-6" />
+		</case>
+	</rule>
+
+	<rule id="whatdoyousee">
+		<case>
+			<condition>
+				<if var="i_u" value="WhatDoYouSee" />
+				<if var="a_m" value="Describe({perceived})" />
+			</condition>
+			<effect util="6" />
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Describe(*)"/>
+			</condition>
+			<effect util="-6" />
+		</case>
+	</rule>
+
+
+</model>
