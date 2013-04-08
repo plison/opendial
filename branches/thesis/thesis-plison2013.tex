@@ -1,21 +1,64 @@
-\documentclass[english]{uiophd}
+\documentclass[english,12pt]{uiophd}
 \usepackage[latin1]{inputenc}   % or whatever you use
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{rotating}
+\bibliographystyle{apalike}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{makeidx}
 
 \title{Structured Probabilistic Modelling \\ for Dialogue Management}
 \author{Pierre Lison}
+
+\makeindex
+
+\newcommand{\utt}[1]{``\begin{small}\textsf{#1}\end{small}''}
+\newcommand{\note}[1]{\textcolor{red}{#1}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}} 
+\def\Var{{\rm Var}\,}
+\def\E{{\rm E}\,}
 
 \begin{document}
 \frontmatter
 \maketitle
 \tableofcontents
 
+
 \mainmatter
 
 \chapter{Introduction}
 
+Spoken language\index{spoken language} is one of the most powerful system of communication at our disposal. Most of our waking hours are spent in social interactions mediated through natural language.  We communicate in order to fulfil a wide array of functions, such as exchanging ideas, recollecting experiences,  sustaining social relationships, or collaborating with others to accomplish shared goals. Language is what makes this communication possible in modern human cultures.  This central role played by spoken language in our daily activities is in no small part due to its great efficiency.  Human languages are indeed highly articulated and allow us to convey elaborate thoughts in a robust and effective manner. We have acquired from early childhood this capacity to understand and produce increasingly complex utterances, and our cognitive abilities are in many ways shaped and amplified by this propensity for linguistic communication. 
+
+%Speech remains therefore our primary mode of interaction with others in most practical settings. 
+
+We now live in a technological age where we are surrounded by electronic devices of various kinds, from mobile phones to personal computers, in-car navigation systems, and service robots. As these technologies gain in autonomy and sophistication, it becomes increasingly important to design \textit{user interfaces}\index{user interfaces} that can unlock their full potential.  These interfaces must be centered on the user needs and preferences -- the key idea being that we should develop machines that adapt to their users rather than the other way round.  The interaction should therefore be made as natural and intuitive as possible. In this context, it would seem only common sense to endow these devices with a capacity to understand, even in a limited manner, the communication medium that is most natural to us, namely spoken language. 
+
+The ongoing research on \textit{Spoken Dialogue Systems}\index{Spoken Dialogue Systems} (SDS) is precisely trying to achieve this objective. Spoken Dialogue Systems are computer systems that are able to converse with humans through natural spoken language in order to perform their tasks.  Their applications are wide-ranging and include domains such as telephone-based systems for information access and service delivery, speech-enabled software applications for hand-held devices, navigation assistants in cars, or even service robots operating in homes, schools, offices or hospitals.  
+
+Developing such systems is however far from trivial.  Two important challenges must indeed be addressed:
+\begin{itemize}
+\item Verbal interactions are \textit{complex}.  Linguistic utterances exhibit a high-degree of structural complexity that phonological, morphosyntactic and semantic levels of analysis.  In addition, spoken utterances can only be understood in context. This is especially critical for conversational domains, where speakers continuously attend to each other's contributions and work together to establish and refine the common ground\index{common ground} of the interaction. 
+\item Verbal interactions are crippled with \textit{uncertainties}.  In order to make sense of a given utterance, a dialogue system must face numerous sources of uncertainties, including error-prone speech recognition, lexical and syntactic ambiguities, partially observable environments, and unpredictable interaction dynamics. 
+\end{itemize} 
+
+\section{Research Questions}
+
+\section{Contributions}
+
+\section{Outline of the Thesis}
+
+
 \chapter{Background}
 
 \section{Spoken Dialogue Systems}
+
+\subsection{Applications}
 
 \section{Dialogue Management}
 
@@ -32,5 +75,11 @@
 \appendix
 
 \chapter{The openDial toolkit}
+
+\nocite{rulebasedmodels-sigdial2012}
+
+\bibliography{lt-biblio}
+
+\printindex
 
 \end{document}
