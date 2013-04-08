@@ -1,0 +1,34 @@
+
+\chapter{Background}
+
+\section{Key properties of dialogue}
+
+\note{alignment, common ground,  dialogue as collaborative activity}
+\note{take key points from course slides}
+
+
+\section{Spoken Dialogue Systems}
+ 
+\subsection{Architectures}
+
+\subsection{Applications}
+
+\section{Dialogue Management}
+
+\subsection{Hand-crafted approaches}
+
+Some topics investigated in this paradigm are the semantic and pragmatic interpretation of dialogue moves \citep{ThomasonManuscript-THOEUA,Ginzburg2012}, the rhetorical structure of dialogue \citep{0521659515}, or the use of plan-based reasoning to infer the user intentions \citep{Allen1980,Litman87}.  These approaches are able to provide detailed analyses of various dialogue behaviours, but they generally assume complete observability of the dialogue context and provide only a very limited account (if any) of uncertainties.
+
+
+\note{Finite-state automata, frame-based, logical reasoning, etc.}
+
+\subsection{Statistical approaches}
+
+
+This is typically done by representing the dialogue domain as a Markov Decision Process (MDP) or Partially Observable Markov Decision Process (POMDP) and subsequently estimating the parameters of these models from data \citep{Supelec270}. 
+
+ related to partial observability (noisy spoken inputs, unknown user intentions) and stochastic action effects (the user behaviour can be hard to predict). 
+ 
+  Probabilistic modelling techniques must however face two important challenges. The most pressing issue is the paucity of appropriate data sets.  Statistical models often require large amounts of training data to estimate their parameters. Unfortunately, real interaction data is scarce, expensive to acquire, and difficult to transfer from one domain to another.  Moreover, many domains exhibit a rich internal structure with multiple tasks to perform, sophisticated user models, and a complex, dynamic context.  In such settings, the dialogue system might need to track a large number of variables in the course of the interaction, which quickly leads to a combinatorial explosion of the state space.  
+  
+\note{MDP and POMDPs}

@@ -1,0 +1,29 @@
+
+\chapter{Introduction}
+
+Spoken language\index{spoken language} is one of the most powerful system of communication at our disposal. A large part of our waking hours is spent in social interactions mediated through natural language.  We communicate in order to fulfil a wide array of social functions, such as exchanging ideas, recollecting experiences,  sustaining relationships, or collaborating with others to accomplish shared goals. These communication skills are developed in early childhood, and our cognitive abilities are in many ways shaped and amplified by this disposition for verbal interaction.  Spoken language is indeed a remarkably efficient communication tool that allow us to convey elaborate thoughts in a robust and effective manner. 
+
+Is it possible to exploit this basic fact to develop more human-friendly technologies? Most of our daily life activities are now relying on ``smart'' electronic devices of various kinds, from mobile phones to personal computers, in-car navigation systems, or even service robots. As these technologies gain in autonomy and sophistication, it becomes increasingly important to design \textit{user interfaces}\index{user interfaces} that can unlock their full potential.  To be functional, these interfaces must be centered around the user needs and preferences, and should therefore be made as intuitive as possible. In this context, it seems rational to endow these devices with a capacity to understand, even in a limited manner, the communication medium that is most natural to us, namely spoken language.  
+
+The ongoing research on \textit{Spoken Dialogue Systems}\index{Spoken Dialogue Systems} (SDS) is precisely trying to implement this objective. Spoken Dialogue Systems are computer systems that are able to converse with humans through everyday spoken language in order to perform their tasks.  They include a wide range of possible applications such as telephone-based systems for information access and service delivery, speech-enabled software applications for hand-held devices, navigation assistants, and (in a not-too-distant future) service robots assisting us in our everyday environments.   
+
+The development of such interactive systems is however far from trivial, due to two central characteristics of verbal interactions that make spoken dialogue processing a challenging entreprise:
+\begin{itemize}
+\item Verbal interactions are highly \textit{articulated}.  Their analysis reveals the presence of rich relational structures\index{relational structures} straddling the linguistic and extra-linguistic levels of analysis. 
+In particular, contextual knowledge is essential for the interpretation of most utterances. This is especially the case for conversational domains, where the contributions of the different speakers are built upon one another in a rapid sequence. A dialogue move is therefore only intelligible within the larger pragmatic context that gave rise to it. 
+\item Verbal interactions are also crippled with \textit{uncertainties}\index{uncertainties}.  In order to make sense of a given utterance, a dialogue system must face numerous sources of uncertainty, including error-prone speech recognition, lexical,  syntactic and referential ambiguities, partially observable environments, and unpredictable interaction dynamics.  
+\end{itemize} 
+
+These two problems have typically been addressed in separate lines of research.  On the one hand, structural complexity is often tackled with techniques borrowed from formal logic\index{formal logic}.  These approaches provide principled methods for the interpretation and generation of dialogue moves through logical reasoning on the basis of the inferred beliefs, desires and intentions\index{Belief-Desire-Intention model} of the dialogue participants \citep{Allen1980}. These approaches are able to provide detailed analyses of various dialogue behaviours, but they generally assume complete observability of the dialogue context and provide only a very limited account (if any) of uncertainties.
+
+On the other hand, the problem of uncertainty is usually addressed by probabilistic modelling\index{probabilistic modelling} techniques.  The state of the dialogue is here represented as a probability distribution over possible worlds.  This distribution represents the system's knowledge of the interaction and is regularly updated as new observations are collected. These probabilistic models provide an explicit account for the various uncertainties that can arise during the interaction. They also enable the dialogue behaviour to be automatically optimised in a data-driven manner instead of relying on hand-crafted mechanisms.  However, these models typically rely on large amounts of training data to estimate their parameters -- a requirement that is hard to satisfy for most dialogue domains.  In addition, the models are usually limited to a handful of interacting variables and are therefore difficult to scale to domains featuring rich conversational contexts. 
+
+This thesis presents a new, hybrid approach that aims at reconciling these two strands of research.  In particular, we describe a new modelling paradigm that allows rich prior domain knowledge to be incorporated in probabilistic models of dialogue.
+
+\section{Research Questions}
+
+\section{Contributions}
+
+\note{unified framework?}
+
+\section{Outline of the Thesis}
