@@ -1,4 +1,3 @@
-package opendial.experiments;
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
@@ -18,52 +17,27 @@ package opendial.experiments;
 // 02111-1307, USA.                                                                                                                    
 // =================================================================                                                                   
 
+package opendial.simulation;
 
-import opendial.arch.DialException;
-import opendial.arch.DialogueSystem;
+
+import java.util.TimerTask;
+
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.Assignment;
-import opendial.bn.BNetwork;
-import opendial.common.InferenceChecks;
-import opendial.domains.Domain;
-import opendial.gui.GUIFrame;
-import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLSettingsReader;
-import opendial.readers.XMLStateReader;
-import opendial.simulation.UserSimulator;
 
-public class ACL2013 {
+public class SimulatorClock extends TimerTask   {
 
 	// logger
-	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
+	public static Logger log = new Logger("Clock", Logger.Level.NORMAL);
 
-
-//	public static final String domainFile = "domains//is2013/linear/domain.xml";
-//	public static final String parametersFile = "domains//is2013/linear/params_linear.xml";
-	public static final String simulatorFile = "domains//acl2013/simulator/simulator.xml";
-
-	public static void main(String[] args) {
-		try {
-			if (args.length != 3) {
-				throw new DialException("must provide arguments for domain and parameter");
-			}
-			String settingsFile = args[0];
-			String domainFile = args[1];
-			String parametersFile = args[2];
-			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
-			Domain domain = XMLDomainReader.extractDomain(domainFile);
-			BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
-			Domain simulatorDomain = XMLDomainReader.extractDomain(simulatorFile); 
-		DialogueSystem system = new DialogueSystem(settings, domain);
-		system.addParameters(params);
-		system.attachSimulator(simulatorDomain);
-		system.startSystem(); 
-		
-		}
-		catch (DialException e) {
-			log.warning("exception thrown " + e + ", aborting");
-		}
+	UserSimulator simulator;
+	
+	public SimulatorClock(UserSimulator simulator) {
+		this.simulator = simulator;
 	}
+	@Override
+	public void run() {
+		log.info("last return: " + simulator.lastReturn);
+	}
+
 }
 

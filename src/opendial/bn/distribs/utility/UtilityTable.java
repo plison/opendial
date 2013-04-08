@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -165,26 +166,25 @@ public class UtilityTable implements UtilityDistribution {
 	 * 
 	 * @return the (assignment,utility) table
 	 */
-	public Map<Assignment, Double> getTable() {
-		Map<Assignment,Double> averageUtils = new HashMap<Assignment,Double>();
+	public LinkedHashMap<Assignment, Double> getTable() {
+		LinkedHashMap<Assignment,Double> averageUtils = new LinkedHashMap<Assignment,Double>();
 		for (Assignment a : table.keySet()) {
 			averageUtils.put(a, getUtil(a));
 		}
 		return averageUtils;
 	} 
 	
-	
+	 
 	/**
 	 * Creates a table with a subset of the utility values, namely the nbest highest
 	 * ones.  
 	 * 
 	 * @param nbest the number of values to keep in the filtered table
 	 * @return the table of values, of size nbest
-	 * @throws DialException if nbest is < 1
 	 */
-	public UtilityTable getNBest(int nbest) throws DialException {
+	public UtilityTable getNBest(int nbest) {
 		if (nbest < 1) {
-			throw new DialException("nbest must be >= 1");
+			nbest = 1;
 		}
 		List<Map.Entry<Assignment,Double>> entries = 
 				new ArrayList<Map.Entry<Assignment,Double>>(getTable().entrySet());

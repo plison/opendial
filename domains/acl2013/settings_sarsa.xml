@@ -4,8 +4,9 @@
 
 <planning>
 	<variable>a_m</variable>
-	<horizon>2</horizon>
+	<horizon>1</horizon>
 	<discount>0.9</discount>
+	<sarsa>true</sarsa>
 </planning>
 
 <gui>
@@ -19,8 +20,8 @@
 </gui>
 
 <inference>
-	<nbsamples>8000</nbsamples>
-	<timeout>3000</timeout>
+	<nbsamples>10000</nbsamples>
+	<timeout>5000</timeout>
 </inference>
 
 </settings>

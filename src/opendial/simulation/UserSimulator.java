@@ -27,12 +27,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.arch.StateListener;
 import opendial.arch.Logger.Level;
+import opendial.arch.timing.StopProcessTask;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
@@ -73,7 +75,14 @@ public class UserSimulator extends Thread {
 	
 	boolean startup = true;
 	
+	
+	
 	double accReturn = 0;
+	
+	double lastReturn = 0;
+	
+	public static final long timingData = 10;
+
 	
 	ProbDistribution asrScore;
 	ProbDistribution a_uother;
@@ -100,6 +109,9 @@ public class UserSimulator extends Thread {
 	public void startSimulator() {
 
 		realState.startState();
+		
+		Timer timer = new Timer();
+		timer.schedule(new SimulatorClock(this), 0, timingData*1000);
 
 		this.start();
 		
@@ -134,11 +146,13 @@ public class UserSimulator extends Thread {
 	public void performTurn() {
 
 		try {	
-			
 			Assignment action = getSystemAction();		
-			log.debug("system action: " + action);
+		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
-			
+			if (Settings.getInstance().planning.isSarsa()) {
+				systemState.addContent(new Assignment("r", returnValue), "simulator");
+			}
+
 			if (startup) {
 				log.debug("STARTING UP SIMULATOR...");
 				action = new Assignment("a_m", "AskRepeat");
@@ -146,7 +160,6 @@ public class UserSimulator extends Thread {
 			}
 			else {
 				log.debug("reward value: " + returnValue);
-				systemState.addEvidence(new Assignment("r", returnValue));
 				accReturn += returnValue;						
 			}
 			
@@ -180,6 +193,7 @@ public class UserSimulator extends Thread {
 						new Assignment(), new Assignment("floor", "start"));
 				if (prob > 0.98) {
 					log.debug("accumulated return: " + accReturn);
+					lastReturn = accReturn;
 					accReturn = 0;
 				}
 			}
@@ -236,40 +250,13 @@ public class UserSimulator extends Thread {
 	
 
 	private void showParameterState() throws DialException {
-		if (nbTurns == 5) {
-			for (int i = 1 ; i < 15 ;i++) {
-				if (systemState.getNetwork().hasChanceNode("theta_"+i)) {
-					log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
+		if (nbTurns == 2) {
+			for (String nodeId: systemState.getNetwork().getNodeIds()) {
+				if (systemState.isParameter(nodeId)) {
+					log.debug("===> estimate for " + nodeId +": " + systemState.getContent(nodeId, true));					
 				}
 			}
-			String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-				log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
-			}
-			String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-				log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
-			}
-			String fullTheta3 = "theta_(a_m=Confirm(Move(Left))^i_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta3)) {
-				log.debug("===> estimate for " + fullTheta3 +": " + systemState.getContent(fullTheta3, true));
-			}
-			String fullTheta4 = "theta_(a_m=AskRepeat^i_u=Move(Right))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta4)) {
-				log.debug("===> estimate for " + fullTheta4 +": " + systemState.getContent(fullTheta4, true));	
-			}
-			String fullTheta5 = "theta_(a_m=Do(*)^i_u=WhatDoYouSee)";
-			if (systemState.getNetwork().hasChanceNode(fullTheta5)) {
-				log.debug("===> estimate for " + fullTheta5 +": " + systemState.getContent(fullTheta5, true));	
-			}
-			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
-				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
-			}
-			String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
-				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
-			}
+			
 			nbTurns = 0;
 		}
 	}

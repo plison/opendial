@@ -26,11 +26,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Template;
+import opendial.readers.XMLDomainReader;
 
 /**
  * 
@@ -43,7 +45,7 @@ public class TemplateStringTest {
 
 	// logger
 	public static Logger log = new Logger("TemplateStringTest",
-			Logger.Level.NORMAL);
+			Logger.Level.DEBUG);
 	
 	
 
@@ -171,5 +173,17 @@ public class TemplateStringTest {
 				("and this could be pretty much anything", true).getValue("match.end"));
 		
 
+	}
+	
+	
+	@Test
+	public void QuickTest() throws DialException {
+		Domain domain = XMLDomainReader.extractDomain("domains/testing/quicktest.xml");
+		DialogueSystem system = new DialogueSystem(domain);
+		system.startSystem();
+		assertEquals(system.getState().getContent("caught", true).
+				toDiscrete().getProb(new Assignment(), new Assignment("caught", false)), 1.0, 0.01);
+		assertEquals(system.getState().getContent("caught2", true).
+				toDiscrete().getProb(new Assignment(), new Assignment("caught2", true)), 1.0, 0.01);
 	}
 }

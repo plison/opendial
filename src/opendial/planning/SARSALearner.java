@@ -20,10 +20,13 @@
 package opendial.planning;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 
@@ -52,21 +55,24 @@ public class SARSALearner extends ForwardPlanner {
 	// logger
 	public static Logger log = new Logger("SARSALearner", Logger.Level.DEBUG);
 	
-	DialogueState lastDS;
+	public static double EPSILON = 0.2;
+	
+	public static DialogueState lastDS;
 	
 	public SARSALearner(DialogueState state) {
 		super(state);
 	}
 	
-
 	@Override
 	public void run() {
 		isTerminated = false;
 		Timer timer = new Timer();
 		timer.schedule(new StopProcessTask(this, MAX_DELAY), MAX_DELAY);
 
-		Map.Entry<Assignment, Double> bestAction = findBestAction();
-		
+		UtilityTable evalActions = evaluateActions();
+
+		Map.Entry<Assignment, Double> bestAction = selectAction(evalActions);
+		log.debug("selected action: " + bestAction.getKey());
 		if (lastDS != null) {
 			updateParameters(bestAction);
 		}
@@ -80,13 +86,39 @@ public class SARSALearner extends ForwardPlanner {
 
 	}
 	
+	
+	private Map.Entry<Assignment, Double> selectAction(UtilityTable evalActions) {
+		
+	/**	if ((new Random()).nextDouble() < EPSILON) {
+			log.debug("selecting sub-optimal action");
+			Map<Assignment,Double> table = evalActions.getNBest(3).getTable();
+			int selection = (new Random()).nextInt(table.size());
+			return new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet()).get(selection);
+		} */
+		return evalActions.getBest();
+	}
+	
+	
+	
 	private void updateParameters(Map.Entry<Assignment, Double> bestAction) {
 		double expectedValue = 0.0;
-		if (currentState.getEvidence().containsVar("r") && 
-				currentState.getEvidence().getValue("r") instanceof DoubleVal) {
-			expectedValue += ((DoubleVal)currentState.getEvidence().getValue("r")).getDouble();
+		try {
+			log.debug("estimated Q value for previous action: " + lastDS.getContent("q", true));
+			
+			if (currentState.getNetwork().hasChanceNode("r")) {
+			DoubleVal value = (DoubleVal)currentState.getContent("r", true).sample(new Assignment()).getValue("r");
+			expectedValue += value.getDouble();
+		//	log.debug("reward: " + expectedValue);
+		}
+		else {
+			log.debug("no reward!" + currentState.getNetwork().getNodeIds());
+		}
+		}
+		catch (DialException e) {
+			log.warning("cannot extract last reward");
 		}
 		expectedValue += Settings.getInstance().planning.discountFactor * bestAction.getValue();
+		log.debug("updated Q-value for previous action: " + expectedValue);
 		lastDS.addEvidence(new Assignment("q", expectedValue));
 		lastDS.triggerUpdates();
 		
@@ -108,7 +140,19 @@ public class SARSALearner extends ForwardPlanner {
 		try {
 			lastDS = currentState.copy();
 			
-			lastDS.addEvidence(bestAction);
+			// change action node into a chance node with a single action
+			for (String var : bestAction.getVariables()) {
+				ActionNode aNode = lastDS.getNetwork().getActionNode(var);
+				ChanceNode newNode = new ChanceNode(var);
+				newNode.addProb(new Assignment(), bestAction.getValue(var), 1.0);
+				Set<String> outputNodes = new HashSet<String>(aNode.getOutputNodesIds());
+				lastDS.getNetwork().removeNode(var);
+				for (String oNodeId : outputNodes) {
+					BNode oNode = lastDS.getNetwork().getNode(oNodeId);
+					oNode.addInputNode(newNode);
+				}
+				lastDS.getNetwork().addNode(newNode);				
+			}
 			
 			if (lastDS.getNetwork().hasNode("q")) {
 			lastDS.getNetwork().removeNode("q");
@@ -134,12 +178,6 @@ public class SARSALearner extends ForwardPlanner {
 				totalNode.addInputNode(newNode);
 			}
 			
-			/** for (String nodeId: new HashSet<String>(lastDS.getNetwork().getNodeIds())) {
-				if (nodeId.contains("theta")) {
-					lastDS.getNetwork().removeNode(nodeId);
-				}
-			} */
-
 		//	GUIFrame.getInstance().recordState(lastDS, "lastSARSA");
 			}
 			catch (DialException e) {
