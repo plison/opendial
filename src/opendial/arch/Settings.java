@@ -45,7 +45,7 @@ public class Settings {
 
 	// logger
 	public static Logger log = new Logger("Settings",
-			Logger.Level.NORMAL);
+			Logger.Level.DEBUG);
 	
 	
 	static Settings settings ;
@@ -84,6 +84,7 @@ public class Settings {
 		
 		public int horizon = 1;
 		public double discountFactor = 0.8;
+		public boolean isSarsa = false;
 		
 		Map<String,PlanSettings> specifics = new HashMap<String,PlanSettings>();
 
@@ -92,7 +93,18 @@ public class Settings {
 		public PlanSettings (int horizon, double discountFactor) {
 			this.horizon = horizon;
 			this.discountFactor = discountFactor;
-		}	
+		}
+		
+		public PlanSettings (int horizon, double discountFactor, boolean isSarsa) {
+			this.horizon = horizon;
+			this.discountFactor = discountFactor;
+			log.debug("SARSA: " + isSarsa);
+			this.isSarsa = isSarsa;
+		}
+		
+		public void setAsSarsa(boolean isSarsa) {
+			this.isSarsa = isSarsa;
+		}
 		
 		public int getHorizon(Collection<String> actionVars) {
 			for (String actionVar : actionVars) {
@@ -116,6 +128,10 @@ public class Settings {
 
 		public void addSpecific(String variable, PlanSettings planSettings) {
 			specifics.put(variable, planSettings);
+		}
+
+		public boolean isSarsa() {
+			return isSarsa;
 		}
 	}
 	

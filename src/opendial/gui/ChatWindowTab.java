@@ -358,10 +358,9 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	public void update(DialogueState state) {
 		if (state.getName().equals(this.state.getName())) {
 		for (String varToMonitor : variablesToMonitor.keySet()) {
-			long lastUpdate = state.getUpdateStamp(varToMonitor);
 			if (state.getNetwork().hasChanceNode(varToMonitor) && 
-					lastUpdate - updateStamps.get(varToMonitor) > 0) {
-				updateStamps.put(varToMonitor, lastUpdate);
+					state.isUpdated(varToMonitor, updateStamps.get(varToMonitor))) {
+				updateStamps.put(varToMonitor, System.currentTimeMillis());
 				try {
 				ProbDistribution distrib = state.getContent(varToMonitor, false);
 				if (distrib.toDiscrete() instanceof SimpleTable) {

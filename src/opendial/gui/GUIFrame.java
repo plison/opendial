@@ -85,6 +85,8 @@ public class GUIFrame extends JFrame implements StateListener {
 		}
 		); 
 		
+		guiFrameInstance = this;
+		
 		this.system = system;
 		
 		setJMenuBar(new ToolkitMenu(this));
@@ -99,6 +101,11 @@ public class GUIFrame extends JFrame implements StateListener {
 		setPreferredSize(new Dimension(1000,800));
 		pack();
 		setVisible(true);
+	}
+	
+	
+	public static GUIFrame getInstance() {
+		return guiFrameInstance;
 	}
 
 

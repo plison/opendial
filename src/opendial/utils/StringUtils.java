@@ -196,6 +196,7 @@ public class StringUtils {
 		if (nbBracesLeft != nbBracesRight) {
 			log.warning("Unequal number of braces in string: " + rawString + 
 					"(" + nbBracesLeft + " vs. " + nbBracesRight + "). Problems ahead!");
+			Thread.dumpStack();
 		}
 		
 		int nbBracketsLeft = (rawString+" ").split("\\{").length - 1;

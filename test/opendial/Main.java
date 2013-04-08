@@ -24,9 +24,12 @@ import opendial.arch.DialException;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.BNetwork;
 import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLSettingsReader;
+import opendial.readers.XMLStateReader;
 
 public class Main {
 
@@ -34,18 +37,27 @@ public class Main {
 	public static Logger log = new Logger("Main", Logger.Level.NORMAL);
 
 
-	public static final String domainFile = "domains//testing//basictest.xml";
+	public static final String domainFile = "domains//acl2013//sarsa//domain.xml";
+	public static final String parametersFile = "domains//acl2013//sarsa//params_qvalues.xml";
+	public static final String settingsFile = "domains//acl2013/settings.xml";
 
+	
 	public static void main(String[] args) {
 		try {
+			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		Domain domain = XMLDomainReader.extractDomain(domainFile); 
 		Settings.getInstance().gui.showGUI = true;
-		DialogueSystem system = new DialogueSystem(domain);
+		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
+
+		DialogueSystem system = new DialogueSystem(settings,domain);
+		system.addParameters(params);
+
 		system.startSystem(); 
 		}
 		catch (DialException e) {
 			log.warning("exception thrown " + e + ", aborting");
 		}
 	}
+	
 }
 

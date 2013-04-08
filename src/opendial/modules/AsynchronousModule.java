@@ -41,6 +41,8 @@ public abstract class AsynchronousModule implements Runnable {
 	public AsynchronousModule(DialogueState state) {
 		this.state = state;
 	}
+	
+	public abstract void shutdown();
 
 	
 }

@@ -29,6 +29,7 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.continuous.FuzzyDistribution;
 import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -118,8 +119,9 @@ public class SampleCollector extends Thread {
 							Value evidenceValue = evidence.getValue(n.getId());
 							double evidenceProb = 1.0;
 							if (((ChanceNode)n).getDistrib() instanceof ContinuousProbDistribution) {
+								Assignment trimmedInput = sample.getSample().getTrimmed(n.getInputNodeIds());
 								evidenceProb = ((ContinuousProbDistribution)((ChanceNode)n).getDistrib()).
-										getProbDensity(sample.getSample(), evidence);
+										getProbDensity(trimmedInput, evidence);
 							}
 							else {
 								evidenceProb = ((ChanceNode)n).getProb(sample.getSample(), evidenceValue);								

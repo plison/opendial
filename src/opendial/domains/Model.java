@@ -283,4 +283,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 			return rules.iterator().next().getClass();
 		}
 	}
+
+	@Override
+	public void shutdown() { }
 }

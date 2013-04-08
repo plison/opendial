@@ -64,7 +64,10 @@ public class InferenceUtils {
 		
 		Map<Assignment,Double> normalisedDistrib = new HashMap<Assignment,Double>();
 		for (Assignment a: distrib.keySet()) {
-			normalisedDistrib.put(a, distrib.get(a)/ total);
+			double prob = distrib.get(a)/ total;
+		//	if (prob > 0.0) {
+			normalisedDistrib.put(a, prob);
+		//	}
 		}
 		return normalisedDistrib;
 	}
