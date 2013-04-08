@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings>
+
+<planning>
+	<variable>a_m</variable>
+	<horizon>1</horizon>
+	<discount>0.9</discount>
+	<sarsa>true</sarsa>
+</planning>
+
+<gui>
+	<showgui>false</showgui>
+	<userUtterance>a_u</userUtterance>
+	<systemUtterance>a_m</systemUtterance>
+ <toMonitor>p_m</toMonitor>
+	<toMonitor>i_u</toMonitor> 
+	<toMonitor>carried</toMonitor>
+	<toMonitor>perceived</toMonitor>  
+</gui>
+
+<inference>
+	<nbsamples>3000</nbsamples>
+	<timeout>1000</timeout>
+</inference>
+
+</settings>

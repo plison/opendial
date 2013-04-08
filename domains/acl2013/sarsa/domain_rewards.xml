@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_u" type="decision">
+
+	<rule id="movements">
+		<case>
+			<condition>
+				<if var="a_u" value="Move(*)" />
+			</condition>
+			<effect util="theta_(movements1)">
+				<set var="a_m" value="Do({a_u})" />
+			</effect>
+			<effect util="theta_(movements2)">
+				<set var="a_m" value="Ground({a_u})" />
+			</effect>
+		</case>
+	</rule>
+
+    <rule id="pickup">
+		<case>
+			<condition operator="and">
+				<if var="a_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]"/>
+			</condition>
+			<effect util="theta_(pickup1)">
+				<set var="a_m" value="Do({a_u})" />
+			</effect>
+			<effect util="theta_(pickup2)">
+				<set var="a_m" value="Ground({a_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]" relation="!=" />
+			</condition>
+			<effect util="theta_(pickup3)">
+				<set var="a_m" value="Excuse(AlreadyCarryObject)" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+			</condition>
+			<effect util="theta_(pickup4)">
+				<set var="a_m" value="Excuse(DoNotSeeObject)" />
+			</effect>
+		</case>
+	</rule>
+	
+	
+	
+	<rule id="release">
+		<case>
+			<condition operator="and">
+				<if var="a_u" value="Release({X})" />
+				<if var="carried" value="{X}" relation="contains"/>
+			</condition>
+			<effect util="theta_(release1)">
+				<set var="a_m" value="Do({a_u})" />
+			</effect>
+			<effect util="theta_(release2)">
+				<set var="a_m" value="Ground({a_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" value="Release({X})" />
+				<if var="carried" value="{X}" relation="notcontains"/>
+			</condition>
+			<effect util="theta_(release3)">
+				<set var="a_m" value="Excuse(DoNotCarryObject)" />
+			</effect>
+		</case>
+	</rule>
+	
+	
+
+	<rule>
+		<case>
+			<condition>
+				<if var="a_u" value="None" relation="!="/>
+			</condition>
+			<effect util="theta_(none)">
+				<set var="a_m" value="None" />
+			</effect>		
+		</case>
+	</rule>
+	
+	
+	<rule>
+		<case>
+			<effect util="theta_(wrong1)">
+				<set var="a_m" value="Do(*)" />
+				<set var="a_m" value="Do({a_u})" relation="!=" />
+			</effect>
+			<effect util="theta_(wrong2)">
+				<set var="a_m" value="Ground(*)" />
+				<set var="a_m" value="Ground({a_u})" relation="!=" />
+			</effect>	
+			<effect util="theta_(wrong3)">
+				<set var="a_m" value="Excuse(*)" />
+			</effect>	
+		</case>
+	</rule>
+
+	<rule>
+		<quantifier id="X"/>
+		<case>
+			<condition>
+				<if var="history" value="{X}" relation="contains" />
+			</condition>
+			<effect util="theta_(history1)">
+				<set var="a_m" value="{X}" />
+			</effect>
+		</case>
+	</rule>
+	
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="history" value="Ground({X})" relation="contains" />
+			</condition>
+			<effect util="theta_(history2)">
+				<set var="a_m" value="{X}" relation="!="/>
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+		<condition>
+				<if var="a_m" value="AskRepeat" relation="!="/>
+		</condition>
+			<effect util="theta_(repeat)">
+				<set var="a_m" value="AskRepeat" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+			<effect util="theta_(confirm1)">
+				<set var="a_m" value="Confirm({a_u})" />
+			</effect>
+			<effect util="theta_(confirm2)">
+				<set var="a_m" value="Confirm(*)" />
+				<set var="a_m" value="Confirm({a_u})" relation="!=" />
+			</effect>
+			<effect util="theta_(confirm3)">
+				<set var="a_m" value="Confirm(None)" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="a_u" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+			</condition>
+			<effect util="theta_(doyousee1)">
+				<set var="a_m" value="Confirm" />
+			</effect>
+			<effect util="theta_(doyousee2)">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+			</condition>
+			<effect util="theta_(doyousee3)">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
+			<effect util="theta_(doyousee4)">
+				<set var="a_m" value="Confirm" />
+			</effect>
+		</case>
+		<case>
+			<effect util="theta_(doyousee5)">
+				<set var="a_m" value="Confirm" />
+			</effect>
+			<effect util="theta_(doyousee6)">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="whatdoyousee">
+		<case>
+			<condition>
+				<if var="a_u" value="WhatDoYouSee" />
+			</condition>
+			<effect util="theta_(whatdoyousee1)">
+				<set var="a_m" value="Describe({perceived})" />
+			</effect>
+		</case>
+		<case>
+			<effect util="theta_(whatdoyousee2)">
+				<set var="a_m" value="Describe(*)" />
+			</effect>
+		</case>
+	</rule>
+
+
+</model>
