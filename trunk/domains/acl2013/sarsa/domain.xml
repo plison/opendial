@@ -14,6 +14,26 @@
 
 <import href="domain_rewards.xml"/>
 
+<model type="update" trigger="a_m">
+
+<rule>
+	<case>
+		<effect>
+			<set var="a_ub" value="{a_u}"/>
+		</effect>
+	</case>
+</rule>
+
+<rule>
+	<case>
+		<effect>
+			<clear var="a_ub"/>
+		</effect>
+	</case>
+</rule>
+
+</model>
+
 
 <!--  <import href="domain_nlu.xml"/> -->
 

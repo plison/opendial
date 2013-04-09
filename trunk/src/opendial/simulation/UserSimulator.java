@@ -134,7 +134,6 @@ public class UserSimulator extends Thread {
 	public void performTurn() {
 
 		try {	
-			
 			Assignment action = getSystemAction();		
 		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
