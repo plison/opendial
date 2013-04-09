@@ -181,6 +181,20 @@
 			</effect>	
 		</case>
 	</rule>
+	
+	
+	<rule>
+		<case>
+			<effect util="theta_(wrong4)">
+				<set var="a_m" value="Do(*)" />
+				<set var="a_m" value="Do({a_ub})" relation="!=" />
+			</effect>
+			<effect util="theta_(wrong5)">
+				<set var="a_m" value="Ground(*)" />
+				<set var="a_m" value="Ground({a_ub})" relation="!=" />
+			</effect>	
+		</case>
+	</rule>
 
 	<rule>
 		<quantifier id="X"/>
