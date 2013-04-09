@@ -136,9 +136,10 @@ public class UserSimulator extends Thread {
 		try {	
 			
 			Assignment action = getSystemAction();		
-			log.debug("system action: " + action);
+		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
-			
+			systemState.addContent(new Assignment("r", returnValue), "simulator");
+
 			if (startup) {
 				log.debug("STARTING UP SIMULATOR...");
 				action = new Assignment("a_m", "AskRepeat");
@@ -146,7 +147,6 @@ public class UserSimulator extends Thread {
 			}
 			else {
 				log.debug("reward value: " + returnValue);
-				systemState.addEvidence(new Assignment("r", returnValue));
 				accReturn += returnValue;						
 			}
 			

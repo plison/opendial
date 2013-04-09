@@ -52,7 +52,7 @@ public class SARSALearner extends ForwardPlanner {
 	// logger
 	public static Logger log = new Logger("SARSALearner", Logger.Level.DEBUG);
 	
-	DialogueState lastDS;
+	public static DialogueState lastDS;
 	
 	public SARSALearner(DialogueState state) {
 		super(state);
@@ -82,9 +82,18 @@ public class SARSALearner extends ForwardPlanner {
 	
 	private void updateParameters(Map.Entry<Assignment, Double> bestAction) {
 		double expectedValue = 0.0;
-		if (currentState.getEvidence().containsVar("r") && 
-				currentState.getEvidence().getValue("r") instanceof DoubleVal) {
-			expectedValue += ((DoubleVal)currentState.getEvidence().getValue("r")).getDouble();
+		try {
+		if (currentState.getNetwork().hasChanceNode("r")) {
+			DoubleVal value = (DoubleVal)currentState.getContent("r", true).sample(new Assignment()).getValue("r");
+			expectedValue += value.getDouble();
+		//	log.debug("expected value: " + expectedValue);
+		}
+		else {
+			log.debug("no reward!" + currentState.getNetwork().getNodeIds());
+		}
+		}
+		catch (DialException e) {
+			log.warning("cannot extract last reward");
 		}
 		expectedValue += Settings.getInstance().planning.discountFactor * bestAction.getValue();
 		lastDS.addEvidence(new Assignment("q", expectedValue));
