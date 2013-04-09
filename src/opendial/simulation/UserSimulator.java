@@ -270,6 +270,38 @@ public class UserSimulator extends Thread {
 			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
 				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
 			}
+			String sarsaTheta1 = "theta_(movements1)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta1)) {
+				log.debug("===> estimate for " + sarsaTheta1 +": " + systemState.getContent(sarsaTheta1, true));	
+			}
+			String sarsaTheta2 = "theta_(repeat)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta2)) {
+				log.debug("===> estimate for " + sarsaTheta2 +": " + systemState.getContent(sarsaTheta2, true));	
+			}
+			String sarsaTheta3 = "theta_(confirm1)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta3)) {
+				log.debug("===> estimate for " + sarsaTheta3 +": " + systemState.getContent(sarsaTheta3, true));	
+			}
+			String sarsaTheta4 = "theta_(confirm2)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta4)) {
+				log.debug("===> estimate for " + sarsaTheta4 +": " + systemState.getContent(sarsaTheta4, true));	
+			}
+			String sarsaTheta5 = "theta_(doyousee1)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta5)) {
+				log.debug("===> estimate for " + sarsaTheta5 +": " + systemState.getContent(sarsaTheta5, true));	
+			}
+			String sarsaTheta6 = "theta_(doyousee2)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta6)) {
+				log.debug("===> estimate for " + sarsaTheta6 +": " + systemState.getContent(sarsaTheta6, true));	
+			}
+			String sarsaTheta7 = "theta_(wrong1)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta7)) {
+				log.debug("===> estimate for " + sarsaTheta7 +": " + systemState.getContent(sarsaTheta7, true));	
+			}
+			String sarsaTheta8 = "theta_(pickup1)";
+			if (systemState.getNetwork().hasChanceNode(sarsaTheta8)) {
+				log.debug("===> estimate for " + sarsaTheta8 +": " + systemState.getContent(sarsaTheta8, true));	
+			}
 			nbTurns = 0;
 		}
 	}
