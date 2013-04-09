@@ -135,7 +135,7 @@ public class SARSALearner extends ForwardPlanner {
 			lastDS.getNetwork().removeNode("q");
 			}
 			ChanceNode totalNode = new ChanceNode("q");
-			totalNode.setDistrib(new FuzzyDistribution("q", new AdditionFunction(), 50));
+			totalNode.setDistrib(new FuzzyDistribution("q", new AdditionFunction(), 200));
 			lastDS.getNetwork().addNode(totalNode);
 			
 			for (String utilVar : new HashSet<String>(lastDS.getNetwork().getUtilityNodeIds())) {

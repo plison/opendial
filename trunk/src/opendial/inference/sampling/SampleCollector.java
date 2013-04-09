@@ -120,7 +120,7 @@ public class SampleCollector extends Thread {
 							double evidenceProb = 1.0;
 							if (((ChanceNode)n).getDistrib() instanceof ContinuousProbDistribution) {
 								Assignment trimmedInput = sample.getSample().getTrimmed(n.getInputNodeIds());
-								evidenceProb = 50 * ((ContinuousProbDistribution)((ChanceNode)n).getDistrib()).
+								evidenceProb = 200 * ((ContinuousProbDistribution)((ChanceNode)n).getDistrib()).
 										getProbDensity(trimmedInput, evidence);
 							}
 							else {
