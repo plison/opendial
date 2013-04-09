@@ -83,10 +83,12 @@ public class SARSALearner extends ForwardPlanner {
 	private void updateParameters(Map.Entry<Assignment, Double> bestAction) {
 		double expectedValue = 0.0;
 		try {
-		if (currentState.getNetwork().hasChanceNode("r")) {
+			log.debug("estimated Q value: " + lastDS.getContent("q", true));
+			
+			if (currentState.getNetwork().hasChanceNode("r")) {
 			DoubleVal value = (DoubleVal)currentState.getContent("r", true).sample(new Assignment()).getValue("r");
 			expectedValue += value.getDouble();
-		//	log.debug("expected value: " + expectedValue);
+		//	log.debug("reward: " + expectedValue);
 		}
 		else {
 			log.debug("no reward!" + currentState.getNetwork().getNodeIds());
@@ -96,6 +98,7 @@ public class SARSALearner extends ForwardPlanner {
 			log.warning("cannot extract last reward");
 		}
 		expectedValue += Settings.getInstance().planning.discountFactor * bestAction.getValue();
+		log.debug("updated Q-value: " + expectedValue);
 		lastDS.addEvidence(new Assignment("q", expectedValue));
 		lastDS.triggerUpdates();
 		
@@ -135,7 +138,7 @@ public class SARSALearner extends ForwardPlanner {
 			lastDS.getNetwork().removeNode("q");
 			}
 			ChanceNode totalNode = new ChanceNode("q");
-			totalNode.setDistrib(new FuzzyDistribution("q", new AdditionFunction(), 200));
+			totalNode.setDistrib(new FuzzyDistribution("q", new AdditionFunction(), 50));
 			lastDS.getNetwork().addNode(totalNode);
 			
 			for (String utilVar : new HashSet<String>(lastDS.getNetwork().getUtilityNodeIds())) {
@@ -155,12 +158,6 @@ public class SARSALearner extends ForwardPlanner {
 				totalNode.addInputNode(newNode);
 			}
 			
-			/** for (String nodeId: new HashSet<String>(lastDS.getNetwork().getNodeIds())) {
-				if (nodeId.contains("theta")) {
-					lastDS.getNetwork().removeNode(nodeId);
-				}
-			} */
-
 		//	GUIFrame.getInstance().recordState(lastDS, "lastSARSA");
 			}
 			catch (DialException e) {
