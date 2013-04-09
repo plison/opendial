@@ -144,14 +144,6 @@
 </variable>
 
 
-<variable id="theta_(confirm3)">
-<distrib type="gaussian">
-<mean>-2</mean>
-<variance>20</variance>
-</distrib>
-</variable>
-
-
 <variable id="theta_(doyousee1)">
 <distrib type="gaussian">
 <mean>6</mean>

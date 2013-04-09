@@ -151,7 +151,7 @@
 				<set var="a_m" value="Confirm(*)" />
 				<set var="a_m" value="Confirm({a_u})" relation="!=" />
 			</effect>
-			<effect util="theta_(confirm3)">
+			<effect util="-10">
 				<set var="a_m" value="Confirm(None)" />
 			</effect>
 		</case>
