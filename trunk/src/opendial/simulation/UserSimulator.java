@@ -301,7 +301,7 @@ public class UserSimulator extends Thread {
 			if (systemState.getNetwork().hasChanceNode(sarsaTheta8)) {
 				log.debug("===> estimate for " + sarsaTheta8 +": " + systemState.getContent(sarsaTheta8, true));	
 			}
-			String sarsaTheta9 = "theta_(ground1)";
+			String sarsaTheta9 = "theta_(movements2)";
 			if (systemState.getNetwork().hasChanceNode(sarsaTheta9)) {
 				log.debug("===> estimate for " + sarsaTheta9 +": " + systemState.getContent(sarsaTheta9, true));	
 			}
