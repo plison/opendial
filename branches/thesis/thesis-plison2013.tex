@@ -1,5 +1,4 @@
 \documentclass[english,12pt]{uiophd}
-\usepackage[latin1]{inputenc}   % or whatever you use
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -11,6 +10,15 @@
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{makeidx}
+\usepackage{url}
+\usepackage[tight,footnotesize]{subfigure}
+\usepackage{sectsty}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+\hypersetup{colorlinks,citecolor=black, filecolor=black,linkcolor=black,urlcolor=black}
+\usepackage[nottoc]{tocbibind}
+\setlength{\columnsep}{1cm}
+\urlstyle{sf}
 
 \title{Structured Probabilistic Modelling \\ for Dialogue Management}
 \author{Pierre Lison}
@@ -28,8 +36,20 @@
 \begin{document}
 \frontmatter
 \maketitle
-\tableofcontents
 
+\chapterfont{\centering}
+
+\chapter*{Abstract}
+
+\note{TODO}
+
+\chapter*{Acknowledgements}
+
+\note{TODO}
+
+\chapterfont{\raggedright}
+
+\tableofcontents
 
 \mainmatter
 
@@ -43,15 +63,21 @@
 
 \include{rllearning-thesis-plison2013}
 
-\include{experiments-thesis-plison2013}
+\include{evaluation-thesis-plison2013}
 
-\include{conclusion-thesis-plison2013}
+\include{summary-thesis-plison2013}
 
 \appendix
 
 \include{opendial-thesis-plison2013}
 
+\backmatter
+
+
 \bibliography{lt-biblio}
+
+\newpage
+\phantomsection
 
 \printindex
 
