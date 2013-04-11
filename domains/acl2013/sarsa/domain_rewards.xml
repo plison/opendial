@@ -26,6 +26,15 @@
 				<set var="a_m" value="Ground({a_ub})" />
 			</effect>
 		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Ground(Move({X}))" />
+				<if var="a_u" value="Nothing" />
+			</condition>
+			<effect util="theta_(movements1)">
+				<set var="a_m" value="Do(Move({X}))" />
+			</effect>
+		</case>
 	</rule>
 	
 	
@@ -97,6 +106,38 @@
 				<set var="a_m" value="Excuse(DoNotSeeObject)" />
 			</effect>
 		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground(PickUp{X})" />
+				<if var="a_u" value="Nothing" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]"/>
+			</condition>
+			<effect util="theta_(pickup1)">
+				<set var="a_m" value="Do(PickUp({X}))" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground(PickUp({X}))" />
+				<if var="a_u" value="Nothing" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]" relation="!=" />
+			</condition>
+			<effect util="theta_(pickup3)">
+				<set var="a_m" value="Excuse(AlreadyCarryObject)" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Ground(PickUp({X}))" />
+				<if var="a_u" value="Nothing" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+			</condition>
+			<effect util="theta_(pickup4)">
+				<set var="a_m" value="Excuse(DoNotSeeObject)" />
+			</effect>
+		</case>
 	</rule>
 	
 		
@@ -146,6 +187,29 @@
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Ground(Release({X}))" />
+				<if var="a_u" value="Nothing"/>
+				<if var="carried" value="{X}" relation="contains"/>
+			</condition>
+			<effect util="theta_(release1)">
+				<set var="a_m" value="Do({a_u})" />
+			</effect>
+			<effect util="theta_(release2)">
+				<set var="a_m" value="Ground({a_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Ground(Release({X}))" />
+				<if var="a_u" value="Nothing"/>
+				<if var="carried" value="{X}" relation="notcontains"/>
+			</condition>
+			<effect util="theta_(release3)">
+				<set var="a_m" value="Excuse(DoNotCarryObject)" />
+			</effect>
+		</case>
 	</rule>
 	
 		
@@ -153,8 +217,14 @@
 		<case>
 			<condition>
 				<if var="a_u" value="None" relation="!="/>
+				<if var="a_u" value="Nothing" relation="!="/>
 			</condition>
 			<effect util="theta_(none)">
+				<set var="a_m" value="None" />
+			</effect>		
+		</case>
+		<case>
+			<effect util="theta_(none2)">
 				<set var="a_m" value="None" />
 			</effect>		
 		</case>
@@ -181,7 +251,7 @@
 		</case>
 		<case>
 		 <condition>
-		 	<if var="a_u" value="Confirm" relation="="/>
+		 	<if var="a_u" value="Confirm"/>
 		 </condition>
 			<effect util="theta_(wrong1)">
 				<set var="a_m" value="Do(*)" />
