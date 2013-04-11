@@ -26,9 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -176,7 +174,7 @@ public class UtilityTable implements UtilityDistribution {
 		return averageUtils;
 	} 
 	
-	
+	 
 	/**
 	 * Creates a table with a subset of the utility values, namely the nbest highest
 	 * ones.  
