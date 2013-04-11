@@ -19,8 +19,8 @@
 </gui>
 
 <inference>
-	<nbsamples>3000</nbsamples>
-	<timeout>1000</timeout>
+	<nbsamples>8000</nbsamples>
+	<timeout>3000</timeout>
 </inference>
 
 </settings>
