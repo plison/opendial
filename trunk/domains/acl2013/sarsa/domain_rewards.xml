@@ -14,23 +14,21 @@
 				<set var="a_m" value="Ground({a_u})" />
 			</effect>
 		</case>
-	</rule>
-	
-	<rule id="movements2">
 		<case>
 			<condition>
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="Move(*)" />
 			</condition>
-			<effect util="theta_(movements3)">
+			<effect util="theta_(movements1)">
 				<set var="a_m" value="Do({a_ub})" />
 			</effect>
-			<effect util="theta_(movements4)">
+			<effect util="theta_(movements2)">
 				<set var="a_m" value="Ground({a_ub})" />
 			</effect>
 		</case>
 	</rule>
 	
-
+	
     <rule id="pickup">
 		<case>
 			<condition operator="and">
@@ -64,45 +62,44 @@
 				<set var="a_m" value="Excuse(DoNotSeeObject)" />
 			</effect>
 		</case>
-	</rule>
-	
-	
-    <rule id="pickup2">
 		<case>
 			<condition operator="and">
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="carried" value="[]"/>
 			</condition>
-			<effect util="theta_(pickup5)">
+			<effect util="theta_(pickup1)">
 				<set var="a_m" value="Do({a_ub})" />
 			</effect>
-			<effect util="theta_(pickup6)">
+			<effect util="theta_(pickup2)">
 				<set var="a_m" value="Ground({a_ub})" />
 			</effect>
 		</case>
 		<case>
 			<condition operator="and">
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="carried" value="[]" relation="!=" />
 			</condition>
-			<effect util="theta_(pickup7)">
+			<effect util="theta_(pickup3)">
 				<set var="a_m" value="Excuse(AlreadyCarryObject)" />
 			</effect>
 		</case>
 		<case>
 			<condition>
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="PickUp({X})" />
 				<if var="perceived" value="{X}" relation="notcontains" />
 			</condition>
-			<effect util="theta_(pickup8)">
+			<effect util="theta_(pickup4)">
 				<set var="a_m" value="Excuse(DoNotSeeObject)" />
 			</effect>
 		</case>
 	</rule>
 	
-	
+		
 	
 	<rule id="release">
 		<case>
@@ -126,34 +123,32 @@
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 		</case>
-	</rule>
-	
-	
-	<rule id="release2">
 		<case>
 			<condition operator="and">
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="Release({X})" />
 				<if var="carried" value="{X}" relation="contains"/>
 			</condition>
-			<effect util="theta_(release4)">
+			<effect util="theta_(release1)">
 				<set var="a_m" value="Do({a_ub})" />
 			</effect>
-			<effect util="theta_(release5)">
+			<effect util="theta_(release2)">
 				<set var="a_m" value="Ground({a_ub})" />
 			</effect>
 		</case>
 		<case>
 			<condition>
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="Release({X})" />
 				<if var="carried" value="{X}" relation="notcontains"/>
 			</condition>
-			<effect util="theta_(release6)">
+			<effect util="theta_(release3)">
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 		</case>
 	</rule>
 	
-	
+		
 	<rule>
 		<case>
 			<condition>
@@ -168,6 +163,10 @@
 	
 	<rule>
 		<case>
+		 <condition>
+		 	<if var="a_u" value="Confirm" relation="!="/>
+		 	<if var="a_u" value="RepeatLast" relation="!="/>
+		 </condition>
 			<effect util="theta_(wrong1)">
 				<set var="a_m" value="Do(*)" />
 				<set var="a_m" value="Do({a_u})" relation="!=" />
@@ -180,22 +179,25 @@
 				<set var="a_m" value="Excuse(*)" />
 			</effect>	
 		</case>
-	</rule>
-	
-	
-	<rule>
 		<case>
-			<effect util="theta_(wrong4)">
+		 <condition>
+		 	<if var="a_u" value="Confirm" relation="="/>
+		 </condition>
+			<effect util="theta_(wrong1)">
 				<set var="a_m" value="Do(*)" />
 				<set var="a_m" value="Do({a_ub})" relation="!=" />
 			</effect>
-			<effect util="theta_(wrong5)">
+			<effect util="theta_(wrong2)">
 				<set var="a_m" value="Ground(*)" />
 				<set var="a_m" value="Ground({a_ub})" relation="!=" />
 			</effect>	
+			<effect util="theta_(wrong3)">
+				<set var="a_m" value="Excuse(*)" />
+			</effect>	
 		</case>
 	</rule>
-
+	
+	
 	<rule>
 		<case>
 		<condition>
@@ -207,7 +209,7 @@
 		</case>
 	</rule>
 
-	<!-- <rule>
+	<rule>
 		<case>
 			<effect util="theta_(confirm1)">
 				<set var="a_m" value="Confirm({a_u})" />
@@ -220,9 +222,21 @@
 				<set var="a_m" value="Confirm(None)" />
 			</effect>
 		</case>
-	</rule> -->
+	</rule>
 
 
+	<rule>
+		<case>
+			<condition>
+				<if var="a_m" value="Confirm(*)"/>
+			</condition>
+			<effect util="-10">
+				<set var="a_m" value="Confirm(*)"/>
+			</effect>
+		</case>	
+	</rule>
+	
+	
 	<rule id="doyousee">
 		<case>
 			<condition>
@@ -249,6 +263,32 @@
 			</effect>
 		</case>
 		<case>
+			<condition>
+				<if var="a_u" value="Confirm" />
+				<if var="a_ub" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="contains" />
+			</condition>
+			<effect util="theta_(doyousee1)">
+				<set var="a_m" value="Confirm" />
+			</effect>
+			<effect util="theta_(doyousee2)">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u" value="Confirm" />
+				<if var="a_ub" value="DoYouSee({X})" />
+				<if var="perceived" value="{X}" relation="notcontains" />
+			</condition>
+			<effect util="theta_(doyousee3)">
+				<set var="a_m" value="Disconfirm" />
+			</effect>
+			<effect util="theta_(doyousee4)">
+				<set var="a_m" value="Confirm" />
+			</effect>
+		</case>
+		<case>
 			<effect util="theta_(doyousee5)">
 				<set var="a_m" value="Confirm" />
 			</effect>
@@ -259,41 +299,6 @@
 	</rule>
 	
 	
-	
-	<rule id="doyousee2">
-		<case>
-			<condition>
-				<if var="a_ub" value="DoYouSee({X})" />
-				<if var="perceived" value="{X}" relation="contains" />
-			</condition>
-			<effect util="theta_(doyousee7)">
-				<set var="a_m" value="Confirm" />
-			</effect>
-			<effect util="theta_(doyousee8)">
-				<set var="a_m" value="Disconfirm" />
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_ub" value="DoYouSee({X})" />
-				<if var="perceived" value="{X}" relation="notcontains" />
-			</condition>
-			<effect util="theta_(doyousee9)">
-				<set var="a_m" value="Disconfirm" />
-			</effect>
-			<effect util="theta_(doyousee10)">
-				<set var="a_m" value="Confirm" />
-			</effect>
-		</case>
-		<case>
-			<effect util="theta_(doyousee11)">
-				<set var="a_m" value="Confirm" />
-			</effect>
-			<effect util="theta_(doyousee12)">
-				<set var="a_m" value="Disconfirm" />
-			</effect>
-		</case>
-	</rule>
 
 	<rule id="whatdoyousee">
 		<case>
@@ -304,26 +309,17 @@
 				<set var="a_m" value="Describe({perceived})" />
 			</effect>
 		</case>
-		<case>
-			<effect util="theta_(whatdoyousee2)">
-				<set var="a_m" value="Describe(*)" />
-			</effect>
-		</case>
-	</rule>
-
-
-
-	<rule id="whatdoyousee2">
-		<case>
+			<case>
 			<condition>
+				<if var="a_u" value="Confirm" />
 				<if var="a_ub" value="WhatDoYouSee" />
 			</condition>
-			<effect util="theta_(whatdoyousee3)">
+			<effect util="theta_(whatdoyousee1)">
 				<set var="a_m" value="Describe({perceived})" />
 			</effect>
 		</case>
 		<case>
-			<effect util="theta_(whatdoyousee4)">
+			<effect util="theta_(whatdoyousee2)">
 				<set var="a_m" value="Describe(*)" />
 			</effect>
 		</case>
@@ -338,7 +334,15 @@
 				<set var="a_m" value="Do({a_m})"/>
 			</effect>
 		</case>
-	
+		<case>
+			<condition>
+			<if var="a_u" value="Confirm"/>
+			<if var="a_ub" value="RepeatLast"/>
+			</condition>
+			<effect util="theta_(repeatLast)">
+				<set var="a_m" value="Do({a_m})"/>
+			</effect>
+		</case>
 	</rule>
 
 </model>
