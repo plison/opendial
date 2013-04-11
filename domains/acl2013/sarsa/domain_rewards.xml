@@ -344,7 +344,7 @@
 			<if var="a_u" value="RepeatLast"/>
 			</condition>
 			<effect util="theta_(repeatLast)">
-				<set var="a_m" value="Do({a_m})"/>
+				<set var="a_m" value="{a_m}"/>
 			</effect>
 		</case>
 		<case>
@@ -353,7 +353,7 @@
 			<if var="a_ub" value="RepeatLast"/>
 			</condition>
 			<effect util="theta_(repeatLast)">
-				<set var="a_m" value="Do({a_m})"/>
+				<set var="a_m" value="{a_m}"/>
 			</effect>
 		</case>
 	</rule>
