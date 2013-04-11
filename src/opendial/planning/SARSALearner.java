@@ -22,8 +22,10 @@ package opendial.planning;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 
@@ -52,21 +54,24 @@ public class SARSALearner extends ForwardPlanner {
 	// logger
 	public static Logger log = new Logger("SARSALearner", Logger.Level.DEBUG);
 	
+	public static double EPSILON = 0.1;
+	
 	public static DialogueState lastDS;
 	
 	public SARSALearner(DialogueState state) {
 		super(state);
 	}
 	
-
 	@Override
 	public void run() {
 		isTerminated = false;
 		Timer timer = new Timer();
 		timer.schedule(new StopProcessTask(this, MAX_DELAY), MAX_DELAY);
 
-		Map.Entry<Assignment, Double> bestAction = findBestAction();
-		
+		UtilityTable evalActions = evaluateActions();
+
+		Map.Entry<Assignment, Double> bestAction = selectAction(evalActions);
+		log.debug("selected action: " + bestAction.getKey());
 		if (lastDS != null) {
 			updateParameters(bestAction);
 		}
@@ -78,6 +83,26 @@ public class SARSALearner extends ForwardPlanner {
 		}
 		timer.cancel();	
 
+	}
+	
+	
+	private Map.Entry<Assignment, Double> selectAction(UtilityTable evalActions) {
+		
+		if ((new Random()).nextDouble() < EPSILON) {
+			log.debug("selecting sub-optimal action");
+			try {
+			Map<Assignment,Double> table = evalActions.getNBest(2).getTable();
+			if (table.size() > 1) {
+				Iterator<Map.Entry<Assignment,Double>> it = table.entrySet().iterator();
+				it.next();
+				return it.next();
+			}
+			}
+			catch (DialException e) {
+				log.warning("cannot select sub-optimal action");
+			}
+		}
+		return evalActions.getBest();
 	}
 	
 	private void updateParameters(Map.Entry<Assignment, Double> bestAction) {

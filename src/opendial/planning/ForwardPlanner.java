@@ -82,8 +82,9 @@ public class ForwardPlanner implements AnytimeProcess {
 		isTerminated = false;
 		Timer timer = new Timer();
 		timer.schedule(new StopProcessTask(this, MAX_DELAY), MAX_DELAY);
-
-		Assignment bestAction = findBestAction().getKey();
+		
+		UtilityTable evalActions = evaluateActions();
+		Assignment bestAction = evalActions.getBest().getKey();
 		if (!bestAction.isEmpty()) {
 			recordAction(currentState, bestAction);
 		}
@@ -91,7 +92,7 @@ public class ForwardPlanner implements AnytimeProcess {
 
 	}
 	
-	protected Map.Entry<Assignment,Double> findBestAction() {
+	protected UtilityTable evaluateActions() {
 		try {
 			Set<String> actionNodes = currentState.getNetwork().getActionNodeIds();
 			int horizon = Settings.getInstance().planning.getHorizon(actionNodes);
@@ -101,14 +102,13 @@ public class ForwardPlanner implements AnytimeProcess {
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
 			log.debug("Q values: " + qValues);
 			Map.Entry<Assignment, Double> bestAction = qValues.getBest();
-			log.debug("best action: " + bestAction.getKey());
 
-			return bestAction;
+			return qValues;
 		}
 		catch (Exception e) {
 			log.warning("could not perform planning, aborting action selection: " + e);
 		}
-		return new UtilityTable().getBest();
+		return new UtilityTable();
 	}
 
 
