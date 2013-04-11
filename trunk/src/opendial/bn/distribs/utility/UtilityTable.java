@@ -23,9 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.SortedMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -165,8 +168,8 @@ public class UtilityTable implements UtilityDistribution {
 	 * 
 	 * @return the (assignment,utility) table
 	 */
-	public Map<Assignment, Double> getTable() {
-		Map<Assignment,Double> averageUtils = new HashMap<Assignment,Double>();
+	public LinkedHashMap<Assignment, Double> getTable() {
+		LinkedHashMap<Assignment,Double> averageUtils = new LinkedHashMap<Assignment,Double>();
 		for (Assignment a : table.keySet()) {
 			averageUtils.put(a, getUtil(a));
 		}
