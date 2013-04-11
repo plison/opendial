@@ -29,7 +29,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Ground(Move({X}))" />
-				<if var="a_u" value="Nothing" />
+				<if var="a_u" value="Disconfirm" relation="!=" />
 			</condition>
 			<effect util="theta_(movements1)">
 				<set var="a_m" value="Do(Move({X}))" />
@@ -109,7 +109,7 @@
 		<case>
 			<condition operator="and">
 				<if var="a_m" value="Ground(PickUp{X})" />
-				<if var="a_u" value="Nothing" />
+				<if var="a_u" value="Disconfirm" relation="!=" />
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="carried" value="[]"/>
 			</condition>
@@ -120,7 +120,7 @@
 		<case>
 			<condition operator="and">
 				<if var="a_m" value="Ground(PickUp({X}))" />
-				<if var="a_u" value="Nothing" />
+				<if var="a_u" value="Disconfirm" relation="!=" />
 				<if var="perceived" value="{X}" relation="contains"/>
 				<if var="carried" value="[]" relation="!=" />
 			</condition>
@@ -131,7 +131,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Ground(PickUp({X}))" />
-				<if var="a_u" value="Nothing" />
+				<if var="a_u" value="Disconfirm" relation="!=" />
 				<if var="perceived" value="{X}" relation="notcontains" />
 			</condition>
 			<effect util="theta_(pickup4)">
@@ -190,7 +190,7 @@
 		<case>
 			<condition operator="and">
 				<if var="a_m" value="Ground(Release({X}))" />
-				<if var="a_u" value="Nothing"/>
+				<if var="a_u" value="Disconfirm" relation="!=" />
 				<if var="carried" value="{X}" relation="contains"/>
 			</condition>
 			<effect util="theta_(release1)">
@@ -203,7 +203,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Ground(Release({X}))" />
-				<if var="a_u" value="Nothing"/>
+				<if var="a_u" value="Disconfirm" relation="!=" />
 				<if var="carried" value="{X}" relation="notcontains"/>
 			</condition>
 			<effect util="theta_(release3)">
