@@ -207,7 +207,7 @@
 		</case>
 	</rule>
 
-	<rule>
+	<!-- <rule>
 		<case>
 			<effect util="theta_(confirm1)">
 				<set var="a_m" value="Confirm({a_u})" />
@@ -220,7 +220,7 @@
 				<set var="a_m" value="Confirm(None)" />
 			</effect>
 		</case>
-	</rule>
+	</rule> -->
 
 
 	<rule id="doyousee">
