@@ -208,6 +208,19 @@
 			</effect>
 		</case>
 	</rule>
+	
+	
+	
+	<rule>
+		<case>
+		<condition>
+				<if var="a_u" value="Disconfirm"/>
+		</condition>
+			<effect util="theta_(repeat2)">
+				<set var="a_m" value="AskRepeat" />
+			</effect>
+		</case>
+	</rule>
 
 	<rule>
 		<case>
