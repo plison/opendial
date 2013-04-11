@@ -197,30 +197,6 @@
 	</rule>
 
 	<rule>
-		<quantifier id="X"/>
-		<case>
-			<condition>
-				<if var="history" value="{X}" relation="contains" />
-			</condition>
-			<effect util="theta_(history1)">
-				<set var="a_m" value="{X}" />
-			</effect>
-		</case>
-	</rule>
-	
-	<rule>
-		<case>
-			<condition operator="or">
-				<if var="history" value="Ground({X})" relation="contains" />
-			</condition>
-			<effect util="theta_(history2)">
-				<set var="a_m" value="{X}" relation="!="/>
-			</effect>
-		</case>
-	</rule>
-
-
-	<rule>
 		<case>
 		<condition>
 				<if var="a_m" value="AskRepeat" relation="!="/>
@@ -351,6 +327,18 @@
 				<set var="a_m" value="Describe(*)" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="repeatlast">
+		<case>
+			<condition>
+			<if var="a_u" value="RepeatLast"/>
+			</condition>
+			<effect util="theta_(repeatLast)">
+				<set var="a_m" value="Do({a_ub})"/>
+			</effect>
+		</case>
+	
 	</rule>
 
 </model>
