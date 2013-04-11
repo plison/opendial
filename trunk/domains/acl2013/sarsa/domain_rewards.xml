@@ -236,6 +236,7 @@
 		 <condition>
 		 	<if var="a_u" value="Confirm" relation="!="/>
 		 	<if var="a_u" value="RepeatLast" relation="!="/>
+		 	<if var="a_m" value="Ground(*)" relation="!="/>
 		 </condition>
 			<effect util="theta_(wrong1)">
 				<set var="a_m" value="Do(*)" />
