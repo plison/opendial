@@ -20,8 +20,8 @@
 </gui>
 
 <inference>
-	<nbsamples>800</nbsamples>
-	<timeout>300</timeout>
+	<nbsamples>5000</nbsamples>
+	<timeout>2000</timeout>
 </inference>
 
 </settings>
