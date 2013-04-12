@@ -27,12 +27,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.arch.StateListener;
 import opendial.arch.Logger.Level;
+import opendial.arch.timing.StopProcessTask;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
@@ -75,6 +77,10 @@ public class UserSimulator extends Thread {
 	
 	double accReturn = 0;
 	
+	double lastReturn = 0;
+	
+	public static final long timingData = 60;
+	
 	ProbDistribution asrScore;
 	ProbDistribution a_uother;
 	
@@ -100,6 +106,9 @@ public class UserSimulator extends Thread {
 	public void startSimulator() {
 
 		realState.startState();
+		
+		Timer timer = new Timer();
+		timer.schedule(new Clock(this), 0, timingData*1000);
 
 		this.start();
 		
@@ -179,6 +188,7 @@ public class UserSimulator extends Thread {
 						new Assignment(), new Assignment("floor", "start"));
 				if (prob > 0.98) {
 					log.debug("accumulated return: " + accReturn);
+					lastReturn = accReturn;
 					accReturn = 0;
 				}
 			}
