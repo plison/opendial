@@ -54,7 +54,7 @@ public class SARSALearner extends ForwardPlanner {
 	// logger
 	public static Logger log = new Logger("SARSALearner", Logger.Level.DEBUG);
 	
-	public static double EPSILON = 0.1;
+	public static double EPSILON = 0.5;
 	
 	public static DialogueState lastDS;
 	
@@ -90,20 +90,15 @@ public class SARSALearner extends ForwardPlanner {
 		
 		if ((new Random()).nextDouble() < EPSILON) {
 			log.debug("selecting sub-optimal action");
-			try {
 			Map<Assignment,Double> table = evalActions.getNBest(2).getTable();
 			if (table.size() > 1) {
-				Iterator<Map.Entry<Assignment,Double>> it = table.entrySet().iterator();
-				it.next();
-				return it.next();
-			}
-			}
-			catch (DialException e) {
-				log.warning("cannot select sub-optimal action");
+				return table.entrySet().iterator().next();
 			}
 		}
 		return evalActions.getBest();
 	}
+	
+	
 	
 	private void updateParameters(Map.Entry<Assignment, Double> bestAction) {
 		double expectedValue = 0.0;

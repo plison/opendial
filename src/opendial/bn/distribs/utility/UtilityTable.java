@@ -181,11 +181,10 @@ public class UtilityTable implements UtilityDistribution {
 	 * 
 	 * @param nbest the number of values to keep in the filtered table
 	 * @return the table of values, of size nbest
-	 * @throws DialException if nbest is < 1
 	 */
-	public UtilityTable getNBest(int nbest) throws DialException {
+	public UtilityTable getNBest(int nbest) {
 		if (nbest < 1) {
-			throw new DialException("nbest must be >= 1");
+			nbest = 1;
 		}
 		List<Map.Entry<Assignment,Double>> entries = 
 				new ArrayList<Map.Entry<Assignment,Double>>(getTable().entrySet());
