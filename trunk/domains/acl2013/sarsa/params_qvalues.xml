@@ -3,14 +3,14 @@
 
 	<variable id="theta_(movements1)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
 
 	<variable id="theta_(movements2)">
 		<distrib type="gaussian">
-			<mean>2</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -18,7 +18,7 @@
 
 	<variable id="theta_(pickup1)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -26,7 +26,7 @@
 
 	<variable id="theta_(pickup2)">
 		<distrib type="gaussian">
-			<mean>2</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -34,7 +34,7 @@
 
 	<variable id="theta_(pickup3)">
 		<distrib type="gaussian">
-			<mean>12</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -42,7 +42,7 @@
 
 	<variable id="theta_(pickup4)">
 		<distrib type="gaussian">
-			<mean>12</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -50,7 +50,7 @@
 
 	<variable id="theta_(release1)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -58,7 +58,7 @@
 
 	<variable id="theta_(release2)">
 		<distrib type="gaussian">
-			<mean>2</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -66,7 +66,7 @@
 
 	<variable id="theta_(release3)">
 		<distrib type="gaussian">
-			<mean>12</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -74,7 +74,7 @@
 
 	<variable id="theta_(none)">
 		<distrib type="gaussian">
-			<mean>-1.5</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -82,7 +82,7 @@
 
 	<variable id="theta_(none2)">
 		<distrib type="gaussian">
-			<mean>2</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -90,7 +90,7 @@
 
 	<variable id="theta_(wrong1)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -98,7 +98,7 @@
 
 	<variable id="theta_(wrong2)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -106,7 +106,7 @@
 
 	<variable id="theta_(wrong3)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -114,7 +114,7 @@
 
 	<variable id="theta_(repeat)">
 		<distrib type="gaussian">
-			<mean>-1</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -122,7 +122,7 @@
 
 	<variable id="theta_(repeat2)">
 		<distrib type="gaussian">
-			<mean>2</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -130,7 +130,7 @@
 
 	<variable id="theta_(confirm1)">
 		<distrib type="gaussian">
-			<mean>-0.5</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -138,7 +138,7 @@
 
 	<variable id="theta_(confirm2)">
 		<distrib type="gaussian">
-			<mean>-1.5</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -146,7 +146,7 @@
 
 	<variable id="theta_(doyousee1)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -154,7 +154,7 @@
 
 	<variable id="theta_(doyousee2)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -162,7 +162,7 @@
 
 	<variable id="theta_(doyousee3)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -170,7 +170,7 @@
 
 	<variable id="theta_(doyousee4)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -178,7 +178,7 @@
 
 	<variable id="theta_(doyousee5)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -186,7 +186,7 @@
 
 	<variable id="theta_(doyousee6)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -194,7 +194,7 @@
 
 	<variable id="theta_(whatdoyousee1)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -202,7 +202,7 @@
 
 	<variable id="theta_(whatdoyousee2)">
 		<distrib type="gaussian">
-			<mean>-6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
@@ -210,7 +210,7 @@
 
 	<variable id="theta_(repeatLast)">
 		<distrib type="gaussian">
-			<mean>6</mean>
+			<mean>4</mean>
 			<variance>100</variance>
 		</distrib>
 	</variable>
