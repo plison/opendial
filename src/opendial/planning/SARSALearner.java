@@ -54,7 +54,7 @@ public class SARSALearner extends ForwardPlanner {
 	// logger
 	public static Logger log = new Logger("SARSALearner", Logger.Level.DEBUG);
 	
-	public static double EPSILON = 0.5;
+	public static double EPSILON = 0.2;
 	
 	public static DialogueState lastDS;
 	
