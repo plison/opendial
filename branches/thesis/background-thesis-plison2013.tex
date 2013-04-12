@@ -2,17 +2,74 @@
 \chapter{Background}
 \label{chap:background}
 
+We introduce in this chapter the most importance concepts, methods and tools employed in the field of spoken dialogue systems -- with special emphasis on dialogue management.  To lay down the linguistic foundations of our work, we start by describing some of the key properties of dialogue.  A proper understanding of these aspects is indeed a prerequisite for the design of 
+conversationally competent dialogue systems.
+
 \section{Key properties of dialogue}
+
+\note{reducing the communicative effort}
+
+\footnote{An elliptical (also called non-sentential) utterance is a linguistic construction that lacks an overt predicate, such as \utt{where?}, \utt{at 8 o'clock}, \utt{a bit less, thanks} and \utt{brilliant!}. Their interpretation generally requires access to the dialogue history to recover their intended meaning \citep{Fernandez:2007}.}
+
+\footnote{A deictic marker is a linguistic reference to an entity that is determined by the context of enunciation.  Examples of such markers are \utt{here} (spatial reference), \utt{yesterday} (temporal reference), \utt{this mug} (demonstrative) or \utt{you} (reference to a dialogue participant).}
 
 \subsection{Turn-taking}
 
+In spoken dialogue, the physical constraints of the communication medium impose that only one person speaks at a given time.
+
+
+\note{mixed initiative}
+\note{multi-party dialogue}
+
+\note{ping-pong type of interactions Current systems rely on an overly simplistic model of the interaction, where each speaker take discrete turns with noticeable gaps in between, more resembling a walkie-talkie dialogue than a natural conversation. }
+
+\note{Bohus paper}
+
+\note{little silence in smooth dialogue:< 250ms Gaps less than actual sentence planning time - anticipate }
+
+\note{At each TRP in each turn (Sacks 1974)
+a
+ 
+If speaker has selected A to speak, A must take floor
+a
+ 
+If speaker has selected no one to speak, anyone can
+a
+ 
+If no one else takes the turn, the speaker can
+a
+ 
+Selecting speaker A:
+a
+ 
+By explicit/implicit mention: What about it, Bob?
+a
+ 
+By gaze, function
+a
+ 
+Selecting others: questions, greetings, closing (notion of adjacency pairs)
+a
+ 
+(Traum et al., 2003) }
+
 \subsection{Dialogue acts}
 
-\subsection{Common ground}
+\note{called communicative acts, speech acts, dialogue move, etc.}
 
+\note{Searle taxonomy, inspired by Austin}
+mention non-sentential utterances or ellipsis
+and references to context (deictics, anaphora, etc.)
 
-\note{alignment, common ground,  dialogue as collaborative activity}
-\note{take key points from course slides}
+\note{prosodic layer}
+
+\subsection{Grounding}
+
+\note{talk about feedbacks, common ground, and alignment}
+
+\note{dialogue as collaborative activity}
+
+\note{interpret each other's utterance cooperatively}
 
 
 \section{Spoken Dialogue Systems}
@@ -20,6 +77,8 @@
 \subsection{Architectures}
 
 \note{beyond the boundaries of the isolated utterance}
+
+\note{mention the question of adaptivity}
 
 \subsection{Components}
 
