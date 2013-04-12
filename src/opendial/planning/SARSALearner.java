@@ -89,12 +89,12 @@ public class SARSALearner extends ForwardPlanner {
 	
 	private Map.Entry<Assignment, Double> selectAction(UtilityTable evalActions) {
 		
-		if ((new Random()).nextDouble() < EPSILON) {
+	/**	if ((new Random()).nextDouble() < EPSILON) {
 			log.debug("selecting sub-optimal action");
 			Map<Assignment,Double> table = evalActions.getNBest(3).getTable();
 			int selection = (new Random()).nextInt(table.size());
 			return new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet()).get(selection);
-		}
+		} */
 		return evalActions.getBest();
 	}
 	
