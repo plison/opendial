@@ -108,7 +108,7 @@ public class UserSimulator extends Thread {
 		realState.startState();
 		
 		Timer timer = new Timer();
-		timer.schedule(new Clock(this), 0, timingData*1000);
+		timer.schedule(new SimulatorClock(this), 0, timingData*1000);
 
 		this.start();
 		
