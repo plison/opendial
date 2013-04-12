@@ -20,6 +20,7 @@
 package opendial.planning;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -90,10 +91,9 @@ public class SARSALearner extends ForwardPlanner {
 		
 		if ((new Random()).nextDouble() < EPSILON) {
 			log.debug("selecting sub-optimal action");
-			Map<Assignment,Double> table = evalActions.getNBest(2).getTable();
-			if (table.size() > 1) {
-				return table.entrySet().iterator().next();
-			}
+			Map<Assignment,Double> table = evalActions.getNBest(3).getTable();
+			int selection = (new Random()).nextInt(table.size());
+			return new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet()).get(selection);
 		}
 		return evalActions.getBest();
 	}
