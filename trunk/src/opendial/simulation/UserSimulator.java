@@ -146,7 +146,7 @@ public class UserSimulator extends Thread {
 			Assignment action = getSystemAction();		
 		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
-			systemState.addContent(new Assignment("r", returnValue), "simulator");
+		//	systemState.addContent(new Assignment("r", returnValue), "simulator");
 
 			if (startup) {
 				log.debug("STARTING UP SIMULATOR...");
