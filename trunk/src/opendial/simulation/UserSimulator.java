@@ -79,7 +79,7 @@ public class UserSimulator extends Thread {
 	
 	double lastReturn = 0;
 	
-	public static final long timingData = 60;
+	public static final long timingData = 10;
 	
 	ProbDistribution asrScore;
 	ProbDistribution a_uother;
