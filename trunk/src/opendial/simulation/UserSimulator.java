@@ -75,11 +75,14 @@ public class UserSimulator extends Thread {
 	
 	boolean startup = true;
 	
+	
+	
 	double accReturn = 0;
 	
 	double lastReturn = 0;
 	
 	public static final long timingData = 10;
+
 	
 	ProbDistribution asrScore;
 	ProbDistribution a_uother;
@@ -146,7 +149,9 @@ public class UserSimulator extends Thread {
 			Assignment action = getSystemAction();		
 		//	log.debug("system action: " + action);
 			double returnValue = getReturn(action);
-			systemState.addContent(new Assignment("r", returnValue), "simulator");
+			if (Settings.getInstance().planning.isSarsa()) {
+				systemState.addContent(new Assignment("r", returnValue), "simulator");
+			}
 
 			if (startup) {
 				log.debug("STARTING UP SIMULATOR...");
@@ -245,42 +250,7 @@ public class UserSimulator extends Thread {
 	
 
 	private void showParameterState() throws DialException {
-		if (nbTurns == 5) {
-			for (int i = 1 ; i < 15 ;i++) {
-				if (systemState.getNetwork().hasChanceNode("theta_"+i)) {
-					log.debug("===> estimate for theta_"+i+": " + systemState.getContent("theta_"+i, true));						
-				}
-			}
-			String fullTheta1 = "theta_(a_m=AskRepeat^i_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-				log.debug("===> estimate for " + fullTheta1 +": " + systemState.getContent(fullTheta1, true));
-			}
-			String fullTheta2 = "theta_(a_m=AskRepeat^i_u=Move(Forward))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta1)) {
-				log.debug("===> estimate for " + fullTheta2 +": " + systemState.getContent(fullTheta2, true));	
-			}
-			String fullTheta3 = "theta_(a_m=Confirm(Move(Left))^i_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta3)) {
-				log.debug("===> estimate for " + fullTheta3 +": " + systemState.getContent(fullTheta3, true));
-			}
-			String fullTheta4 = "theta_(a_m=AskRepeat^i_u=Move(Right))";
-			if (systemState.getNetwork().hasChanceNode(fullTheta4)) {
-				log.debug("===> estimate for " + fullTheta4 +": " + systemState.getContent(fullTheta4, true));	
-			}
-			String fullTheta5 = "theta_(a_m=Do(*)^i_u=WhatDoYouSee)";
-			if (systemState.getNetwork().hasChanceNode(fullTheta5)) {
-				log.debug("===> estimate for " + fullTheta5 +": " + systemState.getContent(fullTheta5, true));	
-			}
-			String linearTheta1 = "theta_(i_u=Move(Left)^a_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(linearTheta1)) {
-				log.debug("===> estimate for " + linearTheta1 +": " + systemState.getContent(linearTheta1, true));	
-			}
-			String linearTheta2 = "theta_(a_m=AskRepeat^a_u=Move(Left))";
-			if (systemState.getNetwork().hasChanceNode(linearTheta2)) {
-				log.debug("===> estimate for " + linearTheta2 +": " + systemState.getContent(linearTheta2, true));	
-			}
-			
-			
+		if (nbTurns == 2) {
 			for (String nodeId: systemState.getNetwork().getNodeIds()) {
 				if (systemState.isParameter(nodeId)) {
 					log.debug("===> estimate for " + nodeId +": " + systemState.getContent(nodeId, true));					
