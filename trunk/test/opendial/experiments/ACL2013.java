@@ -42,15 +42,15 @@ public class ACL2013 {
 //	public static final String domainFile = "domains//is2013/linear/domain.xml";
 //	public static final String parametersFile = "domains//is2013/linear/params_linear.xml";
 	public static final String simulatorFile = "domains//acl2013/simulator/simulator.xml";
-	public static final String settingsFile = "domains//acl2013/settings.xml";
 
 	public static void main(String[] args) {
 		try {
-			if (args.length != 2) {
+			if (args.length != 3) {
 				throw new DialException("must provide arguments for domain and parameter");
 			}
-			String domainFile = args[0];
-			String parametersFile = args[1];
+			String settingsFile = args[0];
+			String domainFile = args[1];
+			String parametersFile = args[2];
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
