@@ -13,6 +13,7 @@
 </initialstate>
 
 <import href="domain_rewards.xml"/>
+<import href="domain_effects.xml"/>
 
 <model type="update" trigger="a_m">
 

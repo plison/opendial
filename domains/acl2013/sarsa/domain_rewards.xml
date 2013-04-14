@@ -270,6 +270,19 @@
 	
 	
 	<rule>
+		<quantifier id="X"/>
+		<case>
+			<condition>
+				<if var="history" value="{X}" relation="contains" />
+			</condition>
+			<effect util="-4">
+				<set var="a_m" value="{X}" />
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule>
 		<case>
 		<condition>
 				<if var="a_m" value="AskRepeat" relation="!="/>
