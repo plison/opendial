@@ -2,20 +2,20 @@
 \chapter{Background}
 \label{chap:background}
 
-We introduce in this chapter the most importance concepts, methods and tools employed in the field of spoken dialogue systems -- with special emphasis on dialogue management.  To lay down the linguistic foundations of our work, we start by describing some of the key properties of dialogue.  A proper understanding of these aspects is indeed a prerequisite for the design of 
-conversationally competent dialogue systems.
+We introduce in this chapter the most importance concepts, methods and tools employed in the field of spoken dialogue systems -- with special emphasis on dialogue management.  We start by laying down the linguistic foundations of our work and some of the key properties of dialogue.  A proper understanding of these aspects is indeed a prerequisite for the design of conversationally competent dialogue systems.
 
-\section{Key properties of dialogue}
+\section{What is spoken dialogue?}
 
-\note{reducing the communicative effort}
+We communicate in order to fulfil a wide array of social functions, such as exchanging ideas, recollecting experiences,  sustaining relationships, or collaborating with others to accomplish shared goals. These communication skills are developed in early childhood, and our cognitive abilities are in many ways shaped and amplified by this disposition for verbal interaction.  
 
-\footnote{An elliptical (also called non-sentential) utterance is a linguistic construction that lacks an overt predicate, such as \utt{where?}, \utt{at 8 o'clock}, \utt{a bit less, thanks} and \utt{brilliant!}. Their interpretation generally requires access to the dialogue history to recover their intended meaning \citep{Fernandez:2007}.}
-
-\footnote{A deictic marker is a linguistic reference to an entity that is determined by the context of enunciation.  Examples of such markers are \utt{here} (spatial reference), \utt{yesterday} (temporal reference), \utt{this mug} (demonstrative) or \utt{you} (reference to a dialogue participant).}
 
 \subsection{Turn-taking}
 
-In spoken dialogue, the physical constraints of the communication medium impose that only one person speaks at a given time.
+Turn-taking\index{turn-taking} is one of the most basic (yet often neglected) aspect of spoken dialogue. The physical constraints of the communication channel impose that participants take turns in order to speak.   Turn-taking is essentially a resource allocation problem.  In this case, the resource to allocate is the conversational floor\index{conversational floor}, and social conventions dictate how the dialogue participants are to take and release their turns. 
+
+The field of  \textit{conversation analysis}\index{conversation analysis} studies what these conventions are, how they vary across cultures and languages, and how they combine to shape conversational behaviours. Human conversations are indeed remarkably efficient at turn-taking.  Empirical cross-linguistic studies have shown that the average transition time between turns revolves around 250 ms \citep{Stivers30062009}.\footnote{Interestingly, this duration is shorter than the time required for a human speaker to plan the motor routines associated with the physical act of speaking.  This means that the next speaker must start planning his utterance before the current turn is complete, and predict when a potential turn boundary is likely to appear.} In addition, most of the utterances do not overlap: \cite{Levinson1983} argues that less than 5 \% of the speech stream contains some form of overlap in spontaneous conversations.  
+
+A wide variety of cues are used to detect turn boundaries, such as silence, hesitation markers, syntax (complete grammatical unit), intonation (rising or falling pitch) and body language \citep{Duncan1972}.   These cues can occur jointly or in isolation. Upon reaching a turn boundary, a set of social conventions govern who is allowed to take the turn.  The current speaker can explicitly select the next person to take the turn, for instance when greeting someone or asking a directed question.   This selection can also occur via other mechanisms such as gaze \citep{sacks1974}.  When no such selection is indicated, other participants are allowed to take the turn.  Alternatively, the current speaker can continue to hold the floor until the next boundary. 
 
 
 \note{mixed initiative}
@@ -25,33 +25,6 @@ In spoken dialogue, the physical constraints of the communication medium impose 
 
 \note{Bohus paper}
 
-\note{little silence in smooth dialogue:< 250ms Gaps less than actual sentence planning time - anticipate }
-
-\note{At each TRP in each turn (Sacks 1974)
-a
- 
-If speaker has selected A to speak, A must take floor
-a
- 
-If speaker has selected no one to speak, anyone can
-a
- 
-If no one else takes the turn, the speaker can
-a
- 
-Selecting speaker A:
-a
- 
-By explicit/implicit mention: What about it, Bob?
-a
- 
-By gaze, function
-a
- 
-Selecting others: questions, greetings, closing (notion of adjacency pairs)
-a
- 
-(Traum et al., 2003) }
 
 \subsection{Dialogue acts}
 
@@ -70,6 +43,13 @@ and references to context (deictics, anaphora, etc.)
 \note{dialogue as collaborative activity}
 
 \note{interpret each other's utterance cooperatively}
+
+
+\note{reducing the communicative effort}
+
+\footnote{An elliptical (also called non-sentential) utterance is a linguistic construction that lacks an overt predicate, such as \utt{where?}, \utt{at 8 o'clock}, \utt{a bit less, thanks} and \utt{brilliant!}. Their interpretation generally requires access to the dialogue history to recover their intended meaning \citep{Fernandez:2007}.}
+
+\footnote{A deictic marker is a linguistic reference to an entity that is determined by the context of enunciation.  Examples of such markers are \utt{here} (spatial reference), \utt{yesterday} (temporal reference), \utt{this mug} (demonstrative) or \utt{you} (reference to a dialogue participant).}
 
 
 \section{Spoken Dialogue Systems}
