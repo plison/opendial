@@ -2,61 +2,125 @@
 \chapter{Background}
 \label{chap:background}
 
-We introduce in this chapter the most importance concepts, methods and tools employed in the field of spoken dialogue systems -- with special emphasis on dialogue management.  We start by laying down the linguistic foundations of our work and some of the key properties of dialogue.  A proper understanding of these aspects is indeed a prerequisite for the design of conversationally competent dialogue systems.
+We introduce in this chapter the most important concepts and methods employed in the field of spoken dialogue systems, with special emphasis on dialogue management.  We start by laying down the linguistic foundations of our work and describe some of the key properties of dialogue.  A proper understanding of these aspects is indeed a prerequisite for the design of conversationally competent dialogue systems. After this linguistic overview, we move to a more technical discussion of the software architectures used to implement practical dialogue systems.  These architectures typically comprise multiple processing components, from speech recognition to understanding, dialogue management, output generation and speech synthesis.  We briefly describe the role of each component and its position in the global processing pipeline. Last but not least, the final section of this background chapter delves into the diverse set of approaches that have been explored in the literature to formalise the dialogue management problem.  We first present hand-crafted approaches, starting with finite-state policies and pursuing with more sophisticated methods based on logic- or plan-based reasoning.  Finally, we detail the more recently developed statistical approaches to dialogue management that aim to automatically extract optimal policies from data.
 
 \section{What is spoken dialogue?}
 
 We communicate in order to fulfil a wide array of social functions, such as exchanging ideas, recollecting experiences,  sustaining relationships, or collaborating with others to accomplish shared goals. These communication skills are developed in early childhood, and our cognitive abilities are in many ways shaped and amplified by this disposition for verbal interaction.  
 
+One of the most important property of dialogue is that it is fundamentally a \textit{collaborative activity} (emphasis on both terms).  It is, first of all, an \textit{activity}, which means that is is (1) driven by concrete goals to achieve; (2) subject to costs -- the communication effort -- to minimise, and (3) composed of a temporal sequence of basic actions.  Furthermore, if we abstract from so-called ``internal dialogues'' with oneself, dialogue involves per definition at least two participants.  As shown by a wealth of studies in psychology and linguistics \citep{Clark1989,Allwood92,Clark96,Garrod2004,Tomasello2005}, human conversations are characterised by a high degree of \textit{collaboration} between interlocutors to coordinate their contributions and ensure mutual understanding.  
+
+We describe in the next sections three major aspects of this collaborative activity: \begin{enumerate}
+\item The dialogue participants take \textit{turns} in a conversation;
+\item These turns are structured into basic communicative units called \textit{dialogue acts};
+\item The participants continuously provide \textit{grounding signals} to each other in order to indicate how they understand (or fail to understand) their contributions.
+\end{enumerate}
 
 \subsection{Turn-taking}
 
 Turn-taking\index{turn-taking} is one of the most basic (yet often neglected) aspect of spoken dialogue. The physical constraints of the communication channel impose that participants take turns in order to speak.   Turn-taking is essentially a resource allocation problem.  In this case, the resource to allocate is the conversational floor\index{conversational floor}, and social conventions dictate how the dialogue participants are to take and release their turns. 
 
-The field of  \textit{conversation analysis}\index{conversation analysis} studies what these conventions are, how they vary across cultures and languages, and how they combine to shape conversational behaviours. Human conversations are indeed remarkably efficient at turn-taking.  Empirical cross-linguistic studies have shown that the average transition time between turns revolves around 250 ms \citep{Stivers30062009}.\footnote{Interestingly, this duration is shorter than the time required for a human speaker to plan the motor routines associated with the physical act of speaking.  This means that the next speaker must start planning his utterance before the current turn is complete, and predict when a potential turn boundary is likely to appear.} In addition, most of the utterances do not overlap: \cite{Levinson1983} argues that less than 5 \% of the speech stream contains some form of overlap in spontaneous conversations.  
+The field of  \textit{conversation analysis}\index{conversation analysis} studies what these conventions are and how they combine to shape conversational behaviours in various languages and cultures. Human conversations are indeed remarkably efficient at turn-taking.  Empirical cross-linguistic studies have shown that the average transition time between turns revolves around 250 ms. \citep{Stivers30062009}.\footnote{Interestingly, this duration is shorter than the time required for a human speaker to plan the motor routines associated with the physical act of speaking.  This means that the next speaker must start planning his utterance before the current turn is complete, and predict when a potential turn boundary is likely to appear.} In addition, most of the utterances do not overlap: \cite{Levinson1983} argues that less than 5 \% of the speech stream contains some form of overlap in spontaneous conversations.  
 
 A wide variety of cues are used to detect turn boundaries, such as silence, hesitation markers, syntax (complete grammatical unit), intonation (rising or falling pitch) and body language \citep{Duncan1972}.   These cues can occur jointly or in isolation. Upon reaching a turn boundary, a set of social conventions govern who is allowed to take the turn.  The current speaker can explicitly select the next person to take the turn, for instance when greeting someone or asking a directed question.   This selection can also occur via other mechanisms such as gaze \citep{sacks1974}.  When no such selection is indicated, other participants are allowed to take the turn.  Alternatively, the current speaker can continue to hold the floor until the next boundary. 
 
+Turn-taking is closely related to the notion of \textit{initiative}\index{initiative} in research on human--computer interaction. The vast majority of dialogue systems currently deployed are either system-initiated or user-initiated.  In a system-initiated dialogue, the dialogue system has full control on how the interaction is unfolding -- i.e. the system is the one asking the questions and waiting for the user responses.  A user-initiated dialogue is the exact opposite: in such settings, the user is assumed to lead the interaction and request information from the system.  The most complex -- but also most natural -- interaction style is the mixed-initiative\index{mixed initiative}, where both the user and the dialogue system are allowed to take the initiative at any time and provide or solicit information whenever they see fit \citep{Horvitz:1999}. 
 
-\note{mixed initiative}
-\note{multi-party dialogue}
-
-\note{ping-pong type of interactions Current systems rely on an overly simplistic model of the interaction, where each speaker take discrete turns with noticeable gaps in between, more resembling a walkie-talkie dialogue than a natural conversation. }
-
-\note{Bohus paper}
-
+The turn-taking behaviour of most current-day dialogue systems remains quite primitive.  The most common method to detect the end of a user turn is to wait for a silence longer than a manually fixed threshold, typically ranging between 
+\textonehalf  $ $ and 1.0 second.  Some system architectures also include routines for handling barge-ins\index{barge-in} -- that is, user interruptions --  \citep{StromS00}, while others simply ignore them altogether . Turn-taking has now become a focus of research in its own right in the dialogue system literature \citep{RauxE09,Gravano2011}, in an effort to break away from the ping-pong interaction style that characterises most current dialogue interfaces.  
 
 \subsection{Dialogue acts}
 
-\note{called communicative acts, speech acts, dialogue move, etc.}
+Each turn is constituted of one or more utterances.  As argued by \cite{Austin1962} and \cite{Searle1969}, our utterances are nearly always purposeful: they have specific goals and are intended to have a specific effect on the listener.  They should therefore best be described as actions rather than abstract statements about the world.  The notion of dialogue act\index{dialogue act} embodies this idea.\footnote{Dialogue acts have gone through multiple names over time, owing to the diverse range of research fields that have studied them, from philosophy to descriptive and computational linguistics.  As listed in \cite{mctear2004}, alternative denominations include speech acts \citep{Searle1969}, communicative acts \citep{allwood1976}, conversation acts \citep{TraumH92}, conversational moves \citep{sinclair1975}, and dialogue moves \citep{LarssonCEL99}.} \cite{Bunt1996} defines a dialogue act as a ``functional unit of a dialogue used by the speaker to change the context''.
 
-\note{Searle taxonomy, inspired by Austin}
-mention non-sentential utterances or ellipsis
-and references to context (deictics, anaphora, etc.)
+In his seminal work on the philosophy of language, \cite{Searle1979} established a taxonomy of speech acts\index{speech act} divided in five central categories:
+\begin{description}
+\item[Assertives: ] Committing the speaker to the truth of a proposition. \\
+Examples: \utt{I swear I saw him on the crime scene.}, \utt{I bought more coffee.}
+\item[Directives: ]  Attempts by the speaker to get the addressee to do something. \\ Examples:  \utt{Clean your room!}, \utt{Could you post this for me?}
+\item[Commissives: ] Committing the speaker to some future course of action. \\ Examples: \utt{I will deliver this review before Monday.}, \utt{I promise to work on this.}
+\item[Expressives: ] Expressing the psychological state of the speaker about a state of affairs. \\ Examples: \utt{I am so happy for you!}, \utt{Apologies for being late.}
+\item[Declaratives: ] Bringing about a different state of the world by the utterance. \\ Examples: \utt{You're fired.}, \utt{We decided to let you pass this exam.}
+\end{description}
 
-\note{prosodic layer}
+Modern taxonomies of dialogue acts are significantly more detailed than the one introduced by Searle.  They also provide detailed accounts of various dialogue-level phenomena such as grounding (cf. next section) that were absent from Searle's analysis. The most well-known annotation scheme is DAMSL (Dialogue Act Markup in Several Layers\index{DAMSL}), which was initially put forward by \cite{Core1997}.  DAMSL defines a rich, multi-layered annotation scheme for dialogue acts that is both domain- and task- independent.  A modified version of this scheme was applied to annotate the Switchboard corpus\footnote{The Switchboard corpus is a corpus of spontaneous telephone conversations collected in the early 1990's.  It includes about 2430 conversations averaging 6 minutes in length; totalling over 240 hours of recorded speech with native speakers of American English \citep{Godfrey1992}.} based on a set of 42 distinct dialogue acts \citep{Jurafsky1997}, including greeting and closing actions, acknowledgements, clarification requests, self-talk, responses, and many more.  An interesting aspect of DAMSL is the use of two complementary dimensions in the markup: the \textit{forward-looking functions}\index{forward-looking function}, which are the traditional speech acts in Searle's sense (assertions, directives, information requests, etc.) and the \textit{backward-looking functions}\index{backward-looking function} that respond back to a previous dialogue act and can signal agreement, understanding, or provide answers.  Both backward- and forward-looking functions can be present in the same utterance. 
+
+Determining the dialogue act corresponding to a given utterance is a non-trivial operation. The type of utterance only gives a partial indication of the underlying dialogue act -- a question can for instance express a directive (\utt{Could you post this for me?}).  In order to accurately classify a dialogue act, a variety of linguistic factors have to be taken into account, such as prosody, lexical, syntactic and semantic features, and the preceding dialogue history \citep{jurafsky1998,Shriberg1998,stolcke2000}.
+
+Dialogue acts are strongly contextual in nature: they are generally only intelligible within the particular conversational context in which they appear. Their successful interpretation must therefore venture beyond the boundaries of the isolated utterance. We briefly review here three striking examples of this subordination to context.
+
+\subsubsection*{Deictic markers}
+
+A deictic marker\index{deictic marker} is a linguistic reference to an entity that is determined by the context of enunciation.  Examples of such markers are \utt{here} (spatial reference), \utt{yesterday} (temporal reference), \utt{this mug} (demonstrative) or \utt{you} (reference to an interlocutor). By their very definitions, deictic markers refer to different realities depending on the situation in which they are used: a \utt{here} uttered in a classroom differs from a \utt{here} uttered on the beach.  As a consequence, the resolution of these expressions based on their context is a prerequisite to semantic interpretation.
+
+\subsubsection*{Implicatures}
+\index{implicature}
+As initially argued by \cite{Grice1989}, an important part of the semantics of dialogue acts is not explicitly stated but rather implied from the context.  Consider the following constructed example: 
+\begin{center}
+\begin{dialogue}
+\speak{A} Is William working today?
+\speak {B} He has a cold.
+\end{dialogue}
+\end{center}
+In order to retrieve the ``suggested'' meaning behind B's utterance -- namely, that William is probably not working --, one needs to assume that B is cooperative and that his response is therefore relevant to A's question.  If an utterance initially seems to deliberately violate this principle, the listener must search for additional hypotheses required to make sense of the dialogue act. \cite{Grice1989} formalised these ideas in terms of a cooperative principle composed of four conversational maxims that are assumed to hold in a natural conversation: the maxim of quality (``be truthful''), the maxim of quantity (``be exactly as informative as required''), the maxim of relation (``be relevant'') , and the maxim of manner (``be relevant'').  These notions have been further developed by various theorists such as \cite{wilson2002relevance} and \cite{horn2008handbook}. 
+
+
+\subsubsection*{Non-sentential utterances}
+\index{non-sentential utterance}
+Non-sentential (also called elliptical) utterances are linguistic constructions that lack an overt predicate.  They include expressions such as  \utt{where?}, \utt{at 8 o'clock}, \utt{a bit less, thanks} and \utt{brilliant!}. Their interpretation generally requires access to the recent dialogue history to recover their intended meaning. This can lead to ambiguities in the resolution, as illustrated in these examples modified from \cite{Fernandez:2007}: \begin{itemize}
+\item A: ``When do they open the new station?''  $\rightarrow$ B: ``Tomorrow'' (\textit{short answer})
+\item A: ``They open the station today''  $\rightarrow$ B: ``Tomorrow'' (\textit{correction})
+\item A: ``They open the station tomorrow''  $\rightarrow$ B: ``Tomorrow'' (\textit{acknowledgement})
+\end{itemize}
 
 \subsection{Grounding}
 
-\note{talk about feedbacks, common ground, and alignment}
+Dialogue acts are executed as part of a larger collaborative activity that requires the active coordination of all conversational partners, i.e. speaker(s) as well as hearer(s).  This coordination takes place at various levels.  The first and most visible level is the content of the conversational activity.   The partners must ensure mutual understanding of each other's contribution, to control that they remain ``on the same page''.  In addition, they  also coordinate the process by which the conversational activity moves forward -- by signalling that they attending to the partner who currently holds the conversational floor and acknowledging his/her contributions to the dialogue.
 
-\note{dialogue as collaborative activity}
+As an illustration, consider this short excerpt from a real conversation transcribed in the British National Corpus \citep{bnc} :\footnote{The full transcript is available at \url{http://www.phon.ox.ac.uk/SpokenBNCdata/KBM.html}}
 
-\note{interpret each other's utterance cooperatively}
+\begin{center}
+\begin{dialogue} 
+\speak{David} you know carriage a single carriage way?
+\speak{Chris} mm
+\speak{David} now a ... a dual carriage way that has three lanes, what lane do you use?
+\speak{Chris} the left ...
+\speak{David} right, what one you use for overtaking?
+\speak{Chris} mm?
+\speak{David} what one you use for overtaking?
+\speak{Chris} right
+\speak{David} middle lane
+\speak{Chris} all three lanes is the taught now -- middle?
+\speak{David} middle lane, you never stay in it either
+\speak{Chris} so what's the last
+\speak{David} it's just
+\speak{Chris} one for?
+\speak{David} turn right
+\speak{Chris} turn, aye
+\end{dialogue}
+\end{center}
 
+We can observe in this short dialogue that the interlocutors constantly rely on the \textit{common ground} of the interaction to move their discussion forward.  They regularly check what pieces of information are mutually known and understood (e.g. \utt{you know carriage a single carriage way?}).  They also make use of a variety of signals to indicate when things are properly grounded (\utt{mm}, \utt{right}, \utt{turn, aye}) and when they are not (\utt{mm?}).  As the dialogue unfolds turn after turn, this common ground\index{common ground} accumulates more and more material -- for instance, the use of the middle lane for overtaking is not initially part of the shared knowledge for both speakers at the onset of the conversation, but becomes so towards the end. 
 
-\note{reducing the communicative effort}
+The common ground is defined as the collection of shared knowledge, beliefs and assumptions that is established during an interaction.\footnote{An information that is part of the common ground for a given group is more than simply known by every member of the group.  They must also be aware that the information is shared and known by the other members. Formally speaking, a proposition $p$ is part of the common knowledge for a group of agents $G$ when all the agents in $G$ know $p$, and they also all know that they all know $p$, and they all know that they all know that they all know $p$, \textit{ad infinitum}. This definition can be rigorously formalised with set theory or epistemic logic \citep{meyer2004epistemic}. } Each dialogue act is built upon the current common ground and participates in its gradual expansion and refinement.  This process is called \textit{grounding}\index{grounding}.  A variety of feedback mechanisms  can be used to this effect.  As described by \cite{Clark1989}, positive evidence\index{positive feedback} of understanding can be expressed via cues such as:
+\begin{description}
+\item[Continued attention: ] The hearer shows that he/she continues to attend to the speaker;
+\item[Relevant next contribution: ] The hearer produces a relevant follow-up, as in the answer \utt{the left...} following the question preceding it;
+\item [Acknowledgement: ] The hearer nods or utters a backchannel such as \utt{mm}, \utt{uh-uh}, \utt{yeah}, or an assessment such \utt{I see}, \utt{that's great};
+\item [Demonstration: ] The hearer demonstrates evidence of understanding by reformulating or completing the speaker utterance;
+\item [Display: ] The hearer reuses part of the previous utterance, such as \utt{turn, aye} after \utt{turn right}.
+\end{description}
 
-\footnote{An elliptical (also called non-sentential) utterance is a linguistic construction that lacks an overt predicate, such as \utt{where?}, \utt{at 8 o'clock}, \utt{a bit less, thanks} and \utt{brilliant!}. Their interpretation generally requires access to the dialogue history to recover their intended meaning \citep{Fernandez:2007}.}
+Communication problems can also occur, owing to e.g. misheard or misunderstood utterances. The hearer must in this case provide a negative feedback\index{negative feedback} indicating a trouble in understanding.  A large panel of clarification and repair strategies\index{clarification strategy} \index{repair strategy} are available to recover from these communicative failures.  These strategies include backchannels\index{backchannel} (\utt{mm?}), confirmations  (\utt{Do you mean that...?}), requests for disambiguations, invitations to repeat, and tentative corrections.  
 
-\footnote{A deictic marker is a linguistic reference to an entity that is determined by the context of enunciation.  Examples of such markers are \utt{here} (spatial reference), \utt{yesterday} (temporal reference), \utt{this mug} (demonstrative) or \utt{you} (reference to a dialogue participant).}
+All in all, these positive and negative signals enable the dialogue participants to dynamically synchronise what the speaker intends to express and what the hearers actually understand.   This grounding process operates mostly automatically, without deliberate effort.  It is closely related to the concept of interactive alignment\index{alignment} that has recently been articulated by \cite{Garrod2004,Garrod2009}. Humans show a clear tendency to (unconsciously) imitate their conversational partners. In particular, they automatically align their choice of words, a phenomenon called lexical entrainment\index{lexical entrainment} \citep{brennan1996conceptual}.  But alignment also occurs on several other levels such as grammatical constructions \citep{branigan2000syntactic}, pronunciation \citep{pardo2006phonetic}, accents and speech rate \citep{giles19911}, and even gestures and facial expressions \citep{bavelas1986show}.  
+
+A proper treatment of grounding is critical for the development of intuitive conversational interfaces.  As we already mentioned in the introduction to this thesis, understanding errors are indeed ubiquitous in spoken dialogue systems.  The potential sources of misunderstandings are abundant, from error-prone speech recognition to out-of-domain utterances, unresolved ambiguities, and unexpected user behaviour.  These pitfalls make the necessity of appropriate grounding strategies even more acute.  Grounding for dialogue systems is an active area of research and important advances have been made regarding the formalisation of rich computational models of grounding \citep{Traum:1994thesis,MathesonPT00}, the generation of clarification requests \citep{Purver04Thesis,Rieser:2005}, the design of human-inspired error handling\index{error handling} strategies \citep{Skantze2007}, the integration of non-verbal cues such as gaze, head nods and attentional focus \citep{Nakano:2003}, and the development of incremental grounding mechanisms \citep{visser_toward_2012}.
 
 
 \section{Spoken Dialogue Systems}
  
 \subsection{Architectures}
-
-\note{beyond the boundaries of the isolated utterance}
 
 \note{mention the question of adaptivity}
 
@@ -66,10 +130,12 @@ and references to context (deictics, anaphora, etc.)
 
 \section{Dialogue Management}
 
+information state update
 \subsection{Hand-crafted approaches}
 
 Some topics investigated in this paradigm are the semantic and pragmatic interpretation of dialogue moves \citep{ThomasonManuscript-THOEUA,Ginzburg2012}, the rhetorical structure of dialogue \citep{0521659515}, or the use of plan-based reasoning to infer the user intentions \citep{Allen1980,Litman87}.  These approaches are able to provide detailed analyses of various dialogue behaviours, but they generally assume complete observability of the dialogue context and provide only a very limited account (if any) of uncertainties.
 
+\citep{Grosz:1986} about plan-based approach. 
 
 \note{Finite-state automata, frame-based, logical reasoning, etc.}
 
@@ -85,3 +151,11 @@ This is typically done by representing the dialogue domain as a Markov Decision 
 \note{MDP and POMDPs}
 
 \section{Summary}
+
+\note{5 points about dialogue? uncertain, structured, contextual, goal-driven, collaborative}
+
+%They also continuously seek to predict what their interlocutor is going to say or talk about next, based on the current context \citep{VanBerkum2005}.  They cover a wide range of behavioural levels, from low-level imitation mechanisms to high-level alignment of semantic representations \citep{Garrod2009}.
+
+
+\note{not said: predictions, incrementality, embodiment and situatedness, conversation structure}
+
