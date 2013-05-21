@@ -10,6 +10,7 @@
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{makeidx}
+\usepackage{attrib}
 \usepackage{url}
 \usepackage[tight,footnotesize]{subfigure}
 \usepackage{sectsty}
@@ -27,7 +28,8 @@
 \newcommand{\argmax}{\operatornamewithlimits{argmax}} 
 \def\Var{{\rm Var}\,}
 \def\E{{\rm E}\,}
-
+\newcommand{\urlsmall}[1]{\begin{scriptsize}\url{#1}\end{scriptsize}}
+\def\opendial{\begin{small}\textsf{openDial}\end{small}\index{openDial} }
 
 \title{\Huge{Structured Probabilistic Modelling \\ for Dialogue Management}}
 
@@ -71,6 +73,8 @@ Submitted for the degree of Philosophiae Doctor}
 \tableofcontents
 
 \mainmatter
+
+\include{notation-thesis-plison2013}
 
 \include{intro-thesis-plison2013}
 
