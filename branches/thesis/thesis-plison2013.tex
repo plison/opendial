@@ -8,6 +8,7 @@
 \usepackage{rotating}
 \usepackage{multirow}
 \usepackage{rotating}
+\usepackage{longtable}
 \usepackage{algorithmic}
 \usepackage{algorithm}
 \usepackage{makeidx}
@@ -18,12 +19,25 @@
 \usepackage{sectsty}
 \usepackage{wrapfig}
 \usepackage{hyperref}
+\usepackage{amsthm}
 \hypersetup{colorlinks,citecolor=black, filecolor=black,linkcolor=black,urlcolor=black}
 \usepackage[nottoc]{tocbibind}
 \setlength{\columnsep}{1cm}
 \urlstyle{sf}
  \usepackage{dialogue}
 \newfloat{Transcript}{tbp}{lop}[section]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\usepackage{framed}
+\newcounter{examplecounter}
+\newenvironment{example}{\begin{quote}%
+    \refstepcounter{examplecounter}%
+  \textbf{Example \arabic{examplecounter}}%
+  \quad
+}{%
+\end{quote}%
+}
 
 \newcommand{\utt}[1]{``\textsl{#1}''}
 \newcommand{\note}[1]{\textcolor{red}{#1}}
@@ -82,6 +96,8 @@ Submitted for the degree of Philosophiae Doctor}
 
 \include{background-thesis-plison2013}
 
+\include{probmodelling-thesis-plison2013}
+
 \include{rules-thesis-plison2013}
 
 \include{wozlearning-thesis-plison2013}
@@ -95,6 +111,8 @@ Submitted for the degree of Philosophiae Doctor}
 \appendix
 
 \include{distributions-thesis-plison2013}
+
+\include{proofs-thesis-plison2013}
 
 \include{domainspecs-thesis-plison2013}
 

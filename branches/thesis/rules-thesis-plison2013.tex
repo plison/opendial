@@ -1,13 +1,17 @@
-\chapter{Dialogue Modelling with Probabilistic Rules}
+\chapter{Probabilistic Rules}
 \label{chap:rules}
 
-\section{Graphical models}
+This chapter spells out the dialogue modelling approach developed in this thesis.  As we have seen in the previous chapter, graphical models can help reduce the complexity of probability and utility models by exploiting independence properties between variables.  Based on this framework, the state of the dialogue system can be efficiently encoded as a network of interconnected variables.  These variables are dynamically updated as a function of the system actions and observations.  Graphical models can also easily represent decision-theoretic problems through the inclusion of decision and utility variables.  We argued that this generic representation offered a number of theoretical and practical advantages for various learning and inference tasks.
 
-\subsection{Representation}
+Despite these attractive properties, graphical models do also unfortunately suffer from scalability problems when faced with complex dialogue domains.  Conditional dependencies between variables can lead to an rapid increase in the number of distributions included in the model. Alas, only limited amounts of training data are available for most dialogue domains.  Estimating the model distributions in such setting is therefore particularly challenging. To address this issue, we introduce in this chapter the notion of \textit{probabilistic rules}, which are structured mappings between conditions and  (parametrised) effects.  These rules function as \textit{high-level templates} for the construction of the Dynamic Decision Network.  The key advantage of such structured modelling approach is the drastic reduction of the number of parameters compared to traditional representations.  We also argue that these expressive representations are particularly well suited to encode the probability and utility models used in dialogue management, where substantial amounts of expert knowledge can be exploited to structure the relationships between variables. 
 
-\subsection{Inference}
+The chapter is divided in five sections: Section \ref{sec:prules} describes in detail how probabilistic rules are defined in terms of conditions and effects and provide some concrete examples of rules for dialogue management.  Section \ref{sec:ruleinstantiation} connects these definitions to the graphical models described in the previous chapter by  showing how probabilistic rules are practically instantiated into a Dynamic Decision Network.  Finally, Section \ref{sec:amodelling} addresses some advanced modelling issues and Section \ref{sec:relatedwork} relates the approach to previous work.
 
 \section{Definitions}
+\label{sec:prules}
+
+\note{the rules define a conditional Bayesian network}
+
 
 \subsection{Conditions}
 
@@ -15,15 +19,12 @@
 
 \subsection{Parameters}
 
-\section{Types of rules}
-
-\subsection{Probability rules}
-
-\subsection{Utility rules}
+\subsection{Rule types}
 
 \subsection{Examples}
 
 \section{Rule instantiation}
+\label{sec:ruleinstantiation}
 
 \subsection{Dialogue state}
 
@@ -31,20 +32,19 @@
 
 \subsection{Instantiation algorithm}
 
-\subsection{Probabilistic inference}
-
-Standard algorithms for probabilistic inference such variable elimination\index{variable elimination} \citep{ZhangP96} and likelihood weighted sampling\index{likelihood weighted sampling} \citep{FungC89} are applied for this purpose.
-
-
 \subsection{Pruning mechanisms}
 
 \section{Advanced modelling}
+\label{sec:amodelling}
 
 \subsection{Strings, numbers and collections}
 
 \subsection{Quantifiers}
 
 \section{Related work}
+\label{sec:relatedwork}
+
+\note{Heriberto's relational state: \cite{pub5502}}
 
 \section{Conclusion}
 

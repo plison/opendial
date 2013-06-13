@@ -2,40 +2,53 @@
 \chapter*{Mathematical notations}
 \thispagestyle{empty}
 
-\note{Need to work on this}
-
-\begin{tabular}{lp{5mm}p{11cm}}
-\multicolumn{3}{l}{\textbf{Probabilistic models:}} \\
-$P(x)$ && Probability distribution for the random variable $x$ \\
-$P(x_1, ...x_n)$ && Joint probability distribution for $x_1$, ... $x_n$ \\
-$P(x_1,...x_n | y_1, ... y_n)$ && Conditional probability distribution for $x_1$, ... $x_n$ given $y_1$, ... $y_n$  \\ 
-$E(x)$ && Expectation of the variable $x$ \vspace{4mm} \\
-\multicolumn{3}{l}{\textbf{(Partially observable) Markov Decision Processes:}} \\
+\begin{longtable}{lp{5mm}p{11cm}}
+\multicolumn{3}{l}{\textbf{Probabilistic models:}} \vspace{2mm} \\
+$X$ && Random variable \\
+$Val(X)$ && Range of values for the variable $X$ \\
+$P(X)$ && Probability distribution for the random variable $X$ \\
+$P(X_1, ...X_n)$ && Joint probability distribution for $X_1$, ... $X_n$ \\
+$P(X_1,...X_n \, | \, Y_1, ... Y_n)$ && Conditional probability distribution for $X_1$, ... $X_n$ given $Y_1$, ... $Y_n$  \\ 
+$E(X)$ && Expectation of the random variable $X$ \\
+&&  \vspace{3mm} \\
+\multicolumn{3}{l}{\textbf{(Partially observable) Markov Decision Processes:}} \vspace{2mm} \\
 $s$ && Current state \\
 $\mathcal{S}$ && Set of possible states \\
 $s_t$ && State at time $t$ \\
 $a$ && System action \\ 
 $\mathcal{A}$ && Set of possible actions \\
-$o$ && Observation \\
-$\mathcal{O}$ && Set of possible observations \\
 $R(s,a)$ && Immediate reward of action $a$ in state $s$ \\
 $\gamma$ && Discount factor \\
 $h$ && Planning horizon \\
-$Q(s,a)$ && Utility  of action $a$ in state $s$ (=expected cumulative reward) \\
+$V(s)$ && Value function for state $s$ (= expected return) \\
+$Q(s,a)$ && Action--value function for action $a$ in state $s$  \\
+$\pi(s)$ && MDP dialogue policy, defined as a function $\pi: \mathcal{S} \rightarrow \mathcal{A} $ \\
+$o$ && Observation \\
+$\mathcal{O}$ && Set of possible observations \\
 $b$ && Belief state $b(s) = P(s)$ \\
-$Q(b,a)$ && Utility  of action $a$ in belief state $b$ \\
-$\pi(b)$ && Dialogue policy, defined as a function $\pi: b \rightarrow a$ \\
+$\mathcal{B}$ && Belief state space  ($(|\mathcal{S}|\!-\!1)$-dimensional simplex) \\
+$V(b)$ && Value function for belief state $b$  \\
+$Q(b,a)$ && Action--value function for action $a$ in belief state $b$ \\
+$\pi(b)$ && POMDP dialogue policy, defined as a function $\pi: \mathcal{B} \rightarrow \mathcal{A} $ \\
 
-&&  \vspace{4mm} \\
-\multicolumn{3}{l}{\textbf{Dialogue management:}} \\
+&&  \vspace{3mm} \\
+\multicolumn{3}{l}{\textbf{Graphical Models:}} \vspace{2mm} \\
+$(\mathbf{X} \, \bot \, \mathbf{Y} \, | \, \mathbf{Z})$ && Conditional independence of the variables $\mathbf{X} $ and $\mathbf{Y}$ given $\mathbf{Z}$ \\
+$Y \rightarrow X$ && Directed edge from the variable $Y$ to the variable $X$ \\
+$parents(X)$ && Parents of the variable $X$ such that $\forall Y \in parents(X), Y \rightarrow X$ \\
+ $P(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Probability query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
+ $U(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Utility query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
+
+&&  \vspace{3mm} \\
+\multicolumn{3}{l}{\textbf{Dialogue-specific variables:}} \vspace{2mm} \\
 
 $u_u$ && User utterance \\
-$\tilde{u}_u$ && Actual recognition hypotheses $\langle (u_u^1, p^1), ... (u_u^n, p^n)\rangle$ for user utterance, where $u_u^i$ is an hypothesis with probability $p^i$ \\
+$\tilde{u}_u$ && ASR recognition hypotheses for user utterance \\
 $a_u$ && User dialogue act \\
-$\tilde{a}_u$ && Actual interpretation hypotheses $\langle (a_u^1, p^1), ... (a_u^n, p^n)\rangle$ for the user dialogue act \\
+$\tilde{a}_u$ && NLU Interpretation hypotheses for the user dialogue act \\
 $i_u$ && User intention \\
-$c$ && External context \\
+$c$ && Interaction context \\
 $a_m$ && System dialogue act \\
 $u_m$ && System utterance \\
 
-\end{tabular}
+\end{longtable}
