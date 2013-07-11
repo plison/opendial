@@ -1,7 +1,7 @@
-\chapter{Probabilistic modelling of dialogue}
+\chapter{Probabilistic models of dialogue management}
 \label{chap:probmodelling}
 
-The previous chapter provided an short overview of the most important approaches to dialogue management, and outlined in particular the benefits of statistical techniques to account for the uncertainty and unpredictability inherent to spoken dialogue. The present chapter exposes the theoretical and methodological foundations of these statistical approaches as well as their application to dialogue management. 
+The previous chapter surveyed the most important approaches to dialogue management, and outlined in particular the benefits of statistical techniques to account for the uncertainty and unpredictability inherent to dialogue. The present chapter exposes the theoretical and methodological foundations of these statistical approaches and their application to dialogue management. 
 
 The first section of this chapter concentrates on the use of graphical models to design structured representations of probability and utility distributions. Graphical models provide powerful, mathematically principled methods for representing, estimating and reasoning over complex probabilistic problems. The section starts with the most well-known type of directed graphical model: Bayesian networks.  We then show how to extend Bayesian networks to capture temporal sequence and express decision-theoretic problems through actions and utilities. We also review the most inference and learning algorithms developed for these graphical models.
 
@@ -151,9 +151,34 @@ The \opendial toolkit we have developed for this thesis includes two inference a
 
 \subsubsection*{Likelihood weighting} 
 
-To make our discussion of inference frameworks for graphical models more concrete, we describe below a simple but efficient sampling method called \textit{likelihood weighting} \citep{FungC89}, which we have used as inference algorithm for most of the experiments conducted in this thesis.  We limit the present discussion to inference in Bayesian networks, but the sampling algorithm can be extended to decision networks in a straightforward manner.
+To make our discussion of inference frameworks for graphical models more concrete, we describe below a simple but efficient sampling method called \textit{likelihood weighting} \citep{FungC89}, which we have used as inference algorithm for most of the experiments conducted in this thesis.  
 
-The intuition behind all sampling algorithms is to estimate the posterior distribution expressed in the query by collecting a large quantity of samples (i.e. assignments of values to the random variables) drawn from the graphical model.  Likelihood weighting proceeds by sampling the random variables in the graphical model one by one, in topological order (i.e. from parents to children).\footnote{A partial order on the nodes in the graph can always be found since the network is a directed acyclic graph.} For instance, sampling the network in Figure \ref{fig:plainbn} will start with the variable $\mathit{Weather}$, then $\mathit{Fire}$ (based on the value drawn for the parent $\mathit{Weather}$), and finally $\mathit{Ground}$ and $\mathit{Satellite}$ (based on the value drawn for $\mathit{Fire}$).  In order to account for the evidence $P(\mathbf{Q} \, | \, \mathbf{E} =\mathbf{e})$, every sample is associated with a specific \textit{weight} that expresses the likelihood of the evidence given the assignment for all the other variables.  The pseudocode in Algorithm \ref{algo:lw} (modified from \cite{aima2010,Koller+Friedman:09}) outlines the procedure.  The notation $\mathbf{x}(\mathbf{Y})$ is used to refer to the values specified for the variables $\mathbf{Y}$ in the assignment $\mathbf{x}$.
+The intuition behind sampling algorithms is to estimate the posterior distribution expressed in the query by collecting a large quantity of samples (i.e. assignments of values to the random variables) drawn from the graphical model.  Likelihood weighting proceeds by sampling the random variables in the graphical model one by one, in topological order (i.e. from parents to children).\footnote{A partial order on the nodes in the graph can always be found since the network is a directed acyclic graph.} For instance, sampling the network in Figure \ref{fig:plainbn} will start with the variable $\mathit{Weather}$, then $\mathit{Fire}$ (based on the value drawn for the parent $\mathit{Weather}$), and finally $\mathit{Ground}$ and $\mathit{Satellite}$ (based on the value drawn for $\mathit{Fire}$).  In order to account for the evidence $\mathbf{e}$, every sample is associated with a specific \textit{weight} that expresses the likelihood of the evidence given the assignment for all the other variables.  For graphical models that include utility variables, samples also record the total utility accumulated for the particular value assignment. The pseudocode in Algorithm \ref{algo:getsample} outlines the sampling procedure.  
+% (modified from \cite{aima2010,Koller+Friedman:09})
+\begin{algorithm}[h]
+\begin{algorithmic} \vspace{2mm} 
+\REQUIRE Bayesian network $\mathcal{B}$ over $\mathbf{X}$ with topological ordering $X_1,...X_n$
+\REQUIRE Evidence $\mathbf{E} =\mathbf{e}$
+\ENSURE Full sample drawn from $\mathcal{B}$ together with a weight and utility \\[2mm]
+\STATE Initialise sample $\mathbf{x} \leftarrow \langle \mathbf{e} \rangle$
+\STATE Initialise weight $w \leftarrow 1$ and utility $u \leftarrow 0$
+\FORALL {$X_i \in X_1,...X_n$} 
+\IF {$X_i$ is a chance variable and $X_i \in \mathbf{E}$}
+\STATE $w \leftarrow w \times P\left(X_i = \mathbf{e}(X_i)  \, | \,  \mathbf{x}\right)$
+\ELSIF {$X_i$ is a chance or decision variable and $X_i \notin \mathbf{E}$}
+\STATE $x_i \leftarrow$ random sample value drawn from $P(X_i  \, | \,  \mathbf{x})$
+\STATE $\mathbf{x} \leftarrow \mathbf{x} \cup \langle x_i \rangle$
+\ELSIF {$X_i$ is a utility variable}
+\STATE $u \leftarrow u + X_i(\mathbf{x})$
+\ENDIF
+\ENDFOR
+\RETURN $\mathbf{x}, w, u$
+\end{algorithmic}
+\caption{\textsc{Get-Sample} $(\mathcal{B},\mathbf{E}=\mathbf{e})$}
+\label{algo:getsample}
+\end{algorithm}
+
+A large number of samples can be collected in such manner. The resulting posterior distribution for a set of query variables $\mathbf{Q}$ can be derived from the samples by normalising the weighted counts associated with each value of the query variables, as shown in Algorithm \ref{algo:lw}.  The notation $\mathbf{x}(\mathbf{Q})$ is used to refer to the values specified for the variables $\mathbf{Q}$ in the assignment $\mathbf{x}$. Algorithm \ref{algo:lwu} extends the procedure to the calculation of utility distributions. In this case, the utility values are not normalised but correspond to a weighted average of the sampled utilities. 
 
 \begin{algorithm}[h]
 \begin{algorithmic} \vspace{2mm} 
@@ -161,25 +186,35 @@ The intuition behind all sampling algorithms is to estimate the posterior distri
 \REQUIRE Set of query variables $\mathbf{Q}$ and evidence $\mathbf{E} =\mathbf{e}$
 \REQUIRE Number $N$ of samples to draw
 \ENSURE Approximate posterior distribution $P(\mathbf{Q} \, | \, \mathbf{E} =\mathbf{e})$ given $\mathcal{B}$ \\[2mm]
-\STATE Let $\mathbf{W}$ be a vector of weighted counts for each possible value for $\mathbf{Q}$, initialised to zero
+\STATE Let $\mathbf{W}$ be vectors of weighted counts for each possible value of $\mathbf{Q}$, initialised to zero
 \FOR {$i = 1 \to N$}
-\STATE Initialise sample $\mathbf{x} \leftarrow \langle \mathbf{e} \rangle$ and weight $w \leftarrow 1$
-\FORALL {$X_i \in X_1,...X_n$} 
-\IF {$X_i \in \mathbf{E}$}
-\STATE $w \leftarrow w \times P\left(X_i = \mathbf{e}(X_i)  \, | \,  \mathbf{x}\right)$
-\ELSE
-\STATE $x_i \leftarrow$ random sample drawn from $P(X_i  \, | \,  \mathbf{x})$
-\STATE $\mathbf{x} \leftarrow \mathbf{x} \cup \langle x_i \rangle$
-\ENDIF
+\STATE $\mathbf{x}, w \leftarrow $ \textsc{Get-Sample}$(\mathcal{B}, \mathbf{e})$ 
+\STATE $\mathbf{W}[\mathbf{x}(\mathbf{Q})] \leftarrow \mathbf{W}[\mathbf{x}(\mathbf{Q})] + w$
 \ENDFOR
-\STATE $\mathbf{W}[\mathbf{x}(\mathbf{Q})] \leftarrow \mathbf{W}[\mathbf{q}] + w$
-\ENDFOR
-\STATE Normalise the counts in $\mathbf{W}$
+\STATE Normalise the weighted counts in $\mathbf{W}$
 \RETURN $\mathbf{W}$  \vspace{1mm} 
 \end{algorithmic}
 \caption{\textsc{Likelihood-Weighting} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
 \label{algo:lw}
 \end{algorithm}
+
+\begin{algorithm}[h]
+\begin{algorithmic} \vspace{2mm} 
+\REQUIRE (see above)
+\ENSURE Approximate utility distribution $U(\mathbf{Q}, \mathbf{E} =\mathbf{e})$ given $\mathcal{B}$ \\[2mm]
+\STATE Let $\mathbf{W}, \mathbf{U}$ be vectors of weighted counts for each possible value of $\mathbf{Q}$, initialised to zero
+\FOR {$i = 1 \to N$}
+\STATE $\mathbf{x}, w, u \leftarrow $ \textsc{Get-Sample}$(\mathcal{B}, \mathbf{e})$ 
+\STATE $\mathbf{W}[\mathbf{x}(\mathbf{Q})] \leftarrow \mathbf{W}[\mathbf{x}(\mathbf{Q})] + w$
+\STATE $\mathbf{U}[\mathbf{x}(\mathbf{Q})] \leftarrow \mathbf{U}[\mathbf{x}(\mathbf{Q})] + w \times u$
+\ENDFOR
+\STATE Average the weighted utility counts $\mathbf{U}(\mathbf{q}) \leftarrow \frac{\mathbf{U}(\mathbf{q})}{\mathbf{W}(\mathbf{q})} \ \ \forall \text{ values } \mathbf{q} \text{ of } \mathbf{Q}$ 
+\RETURN $\mathbf{U}$  \vspace{1mm} 
+\end{algorithmic}
+\caption{\textsc{Likelihood-Weighting-Util} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
+\label{algo:lwu}
+\end{algorithm}
+
 
 %\begin{example}
 %Assume we want to estimate the distribution $P(\mathit{Fire} \, | \, \mathit{GroundReport}\!=\!\mathit{yes},\mathit{SatelliteReport}\!=\!\mathit{no})$ via likelihood weighting based on the network in Figure \ref{fig:plainbn}.  The following procedure is followed to draw a particular sample: 

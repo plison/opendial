@@ -520,7 +520,7 @@ We have seen in Section \ref{sec:probruleinstantiation} that probability rules w
 \label{algo:getgroundings}
 \end{algorithm}
  
- Each grounding $\mathbf{g}_k \in G$ gives rise to a particular effect distribution, and the total effect for the rule is the conjunction of effects $[e_1 \land ... e_{|G|}]$ for all possible groundings.  The probability of each conjunction is defined as the product of probabilities for the grounding-specific effects:
+ Groundings are therefore specific values for the universally quantified variables $\mathbf{z}$ such that the input assignment entails the satisfaction of at least one corresponding grounded condition (that is, a rule condition in which the occurrences of $\mathbf{z}$ are replaced by the grounded values). Each grounding $\mathbf{g}_k \in G$ gives rise to a particular effect distribution, and the total effect for the rule is the conjunction of effects $[e_1 \land ... e_{|G|}]$ for all possible groundings.  The probability of each conjunction is defined as the product of probabilities for the grounding-specific effects:
 \begin{align}
 & P(r\!=\![e_1 \land ... e_{|G|}] \, | \, I_1\!=\!i_1,... I_n\!=\!i_n) = \prod_{k=1}^{|G|} P(E_i = e_k[\mathbf{g}_k / \mathbf{z}]) \label{eq:quantifruledistrib}
  \\
@@ -580,7 +580,7 @@ The two previous sections have detailed how probability and utility rules are in
 We start by describing how dialogue domains can be organised in collections of rules called ``models''. We then show how these models are triggered to update state variables and express the utility of particular actions. We also demonstrate the general processing workflow on a detailed example. 
 
 
-\subsection{Domain specification}
+\subsection{Domain representation}
 
 To ease the specification of dialogue domains, the probabilistic rules are grouped into collections called \textit{models}.  A model is simply a collection of rules that is associated with one or more ``trigger'' variables.  The update of such trigger variables in the dialogue state leads to the instantiation of all the rules included in the model. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ is a set of variables names that trigger the instantiation of the model, and $\mathcal{R}_m$ are the rules included in the model.
 
@@ -592,7 +592,7 @@ As argued in \cite{lison-semdial2012}, the expressive power of probabilistic rul
 
 \item [Domain portability: ]  As all domain-specific knowledge is declaratively specified in the rules, the system architecture is essentially reduced to a generic platform for rule instantiation and probabilistic inference.  This declarative design greatly enhances the system portability across domains, since adapting a system to a new domain only requires a rewrite or extension of the domain-specific rules, without having to reprogram a single component.  This stands in sharp contrast with ``black-box'' types of architectures where much of the task- and domain-specific knowledge is encoded in procedural form within the component workflow.
 
-\item [Flexible workflow: ] Probability rules can design very flexible processing pipelines where state variables are allowed to depend or influence each other in any order and direction.  Models can be easily inserted or extended without requiring any change to the underlying platform. Furthermore, several models can be applied in parallel. Since output distributions can handle effect specifications arising from multiple, sometimes conflicting sources, it becomes possible to update state variables with concurrent models. 
+\item [Flexible workflow: ] Probability rules can design very flexible processing pipelines where state variables are allowed to depend or influence each other in any order and direction.  Models can be easily inserted or extended without requiring any change to the underlying platform. Furthermore, several models can be triggered concurrently on the same input/output variables.\footnote{Output distributions can indeed handle effect specifications arising from multiple, sometimes conflicting sources, as we have seen in Section \ref{sec:probruleinstantiation}.} This allows the system to take advantage of multiple, complementary modelling strategies while ensuring that the dialogue state remains consistent. 
 
 \item [Joint optimisation: ] Finally, the use of a unified modelling formalism allows domain models to be optimised jointly instead of being tuned in isolation from one another. Joint optimisation has recently gained much attention in the dialogue system community to overcome the fragmentation of current system architectures and attempt to directly optimise the end-to-end conversational behaviour of the system \citep{Lemon:2011}. 
 
@@ -631,7 +631,7 @@ We now describe each of these steps in detail.
 
 Rules are sometimes used to provide predictions on variables that will be observed in the next time steps.\footnote{This is notably the case for the user action model $P(a_u \, | \, i_u, a_m)$, which estimate the relative probabilities for the next dialogue action from the user. The prediction provide a prior on the future observation of the user action, and effectively prime the user actions that are most likely given a particular conversational situation.} In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote predictive variables with a subscript $p$. A variable $X_p$ is thus a prediction for the future observation of the variable $X$. 
 
-\begin{wrapfigure}[12]{r}{48mm}
+\begin{wrapfigure}[9]{r}{48mm}
 \vspace{-6mm}
 \centering
 \includegraphics[scale=0.25]{imgs/prediction.pdf} 
@@ -780,8 +780,8 @@ The objective of the system is to fulfil the user command if it is reasonably ce
 
 \subsubsection*{Domain specification}
 
-The domain specification designed for this constructed example is constituted of an empty initial state and the following two rule-based models: \begin{description}
-\item[Model $m_1$: ] Model $m_1 = \langle \langle a_u \rangle, \langle r_9, r_{10} \rangle \rangle$ is triggered by $a_u$ and includes two utility rules $r_{9}$ and $r_{10}$:
+The domain specification designed for this constructed example is constituted of an empty initial state and the following two rule-based models: \begin{itemize}
+\item Model $m_1 = \langle \langle a_u \rangle, \langle r_9, r_{10} \rangle \rangle$ is triggered by $a_u$ and includes two utility rules $r_{9}$ and $r_{10}$:
 \begin{align*}
 r_{9}: \ \ & \forall z: \\ 
 & \textbf{if} \ (a_u = Request(z)) \ \textbf{then} \\ 
@@ -797,7 +797,7 @@ r_{10}: \ \ &  \begin{cases} U(a_m = \mathit{AskRepeat}) = 0.5 \end{cases}
 
 Rule $r_{9}$ specifies that the utility of executing the action corresponding to the user command is 2, with a penalty of $-2$ when the wrong action is executed. Rule $r_{10}$ assign a utility of 0.5 for asking a clarification question.\footnote{As the action selection process presented thus far does not perform forward planning, the utilities provided in this example correspond to long-term expected utilities (Q-values in the reinforcement learning terminology).}
 
-\item[Model $m_2$: ] Model $m_2 = \langle \langle a_m \rangle, \langle r_{11} \rangle \rangle$ is triggered by $a_m$ and includes the predictive rule $r_{11}$: 
+\item Model $m_2 = \langle \langle a_m \rangle, \langle r_{11} \rangle \rangle$ is triggered by $a_m$ and includes the predictive rule $r_{11}$: 
 \begin{align*}
 r_{11}: \ \ & \forall z: \\ 
 & \textbf{if} \ (a_m = \mathit{AskRepeat} \land a_u=z) \ \textbf{then} \\ 
@@ -806,7 +806,7 @@ P(a_{u\mbox{-}p} = z) = 0.9 \\
 \end{cases}
 \end{align*}
 Rule $r_{11}$ specifies that the probability that the user will repeat his last utterance when asked by the system to do so is expected to be $0.9$.
-\end{description}
+\end{itemize}
 
 \subsubsection*{Processing workflow}
 
@@ -830,7 +830,6 @@ The recognition hypotheses $\tilde{a}_u$ produced by the system are written unde
  
 Step 1 inserts the new dialogue act hypotheses on the dialogue state.  This insertion triggers 
 the utility model $m_1$. The instantiation results in Step 2 in the creation of two utility nodes and one decision node.  The optimal action to perform in such case is $\mathit{AskRepeat}$, which is selected by the system in Step 3. The action selection triggers model $m_2$ in Step 4, which creates a prediction node $a_{u\mbox{-}p}'$ expressing the expected probability distribution for the next user dialogue act. The state is finally pruned of the intermediary rule node in Step 5.  System components such as NLG can react on the updated state and generate the proper linguistic realisation of the system action. The system then waits for the user input, which is shown in Step 6.  The relation between the predicted and actual user response leads in Step 7 to the creation of an equivalence node, and the inclusion of the assignment $eq_{a_u} = true$ in the evidence. We notice that the combination of the prior distribution over predicted values and the actual distribution over dialogue act hypotheses increases the probability of $a_u' = \mathit{Request(Forward)}$. Step 8 triggers the model $m_1$ based on the new user input.  The optimal action is this case is $\mathit{Move(Forward)}$, which is selected in Step 9.  This selection triggers model $m_2$, but rule $r_{12}$ only generates in this case an empty effect and is therefore directly deleted. Finally, the state is pruned of its intermediary nodes in Step 10, leaving only the last user and system actions $a_u$ and $a_m$. 
-
 
 \section{Advanced modelling}
 \label{sec:amodelling}
@@ -893,7 +892,7 @@ Figure \ref{fig:stringmanip} illustrate how such rules are applied in practice. 
 \label{fig:stringmanip}
 \end{figure}
 
-\section{Related work}
+\section{Relation to previous work}
 \label{sec:relatedwork}
 
 The idea of using structural knowledge in probabilistic models has been explored in many directions, both in the fields of decision-theoretic planning and reinforcement learning \citep{Hauskrecht98,Pineau2004,KerstingR04,lang10jair,Otterlo2012} and in statistical relational learning \citep{Jaeger01,Richardson:2006,getoor:srlbook07}.  The introduced structure may be hierarchical, relational, or both. As in our approach, most of these frameworks rely on the use of expressive representations as high-level templates for the generation of classical probabilistic models.  The surveys of \cite{Otterlo2006,Otterlo2012} provide a complete overview of relational and first-order logical approaches for reinforcement learning in fully and partially observable Markov decision processes, covering both model-free and model-based methods. 

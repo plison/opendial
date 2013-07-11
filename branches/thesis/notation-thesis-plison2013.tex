@@ -34,7 +34,7 @@ $\pi(s)$ && MDP dialogue policy, defined as a function $\pi: \mathcal{S} \righta
 $o$ && Observation \\
 $\mathcal{O}$ && Set of possible observations \\
 $b$ && Belief state $b(s) = P(s)$ \\
-$\mathcal{B}$ && Belief state space $\in \Re^{|S|-1}$ \\
+$\mathcal{B}$ && Belief state space $\subset \Re^{|S|-1}$ \\
 $V(b)$ && Value function for belief state $b$  \\
 $Q(b,a)$ && Action--value function for action $a$ in belief state $b$ \\
 $\pi(b)$ && POMDP dialogue policy, defined as a function $\pi: \mathcal{B} \rightarrow \mathcal{A} $ \\
@@ -58,7 +58,7 @@ $r$ && Probability or utility rule \\
 $c_i$ && $i$-th condition of a rule, expressed as a logical formula \\
 $e$ && Specific effect, expressed as a conjunction of assignments \\
 $\mathbf{e}$ && Conjunction of effects $e_1 \land ... e_n$ \\
-$\mathbf{e}(X)$ && (Possibly empty) set of values specified for $X$ in $\mathbf{e}$ \\
+$\mathbf{e}(X)$ && (Possibly empty) set of values specified for variable $X$ in $\mathbf{e}$ \\
 $\mathbf{z}$ && Universally quantified variables of a rule  \\
 $\mathbf{g}_k$ && Possible grounding for the universally quantified variables $\mathbf{z}$ \\
 $\mathcal{B}$ && Current state, represented as a Bayesian network \\
