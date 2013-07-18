@@ -2,34 +2,171 @@
 \chapter{Learning from Wizard-of-Oz data}
 \label{chap:wozlearning}
 
-\note{where do the numbers come from?}
+\note{IN CONSTRUCTION - NOT READY YET }
 
-\section{Bayesian parameter estimation}
+The previous chapter outlined the formalism of probabilistic rules and their instantiation as directed graphical models. Rule are essentially composed of conditions mapped to effects. Probability rules associate each condition with a separate probability distribution over effects on output variables, while utility rules associate conditions to utility distributions defined on decision variables. We have however not yet described where these probabilities and utilities -- which we shall collectively denote as rule parameters -- exactly come from. 
 
-\subsection{Key idea}
+We have developed in our thesis work two distinct approaches to this question. The present chapter concentrates on the first approach, based on supervised learning techniques. We demonstrate how the parameters can be optimised to best imitate the decision choices of an human expert through a process of statistical estimation on Wizard-of-Oz data. The next chapter will then detail an alternative, reinforcement learning approach to the same task.
+
+The chapter is divided in three sections.  Section \ref{sec:rule-params} describes how uncertainty regarding the value of rule parameters can be explicitly represented through prior distributions. Section \ref{sec:rule-supervised} spells out how these distributions can be gradually refined through Bayesian learning on data gathered from Wizard-of-Oz interactions.  The learning algorithm  is used to progressively narrow down the spread of the parameter distributions to the values providing the best fit for the training data. Finally, Section \ref{sec:wozlearning-experiments} presents experimental results in a human-robot interaction domain for which small amounts of Wizard-of-Oz data were recorded. The experiment compared the learning performance of a utility model structured with probabilistic rules to two baselines respectively encoded with plain utility tables and with linear models. The empirical evaluation showed that the rule-structured model was able to imitate the wizard policy significantly better than its unstructured counterparts.
+
+\section{Parametrised rules}
+\label{sec:rule-params}
+
+\subsection{Generalities}
+
+The examples of probabilistic rules analysed so far all relied on fixed probability and utility values. These values can however be replaced by parameters that reflect unknown values that are to be estimated empirically, on the basis of training data. 
+
+The learning methods developed in this thesis focus on the problem of parameter estimation given a known rule structure.  Although some structure learning approaches have been developed in the literature on statistical relational learning \citep[see e.g. ][]{PasulaZK07,Kok:2009}, they are generally confined to domains of limited size and full observability. We shall therefore assume that the \textit{if ... then ... else} rule structure can be defined by the system designer, while the effect parameters are estimated via statistical techniques. We believe -- based on our own experience with various dialogue systems --  that such division of labour between the system designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables, but are often unable to quantify the exact probability of a given effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases, as evidenced by numerous studies in the behavioural psychology literature.  The interested reader is invited to consult e.g. \cite{KahnemanSlovicTversky81,morganhenrion} for more details on the psychological aspects of the human perception of uncertainty and the elicitation of subjective probabilities from experts.}
+
+The overall structure of parametrised rules remains essentially identical to the one outlined in Section \ref{sec:formalisation}.  Parametrised probability rules continues to be defined in terms of conditions $c_i$ associated to probability distributions $P(E_i)$ over possible effects.  The probability of each effect $e_i^j$ is however no longer fixed but is represented by a parameter $\theta_i^j$, giving rise to the following rule skeleton: 
+\begin{equation}
+\begin{aligned}
+& \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
+& \;\;\;\;\; \begin{cases}
+P(E_1\!=\!e_1^1) = \theta_1^1 \\
+ ... \\
+P(E_1\!=\!e_1^{m_1}) = \theta_1^{m_1} 
+\end{cases} \\[3mm]
+%& \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
+%& \;\;\;\;\; \begin{cases}
+%P(E_2\!=\!e_2^1) = \theta_2^1, \\
+% ... \\
+%P(E_2\!=\!e_2^{m_2}) = \theta_2^{m_2}
+%\end{cases} \\ 
+& ...  \\
+& \textbf{else} \\
+& \;\;\;\;\; \begin{cases}
+P(E_{n}\!=\!e_{n}^1) = \theta_{n}^1, \\
+... \\
+P(E_{n}\!=\!e_{n}^{m_{n}}) = \theta_{n}^{m_{n}}
+\end{cases}
+\end{aligned}
+\label{eq:probrule}
+\end{equation}
+
+The $\boldsymbol\theta$ parameters must satisfy the axiomatic constraints $\theta_i^j \geq 0  \ \forall i,j$ and $\sum_{j = 1}^{m_i} \theta_i^j = 1 \ \forall i$.
+
+Parametrised utility rules are expressed similarly by replacing fixed utility values with unknown parameters:
+\begin{equation}
+\begin{aligned}
+& \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
+& \;\;\;\;\; \begin{cases}
+U_1(d_1^1) = \theta_1^1 \\
+ ... \\
+U_1(d_1^{m_1}) = \theta_1^{m_1} 
+\end{cases} \\[3mm]
+%& \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
+%& \;\;\;\;\; \begin{cases}
+%U_2(d_2^1) = \theta_2^1 \\
+% ... \\
+%U_2(d_2^{m_2}) = \theta_2^{m_2} 
+%\end{cases} \\
+& ...  \\
+& \textbf{else} \\
+& \;\;\;\;\; \begin{cases}
+U_n(d_n^1) = \theta_n^1, \\
+... \\
+U_n(d_n^{m_n}) = \theta_n^{m_n}
+\end{cases}
+\end{aligned}
+\end{equation}
+
+Domain models can be composed of both fixed and parametrised rules and can therefore accommodate a wide spectrum of learning tasks from fully statistical models with virtually no prior knowledge to manually designed models with only a handful of parameters. 
 
 \subsection{Parameter priors}
+\label{sec:rule-params-priors}
+
+We adopt in this thesis a Bayesian approach to parameter estimation and associate the rule parameters with explicit prior distributions over the possible parameter values. 
+
+\note{to be continued}
+
+\subsubsection*{Probability parameters}
+
+\note{talk about Dirichlets, why not independent distribs, give examples}
+
+\subsubsection*{Utility parameters}
+
+\note{uniform distribution within interval, gaussian}
+
+\subsection{Instantiation in the dialogue state}
+\label{sec:rule-params-instantiatoin}
+
+\note{parameter sharing}
+
+\section{Supervised learning of rule parameters}
+\label{sec:rule-supervised}
 
 \note{talk about simplifying assumptions: we are learning from partial data}
 
-\subsection{Approximate inference}
+\subsection{Wizard-of-Oz training data}
+\label{sec:rule-supervised-oz}
 
-\section{Estimation of action utilities from Wizard-of-Oz data}
+\note{belief state + selected action}
+
+\subsection{Integration of the evidence}
+
+\note{explain the assumption that the wizard is rational and will select the actions with high utility.}
+
+\subsection{Learning cycle}
+\label{sec:rule-supervised-learning}
+
 \note{Sell it as some type of imitation learning?}
 
-\subsection{Data representation}
+\note{talk about kernel distributions, and the difficulty of regenerating the parametric distribution after each time step}
 
-\subsection{Integrating the evidence}
+
+Algorithm \ref{algo:wozlearning} presents the general procedure for estimating model parameters from Wizard-of-Oz data.  The algorithm loops on each instance pair in the training data.  For each pair, the algorithm starts by including the parameters in the input dialogue state for the 
+instance and trigger the domain models.  The next step is then to collect a set of $N$ samples for this model.  For each sample, we select a possible action $a_j$ on the basis of which the sample is generated. The weight of the sample is then adjusted to give more importance to the samples that better reflect the wizard action.  More precisely, the sample weight is set to $w \times (u-u_{min})$ if the action $a_j$ corresponds to the wizard action, and to $w \times (u_{max}-u)$.  This means that samples that include the wizard action will have a higher weight if they have a high utility, whereas the opposite holds for samples that tested another utility than the one selected by the wizard. 
+
+\begin{algorithm}[h!]
+\caption{: \textsc{WoZ-learning} ($\mathcal{M}, \boldsymbol\Theta, \mathcal{D}, N$)}
+\begin{algorithmic}[1] \vspace{1mm}
+\REQUIRE $\mathcal{M}$: Rule-structured models for the domain
+\REQUIRE $\boldsymbol\Theta$: Parameter associated with the models with prior distribution $P(\boldsymbol\Theta)$
+\REQUIRE $\mathcal{D}$: Wizard-of-Oz data set $\{\langle \mathcal{B}_i, a_i \rangle : 1 \leq i  \leq n\}$
+%\REQUIRE $\gamma$: Proportion of samples with the wizard action $[A=a_i]$ as evidence
+\ENSURE Posterior distribution $P(\boldsymbol\Theta \; | \; \mathcal{D})$ for the parameters  \vspace{1mm}
+\FORALL {$\langle \mathcal{B}_i, a_i \rangle \in \mathcal{D}$}
+\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\Theta$
+\STATE $\mathcal{B}_i, \mathbf{e} \leftarrow$ \textsc{TriggerModels} ($\mathcal{B}_i, \emptyset,  \mathcal{B}_i$) 
+\STATE Let $u_{min}$ and $u_{max}$ be the minimum and maximum utilities in $\mathcal{B}_i$
+\STATE Initialise $\mathit{samples} \leftarrow \emptyset$
+\FOR {$j = 1 \to N$}
+%\STATE Set $\mathbf{e} \leftarrow [A=a_i]$ with probability $\gamma$ and another action with probability $1-\gamma$
+\STATE Draw an action value $a_j$ and set $\mathbf{e} \leftarrow \mathbf{e} \cup [A=a_j]$
+\STATE $\mathbf{x}, w, u \leftarrow $ \textsc{Get-Sample}$(\mathcal{B}_i, \mathbf{e})$ 
+\STATE Adjust weight $w \leftarrow \begin{cases} w \times (u-u_{min}) & \text{ if } a_j=a_i \\ w \times (u_{max}-u) & \text{ otherwise} \end{cases}$
+\STATE Add $\langle \mathbf{x}, w \rangle$ to $\mathit{samples}$
+\ENDFOR
+\STATE $\mathit{samples} \leftarrow $ resample based on the adjusted weights
+\STATE Set posterior $P(\boldsymbol\Theta) \leftarrow $ KDE ($\mathit{samples}(\boldsymbol\Theta)$)
+\ENDFOR
+\RETURN $P(\boldsymbol\Theta)$
+\end{algorithmic}
+\label{algo:wozlearning}
+\end{algorithm}
+
+\note{explain that the action values might be either drawn at random, or we can alternatively draw a higher proportion of $a_j = a_i$ since they are more directly relevant for fitting the parameters to the data.}
+
 
 \section{Experiments}
 \label{sec:wozlearning-experiments}
 
+\subsection{Dialogue domain}
+\label{sec:wozlearning-experiments-domain}
+
 \subsection{Wizard-of-Oz data collection}
+\label{sec:wozlearning-experiments-woz}
 
 \subsection{Experimental setup}
+\label{sec:wozlearning-experiments-setup}
 
 \subsection{Empirical results}
+\label{sec:wozlearning-experiments-results}
 
 \subsection{Analysis}
+\label{sec:wozlearning-experiments-analysis}
 
 \section{Conclusion}
+\label{sec:woz-conclusions}

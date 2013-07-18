@@ -5,20 +5,43 @@
 
 \note{general notes on the architecture, event-driven stuff etc.}
 
+\note{restate the main properties of opendial (cf. Section \ref{sec:processing-workflow}). }
 \subsection{System modules}
 
 \note{description of the system modules (including Nao stuff), mention distributed aspects}
-
-\note{software engineering aspects (JUnit etc.)}
+\note{turn-taking}
+\note{software engineering aspects}
 
 \subsection{Graphical user interface}
 
 \section{Specification of dialogue domains}
+\label{sec:domain-specification}
 
 \note{general XML format, examples of rules}
 
 \note{specification of parameters}
 
+\subsection{Motivation}
+
+Many reasoning tasks can be structured in terms of probabilistic rules.  Beyond the core probability and utility models for dialogue management, probabilistic rules have also been applied in our work to natural language understanding and generation tasks.  The dialogue domain designed for the user experiments in Chapter \ref{chap:user-evaluation} included for instance a total of 6 models: one dialogue act classification model, (triggered by the user utterance $u_u$), one action utility model (triggered by the user dialogue act $a_u$), three probability models to predict the effects of the system action on the context, the user intention and the next user action (all triggered by the system action $a_m$), and a generation model (triggered by the system action $a_m$).  The association of trigger variables to the rule-based models provides a simple and flexible a way to define the processing pipeline for the application.  Variables can function as triggers for more than one model, allowing models to be instantiated in parallel.
+
+
+As argued in \cite{lison-semdial2012}, the expressive power of probabilistic rules allow them to capture the structure of many dialogue processing tasks.  Compared to traditional architectures in which the components are developed separately and rely on ad hoc representation formats, the use of a shared formalism to encode the domain models yields several advantages:
+\begin{description}
+\item [Transparency: ] The reliance on a common representation format provides a unified, transparent semantics for the dialogue state, since all state variables are described and related to one another through a principled framework grounded in probabilistic modelling.  This makes it possible to derive a semantic interpretation for the dialogue state as a whole -- in terms e.g. of a joint probability distribution over the state variables. 
+
+\item [Domain portability: ]  As all domain-specific knowledge is declaratively specified in the rules, the system architecture is essentially reduced to a generic platform for rule instantiation and probabilistic inference.  This declarative design greatly enhances the system portability across domains, since adapting a system to a new domain only requires a rewrite or extension of the domain-specific rules, without having to reprogram a single component.  This stands in sharp contrast with ``black-box'' types of architectures where much of the task- and domain-specific knowledge is encoded in procedural form within the component workflow.
+
+\item [Flexible workflow: ] Probability rules can design very flexible processing pipelines where state variables are allowed to depend or influence each other in any order and direction.  Models can be easily inserted or extended without requiring any change to the underlying platform. Furthermore, several models can be triggered concurrently on the same input/output variables.\footnote{Output distributions can indeed handle effect specifications arising from multiple, sometimes conflicting sources, as we have seen in Section \ref{sec:probruleinstantiation}.} This allows the system to take advantage of multiple, complementary modelling strategies while ensuring that the dialogue state remains consistent. 
+
+\item [Joint optimisation: ] Finally, the use of a unified modelling formalism allows domain models to be optimised jointly instead of being tuned in isolation from one another. Joint optimisation has recently gained much attention in the dialogue system community to overcome the fragmentation of current system architectures and attempt to directly optimise the end-to-end conversational behaviour of the system \citep{Lemon:2011}. 
+
+\end{description}
+
+It should be noted that the architecture does not in any way preclude the integration of other types of processing modules in addition to rule-structured models, as long as these modules can read and update the dialogue state when relevant changes are detected. 
+
+
+\subsection{Encoding format}
 \section{Efficient inference}
 
 \note{switching algorithm, sampling methods for various distributions, kernel distributions}

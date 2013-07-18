@@ -1,15 +1,20 @@
 \chapter{Learning from interactions}
 \label{chap:rllearning}
 
-\section{Bayesian Reinforcement Learning}
-
-\note{Interestingly, offline and online approaches to planning are not mutually exclusive, but can be combined together to offer ``the best of both worlds''.  The idea is to perform offline planning to precompute a rough policy, and use this policy as a heuristic approximation to guide the search of an online planner \citep{ross2008}. These heuristic approximations can for instance be used to provide lower and upper bounds on the value function, which can be exploited to prune the lookahead tree.}
-
-\subsection{Model-free methods}
+\section{Bayesian reinforcement learning}
 
 \subsection{Model-based methods}
 
+\subsection{Model-free methods}
+
+\note{here, learn a transition function and a Q-function separately}
+
 \section{Online planning}
+\label{sec:online-planning} 
+
+\note{Interestingly, offline and online approaches to planning are not mutually exclusive, but can be combined together to offer ``the best of both worlds''.  The idea is to perform offline planning to precompute a rough policy, and use this policy as a heuristic approximation to guide the search of an online planner \citep{ross2008}. These heuristic approximations can for instance be used to provide lower and upper bounds on the value function, which can be exploited to prune the lookahead tree.}
+
+\note{explain why the use of rules help making the planner more efficient, as only the actions relevant at a particular state are applied}
 
 \section{Experiments}
 
