@@ -1,4 +1,56 @@
 
-\chapter{Domain specification for user trials}
+\chapter{Domain specifications}
+\label{chap:domainspecs}
 
 \note{put here a summary of the probabilistic rules applied in the last experiment (user evaluation)}
+
+\section{Domain for experiment in Section \ref{sec:wozlearning-experiments}}
+
+The dialogue management part of the domain is composed of a total of fifteen utility rules.  The input variables of these rules are the user dialogue act $a_u$, the last system act $a_m$, the last physical movement $\mathit{lastMove}$, the recorded list of movements $\mathit{sequence}$, and a variable $\mathit{silence}$ expressing the amount of time elapsed since the last (user or system) action.  
+
+It should be noted that the variable $a_u$ is encoded in this experiment as a list made of one or more dialogue act.  This encoding facilitates the processing of utterances containing more than one dialogue act.  
+\begin{small}
+\begin{align*}
+\hdashline \\[-4mm] 
+r_{1}: \ \ & \forall x : \\ & \textbf{if} \ (\mathit{silence}\!>\!\mathit{1} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation1}}\end{cases}\\ & \textbf{else if} \ (\mathit{silence}\!>\!\mathit{2} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation2}}\end{cases}\\ & \textbf{else if} \ (\mathit{silence}\!>\!\mathit{3} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation3}}\end{cases} \\ \hdashline \\[-4mm] 
+r_{2}: \ \ & \textbf{if} \ (\mathit{Confirm}\!\in\!\mathit{a_u} \land \mathit{lastMove}\!\neq\!\mathit{None}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Register})\!=\!\theta_{\mathrm{registerExplicit}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Register})\!=\!\theta_{\mathrm{registerExplicitNeg}}\end{cases} \\ \hdashline \\[-4mm] \\[-4mm]
+r_{3}: \ \ & \textbf{if} \ (\mathit{Disconfirm}\!\in\!\mathit{a_u} \land \mathit{None}\!\neq\!\mathit{lastMove}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Undo})\!=\!\theta_{\mathrm{undo}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Undo})\!=\!\theta_{\mathrm{undoNeg}}\end{cases} \\ \hdashline \\[-4mm]
+r_{4}: \ \ & \textbf{if} \ (\mathit{a_u}\!\neq\!\mathit{None} \land \mathit{lastMove}\!\neq\!\mathit{a_u} \land \mathit{Confirm}\!\notin\!\mathit{a_u} \land \mathit{Disconfirm}\!\notin\!\mathit{a_u} \land \mathit{lastMove}\!\notin\mathit{None}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Register})\!=\!\theta_{\mathrm{registerImplicit}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Register})\!=\!\theta_{\mathrm{registerImplicitNeg}}\end{cases} \\ \hdashline \\[-4mm]
+r_{5}: \ \ & \forall x,y,z: \\
+&\textbf{if} \ (a_u\!=\!x \land \mathit{lastMove}\!\notin\!\mathit{a_u} \land (\mathit{MoveArm}(y,z)\!\in\!\mathit{a_u} \lor \mathit{MoveHead}(y)\!\in\!\mathit{a_u} \lor \mathit{Kneel}\!\in\!\mathit{a_u} \\ & \ \ \ \ \ \lor \mathit{MoveFoot}(x,y)\!\in\!\mathit{a_u}  \lor \mathit{StandUp}\!\in\!\mathit{a_u} \lor \mathit{SitDown}\!\in\!\mathit{a_u} \lor \mathit{Turn}(y)\!\in\!\mathit{a_u})) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Demonstrate(x)})\!=\!\theta_{\mathrm{Demonstrate}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Demonstrate(x)})\!=\!\theta_{\mathrm{DemonstrateNeg}}\end{cases} \\ \hdashline \\[-4mm]
+r_{6}: \ \ & \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskRepeat}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeatFirst}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeatSecond}}\end{cases} \\ \hdashline \\[-4mm]
+r_{7}: \ \ & \textbf{if} \ (\mathit{Confirm}\!\in\!\mathit{a_u} \land \mathit{|a_u|}\!=\!\mathit{1}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Ack})\!=\!\theta_{\mathrm{ack}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Ack})\!=\!\theta_{\mathrm{ackNeg}}\end{cases} \\ \hdashline \\[-4mm]
+r_{8}: \ \ & \textbf{if} \ (\mathit{Disconfirm}\!\in\!\mathit{a_u} \land \mathit{|a_u|}\!=\!\mathit{1}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskIntention})\!=\!\theta_{\mathrm{askIntention}}\end{cases}\\ & \textbf{else} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskIntention})\!=\!\theta_{\mathrm{askIntentionNeg}}\end{cases} \\ \hdashline \\[-4mm]
+r_{9}: \ \ & \textbf{if} \ (\mathit{RepeatAll}\!\in\!\mathit{a_u} \land \mathit{sequence}\!\neq\!\mathit{None}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{DemonstrateAll})\!=\!\theta_{\mathrm{demonstrateAll}}\end{cases} \\ \hdashline \\[-4mm]
+r_{10}: \ \ & \textbf{if} \ (\mathit{ForgetAll}\!\in\!\mathit{a_u} \land \mathit{sequence}\!\neq\!\mathit{None}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{ForgetAll})\!=\!\theta_{\mathrm{forgetAll}}\end{cases} \\ \hdashline \\[-4mm]
+r_{11}: \ \ & \textbf{if} \ (\mathit{Compliment}\!\in\!\mathit{a_u} \land \mathit{a_m}\!=\!\mathit{DemonstrateAll}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{SayThankYou})\!=\!\theta_{\mathrm{sayThankYou}}\end{cases} \\ \hdashline \\[-4mm]
+r_{12}: \ \ & \textbf{if} \ (\mathit{FollowMe}\!\in\!\mathit{a_u}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{FollowMe})\!=\!\theta_{\mathrm{followMe}}\end{cases} \\ \hdashline \\[-4mm]
+r_{13}: \ \ & \textbf{if} \ (\mathit{Stop}\!\in\!\mathit{a_u}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{Stop})\!=\!\theta_{\mathrm{stop}}\end{cases} \\ \hdashline \\[-4mm]
+r_{14}: \ \ & \textbf{if} \ (\mathit{SayHello}\!\in\!\mathit{a_u}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{SayHello})\!=\!\theta_{\mathrm{sayHello}}\end{cases} \\ \hdashline \\[-4mm]
+r_{15}: \ \ & \textbf{if} \ (\mathit{SayGoodbye}\!\in\!\mathit{a_u}) \ \textbf{then} \\
+& \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{SayGoodbye})\!=\!\theta_{\mathrm{sayGoodbye}}\end{cases} \\ \hdashline
+\end{align*}
+\end{small}
