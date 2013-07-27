@@ -102,37 +102,37 @@ A terminological note is here in order: we shall use the term \textit{probabilis
 \subsection{Probability rules}
 \label{sec:probabirules}
 
-Probability rules take the form of \textit{if ... then ... else} control structures and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $\langle br_1, ... br_{n}\rangle$, where each branch $br_i$ is a pair $(c_i, P(E_i))$, $c_i$ is a condition and $P(E_i)$ an associated distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $Val(E_i) = \{e_i^1,... e_i^{m_i}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_i^j \in Val(E_i)$ has a particular probability denoted $p_i^j$. 
+Probability rules take the form of \textit{if ... then ... else} control structures and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $\langle br_1, ... br_{n}\rangle$, where each branch $br_i$ is a pair $(c_i, P(E_i))$, $c_i$ is a condition and $P(E_i)$ an associated distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $Val(E_i) = \{e_{(i,1)},... e_{(i,m_i)}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_{(i,j)} \in Val(E_i)$ has a particular probability denoted $p_{(i,j)}$. 
 
 Given these elements, a basic probability rule reads as such:
 \begin{equation}
 \begin{aligned}
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_1\!=\!e_1^1) = p_1^1 \\
+P(E_1\!=\!e_{(1,1)}) = p_{(1,1)} \\
  ... \\
-P(E_1\!=\!e_1^{m_1}) = p_1^{m_1} 
+P(E_1\!=\!e_{(1,m_1)}) = p_{(1,m_1)} 
 \end{cases} \\[3mm]
 & \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_2\!=\!e_2^1) = p_2^1, \\
+P(E_2\!=\!e_{(2,1)}) = p_{(2,1)} \\
  ... \\
-P(E_2\!=\!e_2^{m_2}) = p_2^{m_2}
+P(E_2\!=\!e_{(2,m_2)}) = p_{(2,m_2)}
 \end{cases} \\ 
 & ...  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-P(E_{n}\!=\!e_{n}^1) = p_{n}^1 \\
+P(E_{n}\!=\!e_{(n,1)}) = p_{(n,1)} \\
 ... \\
-P(E_{n}\!=\!e_{n}^{m_{n}}) = p_{n}^{m_{n}}
+P(E_{n}\!=\!e_{(n,m_n)}) = p_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \label{eq:probrule}
 \end{equation}
 
- In the rest of this thesis, we will often write $P(e_i^j)$ as a notational convenience for $P(E_i = e_i^j)$.   
+ In the rest of this thesis, we will often use $P(e_{(i,j)})$ as notational convenience for $P(E_i = e_{(i,j)})$.   
 
-%The three following sections describe how the conditions $c_i$, effects $e_i^j$ and associated effect probabilities $p_i^j$ are respectively defined. 
+%The three following sections describe how the conditions $c_i$, effects $e_{(i,j)}$ and associated effect probabilities $p_{(i,j)}$ are respectively defined. 
 
 \subsubsection*{Conditions}
 
@@ -145,13 +145,13 @@ The conditions on the input variables offer a compact partitioning of the state 
 
 \subsubsection*{Effects}
 
-Associated to each condition $c_i$ stands a collection of mutually exclusive effects $e_i^{1...m_i}$. Each effect $e_i^j$ defines a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is defined as a conjunction of (variable,value) pairs $O_1\!=\!o_1 ... \land O_{l}\!=\!o_{l}$ where $O_1,... O_{l}$ are the output variables (which may already exist or yet to be created) and $o_1,...o_{l}$ the corresponding values for these variables. In the partitioning example from Figure \ref{fig:partitioning}, the output variable is unique and corresponds to $Fire$. We shall however encounter examples of rules with more than one output variable. 
+Associated to each condition $c_i$ stands a collection of mutually exclusive effects $e_i^{1...m_i}$. Each effect $e_{(i,j)}$ defines a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is defined as a conjunction of (variable,value) pairs $O_1\!=\!o_1 ... \land O_{l}\!=\!o_{l}$ where $O_1,... O_{l}$ are the output variables (which may already exist or yet to be created) and $o_1,...o_{l}$ the corresponding values for these variables. In the partitioning example from Figure \ref{fig:partitioning}, the output variable is unique and corresponds to $Fire$. We shall however encounter examples of rules with more than one output variable. 
 
 Effects can be void -- that is, represent an empty assignment.  In such case, the effect does not lead to any change in the distribution of the output variables for the rule. 
 
 \subsubsection*{Probabilities}
 
-Each effect $e_i^j$ is assigned with a probability $p_i^j = P(E_i = e_i^j)$ that must satisfy the usual probability axioms $p_i^j \geq 0  \ \forall i,j$ and $\sum_{j = 1}^{m_i} p_i^j = 1 \ \forall i$.  The probabilities can be either fixed by hand or correspond to parameters to estimate from data.  Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} detail how Dirichlet distributions can be exploited to estimate probability parameters. 
+Each effect $e_{(i,j)}$ is assigned with a probability $p_{(i,j)} = P(E_i = e_{(i,j)})$ that must satisfy the usual probability axioms $p_{(i,j)} \geq 0  \ \forall i,j$ and $\sum_{j = 1}^{m_i} p_{(i,j)} = 1 \ \forall i$.  The probabilities can be either fixed by hand or correspond to parameters to estimate from data.  Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} detail how Dirichlet distributions can be exploited to estimate probability parameters. 
 
 %In the latter case, we adopt a Bayesian learning approach (cf. Section \ref{sec:learning}) and assume the probabilities $p_i^{1...m_i}$ to be drawn from the conjugate prior of categorical distributions, namely Dirichlet distributions.
 
@@ -186,32 +186,32 @@ Rule $r_1$ has two input variables: $\mathit{Rain}$ and $\mathit{Weather}$ as we
 
 The rule-based formalism we have outlined can also be used to express utility distributions with only minor notational changes. Utility rules essentially retain the same form as probability rules, with one important exception, namely that the probabilistic effects are replaced by utility distributions over particular assignments of decision variables. 
 
-Formally, a utility rule is an ordered list $\langle br_1, ... br_n\rangle$, where each branch $br_i$ is a pair $(c_i, U_i)$ where $c_i$ is a condition and $U_i$ an associated utility distribution over possible assignments of decision variables. The utility distribution $U_i$ specifies a set of possible decisions $d_i^1,... d_i^{m_i}$.  Each decision $d_i^j$ has a particular utility value denoted $u_i^j$.  Utility rules can be expressed in the following manner:
+Formally, a utility rule is an ordered list $\langle br_1, ... br_n\rangle$, where each branch $br_i$ is a pair $(c_i, U_i)$ where $c_i$ is a condition and $U_i$ an associated utility distribution over possible assignments of decision variables. The utility distribution $U_i$ specifies a set of possible decisions $d_{(i,1)},... d_{(i,m_i)}$.  Each decision $d_{(i,j)}$ has a particular utility value denoted $u_{(i,j)}$.  Utility rules can be expressed in the following manner:
 \begin{equation}
 \begin{aligned}
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-U_1(d_1^1) = u_1^1 \\
+U_1(d_{(1,1)}) = u_{(1,1)} \\
  ... \\
-U_1(d_1^{m_1}) = u_1^{m_1} 
+U_1(d_{(1,m_1)}) = u_{(1,m_1)} 
 \end{cases} \\[3mm]
 & \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-U_2(d_2^1) = u_2^1 \\
+U_2(d_{(2,1)}) = u_{(2,1)} \\
  ... \\
-U_2(d_2^{m_2}) = u_2^{m_2} 
+U_2(d_{(2,m_2)}) = u_{(2,m_2)} 
 \end{cases} \\
 & ...  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-U_n(d_n^1) = u_n^1 \\
+U_n(d_{(n,1)}) = u_{(n,1)} \\
 ... \\
-U_n(d_n^{m_n}) = u_n^{m_n}
+U_n(d_{(n,m_n)}) = u_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \end{equation}
 
-A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1,... I_k$.  The decisions $d_i^j$ are assignments $A_1\!=\!a_1 ... \land A_{l}\!=\!a_{l}$ where the variables $A_1,..A_{l}$ are decision variables and $a_1,...a_{l}$ possible values for these variables. The utility values $u_i^j$ are real numbers (which may be positive or negative).  
+A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1,... I_k$.  The decisions $d_{(i,j)}$ are assignments $A_1\!=\!a_1 ... \land A_{l}\!=\!a_{l}$ where the variables $A_1,..A_{l}$ are decision variables and $a_1,...a_{l}$ possible values for these variables. The utility values $u_{(i,j)}$ are real numbers (which may be positive or negative).  
 
 Although most utility rules only include one single decision variable, the possibility to integrate multiple decision variables is helpful in domains where the system can execute multiple actions in parallel. Such situations can arise in human-robot interaction and multi-modal applications, as the system can communicate through both verbal and non-verbal channels and is often able to perform physical actions in addition to communicative acts. 
  
@@ -243,28 +243,28 @@ Quantification is a powerful mechanism to abstract over particular relational as
 \forall \mathbf{y} = y_1, y_2,...y_p: \\
 & \textbf{if} \ \ (c_{1}(\mathbf{y})) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_1\!=\!e_1^1(\mathbf{y})) = p_1^1 \\
+P(E_1\!=\!e_{(1,1)}(\mathbf{y})) = p_{(1,1)} \\
  ... \\
-P(E_1\!=\!e_1^{m_1}(\mathbf{y})) = p_1^{m_1} 
+P(E_1\!=\!e_{(1,m_1)}(\mathbf{y})) = p_{(1,m_1)} 
 \end{cases} \\[3mm]
 & \textbf{else if} \ \ (c_{2}(\mathbf{y})) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_2\!=\!e_2^1(\mathbf{y})) = p_2^1 \\
+P(E_2\!=\!e_{(2,1)}(\mathbf{y})) = p_{(2,1)} \\
  ... \\
-P(E_2\!=\!e_2^{m_2}(\mathbf{y})) = p_2^{m_2} 
+P(E_2\!=\!e_{(2,m_2)}(\mathbf{y})) = p_{(2,m_2)} 
 \end{cases} \\ 
 & ...  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-P(E_n\!=\!e_n^1(\mathbf{y})) = p_n^1 \\
+P(E_n\!=\!e_{(n,1)}(\mathbf{y})) = p_{(n,1)} \\
 ... \\
-P(E_n\!=\!e_n^{m_n}(\mathbf{y})) = p_n^{m_n}
+P(E_n\!=\!e_{(n,m_n)}(\mathbf{y})) = p_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \label{eq:rulewithquant}
 \end{equation}
 
-The formalisation allows specific elements $y_1,...y_p$ in the conditions and effects to be \textit{underspecified}.  The mapping between conditions and effects specified by the rule holds for every possible assignment of the underspecified variables. Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the key advantages of such representation is that it allows for powerful forms of \textit{parameter sharing}, as the effect probabilities $p_i^j$ in the above rule are made independent of the various possible instantiations of the variables $y_1,...y_p$. Quantification also applies to utility rules in the same manner. 
+The formalisation allows specific elements $y_1,...y_p$ in the conditions and effects to be \textit{underspecified}.  The mapping between conditions and effects specified by the rule holds for every possible assignment of the underspecified variables. Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the key advantages of such representation is that it allows for powerful forms of \textit{parameter sharing}, as the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various possible instantiations of the variables $y_1,...y_p$. Quantification also applies to utility rules in the same manner. 
 
 \subsubsection*{Example}
 
@@ -966,7 +966,7 @@ The literature on dialogue policy optimisation with reinforcement learning also 
 
 \section{Conclusion}
 
-This chapter presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by (1) introducing latent variables, (2) partitioning value assignments for the parent variables, and (3) making use of quantification. We then explained how these structural insights can be transferred into a new framework -- probabilistic rules -- that combines concepts borrowed from both first-order logic and probability theory.  These rules are practically defined as \textit{if...then...else} control structures that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g. encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists and strings. 
+This chapter presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by (1) introducing latent variables, (2) partitioning value assignments for the parent variables, and (3) making use of quantification. We then explained how these structural insights can be transferred into a new framework -- probabilistic rules -- that combines concepts borrowed from both first-order logic and probability theory in order to get the ``best of both worlds''.  These rules are practically defined as \textit{if...then...else} control structures that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g. encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists and strings. 
 
 At runtime, these rules are instantiated in the Bayesian network representing the current dialogue state. The instantiation procedure creates a latent node for each rule, which is conditionally dependent on the input variables of the rule.  For probability rules, this node is a chance node that expresses a probability distribution over the possible effects of the rule. Utility rules are similarly instantiated with a utility node expressing the utility distribution for specific decision variables.  Universally quantified variables can be included in the conditions and effects of the rules, allowing particular aspects of the rule to be underspecified. The rules are grouped into models that are attached to the dialogue state and are triggered upon relevant state updates. 
 

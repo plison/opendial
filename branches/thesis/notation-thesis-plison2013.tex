@@ -5,21 +5,25 @@
 \begin{longtable}{lp{5mm}p{11cm}}
 \multicolumn{3}{l}{\textbf{Probability distributions:}} \vspace{2mm} \\
 $X$ && Random variable \\
-$Val(X)$ && Range of values for the variable $X$ \\
+$Val(X)$ && Range of values for the random variable $X$ \\
 $P(X)$ && Probability distribution for the random variable $X$ \\
 $P(X_1, ...X_n)$ && Joint probability distribution for $X_1$, ... $X_n$ \\
 $P(X_1,...X_n \, | \, Y_1, ... Y_m)$ && Conditional probability distribution for $X_1$, ... $X_n$ given $Y_1$, ... $Y_m$  \\ 
 $E(X)$ && Expectation of the random variable $X$ \\
+$p(X)$ && Probability density function (PDF) of continuous variable $X$ \\
+
 &&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Graphical models:}} \vspace{2mm} \\
-$(\mathbf{X} \, \bot \, \mathbf{Y} \, | \, \mathbf{Z})$ && Conditional independence of the variables $\mathbf{X} $ and $\mathbf{Y}$ given $\mathbf{Z}$ \\
+ $\mathcal{B}$ && Bayesian network \\
+ $P_\mathcal{B}(X)$ && Probability distribution for $X$ in Bayesian network $\mathcal{B}$ \\ 
+$(\mathbf{X} \, \bot \, \mathbf{Y} \, | \, \mathbf{Z})$ && Conditional independence of variables $\mathbf{X} $ and $\mathbf{Y}$ given $\mathbf{Z}$ \\
 $Y \rightarrow X$ && Directed edge from variable $Y$ to variable $X$ \\
-$parents(X)$ && Parents of variable $X$ such that $\forall\, Y\!\in\!parents(X), Y \rightarrow X$ \\
+$parents(X)$ && Parents of variable $X$ such that $Y \rightarrow X$ for all $Y\!\in\!parents(X)$ \\
  $P(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Probability query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
  $U(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Utility query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
  $\boldsymbol\theta_{X}$ && Parameters associated with the random variable $X$ \\ 
- $P(X \, ; \, \boldsymbol\theta_{X})$ && Probability of $X$ depending on the parameters $\boldsymbol\theta_{X}$ \\ 
- &&  \vspace{0mm} \\
+ $P(X \, : \, \boldsymbol\theta)$ && Probability of $X$ depending on the parameters $\boldsymbol\theta$ \\ 
+&&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Reinforcement learning:}} \vspace{2mm} \\
 $s$ && Current state \\
 $\mathcal{S}$ && Set of possible states \\
@@ -45,9 +49,9 @@ $\pi(b)$ && POMDP dialogue policy, defined as a function $\pi: \mathcal{B} \righ
 \multicolumn{3}{l}{\textbf{Dialogue-specific variables:}} \vspace{2mm} \\
 
 $u_u$ && User utterance \\
-$\tilde{u}_u$ && ASR recognition hypotheses for user utterance \\
+$\tilde{u}_u$ && Speech recognition hypotheses for user utterance \\
 $a_u$ && User dialogue act \\
-$\tilde{a}_u$ && NLU hypotheses for the user dialogue act \\
+$\tilde{a}_u$ && Speech understanding hypotheses for the user dialogue act \\
 $i_u$ && User intention \\
 $c$ && Interaction context \\
 $a_m$ && System dialogue act \\
@@ -57,7 +61,8 @@ $u_m$ && System utterance \\
 \multicolumn{3}{l}{\textbf{Probabilistic rules:}} \vspace{2mm} \\
 $r$ && Probability or utility rule \\
 $c_i$ && $i$-th condition of a rule, expressed as a logical formula \\
-$e$ && Specific effect, expressed as a conjunction of assignments \\
+$e_{(i,j)}$ && $j$-th effect for condition $c_i$, expressed as a value assignment \\
+$p_{(i,j)}$ && Probability of effect $e_{(i,j)}$ \\
 $I_1,...I_{k}$  && Set of input variables of a rule\\
 $O_1,...O_{l}$ && Set of output variables of a probability rule \\
 $A_1,...A_{l}$ && Set of decision variables of an utility rule \\
@@ -65,7 +70,6 @@ $\mathbf{e}$ && Conjunction of effects $e_1 \land ... e_n$ \\
 $\mathbf{e}(X)$ && (Possibly empty) set of values specified for variable $X$ in $\mathbf{e}$ \\
 $\mathbf{y}$ && Universally quantified variables $y_1,... y_p$ of a rule  \\
 $\mathbf{g}$ && Possible grounding for the universally quantified variables $\mathbf{y}$ \\
-$\mathcal{B}$ && Current state, represented as a Bayesian network \\
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Miscellaneous:}} \vspace{2mm} \\
 $\mathbf{1}(b)$ && Indicator function, with $\mathbf{1}(b) = 1$ if $b$ is true and 0 otherwise \\

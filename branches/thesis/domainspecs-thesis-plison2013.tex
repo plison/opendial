@@ -2,16 +2,14 @@
 \chapter{Domain specifications}
 \label{chap:domainspecs}
 
-\note{put here a summary of the probabilistic rules applied in the last experiment (user evaluation)}
-
-\section{Domain for experiment in Section \ref{sec:wozlearning-experiments}}
+\section{Experiments in Section \ref{sec:wozlearning-experiments}}
 
 The dialogue management part of the domain is composed of a total of fifteen utility rules.  The input variables of these rules are the user dialogue act $a_u$, the last system act $a_m$, the last physical movement $\mathit{lastMove}$, the recorded list of movements $\mathit{sequence}$, and a variable $\mathit{silence}$ expressing the amount of time elapsed since the last (user or system) action.  
 
 It should be noted that the variable $a_u$ is encoded in this experiment as a list made of one or more dialogue act.  This encoding facilitates the processing of utterances containing more than one dialogue act.  
+
 \begin{small}
-\begin{align*}
-\hdashline \\[-4mm] 
+\begin{align*}  \hdashline \\[-4mm] 
 r_{1}: \ \ & \forall x : \\ & \textbf{if} \ (\mathit{silence}\!>\!\mathit{1} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
 & \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation1}}\end{cases}\\ & \textbf{else if} \ (\mathit{silence}\!>\!\mathit{2} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
 & \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation2}}\end{cases}\\ & \textbf{else if} \ (\mathit{silence}\!>\!\mathit{3} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then} \\
@@ -54,3 +52,10 @@ r_{15}: \ \ & \textbf{if} \ (\mathit{SayGoodbye}\!\in\!\mathit{a_u}) \ \textbf{t
 & \;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{SayGoodbye})\!=\!\theta_{\mathrm{sayGoodbye}}\end{cases} \\ \hdashline
 \end{align*}
 \end{small}
+
+\section{Experiments in Section \ref{sec:rllearning-experiments}}
+
+\section{Experiments in Chapter \ref{chap:user-evaluation}}
+
+\note{put here a summary of the probabilistic rules applied in the last experiment (user evaluation)}
+
