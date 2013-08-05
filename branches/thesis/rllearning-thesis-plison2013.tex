@@ -110,7 +110,7 @@ Figure \ref{fig:learningexample} shows how the distribution over the parameter v
 Algorithm \ref{algo:planning} selects the action to execute through forward planning on a given horizon $h$.  The selection procedure relies on the recursive function \textsc{Calculate-Q-Values}() to compute the Q-values of possible actions. The $Q$ value of an action is the discounted addition of its immediate reward (line 3 in Algorithm \ref{algo:qval}) and the expected future reward following its execution.  Line 6 loops on possible observations.  For efficiency reasons, only a limited number of high-probability observations are sampled. For each selected observation, the dialogue state is updated and its maximum expected reward is computed.  The procedure stops when the planning horizon has been reached, or the algorithm has run out of time. The planner then simply selects the action with maximum expected cumulative utility. 
 
 \begin{algorithm}[h!]
-\caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$, h)}
+\caption{: \textsc{PlanAction} ($\mathcal{B}, \mathbf{e}$, h) }
 \begin{algorithmic}[1] \vspace{1mm}
 \REQUIRE Dialogue state $\mathcal{B}$ as a decision network
 \REQUIRE Evidence $\mathbf{e}$
@@ -237,7 +237,7 @@ P(\boldsymbol\theta \, | \, r_{t+1}, a_{t+1}) = \eta \ P(r_{t+1}, a_{t+1} \,; \b
 The above section described how the parameter distributions were updated on the basis of the received rewards and executed actions, but did not explain how the system actions were selected at runtime.  A simple strategy is to select the action yielding the maximum $Q$ value for the current state.  This greedy strategy can however result in poor control policies if the agent gets stuck in a suboptimal behaviour.  Greedy strategies can be improved by allowing the agent to explore other actions once in a while. The relative frequency of these exploration actions compared to the  ``greedy'' actions is expressed by the probability $\epsilon$, which is usually small. This method is called an $\epsilon$-greedy strategy and is illustrated in Algorithm \ref{algo:egreedy}.
 
 \begin{algorithm}[h!]
-\caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$)}
+\caption{: \textsc{$\epsilon$-Greedy-Policy} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \REQUIRE Dialogue state $\mathcal{B}$ as a decision network
 \REQUIRE Evidence $\mathbf{e}$
