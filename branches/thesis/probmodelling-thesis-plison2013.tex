@@ -157,6 +157,7 @@ The intuition behind sampling algorithms is to estimate the posterior distributi
 % (modified from \cite{aima2010,Koller+Friedman:09})
 \begin{algorithm}[h]
 \begin{algorithmic} \vspace{2mm} 
+\caption{: \textsc{Get-Sample} $(\mathcal{B},\mathbf{E}=\mathbf{e})$}
 \REQUIRE Bayesian/decision network $\mathcal{B}$ over $\mathbf{X}$ with topological ordering $X_1,...X_n$
 \REQUIRE Evidence $\mathbf{E} =\mathbf{e}$
 \ENSURE Full sample drawn from $\mathcal{B}$ together with a weight and utility \\[2mm]
@@ -174,7 +175,6 @@ The intuition behind sampling algorithms is to estimate the posterior distributi
 \ENDFOR
 \RETURN $\mathbf{x}, w, u$
 \end{algorithmic}
-\caption{\textsc{Get-Sample} $(\mathcal{B},\mathbf{E}=\mathbf{e})$}
 \label{algo:getsample}
 \end{algorithm}
 
@@ -184,6 +184,7 @@ A large number of samples can be collected in such manner. Once enough samples a
 
 \begin{algorithm}[h]
 \begin{algorithmic} \vspace{2mm} 
+\caption{:\textsc{Likelihood-Weighting} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
 \REQUIRE Bayesian/decision network $\mathcal{B}$ over $\mathbf{X}$ with topological ordering $X_1,...X_n$
 \REQUIRE Set of query variables $\mathbf{Q}$ and evidence $\mathbf{E} =\mathbf{e}$
 \REQUIRE Number $N$ of samples to draw
@@ -196,12 +197,12 @@ A large number of samples can be collected in such manner. Once enough samples a
 \STATE Normalise the weighted counts in $\mathbf{W}$
 \RETURN $\mathbf{W}$  \vspace{1mm} 
 \end{algorithmic}
-\caption{\textsc{Likelihood-Weighting} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
 \label{algo:lw}
 \end{algorithm}
 
 \begin{algorithm}[h]
 \begin{algorithmic} \vspace{2mm} 
+\caption{: \textsc{Likelihood-Weighting-Utility} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
 \REQUIRE (see above)
 \ENSURE Approximate utility distribution $U(\mathbf{Q}, \mathbf{E} =\mathbf{e})$ given $\mathcal{B}$ \\[2mm]
 \STATE Let $\mathbf{W}, \mathbf{U}$ be vectors of weighted counts for each possible value of $\mathbf{Q}$, initialised to zero
@@ -213,7 +214,6 @@ A large number of samples can be collected in such manner. Once enough samples a
 \STATE Average the weighted utility counts $\mathbf{U}(\mathbf{q}) \leftarrow \frac{\mathbf{U}(\mathbf{q})}{\mathbf{W}(\mathbf{q})} \ \ \forall \text{ values } \mathbf{q} \text{ of } \mathbf{Q}$ 
 \RETURN $\mathbf{U}$  \vspace{1mm} 
 \end{algorithmic}
-\caption{\textsc{Likelihood-Weighting-Utility} $(\mathcal{B},\mathbf{Q}, \mathbf{E}=\mathbf{e}, N)$}
 \label{algo:lwu}
 \end{algorithm}
 
@@ -247,7 +247,7 @@ We shall concentrate in this thesis on the parameter estimation problem, which i
 
 \subsubsection*{Maximum likelihood estimation}
 
-The most straightforward parameter estimation method is maximum likelihood estimation (MLE). Maximum likelihood estimation searches for the parameters values that provide the best ``fit'' for the provided data set.  In other words, the parameters are set to the values that maximise the likelihood of the data set.  Given a data set $\mathcal{D}$, a graphical model and a set of parameters $\boldsymbol\theta$ to estimate in this model, the MLE learning objective is to find the values $\boldsymbol\theta^*$  that maximise the likelihood $P(\mathcal{D} \, ;  \, \boldsymbol\theta)$, where the distribution for $\mathcal{D}$ is parametrised by the values $\boldsymbol\theta$.  This likelihood is often written in logarithmic form: 
+The most straightforward parameter estimation method is maximum likelihood estimation (MLE). Maximum likelihood estimation searches for the parameters values that provide the best ``fit'' for the provided data set.  In other words, the parameters are set to the values that maximise the likelihood of the data set.  Given a data set $\mathcal{D}$, a graphical model and a set of parameters $\boldsymbol\theta$ to estimate in this model, the MLE learning objective is to find the values $\boldsymbol\theta^*$  that maximise the probability $P(\mathcal{D} \, ;  \, \boldsymbol\theta)$, which expresses the likelihood of the data set $\mathcal{D}$ given the specified parameter values for $\boldsymbol\theta$. This likelihood is often written in logarithmic form: 
 \begin{equation}
 \boldsymbol\theta^* = \argmax_{\boldsymbol\theta} P(\mathcal{D}  \, ; \, \boldsymbol\theta) = \argmax_{\boldsymbol\theta} \log P(\mathcal{D}  \,  ;  \, \boldsymbol\theta)
 \end{equation}
@@ -264,16 +264,20 @@ The main drawback of maximum likelihood estimation is its vulnerability to overf
 
 \subsubsection*{Bayesian learning}
 
-An alternative to maximum likelihood estimation is \textit{Bayesian learning}.  The key idea of Bayesian approaches to parameter estimation is to view the CPD parameters as random variables and to derive their posterior distributions after observing the data.  Bayesian learning starts with an initial prior over the range of parameter values and gradually refines this distribution through probabilistic inference based on the observation of the samples in the training data. Each distribution $P(X_i \, | \, parents(X_i))$ with unknown parameters is therefore associated with a parent node $\theta_{X_i|parents(X_i)}$ that define its parameter distribution.  This parameter distribution is often continuous and multivariate.  Intuitively, we can think of the variable $\theta_{X_i|parents(X_i)}$ as expressing a ``distribution over possible distributions''.  
+An alternative to maximum likelihood estimation is \textit{Bayesian learning}.  The key idea of Bayesian approaches to parameter estimation is to view the CPD parameters as random variables and to derive their posterior distributions after observing the data.  Bayesian learning starts with an initial prior over the range of parameter values and gradually refines this distribution through probabilistic inference based on the observation of the samples in the training data. Each distribution $P(X_i \, | \, parents(X_i))$ with unknown parameters is therefore associated with a parent node $\theta_{X_i|parents(X_i)}$ that define its parameter distribution.  
+
+Parameter distributions are typically continuous (since probabilities are continuous values), and often multivariate.  Intuitively, we can think of the variable $\theta_{X_i|parents(X_i)}$ as expressing a ``distribution over possible distributions''.  
 
 Based on this formalisation, parameter estimation can be elegantly reduced to a problem of probabilistic inference over the parameters. Given a prior $P(\boldsymbol\theta)$ on the parameter values and a data set $\mathcal{D}$, the posterior distribution $P(\boldsymbol\theta  \, | \, \mathcal{D})$ is given by Bayes' rule: 
 \begin{equation}
-P(\boldsymbol\theta  \, | \, \mathcal{D}) =  \frac{P(\mathcal{D} \, ; \, \boldsymbol\theta) \, P(\boldsymbol\theta)}{P(\mathcal{D})}
+P(\boldsymbol\theta  \, | \, \mathcal{D}) =  \frac{P(\mathcal{D} \, ; \, \boldsymbol\theta) \, P(\boldsymbol\theta)}{P(\mathcal{D})} \label{eq:bl}
 \end{equation}
 
 %Note that the maximum likelihood estimators described in the previous section coincide with the most probable Bayesian estimator given a uniform prior distribution on the parameters.
 
-The posterior distribution $P(\boldsymbol\theta  \, | \, \mathcal{D})$ can be calculated with standard inference algorithms for graphical models. It is often convenient to encode the distributions of the parameter variables as \textit{conjugate priors} of their associated CPD distribution. In such case, the prior $P(\boldsymbol\theta)$ and posterior $P(\boldsymbol\theta  \, | \, \mathcal{D})$ after observing the data points $\mathcal{D}$ are ensured to remain within the same distribution family. In particular, if the distribution of interest is a categorical distribution, its parameter distribution can be encoded with a Dirichlet distribution, which is known as the conjugate prior of categorical and multinomial distributions. A Dirichlet distribution is a continuous, multivariate distribution of dimension $k$ (with $k$ being the size of the multinomial) that is itself parametrised with so-called concentration hyperparameters denoted $\boldsymbol\alpha = [ \alpha_1,... \alpha_k ]$. Additional details about the formal properties of Dirichlet distributions can be found in Appendix \ref{chap:probdistributions}.
+Based on Equation \ref{eq:bl}, the posterior distribution $P(\boldsymbol\theta  \, | \, \mathcal{D})$ can be calculated with standard inference algorithms for graphical models. 
+
+It is often convenient to encode the distributions of the parameter variables as \textit{conjugate priors} of their associated CPD distribution. In such case, the prior $P(\boldsymbol\theta)$ and posterior $P(\boldsymbol\theta  \, | \, \mathcal{D})$ after observing the data points $\mathcal{D}$ are ensured to remain within the same distribution family. In particular, if the distribution of interest is a categorical distribution, its parameter distribution can be encoded with a Dirichlet distribution, which is known as the conjugate prior of categorical and multinomial distributions. A Dirichlet distribution is a continuous, multivariate distribution of dimension $k$ (with $k$ being the size of the multinomial) that is itself parametrised with so-called concentration hyperparameters denoted $\boldsymbol\alpha = [ \alpha_1,... \alpha_k ]$. Additional details about the formal properties of Dirichlet distributions can be found in Appendix \ref{chap:probdistributions}.
 
 Figure \ref{fig:baysianlearning} illustrates this Bayesian approach to parameter estimation for the variable $\mathit{Weather}$.  As the variable possesses three alternative values, the allowed values for the parameter $\boldsymbol\theta_{\mathit{Weather}}$ are three-dimensional vectors $[ \theta_{\mathrm{Weather}(1)}, \theta_{\mathrm{Weather}(2)}, \theta_{\mathrm{Weather}(3)} ]$, with the standard constraints on probability values: $\theta_{\mathrm{Weather}(i)} \geq 0 \text{ for } i=\{1,2,3\} $ and $\theta_{\mathrm{Weather}(1)} + \theta_{\mathrm{Weather}(2)} + \theta_{\mathrm{Weather}(3)} = 1$.   As we can observe in the figure, these constraints effectively limit the range of possible values to a 2-dimensional simplex. The $\boldsymbol\alpha$ hyperparameters can be intuitively interpreted as ``virtual counts'' of the number of observations in each category.   In Figure \ref{fig:baysianlearning}, we can see that the hyperparameters $[5,10,5]$ lead to higher probability densities for parameters around the peak $\langle 0.25, 0.5, 0.25 \rangle$.  As the number of observations increases, the Dirichlet distribution will gradually concentrate on a particular region of the parameter space until convergence.
 
@@ -483,7 +487,7 @@ Q(s,a) = f(s)^{T} w_a
 \end{equation}
 where $f(s)$ is a feature vector extracted from the state and $w_a$ a weight vector for action $a$. The weight vectors were learned with the SARSA algorithm based on a fixed corpus (thereby avoiding the use of user simulators). To further refine the estimation of $Q$-values, they also combined estimates from both supervised and reinforcement learning in their final model. 
 
-Hierarchical abstraction is another way to reduce the search space of the optimisation process, as shown by \cite{Heriberto2011}. Instead of viewing action selection as a single monolithic policy, the selection is decomposed in their work into multiple levels, each responsible for a specific decision problem.  This decomposition is formally expressed via an hierarchical extension of MDPs called Semi-Markov Decision Processes.  Each level in the hierarchy is associated with its own subset of state and action variables.  This modular approach allows a complex policy to be split into a sequence of simpler decisions.  Such hierarchical formalisation is particularly natural for task-oriented dialogues, which are known to exhibit rich intentional structures \citep{Grosz:1986,Litman87}. 
+Hierarchical abstraction is another way to reduce the search space of the optimisation process, as shown by \cite{Heriberto2011}. Instead of viewing action selection as a single monolithic policy, the selection is decomposed in their work into multiple levels, each responsible for a specific decision problem.  This decomposition is formally expressed via an hierarchical extension of MDPs called Semi-Markov Decision Processes.  Each level in the hierarchy is associated with its own subset of state and action variables.  This modular approach allows a complex policy to be split into a sequence of simpler decisions.  Such hierarchical formalisation is particularly natural for task-oriented dialogues, which are known to exhibit rich attentional and intentional structures, as notably argued in the seminal work of \cite{Grosz:1986}. It also bears similarities with the approach presented by \cite{Litman87} on dialogue understanding based on a plan structure. 
 
 Finally, it is worth noting that several researchers have attempted to combine the benefits of supervised and reinforcement learning methods by initialising a RL algorithm with a policy estimated via supervised methods \citep{williams2003, rieser2006}.
 
@@ -513,7 +517,7 @@ These two distributions are usually derived from collected interaction data. A g
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.25]{imgs/POMDP2.pdf}
+\includegraphics[scale=0.30]{imgs/POMDP2.pdf}
 \caption{Common factorisation of the state space for a POMDP-based dialogue system, where $c$ represents the dialogue context, $i_u$ the user intention(s), $a_u$ the user dialogue act, $a_m$ the system act, and $o$ the observed N-best list hypotheses. The representation omits the conditional dependencies and probability distribution for the variable $c'$, which are contingent on the particular interaction context in place for the domain.}
 \label{fig:pomdp2}
 \end{figure}

@@ -310,7 +310,7 @@ Rule $r_4$ associates an utility of 2 to the action of grasping an object $y$ wh
 
 We represent the dialogue state as a Bayesian network over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040,bui2010}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. These rule nodes are essentially latent variables that serve as intermediaries between input and output variables.  Albeit the presence of these rules is never directly observed, they help structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
 
-We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without quantifiers, and then show quantifiers can be accounted for in the instantiation process. 
+We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without quantifiers, and then demonstrate how quantifiers can be accounted for in the instantiation process. 
 
 \subsection{Probability rules}
 \label{sec:probruleinstantiation}
@@ -677,21 +677,23 @@ We now describe each of these steps in detail.
 Rules are sometimes used to provide predictions on variables that will be observed in the next time steps.\footnote{This is notably the case for the user action model $P(a_u \, | \, i_u, a_m)$, which estimate the relative probabilities for the next dialogue action from the user. The prediction provide a prior on the future observation of the user action.} In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote predictive variables with a subscript $p$. A variable $X_p$ is thus a prediction for the future observation of the variable $X$. 
 
 \begin{wrapfigure}[11]{r}{48mm}
-\vspace{-4mm}
+\vspace{-2mm}
 \centering
 \includegraphics[scale=0.25]{imgs/prediction.pdf} 
-\vspace{-4mm}
+\vspace{-2mm}
 \caption{Equivalence node $eq_{X}$ with parents $X$ and $X_p$.}
 \label{fig:prediction}
 \end{wrapfigure}
 
-Prediction and observation variables must be connected with one another at runtime.  In the case where the observation is known with certainty, this connection can simply be represented as an assignment of evidence values.  However, dialogue often include observations that are themselves uncertain and represent ``soft'' or virtual evidence.  Several techniques are available to practically encode this evidence. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node} $eq_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}.\footnote{Note that the use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ can have arbitrary incoming and outgoing edges with other variables.} The conditional probability distribution of $eq_X$ is deterministic (graphically depicted by a double circle around the chance node): 
+Prediction and observation variables must be connected with one another at runtime.  In the case where the observation is known with certainty, this connection can simply be represented as an assignment of evidence values.  However, dialogue often include observations that are themselves uncertain and represent ``soft'' or virtual evidence.  Several techniques are available to practically encode this evidence. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node} $eq_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}. The conditional probability distribution of $eq_X$ is deterministic (graphically depicted by a double circle around the chance node): 
 \begin{equation}
 P(eq_{X}\!=\!true \, | \, X\!=\!x, X_p\!=\!x_p) = \begin{cases}
 1 & \text{if } x = x_p \\
 0 & \text{otherwise}
 \end{cases} \label{eq:equivdistrib}
 \end{equation}
+
+The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ can have arbitrary incoming and outgoing edges with other variables. 
 
 The assignment $eq_{X} \!=\! true$ is added to the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
 \begin{align}
@@ -811,6 +813,7 @@ Figure \ref{fig:pruning} illustrates the input and output of the pruning process
 
 
 \subsection{Detailed example}
+\label{sec:detailedexample}
 
 We now describe a minimal but complete example of workflow for a short interaction. 
 
@@ -867,7 +870,7 @@ We now detail the processing workflow associated with the following constructed 
 \speak{User } Please move forward! \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) \rangle$ \\[-3mm]
 \speak{System } OK, moving forward!
 \end{dialogue}
-The (artificial) recognition hypotheses $\tilde{a}_u$ produced by the ASR/NLU components are written underneath the user utterance. 
+The (constructed) recognition hypotheses $\tilde{a}_u$ produced by the ASR/NLU components are written underneath the user utterance. 
 
 Figure \ref{fig:detailedexample} details the steps involved in the state update procedure that follows from the reception of dialogue act hypotheses from the natural language understanding component. 
 
@@ -966,7 +969,7 @@ The literature on dialogue policy optimisation with reinforcement learning also 
 
 \section{Conclusion}
 
-This chapter presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by (1) introducing latent variables, (2) partitioning value assignments for the parent variables, and (3) making use of quantification. We then explained how these structural insights can be transferred into a new framework -- probabilistic rules -- that combines concepts borrowed from both first-order logic and probability theory in order to get the ``best of both worlds''.  These rules are practically defined as \textit{if...then...else} control structures that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g. encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists and strings. 
+This chapter presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by (1) introducing latent variables, (2) partitioning value assignments for the parent variables, and (3) making use of quantification. We then explained how these structural insights can be transferred into a new framework -- probabilistic rules -- that combines concepts borrowed from both first-order logic and probability theory in order to get ``the best of both worlds'', i.e. a representation formalism that is both richly expressive and capable of capturing uncertain knowledge.  These rules are practically defined as \textit{if...then...else} control structures that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g. encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists and templates. 
 
 At runtime, these rules are instantiated in the Bayesian network representing the current dialogue state. The instantiation procedure creates a latent node for each rule, which is conditionally dependent on the input variables of the rule.  For probability rules, this node is a chance node that expresses a probability distribution over the possible effects of the rule. Utility rules are similarly instantiated with a utility node expressing the utility distribution for specific decision variables.  Universally quantified variables can be included in the conditions and effects of the rules, allowing particular aspects of the rule to be underspecified. The rules are grouped into models that are attached to the dialogue state and are triggered upon relevant state updates. 
 
