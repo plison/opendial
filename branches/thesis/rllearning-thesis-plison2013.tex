@@ -219,7 +219,7 @@ where $\alpha$ represents the learning rate of the algorithm. The estimate $Q(s_
 
 %As shown by e.g. \cite{Dearden:1998}, temporal-difference methods are easily amenable to a Bayesian treatment. 
 
-The approach developed in this thesis rests on a simple Baysesian extension of SARSA.  The posterior distribution over the parameters is here computed on the basis of the evidence provided by the reward $r_{t+1}$ and next system action $a_{t+1}$.  Given a sequence of state-action-rewards $\langle \mathcal{B}_t, a_t, r_{t+1}, \mathcal{B}_{t+1}, a_{t+1} \rangle$, we define the likelihood distribution $P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta)$ as:
+The approach developed in this thesis rests on a simple Bayesian extension of SARSA.  The posterior distribution over the parameters is here computed on the basis of the evidence provided by the reward $r_{t+1}$ and next system action $a_{t+1}$.  Given a sequence of state-action-rewards $\langle \mathcal{B}_t, a_t, r_{t+1}, \mathcal{B}_{t+1}, a_{t+1} \rangle$, we define the likelihood distribution $P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta)$ as:
 \begin{equation}
 P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta) = \phi \left(\alpha \left[ U_{\mathcal{B}_t}\left(a_t \,; \boldsymbol\theta\right) - r_{t+1} - \gamma \ U_{\mathcal{B}_{t+1}} \left(a_{t+1} \,; \boldsymbol\theta\right) \right] \right) \label{eq:modelfreelikelihood}
 \end{equation}
