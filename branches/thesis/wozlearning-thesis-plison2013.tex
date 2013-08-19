@@ -107,12 +107,12 @@ P(\mathit{Fire}\!=\!\mathit{false}) = \theta_{r_{1}(2,2)}
 
 The parameters of rule $r_{1}$ can be expressed with two independent Dirichlet distributions $P(\boldsymbol\theta_{r_{1}(1,\cdot)})$ and $P(\boldsymbol\theta_{r_{1}(2,\cdot)})$ respectively associated with the effect distributions for the first and second condition.  The Dirichlet distributions in this example each have two dimensions (since two alternative effects are mentioned in the rule), which make them equivalent to \textit{Beta} distributions. 
 
-Dirichlet distributions are continuous, multivariate distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1,... \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1,... \theta_k$ are formally defined by the following probability density function:
+Dirichlet distributions are continuous, multivariate distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1,... \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1,... \theta_k$ are formally expressed by the following probability density function:
 \begin{align}
 p(\theta_1,...\theta_k\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1} \ \ \ \text{where } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
 \end{align}
 
-where $ \mathrm{B}(\boldsymbol\alpha)$ serves as normalisation factor and relies on the gamma function $\Gamma$.\footnote{The gamma function is a generalisation of the factorial for real numbers, and is defined as $\Gamma(z) = \int_0^\infty  t^{z-1} e^{-t}\,{\rm d}t$.} We remind the reader that the notation $p(\theta_1,...\theta_k\,; \boldsymbol\alpha)$ refers to the density function of the $\theta_1,... \theta_k$ random variables given the specified (hyper-)parameters $\boldsymbol\alpha$. 
+where $ \mathrm{B}(\boldsymbol\alpha)$ serves as normalisation factor and builds upon on the gamma function $\Gamma$.\footnote{The gamma function is a generalisation of the factorial for real numbers, and is defined as $\Gamma(z) = \int_0^\infty  t^{z-1} e^{-t}\,{\rm d}t$.} We remind the reader that the notation $p(\theta_1,...\theta_k\,; \boldsymbol\alpha)$ refers to the density function of the $\theta_1,... \theta_k$ random variables given the specified (hyper-)parameters $\boldsymbol\alpha$. 
 
 Figure \ref{fig:dirichletfun} illustrates the shape of the probability density functions for several variants of the two-dimensional Dirichlet distribution $P(\theta_1,\theta_2\,; \boldsymbol\alpha)$.  The second dimension $\theta_2$ is not explicitly shown on the figure but can be directly derived from the first dimension, since $\theta_1 + \theta_2=1$.  We can observe how the $\boldsymbol\alpha$ hyper-parameters determine the shape of the distribution. As the $\boldsymbol\alpha$ counts grow larger, the density function becomes increasingly focused on a particular region of the parameter space.  The $\boldsymbol\alpha$ counts can therefore be tuned to skew the distribution in a particular way based on prior domain knowledge. Such prior distributions are called ``informative'' priors, since their shape is influenced by expert information. In the absence of such information, non-informative distributions such as $\mathrm{Dirichlet}(1,1)$ can also be employed. 
 
@@ -290,7 +290,7 @@ After sampling, the full joint distribution $P_{\mathcal{B}_i}(\boldsymbol\theta
 
 The result of the posterior calculation in Equation \eqref{eq:paramposterior} is a collection of sampled values. Two approaches are possible to define probability density functions from these samples. One can either follow a so-called parametric approach and seek to reconstruct the underlying parametric distributions (such as Gaussian or Dirichlet distributions) that best fit the data, or adopt a non-parametric approach and directly represent the posterior as a function of the samples. Parametric approaches, albeit interesting, are difficult to apply in this setting, for two main reasons:
 \begin{enumerate}
-\item The distribution family of the posterior is hard to determine, as the posterior is longer ensured to remain in the same family as the prior when learning from partial data.  
+\item The distribution family of the posterior is hard to determine, as the posterior is no longer ensured to remain in the same family as the prior when learning from partial data.  
 \item Additionally, fitting multivariate distributions such as Dirichlets based on sampled values is a laborious computational process with no closed-form solutions.\footnote{Numerical methods based on fixed-point and Newton-Raphson iterations do however exist \citep{minka2003}.}
 \end{enumerate}
 
@@ -338,7 +338,7 @@ Algorithm \ref{algo:wozlearning} presents the general procedure for estimating m
 \end{algorithm}
 
 
-\section{Experimental evaluation}
+\section{Experiments}
 \label{sec:wozlearning-experiments}
 
 We evaluated the learning approach outlined in this chapter in the context of a dialogue policy learning task for a human-robot interaction scenario.  The goal of the experiment, originally presented in \cite{rulebasedmodels-sigdial2012}, was to evaluate how well the parameters of a rule-structured utility model could be optimised from small amounts of Wizard-of-Oz data.  The evaluation metric was defined in this experiment as the proportion of actions corresponding to the wizard selections. The rule-structured model was compared to two baselines where the action utilities was represented using classical representations (respectively utility tables and linear functions). %The empirical results showed that the model encoded with utility rules were able to reproduce the wizard policy  than the more weakly structured baseline models. 
@@ -362,7 +362,7 @@ The scenario for the Wizard-of-Oz experiment involved a human user and a Nao rob
 
 The users were instructed to teach the robot a sequence of body movements such as lifting arms, stepping forward, backward, kneeling down, etc.  The movements could be performed either in consecutive order or in parallel (provided the movements were not in conflict).  The users were free to decide on the movements to perform, and communicated their intention using spoken commands (no gesture recognition was here involved).  The robot was programmed to memorise the instructed sequence and could ``replay'' it at any time.
 
-The list of possible dialogue acts for the user is shown in Table \ref{table:userdas}, and includes a total of 41 dialogue acts (when counting all possible predicate instantiations), amongst which 33 dialogue acts expressing the robot movements to execute and 8 additional dialogue acts expressing feedbacks, acknowledgements, corrections, and generic conversational moves.  To respond to these user inputs, the robot/wizard had at its disposal a repository of 41 possible actions (again when counting all possible instantiations), including both physical and verbal actions.  The verbal actions available to the system comprised various types of clarification requests and grounding acts. The list of system actions is given in Table \ref{table:systemdas}. 
+The list of possible dialogue acts for the user is shown in Table \ref{table:userdas}, and includes a total of 16 dialogue act templates (expanding into 41 dialogue acts when counting all possible argument instantiations). The set of user dialogue acts contain both task-specific dialogue moves to convey user commands as well as conversational actions for feedbacks, acknowledgements, corrections and engagement.  To respond to these user inputs, the robot/wizard had at its disposal a repository of 12 possible actions (expanding into 41 alternative actions when counting all possible instantiations of the action arguments).  The actions included both physical and verbal actions. The verbal actions available to the system comprised various types of clarification requests and grounding acts. The list of system actions is given in Table \ref{table:systemdas}. 
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -371,26 +371,23 @@ The list of possible dialogue acts for the user is shown in Table \ref{table:use
 \begin{tabular}{p{60mm}} 
 $\cdot$ $\mathrm{MoveArm}(x,y) $ \\ $ \ \ \ \ \ \text{ where } x=\{\mathrm{Left,Right,Both}\} $ \\ $ \ \ \ \ \  \text{ and } y = \{\mathrm{Up,Down,Lateral,}$ \\ $\ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{Forward,Folded}\}$ \\
 $\cdot$ $\mathrm{MoveHead}(y) $ \\ $\ \ \ \ \  \text{ where } y = \{\mathrm{Up,Left,Down,Right}\}$ \\
-$\cdot$ $\mathrm{Kneel}$ \\
-$\cdot$ $\mathrm{StandUp}$ \\
-$\cdot$ $\mathrm{SitDown}$ \\
 $\cdot$ $\mathrm{MoveFoot}(x,y) $ \\ $\ \ \ \ \  \text{ where } x = \{\mathrm{Left,Right}\} $ \\ $\ \ \ \ \ \text{ and } y = \{\mathrm{Forward,Backward}\}$ \\
-$\cdot$ $\mathrm{Turn}(y) $ \\ $\ \ \ \ \ \text{ where } y = \{\mathrm{Left,Right}\}$
+$\cdot$ $\mathrm{Turn}(y) $ \\ $\ \ \ \ \ \text{ where } y = \{\mathrm{Left,Right}\}$ \\ 
+$\cdot$ $\mathrm{Kneel}$ \\
+$\cdot$ $\mathrm{StandUp}$ 
 \end{tabular}
 \hspace{2cm}
 \begin{tabular}{p{60mm}} 
-$\cdot$ $\mathrm{Confirm}$ \\
-$\cdot$ $\mathrm{Disconfirm}$ \\
+$\cdot$ $\mathrm{SitDown}$ \\
 $\cdot$ $\mathrm{DoMovements}(y) $ \\ $ \ \ \ \ \  \text{ where } y = \{\mathrm{InParallel,InSequence}\}$\\
 $\cdot$ $\mathrm{RepeatAll}$ \\
 $\cdot$ $\mathrm{ForgetAll}$ \\
-$\cdot$ $\mathrm{Compliment}$ \\
-$\cdot$ $\mathrm{SayHello}$ \\
-$\cdot$ $\mathrm{SayGoodbye}$ \\
-$\cdot$ $\mathrm{SayThankYou}$ \\
+$\cdot$ $\mathrm{Confirm}$ \\
+$\cdot$ $\mathrm{Disconfirm}$ \\
+$\cdot$ $\mathrm{Say}(x)$ \\  $ \ \ \ \ \  \text{ where } x = \{\mathrm{Hello, Compliment,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{ThankYou, Goodbye}\}$\\
 $\cdot$ $\mathrm{GoToInitPose}$ \\ 
 $\cdot$ $\mathrm{FollowMe}$ \\
-$\cdot$ $\mathrm{Stop}$ \\ \\
+$\cdot$ $\mathrm{Stop}$ 
 \end{tabular}
 \end{footnotesize}
  \caption{List of user actions $a_u$} 
@@ -401,22 +398,21 @@ $\cdot$ $\mathrm{Stop}$ \\ \\
 \begin{footnotesize}
 \begin{tabular}{p{60mm}} 
 $\cdot$ $\mathrm{Demonstrate}(z)$ \\ $\ \ \ \ \ \text { where } z = \{\mathrm{MoveArm}(x,y), $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{MoveHead}(y),\mathrm{Kneel}, $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{StandUp},\mathrm{SitDown}, $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{MoveFoot}(x,y), \mathrm{Turn}(y)\}$ \\ $\ \ \ \ \ \text{ and } x, y \text{ take the same values}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \text{as for the user actions}$ \\
-$\cdot$ $\mathrm{AskConfirmation}$ \\ 
-$\cdot$ $\mathrm{RegisterMove}$ \\
-$\cdot$ $\mathrm{UndoMove}$ 
+$\cdot$ $\mathrm{Say}(x)$ \\  $ \ \ \ \ \  \text{ where } x = \{\mathrm{Hello, ThankYou,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{Goodbye}\}$
 \end{tabular}
 \hspace{2cm}
 \begin{tabular}{p{60mm}} 
+$\cdot$ $\mathrm{AskConfirmation}$ \\
+$\cdot$ $\mathrm{RegisterMove}$ \\
+$\cdot$ $\mathrm{UndoMove}$ \\
 $\cdot$ $\mathrm{AskRepeat}$ \\
 $\cdot$ $\mathrm{Acknowledgement}$ \\
 $\cdot$ $\mathrm{AskIntention}$ \\
 $\cdot$ $\mathrm{DemonstrateAll}$ \\
 $\cdot$ $\mathrm{ForgetAll}$ \\
 $\cdot$ $\mathrm{StopMove}$ \\
-$\cdot$ $\mathrm{FollowUser}$ \\
-$\cdot$ $\mathrm{SayThankYou}$ \\
-$\cdot$ $\mathrm{SayHello}$ \\
-$\cdot$ $\mathrm{SayGoodbye}$ 
+$\cdot$ $\mathrm{FollowUser}$ 
+
 \end{tabular}
 \end{footnotesize}
 \caption{List of system actions $a_m$} 
@@ -440,11 +436,11 @@ An integrated dialogue system was developed in order to collect Wizard-of-Oz int
 \end{figure}
 
 
-The modules used for the experiments included in particular an off-the-shelf speech recogniser (Vocon 3200 from Nuance) connected to four microphones placed on the robot head. The language model of the speech recogniser was represented by a small hand-crafted recognition grammar. The corresponding user dialogue acts were then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model was in charge of the surface realisation of the verbal actions.  The surface string was synthesised via a speech synthesis module embarked on the robot. Finally, the execution of physical actions was delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time, based on the software libraries available on the robotic platform. 
+The modules used for the experiments included in particular an off-the-shelf speech recogniser (Vocon 3200 from Nuance) connected to four microphones placed on the robot head. The language model of the speech recogniser was represented by a small hand-crafted recognition grammar, while the acoustic model was set to U.S. English. The corresponding user dialogue acts were then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model was in charge of the surface realisation of the verbal actions.  The surface string was synthesised via a speech synthesis module embarked on the robot. Finally, the execution of physical actions was delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time, based on the software libraries available on the robotic platform. 
 
 \subsubsection*{Data collection procedure}
 
- Each recorded dialogue involved one human subject interacting with the Nao robot in a shared visual scene.  The dialogues were relatively short, with an average duration of about four minutes. We collected a total of 20 interactions with 7 distinct users, for a total of 1020 system turns, summing to around 1h of interaction.  The users were recruited amongst the students and researchers in the Department of Informatics at the University of Oslo, while the role of the wizard was taken by the author of the present thesis.  All the interactions were performed in English.  As the speech recogniser relied on a grammar-based language model of limited size, the users were briefed before each experiment about the comprehension capabilities of the robot in order to adjust their expectations about what the robot could and could not understand, and thereby limit the number of out-of-coverage utterances.
+ Each recorded dialogue involved one human subject interacting with the Nao robot in a shared visual scene.  The dialogues were relatively short, with an average duration of about four minutes. We collected a total of 20 interactions with 7 distinct users, for a total of 1020 system turns, summing to around 1h of interaction.  The users were recruited amongst the students and researchers in the Department of Informatics at the University of Oslo, while the role of the wizard was taken by the author of the present thesis.  All the interactions were performed in English. All users were comfortable speaking English, but all but one were non-native speakers.\footnote{This may partly explain the relatively high level of speech recognition errors due to the mismatch between the acoustic model trained on native American speakers and the foreign accents of the participants.}  As the speech recogniser relied on a grammar-based language model of limited size, the users were briefed before each experiment about the comprehension capabilities of the robot in order to adjust their expectations about what the robot could and could not understand, and thereby limit the number of out-of-coverage utterances.
 
 Wizard-of-Oz experiments should ideally place the wizard in the same types of decision contexts as the ones encountered by the dialogue manager. To this end, the wizard was prevented from listening directly to the spoken utterances of the user and was instead provided with the N-best list $\tilde{a}_u$ generated by the dialogue act recognition engine (which is itself based on the speech recogniser outputs).  The N-best lists appeared on the wizard control screen as lists of hypotheses accompanied with their respective probabilities. On the basis of these inputs (and the interaction context), the wizard could then select the action to perform from a list of alternatives.  
 
