@@ -606,7 +606,7 @@ Rule-structured model & \textbf{82.82} \\ \hline
 \end{tabular}
 \end{center}
 \vspace{-2mm}
-\caption{Accuracy results for the three models on a held-out test after parameter estimation.}
+\caption{Accuracy results for the three models on a held-out test.}
 \vspace{-2mm}
 \label{table}
 \end{table}
@@ -630,7 +630,7 @@ The learning curves for the three models are shown in Figure \ref{results}.   No
 
 Thanks to its considerably reduced number of parameters, the rule-structured model is able to converge to near-optimal values after observing only a small fraction of the training set.  The incorporation of domain knowledge via the rule structure has a clearly beneficial effect on the learning performance and on the generalisation capacity of the model.  As the figure shows, the two baseline models do also improve their accuracies over time, but at a much slower rate.   The linear model is comparatively faster than the plain model, but levels off towards the end. The suboptimal learning performance of the linear model is most likely due to the non-linearity of some dialogue strategies.  The plain model continues its convergence and would probably reach an accuracy similar to the rule-structured model if given much larger amounts of training data. 
 
-The learning results are in line with our expectations based on the respective sizes of the parameter space for the three utility models, and are not \textit{per se} highly surprising.  The main lesson to draw from this experiment is however not the exact difference in accuracy or learning rates for each particular model, but the successful deployment of probabilistic rules to structure a small but non-trivial dialogue domain and derive its parameters from collected interaction data.  Through the use of abstraction mechanisms such as partitioning and quantification, the experiment shows that the utility rules specified for the domain (see Appendix \ref{chap:domainspecs}) can cover large regions of the problem space without degrading the model performance.  The utility model can hence be optimised with only modest amounts of in-domain data. 
+The learning results are in line with our expectations based on the respective sizes of the parameter space for the three utility models, and are not \textit{per se} highly surprising.  The main lesson to draw from this experiment is however not the exact difference in accuracy or learning rates for each particular model, but the fact that probabilistic rules can be successfully applied to structure a small but non-trivial dialogue domain and derive its parameters from collected interaction data.  Through the use of abstraction mechanisms such as partitioning and quantification, the experiment demonstrates that the utility rules specified for the domain (see Appendix \ref{chap:domainspecs}) can cover large regions of the problem space without degrading the model performance.  The utility model can hence be optimised with only modest amounts of in-domain data. 
 
 
 \section{Conclusion}

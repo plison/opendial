@@ -132,7 +132,7 @@ Algorithm \ref{algo:planning} selects the action to execute through forward plan
 \REQUIRE Planning horizon $h$
 \ENSURE Selected action $\mathbf{a}^*$
 \STATE $Q_{\mathcal{B}} \leftarrow $ \textsc{Calculate-Q-Values} ($\mathcal{B}, \mathbf{e}, h)$
-\STATE Find optimal value $\mathbf{a}^* = \argmax_{\mathbf{a}} Q_{\mathcal{B}}(a)$
+\STATE Find optimal value $\mathbf{a}^* = \argmax_{\mathbf{a}} Q_{\mathcal{B}}(\mathbf{a})$
 \STATE Remove utility nodes from the state $\mathcal{B}$
 \RETURN $\mathbf{a}^*$
 \end{algorithmic}
@@ -145,13 +145,13 @@ Algorithm \ref{algo:planning} selects the action to execute through forward plan
 \begin{algorithmic}[1] \vspace{1mm}
 \STATE Let $\mathbf{A}$ be the set of all decision variables in $\mathcal{B}$
 \FORALL {possible action $\mathbf{a} \in Val(\mathbf{A})$}
-\STATE $Q_{\mathcal{B}}(a) \leftarrow U_{\mathcal{B}}(\mathbf{a}, \mathbf{e})$
+\STATE $Q_{\mathcal{B}}(\mathbf{a}) \leftarrow U_{\mathcal{B}}(\mathbf{a}, \mathbf{e})$
 \IF {$h > 1$}
 \STATE $\mathcal{B}' \leftarrow $ dialogue state updated from $\mathcal{B}$ after action $\mathbf{a}$
 \FORALL {possible observation $\mathbf{o}$}
 \STATE $\mathcal{B} \leftarrow $ dialogue state updated from $\mathcal{B}'$ after observation $o$
-\STATE $Q_{\mathcal{B}''} \leftarrow $ \textsc{Calculate-Q-Values}($\mathcal{B}'', \mathbf{e}, h\mbox{-}1$)
-\STATE $Q_{\mathcal{B}}(a) \leftarrow Q_{\mathcal{B}}(a) + \gamma \ P_{\mathcal{B}'}(\mathbf{o}) \ \max_{\mathbf{a}'} Q_{\mathcal{B}''}(\mathbf{a}')$
+\STATE $Q_{\mathcal{B}''} \leftarrow $ \textsc{Calculate-Q-Values}($\mathcal{B}'', \mathbf{e}, h -1$)
+\STATE $Q_{\mathcal{B}}(\mathbf{a}) \leftarrow Q_{\mathcal{B}}(\mathbf{a}) + \gamma \ P_{\mathcal{B}'}(\mathbf{o}) \ \max_{\mathbf{a}'} Q_{\mathcal{B}''}(\mathbf{a}')$
 \ENDFOR
 \ENDIF
 \ENDFOR

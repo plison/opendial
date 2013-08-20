@@ -11,18 +11,19 @@ $P(X_1, ...X_n)$ && Joint probability distribution for $X_1$, ... $X_n$ \\
 $P(X_1,...X_n \, | \, Y_1, ... Y_m)$ && Conditional probability distribution for $X_1$, ... $X_n$ given $Y_1$, ... $Y_m$  \\ 
 $E(X)$ && Expectation of the random variable $X$ \\
 $p(X)$ && Probability density function (PDF) of continuous variable $X$ \\
-
+ $P(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Posterior distribution of variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
+ $U(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Utility distribution of variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
+ $\boldsymbol\theta_{X}$ && Parameters associated with the random variable $X$ \\ 
+ $P(X\,;\boldsymbol\theta_{X})$ && Probability of $X$ given the parameters $\boldsymbol\theta_{X}$ \\ 
+ 
 &&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Graphical models:}} \vspace{2mm} \\
  $\mathcal{B}$ && Bayesian network \\
- $P_\mathcal{B}(X)$ && Probability distribution for $X$ in Bayesian network $\mathcal{B}$ \\ 
+ $P_\mathcal{B}(X)$ && Probability distribution for $X$ in the Bayesian network $\mathcal{B}$ \\ 
 $(\mathbf{X} \, \bot \, \mathbf{Y} \, | \, \mathbf{Z})$ && Conditional independence of variables $\mathbf{X} $ and $\mathbf{Y}$ given $\mathbf{Z}$ \\
 $Y \rightarrow X$ && Directed edge from variable $Y$ to variable $X$ \\
 $parents(X)$ && Parents of variable $X$ such that $Y \rightarrow X$ for all $Y\!\in\!parents(X)$ \\
- $P(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Probability query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
- $U(\mathbf{Q}  \, | \,  \mathbf{E}\!=\!\mathbf{e})$ && Utility query on variables $\mathbf{Q}$ given evidence $\mathbf{E}\!=\!\mathbf{e}$ \\ 
- $\boldsymbol\theta_{X}$ && Parameters associated with the random variable $X$ \\ 
- $P(X\,;\boldsymbol\theta)$ && Probability of $X$ given the parameters $\boldsymbol\theta$ \\ 
+
 &&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Reinforcement learning:}} \vspace{2mm} \\
 $s$ && Current state \\
@@ -73,6 +74,6 @@ $\mathbf{g}$ && Possible grounding for the universally quantified variables $\ma
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Miscellaneous:}} \vspace{2mm} \\
 $\mathbf{1}(b)$ && Indicator function, with $\mathbf{1}(b) = 1$ if $b$ is true and 0 otherwise \\
-$\phi[a / b]$ && Formula $\phi$ where all occurrences of $a$ are replaced by $b$ \\
+$\phi[a / b]$ && First-order formula $\phi$ where all occurrences of $a$ are replaced by $b$ \\
 $|\mathcal{S}|$ && Cardinality of the set $\mathcal{S}$ (i.e. number of elements) 
 \end{longtable}

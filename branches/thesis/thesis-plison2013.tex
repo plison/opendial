@@ -13,6 +13,7 @@
 \usepackage{algorithm}
 \usepackage{makeidx}
 \usepackage{xfrac}
+\usepackage{listings}
 \usepackage{attrib}
 \allowdisplaybreaks[1]
 \usepackage{array}
@@ -70,6 +71,29 @@
 \def\E{{\rm E}\,}
 \newcommand{\urlsmall}[1]{\begin{scriptsize}\url{#1}\end{scriptsize}}
 \def\opendial{\begin{small}\textsf{openDial}\end{small}\index{openDial} }
+
+\usepackage{color}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  showstringspaces=false,
+  commentstyle=\color{gray}\upshape
+}
+
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type}% list your attributes here
+}
 
 \title{\Huge{Structured Probabilistic Modelling \\ for Dialogue Management}}
 
