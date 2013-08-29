@@ -63,6 +63,7 @@ We developed in this thesis two distinct approaches to the optimisation of rule 
 The two sections below flesh out these two approaches in more detail. 
 
 \subsection{Model-based approach}
+\label{sec:modelbased}
 
 The model-based approach relies on the specification of probabilistic rules that describe:
 \begin{itemize}
@@ -89,14 +90,7 @@ Two types of information sources are available to the agent to refine its parame
 
 \subsubsection*{Example of parameter update}
 
-Let us illustrate this process on the domain example from Section \ref{sec:detailedexample}.  The example of dialogue snippet remains unchanged:
- \begin{dialogue} 
-\speak{User } Now move forward \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)\rangle$  \\[-3mm]
-\speak{System } Could you please repeat? \\[-3mm]
-\speak{User } Please move forward! \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) \rangle$ \\[-4mm]
-\end{dialogue}
-
-We now assume that the effect distribution associated with the predictive rule $r_{11}$ is unknown and replaced by parameters: 
+Let us illustrate this process on the domain example from Section \ref{sec:detailedexample}, if we assume the effect distribution associated with the predictive rule $r_{11}$ to be unknown and replaced by parameters: 
 \begin{align*}
 r_{11}: \ \ & \forall y: \\ 
 & \textbf{if} \ (a_m = \mathit{AskClarify} \land a_u=y) \ \textbf{then} \\ 
@@ -106,7 +100,15 @@ P([\cdot]) = \theta_{r_{11}(1,2)} \\
 \end{cases}
 \end{align*}
 
-Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1,\cdot)}$ is automatically modified as part of the state update operation.  To keep the procedure as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The prior distribution $P(\boldsymbol\theta_{r_{11}(1,\cdot)})$ is set in this example to $\sim \mathrm{Dirichlet}(2,1)$, as we can reasonably presuppose that the user is more likely than not to repeat her/his last utterance after an explicit request from the system.
+
+Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1,\cdot)}$ is automatically modified as part of the state update operation.  The dialogue example remains unchanged:
+\begin{dialogue} 
+\speak{User } Now move forward \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)\rangle$  \\[-3mm]
+\speak{System } Could you please repeat? \\[-3mm]
+\speak{User } Please move forward! \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) \rangle$ \\[-4mm]
+\end{dialogue} 
+
+To keep the procedure as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The prior distribution $P(\boldsymbol\theta_{r_{11}(1,\cdot)})$ is set in this example to $\sim \mathrm{Dirichlet}(2,1)$, as we can reasonably presuppose that the user is more likely than not to repeat her/his last utterance after an explicit request from the system.
 
 \begin{figure}[h]
 \centering
@@ -640,7 +642,7 @@ The performance was first measured in terms of average return per simulated inte
 \label{fig:return_exp21}
 \end{figure}
 
-\begin{figure}[h] 
+\begin{figure}[h!] 
 \begin{center}
 \includegraphics[scale=0.40]{imgs/kldivergence.pdf}
 \end{center} 
@@ -721,7 +723,7 @@ The first technique is a model-based approach that explicitly constructs statist
 
 The second technique is a model-free approach that skips the estimation of the domain models to directly construct an action-value model expressing the $Q$ values of state-action pairs.  As the $Q$ values are never directly observed, the update of $Q$ values is bootstrapped based on Bellman's equation. We described in particular how the action-value model could be structured with utility rules and optimised through a Bayesian variant of the SARSA learning algorithm combined with $\epsilon$-greedy action selection. 
 
-The last section detailed two experiments conducted in a simulated environment to evaluate  the empirical performance of the two learning approaches. The simulator was common to both experiments and constructed on the basis of a Wizard-of-Oz study conducted in a human-robot interaction domain. The simulator included three distinct models, all estimated from the collected Wizard-of-Oz data: (1) a \textit{user model} expressing how the user intentions and dialogue acts are likely to evolve as a function of the system actions, (2) a \textit{context model} expressing the objects in the visual field of the robot as well as the ones carried by the robot, and (3) an \textit{error model} introducing errors and inaccuracies into the generated user input in order to mimic the imperfect nature of speech recognition
+The last section detailed two experiments conducted in a simulated environment to evaluate  the empirical performance of the two learning approaches. The simulator was common to both experiments and constructed on the basis of a Wizard-of-Oz study conducted in a human-robot interaction domain. The simulator included three distinct models, all estimated from the collected Wizard-of-Oz data: a \textit{user model} expressing how the user intentions and dialogue acts are likely to evolve as a function of the system actions, a \textit{context model} expressing the objects in the visual field of the robot as well as the ones carried by the robot, and an \textit{error model} introducing errors and inaccuracies into the generated user input in order to mimic the imperfect nature of speech recognition
 
 On the basis of this user simulator, the first experiment compared the performance of model-based Bayesian reinforcement learning on two alternative formalisations of the transition model.  The first formalisation relied on traditional categorical distributions, while the second represented the transition model through probability rules. The empirical results showed that the rule-structured model could converge to a high-performing dialogue behaviour -- as measured by the average return per interaction -- much faster than the baseline.
 

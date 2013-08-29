@@ -380,7 +380,7 @@ If the node $X'$ is an update of an existing node $X$, the procedure remains ess
 \end{dcases}\label{eq:outputdist2}
 \end{align}
 
-As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A\!=\!a_2 \land E\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A) = \{a_2\}$. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values. The output distribution $P(A' \, | \, r_5\!=\!\{A\!=\!a_1\},r_6\!=\!\{A\!=\!a_2 \land E\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A$: $\mathbf{e}(A) = \{a_1,a_2\}$. The output distribution is thus a uniform distribution with two values: $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are empty, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
+As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A\!=\!a_2 \land E\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A) = \{a_2\}$. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values.\footnote{This uniform division of the probability mass reflects that, in the absence of further knowledge, all rules are assumed to have the same ``weight''. If two or more rules generate contradictory effects, there is therefore no way to tell which rule is to take precedence. This assumption could however be refined in the future by e.g. associating numerical weights to particular rules or specifying a dominance hierarchy between the rules.}   The output distribution $P(A' \, | \, r_5\!=\!\{A\!=\!a_1\},r_6\!=\!\{A\!=\!a_2 \land E\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A$: $\mathbf{e}(A) = \{a_1,a_2\}$. The output distribution is thus a uniform distribution with two values: $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are empty, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
 
 Output distributions are directly derived from the effects in the rule nodes and are thus entirely parameter-free.  The ordering of the parent rules in the conditional probability distribution is arbitrary. The resulting distribution bears resemblance to the probabilistic Independence of Causal Influence (pICI) described by \cite{diez06}. 
 
@@ -510,11 +510,6 @@ Algorithm \ref{algo:getinputvariables} outlines how this search for matching inp
 \end{algorithmic}
 
 
-%Line 1 in Algorithms \ref{algo:instantiateProbRule} and \ref{algo:instantiateUtilRule} is then replaced by: 
-%\begin{algorithmic}[1] \vspace{1mm}
-%\STATE $I_1,...I_k \leftarrow $ \textsc{GetInputVariables} ($\mathcal{B}, \mathit{r}$)
-%\end{algorithmic}
-
 \subsubsection*{Extraction of relevant groundings}
 
 Once the input variables for the rules are retrieved, the next step is to establish the set of relevant groundings $G$ for the universally quantified variables.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1,...I_k$.
@@ -565,10 +560,6 @@ Empty and redundant effect distributions are discarded. The grounding procedure 
 & P(r\!=\![e_1 \land ... e_{q}] \, | \, I_1\!=\!i_1,... I_k\!=\!i_k) = \prod_{j=1}^{q} P(r_{\mathbf{g}_j}\!=\!e_j)
 \end{align}
 
-%The values of the rule node are thus conjunctions of effects $[e_1 \land ... e_q]$.  
-
-%They can however include conflicting assignments, which are in such case automatically ``resolved'' in the output distribution by assigning the probability mass uniformly to the alternative values (as explained in the previous section).
-
 Figure \ref{fig:quantinstantitionprob} shows how the rule $r_3$ is instantiated in a state with two objects $o_1$ and $o_2$, each associated with a random variable describing its shape.
 
 \begin{figure}[h]
@@ -585,7 +576,7 @@ As an example, the probability distribution $P(r_3 \, | \, \mathit{shape}(o_1)\!
 \item $\{\mathit{graspable}(o_1)\!=\!false \land \mathit{graspable}(o_2)\!=\!false\}$ with probability $0.1 \times 0.8 = 0.08$. 
 \end{itemize} 
 
-%The effects specified for $r_3$ mention two output variables: $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_1)$.  These two variables are thus created as children of the node $r_3$. 
+The effects specified for $r_3$ mention two output variables: $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_1)$.  These two variables are thus created as children of the node $r_3$. 
 
 \subsubsection*{Quantified utility rules}
 
@@ -620,19 +611,19 @@ The utility distribution $U_{r_4}(\mathit{task}\!=\!\mathit{grasp}(o_1), \mathit
 
 Although the use of universally quantifiers greatly improves the expressivity of probabilistic rules, they also tend to increase the in- and out-degrees of rule nodes (that is, the cardinality of their parents and children nodes). Approximate inference techniques are thus necessary to handle this conditional structure in a tractable manner. Sampling methods such as likelihood weighting have in practice proved to work well in this setting (cf. Section \ref{sec:inference}).
 
-It should be stressed that the groundings are always extracted \textit{given a specific value assignment} for the input variables. By restricting the groundings to this limited domain of discourse, we ensure that the number of alternative effects remains bounded and avoid the generation of spurious effects.   This instantiation procedure was found to be much more efficient than copying the rule in distinct nodes, as investigated in earlier implementations of the formalism \citep{relational-apl2012}.  
+It should be stressed that the groundings are always extracted \textit{given a specific value assignment} for the input variables. By restricting the groundings to this limited domain of discourse, we ensure that the number of alternative effects remains bounded and avoid the generation of spurious effects.   This instantiation procedure was found to be much more efficient than copying the rule in distinct nodes, as investigated in earlier implementations of the formalism \citep{relational-apl2012}.  This procedure departs from other frameworks such as Markov Logic Networks, where the functions and predicates are duplicated for every possible grounding of variables in the domain \citep{Richardson:2006}.
+
 
  %In order to keep the number of groundings under control, the specification of probabilistic rules should nevertheless refrain from introducing more universally quantified variables than necessary.
 
-%This procedure departs from other frameworks such as Markov Logic Networks, where the functions and predicates are duplicated for every possible grounding of variables in the domain \citep{Richardson:2006}.
-
+%
 
 \section{Processing workflow}
 \label{sec:processing-workflow}
 
 The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsson:2000:ISD:973935.973943,Buckley:2006}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
 
-%We start by describing how dialogue domains can be organised in collections of rules called ``models''. We then show how these models are triggered to update state variables and express the utility of particular actions. We also demonstrate the general processing workflow on a detailed example. 
+The section first describes how dialogue domains are organised in collections of rules called ``models'', and then goes on to explain how these models are applied to update state variables and express the utility of particular actions. We also demonstrate the general processing workflow on a detailed example. 
 
 
 \subsection{Domain representation}
@@ -641,13 +632,13 @@ Dialogue domains can consist of multiple probability and utility rules. These ru
 
 A dialogue domain is represented as a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$, where $\mathcal{B}_0$ is the initial dialogue state  and $\mathcal{M}$ the set of rule-based models attached to it. The organisation of rules into models allows the system designer to structure the application pipeline in a modular manner. Each model can be intuitively viewed as a distinct component responsible for a particular inference or decision step. 
 
-Section \ref{sec:domain-specification} explains how dialogue domains are practically encoded in the \opendial architecture. 
+Section \ref{sec:domain-specification} explains how dialogue domains (and the models that compose them) are practically encoded in the \opendial architecture, based on an XML specification. 
 
 \subsection{Update algorithm} 
 
 The software architecture adopted in this thesis takes the form of an event-driven, blackboard architecture \citep{jaspis2004,Buckley:2006} revolving around a dialogue state $\mathcal{B}$ represented as a Bayesian network.  As in information state approaches, this dialogue state is read and written by the various modules integrated in the dialogue system. 
 
-The update procedure is shown in Algorithm \ref{algo:stateupdate}. The procedure is started upon the reception of new variables to incorporate in the state, such as new user inputs processed by the ASR/NLU components. The first step is to insert the variables in the dialogue state and possibly relate them to their predicted values (lines 2-3). The algorithm then triggers the instantiation of the relevant domain models (line 4), leading to a recursive chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithms searches for the optimal action, selects it, and activates the models that are triggered as a result  (lines 6-8). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 10). 
+The update procedure is shown in Algorithm \ref{algo:stateupdate}. The procedure is started upon the reception of new variables to incorporate in the state, such as new user inputs processed by the speech recognition and natural language understanding components. The first step is to insert the variables in the dialogue state and possibly relate them to their predicted values (lines 2-3). The algorithm then triggers the instantiation of the relevant domain models (line 4), leading to a recursive chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithms searches for the optimal action, selects it, and activates the models that are triggered as a result  (lines 6-8). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 10). 
 
 
 \begin{algorithm}[h]
@@ -674,7 +665,7 @@ We now describe each of these steps in detail.
 
 \subsubsection*{Connecting predictions and observations}
 
-Rules are sometimes used to provide predictions on variables that will be observed in the next time steps.\footnote{This is notably the case for the user action model $P(a_u \, | \, i_u, a_m)$, which estimate the relative probabilities for the next dialogue action from the user. The prediction provide a prior on the future observation of the user action.} In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote predictive variables with a subscript $p$. A variable $X_p$ is thus a prediction for the future observation of the variable $X$. 
+Rules are sometimes used to provide predictions on variables that will be observed in the next time steps.\footnote{This is notably the case for the user action model $P(a_u \, | \, i_u, a_m)$, which estimate the relative probabilities for the next dialogue action from the user. The prediction provide a prior on the future observation of the user action.} In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote predictive variables with a subscript $p$. A variable $X_p$ represents therefore a random variable on the predicted values of the variable $X$ to be observed in the future. 
 
 \begin{wrapfigure}[11]{r}{48mm}
 \vspace{-2mm}
