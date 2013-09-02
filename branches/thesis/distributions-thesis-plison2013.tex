@@ -1,7 +1,7 @@
 \chapter{Relevant probability distributions}
 \label{chap:probdistributions}
 
-This appendix details the most important probability distributions employed in this thesis.  For each distribution, we describe its parameters, probability density or mass function (depending on the type of distribution), mean, variance, as well as a graphical illustration.
+This appendix details the most important probability distributions employed in this thesis.  For each distribution, we describe its parameters, probability density or mass function (depending on whether the distribution has a discrete or continuous domain), mean, variance, as well as a graphical illustration.   
 
 \section*{Continuous uniform distribution}
 
@@ -10,7 +10,7 @@ This appendix details the most important probability distributions employed in t
 
 \item [Density function: ] The density remains constant within $[a,b]$ and is $0$ outside this range:
 \begin{equation}
-p(x\,; a, b) = \begin{cases}
+P(x\,; a, b) = \begin{cases}
 \frac{1}{b - a} & \text{for } x \in [a,b]  \\
 0               & \text{otherwise}
 \end{cases}
@@ -110,7 +110,7 @@ The normal distribution is probably the most well known probability distribution
 
 \item [Probability density function: ] The density function of a normal distribution is defined as:
 \begin{equation}
-p(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{-\frac{\left(x-\mu\right)^2}{2\sigma^2}\right\}
+P(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{-\frac{\left(x-\mu\right)^2}{2\sigma^2}\right\}
 \end{equation}
 \item [Mean: ] The mean of the normal distribution is simply the value $\mu$.
 
@@ -136,7 +136,7 @@ A Dirichlet distribution is a continuous, multivariate probability distribution 
 
 \item [Probability density function: ] The density function of a Dirichlet distribution is defined as:
 \begin{align}
-p(x_1,...x_K\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^K x_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^K \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
+P(x_1,...x_K\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^K x_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^K \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
 \end{align}
 in which $ \mathrm{B}(\boldsymbol\alpha)$ is a normalisation factor and $\Gamma$ is the gamma function $\Gamma(z) = \int_0^\infty  t^{z-1} e^{-t}\,{\rm d}t$. 
 
@@ -163,7 +163,7 @@ Distributions can also be defined in a non-parametric manner using kernel densit
 
 \item [Probability density function: ] The distribution resulting from the use of kernel density estimation based on a set of sample points $x_1,...x_n$ is: 
 \begin{align}
-p(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
+P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
 \end{align}
 \item [Mean: ] The mean of kernel density estimate is the average of the sample points: $\dfrac{\sum_{i=1}^n x_i}{n}$.
 

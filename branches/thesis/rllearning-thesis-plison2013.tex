@@ -96,7 +96,7 @@ r_{11}: \ \ & \forall y: \\
 & \textbf{if} \ (a_m = \mathit{AskClarify} \land a_u=y) \ \textbf{then} \\ 
 & \; \;  \begin{cases} 
 P(a_{u\mbox{-}p} = y) = \theta_{r_{11}(1,1)} \\ 
-P([\cdot]) = \theta_{r_{11}(1,2)} \\ 
+P(\{\cdot\}) = \theta_{r_{11}(1,2)} \\ 
 \end{cases}
 \end{align*}
 
@@ -492,7 +492,7 @@ A total of eight interactions were recorded, each with a different speaker, tota
 
 After the recording, the dialogues were segmented and annotated by hand. The first layer of annotation encodes the user dialogue acts $a_u$ and system actions $a_m$, according to the lists in Table \ref{table:userdas_exp2} and \ref{table:systemdas_exp2}. The user intentions $i_u$ underlying the user commands are annotated on top of this sequence of turns. \footnote{Although the user intentions are in principle hidden ``mentalistic'' entities, they can in our domain be easily determined by a human annotator from the dialogue transcript.} The annotation also includes two contextual variables respectively expressing the lists of objects perceived and carried by the robot at a given time. Transcript 4 provides a concrete example of annotation for the first part of the interaction in Transcript 3. 
 
-\begin{Transcript}[h]
+\begin{Transcript}[p]
 \begin{dialogue} \vspace{3mm}
 \speak{Human} Would you please move forward \\[1mm]
 \begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(Move(Forward))}$\\ $\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![]$\end{footnotesize} \vspace{2mm}
@@ -657,6 +657,8 @@ The empirical results illustrate that both models are able to capture at least s
 One can observe from the empirical results that the Dirichlet parameters associated with the probabilistic rules converge to their optimal value very rapidly, after a handful of episodes.  This is a promising result, since it implies that the proposed approach could in principle optimise dialogue policies from live interactions, without resorting to a user simulator.
 
 One caveat is nevertheless here in order.  As described in the previous section, the simulation model used to sample the next intentions and actions of the user is built on a number of structural assumptions.  The learning results must therefore be interpreted with caution, as real-world dialogues may not exhibit the same kind of internal structure as the one derived from the simulator.  We shall however see in Chapter \ref{chap:user-evaluation} that the results presented here fortunately also carry over to genuine human-robot interactions. 
+
+\note{more here}
 
 \subsection{Second experiment}
 
