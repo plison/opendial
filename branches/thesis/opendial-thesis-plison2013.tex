@@ -33,7 +33,7 @@ The modules in the \opendial toolkit are divided in two distinct types: \begin{e
 In the experiments carried out in this thesis, we found it useful to encode not only dialogue management models with the help of probabilistic rules, but also tasks related to natural language understanding and generation. As argued in \cite{lison-semdial2012}, the expressive power of probabilistic rules allows them to capture the structure of many dialogue processing tasks, not necessarily confined to dialogue management. The dialogue domain designed for the experiments in Chapter \ref{chap:user-evaluation} include for instance a total of six models: one dialogue act classification model, (triggered by the user utterance $u_u$), one action utility model (triggered by the user dialogue act $a_u$), three probability models to predict the effects of the system action on the context, the user intention and the next user action (all triggered by the system action $a_m$), and a generation model (triggered by the system action $a_m$). The parameters of the NLU and NLG models are however hand-crafted since they do not directly constitute the focus of our work.
 
 Compared to traditional architectures in which the components are developed separately and rely on ad hoc representation formats, the use of a shared description formalism (probabilistic rules) to encode multiple reasoning tasks offers several advantages:
-\begin{enumerate}
+\begin{itemize}
 \item \textit{Transparency}:  The reliance on a common representation format provides a unified, transparent semantics for the dialogue state, since all state variables are described and related to one another through a principled framework grounded in probabilistic modelling.  This makes it possible to derive a semantic interpretation for the dialogue state as a whole -- in terms of e.g. of a joint probability distribution over the state variables. 
 
 \item \textit{Domain portability}:   As most domain-specific knowledge is declaratively specified in the rules, the system architecture is essentially reduced to a generic platform for rule instantiation and probabilistic inference.  This declarative design greatly enhances the system portability across domains, since adapting a system to a new domain only requires a rewrite or extension of the domain-specific rules, without having to reconfigure or re-develop other components.  This stands in sharp contrast with ``black-box'' types of architectures where much of the task- and domain-specific knowledge is encoded in procedural form buried inside the implementation of the system components.
@@ -42,7 +42,7 @@ Compared to traditional architectures in which the components are developed sepa
 
 \item \textit{Joint optimisation}:  Finally, the use of a unified formalism allows domain models to be optimised jointly instead of being tuned in isolation from one another. Joint optimisation has recently gained much attention in the dialogue system community to overcome the fragmentation of current system architectures and attempt to directly optimise the end-to-end conversational behaviour of the system \citep[see also][]{Lemon:2011}. 
 
-\end{enumerate}
+\end{itemize}
 
 Despite these merits, probabilistic rules cannot naturally model all dialogue reasoning tasks.  Modules such as speech recognition or speech synthesis depend in particular on external resources and processes and must be integrated separately in the system. The \opendial toolkit is designed to incorporate both rule-structured models and external components in its architecture. 
 \subsection{Specification of dialogue domains}
@@ -69,18 +69,18 @@ A dialogue domain is represented in \opendial by a pair $\langle \mathcal{B}_0, 
      	</model>
 
     </domain>
-\end{lstlisting}
+\end{lstlisting}\vspace{2mm}
 
 The initial dialogue state is represented by a list of state variables, each being associated with a particular probability distribution.  Most state variables are defined by a categorical distribution, according to the following skeleton:
 
-\begin{lstlisting}
+\vspace{3mm}\begin{lstlisting}
     <variable id="variable name"/>
         <value prob="prob for first value">first value</value>
         <value prob="prob for second value">second value</value>
 		...
         <value prob="prob for nth value">nth value</value>
    </variable>  
-\end{lstlisting}
+\end{lstlisting}\vspace{2mm}
 
 State variables with continuous ranges can also be encoded with uniform, Gaussian, or Dirichlet probability density functions (provided the required parameters are specified). 
 
@@ -153,15 +153,16 @@ Utility rules are defined in the same manner.  An example of utility rule specif
 
 \subsubsection*{Parameters}
 
-When operating in learning mode, dialogue domains must be associated with parameter variables defined together with their prior probability distribution.  This prior can take the form of a categorical, Dirichlet, Gaussian or uniform distributions.  As an illustration, the prior distribution for the parameter variable $\boldsymbol\theta_2 \sim \mathrm{Dirichlet}(1,2)$ is specified as:
-\begin{lstlisting}
+When operating in learning mode, dialogue domains must be associated with parameter variables defined together with their prior probability distribution.  This prior can take the form of a categorical, Dirichlet, Gaussian or uniform distributions.  As an illustration, the prior distribution for the parameter variable $\boldsymbol\theta_2 \sim \mathrm{Dirichlet}(1,2)$ is specified as: 
+
+\vspace{3mm}\begin{lstlisting}
     <variable id="theta_2">
         <distrib type="dirichlet">
             <alpha>1</alpha>
             <alpha>2</alpha>
         </distrib>
     </variable>
-\end{lstlisting}
+\end{lstlisting}\vspace{2mm}
 
 Other types of prior distributions are defined in a similar manner. 
 
@@ -213,7 +214,7 @@ Information-state approaches are closely related to the framework presented in t
 
 The idea of domain independence is also taken up by plan-based approaches such as the TRIPS \citep[The Rochester Interactive Planning System, cf. ][]{Allen:2000:AGD:973935.973937}. TRIPS uses an agent-oriented architecture comprised of multiple modules working together to recognise the intentions of the human user and fulfilling the system goals.  Most reasoning tasks are explicitly cast as planning problems, from high-level planning to response planning and surface realisation.  
 
-One of the most mature platform for prototyping dialogue systems is Olympus and its associated dialogue management framework Ravenclaw \citep{Bohus:2007,Bohus:2009:RDM:1518321.1518367}.  The Olympus architecture is built on top of a centralised message-passing infrastructure in which modules can be plugged in and out to suit the needs of the application.  Ravenclaw is a plan-based, task-independent dialogue engine which is fully integrated in Olympus.  Ravenclaw supports mixed-initiative interaction and integrates dedicated functions for conversational skills such as error handling, timing and turn-taking. Action selection is based on a hierarchical decomposition of tasks whose execution is sequentially ordered via an agenda. 
+One of the most mature platform for prototyping dialogue systems is Olympus and its associated dialogue management framework Ravenclaw \citep{Bohus:2007,Bohus:2009}.  The Olympus architecture is built on top of a centralised message-passing infrastructure in which modules can be plugged in and out to suit the needs of the application.  Ravenclaw is a plan-based, task-independent dialogue engine which is fully integrated in Olympus.  Ravenclaw supports mixed-initiative interaction and integrates dedicated functions for conversational skills such as error handling, timing and turn-taking. Action selection is based on a hierarchical decomposition of tasks whose execution is sequentially ordered via an agenda. 
 
 The agent-based Jaspis architecture \citep{jaspis2004} also has multiple points of contact with the \opendial toolkit, as it similarly revolves around a shared representation of the system state.  Jaspis components are themselves split into agents (in charge of decision-making), evaluators (in charge of selecting the most suitable agent in a particular situation) and managers (in charge of the general coordination of the components). Jaspis is designed to allow for distributed setups with dedicated mechanisms for the coordination and synchronisation of concurrent modules.  The architecture also aims to facilitate system-level adaptivity.  Compared to the \opendial toolkit, Jaspis offers more advanced support for distributed and parallel setups, but at the cost of an increased system complexity.  
 
@@ -381,4 +382,4 @@ The hybrid design  of \opendial allows system designers to exploit powerful gene
 
 The last section described the integrated dialogue system used to carry out the practical experiments presented in Chapters \ref{chap:wozlearning}, \ref{chap:rllearning} and \ref{chap:user-evaluation}.  The system comprised both synchronous and asynchronous components and included dedicated modules for speech recognition, speech synthesis, robot perception and motor control.  Natural language understanding, dialogue management and natural language generation were encoded with models structured with probability rules. 
 
-The next chapter will then flesh out the practical deployment of this system in a user evaluation experiment. 
+The next chapter demonstrates the practical deployment of this system in a full-scale user evaluation experiment. 

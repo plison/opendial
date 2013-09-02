@@ -1,14 +1,183 @@
 \chapter{Relevant probability distributions}
 \label{chap:probdistributions}
 
-\section*{Uniform distribution}
+This appendix details the most important probability distributions employed in this thesis.  For each distribution, we describe its parameters, probability density or mass function (depending on the type of distribution), mean, variance, as well as a graphical illustration.
 
-\section*{Multinomial \& categorical distribution}
+\section*{Continuous uniform distribution}
+
+\begin{description}
+\item [Parameters: ] Continuous uniform distributions are described by two parameters $a$ and $b$ that define the range $[a,b]$ upon which the distribution is defined. 
+
+\item [Density function: ] The density remains constant within $[a,b]$ and is $0$ outside this range:
+\begin{equation}
+p(x\,; a, b) = \begin{cases}
+\frac{1}{b - a} & \text{for } x \in [a,b]  \\
+0               & \text{otherwise}
+\end{cases}
+\end{equation} 
+\item [Mean: ] The mean of a continuous uniform distribution is simply equal to \ $\dfrac{a+b}{2}$
+
+\item [Variance: ] The distribution variance is \ $\dfrac{(b-a)^2}{12}$
+\end{description}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.40]{imgs/uniform-appendix.pdf}
+\caption{Probability density functions for two continuous uniform distributions.} 
+\label{fig:uniform-appendix}
+\end{figure}
+
+\section*{Discrete uniform distribution}
+
+\begin{description}
+\item [Parameters: ] Discrete uniform distributions are also described by two parameters $a$ and $b$ -- but are here constrained to integer values. The number $n$ of values in the distribution is $b-a+1$. 
+
+\item [Probability mass function: ] The probability mass function is defined as:
+\begin{equation}
+P(X\!=\!i\,; a, b) = \begin{cases}
+\frac{1}{n} & \text{for } i \in \mathcal{Z} \text{ and } \in [a,b]  \\
+0               & \text{otherwise}
+\end{cases}
+\end{equation} 
+\item [Mean: ] The mean of a discrete uniform distribution is also \  $\dfrac{a+b}{2}$
+
+\item [Variance: ] The distribution variance is \ $\dfrac{(n^2 -1)}{12}$
+\end{description}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.40]{imgs/uniformd-appendix.pdf}
+\caption{Probability mass functions for two discrete uniform distributions.} 
+\label{fig:uniformd-appendix}
+\end{figure}
+
+\section*{Categorical distribution}
+
+A categorical distribution describe the result of a random event that can take on one of $K$ possible (and mutually exclusive) outcomes.
+
+\begin{description}
+\item [Parameters: ] A categorical distributions on $K$ outcomes is defined by $K$ parameters $p_1,...p_K$ representing the probabilities of each outcome.
+
+\item [Probability mass function: ] The probability mass function is simply defined as:
+\begin{equation}
+P(X=i\,; p_1,... p_K) = p_i
+\end{equation} 
+\end{description}
+
+The mean and variance of categorical distributions are only defined when the outcomes have a numerical range.  The mean is in such case equal to $\sum_{i=1}^{K} i \cdot p_i$, while the variance corresponds to $\sum_{i=1}^K (p_i\cdot i^2) - \mu^2$, with $\mu$ denoting the mean of the distribution.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.40]{imgs/categorical_appendix.pdf}
+\caption{Probability mass functions for two categorical distributions.} 
+\label{fig:categorical-appendix}
+\end{figure}
+
+\section*{Multinomial distribution}
+
+Given the repetition of $n$ independent trials where each trial leads to one of $K$ possible outcomes (described by a categorical distribution), the multinomial distribution gives the probability of a particular combination of numbers of outcomes for the various categories. 
+
+\begin{description}
+\item [Parameters: ] Multinomial distributions are parametrised with $K$ probability values $p_1,...p_K$ expressing the likelihood of each outcome, and an integer $n$ denoting the number of trials.
+
+\item [Probability mass function: ] For $n$ trials,  the probability of having $x_1$ outcomes for category 1, $x_2$ outcomes for category 2, ... and $x_K$ outcomes for category $K$ is:
+\begin{align}
+\Pr(X_1 = x_1,\dots X_K = x_K)  = \begin{cases} { \displaystyle {n! \over x_1!\cdots x_K!}p_1^{x_1}\cdots p_K^{x_K}}, \quad &
+\mbox{when } \sum_{i=1}^K x_i=n \\
+0 & \mbox{otherwise,} \end{cases}
+\end{align} 
+\item [Mean: ] The expected number of outcomes for a category $i$ is \ $ n p_i$.
+
+\item [Variance: ] The variance on the number of outcomes for a category $i$ is \ $n  p_i (1-p_i)$.
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.40]{imgs/multinomial_appendix.pdf}
+\caption{Probability mass function for a multinomial distribution.} 
+\label{fig:multinomial-appendix}
+\end{figure}
+
+The multinomial distribution is a generalisation of the binomial distribution to more than two categories.
 
 \section*{Normal distribution}
 
+The normal distribution is probably the most well known probability distribution in the continuous domain. The central limit theorem states that, under mild conditions, the mean of many random variables drawn independently from the same (arbitrary) distribution is distributed according to a normal distribution in the large sample limit.  The normal distribution is also called a Gaussian distribution or a bell curve (due to its shape). 
+
+
+\begin{description}
+\item [Parameters: ] A normal distribution is encoded by two parameters: the mean $\mu$ and  variance $\sigma^2$. 
+
+\item [Probability density function: ] The density function of a normal distribution is defined as:
+\begin{equation}
+p(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{-\frac{\left(x-\mu\right)^2}{2\sigma^2}\right\}
+\end{equation}
+\item [Mean: ] The mean of the normal distribution is simply the value $\mu$.
+
+\item [Variance: ] The variance of the distribution is $\sigma^2$.
+
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.40]{imgs/norm_appendix.pdf}
+\caption{Probability density functions for two normal distributions.} 
+\label{fig:norm-appendix}
+\end{figure}
+
+Multivariate normal distributions can be used to generalise the one-dimensional normal distribution to higher dimensions.
+
 \section*{Dirichlet distribution}
+
+A Dirichlet distribution is a continuous, multivariate probability distribution that is often used to describe the parameters of categorical or multinomial distributions.  The Dirichlet distribution is indeed the conjugate prior of categorical/multinomials. 
+
+\begin{description}
+\item [Parameters: ] A Dirichlet distribution of dimension $K$ is encoded by $K$ parameters $\boldsymbol\alpha = \alpha_1, .... \alpha_K$. 
+
+\item [Probability density function: ] The density function of a Dirichlet distribution is defined as:
+\begin{align}
+p(x_1,...x_K\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^K x_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^K \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
+\end{align}
+in which $ \mathrm{B}(\boldsymbol\alpha)$ is a normalisation factor and $\Gamma$ is the gamma function $\Gamma(z) = \int_0^\infty  t^{z-1} e^{-t}\,{\rm d}t$. 
+
+\item [Mean: ] The mean of the Dirichlet distribution is $\dfrac{\alpha_i}{\sum_k \alpha_k}$.
+
+\item [Variance: ] The variance of the distribution is $\dfrac{\alpha_i (\alpha_0-\alpha_i)}{\alpha_0^2 (\alpha_0+1)} \text{ with } \alpha_0 = \sum_{i=1}^K\alpha_i$.
+
+\end{description}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.40]{imgs/Dirichlet_appendix.pdf}
+\caption{Probability density function for a three-dimensional Dirichlet distribution.} 
+\label{fig:norm-appendix}
+\end{figure}
+
 
 \section*{Kernel distribution}
 
-\note{Should we include the last one?}
+Distributions can also be defined in a non-parametric manner using kernel density estimation (KDE).  Such distributions are defined on the basis of sample points $x_1,...x_n$.
+
+\begin{description}
+\item [Parameters: ] A kernel distribution is defined by its sample points, the kernel function $K(\cdot)$, and the bandwidth $h$ used to smooth the function.  Multiple kernels are possible but a common choice is the Gaussian distribution.
+
+\item [Probability density function: ] The distribution resulting from the use of kernel density estimation based on a set of sample points $x_1,...x_n$ is: 
+\begin{align}
+p(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
+\end{align}
+\item [Mean: ] The mean of kernel density estimate is the average of the sample points: $\dfrac{\sum_{i=1}^n x_i}{n}$.
+
+\item [Variance: ] The variance of the estimate is $\sigma^2 + h^2 \kappa$, where $\sigma^2$ is the variance of the sample points and $\kappa$ corresponds to the variance of the kernel. 
+
+\end{description}
+
+\newpage 
+
+\begin{figure}[t]
+\centering
+\includegraphics[scale=0.40]{imgs/kde_appendix.pdf}
+\caption{Probability density function for a kernel density estimate with ten points. The Gaussian distributions making up the estimate are shown with red dashed lines. } 
+\label{fig:norm-appendix}
+\end{figure}
+
+$\phantom{aa}$
