@@ -1,7 +1,7 @@
 \chapter{Relevant probability distributions}
 \label{chap:probdistributions}
 
-This appendix details the most important probability distributions employed in this thesis.  For each distribution, we describe its parameters, probability density or mass function (depending on whether the distribution has a discrete or continuous domain), mean, variance, as well as a graphical illustration.   
+This appendix details the most important probability distributions employed in this thesis.  For each distribution, we provide its parameters, probability density or mass function (depending on whether the distribution has a discrete or continuous domain), mean and variance. 
 
 \section*{Continuous uniform distribution}
 
@@ -64,7 +64,7 @@ P(X=i\,; p_1,... p_K) = p_i
 \end{equation} 
 \end{description}
 
-The mean and variance of categorical distributions are only defined when the outcomes have a numerical range.  The mean is in such case equal to $\sum_{i=1}^{K} i \cdot p_i$, while the variance corresponds to $\sum_{i=1}^K (p_i\cdot i^2) - \mu^2$, with $\mu$ denoting the mean of the distribution.
+The mean and variance of categorical distributions are only defined when the outcomes have a numerical range.  The mean is in such case equal to $\mu = \sum_{i=1}^{K} i p_i$, while the variance corresponds to $\sigma^2 = \sum_{i=1}^K (p_i i^2) - \mu^2$.
 
 \begin{figure}[h]
 \centering
@@ -82,7 +82,7 @@ Given the repetition of $n$ independent trials where each trial leads to one of 
 
 \item [Probability mass function: ] For $n$ trials,  the probability of having $x_1$ outcomes for category 1, $x_2$ outcomes for category 2, ... and $x_K$ outcomes for category $K$ is:
 \begin{align}
-\Pr(X_1 = x_1,\dots X_K = x_K)  = \begin{cases} { \displaystyle {n! \over x_1!\cdots x_K!}p_1^{x_1}\cdots p_K^{x_K}}, \quad &
+P(X_1 = x_1,\dots X_K = x_K)  = \begin{cases} { \displaystyle {n! \over x_1!\cdots x_K!}p_1^{x_1}\cdots p_K^{x_K}}, \quad &
 \mbox{when } \sum_{i=1}^K x_i=n \\
 0 & \mbox{otherwise,} \end{cases}
 \end{align} 
@@ -98,11 +98,11 @@ Given the repetition of $n$ independent trials where each trial leads to one of 
 \label{fig:multinomial-appendix}
 \end{figure}
 
-The multinomial distribution is a generalisation of the binomial distribution to more than two categories.
+The binomial distribution is a special case of multinomial with only two categories.  The binomial distribution expresses the number of successes associated with the repetition of $n$ Bernoulli trials with a specific probability of success. 
 
 \section*{Normal distribution}
 
-The normal distribution is probably the most well known probability distribution in the continuous domain. The central limit theorem states that, under mild conditions, the mean of many random variables drawn independently from the same (arbitrary) distribution is distributed according to a normal distribution in the large sample limit.  The normal distribution is also called a Gaussian distribution or a bell curve (due to its shape). 
+The normal distribution (also called the Gaussian distribution or the bell curve) is the most well known probability distribution in the continuous domain. The central limit theorem states that, under mild conditions, the mean of many random variables drawn independently from the same (arbitrary) distribution is distributed according to a normal distribution in the large sample limit.   
 
 
 \begin{description}
@@ -112,7 +112,7 @@ The normal distribution is probably the most well known probability distribution
 \begin{equation}
 P(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{-\frac{\left(x-\mu\right)^2}{2\sigma^2}\right\}
 \end{equation}
-\item [Mean: ] The mean of the normal distribution is simply the value $\mu$.
+\item [Mean: ] The mean of the normal distribution corresponds to $\mu$.
 
 \item [Variance: ] The variance of the distribution is $\sigma^2$.
 
@@ -125,11 +125,11 @@ P(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{
 \label{fig:norm-appendix}
 \end{figure}
 
-Multivariate normal distributions can be used to generalise the one-dimensional normal distribution to higher dimensions.
+Multivariate normal distributions can be used to generalise one-dimensional normal distributions to higher dimensions. Multivariate normal distributions of dimensions $K$ are parametrised by a $K$-dimensional mean vector $\boldsymbol\mu$ and a $K \times K$ - dimensional covariance matrix $\boldsymbol\Sigma$. 
 
 \section*{Dirichlet distribution}
 
-A Dirichlet distribution is a continuous, multivariate probability distribution that is often used to describe the parameters of categorical or multinomial distributions.  The Dirichlet distribution is indeed the conjugate prior of categorical/multinomials. 
+A Dirichlet is a continuous, multivariate probability distribution that is often used to describe the parameters of categorical or multinomial distributions.  The Dirichlet distribution is indeed the conjugate prior of these distributions. 
 
 \begin{description}
 \item [Parameters: ] A Dirichlet distribution of dimension $K$ is encoded by $K$ parameters $\boldsymbol\alpha = \alpha_1, .... \alpha_K$. 
@@ -156,12 +156,12 @@ in which $ \mathrm{B}(\boldsymbol\alpha)$ is a normalisation factor and $\Gamma$
 
 \section*{Kernel distribution}
 
-Distributions can also be defined in a non-parametric manner using kernel density estimation (KDE).  Such distributions are defined on the basis of sample points $x_1,...x_n$.
+Distributions can also be defined in a non-parametric manner using kernel density estimation (KDE).  Such distributions are defined on the basis of a set of sample points $x_1,...x_n$.
 
 \begin{description}
-\item [Parameters: ] A kernel distribution is defined by its sample points, the kernel function $K(\cdot)$, and the bandwidth $h$ used to smooth the function.  Multiple kernels are possible but a common choice is the Gaussian distribution.
+\item [Parameters: ] A kernel distribution is fully defined by its sample points, the kernel function $K(\cdot)$, and the smoothing bandwidth $h$.  Multiple kernels are possible but a common choice is the Gaussian distribution.
 
-\item [Probability density function: ] The distribution resulting from the use of kernel density estimation based on a set of sample points $x_1,...x_n$ is: 
+\item [Probability density function: ] The kernel density estimator for the points $x_1,...x_n$ is: 
 \begin{align}
 P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
 \end{align}
