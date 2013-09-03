@@ -54,18 +54,6 @@ Determining the dialogue act corresponding to a given utterance is a non-trivial
 
 Dialogue acts are strongly contextual in nature: their precise meaning can often only be comprehended within the particular conversational context in which they appear. The successful interpretation  of dialogue acts must therefore venture beyond the boundaries of the isolated utterance. We briefly review here three striking aspects of this dependence on context.
 
-\subsubsection*{Implicatures}
-\index{implicature}
-As shown by \cite{Grice1989}, an important part of the semantics of dialogue acts is not explicitly stated but rather implied from the context.  Consider the following constructed example: 
-\begin{center}
-\begin{dialogue}
-\speak{A} Is William working today?
-\speak {B} He has a cold.
-\end{dialogue}
-\end{center}
-In order to retrieve the ``suggested'' meaning behind B's utterance -- namely, that William is probably not working --, one needs to assume that B is cooperative and that his response is therefore relevant to A's question.  If an utterance initially seems to deliberately violate this principle, the listener must search for additional hypotheses required to make sense of the dialogue act. \cite{Grice1989} formalised these ideas in terms of a cooperative principle composed of four conversational maxims that are assumed to hold in a natural conversation: the maxim of quality (``be truthful''), the maxim of quantity (``be exactly as informative as required''), the maxim of relation (``be relevant'') , and the maxim of manner (``be relevant'').  These notions have been further developed by various theorists such as \cite{wilson2002relevance} and \cite{horn2008handbook}.  A computational account of these implicatures (and application to dialogue systems) is provided by \cite{benotti2010implicature}. 
-
-
 \subsubsection*{Non-sentential utterances}
 \label{non-sentential utterance}
 \index{non-sentential utterance}
@@ -76,6 +64,18 @@ Non-sentential (also called elliptical) utterances are linguistic constructions 
 \end{itemize}
 
 Various accounts of non-sentential utterances have been proposed, based on e.g. discourse coherence \citep{Schlangen03theinterpretation} or interaction-oriented semantics \citep{fernandez2006non,Ginzburg2012}. Machine learning approaches have also been developed \citep{Schlangen:2005,Fernandez:2007}. 
+
+
+\subsubsection*{Implicatures}
+\index{implicature}
+As shown by \cite{Grice1989}, an important part of the semantics of dialogue acts is not explicitly stated but rather implied from the context.  Consider the following constructed example: 
+\begin{center}
+\begin{dialogue}
+\speak{A} Is William working today?
+\speak {B} He has a cold.
+\end{dialogue}
+\end{center}
+In order to retrieve the ``suggested'' meaning behind B's utterance -- namely, that William is probably not working --, one needs to assume that B is cooperative and that his response is therefore relevant to A's question.  If an utterance initially seems to deliberately violate this principle, the listener must search for additional hypotheses required to make sense of the dialogue act. \cite{Grice1989} formalised these ideas in terms of a cooperative principle composed of four conversational maxims that are assumed to hold in a natural conversation: the maxim of quality (``be truthful''), the maxim of quantity (``be exactly as informative as required''), the maxim of relation (``be relevant'') , and the maxim of manner (``be relevant'').  These notions have been further developed by various theorists such as \cite{wilson2002relevance} and \cite{horn2008handbook}.  A computational account of these implicatures (and application to dialogue systems) is provided by \cite{benotti2010implicature}. 
 
 \subsubsection*{Referring expressions}
 
@@ -150,7 +150,7 @@ Spoken dialogue systems (SDS) often take the form of complex software architectu
  \end{enumerate}
  \index{speech recognition}\index{dialogue understanding}\index{dialogue management}\index{natural language generation}\index{text-to-speech synthesis}
  
- Figure \ref{fig:architecture} shows the flow of information for a prototypical spoken dialogue system. Many systems rely on additional middleware to act as a ``software glue'' between the components and handle the information exchange and scheduling of modules \citep{jaspis2004,Herzog:2004,Bohus:2009,schlangen2010}.
+ Figure \ref{fig:architecture} shows the flow of information for a prototypical spoken dialogue system. In practice, dialogue system architectures often employ additional middleware to provide the ``software glue'' between the components and handle the information exchange and scheduling of modules \citep{jaspis2004,Herzog:2004,Bohus:2009,schlangen2010}.
    
  \begin{figure}[h]
 \centering

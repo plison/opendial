@@ -621,7 +621,7 @@ It should be stressed that the groundings are always extracted \textit{given a s
 \section{Processing workflow}
 \label{sec:processing-workflow}
 
-The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsson:2000,Buckley:2006}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
+The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsson:2000}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
 
 The section first describes how dialogue domains are organised in collections of rules called ``models'', and then goes on to explain how these models are applied to update state variables and express the utility of particular actions. We also demonstrate the general processing workflow on a detailed example. 
 
@@ -636,7 +636,7 @@ Section \ref{sec:domain-specification} explains how dialogue domains (and the mo
 
 \subsection{Update algorithm} 
 
-The software architecture adopted in this thesis takes the form of an event-driven, blackboard architecture \citep{jaspis2004,Buckley:2006} revolving around a dialogue state $\mathcal{B}$ represented as a Bayesian network.  As in information state approaches, this dialogue state is read and written by the various modules integrated in the dialogue system. 
+The software architecture adopted in this thesis takes the form of an event-driven, blackboard architecture revolving around a dialogue state $\mathcal{B}$ represented as a Bayesian network.  %As in information state approaches, this dialogue state functions as a central informational hub for the architecture and is continuously read and written by the system modules. 
 
 The update procedure is shown in Algorithm \ref{algo:stateupdate}. The procedure is started upon the reception of new variables to incorporate in the state, such as new user inputs processed by the speech recognition and natural language understanding components. The first step is to insert the variables in the dialogue state and possibly relate them to their predicted values (lines 2-3). The algorithm then triggers the instantiation of the relevant domain models (line 4), leading to a recursive chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithms searches for the optimal action, selects it, and activates the models that are triggered as a result  (lines 6-8). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 10). 
 
@@ -806,23 +806,23 @@ Figure \ref{fig:pruning} illustrates the input and output of the pruning process
 \subsection{Detailed example}
 \label{sec:detailedexample}
 
-We now describe a minimal but complete example of workflow for a short interaction. 
+To make the above procedure more concrete, we describe below a minimal but complete example of workflow for a short interaction, detailing step-by-step how the dialogue state is practically updated and employed to select the system actions. 
 
 \subsubsection*{Description}
 
-Assume a domain similar to the one shown in Figure \ref{fig:fsa}, where a user can request a robot to move forward, backward, left, right, or stop.  The set of dialogue acts $a_u$ that can be recognised by the system is the following: 
+Assume a domain similar to the one shown in Figure \ref{fig:fsa}, where a user can request a robot to move forward, backward, left, right, or stop.  The set of dialogue acts $a_u$ that can be recognised by the system in this minimal example is the following: 
 \begin{center}
 $\{\mathit{Request(Forward)}$, $\mathit{Request(Backward)}$, $\mathit{Request(Left)}$, \\ $\mathit{Request(Right)}$, $\mathit{Request(Stop)}$, $\mathit{Other}\}$. \\
 \end{center}
 The corresponding system actions $a_m$ are: 
 \begin{center}
-$\{\mathit{Move(Forward)}$, $\mathit{Move(Backward)}$, $\mathit{Move(Left)}$, \\ $\mathit{Move(Right)}$, $\mathit{Move(Stop)}$, $\mathit{AskRepeat}\}$. 
+$\{\mathit{Move(Forward)}$, $\mathit{Move(Backward)}$, $\mathit{Move(Left)}$, \\ $\mathit{Move(Right)}$, $\mathit{Stop}$, $\mathit{AskRepeat}\}$. 
 \end{center}
 The objective of the system is to fulfil the user command if it is reasonably confident regarding which action to execute.  Otherwise, the system asks the user to repeat. 
 
 \subsubsection*{Domain specification}
 
-The domain specification designed for this constructed example is constituted of an empty initial state and the following two rule-based models: \begin{itemize}
+The domain specification for this constructed example is constituted of an empty initial state and contains two rule-structured models $m_1$ and $m_2$: \begin{itemize}
 % = \langle \langle a_u \rangle, \langle r_9, r_{10} \rangle \rangle$
 \item Model $m_1$ is triggered by $a_u$ and includes the two utility rules $r_{9}$ and $r_{10}$:
 \begin{align*}
