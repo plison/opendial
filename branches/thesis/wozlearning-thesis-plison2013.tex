@@ -425,7 +425,7 @@ $\cdot$ $\mathrm{FollowUser}$
 
 \subsubsection*{System platform}
 
-An integrated dialogue system was developed in order to collect Wizard-of-Oz interactions for the human-robot interaction domain described above. The dialogue system was equipped with all standard processing modules for speech understanding, generation and robot control.  Figure \ref{fig:exp1_architecture} illustrates the general system architecture and its connection to the robotic platform. As evidenced by the figure, the general system architecture is directly inspired by information-state approaches.  At the centre of the architecture lies a shared dialogue state to which multiple system components are attached. These components monitor the dialogue state for relevant changes and read/write to it as they process their data flow. The dialogue management module is naturally replaced by the wizard during data collection. 
+An integrated dialogue system was developed in order to collect Wizard-of-Oz interactions for the human-robot interaction domain described above. The dialogue system is equipped with all standard processing modules for speech understanding, generation and robot control.  Figure \ref{fig:exp1_architecture} illustrates the general system architecture and its connection to the robotic platform. As evidenced by the figure, the general system architecture is directly inspired by information-state approaches.  At the centre of the architecture lies a shared dialogue state to which multiple system components are attached. These components monitor the dialogue state for relevant changes and read/write to it as they process their data flow. The dialogue management module is naturally replaced by the wizard during data collection. 
 
 
 \begin{figure}[h]
@@ -437,7 +437,7 @@ An integrated dialogue system was developed in order to collect Wizard-of-Oz int
 \end{figure}
 
 
-The modules used for the experiments included in particular an off-the-shelf speech recogniser (Vocon 3200 from Nuance) connected to four microphones placed on the robot head. The language model of the speech recogniser was represented by a small hand-crafted recognition grammar, while the acoustic model was set to U.S. English. The corresponding user dialogue acts were then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model was in charge of the surface realisation of the verbal actions.  The surface string was synthesised via a speech synthesis module embarked on the robot. Finally, the execution of physical actions was delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time, based on the software libraries available on the robotic platform. 
+The modules used for the experiments include in particular an off-the-shelf speech recogniser (Vocon 3200 from Nuance) connected to four microphones placed on the robot head. The language model of the speech recogniser is encoded with a small hand-crafted recognition grammar, while the acoustic model was set to U.S. English. The corresponding user dialogue acts are then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model is in charge of the surface realisation of the verbal actions.  The surface string is synthesised via a speech synthesis module embarked on the robot. Finally, the execution of physical actions is delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time, based on the software libraries available on the robotic platform. 
 
 \subsubsection*{Data collection procedure}
 
@@ -580,9 +580,7 @@ Figure \ref{fig:exp1_baselines} offers a graphical comparison of the utility mod
 \end{figure}
 
 
-The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}. For the baseline models, the function \textsc{triggerModels}(...) resulted in the creation of one single utility node connected to the system action, as illustrated in Figure \ref{fig:exp1_baselines}. 
-
-The parameter distributions for all utilities (both in the baseline and rule-structured models) were initialised with uniform priors on the interval $[-1,6]$.
+The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}. For the baseline models, the function \textsc{triggerModels}(...) resulted in the creation of one single utility node connected to the system action, as illustrated in Figure \ref{fig:exp1_baselines}. The prior distributions on the utility values were initialised with uniform priors on the interval $[-1,6]$ in all three models. 
 
 \subsubsection*{Evaluation}
 
@@ -644,7 +642,7 @@ These data points are used to progressively narrow down the spread of the poster
 
 This learning approach has been implemented in a spoken dialogue system for human-robot interaction and validated in a proof-of-concept experiment.  The goal of the experiment was to estimate the utility values of various actions on the basis of a Wizard-of-Oz data set.  Three utility models were compared: a plain utility table, a linear model, and a model structured with utility rules. The analysis of the empirical results shows that the rule-structured model outperforms the two baselines in regards to learning rate and generalisation performance. 
 
-The outcome of the experiment corroborates one of the central claims of this thesis -- namely, that hybrid approaches to dialogue modelling (such as the probabilistic rules presented in this thesis) are well suited to model dialogue domains that must simultaneously confront high levels of uncertainty and limited amounts of in-domain training data.  In such situation, which is commonplace in the field of spoken dialogue systems, neither purely symbolic nor purely data-driven approaches are alone sufficient to harness the complex and stochastic nature of the interactions.  Hybrid approaches, on the other hand, provide ways to seamlessly combine expert knowledge and statistically optimised parameters in a single framework. 
+The outcome of the experiment corroborates one of the central claims of this thesis -- namely, that hybrid approaches to dialogue modelling -- and in particular the formalism of probabilistic rules presented in this thesis -- are well suited to model dialogue domains that must simultaneously confront high levels of uncertainty and limited availability of in-domain dialogue data. In such situation, which is commonplace in the field of spoken dialogue systems, neither purely symbolic nor purely data-driven approaches are alone sufficient to harness the complex and stochastic nature of the interactions.  Hybrid approaches provide ways to combine expert knowledge and statistically optimised parameters in a single, unified framework, thereby allowing dialogue models to be tuned from even small amounts of training data. 
 
 As shown in the experiments, Wizard-of-Oz interaction data can be a useful and interesting source of domain knowledge for the estimation of probabilistic models of dialogue. The data collection procedure can however be a tedious endeavour, as it requires:
 \begin{enumerate}
