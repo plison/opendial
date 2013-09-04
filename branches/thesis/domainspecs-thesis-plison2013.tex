@@ -9,7 +9,7 @@ The dialogue management part of the domain is composed of a total of fifteen uti
 
 The variable $a_u$ is encoded in this experiment as a list of one or more dialogue act.  This encoding facilitates the processing of utterances containing more than one dialogue act.  
 
-\begin{small}
+\begin{footnotesize}
 \begin{longtable}{p{1cm}l} 
 $r_{1}: \ \ $ &  $\forall x : $ \\ & $\textbf{if} \ (\mathit{silence}\!>\!\mathit{3} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirmation3}}\end{cases}$ \\ 
@@ -60,7 +60,7 @@ $r_{14}: \ \ $&$ \textbf{if} \ (\mathit{SayHello}\!\in\!\mathit{a_u}) \ \textbf{
 $r_{15}: \ \ $&$ \textbf{if} \ (\mathit{SayGoodbye}\!\in\!\mathit{a_u}) \ \textbf{then} $\\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}\!=\!\mathit{SayGoodbye})\!=\!\theta_{\mathrm{sayGoodbye}}\end{cases}$   \\[3mm] 
 \end{longtable}
-\end{small}
+\end{footnotesize}
 
 \section{Experiments in Section \ref{sec:rllearning-experiments}}
 \label{sec:domainspecs-rrlearning}
@@ -69,7 +69,7 @@ $r_{15}: \ \ $&$ \textbf{if} \ (\mathit{SayGoodbye}\!\in\!\mathit{a_u}) \ \textb
 
 The six rules below specify the transition model used in the first experiment of Section \ref{sec:rllearning-experiments}. The first rule expresses the probability of the current task being completed after the last system action. If the task is completed, the user intention is reinitialised with a prior distribution given by rules $r_3$, $r_4$ and $r_5$. The user action model based on this user intention is then represented by rule $r_6$.
  
-\begin{small}
+\begin{footnotesize}
 \begin{longtable}{p{1cm}p{14cm}}
 $r_{1}$: \ \ & $\forall \ X \ :$ \\ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do({X})} \land \mathit{i_u}\!=\!\mathit{{X}}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}\!=\!\mathit{true})\!=\!1.0 \end{cases}$\\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Excuse(\cdot)}) \ \textbf{then}$ \\
@@ -132,13 +132,13 @@ P(\cdot)\!=\!\theta_{\mathrm{13[2]}} \end{cases}$
 % & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}\!=\!\mathit{a_u^p})\!=\!%\theta_{\mathrm{14[0]}} \\ 
 % P(\cdot)\!=\!\theta_{\mathrm{14[1]}} \end{cases}$ 
 \end{longtable}
-\end{small}
+\end{footnotesize}
 
 \subsubsection*{Second experiment}
 
 Two rule-structured models are compared to one another in the second experiment: a transition model for the model-based approach, and an action-value model for the model-free approach. The transition model is identical to the one listed above and will hence not be repeated.  The action-value model is specified with a set of eleven rules.  The input variables of these rules are the last user dialogue act $a_u$, the user dialogue act preceding it $a_{u\mbox{-}prev}$, the last system act $a_m$, and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
 
-\begin{small}
+\begin{footnotesize}
 \begin{longtable}{p{1cm}p{14cm}}
 $r_{1}$: \ \ & $\forall \ X \ :$ \\ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Move(\cdot)}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}\!=\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{movements1}} \\
@@ -202,7 +202,7 @@ $r_{10}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{WhatDoYouSee}) \ \text
 $r_{11}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{RepeatLast}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}\!=\!\mathit{{a_m}})\!=\!\theta_{\mathrm{repeatLast}} \end{cases}$ \\ \\[-2mm]
 \end{longtable}
-\end{small}
+\end{footnotesize}
 
 \section{Experiments in Chapter \ref{chap:user-evaluation}}
 
