@@ -145,7 +145,7 @@ The conditions on the input variables offer a compact partitioning of the state 
 
 \subsubsection*{Effects}
 
-Associated to each condition $c_i$ stands a collection of mutually exclusive effects $e_i^{1...m_i}$. Each effect $e_{(i,j)}$ defines a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is defined as a conjunction of (variable,value) pairs $O_1\!=\!o_1 ... \land O_{l}\!=\!o_{l}$ where $O_1,... O_{l}$ are the output variables (which may already exist or yet to be created) and $o_1,...o_{l}$ the corresponding values for these variables. In the partitioning example from Figure \ref{fig:partitioning}, the output variable is unique and corresponds to $Fire$. We shall however encounter examples of rules with more than one output variable. 
+Associated to each condition $c_i$ stands a collection of mutually exclusive effects $e_{(i,1)},... e_{(i,m_i)}$. Each effect $e_{(i,j)}$ defines a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is represented as a conjunction of (variable,value) pairs $O_1\!=\!o_1 ... \land O_{l}\!=\!o_{l}$ where $O_1,... O_{l}$ are the output variables (which may already exist or yet to be created) and $o_1,...o_{l}$ the corresponding values assigned to these variables. In the partitioning example from Figure \ref{fig:partitioning}, the output variable is unique and corresponds to $Fire$. We shall however encounter examples of rules with more than one output variable. 
 
 Effects can be void -- that is, represent an empty assignment.  In such case, the effect does not lead to any change in the distribution of the output variables for the rule. 
 
