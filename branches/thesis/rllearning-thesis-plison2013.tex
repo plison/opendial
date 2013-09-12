@@ -638,16 +638,16 @@ The rule-structured model is encoded with parametrised probability rules. A tota
 
 The performance was first measured in terms of average return per simulated interaction, shown in Figure \ref{fig:return_exp21}.  To analyse the accuracy of the transition model, we also derived the Kullback-Leibler divergence \citep{KLDIVERGE} between the next user act distribution $P(a_u')$ predicted by the learned model and the actual distribution followed by the simulator at a given time, as shown in Figure \ref{fig:divergence}.   Some residual discrepancy is to be expected between these two distributions, the latter being based on the actual user intention while the former must infer it from the current belief state. The results of both figures are averaged on 100 simulations.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\includegraphics[scale=0.40]{imgs/return_exp21.pdf}
+\includegraphics[scale=0.45]{imgs/return_exp21.pdf}
 \caption{Average return as a function of the number of simulated interactions.}
 \label{fig:return_exp21}
 \end{figure}
 
-\begin{figure}[h!] 
+\begin{figure}[p] 
 \begin{center}
-\includegraphics[scale=0.40]{imgs/kldivergence.pdf}
+\includegraphics[scale=0.45]{imgs/kldivergence.pdf}
 \end{center} 
 \caption{Kullback-Leibler divergence between the distribution $P(a_u')$ estimated from the current model and the actual distribution followed by the simulator.}
 \label{fig:divergence}
@@ -694,16 +694,16 @@ The resulting rule parameters were optimised using the SARSA-based method outlin
 
 The simulator was coupled to the dialogue system to compare the learning performance of the two methods.  Figure \ref{fig:return_episodes} shows the average returns over 100 iterations.
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\includegraphics[scale=0.40]{imgs/episodes.pdf}
+\includegraphics[scale=0.45]{imgs/episodes.pdf}
 \caption{Average return as a function of the number of episodes}
 \label{fig:return_episodes}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
-\includegraphics[scale=0.40]{imgs/timing.pdf}
+\includegraphics[scale=0.45]{imgs/timing.pdf}
 \caption{Average return as a function of the elapsed time}
 \label{fig:return_time}
 \end{figure}
