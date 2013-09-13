@@ -591,10 +591,23 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	@Override
 	public String toString() {
+		return toString(0.0);
+	}
+	
+	
+
+	/**
+	 * Returns a string representation of the probability table
+	 *
+	 * @return the string representation
+	 */
+	private String toString(double threshold) {
 		String str = "";
 		for (Assignment head: table.keySet()) {
 			double prob = DistanceUtils.shorten(table.get(head));
-			str += "P("+head + "):=" + prob + "\n";
+			if (prob > threshold) {
+				str += "P("+head + "):=" + prob + "\n";
+			}
 		}
 
 		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
@@ -612,8 +625,8 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		if (table.size() < 20) {
-			return toString();
+		if (table.size() < 30) {
+			return toString(0.1).replace("\n", ", ");
 		}
 		else {
 			return "(probability table too big to be shown)";

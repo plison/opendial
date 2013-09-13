@@ -242,10 +242,10 @@ public class DialogueState {
 				if (network.hasActionNode("a_m'")) { try { 
 					if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
 						if (network.hasChanceNode("motion")) {
-							log.debug("motion : " + getContent("motion", true).toString().replace("\n", ", "));
+							log.debug("motion : " + getContent("motion", true).prettyPrint());
 						}
-						log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
-					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
+						log.debug("interpreted a_u : " + getContent("a_u", true).prettyPrint());
+					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).prettyPrint());
 				} 
 				}
 				catch (DialException e) { e.printStackTrace(); } 	}

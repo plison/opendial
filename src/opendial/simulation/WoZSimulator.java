@@ -95,38 +95,31 @@ public class WoZSimulator implements Simulator {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
+			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
 			
 			// problem: we include an a_m', which means the trigger of the system decisions is screwed up
 			try {		
 
-				systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
-						"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
-				String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
-				ChanceNode goldNode = new ChanceNode("a_m-gold");
-				goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
-				systemState.getNetwork().addNode(goldNode);
-				
-				systemState.getNetwork().addNetwork(newState.getNetwork());			
-				systemState.activateUpdates(true);				
-				systemState.setVariableToProcess("a_m");
-				systemState.triggerUpdates();
+				addNewDialogueState(newState, goldActionValue);
 				
 		//		log.debug("system state: " + systemState.getNetwork().getNodeIds());
 
-				systemState.activateUpdates(false);				
+				systemState.activateUpdates(false);
+
 				if (newState.getNetwork().hasChanceNode("a_u")) {
-					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz");		
+					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz1");		
 				}
 
 				if (goldActionValue.contains("Do(")) {
 					String lastMove = goldActionValue.replace("Do(", "").substring(0, goldActionValue.length()-4);
-					systemState.addContent(new Assignment("lastMove", lastMove), "woz");
+					systemState.addContent(new Assignment("lastMove", lastMove), "woz2");
 				}
 
-				if ((curIndex % 10) == 9)
+				if ((curIndex % 10) == 9) {
 					for (String var: systemState.getParameterIds()) {
 						log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
 					}
+				}
 			}
 			catch (DialException e) {
 				log.warning("cannot add the new content: " +e);
@@ -137,6 +130,31 @@ public class WoZSimulator implements Simulator {
 			System.exit(0);
 		}
 		curIndex++;
+	}
+
+
+	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
+	
+		if (systemState.getNetwork().hasChanceNode("i_u")) {
+			ProbDistribution iudistrib = systemState.getContent("i_u", true);
+			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
+			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
+		}
+		systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
+				"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
+		ChanceNode goldNode = new ChanceNode("a_m-gold");
+		goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
+		systemState.getNetwork().addNode(goldNode);
+		
+		systemState.getNetwork().addNetwork(newState.getNetwork());	
+		
+		systemState.activateUpdates(true);				
+		systemState.setVariableToProcess("a_m");
+		systemState.triggerUpdates();
+		
+		log.debug("predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
+		// TODO Auto-generated method stub
+		
 	}
 
 

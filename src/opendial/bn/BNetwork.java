@@ -121,8 +121,9 @@ public class BNetwork implements IdChangeListener {
 	 * Replaces an existing node with a new one (with same identifier)
 	 * 
 	 * @param node the new value for the node
+	 * @throws DialException 
 	 */
-	public void replaceNode(BNode node) {
+	public void replaceNode(BNode node) throws DialException {
 		if (!nodes.containsKey(node.getId())) {
 			log.debug("network does not contain a node with identifier " + node.getId());
 		}
@@ -141,7 +142,7 @@ public class BNetwork implements IdChangeListener {
 	 */
 	public synchronized BNode removeNode(String nodeId) {
 		if (!nodes.containsKey(nodeId)) {
-	//		log.warning("network does not contain a node with identifier " + nodeId);
+		//	log.warning("network does not contain a node with identifier " + nodeId);
 		}
 		else {
 			BNode node = nodes.get(nodeId);
