@@ -107,7 +107,7 @@ public class WoZSimulator implements Simulator {
 				systemState.getNetwork().addNode(goldNode);
 				
 				systemState.getNetwork().addNetwork(newState.getNetwork());			
-				systemState.setVariableToProcess("processed-task");
+				systemState.setVariableToProcess("a_m");
 				systemState.triggerUpdates();
 				
 		//		log.debug("system state: " + systemState.getNetwork().getNodeIds());
