@@ -103,8 +103,9 @@ public class WoZSimulator implements Simulator {
 			}
 		//	log.debug("system state: " + systemState.getNetwork().getNodeIds());
 			
+			if ((curIndex % 10) == 9)
 			for (String var: systemState.getParameterIds()) {
-	//			log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
+				log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
 			}
 			}
 			catch (DialException e) {
