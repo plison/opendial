@@ -44,6 +44,10 @@ import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.DerivedActionNode;
+import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Model;
@@ -63,13 +67,13 @@ public class ForwardPlanner implements AnytimeProcess {
 
 	public static long MAX_DELAY = 200000;
 
-	public static int NB_BEST_ACTIONS = 8;
+	public static int NB_BEST_ACTIONS = 100;
 	public static int NB_BEST_OBSERVATIONS = 3;
 	public static double MIN_OBSERVATION_PROB = 0.1;
 
-	DialogueState currentState;
+	protected DialogueState currentState;
 
-	boolean isTerminated = false;
+	protected boolean isTerminated = false;
 
 
 	public ForwardPlanner(DialogueState state) {
@@ -85,23 +89,35 @@ public class ForwardPlanner implements AnytimeProcess {
 		
 		UtilityTable evalActions = evaluateActions();
 		Assignment bestAction = evalActions.getBest().getKey();
-		if (!bestAction.isEmpty()) {
-			recordAction(currentState, bestAction);
+		
+		if (evalActions.getUtil(bestAction) < 0.001) {
+			bestAction = Assignment.createDefault(bestAction.getVariables());
 		}
+		
+		log.debug("executing action " + bestAction);
+		recordAction(currentState, bestAction);	
+		
 		timer.cancel();	
 
 	}
 	
 	protected UtilityTable evaluateActions() {
 		try {
+			
 			Set<String> actionNodes = currentState.getNetwork().getActionNodeIds();
 			int horizon = Settings.getInstance().planning.getHorizon(actionNodes);
-			//		log.debug("planner is running for action nodes: " + actionNodes + "with horizon " + horizon);
-
 			double discountFactor = Settings.getInstance().planning.getDiscountFactor(actionNodes);
+			
+		//	log.debug("planner is running for action nodes: " + actionNodes + 
+		//			"with horizon " + horizon + " and discount factor " + discountFactor);
+			long initTime = System.currentTimeMillis();
+
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
+
+			log.debug("rows in Q-values: " + qValues.getRows());
+		//	log.debug("planning time: " + (System.currentTimeMillis() - initTime));
 			log.debug("Q values: " + qValues);
-			Map.Entry<Assignment, Double> bestAction = qValues.getBest();
+	//		Map.Entry<Assignment, Double> bestAction = qValues.getBest();
 
 			return qValues;
 		}
@@ -116,7 +132,10 @@ public class ForwardPlanner implements AnytimeProcess {
 	private UtilityTable getQValues (DialogueState state, int horizon, double discountFactor) throws DialException {
 
 		UtilityTable rewards = getRewardValues(state);
-
+		if (horizon ==1) {
+			return rewards;
+		}
+		
 		UtilityTable qValues = new UtilityTable();
 		for (Assignment action : rewards.getRows()) {
 			double reward = rewards.getUtil(action);
@@ -159,7 +178,6 @@ public class ForwardPlanner implements AnytimeProcess {
 	}
 
 
-
 	private double getExpectedValue(DialogueState state, int horizon, double discountFactor) throws DialException {
 
 		SimpleTable observations = getObservations(state);
@@ -184,27 +202,16 @@ public class ForwardPlanner implements AnytimeProcess {
 
 
 
-
 	protected void recordAction(DialogueState state, Assignment action) {
 		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
+		
 		try {
 			if (!action.isDefault()) {
-				state.addContent(action.removeSpecifiers(), "planner");
-			}
-			else {
-				state.addContent(action.removeSpecifiers(), "planner");
-
-				if (!state.isFictive()) {
-					for (String var : action.getVariables()) {
-						state.setVariableToProcess(var+"'");
-					}
-				}
+				state.addContent(new Assignment(action.removeSpecifiers()), "planner");
 			}
 		}
-		catch (DialException e) {
-			log.warning("cannot add selected action to state");
-		}
+		catch (DialException e) { log.warning("could not insert new action: " + e); }
 	}
 
 

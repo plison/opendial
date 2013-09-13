@@ -107,7 +107,8 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 
 		if (inputNode instanceof UtilityNode) {
-			throw new DialException ("an utility node cannot be the input of any other node");
+			throw new DialException ("an utility node cannot be the input of any other node (" 
+					+ inputNode.getId() + " -> " + nodeId + ")");
 		}
 
 		addInputNode_internal(inputNode);
@@ -262,7 +263,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the ids for the input nodes
 	 */
 	public Set<String> getInputNodeIds() {
-		return inputNodes.keySet();
+		return new HashSet<String>(inputNodes.keySet());
 	}
 
 
@@ -284,7 +285,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the ids for the input nodes
 	 */
 	public Set<String> getOutputNodesIds() {
-		return outputNodes.keySet();
+		return new HashSet<String>(outputNodes.keySet());
 	}
 
 
@@ -693,9 +694,15 @@ public abstract class BNode implements Comparable<BNode> {
 		for (BNode inputNode : inputNodes.values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
 		}
+		try {
 		Set<Assignment> possibleConditions = 
 				CombinatoricsUtils.getAllCombinations(possibleInputValues);
 		return possibleConditions;
+		}
+		catch (OutOfMemoryError e) {
+			log.debug("input node is: " + nodeId + " and possibleInputValues: " + possibleInputValues);
+			throw e;
+		}
 	}
 
 
@@ -777,8 +784,6 @@ public abstract class BNode implements Comparable<BNode> {
 			node.addInputNode(this);
 		}
 	}
-
-
 
 
 

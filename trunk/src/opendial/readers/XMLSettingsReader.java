@@ -84,6 +84,7 @@ public class XMLSettingsReader {
 				int horizon = 0;
 				double discountFactor = 0.0;
 				boolean sarsa = false;
+				String woz = "";
 				
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
 					
@@ -99,13 +100,24 @@ public class XMLSettingsReader {
 					}	
 					if (subnode.getNodeName().equalsIgnoreCase("sarsa")) {
 						sarsa = Boolean.parseBoolean(subnode.getTextContent());
-					}	
+					}
+					if (subnode.getNodeName().equalsIgnoreCase("woz")) {
+						woz = subnode.getTextContent().trim();
+					}
+					if (subnode.getNodeName().equalsIgnoreCase("timeout")) {
+						settings.planning.maximumSamplingTime = Integer.parseInt(subnode.getTextContent().trim());
+						log.debug("Timeout for sampling (fast version) : " + settings.planning.maximumSamplingTime);
+					}
 				}
-				if (variable != null && horizon > 0 && discountFactor > 0.0) {
+				if (variable != null && horizon > 0 || discountFactor > 0.0) {
 				settings.planning.addSpecific(variable, settings.new PlanSettings(horizon, discountFactor));
 				}
 				settings.planning.setAsSarsa(sarsa);
+				settings.planning.setAsWoZ(woz);
+				
+				
 			}
+			
 			if (node.getNodeName().equals("gui")) {
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
 					
@@ -124,6 +136,18 @@ public class XMLSettingsReader {
 					}
 				}
 			}
+			if (node.getNodeName().equals("nao")) {
+				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
+					
+					Node subnode = node.getChildNodes().item(k);
+					if (subnode.getNodeName().equalsIgnoreCase("ip")) {
+						settings.nao.ip = subnode.getTextContent().trim();
+					}
+					if (subnode.getNodeName().equalsIgnoreCase("asr")) {
+						settings.nao.asr = subnode.getTextContent().trim();
+					}
+				}
+			}
 			if (node.getNodeName().equals("inference")) {
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {			
 					Node subnode = node.getChildNodes().item(k);
@@ -139,7 +163,7 @@ public class XMLSettingsReader {
 			}
 			
 		}
-		
+		log.info("Settings from " + settingsFile + " successfully extracted");
 		return settings;
 	}
 	

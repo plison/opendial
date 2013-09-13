@@ -150,9 +150,9 @@ public class AnchoredRule {
 
 	private Map<String,ChanceNode> extractParameters(DialogueState state) {
 		Map<String,ChanceNode> parameters = new HashMap<String,ChanceNode>();	
-
+		
 		for (Output output : cache.getOutputs()) {
-			
+
 			for (Parameter param : cache.getParameters(output)) {
 				for (String paramId : param.getParameterIds()) {
 				if (state.getNetwork().hasChanceNode(paramId)) {
@@ -247,8 +247,8 @@ public class AnchoredRule {
 
 
 
-	public Collection<ChanceNode> getInputNodes() {
-		return inputNodes.values();
+	public Map<String,ChanceNode> getInputNodes() {
+		return inputNodes;
 	}
 
 

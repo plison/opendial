@@ -80,7 +80,7 @@ public class BasicQuerySampling extends AbstractQuerySampling {
 	@Override
 	protected void compileResults() {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
-				
+					
 		synchronized(samples) {
 		for (WeightedSample sample : samples) {
 			double relativeWeight = sample.getWeight()/totalWeight;

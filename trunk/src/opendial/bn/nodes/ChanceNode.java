@@ -27,13 +27,18 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
+import opendial.bn.distribs.discrete.OutputDistribution;
+import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.domains.datastructs.Output;
 
 
 /**
@@ -57,7 +62,7 @@ public class ChanceNode extends BNode {
 	// NB: if the node has a continuous range, these values are based on 
 	// a discretisation procedure defined by the distribution
 	Set<Value> cachedValues;
-	
+
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -98,7 +103,7 @@ public class ChanceNode extends BNode {
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
 		if (distrib.getHeadVariables().size() != 1) {
-		
+
 			log.debug("Distribution for " + nodeId + 
 					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
 					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
@@ -192,7 +197,7 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public void setId(String newId) {
-	//	log.debug("changing id from " + this.nodeId + " to " + nodeId);
+		//	log.debug("changing id from " + this.nodeId + " to " + nodeId);
 		String oldId = nodeId;
 		super.setId(newId);
 		distrib.modifyVarId(oldId, newId);
@@ -303,8 +308,8 @@ public class ChanceNode extends BNode {
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 		if (!result.containsVar(nodeId)) {
-	//		log.warning("result of sampling does not contain " + nodeId +": " + 
-	//				result + " distrib is " + distrib.getClass().getSimpleName());
+			//		log.warning("result of sampling does not contain " + nodeId +": " + 
+			//				result + " distrib is " + distrib.getClass().getSimpleName());
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);
@@ -327,7 +332,21 @@ public class ChanceNode extends BNode {
 
 		return new HashSet<Value>(cachedValues);
 	}
-
+	
+	
+	/**
+	 * Returns the number of values for the node
+	 * 
+	 * @return the number of values
+	 */
+	public int getNbValues() {
+		if (distrib instanceof ContinuousProbDistribution) {
+			return Settings.getInstance().nbDiscretisationBuckets;
+		}
+		else {
+			return getValues().size();
+		}
+	}
 
 	/**
 	 * Returns the probability distribution attached to the node
@@ -446,9 +465,54 @@ public class ChanceNode extends BNode {
 	 */
 	protected synchronized void fillCachedValues() {
 
+
+		if (distrib instanceof DepEmpiricalDistribution) {
+			Set<Value> cachedValuesTemp = new HashSet<Value>();
+			for (Assignment s : ((DepEmpiricalDistribution)distrib).getSamples()) {
+				if (s.containsVar(nodeId)) {
+					cachedValuesTemp.add(s.getValue(nodeId));
+				}
+			}
+			cachedValues = cachedValuesTemp;
+		}
+
+		else if (distrib instanceof OutputDistribution) {
+
+			Set<Value> cachedValuesTemp = new HashSet<Value>();
+			for (BNode node : inputNodes.values()) {
+				for (Value v : node.getValues()) {
+					if (v instanceof Output) {
+
+						if (((Output)v).hasValuesToAdd(nodeId.replace("'", ""))
+								|| ((Output)v).hasValuesToDiscard(nodeId.replace("'", ""))) {
+							cachedValues = extractCacheValues_raw();
+							return;
+						}
+						
+						if (((Output)v).mustBeCleared(nodeId.replace("'", ""))) {
+							cachedValuesTemp.add(ValueFactory.none());
+						}
+						cachedValuesTemp.add(((Output)v).getSetValue(nodeId.replace("'", "")));
+					}
+					else {
+						cachedValuesTemp.add(v);
+					}
+				}
+			}
+
+			cachedValues = cachedValuesTemp;
+		}
+
+		else {
+			cachedValues = extractCacheValues_raw();
+		}
+	}
+
+
+	private Set<Value> extractCacheValues_raw () {
+
 		Set<Value> cachedValuesTemp = new HashSet<Value>();
 
-		if (! (distrib instanceof DepEmpiricalDistribution)) {
 		Set<Assignment> possibleConditions = getPossibleConditions();
 
 		for (Assignment condition : possibleConditions) {
@@ -470,15 +534,11 @@ public class ChanceNode extends BNode {
 				log.warning("exception thrown: "+ e.toString());
 			}
 		}
-		}
-		else {
-			for (Assignment s : ((DepEmpiricalDistribution)distrib).getSamples()) {
-				if (s.containsVar(nodeId)) {
-					cachedValuesTemp.add(s.getValue(nodeId));
-				}
-			}
-		}
-		cachedValues = cachedValuesTemp;
+		return cachedValuesTemp;
+	}
+
+	public void clearCache() {
+		fillCachedValues();
 	}
 
 

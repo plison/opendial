@@ -32,6 +32,7 @@ import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
+import opendial.domains.fsa.FSA;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
@@ -119,6 +120,13 @@ public class XMLDomainReader {
 		//		log.debug(model);
 				domain.addModel(model);
 			}
+			
+			// extracting rule-based probabilistic model
+			else if (mainNode.getNodeName().equals("fsa")) {
+				FSA fsa = XMLFSAReader.extractFSA(mainNode);
+							log.debug(fsa);
+							domain.addModel(fsa);
+						}
 			
 			
 			// extracting imported references

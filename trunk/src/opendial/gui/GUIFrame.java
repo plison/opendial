@@ -137,7 +137,6 @@ public class GUIFrame extends JFrame implements StateListener {
 	public synchronized void recordState(DialogueState state, String name) {
 		stateMonitorTab.recordState(state, name);
 	}
-
 	
 
 }

@@ -30,7 +30,8 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
 import opendial.modules.AsynchronousModule;
-import opendial.simulation.UserSimulator;
+import opendial.modules.SynchronousModule;
+import opendial.simulation.Simulator;
 import opendial.state.DialogueState;
 
 /**
@@ -53,7 +54,7 @@ public class DialogueSystem {
 	
 	GUIFrame gui;
 	
-	UserSimulator simulator;
+	Simulator simulator;
 	
 	List<AsynchronousModule> asyncModules;
 	
@@ -109,10 +110,10 @@ public class DialogueSystem {
 		return gui;
 	}
 
-	public void attachSimulator(Domain simulatorDomain) throws DialException {
-		simulator = new UserSimulator(curState, simulatorDomain);
+	public void attachSimulator(Simulator simulator) throws DialException {
+		this.simulator = simulator;
 		if (Settings.getInstance().gui.showGUI) {
-			simulator.getRealState().addListener(gui);
+			simulator.addListener(gui);
 		}
 	}
 	
@@ -124,6 +125,7 @@ public class DialogueSystem {
 		    for (AsynchronousModule module: asyncModules) {
 		    	module.shutdown();
 		    }
+		    curState.shutdown();
 			  System.out.println("Shutting down dialogue system");
 		   }
 		  });
