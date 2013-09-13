@@ -226,7 +226,7 @@
 				<if var="motion" value="true" />
 			</condition>
 			<effect util="theta_whilemove">
-				<set var="a_m" value="*" />
+				<set var="a_m" value="None" relation="!=" />
 			</effect>
 		</case>
 	</rule>
