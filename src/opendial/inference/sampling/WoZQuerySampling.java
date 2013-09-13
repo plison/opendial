@@ -32,7 +32,8 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MIN_UTIL = -30;
+	public static final double MIN_UTIL = -20;
+	public static final double NUMERATOR_OTHER = 20;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -69,14 +70,28 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
+		Map<Assignment,Double> averages = getAverages();
+		log.debug("averages " + averages);
+		
 		synchronized(samples) {
+			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
 				if (sample.getSample().contains(goldAction)) {
-					 weight *= (sample.getUtility() - MIN_UTIL);
+					double denominator = 0.0;
+					for (Assignment a : averages.keySet()) {
+						denominator += (averages.get(a) - MIN_UTIL);
+					}
+					 weight *= (sample.getUtility() - MIN_UTIL) / denominator;
 				}
 				else {
-					weight *= 1/(sample.getUtility()-MIN_UTIL);
+					double denominator = sample.getUtility() - MIN_UTIL;
+					for (Assignment a : averages.keySet()) {
+						if (!a.equals(sample.getSample().getTrimmed(goldAction.getVariables()))) {
+							denominator += averages.get(a) - MIN_UTIL;
+						}
+						weight *= averages.get(goldAction) / denominator;
+					}
 				}
 				table.put(sample, weight);
 			}
@@ -84,6 +99,28 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 		return new Intervals<WeightedSample>(table);	
 	}
+	
+	private Map<Assignment,Double> getAverages() {
+		
+		Map<Assignment,Double> averages = new HashMap<Assignment,Double>();
+		
+		synchronized(samples) {
+			
+			for (WeightedSample sample : samples) {
+				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
+				if (!averages.containsKey(action)) {
+					averages.put(action, 0.0);
+				}
+				averages.put(action, averages.get(action) + sample.getUtility());
+			}
+		}
+		
+		for (Assignment a : averages.keySet()) {
+			averages.put(a, averages.get(a) * averages.size() / samples.size());
+		}
+		return averages;
+	}
+	
 
 	
 	public SimpleEmpiricalDistribution getResults() {
