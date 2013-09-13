@@ -87,9 +87,7 @@ public class WoZLearner extends ForwardPlanner  {
 			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
 			try {
 				currentState.addContent(paramDistrib, "planner");
-				if (queryVars.contains("theta_whilemove")) {
-					log.debug("==> CHANGE IN whilemove " + currentState.getContent("theta_whilemove", true));
-				}
+	
 			} catch (DialException e) {
 				log.warning("could not update state parameters: " + e);
 			}

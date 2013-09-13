@@ -88,8 +88,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 						if (!a.equals(sample.getSample().getTrimmed(goldAction.getVariables()))) {
 							denominator += averages.get(a) - MIN_UTIL;
 						}
-						weight *= averages.get(goldAction) / denominator;
 					}
+					weight *= averages.get(goldAction) / denominator;
 				}
 				table.put(sample, weight);
 			}
