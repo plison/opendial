@@ -21,8 +21,10 @@ package opendial.simulation;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 
 import opendial.arch.DialException;
@@ -67,6 +69,7 @@ public class WoZSimulator implements Simulator {
 
 	@Override
 	public void run() {
+		
 		while (true) {
 			try {
 				while (!systemState.isStable() || paused) {
@@ -87,7 +90,7 @@ public class WoZSimulator implements Simulator {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
-
+			
 			// problem: we include an a_m', which means the trigger of the system decisions is screwed up
 			try {
 				
@@ -99,22 +102,28 @@ public class WoZSimulator implements Simulator {
 				Assignment goldAction = new Assignment("a_m-gold", goldActionValue);
 				systemState.addContent(goldAction, "wozsim");
 
-				for (ChanceNode dataNode : newState.getNetwork().getChanceNodes()) {
-					if (dataNode.getId().equals("a_m")) {
+				List<String> nodesToAdd = new ArrayList<String>(newState.getNetwork().getChanceNodeIds());
+				nodesToAdd.remove("a_u");
+				nodesToAdd.add("a_u");
+				log.debug("nodes to add " + nodesToAdd);
+				
+				for (String id : nodesToAdd) {
+					if (id.equals("a_m")) {
 						systemState.activateUpdates(false);
-						systemState.addContent(dataNode.getDistrib(), "woz");
+						systemState.addContent(newState.getNetwork().getChanceNode(id).getDistrib(), "woz");
 						systemState.activateUpdates(true);
 					}
 					else {
-						systemState.addContent(dataNode.getDistrib(), "woz");					
+						systemState.addContent(newState.getNetwork().getChanceNode(id).getDistrib(), "woz");					
 					}
 				}
-				
+
+				//	log.debug("system state: " + systemState.getNetwork().getNodeIds());
+
 				if (goldActionValue.contains("Do(")) {
 					String lastMove = goldActionValue.replace("Do(", "").substring(0, goldActionValue.length()-4);
 					systemState.addContent(new Assignment("lastMove", lastMove), "woz");
 				}
-				//	log.debug("system state: " + systemState.getNetwork().getNodeIds());
 
 				if ((curIndex % 10) == 9)
 					for (String var: systemState.getParameterIds()) {
