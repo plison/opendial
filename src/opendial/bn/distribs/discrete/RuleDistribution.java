@@ -66,7 +66,7 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	// a cache with the output values in a simple table
 	DiscreteProbabilityTable cache;
 
-
+	int nbErrors;
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
@@ -321,8 +321,12 @@ public class RuleDistribution implements DiscreteProbDistribution {
 			return probTable;
 		}
 		catch (DialException e) {
+			nbErrors++;
+			if (nbErrors> 20) {
 			log.warning("could not extract output table for condition " + condition + ": " + e.toString());
-			log.debug("rule is " + rule.toString());
+			nbErrors = 0;
+			}
+			
 			SimpleTable probTable = new SimpleTable();
 			probTable.addRow(new Assignment(id, new Output()), 1.0);
 			return probTable;

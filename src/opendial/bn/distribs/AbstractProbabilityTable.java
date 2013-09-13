@@ -19,12 +19,14 @@
 
 package opendial.bn.distribs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -108,6 +110,7 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 	//  GETTERS
 	// ===================================
 
+	List<String> lastTexts = new ArrayList<String>();
 
 	
 	/**
@@ -136,7 +139,13 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		
 		String text = "could not find the corresponding condition for " + condition + 
 				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")";
-		log.debug(text);
+		if (!lastTexts.contains(text)) {
+			log.debug(text);
+			if (lastTexts.size() >= 10) {
+				lastTexts.remove(0);
+			}
+			lastTexts.add(text);
+		}
 	//	log.debug("table: " + toString());
 		
 		Assignment defaultA = new Assignment();

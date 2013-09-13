@@ -30,6 +30,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
@@ -209,8 +210,10 @@ public class RuleInstantiator implements Runnable {
 
 		Set<BNode> outputNodes = getOutputNodes(arule);
 		for (BNode outputNode : outputNodes) {
+		
 			if (outputNode instanceof ChanceNode) {
 				outputNode.addInputNode(ruleNode);
+			
 				if (ruleNode.getId().contains("^2") && outputNode.getInputNodeIds().contains(ruleNode.getId().replace("^2", ""))) {
 					log.warning("output node " + outputNode.getId() + " contains duplicates: " + ruleNode.getId());
 				}
@@ -230,12 +233,13 @@ public class RuleInstantiator implements Runnable {
 		default: ruleNode = null; break;
 		}
 
-		for (ChanceNode inputNode : arule.getInputNodes()) {
+		for (ChanceNode inputNode : arule.getInputNodes().values()) {
 			ruleNode.addInputNode(inputNode);
 		}
 		for (ChanceNode paramNode : arule.getParameterNodes()) {
 			ruleNode.addInputNode(paramNode);
 		}
+		
 		return ruleNode;
 	}
 
@@ -268,12 +272,15 @@ public class RuleInstantiator implements Runnable {
 		for (int i = 1 ; i < 4 ; i++) {
 			String updatedLabel = baseOutput + StringUtils.createNbPrimes(i);
 
+			if (rule.getRuleId().contains("actionmemory")) {
+				log.debug("base Output: " + baseOutput + " and input variables: " + arule.getInputNodes().keySet());
+			}
 			// if the node does not exist yet, it is created
 			if (!network.hasNode(updatedLabel)) {
 				return updatedLabel;
 			}
 
-			else if (!arule.getInputVariables().contains(updatedLabel)){
+			else if (!arule.getInputNodes().keySet().contains(updatedLabel)){
 				return updatedLabel;
 			}
 		}
@@ -305,7 +312,7 @@ public class RuleInstantiator implements Runnable {
 				outputNode.addInputNode(network.
 						getChanceNode(outputVar.replaceFirst("'", "")));
 			}
-
+			
 			// adding the connection between the predicted and observed values
 			String predictEquiv = StringUtils.removePrimes(outputVar) + "^p";
 			if (network.hasChanceNode(predictEquiv) && 

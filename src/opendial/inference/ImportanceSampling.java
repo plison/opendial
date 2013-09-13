@@ -22,6 +22,7 @@ package opendial.inference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,7 @@ import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.inference.sampling.BasicQuerySampling;
 import opendial.inference.sampling.ReductionQuerySampling;
+import opendial.inference.sampling.WoZQuerySampling;
 
 /**
  * Inference algorithm for Bayesian networks based on normalised importance sampling 
@@ -132,6 +134,13 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	@Override
 	protected DistributionCouple queryJoint(Query query) {
 		
+		if (!query.getNetwork().getActionNodes().isEmpty()) {
+			maxSamplingTime = Settings.getInstance().planning.maximumSamplingTime;
+		}
+		else {
+			maxSamplingTime = Settings.getInstance().maximumSamplingTime;	
+		}
+		
 		// creates a new query thread
 		BasicQuerySampling isquery = new BasicQuerySampling(query, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);
@@ -151,6 +160,13 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 	@Override
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
 				
+		if (!query.getNetwork().getActionNodes().isEmpty()) {
+			maxSamplingTime = Settings.getInstance().planning.maximumSamplingTime;
+		}
+		else {
+			maxSamplingTime = Settings.getInstance().maximumSamplingTime;	
+		}
+		
 		query.filterIdenticalNodes();
 		ReductionQuerySampling isquery = new ReductionQuerySampling(query, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);

@@ -42,7 +42,7 @@ import opendial.bn.values.Value;
 public class CombinatoricsUtils {
 
 	// logger
-	public static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
+	public static Logger log = new Logger("CombinatoricsUtils", Logger.Level.DEBUG);
 	
 	static Random sampler = new Random();
 	

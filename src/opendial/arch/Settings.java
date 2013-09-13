@@ -78,6 +78,8 @@ public class Settings {
 	public PlanSettings planning = new PlanSettings();
 	
 	public GUISettings gui = new GUISettings();
+
+	public NaoSettings nao = new NaoSettings();
 		
 	
 	public class PlanSettings {	
@@ -85,6 +87,10 @@ public class Settings {
 		public int horizon = 1;
 		public double discountFactor = 0.8;
 		public boolean isSarsa = false;
+		public String wozFile = "";
+		
+		// maximum sampling time (in milliseconds)
+		public long maximumSamplingTime = 1500;
 		
 		Map<String,PlanSettings> specifics = new HashMap<String,PlanSettings>();
 
@@ -98,12 +104,15 @@ public class Settings {
 		public PlanSettings (int horizon, double discountFactor, boolean isSarsa) {
 			this.horizon = horizon;
 			this.discountFactor = discountFactor;
-			log.debug("SARSA: " + isSarsa);
 			this.isSarsa = isSarsa;
 		}
 		
 		public void setAsSarsa(boolean isSarsa) {
 			this.isSarsa = isSarsa;
+		}
+		
+		public void setAsWoZ(String wozFile) {
+			this.wozFile = wozFile;
 		}
 		
 		public int getHorizon(Collection<String> actionVars) {
@@ -133,8 +142,34 @@ public class Settings {
 		public boolean isSarsa() {
 			return isSarsa;
 		}
+
+		public boolean isWoZ() {
+			return !wozFile.equals("");
+		}
+		
+		public String getWoZFile() {
+			return wozFile;
+		}
+		
+		public String toString() {
+			String s = "horizon:" + horizon + ",discount:" + discountFactor;
+			if (isSarsa) {
+				s += ",SARSA";
+			}
+			if (!wozFile.equals("")) {
+				s+= ",WOZ=" + wozFile;
+			}
+			return s;
+		}
 	}
 	
+	
+	public class NaoSettings {
+		
+		public String ip;
+		
+		public String asr;
+	}
 	
 	
 	

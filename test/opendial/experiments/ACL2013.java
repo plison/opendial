@@ -57,7 +57,7 @@ public class ACL2013 {
 			Domain simulatorDomain = XMLDomainReader.extractDomain(simulatorFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
 		system.addParameters(params);
-		system.attachSimulator(simulatorDomain);
+		system.attachSimulator(new UserSimulator(system.getState(), simulatorDomain));
 		system.startSystem(); 
 		
 		}

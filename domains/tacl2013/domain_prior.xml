@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="completed-task,perceived,carried" type="update">
+
+	<rule id="clearorcontinue">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect>
+				<clear var="i_u" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="completed-task" value="false" />
+			</condition>
+			<effect>
+				<set var="i_u" value="{i_u}" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="baseprior">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Left)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Forward)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Backward)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Right)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Left,Short)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Forward,Short)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Backward,Short)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Right,Short)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="Move(Turn)" />
+			</effect>			
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(RedObj)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(BlueObj)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(Something)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="WhatDoYouSee" />
+			</effect>
+		</case>
+	</rule>
+	
+
+	<rule id="chitchat">
+		<case>
+			<condition>			
+				<if var="lastMove" value="None"/>
+			</condition>
+			<effect prob="0.2" >
+				<set var="i_u" value="Ask(Name)" />
+			</effect>
+			<effect prob="0.40" >
+				<set var="i_u" value="Greeting" />
+			</effect>
+		</case>
+		<case>
+			<condition>			
+				<if var="lastMove" value="Do(Release)"/>
+			</condition>
+			<effect prob="0.40" >
+				<set var="i_u" value="Closing" />
+			</effect>
+		</case>
+		</rule>
+	
+	
+	<rule id="releaseprior">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" relation="!="/>
+				<if var="carried" value="None" relation="!="/>
+			</condition>
+			<effect prob="0.3">
+				<set var="i_u" value="Release" />
+			</effect>
+			<effect prob="0.7" />
+		</case>
+	</rule>
+	
+
+	<rule id="pickupprior">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" />
+				<if var="perceived" value="{X}" relation="contains" />
+			</condition>
+			<effect prob="0.2">
+				<set var="i_u" value="PickUp({X})" />
+			</effect>
+			<effect prob="0.1">
+				<set var="i_u" value="PickUp(AtFeet)" />
+			</effect>
+			<effect prob="0.7" />
+		</case>
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" />
+			</condition>
+			<effect prob="0.05">
+				<set var="i_u" value="PickUp(RedObj)" />
+			</effect>
+			<effect prob="0.05">
+				<set var="i_u" value="PickUp(BlueObj)" />
+			</effect>
+			<effect prob="0.2">
+				<set var="i_u" value="PickUp(AtFeet)" />
+			</effect>
+		</case>
+	</rule>
+
+
+</model>

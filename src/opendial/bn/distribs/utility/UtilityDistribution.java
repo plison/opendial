@@ -26,6 +26,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.values.Value;
+import opendial.domains.rules.parameters.Parameter;
 
 /**
  * Generic interface for an utility distribution (also called value distribution),
@@ -88,7 +89,7 @@ public interface UtilityDistribution {
 	 * @param input the input assignment
 	 * @return the set of possible action values
 	 */
-	public Set<Assignment> getRelevantActions(Assignment input);
+	public Map<Assignment,Parameter> getRelevantActions(Assignment input);
 	
 	
 	

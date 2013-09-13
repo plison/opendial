@@ -75,7 +75,7 @@ public class XMLModelReader {
 		for (int i = 0 ; i < topNode.getChildNodes().getLength() ; i++) {
 			Node node = topNode.getChildNodes().item(i);
 			if (node.getNodeName().equals("rule")) {
-				T rule = (new XMLRuleReader(domain)).getRule(node, cls);
+				T rule = XMLRuleReader.getRule(node, cls);
 				model.addRule(rule);
 			}
 		}

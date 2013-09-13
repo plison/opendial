@@ -19,6 +19,9 @@
 
 package opendial.modules;
 
+import com.aldebaran.qimessaging.QimessagingService;
+
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.state.DialogueState;
@@ -31,15 +34,17 @@ import opendial.state.DialogueState;
  * @version $Date::                      $
  *
  */
-public abstract class AsynchronousModule implements Runnable {
+public abstract class AsynchronousModule extends QimessagingService implements Runnable {
 
 	// logger
 	public static Logger log = new Logger("AsynchronousModule", Logger.Level.NORMAL);
 	
+	protected DialogueSystem system;
 	protected DialogueState state;
 	
-	public AsynchronousModule(DialogueState state) {
-		this.state = state;
+	public AsynchronousModule(DialogueSystem system) {
+		this.state = system.getState();
+		this.system = system;
 	}
 	
 	public abstract void shutdown();

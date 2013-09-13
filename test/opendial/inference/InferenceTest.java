@@ -274,8 +274,12 @@ public class InferenceTest {
 		ChanceNode n2 = new ChanceNode("n2");
 		n2.addProb(ValueFactory.create("oho"), 0.7);
 		network.addNode(n2);
+		ChanceNode n3 = new ChanceNode("n3");
+		n3.addProb(ValueFactory.create("ihi"), 0.7);
+		network.addNode(n3);
 		network.getNode("Alarm").addInputNode(n1);
 		network.getNode("Alarm").addInputNode(n2);
+		network.getNode("Alarm").addInputNode(n3);
 		
 		distrib = (new SwitchingAlgorithm()).queryProb(query);
 		assertTrue(distrib instanceof SimpleEmpiricalDistribution); 

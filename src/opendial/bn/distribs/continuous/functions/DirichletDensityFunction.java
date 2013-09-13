@@ -22,7 +22,9 @@ package opendial.bn.distribs.continuous.functions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import opendial.arch.Logger;
 import opendial.bn.values.DoubleVal;
@@ -88,7 +90,7 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		double sum = 0;
 		double[] sample = new double[alphas.length];
 		for (int i = 0 ; i < alphas.length ; i++) {
-			sample[i] = sampleFromGamma(alphas[i]);
+			sample[i] = sampleFromGamma(alphas[i], 1);
 			sum += sample[i];
 		}
 		for (int i = 0 ; i < alphas.length ; i++) {
@@ -148,40 +150,51 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		 }
 
 
+	   private static Random rng = new Random(
+			      Calendar.getInstance().getTimeInMillis() +
+			      Thread.currentThread().getId());
+	   
 
-
-	public synchronized double sampleFromGamma(double alpha) {
-		UniformDensityFunction uniform = new UniformDensityFunction(0.0,1.0);
-		double gamma=0;
-		if (alpha <= 0) {
-			throw new IllegalArgumentException ("alpha and beta must be strictly positive.");
-		}
-		if (alpha < 1) {
-			double b,p;
-			boolean flag=false;
-			b=1+alpha*Math.exp(-1);
-			while(!flag) {
-				p=b*uniform.sample();
-				if (p>1) {
-					gamma=-Math.log((b-p)/alpha);
-					if (uniform.sample()<=Math.pow(gamma,alpha-1)) flag=true;
-				}
-				else {
-					gamma=Math.pow(p,1/alpha);
-					if (uniform.sample()<=Math.exp(-gamma)) flag=true;
-				}
-			}
-		}
-		else if (alpha == 1) {
-			gamma = -Math.log (uniform.sample());
-		} else {
-			double y = -Math.log (uniform.sample());
-			while (uniform.sample() > Math.pow (y * Math.exp (1 - y), alpha - 1))
-				y = -Math.log (uniform.sample());
-			gamma = alpha * y;
-		}
-		return gamma;
-	}
+	public synchronized double sampleFromGamma(double k, double theta) {
+		 boolean accept = false;
+		    if (k < 1) {
+		 // Weibull algorithm
+		 double c = (1 / k);
+		 double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
+		 double u, v, z, e, x;
+		 do {
+		  u = rng.nextDouble();
+		  v = rng.nextDouble();
+		  z = -Math.log(u);
+		  e = -Math.log(v);
+		  x = Math.pow(z, c);
+		  if ((z + e) >= (d + x)) {
+		   accept = true;
+		  }
+		 } while (!accept);
+		 return (x * theta);
+		    } else {
+		 // Cheng's algorithm
+		 double b = (k - Math.log(4));
+		 double c = (k + Math.sqrt(2 * k - 1));
+		 double lam = Math.sqrt(2 * k - 1);
+		 double cheng = (1 + Math.log(4.5));
+		 double u, v, x, y, z, r;
+		 do {
+		  u = rng.nextDouble();
+		  v = rng.nextDouble();
+		  y = ((1 / lam) * Math.log(v / (1 - v)));
+		  x = (k * Math.exp(y));
+		  z = (u * v * v);
+		  r = (b + (c * y) - x);
+		  if ((r >= ((4.5 * z) - cheng)) ||
+		                    (r >= Math.log(z))) {
+		   accept = true;
+		  }
+		 } while (!accept);
+		 return (x * theta);
+		    }
+		  }
 
 	@Override
 	public double[] getMean() {

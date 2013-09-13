@@ -12,8 +12,6 @@
 
 </initialstate>
 
-<!--  <import href="domain_nlu.xml"/> -->
-
 <import href="domain_observation.xml"/>
 
 <import href="domain_user.xml"/>
@@ -24,26 +22,5 @@
 
 <import href="domain_effects.xml"/>
 
-<model type="update" trigger="a_u">
-	
-
-</model>
-
-<!-- <import href="domain_nlg.xml"/> -->
-
-<!-- <model type="decision" trigger="floor">
- 
-<rule>
-	<case>
-			<condition>
-				<if var="a_m" value="None"/>
-				<if var="floor" value="start" />
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="What can I do for you?" />
-			</effect>
-		</case>
-</rule>
-</model>  -->
 
 </domain>

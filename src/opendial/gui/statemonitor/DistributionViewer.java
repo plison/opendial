@@ -215,7 +215,7 @@ public class DistributionViewer extends JDialog {
 		String variableName = distrib.getHeadVariables().iterator().next();
 		
 		List<Assignment> samples = new ArrayList<Assignment>();
-		for (int i = 0 ; i < 300 ; i++) {
+		for (int i = 0 ; i < 500 ; i++) {
 			samples.add(distrib.sample(new Assignment()));
 		}
 		

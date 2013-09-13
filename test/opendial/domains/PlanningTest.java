@@ -32,6 +32,7 @@ import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
+import opendial.arch.Settings.PlanSettings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.Value;
@@ -39,6 +40,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
 
 public class PlanningTest {
@@ -50,6 +52,7 @@ public class PlanningTest {
 	public static final String domainFile = "domains//testing//domain3.xml";
 	public static final String domainFile2 = "domains//testing//basicplanning.xml";
 	public static final String domainFile3 = "domains//testing//planning2.xml";
+	public static final String settingsFile = "domains//testing//settings_test2.xml";
 
 	static InferenceChecks inference;
 	static Domain domain;
@@ -61,6 +64,7 @@ public class PlanningTest {
 			domain2 = XMLDomainReader.extractDomain(domainFile2); 
 			domain3 = XMLDomainReader.extractDomain(domainFile3); 
 			inference = new InferenceChecks();
+			Settings.getInstance().planning = Settings.getInstance().new PlanSettings();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,7 +88,7 @@ public class PlanningTest {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.startSystem(); 
-		log.debug("Nodes: " + system.getState().getNetwork().getNodeIds());
+
 		assertEquals(2, system.getState().getNetwork().getNodeIds().size());
 		assertFalse(system.getState().getNetwork().hasChanceNode("a_m"));
 
@@ -93,9 +97,11 @@ public class PlanningTest {
 	@Test
 	public void planning3() throws DialException, InterruptedException {
 		
+		Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
+		DialogueSystem system = new DialogueSystem(settings, domain2);
 		Settings.getInstance().planning.horizon =2;
-		DialogueSystem system = new DialogueSystem(domain2);
 		system.startSystem(); 
+
 		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
 		Settings.getInstance().planning.horizon =1;
 	}
@@ -105,8 +111,8 @@ public class PlanningTest {
 	public void planning4() throws DialException, InterruptedException {
 		inference = new InferenceChecks();
 
-		Settings.getInstance().planning.horizon =3;
 		DialogueSystem system = new DialogueSystem(domain3);
+		Settings.getInstance().planning.horizon =3;
 		system.startSystem(); 
 		
 		SimpleTable t1 = new SimpleTable();

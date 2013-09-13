@@ -496,18 +496,9 @@ public class SimpleTable implements DiscreteProbDistribution {
 	}
 
 	
-	
-	/**
-	 * Creates a table with a subset of the probability values, namely the nbest highest
-	 * ones.  
-	 * 
-	 * @param nbest the number of values to keep in the filtered table
-	 * @return the table of values, of size nbest
-	 * @throws DialException if nbest is < 1
-	 */
-	public SimpleTable getNBest(int nbest) throws DialException {
+	public SimpleTable getNBest(int nbest)  {
 		if (nbest < 1) {
-			throw new DialException("nbest must be >= 1");
+			log.warning("nbest should be superior to 1");
 		}
 		List<Map.Entry<Assignment,Double>> entries = 
 				new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet());
@@ -525,6 +516,23 @@ public class SimpleTable implements DiscreteProbDistribution {
 		}
 		return nbestTable;
 	}
+	
+	
+	public SimpleTable getAboveThreshold(double threshold) {
+		if (threshold < 0 || threshold > 1) {
+			log.warning("invalid threshold: " + threshold);
+		}
+		SimpleTable nbestTable = new SimpleTable();
+		for (Assignment a : table.keySet()) {
+			if (table.get(a) >= threshold) {
+				nbestTable.addRow(a, table.get(a));
+			}
+		}
+		return nbestTable;
+	}
+	
+	
+	
 	
 	// ===================================
 	//  UTILITIES
@@ -651,7 +659,6 @@ public class SimpleTable implements DiscreteProbDistribution {
 		}
 		return totalProb;
 	}
-
 
 
 }

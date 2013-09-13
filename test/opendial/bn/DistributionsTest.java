@@ -69,6 +69,13 @@ public class DistributionsTest {
 	public static Logger log = new Logger("DistributionsTest",
 			Logger.Level.DEBUG);
 	
+	
+	public DistributionsTest() {
+		Settings.getInstance().nbSamples = 4000;
+		Settings.getInstance().maximumSamplingTime = 1000;
+	}
+	
+	
 	@Test
 	public void simpleDistrib() {
 		SimpleTable.log.setLevel(Level.MIN);
