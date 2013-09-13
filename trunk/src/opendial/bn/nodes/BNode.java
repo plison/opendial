@@ -731,6 +731,7 @@ public abstract class BNode implements Comparable<BNode> {
 	protected void addOutputNode_internal(BNode outputNode) {
 		if (outputNodes.containsKey(outputNode.getId())) {
 			log.debug("node " + outputNode.getId() + " already included in the output nodes of " + nodeId);
+			Thread.dumpStack();
 		}
 		else {
 			outputNodes.put(outputNode.getId(), outputNode);

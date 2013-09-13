@@ -243,6 +243,11 @@ public class ActionNode extends BNode {
 	}
 
 	
+	public void setValues(Set<Value> newValues) {
+		actionValues = newValues;
+	}
+
+	
 	
 	
 }
