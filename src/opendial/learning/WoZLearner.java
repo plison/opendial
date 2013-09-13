@@ -66,8 +66,7 @@ public class WoZLearner extends ForwardPlanner  {
 			}
 			
 			UtilQuery query = new UtilQuery(currentState, queryVars);
-			query.addEvidence(new Assignment(actionVariable+"'", gold));
-			WoZQuerySampling wozquery = new WoZQuerySampling(query, 
+			WoZQuerySampling wozquery = new WoZQuerySampling(query, new Assignment(actionVariable+"'", gold),
 					Settings.getInstance().nbSamples, Settings.getInstance().maximumSamplingTime);
 
 			Thread t = new Thread(wozquery);
