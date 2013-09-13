@@ -10,7 +10,7 @@
 				<if var="a_m" value="AskRepeat" relation="!=" />
 				<if var="a_m" value="None" relation="!=" />
 			</condition>
-			<effect prob="1.0">
+			<effect>
 				<set var="completed-task" value="true" />
 			</effect>
 		</case>
@@ -18,7 +18,7 @@
 			<condition operator="or">
 				<if var="i_u" value="None" />
 			</condition>
-			<effect prob="1.0">
+			<effect>
 				<set var="completed-task" value="true" />
 			</effect>
 		</case>

@@ -97,5 +97,82 @@
 			<max>30</max>
 		</distrib>
 	</variable>
+	
+	<variable id="theta_moveprior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_perceive1prior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
 
+	<variable id="theta_perceive2prior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_openingprior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_closingprior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_releaseprior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_pickup1prior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_pickup2prior">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+	
+	
 </parameters>
