@@ -110,7 +110,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 				ChanceNode node = reduced.getChanceNode(queryVar);
 				EmpiricalDistribution eDistrib = getNodeDistribution(node);
 				if (!eDistrib.getSamples().isEmpty()) {
-					if (!node.getInputNodeIds().isEmpty() && areDiscrete(node.getInputNodeIds())) {
+					if (toDiscretise(node)) {
 						node.setDistrib(eDistrib.toDiscrete());
 					}
 					else {
@@ -171,12 +171,18 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		return eDistrib;
 	}
 	
-	private boolean areDiscrete(Collection<String> nodeIds) {
+	private boolean toDiscretise(ChanceNode node) {
+		if (node.getInputNodeIds().isEmpty()) {
+			return false;
+		}
+		else if (node.getInputNodeIds().size() > 3) {
+			return false;
+		}
 		Iterator<WeightedSample> it = samples.iterator();
 		int valuesToCheck = 0;
 		while (it.hasNext() && valuesToCheck < 20) {
 			WeightedSample a = it.next();
-			for (String nodeId : nodeIds) {
+			for (String nodeId : node.getInputNodeIds()) {
 				Value val = a.getSample().getValue(nodeId);
 				if (val instanceof DoubleVal || val instanceof VectorVal) {
 					return false;
