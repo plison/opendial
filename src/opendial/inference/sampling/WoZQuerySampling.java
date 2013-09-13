@@ -49,7 +49,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 	@Override
 	protected void compileResults() {
-		log.debug("compiling results");
 		try {
 			Intervals<WeightedSample> intervals = resample();
 			distrib = new SimpleEmpiricalDistribution();
@@ -58,6 +57,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				WeightedSample sample = intervals.sample();
 				distrib.addSample(sample.getSample().getTrimmed(query.getQueryVars()));
 			}
+			
 		}
 		catch (DialException e) {
 			log.warning("sampling problem: " + e);
