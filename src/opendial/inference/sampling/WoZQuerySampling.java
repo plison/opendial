@@ -32,7 +32,7 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MIN_UTIL = -20;
+	public static final double MIN_UTIL = -40;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
