@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+<initialstate>
+
+<variable id="a_u">
+<value prob="0.6">DoA</value>
+<value prob="0.4">DoB</value>
+</variable>
+
+</initialstate>
+
+<model type="prediction" trigger="a_m">
+
+<rule>
+<case>
+<condition>
+<if var="a_m" value="AskRepeat"/>
+</condition>
+<effect prob="theta[0]">
+<set var="a_u" value="{a_u}"/>
+</effect>
+</case>
+</rule>
+
+
+</model>
+
+</domain>
