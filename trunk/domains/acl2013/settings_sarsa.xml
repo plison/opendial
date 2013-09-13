@@ -14,14 +14,14 @@
 	<userUtterance>a_u</userUtterance>
 	<systemUtterance>a_m</systemUtterance>
  <toMonitor>p_m</toMonitor>
-	<toMonitor>i_u</toMonitor> 
+ <toMonitor>i_u</toMonitor> 
 	<toMonitor>carried</toMonitor>
 	<toMonitor>perceived</toMonitor>  
 </gui>
 
 <inference>
-	<nbsamples>10000</nbsamples>
-	<timeout>5000</timeout>
+	<nbsamples>6000</nbsamples>
+	<timeout>3000</timeout>
 </inference>
 
 </settings>
