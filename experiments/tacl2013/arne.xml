@@ -1,0 +1,2361 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<samples>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.4">Move(Forward)</value>
+<value prob="0.6">None</value></variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4">please straight</value>
+<value prob="0.6">None</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5138">Confirm</value>
+<value prob="0.4863">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5138">ok</value>
+<value prob="0.4863">None</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5056">Greeting</value>
+<value prob="0.4944">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5056">good evening</value>
+<value prob="0.4944">None</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.63">Greeting</value>
+<value prob="0.37">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.63">hi</value>
+<value prob="0.37">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">AskRepeat</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Sorry, could you repeat?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Say(Greet)</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8744">Move(Forward)</value>
+<value prob="0.1256">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8744">move forwards</value>
+<value prob="0.1256">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Say(Greet)</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Hi there</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6269">Move(Right)</value>
+<value prob="0.3731">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6269">turn to the right</value>
+<value prob="0.3731">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[BlueObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.9488">Confirm</value>
+<value prob="0.0513">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.9488">yes</value>
+<value prob="0.0513">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[BlueObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8588">Move(Left)</value>
+<value prob="0.1412">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.1412">None</value>
+<value prob="0.8588">turn left</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8513">Move(Forward)</value>
+<value prob="0.1488">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8513">walk forward</value>
+<value prob="0.1488">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[BlueObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6125">PickUp(Other)</value>
+<value prob="0.3875">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.3875">None</value>
+<value prob="0.6125">pick it up</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="0.0024">[BlueObj]</value>
+<value prob="0.9976">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8006">Move(Left)</value>
+<value prob="0.1994">None</value></variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8006">left</value>
+<value prob="0.1994">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7488">Move(Forward,Short)</value>
+<value prob="0.2512">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7488">move forward a bit</value>
+<value prob="0.2512">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[RedObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7575">Move(Left,Short)</value>
+<value prob="0.2425">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7575">turn a bit left</value>
+<value prob="0.2425">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[RedObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left,Short))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7381">Greeting</value>
+<value prob="0.2619">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7381">hi</value>
+<value prob="0.2619">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="0.027">[RedObj]</value>
+<value prob="0.973">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8156">Move(Forward)</value>
+<value prob="0.1844">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8156">walk forwards</value>
+<value prob="0.1844">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5456">PickUp(Other)</value>
+<value prob="0.4544">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4544">None</value>
+<value prob="0.5456">pick it up</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7819">Move(Right)</value>
+<value prob="0.2181">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7819">turn right</value>
+<value prob="0.2181">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.92">Confirm</value>
+<value prob="0.08">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.92">yes</value>
+<value prob="0.08">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7044">None</value>
+<value prob="0.2956">Move(Right)</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7044">None</value>
+<value prob="0.2956">right</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7025">Greeting</value>
+<value prob="0.2975">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7025">hi</value>
+<value prob="0.2975">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="0.973">[RedObj]</value>
+<value prob="0.027">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8656">Move(Forward)</value>
+<value prob="0.1344">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8656">walk forward</value>
+<value prob="0.1344">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[RedObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.4769">Move(Right)</value>
+<value prob="0.5231">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4769">turn to the right</value>
+<value prob="0.5231">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.865">Confirm</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.865">yes</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.4788">Greeting</value>
+<value prob="0.5213">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4788">hi</value>
+<value prob="0.5213">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7688">Move(Forward)</value>
+<value prob="0.2312">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7688">move forward</value>
+<value prob="0.2312">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[BlueObj]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Forward))</value>
+</variable>
+</output>
+</data>
+
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8844">Move(Forward)</value>
+<value prob="0.1156">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8844">move forward</value>
+<value prob="0.1156">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+<variable id="perceived">
+<value prob="0.027">[BlueObj]</value>
+<value prob="0.973">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Stop)</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7156">Move(Forward)</value>
+<value prob="0.2844">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7156">straight</value>
+<value prob="0.2844">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Stop)</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, stopping now</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8363">PickUp(BlueObj)</value>
+<value prob="0.1637">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8363">pick up the blue cylinder</value>
+<value prob="0.1637">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Stop)</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, stopping now</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(PickUp(BlueObj))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8794">Confirm</value>
+<value prob="0.1206">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8794">yes</value>
+<value prob="0.1206">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(PickUp(BlueObj))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I pick up the blue object?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(PickUp(BlueObj))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5675">PickUp(BlueObj)</value>
+<value prob="0.4325">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4325">None</value>
+<value prob="0.5675">pick it up</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(PickUp(BlueObj))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, picking up the blue object</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5894">PickUp(BlueObj)</value>
+<value prob="0.4106">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5894">and pick it up</value>
+<value prob="0.4106">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(PickUp(BlueObj))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, picking up the blue object</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5913">Confirm</value>
+<value prob="0.4087">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5913">ok</value>
+<value prob="0.4087">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(PickUp(BlueObj))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, picking up the blue object</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6956">Move(Right)</value>
+<value prob="0.3044">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6956">turn right</value>
+<value prob="0.3044">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(PickUp(BlueObj))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Object successfully grasped</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8119">Disconfirm</value>
+<value prob="0.1881">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8119">no</value>
+<value prob="0.1881">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.865">Move(Turn)</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.865">turn back</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Turn))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.9125">Move(Forward)</value>
+<value prob="0.0875">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.9125">move forward</value>
+<value prob="0.0875">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Turn))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, now turning back</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8425">Move(Left)</value>
+<value prob="0.1575">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.1575">None</value>
+<value prob="0.8425">turn left</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.4875">Greeting</value>
+<value prob="0.5125">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4875">hi</value>
+<value prob="0.5125">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8425">Move(Forward)</value>
+<value prob="0.1575">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8425">move forward</value>
+<value prob="0.1575">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6869">PickUp(Other)</value>
+<value prob="0.3131">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6869">pick up it</value>
+<value prob="0.3131">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.9175">Move(Left)</value>
+<value prob="0.0825">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.0825">None</value>
+<value prob="0.9175">turn left</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.405">Greeting</value>
+<value prob="0.595">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.405">hi</value>
+<value prob="0.595">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5844">Move(Left,Short)</value>
+<value prob="0.4156">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5844">turn left thirty degrees</value>
+<value prob="0.4156">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Left,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8831">Confirm</value>
+<value prob="0.1169">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8831">yes</value>
+<value prob="0.1169">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Left,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move a bit to the left?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left,Short))</value>
+</variable>
+</output>
+</data>
+
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6194">Move(Left,Short)</value>
+<value prob="0.3806">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6194">turn left thirty degrees</value>
+<value prob="0.3806">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Left,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move a bit to the left?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.9344">Move(Forward)</value>
+<value prob="0.0656">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.9344">move forward</value>
+<value prob="0.0656">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5831">PickUp(Other)</value>
+<value prob="0.4169">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5831">and pick up it</value>
+<value prob="0.4169">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7262">Move(Right,Short)</value>
+<value prob="0.2738">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7262">turn a bit to the right</value>
+<value prob="0.2738">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.9088">Confirm</value>
+<value prob="0.0913">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.9088">yes</value>
+<value prob="0.0913">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move a bit to the right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8369">Move(Forward)</value>
+<value prob="0.1631">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8369">walk forward</value>
+<value prob="0.1631">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6144">PickUp(Other)</value>
+<value prob="0.3856">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.3856">None</value>
+<value prob="0.6144">pick it up</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8631">Move(Right)</value>
+<value prob="0.1369">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8631">turn right</value>
+<value prob="0.1369">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5363">Confirm</value>
+<value prob="0.4638">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5363">ok</value>
+<value prob="0.4638">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.865">Move(Forward)</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.865">walk forward</value>
+<value prob="0.135">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5731">PickUp(Other)</value>
+<value prob="0.4269">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5731">pick up it</value>
+<value prob="0.4269">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7506">Move(Right)</value>
+<value prob="0.2494">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7506">turn right</value>
+<value prob="0.2494">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6975">Move(Right)</value>
+<value prob="0.3025">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6975">turn right</value>
+<value prob="0.3025">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8844">Confirm</value>
+<value prob="0.1156">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8844">yes</value>
+<value prob="0.1156">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move right?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7038">Move(Left)</value>
+<value prob="0.2963">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.2963">None</value>
+<value prob="0.7038">turn left</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Left))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8663">Move(Forward)</value>
+<value prob="0.1338">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8663">move forward</value>
+<value prob="0.1338">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Left))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Left</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.4131">Greeting</value>
+<value prob="0.5869">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.4131">hi</value>
+<value prob="0.5869">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6706">Move(Forward)</value>
+<value prob="0.3294">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6706">move forward</value>
+<value prob="0.3294">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Move(Forward))</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8744">Disconfirm</value>
+<value prob="0.1256">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8744">no</value>
+<value prob="0.1256">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move forward?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.5456">Disconfirm</value>
+<value prob="0.4544">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.5456">no</value>
+<value prob="0.4544">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move forward?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6494">Move(Left)</value>
+<value prob="0.3506">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6494">and move left</value>
+<value prob="0.3506">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move forward?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6344">Move(Right,Short)</value>
+<value prob="0.3656">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.6344">turn right a bit</value>
+<value prob="0.3656">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I move forward?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Right,Short))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.8413">Move(Forward)</value>
+<value prob="0.1587">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.8413">walk forward</value>
+<value prob="0.1587">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Right,Short))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Right a little bit</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Move(Forward))</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.7531">PickUp(Other)</value>
+<value prob="0.2469">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.7531">pick it up</value>
+<value prob="0.2469">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Move(Forward))</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, moving Forward</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.525">Release</value>
+<value prob="0.475">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.525">put it down</value>
+<value prob="0.475">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">AskRepeat</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Sorry, could you repeat?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Confirm(Release)</value>
+</variable>
+</output>
+</data>
+
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.69">Confirm</value>
+<value prob="0.31">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.69">yes</value>
+<value prob="0.31">None</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Confirm(Release)</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">Should I release the object?</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>Do(Release)</value>
+</variable>
+</output>
+</data>
+<data>
+<state>
+<variable id="a_u">
+<value prob="0.6544">PickUp(Other)</value>
+<value prob="0.3456">None</value>
+</variable>
+<variable id="completed-task">
+<value prob="1.0">true</value>
+</variable>
+<variable id="u_u">
+<value prob="0.3456">None</value>
+<value prob="0.6544">pick it up</value>
+</variable>
+<variable id="a_m">
+<value prob="1.0">Do(Release)</value>
+</variable>
+<variable id="u_m">
+<value prob="1.0">OK, putting down the object</value>
+</variable>
+<variable id="carried">
+<value prob="1.0">[blueobj]</value>
+</variable>
+<variable id="perceived">
+<value prob="1.0">[]</value>
+</variable>
+<variable id="motion">
+<value prob="1.0">true</value>
+</variable>
+</state>
+<output>
+<variable id="a_m">
+<value>None</value>
+</variable>
+</output>
+</data>
+</samples>
