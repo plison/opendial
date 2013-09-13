@@ -24,6 +24,7 @@ import java.util.Map;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.Assignment;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.inference.datastructs.WeightedSample;
@@ -31,16 +32,19 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MIN_UTIL = -10;
+	public static final double MIN_UTIL = -20;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
-			Logger.Level.NORMAL);
+			Logger.Level.DEBUG);
 
+	Assignment goldAction;
 	SimpleEmpiricalDistribution distrib;
+	
 
-	public WoZQuerySampling(UtilQuery query, int nbSamples, long maxSamplingTime) {
+	public WoZQuerySampling(UtilQuery query, Assignment goldAction, int nbSamples, long maxSamplingTime) {
 		super(query, nbSamples, maxSamplingTime);
+		this.goldAction = goldAction;
 	}
 
 	@Override
@@ -50,8 +54,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			Intervals<WeightedSample> intervals = resample();
 			distrib = new SimpleEmpiricalDistribution();
 			
-			log.debug("QUERY VARS " + query.getQueryVars());
-
 			for (int i = 0 ; i < samples.size() ; i++) {
 				WeightedSample sample = intervals.sample();
 				distrib.addSample(sample.getSample().getTrimmed(query.getQueryVars()));
@@ -65,16 +67,17 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 	private Intervals<WeightedSample> resample() throws DialException {
 
-		double total =0;
-		for (WeightedSample s : samples) {
-			total += (s.getUtility() - MIN_UTIL);
-		}
-
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
 		synchronized(samples) {
 			for (WeightedSample sample : samples) {
-				double weight = (sample.getUtility() - MIN_UTIL) / total;
+				double weight = sample.getWeight();
+				if (sample.getSample().contains(goldAction)) {
+					 weight *= (sample.getUtility() - MIN_UTIL);
+				}
+				else {
+					weight *= 1/(sample.getUtility()-MIN_UTIL);
+				}
 				table.put(sample, weight);
 			}
 		}
