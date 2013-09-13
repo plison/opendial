@@ -19,6 +19,7 @@
 
 package opendial.inference.sampling;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,11 +31,13 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.FuzzyDistribution;
-import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
+import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.bn.values.AssignmentVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.inference.datastructs.WeightedSample;
@@ -75,7 +78,7 @@ public class SampleCollector extends Thread {
 	 * @param evidence the evidence
 	 */
 	public SampleCollector(AbstractQuerySampling topSampler, Query query) {
-		
+
 		this.masterSampler = topSampler;
 		this.network = query.getNetwork();
 		this.sortedNodes = query.getFilteredSortedNodes();
@@ -93,13 +96,8 @@ public class SampleCollector extends Thread {
 		while (!isFinished) {
 			try {
 				WeightedSample sample = new WeightedSample();
-				
-		//		sample.addAssign(getComboSamples());
-			
-				for (Iterator<BNode> it = sortedNodes.iterator(); 
-				it.hasNext() && (sample.getWeight() > WEIGHT_THRESHOLD); ) {
-
-					BNode n = it.next();
+				List<BNode> nodesToTraverse = new ArrayList<BNode>(sortedNodes);
+				for (BNode n : nodesToTraverse) {
 
 					// if the node is an evidence node and has no input nodes
 					if (n.getInputNodeIds().isEmpty() && evidence.containsVar(n.getId())) {
@@ -109,11 +107,20 @@ public class SampleCollector extends Thread {
 						// if the node is a chance node and is not evidence, sample from the values
 						if (!evidence.containsVar(n.getId())) {
 							if (!sample.getSample().containsVar(n.getId())) {
-							Value newVal = ((ChanceNode)n).sample(sample.getSample());
-							sample.addPoint(n.getId(), newVal);
+								if (((ChanceNode)n).getDistrib() instanceof ComplexEmpiricalDistribution) {
+									Assignment full = ((ComplexEmpiricalDistribution)((ChanceNode)n).getDistrib()).getFullSample();
+									sample.addPoints(full);
+									if (!evidence.consistentWith(sample.getSample())) {
+										sample.setWeight(0);
+									}
+								}
+								else {
+								Value newVal = ((ChanceNode)n).sample(sample.getSample());
+								sample.addPoint(n.getId(), newVal);
+								}
 							}						
 						}
- 
+
 						// if the node is an evidence node, recompute the weights
 						else {
 							Value evidenceValue = evidence.getValue(n.getId());
@@ -123,13 +130,21 @@ public class SampleCollector extends Thread {
 								evidenceProb = 1 + (50 * ((ContinuousProbDistribution)((ChanceNode)n).getDistrib()).
 										getProbDensity(trimmedInput, evidence));
 							}
+							else if (((ChanceNode)n).getDistrib() instanceof DiscreteProbDistribution) {
+								evidenceProb = ((ChanceNode)n).getProb(sample.getSample(), evidenceValue);	
+							}
 							else {
-								evidenceProb = ((ChanceNode)n).getProb(sample.getSample(), evidenceValue);								
+								if (!sample.getSample().containsVar(n.getId())) {
+									sample.addPoint(n.getId(), ((ChanceNode)n).sample(sample.getSample()));
+								}
+								if (!sample.getSample().consistentWith(evidence)) {
+									evidenceProb = 0.0;
+								}
 							}
 							sample.addLogWeight(Math.log(evidenceProb));						
 							sample.addPoint(n.getId(), evidenceValue);
 						}
-						
+
 					}
 
 					// if the node is an action node
@@ -163,37 +178,13 @@ public class SampleCollector extends Thread {
 					masterSampler.addSample(sample);
 				}
 				else {
-			//		log.debug("discarding sample");
+					//		log.debug("discarding sample");
 				}
 			}
 			catch (DialException e) {
 				log.info("exception caught: " + e);
 			}
 		}
-	}
-	
-	
-	
-	private Assignment getComboSamples() throws DialException {
-		
-		Assignment comboSample = new Assignment(evidence);
-		
-		List<String> already = new LinkedList<String>();
-		for (BNode n : sortedNodes) {
-			if (n instanceof ChanceNode && ((ChanceNode)n).getDistrib() 
-					instanceof DepEmpiricalDistribution) {
-
-				Assignment discreteCondition = comboSample.getDiscrete();
-				Assignment sample = ((ChanceNode)n).getDistrib().sample(discreteCondition);
-	
-				comboSample.addAssignment(sample);
-				already.add(n.getId());
-			}
-		}
-	/**	if (!comboSample.isEmpty()) {
-			log.debug("combo sample: " + comboSample);
-		} */
-		return comboSample;
 	}
 
 

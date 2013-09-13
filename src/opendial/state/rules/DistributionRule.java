@@ -105,4 +105,8 @@ public class DistributionRule implements Rule {
 		return ruleId + ": " + distrib.toString();
 	}
 
+	public boolean toClear() {
+		return clearPrevious;
+	}
+
 }

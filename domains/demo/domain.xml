@@ -7,13 +7,14 @@
 <value>true</value>
 </variable>
 
-<variable id="perceived"><value>[]</value></variable>
+<variable id="perceived"><value>[RedObj,BlueObj]</value></variable>
 <variable id="carried"><value>[]</value></variable>
 
 </initialstate>
 
  <import href="../common/tabletop_nlu.xml"/>
  <import href="../common/tabletop_nlu2.xml"/>
+ <import href="../common/tabletop_nlg.xml"/>
 
  <import href="domain_effects.xml"/>
 
@@ -23,7 +24,6 @@
 
 <import href="domain_user.xml"/>
 
- <import href="../common/tabletop_nlg.xml"/>
 
 <!-- <model type="decision" trigger="floor">
  

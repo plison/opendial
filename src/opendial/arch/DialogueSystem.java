@@ -59,6 +59,7 @@ public class DialogueSystem {
 	List<AsynchronousModule> asyncModules;
 	
 	boolean paused = false;
+
 		
 	public DialogueSystem(Domain domain) throws DialException {
 		this (Settings.getInstance(), domain);

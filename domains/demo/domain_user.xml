@@ -22,7 +22,7 @@
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
 			<effect prob="0.7">
-				<set var="a_u" value="Goodbye" />
+				<set var="a_u" value="Disconfirm" />
 			</effect>
 			<effect prob="0.3">
 				<set var="a_u" value="{i_u}" />

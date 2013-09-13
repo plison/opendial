@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_m" type="update">
+
+	
+	<rule id="nextintention">
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm(*)" relation="!=" />
+				<if var="a_m" value="AskRepeat" relation="!=" />
+				<if var="a_m" value="None" relation="!=" />
+			</condition>
+			<effect>
+				<set var="completed-task" value="true" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="i_u" value="None" />
+			</condition>
+			<effect>
+				<set var="completed-task" value="true" />
+			</effect>
+		</case>
+		<case>
+		<effect prob="0.7946">
+				<set var="completed-task" value="false" />
+		</effect>
+		<effect prob="0.2054">
+			<set var="completed-task" value="true" />
+		</effect>
+		</case>
+	</rule>
+	
+	<rule id="changeLastMove">
+		<case>
+			<condition>
+				<if var="a_m" value="Do({M})"/>
+			</condition>
+			<effect>
+				<set var="lastMove" value="{M}"/>
+			</effect>
+		</case>
+	</rule>
+
+</model>

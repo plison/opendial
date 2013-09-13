@@ -154,7 +154,7 @@ public class Assignment {
 	 * @param var the variable label
 	 * @param val the value (as a double array)
 	 */
-	public Assignment(String var, double[] val) {
+	public Assignment(String var, Double[] val) {
 		this();
 		addPair(var, val);
 	}
@@ -383,7 +383,7 @@ public class Assignment {
 	 * @param var the variable
 	 * @param val the value, as a double array
 	 */
-	public void addPair(String var, double[] val) {
+	public void addPair(String var, Double[] val) {
 		map.put(var, ValueFactory.create(val));
 		resetHashCodeCache();
 	}
@@ -888,6 +888,19 @@ public class Assignment {
 
 	private void resetHashCodeCache() {
 		hashCodeCache = Integer.MAX_VALUE;;
+	}
+
+
+	// ONLY PARTIALLY IMPLEMENTED!!!!!
+	public static Assignment createFromString(String str) {
+		Assignment a = new Assignment();
+		for (int i = 0 ; i < str.split(" ^ ").length ; i++) {
+			String substr = str.split(" ^ ")[i];
+			String var = substr.split("=")[0];
+			String value = substr.split("=")[1];
+			a.addPair(var, ValueFactory.create(value));
+		}
+		return a;
 	}
 
 

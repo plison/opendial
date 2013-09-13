@@ -21,6 +21,7 @@ package opendial.inference.datastructs;
 
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.values.AssignmentVal;
 import opendial.bn.values.Value;
 
 
@@ -61,7 +62,18 @@ public class WeightedSample {
 	 * @param value the value
 	 */
 	public void addPoint(String variable, Value value) {
-		sample.addPair(variable, value);
+		if (value instanceof AssignmentVal) {
+			for (String var : ((AssignmentVal)value).getAssignment().getVariables()) {
+				sample.addPair(var, ((AssignmentVal)value).getAssignment().getValue(var));
+			}
+		}
+		else {
+			sample.addPair(variable, value);
+		}
+	}
+	
+	public void addPoints(Assignment assign) {
+		sample.addAssignment(assign);
 	}
 
 	/**

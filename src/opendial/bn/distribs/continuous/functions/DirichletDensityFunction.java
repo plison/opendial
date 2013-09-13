@@ -36,12 +36,12 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	public static Logger log = new Logger("DirichletDensityFunction",
 			Logger.Level.DEBUG);
 
-	double[] alphas;
+	Double[] alphas;
 
 	double C;
 
 
-	public DirichletDensityFunction(double[] alphas) {
+	public DirichletDensityFunction(Double[] alphas) {
 		this.alphas = alphas;
 		if (alphas.length < 2) {
 			log.warning("must have at least 2 alphas");
@@ -55,7 +55,7 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	}
 
 	@Override
-	public double getDensity(double[] x) {
+	public double getDensity(Double[] x) {
 		if (x.length == alphas.length) {
 
 			double sum = 0;
@@ -85,10 +85,10 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	}
 
 	@Override
-	public double[] sample() {
+	public Double[] sample() {
 
 		double sum = 0;
-		double[] sample = new double[alphas.length];
+		Double[] sample = new Double[alphas.length];
 		for (int i = 0 ; i < alphas.length ; i++) {
 			sample[i] = sampleFromGamma(alphas[i], 1);
 			sum += sample[i];
@@ -100,8 +100,8 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	}
 
 	@Override
-	public List<double[]> getDiscreteValueArrays(int nbBuckets) {
-		List<double[]> values = new ArrayList<double[]>();
+	public List<Double[]> getDiscreteValueArrays(int nbBuckets) {
+		List<Double[]> values = new ArrayList<Double[]>();
 		for (int i = 0 ; i < nbBuckets ; i++) {
 			values.add(sample());
 		}
@@ -197,8 +197,8 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		  }
 
 	@Override
-	public double[] getMean() {
-		double[] mean = new double[alphas.length];
+	public Double[] getMean() {
+		Double[] mean = new Double[alphas.length];
 		for (int i = 0 ; i < alphas.length ; i++) {
 			mean[i] = alphas[i] / getAlphaSum();
 		}
@@ -215,8 +215,8 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	}
 
 	@Override
-	public double[] getVariance() {
-		double[] variance = new double[alphas.length];
+	public Double[] getVariance() {
+		Double[] variance = new Double[alphas.length];
 		double denominator = Math.pow(getAlphaSum(), 2) * (getAlphaSum() + 1);
 		for (int j = 0 ; j < alphas.length ; j++) {
 			double numerator = alphas[j]*(getAlphaSum() - alphas[j]);

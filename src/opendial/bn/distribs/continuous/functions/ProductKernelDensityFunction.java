@@ -52,13 +52,13 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	public static Logger log = new Logger("ProductKernelDensityFunction", Logger.Level.DEBUG);
 
 	// bandwidth for the kernel
-	double[] bandwidths;
+	Double[] bandwidths;
 
 	// the kernel function
 	GaussianDensityFunction kernel = new GaussianDensityFunction(0.0, 1.0);
 
 	// the points
-	List<double[]> points;
+	List<Double[]> points;
 
 	// the sampler
 	Random sampler;
@@ -71,8 +71,8 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	 * 
 	 * @param points the points
 	 */
-	public ProductKernelDensityFunction(Collection<double[]> points) {
-		this.points = new ArrayList<double[]>(points);		
+	public ProductKernelDensityFunction(Collection<Double[]> points) {
+		this.points = new ArrayList<Double[]>(points);		
 		sampler = new Random();
 		estimateBandwidths();
 	}
@@ -84,8 +84,8 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 
 	// Silverman's rule of thumb
 	private void estimateBandwidths() {
-		double[] stds = getStandardDeviations();
-		bandwidths = new double[stds.length];
+		Double[] stds = getStandardDeviations();
+		bandwidths = new Double[stds.length];
 		for (int i = 0 ; i < bandwidths.length ;i++) {
 			bandwidths[i] = 1.06 * stds[i] * Math.pow(points.size(), -1/(4.0+getDimensionality()));
 			if (bandwidths[i] == 0.0) {
@@ -103,7 +103,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	 * 
 	 * @return the bandwidth
 	 */
-	public double[] getBandwidth() {
+	public Double[] getBandwidth() {
 		return bandwidths;
 	}
 
@@ -114,10 +114,10 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	 * @return its density
 	 */
 	@Override
-	public double getDensity(double[] x) {
+	public double getDensity(Double[] x) {
 		double density = 0.0;
 		int nbKernels = (isBounded)? bandwidths.length - 1 : bandwidths.length;
-		for (double[] point : points) {
+		for (Double[] point : points) {
 			double logsum = 0.0;
 			for (int i = 0 ; i < nbKernels; i++) {
 				logsum += Math.log((kernel.getDensity((x[i] - point[i]) / bandwidths[i])));
@@ -138,10 +138,10 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	 * @return the sampled point
 	 */
 	@Override
-	public double[] sample() {
-		double[] point = points.get(sampler.nextInt(points.size()));
+	public Double[] sample() {
+		Double[] point = points.get(sampler.nextInt(points.size()));
 
-		double[] newPoint = new double[point.length];
+		Double[] newPoint = new Double[point.length];
 
 		if (isBounded) {
 			int indexToChange = selectIndexToChange(point);
@@ -167,7 +167,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	}
 
 
-	private int selectIndexToChange(double[] point) {
+	private int selectIndexToChange(Double[] point) {
 			int indexWithMaxProb = -1;
 			double maxProb = - Double.MAX_VALUE;
 			for (int i = 0 ; i < point.length ; i++) {
@@ -194,11 +194,11 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	 * @return the discretised values
 	 */
 	@Override
-	public List<double[]> getDiscreteValueArrays(int nbBuckets) {
-		List<double[]> values = new ArrayList<double[]>();
+	public List<Double[]> getDiscreteValueArrays(int nbBuckets) {
+		List<Double[]> values = new ArrayList<Double[]>();
 		double nbToPick = nbBuckets / points.size();
 		if (nbToPick > 0) {
-			for (double[] val : points) {
+			for (Double[] val : points) {
 				for (int i = 0 ; i <nbToPick && nbToPick >= 1.0 ; i++) {
 					values.add(val);
 				}
@@ -206,7 +206,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 		}
 		else {
 			while (values.size() < nbBuckets) {
-				double[] val = sample();
+				Double[] val = sample();
 				if (!values.contains(val)) {
 					values.add(val);
 				}
@@ -236,7 +236,7 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public String prettyPrint() {
 		String s = "MKDE(mean=[";
-		double[] means = getMean();
+		Double[] means = getMean();
 		for (double mean : means) {
 			s += DistanceUtils.shorten(mean) +", ";
 		}
@@ -269,9 +269,12 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 
 
 	@Override
-	public double[] getMean() {
-		double[] mean = new double[points.get(0).length];
-		for (double[] point : points) {
+	public Double[] getMean() {
+		Double[] mean = new Double[points.get(0).length];
+		for (int i = 0 ; i < mean.length ; i++) {
+			mean[i] = 0.0;
+		}
+		for (Double[] point : points) {
 			for (int i = 0 ; i < mean.length ; i++) {
 				mean[i] += point[i];
 			}
@@ -283,10 +286,13 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	}
 
 
-	public double[] getVariance() {
-		double[] mean = getMean();
-		double[] variance = new double[points.get(0).length];
-		for (double[] point : points) {
+	public Double[] getVariance() {
+		Double[] mean = getMean();
+		Double[] variance = new Double[points.get(0).length];
+		for (int i = 0 ; i < variance.length ; i++) {
+			variance[i] = 0.0;
+		}
+		for (Double[] point : points) {
 			for (int i = 0 ; i < variance.length ; i++) {
 				variance[i] += Math.pow(point[i] - mean[i], 2);
 			}
@@ -298,9 +304,9 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	}
 
 
-	private double[] getStandardDeviations() {
-		double[] variance = getVariance();
-		double[] std = new double[points.get(0).length];
+	private Double[] getStandardDeviations() {
+		Double[] variance = getVariance();
+		Double[] std = new Double[points.get(0).length];
 		for (int i = 0 ; i < variance.length ; i++) {
 			std[i] = Math.sqrt(variance[i]);
 		}

@@ -57,7 +57,7 @@ public class DistanceUtils {
 
 		double minDistance = MIN_PROXIMITY_DISTANCE;
 		Assignment closest = new Assignment();
-
+		log.debug("relying on distance utils to calculate probability");
 		outer: 
 			for (Assignment element : elements) {
 			if (element.size() != head.size() || !element.getVariables().equals(head.getVariables())) {
@@ -89,6 +89,8 @@ public class DistanceUtils {
 	
 	public static List<? extends Assignment> getClosestElements (List<Assignment> elements, Assignment head, int number) {
 		
+		log.debug("relying on distance utils to calculate probability");
+
 		List<WeightedAssignment> values = new ArrayList<WeightedAssignment>(elements.size());
 				
 		outer: 
@@ -165,7 +167,7 @@ public class DistanceUtils {
 	}
 	
 
-	public static double getDistance(double[] point1, double[] point2) {
+	public static double getDistance(Double[] point1, Double[] point2) {
 		double dist = 0;
 		for (int i = 0 ; i < point1.length ; i++) {
 			dist += Math.pow(point1[i]-point2[i], 2);
@@ -173,13 +175,13 @@ public class DistanceUtils {
 		return dist / point1.length;
 	}
 	
-	public static double getMinManhattanDistance(Collection<double[]> points) {
+	public static double getMinManhattanDistance(Collection<Double[]> points) {
 		double minDistance = Double.MAX_VALUE;
-		Iterator<double[]> it = points.iterator();
+		Iterator<Double[]> it = points.iterator();
 		if (it.hasNext()) {
-			double[] prev = it.next();
+			Double[] prev = it.next();
 			while (it.hasNext()) {
-				double[] cur = it.next();
+				Double[] cur = it.next();
 				double dist =getDistance(prev, cur);
 				if (dist < minDistance) {
 					minDistance = dist;
@@ -192,13 +194,13 @@ public class DistanceUtils {
 	
 	
 
-	public static double getAverageDistance(Collection<double[]> points) {
-		Iterator<double[]> it = points.iterator();
+	public static double getAverageDistance(Collection<Double[]> points) {
+		Iterator<Double[]> it = points.iterator();
 		double dist = 0;
 		if (it.hasNext()) {
-			double[] prev = it.next();
+			Double[] prev = it.next();
 			while (it.hasNext()) {
-				double[] cur = it.next();
+				Double[] cur = it.next();
 				dist += getDistance(prev, cur);
 				prev = cur;
 			}
@@ -207,13 +209,13 @@ public class DistanceUtils {
 	}
 	
 	
-	public static double getMaxManhattanDistance(Collection<double[]> points) {
+	public static double getMaxManhattanDistance(Collection<Double[]> points) {
 		double maxDistance = Double.MAX_VALUE;
-		Iterator<double[]> it = points.iterator();
+		Iterator<Double[]> it = points.iterator();
 		if (it.hasNext()) {
-			double[] prev = it.next();
+			Double[] prev = it.next();
 			while (it.hasNext()) {
-				double[] cur = it.next();
+				Double[] cur = it.next();
 				double dist =getDistance(prev, cur);
 				if (dist > maxDistance) {
 					maxDistance = dist;

@@ -7,9 +7,7 @@
 <value prob="0.8219">Greeting</value>
 <value prob="0.1781">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.8219">hi lenny</value>
 <value prob="0.1781">None</value>
@@ -34,9 +32,7 @@
 <value prob="0.3938">Move(Forward)</value>
 <value prob="0.6063">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3938">could you go forward</value>
 <value prob="0.6063">None</value>
@@ -67,9 +63,7 @@
 <value prob="0.2306">Confirm</value>
 <value prob="0.7694">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.2306">yes</value>
 <value prob="0.7694">None</value>
@@ -99,9 +93,7 @@
 <value prob="0.445">Confirm</value>
 <value prob="0.555">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.445">perfect</value>
 <value prob="0.555">None</value>
@@ -134,9 +126,7 @@
 <value prob="0.29">None</value>
 <value prob="0.71">Stop</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.71">stop</value>
 <value prob="0.29">None</value>
@@ -170,9 +160,7 @@
 <value prob="0.8806">Move(Left)</value>
 <value prob="0.1194">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.1194">None</value>
 <value prob="0.8806">turn left</value>
@@ -203,9 +191,7 @@
 <value prob="0.6525">Move(Forward)</value>
 <value prob="0.3475">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6525">move forward</value>
 <value prob="0.3475">None</value>
@@ -236,9 +222,7 @@
 <value prob="0.2344">Closing</value>
 <value prob="0.7656">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.2344">bye lenny</value>
 <value prob="0.7656">None</value>
@@ -269,9 +253,7 @@
 <value prob="0.5944">Move(Forward,Short)</value>
 <value prob="0.4056">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5944">go forward a little bit</value>
 <value prob="0.4056">None</value>
@@ -302,9 +284,7 @@
 <value prob="0.715">Move(Left)</value>
 <value prob="0.285">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.285">None</value>
 <value prob="0.715">turn left</value>
@@ -335,9 +315,7 @@
 <value prob="0.4813">Move(Forward)</value>
 <value prob="0.5188">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4813">move forward</value>
 <value prob="0.5188">None</value>
@@ -368,9 +346,7 @@
 <value prob="0.9431">Confirm</value>
 <value prob="0.0569">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.9431">yes</value>
 <value prob="0.0569">None</value>
@@ -401,9 +377,7 @@
 <value prob="0.5813">PickUp(RedObj)</value>
 <value prob="0.4188">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5813">and pick it up</value>
 <value prob="0.4188">None</value>
@@ -437,9 +411,7 @@
 <value prob="0.6587">Move(Left,Short)</value>
 <value prob="0.3413">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6587">turn left a little bit</value>
 <value prob="0.3413">None</value>
@@ -470,9 +442,7 @@
 <value prob="0.3744">Move(Forward)</value>
 <value prob="0.6256">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3744">go straight</value>
 <value prob="0.6256">None</value>
@@ -502,9 +472,7 @@
 <value prob="0.3775">Confirm</value>
 <value prob="0.6225">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3775">great</value>
 <value prob="0.6225">None</value>
@@ -535,9 +503,7 @@
 <value prob="0.3556">PickUp(Other)</value>
 <value prob="0.6444">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3556">pick up it</value>
 <value prob="0.6444">None</value>
@@ -568,9 +534,7 @@
 <value prob="0.5075">Move(Forward)</value>
 <value prob="0.4925">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5075">move forwards</value>
 <value prob="0.4925">None</value>
@@ -601,9 +565,7 @@
 <value prob="0.3838">Move(Forward)</value>
 <value prob="0.6163">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3838">go straight</value>
 <value prob="0.6163">None</value>
@@ -633,9 +595,7 @@
 <value prob="0.5681">Confirm</value>
 <value prob="0.4319">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5681">great</value>
 <value prob="0.4319">None</value>
@@ -666,9 +626,7 @@
 <value prob="0.6969">Move(Right)</value>
 <value prob="0.3031">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6969">please turn right</value>
 <value prob="0.3031">None</value>
@@ -699,9 +657,7 @@
 <value prob="0.4863">Greeting</value>
 <value prob="0.5137">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4863">hi nao</value>
 <value prob="0.5137">None</value>
@@ -732,9 +688,7 @@
 <value prob="0.6619">Move(Forward)</value>
 <value prob="0.3381">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6619">move forward</value>
 <value prob="0.3381">None</value>
@@ -764,9 +718,7 @@
 <value prob="0.6806">PickUp(Other)</value>
 <value prob="0.3194">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6806">pick it up</value>
 <value prob="0.3194">None</value>
@@ -800,9 +752,7 @@
 <value prob="0.7306">Move(Right)</value>
 <value prob="0.2694">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7306">turn right</value>
 <value prob="0.2694">None</value>
@@ -833,9 +783,7 @@
 <value prob="0.3681">Move(Forward)</value>
 <value prob="0.6319">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3681">could you move forward</value>
 <value prob="0.6319">None</value>
@@ -866,9 +814,7 @@
 <value prob="0.7513">Move(Right,Short)</value>
 <value prob="0.2488">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7513">now please to the right a little bit</value>
 <value prob="0.2488">None</value>
@@ -899,9 +845,7 @@
 <value prob="0.6125">WhatDoYouSee</value>
 <value prob="0.3875">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6125">what do you see</value>
 <value prob="0.3875">None</value>
@@ -932,9 +876,7 @@
 <value prob="0.83">PickUp(BlueObj)</value>
 <value prob="0.17">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.83">pick up the blue cylinder</value>
 <value prob="0.17">None</value>
@@ -964,9 +906,7 @@
 <value prob="0.5975">Release</value>
 <value prob="0.4025">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5975">put the food can on the floor</value>
 <value prob="0.4025">None</value>
@@ -1000,9 +940,7 @@
 <value prob="0.7513">Move(Turn)</value>
 <value prob="0.2488">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7513">turn back</value>
 <value prob="0.2488">None</value>
@@ -1033,9 +971,7 @@
 <value prob="0.7994">Move(Forward)</value>
 <value prob="0.2006">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7994">move forward</value>
 <value prob="0.2006">None</value>
@@ -1065,9 +1001,7 @@
 <value prob="0.5363">PickUp(Other)</value>
 <value prob="0.4638">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5363">pick it up</value>
 <value prob="0.4638">None</value>
@@ -1101,9 +1035,7 @@
 <value prob="0.6038">Move(Right,Short)</value>
 <value prob="0.3963">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6038">move right a little bit</value>
 <value prob="0.3963">None</value>
@@ -1134,9 +1066,7 @@
 <value prob="0.5875">Move(Right,Short)</value>
 <value prob="0.4125">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5875">go right a little bit</value>
 <value prob="0.4125">None</value>
@@ -1167,9 +1097,7 @@
 <value prob="0.6769">Move(Forward,Short)</value>
 <value prob="0.3231">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6769">move forward a little bit</value>
 <value prob="0.3231">None</value>
@@ -1200,9 +1128,7 @@
 <value prob="0.7119">Move(Left)</value>
 <value prob="0.2881">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7119">now turn left</value>
 <value prob="0.2881">None</value>
@@ -1233,9 +1159,7 @@
 <value prob="0.8469">Move(Forward)</value>
 <value prob="0.1531">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.1531">None</value>
 <value prob="0.8469">go forward</value>
@@ -1266,9 +1190,7 @@
 <value prob="0.8388">Move(Left)</value>
 <value prob="0.1613">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.1613">None</value>
 <value prob="0.8388">turn left</value>
@@ -1299,9 +1221,7 @@
 <value prob="0.4125">Move(Right)</value>
 <value prob="0.5875">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4125">and please right</value>
 <value prob="0.5875">None</value>
@@ -1332,9 +1252,7 @@
 <value prob="0.6113">Move(Forward,Short)</value>
 <value prob="0.3888">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6113">move forward a bit</value>
 <value prob="0.3888">None</value>
@@ -1365,9 +1283,7 @@
 <value prob="0.8263">Move(Left)</value>
 <value prob="0.1737">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.1737">None</value>
 <value prob="0.8263">turn left</value>
@@ -1398,9 +1314,7 @@
 <value prob="0.8425">Move(Turn)</value>
 <value prob="0.1575">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.8425">turn back</value>
 <value prob="0.1575">None</value>
@@ -1431,9 +1345,7 @@
 <value prob="0.8075">Move(Left)</value>
 <value prob="0.1925">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.1925">None</value>
 <value prob="0.8075">turn left</value>
@@ -1464,9 +1376,7 @@
 <value prob="0.7856">Move(Left)</value>
 <value prob="0.2144">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.2144">None</value>
 <value prob="0.7856">turn left</value>
@@ -1497,9 +1407,7 @@
 <value prob="0.5881">Move(Left,Short)</value>
 <value prob="0.4119">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5881">turn left a bit</value>
 <value prob="0.4119">None</value>
@@ -1530,9 +1438,7 @@
 <value prob="0.4119">Confirm</value>
 <value prob="0.5881">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4119">yes</value>
 <value prob="0.5881">None</value>
@@ -1563,9 +1469,7 @@
 <value prob="0.7194">Move(Forward)</value>
 <value prob="0.2806">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7194">move forward</value>
 <value prob="0.2806">None</value>
@@ -1595,9 +1499,7 @@
 <value prob="0.5163">PickUp(Other)</value>
 <value prob="0.4838">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.5163">and pick up it</value>
 <value prob="0.4838">None</value>
@@ -1632,9 +1534,7 @@
 <value prob="0.6694">Move(Forward)</value>
 <value prob="0.3306">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6694">move forward</value>
 <value prob="0.3306">None</value>
@@ -1668,9 +1568,7 @@
 <value prob="0.7425">Move(Right)</value>
 <value prob="0.2575">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7425">turn right</value>
 <value prob="0.2575">None</value>
@@ -1700,9 +1598,7 @@
 <value prob="0.57">Move(Backward)</value>
 <value prob="0.43">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.57">back</value>
 <value prob="0.43">None</value>
@@ -1736,9 +1632,7 @@
 <value prob="0.3888">Move(Right)</value>
 <value prob="0.6113">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3888">turn right</value>
 <value prob="0.6113">None</value>
@@ -1769,9 +1663,7 @@
 <value prob="0.4506">Move(Right)</value>
 <value prob="0.5494">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4506">turn right</value>
 <value prob="0.5494">None</value>
@@ -1802,9 +1694,7 @@
 <value prob="0.3019">Confirm</value>
 <value prob="0.6981">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3019">yes</value>
 <value prob="0.6981">None</value>
@@ -1835,9 +1725,7 @@
 <value prob="0.7463">Move(Forward)</value>
 <value prob="0.2538">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7463">move forward</value>
 <value prob="0.2538">None</value>
@@ -1867,9 +1755,7 @@
 <value prob="0.4869">PickUp(Other)</value>
 <value prob="0.5131">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.4869">pick up it</value>
 <value prob="0.5131">None</value>
@@ -1903,9 +1789,7 @@
 <value prob="0.3175">Release</value>
 <value prob="0.6825">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3175">and now release it</value>
 <value prob="0.6825">None</value>
@@ -1936,9 +1820,7 @@
 <value prob="0.6094">Move(Forward,Short)</value>
 <value prob="0.3906">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6094">move forward a little bit</value>
 <value prob="0.3906">None</value>
@@ -1969,9 +1851,7 @@
 <value prob="0.7081">Release</value>
 <value prob="0.2919">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7081">put the object down</value>
 <value prob="0.2919">None</value>
@@ -2002,9 +1882,7 @@
 <value prob="0.2475">Confirm</value>
 <value prob="0.7525">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.2475">yes</value>
 <value prob="0.7525">None</value>
@@ -2034,9 +1912,7 @@
 <value prob="0.6587">Confirm</value>
 <value prob="0.3413">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.6587">perfect</value>
 <value prob="0.3413">None</value>
@@ -2069,9 +1945,7 @@
 <value prob="0.3656">Greeting</value>
 <value prob="0.6344">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.3656">hi</value>
 <value prob="0.6344">None</value>
@@ -2105,9 +1979,7 @@
 <value prob="0.7081">Move(Left)</value>
 <value prob="0.2919">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.7081">go left</value>
 <value prob="0.2919">None</value>
@@ -2135,9 +2007,7 @@
 <value prob="0.47">PickUp(Other)</value>
 <value prob="0.53">None</value>
 </variable>
-<variable id="completed-task">
-<value prob="1.0">true</value>
-</variable>
+
 <variable id="u_u">
 <value prob="0.47">please take the object</value>
 <value prob="0.53">None</value>

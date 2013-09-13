@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <samples>
 
+ <import href="lilja.xml"/>
  <import href="elisabeth.xml"/>
  <import href="arne.xml"/>
- <import href="emanuele.xml"/>
+ <import href="student3.xml"/>
+ <import href="rebecca.xml"/>
  <import href="gordana.xml"/>
  <import href="jantore.xml"/>
- <import href="lilja.xml"/>
- <import href="rebecca.xml"/>
  <import href="student1.xml"/>
  <import href="student2.xml"/>
- <import href="student3.xml"/>
+ <import href="emanuele.xml"/>
 
 </samples>

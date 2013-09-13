@@ -87,7 +87,7 @@ public class SandBox {
 	
 	
 	public static void main222(String[] args) {
-		double[] point = new double[]{-0.3, 0.4};
+		Double[] point = new Double[]{-0.3, 0.4};
 		log.debug("result " + new VectorVal(InferenceUtils.normalise(point)));
 	}
 	

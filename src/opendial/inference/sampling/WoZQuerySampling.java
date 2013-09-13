@@ -19,20 +19,28 @@
 
 package opendial.inference.sampling;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MIN_UTIL = -20;
+	public static final double MAX = 50;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -49,7 +57,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 	@Override
 	protected void compileResults() {
-		log.debug("compiling results");
 		try {
 			Intervals<WeightedSample> intervals = resample();
 			distrib = new SimpleEmpiricalDistribution();
@@ -58,6 +65,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				WeightedSample sample = intervals.sample();
 				distrib.addSample(sample.getSample().getTrimmed(query.getQueryVars()));
 			}
+			
 		}
 		catch (DialException e) {
 			log.warning("sampling problem: " + e);
@@ -69,26 +77,79 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
+		Map<Assignment,Double> averages = getAverages();
+		
+		if (averages.size() == 1) {
+			for (WeightedSample sample : samples) {
+				table.put(sample, sample.getWeight());
+			}
+			return new Intervals<WeightedSample>(table);	
+		}
+		
+		Assignment bestNotGold = new Assignment();
+		for (Assignment a : averages.keySet()) {
+			if (!a.equals(goldAction) && (bestNotGold.isEmpty() || averages.get(a) > averages.get(bestNotGold))) {
+				bestNotGold = a;
+			}
+		}
+		log.debug("Utility averages : " + (new UtilityTable(averages)).prettyPrint().replace("\n", ", "));
+		log.debug(" ==> gold action = " + goldAction);
+		
 		synchronized(samples) {
+			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
-				if (sample.getSample().contains(goldAction)) {
-					 weight *= (sample.getUtility() - MIN_UTIL);
+				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
+				if (action.equals(goldAction)  && sample.getUtility() <= averages.get(bestNotGold)) {
+						double distance = averages.get(bestNotGold) - sample.getUtility();
+						weight *= Math.abs(MAX - distance) / MAX;
 				}
-				else {
-					weight *= 1/(sample.getUtility()-MIN_UTIL);
+				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
+					double distance = sample.getUtility() - averages.get(goldAction);
+					double factor = (goldAction.isDefault())? 0.2 : 1.0;
+					weight *= Math.abs(MAX - (factor * distance/averages.size())) / MAX;
 				}
+
 				table.put(sample, weight);
 			}
 		}
 
 		return new Intervals<WeightedSample>(table);	
 	}
+	
+	
+	private Map<Assignment,Double> getAverages() {
+		
+		Map<Assignment,Double> averages = new HashMap<Assignment,Double>();
+		
+		synchronized(samples) {
+			
+			for (WeightedSample sample : samples) {
+				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
+				if (!averages.containsKey(action)) {
+					averages.put(action, 0.0);
+				}
+				averages.put(action, averages.get(action) + sample.getUtility());
+			}
+		}
+		
+		for (Assignment a : averages.keySet()) {
+			averages.put(a, averages.get(a) * averages.size() / samples.size());
+		}
+		if (!averages.containsKey(goldAction)) {
+			averages.put(goldAction, 10.0);
+		}
+		
+		return averages;
+	}
+	
 
 	
 	public SimpleEmpiricalDistribution getResults() {
 		return distrib;
 	}
+	
+	
 	
 }
 

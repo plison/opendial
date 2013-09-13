@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
@@ -318,16 +319,13 @@ public class SimpleTable implements DiscreteProbDistribution {
 			return table.get(trimmedHead);
 		}
 
-		else {
-		//	log.debug("exact value cannot be found in table, must use proximity: " + trimmedHead);
-			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmedHead);
+		 else if (!table.isEmpty() && headVars.size() == 1 && table.keySet().iterator().next()
+					 .getValue(headVars.iterator().next()) instanceof DoubleVal) { 
+		 	Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmedHead);
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}
-			else{
-		//		log.debug("closest row could not be found, table size " + table.size());
-			}
-		}
+		} 
 		return 0.0f;
 	}
 
@@ -422,7 +420,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	
 	
 	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
-	/**	Map<double[],Double> values = new HashMap<double[],Double>();		
+	/**	Map<Double[],Double> values = new HashMap<Double[],Double>();		
 		double total = countTotalProb();		
 		for (Assignment a : table.keySet()) {
 			if (a.getValue(headVar) instanceof VectorVal) {
@@ -436,7 +434,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 		MultiDiscreteDensityFunction function = new MultiDiscreteDensityFunction(values);
 		return new MultivariateDistribution(headVar, function); */
 		
-		List<double[]> samples = new ArrayList<double[]>(Settings.getInstance().nbSamples);
+		List<Double[]> samples = new ArrayList<Double[]>(Settings.getInstance().nbSamples);
 		for (int i = 0 ; i < Settings.getInstance().nbSamples ;i++) {
 			Value val = sample().getValue(headVar);
 			if (val instanceof VectorVal) {
@@ -591,10 +589,29 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	@Override
 	public String toString() {
+		return toString(0.0);
+	}
+	
+	
+
+	/**
+	 * Returns a string representation of the probability table
+	 *
+	 * @return the string representation
+	 */
+	private String toString(double threshold) {
 		String str = "";
-		for (Assignment head: table.keySet()) {
-			double prob = DistanceUtils.shorten(table.get(head));
-			str += "P("+head + "):=" + prob + "\n";
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet());
+		
+		Collections.sort(entries, new EntryComparator());
+		Collections.reverse(entries);
+				
+		for (Entry<Assignment,Double> entry : entries) {
+			double prob = DistanceUtils.shorten(entry.getValue());
+			if (prob > threshold) {
+				str += "P("+entry.getKey() + "):=" + prob + "\n";
+			}
 		}
 
 		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
@@ -612,8 +629,8 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		if (table.size() < 20) {
-			return toString();
+		if (table.size() < 30) {
+			return toString(0.05).replace("\n", ", ");
 		}
 		else {
 			return "(probability table too big to be shown)";

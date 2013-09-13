@@ -20,6 +20,7 @@
 package opendial.bn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,7 +91,6 @@ public class BNetwork implements IdChangeListener {
 	public synchronized void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
 		node.addIdChangeListener(this);
@@ -122,10 +122,11 @@ public class BNetwork implements IdChangeListener {
 	 * Replaces an existing node with a new one (with same identifier)
 	 * 
 	 * @param node the new value for the node
+	 * @throws DialException 
 	 */
-	public void replaceNode(BNode node) {
+	public void replaceNode(BNode node) throws DialException {
 		if (!nodes.containsKey(node.getId())) {
-			log.warning("network does not contain a node with identifier " + node.getId());
+			log.debug("network does not contain a node with identifier " + node.getId());
 		}
 		else {
 			removeNode(node.getId());
@@ -142,7 +143,7 @@ public class BNetwork implements IdChangeListener {
 	 */
 	public synchronized BNode removeNode(String nodeId) {
 		if (!nodes.containsKey(nodeId)) {
-			log.warning("network does not contain a node with identifier " + nodeId);
+		//	log.warning("network does not contain a node with identifier " + nodeId);
 		}
 		else {
 			BNode node = nodes.get(nodeId);
@@ -487,8 +488,7 @@ public class BNetwork implements IdChangeListener {
 		Set<String> identicalNodes = new HashSet<String>();
 		for (ChanceNode node : reducedNetwork.getChanceNodes()) {
 			ChanceNode initNode = getChanceNode(node.getId());
-				if (node.getInputNodeIds().equals(initNode.getInputNodeIds()) 
-			//			&& node.getChanceOutputNodesIds().equals(initNode.getChanceOutputNodesIds()) 
+				if (node.getClusterIds().equals(initNode.getClusterIds()) 
 						&& !initNode.hasDescendant(evidence.getVariables())
 				//		&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))
 						) {
@@ -500,6 +500,38 @@ public class BNetwork implements IdChangeListener {
 		return identicalNodes;
 	}
 	
+	
+	public List<Set<String>> getClusters() {
+		List<Set<String>> clusters = new ArrayList<Set<String>>();
+		
+		for (String var : nodes.keySet()) {
+			
+			boolean inCluster = false;
+			for (Set<String> cluster : clusters) {
+				if (cluster.contains(var)) {
+					inCluster = true;
+				}
+			}
+			if (!inCluster) {
+				Set<String> newCluster = new HashSet<String>();
+				newCluster.addAll(nodes.get(var).getClusterIds());
+				clusters.add(newCluster);
+			}
+		}
+		
+		for (Set<String> cluster1 : clusters) {
+			for (Set<String> cluster2 : clusters) {
+				if (!cluster1.equals(cluster2)) {
+					for (String elInCluster1 : cluster1) {
+						if (cluster2.contains(elInCluster1)) {
+							log.warning("cluster 1 = " + cluster1 + " and cluster 2 = " + cluster2);
+						}
+					}
+				}
+			}
+		}
+		return clusters;
+	}
 
 	// ===================================
 	//  UTILITIES

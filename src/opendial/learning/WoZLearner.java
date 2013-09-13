@@ -79,14 +79,15 @@ public class WoZLearner extends ForwardPlanner  {
 					catch (InterruptedException e) {}
 				}
 			}
-			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
-			Assignment goldAction = new Assignment(actionVariable, gold);
-			log.debug("gold standard action: " + goldAction);
 
+			Assignment goldAction = new Assignment(actionVariable, gold);
 			recordAction(currentState, goldAction);
 			
+			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
+			log.debug("updating parameters: " + paramDistrib.getHeadVariables());
 			try {
 				currentState.addContent(paramDistrib, "planner");
+	
 			} catch (DialException e) {
 				log.warning("could not update state parameters: " + e);
 			}

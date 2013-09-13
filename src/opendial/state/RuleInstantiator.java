@@ -55,6 +55,7 @@ import opendial.domains.rules.quantification.LabelPredicate;
 import opendial.domains.rules.quantification.UnboundPredicate;
 import opendial.domains.rules.quantification.ValuePredicate;
 import opendial.state.rules.AnchoredRule;
+import opendial.state.rules.DistributionRule;
 import opendial.state.rules.Rule;
 import opendial.state.rules.Rule.RuleType;
 import opendial.utils.CombinatoricsUtils;
@@ -308,7 +309,8 @@ public class RuleInstantiator implements Runnable {
 			state.setVariableToProcess(outputVar);
 
 			// adding the connection to the previous version of the variable (if any)
-			if (network.hasChanceNode(outputVar.replaceFirst("'", "")) && !(rule instanceof PredictionRule)) {
+			if (network.hasChanceNode(outputVar.replaceFirst("'", "")) && !(rule instanceof PredictionRule) 
+					&& !(rule instanceof DistributionRule && ((DistributionRule)rule).toClear())) {
 				outputNode.addInputNode(network.
 						getChanceNode(outputVar.replaceFirst("'", "")));
 			}

@@ -5,56 +5,61 @@
 	<rule id="usermodel">
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({X})" />
-				<if var="i_u" value="{X}" />
+				<if var="a_m" value="Confirm({XX})" />
+				<if var="i_u" value="{XX}" />
 			</condition>
-			<effect prob="0.7">
+			<effect prob="theta_confirmpredict[0]">
 				<set var="a_u" value="Confirm" />
 			</effect>
-			<effect prob="0.3">
+			<effect prob="theta_confirmpredict[1]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_confirmpredict[2]"/>
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({Y})" />
-				<if var="i_u" value="{Y}" relation="!=" />
+				<if var="a_m" value="Confirm({YY})" />
+				<if var="i_u" value="{YY}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.7">
-				<set var="a_u" value="Goodbye" />
+			<effect prob="theta_disconfirmpredict[0]">
+				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.3">
+			<effect prob="theta_disconfirmpredict[1]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_disconfirmpredict[2]"/>
 		</case>
 		<case>
 			<condition operator="and">
 				<if var="lastMove" value="{i_u}" />
 			</condition>
-			<effect prob="0.5">
+			<effect prob="theta_samemove[0]">
 				<set var="a_u" value="RepeatLast" />
 			</effect>
-			<effect prob="0.5">
+			<effect prob="theta_samemove[1]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_samemove[2]"/>
 		</case>
 		<case>
 			<condition operator="or">
 				<if var="a_m" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.95">
+			<effect prob="theta_intent[0]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_intent[1]"/>
 		</case>
 		<case>
 			<condition>
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.95">
+			<effect prob="theta_othercase[0]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_othercase[1]"/>
 		</case>
 	</rule>
 
@@ -64,15 +69,13 @@
 			<condition>
 				<if var="a_m" value="Do(*)" />
 			</condition>
-			<effect prob="0.2">
+			<effect prob="theta_aftermove[0]">
 				<set var="a_u" value="Stop" />
 			</effect>
-			<effect prob="0.2">
-				<set var="a_u" value="Confirm" />
-			</effect>
-			<effect prob="0.2">
+			<effect prob="theta_aftermove[1]">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
+			<effect prob="theta_aftermove[2]"/>
 		</case>
 	</rule>
 
