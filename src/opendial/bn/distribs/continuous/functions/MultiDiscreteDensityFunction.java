@@ -45,7 +45,7 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	public static Logger log = new Logger("MultiDiscreteDensityFunction", Logger.Level.DEBUG);
 	
 	// the set of points for the density function
-	Map<double[],Double> points;
+	Map<Double[],Double> points;
 	
 	// the sampler
 	Random sampler;
@@ -59,8 +59,8 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	 * 
 	 * @param points a set of (value,prob) pairs
 	 */
-	public MultiDiscreteDensityFunction(Map<double[],Double> points) {
-		this.points = new HashMap<double[],Double>();
+	public MultiDiscreteDensityFunction(Map<Double[],Double> points) {
+		this.points = new HashMap<Double[],Double>();
 		this.points.putAll(points);
 		sampler = new Random();
 		avgDistance = DistanceUtils.getAverageDistance(points.keySet());
@@ -73,10 +73,10 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	 * @param x the point
 	 * @return the density at the point
 	 */
-	public double getDensity(double[] x) {		
-		double[] closest = null;
+	public double getDensity(Double[] x) {		
+		Double[] closest = null;
 		double closestDist = - Double.MAX_VALUE;
-		for (double[] point : points.keySet()) {
+		for (Double[] point : points.keySet()) {
 			double curDist = DistanceUtils.getDistance(point, x);
 			if (closest == null || curDist < closestDist) {
 				closest = point;
@@ -98,17 +98,17 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	 * @return the resulting sample
 	 */
 	@Override
-	public double[] sample() {
+	public Double[] sample() {
 	        double sampled = sampler.nextFloat();
 	        double sum = 0.0;
-	        for (double[] point : points.keySet()) {
+	        for (Double[] point : points.keySet()) {
 	        	sum += points.get(point);
 	        	if (sampled < sum) {
 	        		return point;
 	        	}
 	        }
 	        log.warning("discrete density function could not be sampled");
-	        return new double[0];
+	        return new Double[0];
 	}
 	
 	
@@ -121,11 +121,11 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	 * @return the set of discrete values
 	 */
 	@Override
-	public List<double[]> getDiscreteValueArrays(int nbBuckets) {
-		List<double[]> values = new ArrayList<double[]>();
+	public List<Double[]> getDiscreteValueArrays(int nbBuckets) {
+		List<Double[]> values = new ArrayList<Double[]>();
 		int nbLoops = 1;
 		while (values.size() < nbBuckets && nbLoops < 5) {
-		for (double[] val : points.keySet()) {
+		for (Double[] val : points.keySet()) {
 			double nbToPick = points.get(val) * nbBuckets * nbLoops;
 				for (int i = 0 ; i <nbToPick && nbToPick >= 1.0 ; i++) {
 					if (!values.contains(val)) {
@@ -158,7 +158,7 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 	@Override
 	public String prettyPrint() {
 		String s = "MKDE(";
-		for (double[] point : points.keySet()) {
+		for (Double[] point : points.keySet()) {
 			s += "(";
 			for (int i = 0 ; i < point.length; i++) {
 				s += DistanceUtils.shorten(point[i]) + ",";
@@ -187,10 +187,10 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 
 
 	@Override
-	public double[] getMean() {
-		double[] mean = new double[getDimensionality()];
+	public Double[] getMean() {
+		Double[] mean = new Double[getDimensionality()];
 		for (int i = 0 ; i < getDimensionality(); i++) {
-			for (double[] point : points.keySet()) {
+			for (Double[] point : points.keySet()) {
 				mean[i] += (point[i] * points.get(point));
 			}
 		}
@@ -199,11 +199,11 @@ public class MultiDiscreteDensityFunction implements MultivariateDensityFunction
 
 	// verify correctness
 	@Override
-	public double[] getVariance() {
-		double[] variance = new double[getDimensionality()];
-		double[] mean = getMean();
+	public Double[] getVariance() {
+		Double[] variance = new Double[getDimensionality()];
+		Double[] mean = getMean();
 		for (int i = 0 ; i < getDimensionality(); i++) {
-			for (double[] point : points.keySet()) {
+			for (Double[] point : points.keySet()) {
 				variance[i] += Math.pow(point[i] - mean[i], 2) * points.get(point);
 			}
 		}

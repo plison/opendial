@@ -154,7 +154,7 @@ public class Assignment {
 	 * @param var the variable label
 	 * @param val the value (as a double array)
 	 */
-	public Assignment(String var, double[] val) {
+	public Assignment(String var, Double[] val) {
 		this();
 		addPair(var, val);
 	}
@@ -383,7 +383,7 @@ public class Assignment {
 	 * @param var the variable
 	 * @param val the value, as a double array
 	 */
-	public void addPair(String var, double[] val) {
+	public void addPair(String var, Double[] val) {
 		map.put(var, ValueFactory.create(val));
 		resetHashCodeCache();
 	}

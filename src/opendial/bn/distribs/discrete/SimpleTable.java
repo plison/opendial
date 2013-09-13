@@ -422,7 +422,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	
 	
 	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
-	/**	Map<double[],Double> values = new HashMap<double[],Double>();		
+	/**	Map<Double[],Double> values = new HashMap<Double[],Double>();		
 		double total = countTotalProb();		
 		for (Assignment a : table.keySet()) {
 			if (a.getValue(headVar) instanceof VectorVal) {
@@ -436,7 +436,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 		MultiDiscreteDensityFunction function = new MultiDiscreteDensityFunction(values);
 		return new MultivariateDistribution(headVar, function); */
 		
-		List<double[]> samples = new ArrayList<double[]>(Settings.getInstance().nbSamples);
+		List<Double[]> samples = new ArrayList<Double[]>(Settings.getInstance().nbSamples);
 		for (int i = 0 ; i < Settings.getInstance().nbSamples ;i++) {
 			Value val = sample().getValue(headVar);
 			if (val instanceof VectorVal) {

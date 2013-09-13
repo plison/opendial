@@ -146,7 +146,8 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 			}
 			lastTexts.add(text);
 		}
-
+	//	log.debug("table: " + toString());
+		
 		Assignment defaultA = new Assignment();
 	/**	if (!table.isEmpty()) {
 			defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());

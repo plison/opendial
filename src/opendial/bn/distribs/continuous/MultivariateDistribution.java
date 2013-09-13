@@ -131,14 +131,14 @@ public class MultivariateDistribution implements ContinuousProbDistribution {
 	
 		int nbBuckets = Settings.getInstance().nbDiscretisationBuckets;
 				
-		List<double[]> values = function.getDiscreteValueArrays(nbBuckets);
+		List<Double[]> values = function.getDiscreteValueArrays(nbBuckets);
 		
 		Map<Assignment, Double> distrib = new HashMap<Assignment, Double>();
 		double minDistance = DistanceUtils.getMaxManhattanDistance(values)/2.0;
 		for (int i = 0 ; i < Settings.getInstance().nbSamples ; i++) {
 			
-			double[] sample = function.sample();
-			double[] closest = findClosest(values, sample, minDistance);
+			Double[] sample = function.sample();
+			Double[] closest = findClosest(values, sample, minDistance);
 			
 			if (closest != null) {
 			Assignment a = new Assignment(variable,new VectorVal(closest));
@@ -156,12 +156,12 @@ public class MultivariateDistribution implements ContinuousProbDistribution {
 	}
 	
 	
-	private static double[] findClosest (List<double[]> values, double[] value, double minDistance) {
+	private static Double[] findClosest (List<Double[]> values, Double[] value, double minDistance) {
 		
 		double closestDist = Double.MAX_VALUE;
-		double[] closestValue = null;
+		Double[] closestValue = null;
 		
-		for (double[] possibleVal : values) {
+		for (Double[] possibleVal : values) {
 			double distance = 0;
 			for (int i = 0 ; i < value.length ; i++) {
 				distance += Math.abs(possibleVal[i] - value[i]);
@@ -327,12 +327,12 @@ public class MultivariateDistribution implements ContinuousProbDistribution {
 
 
 
-	public double[] getMean() {
+	public Double[] getMean() {
 		return function.getMean();
 	}
 	
 	
-	public double[] getVariance() {
+	public Double[] getVariance() {
 		return function.getVariance();
 	}
 
