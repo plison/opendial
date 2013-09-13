@@ -33,7 +33,6 @@ import opendial.inference.queries.UtilQuery;
 public class WoZQuerySampling extends AbstractQuerySampling {
 
 	public static final double MIN_UTIL = -20;
-	public static final double NUMERATOR_OTHER = 20;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -71,7 +70,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
 		Map<Assignment,Double> averages = getAverages();
-		log.debug("averages " + averages);
 		
 		synchronized(samples) {
 			
@@ -117,6 +115,9 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		
 		for (Assignment a : averages.keySet()) {
 			averages.put(a, averages.get(a) * averages.size() / samples.size());
+		}
+		if (!averages.containsKey(goldAction)) {
+			averages.put(goldAction, 10.0);
 		}
 		return averages;
 	}
