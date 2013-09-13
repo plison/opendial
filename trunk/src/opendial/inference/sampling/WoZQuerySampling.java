@@ -70,12 +70,12 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
 		Map<Assignment,Double> averages = getAverages();
-		
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
-				if (sample.getSample().contains(goldAction)) {
+				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
+				if (action.equals(goldAction)) {
 					double denominator = 0.0;
 					for (Assignment a : averages.keySet()) {
 						denominator += (averages.get(a) - MIN_UTIL);
@@ -84,13 +84,14 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				}
 				else {
 					double denominator = sample.getUtility() - MIN_UTIL;
-					for (Assignment a : averages.keySet()) {
-						if (!a.equals(sample.getSample().getTrimmed(goldAction.getVariables()))) {
-							denominator += averages.get(a) - MIN_UTIL;
+					for (Assignment avg : averages.keySet()) {
+						if (!avg.equals(action)) {
+							denominator += averages.get(avg) - MIN_UTIL;
 						}
 					}
-					weight *= averages.get(goldAction) / denominator;
+					weight *= (averages.get(goldAction) - MIN_UTIL) / denominator;
 				}
+
 				table.put(sample, weight);
 			}
 		}
