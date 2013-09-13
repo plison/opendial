@@ -90,7 +90,6 @@ public class BNetwork implements IdChangeListener {
 	public synchronized void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
 		node.addIdChangeListener(this);
@@ -125,7 +124,7 @@ public class BNetwork implements IdChangeListener {
 	 */
 	public void replaceNode(BNode node) {
 		if (!nodes.containsKey(node.getId())) {
-			log.warning("network does not contain a node with identifier " + node.getId());
+			log.debug("network does not contain a node with identifier " + node.getId());
 		}
 		else {
 			removeNode(node.getId());
@@ -142,7 +141,7 @@ public class BNetwork implements IdChangeListener {
 	 */
 	public synchronized BNode removeNode(String nodeId) {
 		if (!nodes.containsKey(nodeId)) {
-			log.warning("network does not contain a node with identifier " + nodeId);
+	//		log.warning("network does not contain a node with identifier " + nodeId);
 		}
 		else {
 			BNode node = nodes.get(nodeId);

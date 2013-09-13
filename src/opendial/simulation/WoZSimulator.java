@@ -21,6 +21,7 @@ package opendial.simulation;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +30,14 @@ import java.util.Timer;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.arch.StateListener;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
 import opendial.simulation.datastructs.WoZDataPoint;
@@ -86,41 +89,34 @@ public class WoZSimulator implements Simulator {
 	}
 
 
+
+
 	private void performTurn() {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
 			
 			// problem: we include an a_m', which means the trigger of the system decisions is screwed up
-			try {
-				
-				if (systemState.getNetwork().hasChanceNode("motion")) {
-					systemState.getNetwork().removeNode("motion");
-				}
-				
+			try {		
+
+				systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
+						"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
 				String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
-				Assignment goldAction = new Assignment("a_m-gold", goldActionValue);
-				systemState.addContent(goldAction, "wozsim");
-
-				List<String> nodesToAdd = new ArrayList<String>(newState.getNetwork().getChanceNodeIds());
-				if (nodesToAdd.contains("a_u")) {
-					nodesToAdd.remove("a_u");
-					nodesToAdd.add("a_u");
-				}
-				log.debug("new nodes in the dialogue state" + nodesToAdd);
+				ChanceNode goldNode = new ChanceNode("a_m-gold");
+				goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
+				systemState.getNetwork().addNode(goldNode);
 				
-				for (String id : nodesToAdd) {
-					if (id.equals("a_m")) {
-						systemState.activateUpdates(false);
-						systemState.addContent(newState.getNetwork().getChanceNode(id).getDistrib(), "woz");
-						systemState.activateUpdates(true);
-					}
-					else {
-						systemState.addContent(newState.getNetwork().getChanceNode(id).getDistrib(), "woz");					
-					}
-				}
+				systemState.getNetwork().addNetwork(newState.getNetwork());			
+				systemState.setVariableToProcess("processed-task");
+				systemState.triggerUpdates();
+				
+		//		log.debug("system state: " + systemState.getNetwork().getNodeIds());
 
-				//	log.debug("system state: " + systemState.getNetwork().getNodeIds());
+				systemState.activateDecisions(true);
+				systemState.activateUpdates(false);				
+				if (newState.getNetwork().hasChanceNode("a_u")) {
+					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz");		
+				}
 
 				if (goldActionValue.contains("Do(")) {
 					String lastMove = goldActionValue.replace("Do(", "").substring(0, goldActionValue.length()-4);
