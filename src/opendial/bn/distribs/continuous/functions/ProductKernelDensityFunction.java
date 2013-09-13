@@ -271,6 +271,9 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	@Override
 	public Double[] getMean() {
 		Double[] mean = new Double[points.get(0).length];
+		for (int i = 0 ; i < mean.length ; i++) {
+			mean[i] = 0.0;
+		}
 		for (Double[] point : points) {
 			for (int i = 0 ; i < mean.length ; i++) {
 				mean[i] += point[i];
@@ -286,6 +289,9 @@ public class ProductKernelDensityFunction implements MultivariateDensityFunction
 	public Double[] getVariance() {
 		Double[] mean = getMean();
 		Double[] variance = new Double[points.get(0).length];
+		for (int i = 0 ; i < variance.length ; i++) {
+			variance[i] = 0.0;
+		}
 		for (Double[] point : points) {
 			for (int i = 0 ; i < variance.length ; i++) {
 				variance[i] += Math.pow(point[i] - mean[i], 2);
