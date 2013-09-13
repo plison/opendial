@@ -63,16 +63,19 @@ public class StatePruner implements Runnable {
 	@Override
 	public void run() {
 
-		//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
+	//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
+
 		Set<String> nodesToKeep = getNodesToKeep();
+
 	//	Set<String> nodesToIsolate = getNodesToIsolate(nodesToKeep);
 		try {
+
 			BNetwork reduced = reduceNetwork(nodesToKeep);
 			removePrimes(reduced);
 			reinsertActionAndUtilityNodes(reduced);
 			removeEmptyNodes(reduced);
 			state.reset(reduced, new Assignment());
-
+			
 		}
 		catch (Exception e) {
 			log.debug("nodes to keep: " + nodesToKeep); // + " nodes to isolate " + nodesToIsolate);
@@ -142,7 +145,7 @@ public class StatePruner implements Runnable {
 			else if (node.getId().contains("^p") && 
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToRemove.add(node.getId());
-			}
+			} 
 			else if (node.getId().contains("^temp")) {
 				nodesToRemove.add(node.getId());
 			}
@@ -199,25 +202,38 @@ public class StatePruner implements Runnable {
 			an.clearListeners();
 			reduced.addNode(an.copy());
 		}
-		for (UtilityNode un : state.getNetwork().getUtilityNodes()) {
-			Set<String> inputNodeIds = new HashSet<String>(un.getInputNodeIds());
-			un.removeAllRelations();
-			un.clearListeners();
-			for (String inputNodeId: inputNodeIds) {
-				String formattedId = StringUtils.removePrimes(inputNodeId);	
-				if (reduced.hasActionNode(inputNodeId)) {
-					un.addInputNode(reduced.getNode(inputNodeId));
-				}
-				else if (reduced.hasChanceNode(formattedId)) {
-					un.addInputNode(reduced.getNode(formattedId));
-				}
-
-				else {
-					log.warning("node " + inputNodeId + " is not in the reduced network: " + reduced.getNodeIds());
-				}
+		for (ChanceNode cn : state.getNetwork().getChanceNodes()) {
+			if (!reduced.hasChanceNode(cn.getId()) && cn.getId().contains("^p") && 
+				cn.hasDescendant(state.getEvidence().getVariables())) {
+				reintegrateNode(cn, reduced);
 			}
-			reduced.addNode(un);
 		}
+		for (UtilityNode un : state.getNetwork().getUtilityNodes()) {
+			reintegrateNode(un, reduced);
+		}
+	}
+	
+	private void reintegrateNode (BNode node, BNetwork reduced) throws DialException {
+		Set<String> inputNodeIds = new HashSet<String>(node.getInputNodeIds());
+		node.removeAllRelations();
+		node.clearListeners();
+		for (String inputNodeId: inputNodeIds) {
+			String formattedId = StringUtils.removePrimes(inputNodeId);	
+			if (reduced.hasActionNode(inputNodeId)) {
+				node.addInputNode(reduced.getNode(inputNodeId));
+			}
+			else if (reduced.hasChanceNode(formattedId)) {
+				node.addInputNode(reduced.getNode(formattedId));
+			}
+
+			else {
+				reintegrateNode(state.getNetwork().getNode(inputNodeId), reduced);
+				node.addInputNode(reduced.getNode(formattedId));
+	//			log.debug("node " + inputNodeId + " is not in the reduced network: " + reduced.getNodeIds()
+	//					+ " (when trying to add node " + node.getId()+")");
+			}
+		}
+		reduced.addNode(node);
 	}
 
 

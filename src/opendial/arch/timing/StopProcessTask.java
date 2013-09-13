@@ -33,7 +33,7 @@ import opendial.arch.Logger;
 public class StopProcessTask extends TimerTask {
 
 	// logger
-	public static Logger log = new Logger("StopProcessTask", Logger.Level.NORMAL);
+	public static Logger log = new Logger("StopProcessTask", Logger.Level.DEBUG);
 
 	AnytimeProcess process;
 	long timing;

@@ -69,6 +69,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
+import opendial.modules.asr.ASRLock;
 import opendial.state.DialogueState;
 
 
@@ -93,8 +94,8 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 
 	// input field
 	JTextField inputField;
-	JComboBox agentBox;		
-
+	JComboBox agentBox;	
+	
 	JList listBox;
 
 	DialogueState state;
@@ -102,7 +103,7 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	Map<String,String> variablesToMonitor;
 	
 	Map<String,Long> updateStamps;
-
+		
 	/**
 	 * Start up the window
 	 * 
@@ -189,8 +190,6 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	}
 
 
-
-
 	private synchronized void insertLine(SimpleTable table) throws DialException {
 
 		if (table.getHeadVariables().size() != 1) {
@@ -219,6 +218,9 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 					}
 				}
 				formattedTable += "\n";
+			}
+			if (formattedTable.trim().length() < 1) {
+				return;
 			}
 			String guiLabel = "<b>[" + variablesToMonitor.get(variable) + "]</b>";
 			String newText =  "<p style=\"font-size: 2px;\"><table><tr><td width=100><font size=4>" + guiLabel +
@@ -357,6 +359,7 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 	@Override
 	public void update(DialogueState state) {
 		if (state.getName().equals(this.state.getName())) {
+		
 		for (String varToMonitor : variablesToMonitor.keySet()) {
 			if (state.getNetwork().hasChanceNode(varToMonitor) && 
 					state.isUpdated(varToMonitor, updateStamps.get(varToMonitor))) {

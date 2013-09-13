@@ -30,6 +30,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -38,15 +42,20 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
 import opendial.domains.rules.PredictionRule;
+import opendial.domains.rules.UpdateRule;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
+import opendial.learning.SARSALearner;
+import opendial.learning.WoZLearner;
 import opendial.modules.SynchronousModule;
 import opendial.planning.ForwardPlanner;
-import opendial.planning.SARSALearner;
 import opendial.state.rules.DistributionRule;
 import opendial.state.rules.Rule;
 import opendial.state.rules.Rule.RuleType;
+import opendial.utils.DistanceUtils;
 import opendial.utils.StringUtils;
 
 /**
@@ -84,6 +93,7 @@ public class DialogueState {
 
 	boolean activateDecisions = true;
 	boolean activatePredictions = true;
+	boolean activateUpdates = true;
 
 	List<StateListener> listeners;
 
@@ -103,6 +113,9 @@ public class DialogueState {
 
 		if (Settings.getInstance().planning.isSarsa()) {
 		planner = new SARSALearner(this);
+		}
+		else if (Settings.getInstance().planning.isWoZ()) {
+			planner = new WoZLearner(this);
 		}
 		else {
 			planner = new ForwardPlanner(this);
@@ -155,6 +168,9 @@ public class DialogueState {
 		if (!activateDecisions && rule.getRuleType() == RuleType.UTIL) {
 			return;
 		}
+		else if (!activateUpdates && rule instanceof UpdateRule) {
+			return;
+		}
 		else if (!activatePredictions && rule instanceof PredictionRule) {
 			return;
 		}
@@ -193,11 +209,12 @@ public class DialogueState {
 
 
 
+	
 	public synchronized void triggerUpdates() {
-		boolean toContinue = true;
-		while (toContinue) {
-			toContinue = false;
-			
+		
+		refresh();
+		
+		while (true) {
 			if (!variablesToProcess.isEmpty()) {
 				List<SynchronousModule> modulesToTrigger = 
 						new ArrayList<SynchronousModule>();
@@ -217,25 +234,26 @@ public class DialogueState {
 				for (SynchronousModule module : modulesToTrigger) {
 					module.trigger(this);
 				}
-				toContinue = true;
 			}
 			else if (pruner.isPruningNeeded()) {
 					pruner.run();
-					toContinue = true;
 			}	
 			else if (planner.isPlanningNeeded()) {	
-				try { 
+				if (network.hasActionNode("a_m'")) { try { 
 					if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
-					log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
+						if (network.hasChanceNode("motion")) {
+							log.debug("motion : " + getContent("motion", true).toString().replace("\n", ", "));
+						}
+						log.debug("interpreted a_u : " + getContent("a_u", true).toString().replace("\n", ", "));
 					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).toString().replace("\n", ", "));
 				} 
 				}
-				catch (DialException e) { e.printStackTrace(); } 	
+				catch (DialException e) { e.printStackTrace(); } 	}
 				planner.run();
-				toContinue = true;
 			}	
 			else {
 				refresh();
+				break;
 			}
 		}
 	}
@@ -265,7 +283,6 @@ public class DialogueState {
 		triggerUpdates();
 	}
 
-
 	
 	public ProbDistribution getContent(String variable, boolean withEvidence) throws DialException {
 		ProbDistribution distrib = getContent(Arrays.asList(getLatestNodeId(variable)), withEvidence);
@@ -285,7 +302,8 @@ public class DialogueState {
 	}
 
 
-	public ProbDistribution getContent(Collection<String> variables, boolean withEvidence) throws DialException {
+	public ProbDistribution getContent(Collection<String> variables, 
+			boolean withEvidence) throws DialException {
 		if (!network.hasChanceNodes(variables)) {
 			throw new DialException("variables " + variables + " are not in the dialogue state");
 		}
@@ -298,7 +316,7 @@ public class DialogueState {
 			return algo.queryProb(query);
 		}
 		catch (Exception e) {
-			throw new DialException ("inference could not be performed: " + variables);
+			throw new DialException ("inference could not be performed: " + variables + " -reason " + e);
 		}
 	}
 
@@ -323,6 +341,9 @@ public class DialogueState {
 		this.activatePredictions = activatePredictions;
 	}
 
+	public void activateUpdates(boolean activateUpdates) {
+		this.activateUpdates = activateUpdates;
+	}
 
 	public void setAsFictive(boolean fictive) {
 		this.isFictive = fictive;
@@ -361,7 +382,7 @@ public class DialogueState {
 		}
 		return false;
 	}
-
+	
 
 	public void addParameters(BNetwork parameterNetwork) {
 		try {
@@ -388,6 +409,40 @@ public class DialogueState {
 			module.shutdown();
 		}
 	}
+	
+	
+
+	public Element generateXML(Document doc, boolean includePredictions) throws DialException {
+		
+		Element root = doc.createElement("state");
+		for (String nodeId : network.getChanceNodeIds()) {
+			if (!isParameter(nodeId) && (includePredictions || !(nodeId.contains("^p")))) {
+			Element var = doc.createElement("variable");
+			
+			Attr id = doc.createAttribute("id");
+			id.setValue(nodeId);
+			var.setAttributeNode(id);
+			
+			SimpleTable table = getContent(nodeId,true).toDiscrete().getProbTable(new Assignment());
+			for (Assignment a : table.getRows()) {
+				Element valueNode = doc.createElement("value");
+				Attr prob = doc.createAttribute("prob");
+				prob.setValue(""+DistanceUtils.shorten(table.getProb(a)));
+				valueNode.setAttributeNode(prob);
+				valueNode.setTextContent(""+a.getValue(nodeId));
+				var.appendChild(valueNode);	
+			}
+			root.appendChild(var);
+			}
+		}
+		return root;
+	}
+
+	
+	public List<String> getParameterIds() {
+		return new ArrayList<String>(parameterIds);
+	}
+
 
 }
 

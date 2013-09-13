@@ -32,7 +32,6 @@ import org.w3c.dom.Node;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 
-import opendial.domains.Domain;
 import opendial.domains.rules.Case;
 import opendial.domains.rules.CaseBasedRule;
 import opendial.domains.rules.DecisionRule;
@@ -43,6 +42,7 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.NegatedCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
@@ -67,24 +67,17 @@ import opendial.utils.XMLUtils;
 public class XMLRuleReader {
 
 	static Logger log = new Logger("XMLRuleReader", Logger.Level.DEBUG);
-		
-	Domain domain;
-		
-	public XMLRuleReader(Domain domain) {
-		this.domain = domain;
-	}
 	
 
 	/**
 	 * 
 	 * @param node
-	 * @param domain
 	 * @return
 	 * @throws DialException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public <T extends CaseBasedRule> T getRule(Node topNode, Class<T> cls) throws DialException {
+	public static <T extends CaseBasedRule> T getRule(Node topNode, Class<T> cls) throws DialException {
 		
 		try {
 		T rule = cls.newInstance();
@@ -122,7 +115,7 @@ public class XMLRuleReader {
 
 
 
-	private String getQuantifier(Node node) {
+	private static String getQuantifier(Node node) {
 		if (node.getNodeName().equals("quantifier") && node.hasAttributes() &&
 				node.getAttributes().getNamedItem("id") != null) {
 			return node.getAttributes().getNamedItem("id").getNodeValue().replace("{", "").replace("}", "");
@@ -140,7 +133,7 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private <T extends CaseBasedRule> Case getCase(Node caseNode, Class<T> cls) throws DialException {
+	private static <T extends CaseBasedRule> Case getCase(Node caseNode, Class<T> cls) throws DialException {
 
 		Case newCase = new Case();
 
@@ -178,7 +171,7 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private Condition getFullCondition(Node conditionNode) throws DialException {
+	public static Condition getFullCondition(Node conditionNode) throws DialException {
 
 		List<Condition> subconditions = new LinkedList<Condition>();
 
@@ -201,6 +194,7 @@ public class XMLRuleReader {
 			BinaryOperator operator = getBinaryOperator(conditionNode);
 			ComplexCondition condition = new ComplexCondition(subconditions);
 			condition.setOperator(operator);
+			
 			return condition;
 		}
 	}
@@ -215,12 +209,13 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private Condition getSubcondition(Node node) throws DialException {
+	private static Condition getSubcondition(Node node) throws DialException {
 
-		Condition condition = new VoidCondition();
 
 		if (node.getNodeName().equals("if") && node.hasAttributes() && 
 				node.getAttributes().getNamedItem("var")!= null) {
+			
+			Condition condition = new VoidCondition();
 
 			String variable = getStandardVariable(node, "var");
 
@@ -246,8 +241,45 @@ public class XMLRuleReader {
 					throw new DialException("unrecognized attribute: " + attr.getNodeName());
 				}
 			}
+			return condition;
 		}
-		return condition;
+		else if (node.getNodeName().equals("or")) {
+			ComplexCondition condition = new ComplexCondition();
+			condition.setOperator(BinaryOperator.OR);
+			
+			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
+				Node subNode = node.getChildNodes().item(i);
+				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
+					condition.addCondition(getSubcondition(subNode));
+				}
+			}
+			return condition;
+		}
+		else if (node.getNodeName().equals("and")) {
+			ComplexCondition condition = new ComplexCondition();
+			condition.setOperator(BinaryOperator.AND);
+			
+			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
+				Node subNode = node.getChildNodes().item(i);
+				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
+					condition.addCondition(getSubcondition(subNode));
+				}		
+			}
+			return condition;
+		}
+		else if (node.getNodeName().equals("neg")) {
+			ComplexCondition condition = new ComplexCondition();
+			condition.setOperator(BinaryOperator.AND);
+			
+			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
+				Node subNode = node.getChildNodes().item(i);
+				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
+					condition.addCondition(getSubcondition(subNode));
+				}
+			}
+			return new NegatedCondition(condition);
+		}
+		return new VoidCondition();
 	}
 
 
@@ -349,7 +381,7 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private Effect getFullEffect(Node effectNode) throws DialException {
+	private static Effect getFullEffect(Node effectNode) throws DialException {
 
 		List<Effect> effects = new LinkedList<Effect>();
 
@@ -385,7 +417,7 @@ public class XMLRuleReader {
 	 * @return
 	 * @throws DialException 
 	 */
-	private Effect getSubEffect(Node node) throws DialException {
+	private static Effect getSubEffect(Node node) throws DialException {
 
 		Effect effect = new VoidEffect();
 
@@ -443,7 +475,7 @@ public class XMLRuleReader {
 	}
 
 	
-	private <T> Parameter getParameter(Node node, Class<T> cls) throws DialException {
+	private static <T> Parameter getParameter(Node node, Class<T> cls) throws DialException {
 		
 		if (cls.equals(UpdateRule.class) || cls.equals(PredictionRule.class)) {
 			if (node.getAttributes().getNamedItem("prob")!= null) {
@@ -464,7 +496,7 @@ public class XMLRuleReader {
 	}
 	
 	
-	private Parameter getInnerParameter(String paramStr) throws DialException {
+	private static Parameter getInnerParameter(String paramStr) throws DialException {
 		try {
 			double weight = Double.parseDouble(paramStr);
 			return new FixedParameter(weight);

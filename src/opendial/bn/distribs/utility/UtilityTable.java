@@ -34,6 +34,8 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.datastructs.EntryComparator;
 import opendial.bn.distribs.datastructs.Estimate;
 import opendial.bn.values.Value;
+import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -229,13 +231,13 @@ public class UtilityTable implements UtilityDistribution {
 	 * @return the relevant actions for the assignment
 	 */
 	@Override
-	public Set<Assignment> getRelevantActions(Assignment input) {
-		Set<Assignment> relevantActions = new HashSet<Assignment>();
+	public Map<Assignment,Parameter> getRelevantActions(Assignment input) {
+		Map<Assignment,Parameter> relevantActions = new HashMap<Assignment,Parameter>();
 		for (Assignment fullKey : table.keySet()) {
 			if (fullKey.consistentWith(input)) {
 				Assignment otherHalf = new Assignment(fullKey);
 				otherHalf.removePairs(input.getVariables());
-				relevantActions.add(otherHalf);
+				relevantActions.put(otherHalf, new FixedParameter(table.get(fullKey).getValue()));
 			}
 		}
 		return relevantActions;

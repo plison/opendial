@@ -154,6 +154,9 @@ public class DialogueStateViewer extends VisualizationViewer<String,Integer> {
 		int counter = 0;
 		for (BNode node: bn.getNodes()) {
 			String nodeName = getVerticeId(node);
+			if (nodeName.equals("history")) {
+				continue;
+			}
 			f.addVertex(nodeName);
 			for (BNode inputNode : node.getInputNodes()) {
 				if (bn.getNode(inputNode.getId()) != null) {

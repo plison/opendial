@@ -41,6 +41,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -203,8 +204,7 @@ public class BasicRuleTest2 {
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
-	 	
-	 	assertEquals(6, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
 
 		finish();
 }

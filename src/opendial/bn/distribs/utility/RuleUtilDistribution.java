@@ -172,10 +172,10 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 * @return the set of corresponding relevant actions
 	 */
 	@Override
-	public synchronized Set<Assignment> getRelevantActions(Assignment fullInput) {
+	public synchronized Map<Assignment,Parameter> getRelevantActions(Assignment fullInput) {
 		Assignment condition = fullInput.getTrimmedInverse(actionVars);
 		
-		Set<Assignment> relevantActions = new HashSet<Assignment>();
+		Map<Assignment,Parameter> relevantActions = new HashMap<Assignment,Parameter>();
 		
 		OutputTable outputs = rule.getEffectOutputs(condition);
 		for (Output o : outputs.getOutputs()) {
@@ -190,7 +190,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 						concreteAction.addPair(entry.getKey(), entry.getValue());
 					}
 				}
-				relevantActions.add(formatAction(concreteAction));
+				relevantActions.put(formatAction(concreteAction), outputs.getParameter(o));
 			}
 		}
 		

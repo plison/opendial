@@ -30,7 +30,13 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import opendial.arch.Logger;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -817,13 +823,31 @@ public class Assignment {
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof Assignment) {
-				return map.equals(((Assignment)o).getPairs());
+			return map.equals(((Assignment)o).getPairs());
 		}
 		return false;
 	}
 	
 	
 
+	public Element generateXML(Document doc) {
+		
+		Element root = doc.createElement("assignment");
+
+		for (String varId: map.keySet()) {
+			Element var = doc.createElement("variable");
+			Attr id = doc.createAttribute("id");
+			id.setValue(varId);
+			var.setAttributeNode(id);
+			Element value = doc.createElement("value");
+			value.setTextContent(map.get(varId).toString());
+			var.appendChild(value);
+			root.appendChild(var);
+		}
+		return root;
+	}
+	
+	
 	/**
 	 * Returns a string representation of the assignment
 	 *

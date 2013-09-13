@@ -33,6 +33,8 @@ import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
 import opendial.utils.CombinatoricsUtils;
 
 /**
@@ -50,7 +52,7 @@ public class UtilityNode extends BNode {
 	// the utility distribution
 	UtilityDistribution distrib;
 
-	Set<Assignment> relevantActionsCache;
+	Map<Assignment, Parameter> relevantActionsCache;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -189,11 +191,29 @@ public class UtilityNode extends BNode {
 	 * 
 	 * @return the set of all relevant action values
 	 */
-	public Set<Assignment> getRelevantActions() {
+	public Map<Assignment,Parameter> getRelevantActions() {
 		if (relevantActionsCache == null) {
 			buildRelevantActionsCache();
 		}
 		return relevantActionsCache;
+	}
+	
+	public boolean hasPositiveUtility() {
+		if (relevantActionsCache == null) {
+			buildRelevantActionsCache();
+		}
+		for (Assignment action : relevantActionsCache.keySet()) {
+			Parameter param = relevantActionsCache.get(action);
+			if (param instanceof FixedParameter) {
+				if (((FixedParameter)param).getParameterValue() > 0.0) {
+					return true;
+				}
+			}
+			else {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// ===================================
@@ -253,7 +273,7 @@ public class UtilityNode extends BNode {
 
 
 	protected void buildRelevantActionsCache() {
-		relevantActionsCache = new HashSet<Assignment>();
+		relevantActionsCache = new HashMap<Assignment,Parameter>();
 		// here, we must be careful not to include the action nodes themselves 
 		// (else, we would create an infinite cycle of calls)
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
@@ -266,7 +286,7 @@ public class UtilityNode extends BNode {
 				CombinatoricsUtils.getAllCombinations(possibleInputValues);
 
 		for (Assignment input : possibleConditions) {
-			relevantActionsCache.addAll(distrib.getRelevantActions(input));
+			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
 	}
 

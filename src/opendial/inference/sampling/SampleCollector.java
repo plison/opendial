@@ -145,11 +145,11 @@ public class SampleCollector extends Thread {
 							sample.addLogWeight(Math.log(evidenceProb));						
 							sample.addPoint(n.getId(), evidenceValue);
 						}
+
 					}
 
 					// finally, if the node is a utility node, calculate the utility
 					else if (n instanceof UtilityNode) {
-
 						double newUtil = ((UtilityNode)n).getUtility(sample.getSample());
 						sample.addUtility(newUtil);
 					}

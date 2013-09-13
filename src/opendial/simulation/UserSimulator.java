@@ -56,12 +56,12 @@ import opendial.inference.queries.UtilQuery;
 import opendial.state.DialogueState;
 import opendial.utils.CombinatoricsUtils;
 
-public class UserSimulator extends Thread {
+public class UserSimulator implements Simulator {
 
 	// logger
 	public static Logger log = new Logger("Simulator", Logger.Level.DEBUG);
 
-	DialogueState systemState;
+	protected DialogueState systemState;
 
 	Model<DecisionRule> rewardModel;
 
@@ -113,7 +113,7 @@ public class UserSimulator extends Thread {
 		Timer timer = new Timer();
 		timer.schedule(new SimulatorClock(this), 0, timingData*1000);
 
-		this.start();
+		(new Thread(this)).start();
 		
 		try {
 		asrScore = realState.getContent("asrScore", true);
@@ -332,6 +332,13 @@ public class UserSimulator extends Thread {
 				log.warning("cannot update state with user utterance");
 			}
 		}
+	}
+
+
+	
+	@Override
+	public void addListener(StateListener listener) {
+		realState.addListener(listener);
 	}
 	
 }

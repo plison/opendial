@@ -44,7 +44,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	
 	public static int LIGHTWEIGHT_FACTOR = 3;
 	
-	public static int MAX_BRANCHING_FACTOR = 3;
+	public static int MAX_BRANCHING_FACTOR = 4;
 	public static int MAX_QUERYVARS = 2;
 	public static int MAX_CONTINUOUS = 0;
 
@@ -70,13 +70,14 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	@Override
 	public UtilityTable queryUtil(UtilQuery query) throws DialException {
-		return selectBestAlgorithm(query).queryUtil(query);
+		InferenceAlgorithm algo = selectBestAlgorithm(query);
+		return algo.queryUtil(query);
 	}
 
 	@Override
 	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
-		return selectBestAlgorithm(query).reduceNetwork(query);
-	}
+		InferenceAlgorithm algo = selectBestAlgorithm(query);
+		return algo.reduceNetwork(query);	}
 	
 	
 	private InferenceAlgorithm selectBestAlgorithm (Query query) {

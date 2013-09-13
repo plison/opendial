@@ -27,13 +27,19 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
+import opendial.bn.BNetwork;
 
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.RuleDistribution;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.queries.ProbQuery;
 import opendial.state.rules.AnchoredRule;
 import opendial.utils.CombinatoricsUtils;
 
@@ -50,6 +56,9 @@ public class UtilityRuleNode extends UtilityNode {
 	public static Logger log = new Logger("UtilityRuleNode", Logger.Level.DEBUG);
 
 	AnchoredRule rule;
+	
+	public static final double LIKELY_VALUE_THRESHOLD = 0.2;
+	
 
 	public UtilityRuleNode(AnchoredRule rule) throws DialException {
 		super(rule.getId());
@@ -70,22 +79,44 @@ public class UtilityRuleNode extends UtilityNode {
 	 * Returns the set of all possible actions that are allowed by the node
 	 * 
 	 * @return the set of all relevant action values
-	 */
-	@Override
+	 */ 
+	@Override 
 	public void buildRelevantActionsCache() {
-		relevantActionsCache = new HashSet<Assignment>();
 
-		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
-		for (BNode inputNode : rule.getInputNodes()) {
-				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
+		relevantActionsCache = new HashMap<Assignment,Parameter>();
+
+		try {
+		for (Assignment input : getPossibleInputs().getAboveThreshold(LIKELY_VALUE_THRESHOLD).getRows()) {
+			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
-		Set<Assignment> possibleConditions = 
-			CombinatoricsUtils.getAllCombinations(possibleInputValues);
-		for (Assignment input : possibleConditions) {
-			relevantActionsCache.addAll(distrib.getRelevantActions(input));
+		}
+		catch (DialException e) {
+			log.warning("could not build relevant actions cache: " + e);
 		}
 	}
-	
+
+
+	private SimpleTable getPossibleInputs () throws DialException {
+		BNetwork network = null; 
+		for (IdChangeListener listener : idChangeListeners) {
+			if (listener instanceof BNetwork) {
+				network = (BNetwork)listener;
+			}
+		}
+		if (network == null) {
+			throw new DialException("could not find including network");
+		}
+		Set<String> queryIds = new HashSet<String>();
+		for (String var : rule.getInputVariables()) {
+			if (network.hasChanceNode(var)) {
+				queryIds.add(var);
+			}
+		}
+		SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
+				(new ProbQuery(network, queryIds)).toDiscrete().getProbTable(new Assignment());
+		return inputVals;
+	}
+		
 	
 	@Override
 	public UtilityRuleNode copy() throws DialException {
@@ -96,6 +127,7 @@ public class UtilityRuleNode extends UtilityNode {
 	public AnchoredRule getRule() {
 		return rule;
 	}
+
 	
 	
 }

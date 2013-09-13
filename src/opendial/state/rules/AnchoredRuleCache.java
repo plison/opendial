@@ -27,6 +27,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 
 import opendial.bn.nodes.BNode;
@@ -65,10 +66,7 @@ public class AnchoredRuleCache {
 		Set<Assignment> conditions = getPossibleConditions();
 		for (Assignment condition : conditions) {
 			OutputTable conditionedOutput = rule.getEffectOutputs(condition);
-			if (rule.getRule().getRuleId().equals("repetition")) {
-				log.debug("input variables: " + rule.getInputVariables() + " - " + rule.getInputNodes());
-				log.debug("condoutput: " + conditionedOutput);
-			}
+			
 			for (Output o : conditionedOutput.getOutputs()) {
 				if (!cachedValues.containsKey(o)) {
 					cachedValues.put(o, new HashSet<Parameter>());
@@ -92,6 +90,7 @@ public class AnchoredRuleCache {
 		return cachedValues.keySet();
 	}
 	
+	
 	public Set<Parameter> getParameters(Output o) {
 		return cachedValues.get(o);
 	}
@@ -110,8 +109,8 @@ public class AnchoredRuleCache {
 	 */
 	protected Set<Assignment> getPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
-		for (ChanceNode inputNode : rule.getInputNodes()) {
-				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
+		for (ChanceNode inputNode : rule.getInputNodes().values()) {
+			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
 		}
 		
 		Set<Assignment> possibleConditions;
@@ -119,15 +118,15 @@ public class AnchoredRuleCache {
 		int nbCombinations = 
 				CombinatoricsUtils.getEstimatedNbCombinations(possibleInputValues);
 		
-		if (nbCombinations < 50) {
+		if (nbCombinations < 100) {
 		possibleConditions = 
 				CombinatoricsUtils.getAllCombinations(possibleInputValues);
 		}
 		else {
 			possibleConditions = new HashSet<Assignment>();
-			for (int i = 0 ; i < 50 ; i++) {
+			for (int i = 0 ; i < Settings.getInstance().nbSamples/4 ; i++) {
 				Assignment sampledA = new Assignment();
-				for (ChanceNode inputNode: rule.getInputNodes()) {
+				for (ChanceNode inputNode: rule.getInputNodes().values()) {
 					Value sampledValue = null;
 					try { 
 						sampledValue = inputNode.sample();

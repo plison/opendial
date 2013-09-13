@@ -27,6 +27,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -90,6 +91,15 @@ public class ReductionQuery extends Query {
 
 			for (String inputDepId : ancestorIds) {
 				if (reduced.hasNode(inputDepId)) {
+					
+					BNode inputDepNode = network.getNode(inputDepId);
+					
+				if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
+							&& ((ChanceNode)inputDepNode).getNbValues() == 1 && 
+							!(reduced.getNode(var) instanceof ProbabilityRuleNode)) {
+				//		log.debug("cutting the link between " + inputDepId + " and " + var);
+						continue;
+					} 
 					reduced.getNode(var).addInputNode(reduced.getNode(inputDepId));
 				}
 			}

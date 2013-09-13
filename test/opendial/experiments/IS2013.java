@@ -57,7 +57,7 @@ public class IS2013 {
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
 		system.addParameters(params);
-		system.attachSimulator(simulatorDomain);
+		system.attachSimulator(new UserSimulator(system.getState(), simulatorDomain));
 		system.startSystem(); 
 		
 		}

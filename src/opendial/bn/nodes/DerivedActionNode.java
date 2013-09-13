@@ -32,6 +32,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.domains.rules.parameters.Parameter;
 import opendial.utils.StringUtils;
 
 /**
@@ -230,7 +231,7 @@ public class DerivedActionNode extends ActionNode {
 	 */
 	@Override
 	public int hashCode() {
-		return nodeId.hashCode() + getValues().hashCode();
+		return nodeId.hashCode() ;
 	}
 
 
@@ -242,8 +243,8 @@ public class DerivedActionNode extends ActionNode {
 	//	String formattedId = StringUtils.removeSpecifiers(nodeId);
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
-				Set<Assignment> relevantActions = ((UtilityNode)output).getRelevantActions();
-				for (Assignment relevantAction : relevantActions) {
+				Map<Assignment,Parameter> relevantActions = ((UtilityNode)output).getRelevantActions();
+				for (Assignment relevantAction : relevantActions.keySet()) {
 					if (relevantAction.containsVar(nodeId)) {
 						valueCacheTemp.add(relevantAction.getValue(nodeId));
 					}
@@ -265,9 +266,9 @@ public class DerivedActionNode extends ActionNode {
 		Map<Value, Double> frequencies = new HashMap<Value,Double>();
 		for (BNode output : getOutputNodes()) {
 			if (output instanceof UtilityNode) {
-				Set<Assignment> possibleActions = ((UtilityNode)output).getRelevantActions();	
+				Map<Assignment,Parameter> possibleActions = ((UtilityNode)output).getRelevantActions();	
 				Set<Assignment> compatibleActions = new HashSet<Assignment>();
-				for (Assignment action : possibleActions) {
+				for (Assignment action : possibleActions.keySet()) {
 					if (action.consistentWith(input)) {
 						compatibleActions.add(action);
 					}
@@ -299,4 +300,5 @@ public class DerivedActionNode extends ActionNode {
 			log.warning("could not build relevant actions cache: " + e);
 		}
 	}
+	
 }

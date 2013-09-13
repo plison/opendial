@@ -50,7 +50,6 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
 	public AbstractQuerySampling(Query query,int nbSamples, long maxSamplingTime) {
-
 		this.query = query;
 		samples = new Stack<WeightedSample>();
 
