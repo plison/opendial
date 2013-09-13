@@ -103,9 +103,11 @@ public class WoZSimulator implements Simulator {
 				systemState.addContent(goldAction, "wozsim");
 
 				List<String> nodesToAdd = new ArrayList<String>(newState.getNetwork().getChanceNodeIds());
-				nodesToAdd.remove("a_u");
-				nodesToAdd.add("a_u");
-				log.debug("nodes to add " + nodesToAdd);
+				if (nodesToAdd.contains("a_u")) {
+					nodesToAdd.remove("a_u");
+					nodesToAdd.add("a_u");
+				}
+				log.debug("new nodes in the dialogue state" + nodesToAdd);
 				
 				for (String id : nodesToAdd) {
 					if (id.equals("a_m")) {
