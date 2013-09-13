@@ -107,12 +107,12 @@ public class WoZSimulator implements Simulator {
 				systemState.getNetwork().addNode(goldNode);
 				
 				systemState.getNetwork().addNetwork(newState.getNetwork());			
+				systemState.activateUpdates(true);				
 				systemState.setVariableToProcess("a_m");
 				systemState.triggerUpdates();
 				
 		//		log.debug("system state: " + systemState.getNetwork().getNodeIds());
 
-				systemState.activateDecisions(true);
 				systemState.activateUpdates(false);				
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz");		
