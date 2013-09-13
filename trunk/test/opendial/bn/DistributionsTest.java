@@ -355,7 +355,7 @@ public class DistributionsTest {
 	public void dirichletTest() throws InterruptedException, DialException {
 		
 
-		double[] alphas = new double[2];
+		Double[] alphas = new Double[2];
 		alphas[0] = 40.0;
 		alphas[1] = 80.0;
 		DirichletDensityFunction dirichlet = new DirichletDensityFunction(alphas);
@@ -412,21 +412,21 @@ public class DistributionsTest {
 	public void kernelDistrib2() throws InterruptedException {
 
 		ProductKernelDensityFunction mkds = new ProductKernelDensityFunction(Arrays.asList(
-				new double[]{0.1}, new double[]{-1.5}, new double[]{0.6}, new double[]{1.3}, new double[]{1.3}));
+				new Double[]{0.1}, new Double[]{-1.5}, new Double[]{0.6}, new Double[]{1.3}, new Double[]{1.3}));
 		
 		MultivariateDistribution continuous2 = new MultivariateDistribution("var2", mkds);
 
-		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new double[]{-2.0})), 0.086, 0.001);
-		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new double[]{0.6})), 0.32 , 0.01);
-		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new double[]{1.3})), 0.30, 0.01);
+		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new Double[]{-2.0})), 0.086, 0.001);
+		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new Double[]{0.6})), 0.32 , 0.01);
+		assertEquals(continuous2.getProbDensity(new Assignment(), new Assignment("var2",new Double[]{1.3})), 0.30, 0.01);
 		double sum = 0;
 		for (int i = 0 ; i < 10000 ; i++) {
 			sum += ((VectorVal)continuous2.sample().getValue("var2")).getVector().get(0);
 		}
 		assertEquals(sum/10000.0, 0.424, 0.1);
 
-		assertEquals(continuous2.toDiscrete().getProb(new Assignment("var2", new double[]{-1.5})), 0.2, 0.1);
-		assertEquals(continuous2.toDiscrete().getProb(new Assignment("var2", new double[]{1.3})), 0.4, 0.1);	
+		assertEquals(continuous2.toDiscrete().getProb(new Assignment("var2", new Double[]{-1.5})), 0.2, 0.1);
+		assertEquals(continuous2.toDiscrete().getProb(new Assignment("var2", new Double[]{1.3})), 0.4, 0.1);	
 		
 	}
 	

@@ -35,17 +35,17 @@ public class VectorVal implements Value {
 	public static Logger log = new Logger("DoubleVectorVal",
 			Logger.Level.DEBUG);
 	
-	double[] array;
+	Double[] array;
 	
-	public VectorVal(double[] values) {
-		this.array = new double[values.length];
+	public VectorVal(Double[] values) {
+		this.array = new Double[values.length];
 		for (int i = 0 ; i < array.length ; i++) {
 			array[i] = values[i];
 		}
 	}
 	
 	public VectorVal(Collection<Double> values) {
-		array = new double[values.size()];
+		array = new Double[values.size()];
 		int incr = 0;
 		for (Double value : values) {
 			array[incr] = value.doubleValue();
@@ -56,7 +56,7 @@ public class VectorVal implements Value {
 	@Override
 	public int compareTo(Value arg0) {
 		if (arg0 instanceof VectorVal) {
-			double[] otherVector = ((VectorVal)arg0).getArray();
+			Double[] otherVector = ((VectorVal)arg0).getArray();
 			if (array.length != otherVector.length) {
 				return array.length - otherVector.length;
 			}
@@ -94,7 +94,7 @@ public class VectorVal implements Value {
 		return false;
 	}
 	
-	public double[] getArray() {
+	public Double[] getArray() {
 		return array;
 	}
 	

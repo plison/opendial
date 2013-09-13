@@ -125,7 +125,7 @@ public class ValueFactory {
 	}
 	
 	
-	public static VectorVal create(double[] d) {
+	public static VectorVal create(Double[] d) {
 		return new VectorVal(d);
 	}
 

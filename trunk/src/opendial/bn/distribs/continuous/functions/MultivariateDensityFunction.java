@@ -41,7 +41,7 @@ public interface MultivariateDensityFunction {
 	 * @param x the point
 	 * @return the density value for the point
 	 */
-	public double getDensity(double[] x);
+	public double getDensity(Double[] x);
 	
 	 
 	/**
@@ -49,7 +49,7 @@ public interface MultivariateDensityFunction {
 	 * 
 	 * @return
 	 */
-	public double[] sample();
+	public Double[] sample();
 	
 	/**
 	 * Returns a set of discrete values representing the function
@@ -57,7 +57,7 @@ public interface MultivariateDensityFunction {
 	 * @param nbBuckets the number of buckets for the discretisation
 	 * @return the resulting points
 	 */
-	public List<double[]> getDiscreteValueArrays(int nbBuckets);
+	public List<Double[]> getDiscreteValueArrays(int nbBuckets);
 	
 	/**
 	 * Returns a copy of the density function
@@ -77,8 +77,8 @@ public interface MultivariateDensityFunction {
 
 	public int getDimensionality();
 	
-	public double[] getMean();
+	public Double[] getMean();
 	
-	public double[] getVariance();
+	public Double[] getVariance();
 	
 }

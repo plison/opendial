@@ -128,10 +128,10 @@ public class InferenceUtils {
 	}
 
 
-	public static double[] normalise(double[] initProbs) {
+	public static Double[] normalise(Double[] initProbs) {
 		for (int i = 0 ; i < initProbs.length; i++) {
 			if (initProbs[i] < 0) {
-				initProbs[i] = 0;
+				initProbs[i] = 0.0;
 			}
 		}
 		double sum = 0.0;
@@ -139,7 +139,7 @@ public class InferenceUtils {
 			sum += prob;
 		}
 		
-		double[] result = new double[initProbs.length];
+		Double[] result = new Double[initProbs.length];
 		
 		if (sum > 0.001) {
 		for (int i = 0 ; i < initProbs.length; i++) {

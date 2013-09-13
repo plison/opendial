@@ -289,7 +289,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
-		List<double[]> values = new ArrayList<double[]>(samples.size());
+		List<Double[]> values = new ArrayList<Double[]>(samples.size());
 		for (Assignment sample : samples) {
 			Value value = sample.getValue(headVar);
 			if (value instanceof VectorVal) {
