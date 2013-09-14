@@ -37,7 +37,7 @@
 				<set var="a_m" value="Say(AlreadyCarryObject)" />
 			</effect>
 		</case>
-				<case>
+		<!-- 		<case>
 			<condition operator="and">
 				<if var="i_u" value="PickUp({Z})" />
 				<if var="Z" value="Other" relation="="/>
@@ -45,7 +45,7 @@
 			<effect util="theta_excuse">
 				<set var="a_m" value="Say(CannotResolve)" />
 			</effect>
-		</case>		
+		</case>	 -->	
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="PickUp({Z2})" />
@@ -183,7 +183,6 @@
 			<if var="a_u" value="DoYouSee(*)" relation="!="/>
 			<if var="a_u" value="WhatDoYouSee" relation="!="/>
 			<if var="a_u" value="None" relation="!="/>
-			<if var="a_u" value="PickUp(Other)" relation="!="/>
 			<if var="a_u" value="Confirm" relation="!="/>
 			<if var="a_u" value="Disconfirm" relation="!="/>
 			<if var="a_u" value="Greeting" relation="!="/>
