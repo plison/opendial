@@ -57,7 +57,7 @@ public class DistanceUtils {
 
 		double minDistance = MIN_PROXIMITY_DISTANCE;
 		Assignment closest = new Assignment();
-
+		log.debug("relying on distance utils to calculate probability");
 		outer: 
 			for (Assignment element : elements) {
 			if (element.size() != head.size() || !element.getVariables().equals(head.getVariables())) {
@@ -89,6 +89,8 @@ public class DistanceUtils {
 	
 	public static List<? extends Assignment> getClosestElements (List<Assignment> elements, Assignment head, int number) {
 		
+		log.debug("relying on distance utils to calculate probability");
+
 		List<WeightedAssignment> values = new ArrayList<WeightedAssignment>(elements.size());
 				
 		outer: 

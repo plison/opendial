@@ -34,6 +34,7 @@ import opendial.bn.distribs.AbstractProbabilityTable;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.DistanceUtils;
 
@@ -215,10 +216,18 @@ implements DiscreteProbDistribution {
 			return table.get(trimmed).getProb(head);
 		}
 		else  {
-			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
+			for (String condVar : conditionalVars) {
+				if (!trimmed.containsVar(condVar)) {
+					trimmed.addPair(condVar, ValueFactory.none());
+				}
+			}
+			if (table.containsKey(trimmed)) {
+				return table.get(trimmed).getProb(head);
+			}
+			/** Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest).getProb(head);
-			}	
+			}	*/
 		}
 		return 0.0f;
 	}
@@ -299,12 +308,12 @@ implements DiscreteProbDistribution {
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
 		}	
-		else {
+	/**	else {
 			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}	
-		}
+		} */
 		SimpleTable defaultTable = new SimpleTable();
 	/**	if (!table.isEmpty()) {
 			defaultTable.addRow(Assignment.createDefault(table.values().iterator().next().getHeadVariables()), 1.0);

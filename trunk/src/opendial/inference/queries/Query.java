@@ -74,7 +74,7 @@ public abstract class Query {
 	}
 	
 	public Collection<String> getQueryVars() {
-		return queryVars;
+		return new ArrayList<String>(queryVars);
 	}
 	
 	public Assignment getEvidence() {
@@ -82,7 +82,7 @@ public abstract class Query {
 	}
 	
 	public Collection<String> getConditionalVars() {
-		return conditionalVars;
+		return new ArrayList<String>(conditionalVars);
 	}
 	
 	public abstract Set<String> getIrrelevantNodes() ;

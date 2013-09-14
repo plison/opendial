@@ -32,6 +32,7 @@ import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
+import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.Value;
@@ -40,6 +41,7 @@ import opendial.common.InferenceChecks;
 import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.utils.DistanceUtils;
 
 public class PruningTest {
 
@@ -53,6 +55,7 @@ public class PruningTest {
 	static DialogueSystem system;
 	
 	static {
+		DistanceUtils.log.setLevel(Level.DEBUG);
 		try { 
 		domain = XMLDomainReader.extractDomain(domainFile); 
 		inference = new InferenceChecks();

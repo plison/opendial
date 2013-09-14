@@ -133,13 +133,13 @@ public class StatePruner implements Runnable {
 					state.getEvidence().containsVar(node.getId())) {
 				nodesToRemove.add(node.getId());
 			}
-			else if (node instanceof ProbabilityRuleNode && !state.isFictive 
+	/**		else if (node instanceof ProbabilityRuleNode && !state.isFictive 
 					&& ((ProbabilityRuleNode)node).hasDescendant(Pattern.compile("(?:.*)\\^p'")) 
 					&& !node.getOutputNodes().isEmpty() && node.getOutputNodesIds().iterator().next().contains("'")
 					&& !((ProbabilityRuleNode)node).getRule().getParameterNodes().isEmpty() 
 					&& !node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToKeep.add(node.getId());
-			}
+			} */
 
 			// removing the prediction nodes once they have been used
 			else if (node.getId().contains("^p") && 
@@ -173,8 +173,8 @@ public class StatePruner implements Runnable {
 			throws DialException, InstantiationException, IllegalAccessException {
 
 		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
-		BNetwork reducedCopy = reductionQuery.getReducedCopy();
-		for (BNode reducedNode : reducedCopy.getNodes()) {
+		/** BNetwork reducedCopy = reductionQuery.getReducedCopy();
+		 for (BNode reducedNode : reducedCopy.getNodes()) {
 			if (state.isParameter(reducedNode.getId())) {
 				for (BNode outputNode : reducedNode.getOutputNodes()) {
 					if (!(outputNode instanceof ProbabilityRuleNode)) {
@@ -182,7 +182,7 @@ public class StatePruner implements Runnable {
 					}					
 				}
 			}
-		}
+		} */
 		
 		InferenceAlgorithm inference = Settings.getInstance().inferenceAlgorithm.newInstance();
 
@@ -255,7 +255,8 @@ public class StatePruner implements Runnable {
 
 	private void removeEmptyNodes(BNetwork reduced) {
 		for (ChanceNode node: new HashSet<ChanceNode>(reduced.getChanceNodes())) {
-			if (node.getInputNodes().isEmpty() && node.getOutputNodes().isEmpty()) {
+			if (node.getInputNodes().isEmpty() && node.getOutputNodes().isEmpty() 
+					&& node.getDistrib() instanceof DiscreteProbDistribution) {
 				if (node.getProb(ValueFactory.none())> 0.99) {
 					reduced.removeNode(node.getId());
 				}

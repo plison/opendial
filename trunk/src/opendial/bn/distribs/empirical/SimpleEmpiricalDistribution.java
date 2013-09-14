@@ -46,6 +46,7 @@ import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
+import opendial.utils.InferenceUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -213,23 +214,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	protected void computeDiscreteCache() {
-
-		SimpleTable discreteCache = new SimpleTable();
-
-		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
-
-		for (Assignment sample : samples) {
-			if (counts.containsKey(sample)) {
-				counts.put(sample, counts.get(sample) + 1);
-			}
-			else {
-				counts.put(sample,1);
-			}
-		}
-		for (Assignment value : counts.keySet()) {
-			discreteCache.addRow(value, 1.0 * counts.get(value) / samples.size());
-		}
-		this.discreteCache = discreteCache;
+		this.discreteCache = InferenceUtils.createTable(getHeadVariables(), samples);
 	}
 
 
@@ -255,55 +240,16 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	protected void computeContinuousCache() throws DialException {
-		String headVar = "";
-		if (!samples.isEmpty() && samples.get(0).getVariables().size() == 1) {
-			headVar = samples.get(0).getVariables().iterator().next();
-			if (samples.get(0).getValue(headVar) instanceof DoubleVal) {
-				continuousCache = extractUnivariateDistribution(headVar);
-			}
-			else if (samples.get(0).getValue(headVar) instanceof VectorVal) {
-				continuousCache = extractMultivariateDistribution(headVar);				
-			}
+		
+		if (getHeadVariables().size() == 1) {
+			continuousCache = InferenceUtils.createContinuousDistrib(getHeadVariables().iterator().next(), samples);
 		}
-		if (continuousCache == null) {
-			throw new DialException ("empirical distribution for " + headVar + " could not be " +
-					"converted to a continuous distribution");
+		else {
+			log.warning("empirical distribution could not converted to a " +
+					"continuous distribution, headVars = " + getHeadVariables());
 		}
 	}
 
-
-	private UnivariateDistribution extractUnivariateDistribution(String headVar) throws DialException {
-		List<Double> values = new ArrayList<Double>(samples.size());
-		for (Assignment sample : samples) {
-			Value value = sample.getValue(headVar);
-			if (value instanceof DoubleVal) {
-				values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
-			}
-			else {
-				throw new DialException ("value type is not allowed in " +
-						"continuous distribution: " + value.getClass().getName());
-			}
-		}
-		return new UnivariateDistribution(headVar, new KernelDensityFunction(values));
-	}
-
-
-	private MultivariateDistribution extractMultivariateDistribution(String headVar) throws DialException {
-		List<Double[]> values = new ArrayList<Double[]>(samples.size());
-		for (Assignment sample : samples) {
-			Value value = sample.getValue(headVar);
-			if (value instanceof VectorVal) {
-				values.add(((VectorVal)sample.getValue(headVar)).getArray());
-			}
-			else {
-				throw new DialException ("value type is not allowed in " +
-						"continuous distribution: " + value.getClass().getName());
-			}
-		}
-		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(values);
-		pkde.setAsBounded(true);
-		return new MultivariateDistribution(headVar, pkde);
-	}
 
 	// ===================================
 	//  UTILITY METHODS

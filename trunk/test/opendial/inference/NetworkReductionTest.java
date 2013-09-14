@@ -95,6 +95,8 @@ public class NetworkReductionTest {
 				new Assignment("MaryCalls")), 
 				ve.queryProb(query3).toDiscrete().getProb(new Assignment(), 
 						new Assignment("MaryCalls")), 0.0001);
+		
+		
 		assertEquals(ve.queryProb(query1).toDiscrete().getProb(new Assignment(), 
 				new Assignment("MaryCalls")), 
 				is.queryProb(query4).toDiscrete().getProb(new Assignment(), 

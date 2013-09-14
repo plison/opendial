@@ -33,7 +33,6 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
@@ -166,7 +165,7 @@ public class ImportanceSampling extends AbstractInference implements InferenceAl
 		else {
 			maxSamplingTime = Settings.getInstance().maximumSamplingTime;	
 		}
-		
+
 		query.filterIdenticalNodes();
 		ReductionQuerySampling isquery = new ReductionQuerySampling(query, nbSamples, maxSamplingTime);
 		Thread t = new Thread(isquery);

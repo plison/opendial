@@ -130,12 +130,12 @@ public abstract class AbstractProbabilityTable<T extends ProbDistribution> imple
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).sample(new Assignment());
 		}
-		else  {
+		/** else  {
 			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);
 			if (!closest.isEmpty()) {
 				return table.get(trimmed).sample(new Assignment());
 			}	
-		}
+		} */
 		
 		String text = "could not find the corresponding condition for " + condition + 
 				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")";

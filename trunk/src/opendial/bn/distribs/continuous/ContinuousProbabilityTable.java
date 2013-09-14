@@ -108,13 +108,13 @@ public class ContinuousProbabilityTable
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProbDensity(new Assignment(), head);
 		}
-		else {
+	/** 	else {
 			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				ContinuousProbDistribution distrib = table.get(closest);
 				return distrib.getProbDensity(new Assignment(), head);
 			}		
-		}
+		} */
 		return 0.0;
 	}
 
@@ -135,13 +135,13 @@ public class ContinuousProbabilityTable
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getCumulativeProb(new Assignment(), head);
 		}
-		else {
+	/**	else {
 			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmed);		
 			if (!closest.isEmpty()) {
 				ContinuousProbDistribution distrib = table.get(closest);
 				return distrib.getCumulativeProb(new Assignment(), head);
 			}	
-		}
+		} */
 		return 0.0;
 	}
 	

@@ -786,6 +786,27 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 	}
 
+	protected List<String> getClusterIds(List<String> toExclude) {
+		List<String> cluster = new ArrayList<String>();
+		cluster.add(nodeId);
+		toExclude.add(nodeId);
+		for (String inputNode : inputNodes.keySet()) {
+			if (!toExclude.contains(inputNode)) {
+				cluster.addAll(inputNodes.get(inputNode).getClusterIds(toExclude));
+			}
+		}
+		for (String outputNode : outputNodes.keySet()) {
+			if (!toExclude.contains(outputNode)) {
+				cluster.addAll(outputNodes.get(outputNode).getClusterIds(toExclude));
+			}
+		}
+		return cluster;
+	}
+
+	public List<String> getClusterIds() {
+		return getClusterIds(new ArrayList<String>());
+	}
+
 
 
 }

@@ -318,16 +318,13 @@ public class SimpleTable implements DiscreteProbDistribution {
 			return table.get(trimmedHead);
 		}
 
-		else {
-		//	log.debug("exact value cannot be found in table, must use proximity: " + trimmedHead);
-			Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmedHead);
+		 else if (!table.isEmpty() && headVars.size() == 1 && table.keySet().iterator().next()
+					 .getValue(headVars.iterator().next()) instanceof DoubleVal) { 
+		 	Assignment closest = DistanceUtils.getClosestElement(table.keySet(), trimmedHead);
 			if (!closest.isEmpty()) {
 				return table.get(closest);
 			}
-			else{
-		//		log.debug("closest row could not be found, table size " + table.size());
-			}
-		}
+		} 
 		return 0.0f;
 	}
 
