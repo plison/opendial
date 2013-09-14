@@ -109,7 +109,7 @@
 			<alpha>5</alpha>
 			<alpha>5</alpha>
 			<alpha>5</alpha>
-			<alpha>15</alpha>
+			<alpha>5</alpha>
 		</distrib>
 	</variable>
 	
@@ -205,7 +205,7 @@
 
 	<variable id="theta_intent">
 		<distrib type="dirichlet">
-			<alpha>10</alpha>
+			<alpha>20</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>

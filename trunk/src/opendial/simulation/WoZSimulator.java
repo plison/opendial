@@ -116,7 +116,9 @@ public class WoZSimulator implements Simulator {
 				}
 
 				if ((curIndex % 10) == 9) {
-					for (String var: systemState.getParameterIds()) {
+					List<String> paramIds = systemState.getParameterIds();
+					Collections.sort(paramIds);
+					for (String var: paramIds) {
 						log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
 					}
 				}
