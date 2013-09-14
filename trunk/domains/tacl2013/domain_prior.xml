@@ -60,39 +60,39 @@
 	<rule id="perceptionprior">
 		<case>
 			<condition>
-				<if var="perceived" value="[]"/>
+				<if var="perceived" value="[]" relation="!="/>
 			</condition>				
-			<effect prob="theta_perceive1prior[0]">
+			<effect prob="theta_perceive_see_prior[0]">
 				<set var="i_u" value="DoYouSee(RedObj)" />
 			</effect>
-			<effect prob="theta_perceive1prior[1]">
+			<effect prob="theta_perceive_see_prior[1]">
 				<set var="i_u" value="DoYouSee(BlueObj)" />
 			</effect>
-			<effect prob="theta_perceive1prior[2]">
+			<effect prob="theta_perceive_see_prior[2]">
 				<set var="i_u" value="DoYouSee(Something)" />
 			</effect>
-			<effect prob="theta_perceive1prior[3]">
+			<effect prob="theta_perceive_see_prior[3]">
 				<set var="i_u" value="WhatDoYouSee" />
 			</effect>
-			<effect prob="theta_perceive1prior[4]"/>
+			<effect prob="theta_perceive_see_prior[4]"/>
 		</case>
 			<case>
 			<condition>
 				<if var="perceived" value="[]"/>
 			</condition>				
-			<effect prob="theta_perceive2prior[0]">
+			<effect prob="theta_perceive_nosee_prior[0]">
 				<set var="i_u" value="DoYouSee(RedObj)" />
 			</effect>
-			<effect prob="theta_perceive2prior[1]">
+			<effect prob="theta_perceive_nosee_prior[1]">
 				<set var="i_u" value="DoYouSee(BlueObj)" />
 			</effect>
-			<effect prob="theta_perceive2prior[2]">
+			<effect prob="theta_perceive_nosee_prior[2]">
 				<set var="i_u" value="DoYouSee(Something)" />
 			</effect>
-			<effect prob="theta_perceive2prior[3]">
+			<effect prob="theta_perceive_nosee_prior[3]">
 				<set var="i_u" value="WhatDoYouSee" />
 			</effect>
-			<effect prob="theta_perceive2prior[4]"/>
+			<effect prob="theta_perceive_nosee_prior[4]"/>
 		</case>
 	</rule>
 	
@@ -144,16 +144,13 @@
 				<if var="carried" value="[]" />
 				<if var="perceived" value="RedObj" relation="contains" />
 			</condition>
-			<effect prob="theta_pickup1prior[0]">
+			<effect prob="theta_pickup_see_prior[0]">
 				<set var="i_u" value="PickUp(RedObj)" />
 			</effect>
-			<effect prob="theta_pickup1prior[1]">
+			<effect prob="theta_pickup_see_prior[1]">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
-			<effect prob="theta_pickup1prior[2]">
-				<set var="i_u" value="PickUp(Other)" />
-			</effect>
-			<effect prob="theta_pickup1prior[3]" />
+			<effect prob="theta_pickup_see_prior[2]" />
 		</case>
 			<case>
 			<condition>
@@ -161,35 +158,29 @@
 				<if var="carried" value="[]" />
 				<if var="perceived" value="BlueObj" relation="contains" />
 			</condition>
-			<effect prob="theta_pickup1prior[0]">
+			<effect prob="theta_pickup_see_prior[0]">
 				<set var="i_u" value="PickUp(BlueObj)" />
 			</effect>
-			<effect prob="theta_pickup1prior[1]">
+			<effect prob="theta_pickup_see_prior[1]">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
-			<effect prob="theta_pickup1prior[2]">
-				<set var="i_u" value="PickUp(Other)" />
-			</effect>
-			<effect prob="theta_pickup1prior[3]" />
+			<effect prob="theta_pickup_see_prior[2]" />
 		</case>
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
 			</condition>
-			<effect prob="theta_pickup2prior[0]">
+			<effect prob="theta_pickup_nosee_prior[0]">
 				<set var="i_u" value="PickUp(RedObj)" />
 			</effect>
-			<effect prob="theta_pickup2prior[1]">
+			<effect prob="theta_pickup_nosee_prior[1]">
 				<set var="i_u" value="PickUp(BlueObj)" />
 			</effect>
-			<effect prob="theta_pickup2prior[2]">
+			<effect prob="theta_pickup_nosee_prior[2]">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
-			<effect prob="theta_pickup2prior[3]">
-				<set var="i_u" value="PickUp(Other)" />
-			</effect>
-			<effect prob="theta_pickup2prior[4]" />
+			<effect prob="theta_pickup_nosee_prior[3]" />
 		</case>
 	</rule>
 
