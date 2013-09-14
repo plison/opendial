@@ -21,103 +21,73 @@
 		</case>
 	</rule>
 
-	<rule id="moveprior">
+	<rule id="baseprior">
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="theta_moveprior[0]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Left)" />
 			</effect>
-			<effect prob="theta_moveprior[1]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Forward)" />
 			</effect>
-			<effect prob="theta_moveprior[2]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Backward)" />
 			</effect>
-			<effect prob="theta_moveprior[3]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Right)" />
 			</effect>
-			<effect prob="theta_moveprior[4]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Left,Short)" />
 			</effect>
-			<effect prob="theta_moveprior[5]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Forward,Short)" />
 			</effect>
-			<effect prob="theta_moveprior[6]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Backward,Short)" />
 			</effect>
-			<effect prob="theta_moveprior[7]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Right,Short)" />
 			</effect>
-			<effect prob="theta_moveprior[8]">
+			<effect prob="0.06">
 				<set var="i_u" value="Move(Turn)" />
-			</effect>	
-			<effect prob="theta_moveprior[9]"/>
+			</effect>			
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(RedObj)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(BlueObj)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="DoYouSee(Something)" />
+			</effect>
+			<effect prob="0.06">
+				<set var="i_u" value="WhatDoYouSee" />
+			</effect>
 		</case>
 	</rule>
 	
-	<rule id="perceptionprior">
-		<case>
-			<condition>
-				<if var="perceived" value="[]"/>
-			</condition>				
-			<effect prob="theta_perceive1prior[0]">
-				<set var="i_u" value="DoYouSee(RedObj)" />
-			</effect>
-			<effect prob="theta_perceive1prior[1]">
-				<set var="i_u" value="DoYouSee(BlueObj)" />
-			</effect>
-			<effect prob="theta_perceive1prior[2]">
-				<set var="i_u" value="DoYouSee(Something)" />
-			</effect>
-			<effect prob="theta_perceive1prior[3]">
-				<set var="i_u" value="WhatDoYouSee" />
-			</effect>
-			<effect prob="theta_perceive1prior[4]"/>
-		</case>
-			<case>
-			<condition>
-				<if var="perceived" value="[]"/>
-			</condition>				
-			<effect prob="theta_perceive2prior[0]">
-				<set var="i_u" value="DoYouSee(RedObj)" />
-			</effect>
-			<effect prob="theta_perceive2prior[1]">
-				<set var="i_u" value="DoYouSee(BlueObj)" />
-			</effect>
-			<effect prob="theta_perceive2prior[2]">
-				<set var="i_u" value="DoYouSee(Something)" />
-			</effect>
-			<effect prob="theta_perceive2prior[3]">
-				<set var="i_u" value="WhatDoYouSee" />
-			</effect>
-			<effect prob="theta_perceive2prior[4]"/>
-		</case>
-	</rule>
-	
-	
-	<rule id="chitchatprior">
+
+	<rule id="chitchat">
 		<case>
 			<condition>			
 				<if var="lastMove" value="None"/>
 			</condition>
-			<effect prob="theta_openingprior[0]" >
+			<effect prob="0.2" >
 				<set var="i_u" value="Ask(Name)" />
 			</effect>
-			<effect prob="theta_openingprior[1]" >
+			<effect prob="0.40" >
 				<set var="i_u" value="Greeting" />
 			</effect>
-			<effect prob="theta_openingprior[2]"/>
 		</case>
 		<case>
 			<condition>			
-				<if var="lastMove" value="Do(Release)"/>
+				<if var="lastMove" value="Release"/>
 			</condition>
-			<effect prob="theta_closingprior[0]" >
+			<effect prob="0.40" >
 				<set var="i_u" value="Closing" />
 			</effect>
-			<effect prob="theta_closingprior[1]"/>
 		</case>
 		</rule>
 	
@@ -129,10 +99,10 @@
 				<if var="carried" value="[]" relation="!="/>
 				<if var="carried" value="None" relation="!="/>
 			</condition>
-			<effect prob="theta_releaseprior[0]">
+			<effect prob="0.3">
 				<set var="i_u" value="Release" />
 			</effect>
-			<effect prob="theta_releaseprior[1]" />
+			<effect prob="0.7" />
 		</case>
 	</rule>
 	
@@ -142,37 +112,50 @@
 			<condition>
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
-				<if var="perceived" value="{X}" relation="contains" />
+				<if var="perceived" value="RedObj" relation="contains" />
 			</condition>
-			<effect prob="theta_pickup1prior[0]">
-				<set var="i_u" value="PickUp({X})" />
+			<effect prob="0.2">
+				<set var="i_u" value="PickUp(RedObj)" />
 			</effect>
-			<effect prob="theta_pickup1prior[1]">
+			<effect prob="0.05">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
-			<effect prob="theta_pickup1prior[2]">
+			<effect prob="0.05">
 				<set var="i_u" value="PickUp(Other)" />
 			</effect>
-			<effect prob="theta_pickup1prior[3]" />
+			<effect prob="0.7" />
+		</case>
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" />
+				<if var="perceived" value="BlueObj" relation="contains" />
+			</condition>
+			<effect prob="0.2">
+				<set var="i_u" value="PickUp(BlueObj)" />
+			</effect>
+			<effect prob="0.05">
+				<set var="i_u" value="PickUp(AtFeet)" />
+			</effect>
+			<effect prob="0.05">
+				<set var="i_u" value="PickUp(Other)" />
+			</effect>
+			<effect prob="0.7" />
 		</case>
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
 			</condition>
-			<effect prob="theta_pickup2prior[0]">
+			<effect prob="0.05">
 				<set var="i_u" value="PickUp(RedObj)" />
 			</effect>
-			<effect prob="theta_pickup2prior[1]">
+			<effect prob="0.05">
 				<set var="i_u" value="PickUp(BlueObj)" />
 			</effect>
-			<effect prob="theta_pickup2prior[2]">
+			<effect prob="0.2">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
-			<effect prob="theta_pickup2prior[3]">
-				<set var="i_u" value="PickUp(Other)" />
-			</effect>
-			<effect prob="theta_pickup2prior[4]" />
 		</case>
 	</rule>
 

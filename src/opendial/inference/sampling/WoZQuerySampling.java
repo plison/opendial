@@ -19,8 +19,15 @@
 
 package opendial.inference.sampling;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -32,7 +39,7 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MIN_UTIL = -40;
+	public static final double MAX = 50;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -70,26 +77,27 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
 		Map<Assignment,Double> averages = getAverages();
+		Assignment bestNotGold = new Assignment();
+		for (Assignment a : averages.keySet()) {
+			if (!a.equals(goldAction) && (bestNotGold.isEmpty() || averages.get(a) > averages.get(bestNotGold))) {
+				bestNotGold = a;
+			}
+		}
+		log.debug("gold action is " + goldAction + "(util=" + averages.get(goldAction) +
+				") and the best action that is not the gold is " + bestNotGold + "(util=" + averages.get(bestNotGold)+")");
+		
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
 				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
-				if (action.equals(goldAction)) {
-					double denominator = 0.0;
-					for (Assignment a : averages.keySet()) {
-						denominator += (averages.get(a) - MIN_UTIL);
-					}
-					 weight *= (sample.getUtility() - MIN_UTIL) / denominator;
+				if (action.equals(goldAction)  && sample.getUtility() <= averages.get(bestNotGold)) {
+						double distance = averages.get(bestNotGold) - sample.getUtility();
+						weight *= (MAX - distance) / MAX;
 				}
-				else {
-					double denominator = sample.getUtility() - MIN_UTIL;
-					for (Assignment avg : averages.keySet()) {
-						if (!avg.equals(action)) {
-							denominator += averages.get(avg) - MIN_UTIL;
-						}
-					}
-					weight *= (averages.get(goldAction) - MIN_UTIL) / denominator;
+				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
+					double distance = sample.getUtility() - averages.get(goldAction);
+					weight *= (MAX - distance) / MAX;
 				}
 
 				table.put(sample, weight);
@@ -98,6 +106,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 		return new Intervals<WeightedSample>(table);	
 	}
+	
 	
 	private Map<Assignment,Double> getAverages() {
 		
@@ -120,6 +129,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		if (!averages.containsKey(goldAction)) {
 			averages.put(goldAction, 10.0);
 		}
+		
 		return averages;
 	}
 	
@@ -128,6 +138,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	public SimpleEmpiricalDistribution getResults() {
 		return distrib;
 	}
+	
+	
 	
 }
 
