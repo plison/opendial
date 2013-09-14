@@ -891,5 +891,18 @@ public class Assignment {
 	}
 
 
+	// ONLY PARTIALLY IMPLEMENTED!!!!!
+	public static Assignment createFromString(String str) {
+		Assignment a = new Assignment();
+		for (int i = 0 ; i < str.split(" ^ ").length ; i++) {
+			String substr = str.split(" ^ ")[i];
+			String var = substr.split("=")[0];
+			String value = substr.split("=")[1];
+			a.addPair(var, ValueFactory.create(value));
+		}
+		return a;
+	}
+
+
 	
 }

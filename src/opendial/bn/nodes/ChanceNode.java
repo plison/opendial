@@ -35,7 +35,9 @@ import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.OutputDistribution;
 import opendial.bn.distribs.discrete.RuleDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
+import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
+import opendial.bn.distribs.empirical.EmpiricalDistribution;
+import opendial.bn.values.AssignmentVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.datastructs.Output;
@@ -102,7 +104,7 @@ public class ChanceNode extends BNode {
 	 */
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
-		if (distrib.getHeadVariables().size() != 1) {
+		if (distrib.getHeadVariables().size() != 1 && !(distrib instanceof ComplexEmpiricalDistribution)) {
 
 			log.debug("Distribution for " + nodeId + 
 					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
@@ -307,7 +309,10 @@ public class ChanceNode extends BNode {
 	 */
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
-		if (!result.containsVar(nodeId)) {
+		if (distrib instanceof ComplexEmpiricalDistribution) {
+			return new AssignmentVal(result);
+		}
+		else if (!result.containsVar(nodeId)) {
 			//		log.warning("result of sampling does not contain " + nodeId +": " + 
 			//				result + " distrib is " + distrib.getClass().getSimpleName());
 			return ValueFactory.none();
@@ -466,9 +471,9 @@ public class ChanceNode extends BNode {
 	protected synchronized void fillCachedValues() {
 
 
-		if (distrib instanceof DepEmpiricalDistribution) {
+		if (distrib instanceof EmpiricalDistribution) {
 			Set<Value> cachedValuesTemp = new HashSet<Value>();
-			for (Assignment s : ((DepEmpiricalDistribution)distrib).getSamples()) {
+			for (Assignment s : ((EmpiricalDistribution)distrib).getSamples()) {
 				if (s.containsVar(nodeId)) {
 					cachedValuesTemp.add(s.getValue(nodeId));
 				}

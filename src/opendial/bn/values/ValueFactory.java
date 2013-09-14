@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
+import opendial.bn.Assignment;
 import opendial.bn.nodes.BNode;
 
 /**
@@ -99,6 +100,10 @@ public class ValueFactory {
 						}
 					}
 					return new MapVal(subVals);
+				}
+				else if (str.startsWith("Assign(") && str.endsWith(")")) {
+					Assignment a = Assignment.createFromString(str.replace("Assign(", "").substring(0, str.length()-8));
+					return new AssignmentVal(a);
 				}
 		// adds the converted value
 			else {

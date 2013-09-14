@@ -55,6 +55,7 @@ import opendial.gui.statemonitor.DistributionViewer;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.VariableElimination;
 import opendial.inference.queries.ProbQuery;
+import opendial.utils.DistanceUtils;
 
 /**
  * 
@@ -71,6 +72,7 @@ public class DistributionsTest {
 	
 	
 	public DistributionsTest() {
+		DistanceUtils.log.setLevel(Level.NORMAL);
 		Settings.getInstance().nbSamples = 4000;
 		Settings.getInstance().maximumSamplingTime = 1000;
 	}

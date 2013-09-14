@@ -39,7 +39,7 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.datastructs.Intervals;
-import opendial.bn.distribs.empirical.DepEmpiricalDistribution;
+import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
 import opendial.bn.distribs.empirical.EmpiricalDistribution;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
@@ -105,23 +105,8 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	protected void compileResults() {
 		
 		try {
-			reweightSamples();
-			for (String queryVar : query.getQueryVars()) {
-				ChanceNode node = reduced.getChanceNode(queryVar);
-				EmpiricalDistribution eDistrib = getNodeDistribution(node);
-				if (!eDistrib.getSamples().isEmpty()) {
-					if (toDiscretise(node)) {
-						node.setDistrib(eDistrib.toDiscrete());
-					}
-					else {
-						node.setDistrib(eDistrib);	
-					}
-				}
-				else {
-					log.warning("cannot estimate " + queryVar + " (no relevant samples)");
-					log.debug("query was: " + query + " and total nb. of samples " + samples.size());
-				}
-			}
+			reweightSamples();	
+			processClusters();
 		}
 		catch (DialException e) {
 			log.warning("cannot compile sampling results: " + e.toString());
@@ -130,6 +115,38 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		isFinished = true;
 	}
 	
+	private void processClusters() throws DialException {
+		
+		List<Set<String>> clusters = reduced.getClusters();
+		for (Set<String> cluster : clusters) {
+			cluster.retainAll(query.getQueryVars());
+			if (!cluster.isEmpty()) {
+			List<Assignment> trimmedSamples = new ArrayList<Assignment>();
+			for (WeightedSample a : samples) {
+				trimmedSamples.add(a.getSample().getTrimmed(cluster));
+			}
+			
+			if (trimmedSamples.isEmpty()) {
+				log.warning("cannot estimate " + cluster + " (no relevant samples)");
+				log.debug("query was: " + query + " and total nb. of samples " + samples.size());
+			}
+			
+			SimpleEmpiricalDistribution distrib = new SimpleEmpiricalDistribution(trimmedSamples);
+			if (cluster.size() == 1) {
+				ChanceNode node = reduced.getChanceNode(cluster.iterator().next());
+				node.setDistrib(distrib);
+			}
+			else {
+				for (String var : cluster) {
+					ChanceNode node = reduced.getChanceNode(var);
+					ComplexEmpiricalDistribution cdistrib = new ComplexEmpiricalDistribution
+							(Arrays.asList(var), node.getInputNodeIds(), distrib);
+					node.setDistrib(cdistrib);
+				}
+			}
+			}
+		}
+	}
 	
 	private void reweightSamples() throws DialException {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
@@ -148,28 +165,7 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 		}
 		samples = reweightedSamples;
 	}
-
 	
-	private EmpiricalDistribution getNodeDistribution(ChanceNode node) {
-
-		EmpiricalDistribution eDistrib;
-		if (node.getInputNodes().isEmpty()) {
-			eDistrib = new SimpleEmpiricalDistribution();
-		}
-		else {
-			eDistrib = new DepEmpiricalDistribution(Arrays.asList(node.getId()), node.getInputNodeIds());
-		}
-		
-		Set<String> trimmedVariables = new HashSet<String>(Arrays.asList(node.getId()));
-		trimmedVariables.addAll(node.getInputNodeIds());
-		Iterator<WeightedSample> it = samples.iterator();
-		while (it.hasNext()) {
-			WeightedSample a = it.next();
-			Assignment trimmedSample = a.getSample().getTrimmed(trimmedVariables);
-			eDistrib.addSample(trimmedSample);
-		}
-		return eDistrib;
-	}
 	
 	private boolean toDiscretise(ChanceNode node) {
 		if (node.getInputNodeIds().isEmpty()) {
