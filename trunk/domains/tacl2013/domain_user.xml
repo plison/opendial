@@ -8,12 +8,13 @@
 				<if var="a_m" value="Confirm({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
-			<effect prob="0.7">
+			<effect prob="theta_confirmpredict[0]">
 				<set var="a_u" value="Confirm" />
 			</effect>
-			<effect prob="0.3">
+			<effect prob="theta_confirmpredict[1]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
+			<effect prob="theta_confirmpredict[2]"/>
 		</case>
 		<case>
 			<condition operator="and">
@@ -22,7 +23,7 @@
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
 			<effect prob="0.7">
-				<set var="a_u" value="Goodbye" />
+				<set var="a_u" value="Disconfirm" />
 			</effect>
 			<effect prob="0.3">
 				<set var="a_u" value="{i_u}" />
