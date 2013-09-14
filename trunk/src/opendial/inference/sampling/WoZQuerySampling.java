@@ -92,7 +92,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			}
 		}
 		log.debug("gold action is " + goldAction + "(util=" + averages.get(goldAction) +
-				") and the best action that is not the gold is " + bestNotGold + "(util=" + averages.get(bestNotGold)+")");
+				") and the best non-gold action is " + bestNotGold + "(util=" + averages.get(bestNotGold)+")");
 		
 		
 		synchronized(samples) {
