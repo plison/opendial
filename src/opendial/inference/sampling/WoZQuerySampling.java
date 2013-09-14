@@ -94,6 +94,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug("gold action is " + goldAction + "(util=" + averages.get(goldAction) +
 				") and the best action that is not the gold is " + bestNotGold + "(util=" + averages.get(bestNotGold)+")");
 		
+		
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
@@ -105,7 +106,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				}
 				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
 					double distance = sample.getUtility() - averages.get(goldAction);
-					weight *= Math.abs(MAX - distance/3.0) / MAX;
+					double factor = (goldAction.isDefault())? 0.5 : 1.0;
+					weight *= Math.abs(MAX - factor * distance/3.0) / MAX;
 				}
 
 				table.put(sample, weight);
