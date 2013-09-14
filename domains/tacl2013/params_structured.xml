@@ -172,5 +172,11 @@
 		</distrib>
 	</variable>
 	
+	<variable id="theta_changemind">
+		<distrib type="dirichlet">
+			<alpha>5</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
 	
 </parameters>
