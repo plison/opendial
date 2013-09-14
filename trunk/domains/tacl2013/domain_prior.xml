@@ -153,6 +153,9 @@
 			<effect prob="0.05">
 				<set var="i_u" value="PickUp(BlueObj)" />
 			</effect>
+			<effect prob="0.05">
+				<set var="i_u" value="PickUp(Other)" />
+			</effect>
 			<effect prob="0.2">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>

@@ -81,7 +81,6 @@ public class WoZLearner extends ForwardPlanner  {
 			}
 
 			Assignment goldAction = new Assignment(actionVariable, gold);
-			log.debug("gold standard action: " + goldAction);
 			recordAction(currentState, goldAction);
 			
 			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
