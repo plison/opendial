@@ -39,7 +39,7 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MAX = 50;
+	public static final double MAX = 30;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -77,6 +77,14 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
 		Map<Assignment,Double> averages = getAverages();
+		
+		if (averages.size() == 1) {
+			for (WeightedSample sample : samples) {
+				table.put(sample, sample.getWeight());
+			}
+			return new Intervals<WeightedSample>(table);	
+		}
+		
 		Assignment bestNotGold = new Assignment();
 		for (Assignment a : averages.keySet()) {
 			if (!a.equals(goldAction) && (bestNotGold.isEmpty() || averages.get(a) > averages.get(bestNotGold))) {
