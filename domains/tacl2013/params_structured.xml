@@ -178,5 +178,51 @@
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
+
+	<variable id="theta_confirmpredict">
+		<distrib type="dirichlet">
+			<alpha>5</alpha>
+			<alpha>5</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_disconfirmpredict">
+		<distrib type="dirichlet">
+			<alpha>5</alpha>
+			<alpha>5</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+	
+	<variable id="theta_samemove">
+		<distrib type="dirichlet">
+			<alpha>5</alpha>
+			<alpha>5</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_intent">
+		<distrib type="dirichlet">
+			<alpha>10</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_othercase">
+		<distrib type="dirichlet">
+			<alpha>10</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>		
+	
+	<variable id="theta_aftermove">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
 	
 </parameters>
