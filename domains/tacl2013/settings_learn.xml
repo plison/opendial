@@ -20,7 +20,7 @@
 
 <inference>
 	<nbsamples>6000</nbsamples>
-	<timeout>3000</timeout>
+	<timeout>6000</timeout>
 </inference>
 
 </settings>
