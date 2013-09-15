@@ -74,10 +74,7 @@
 	</rule>
 	
 	<rule id="perceptionprior_nosee">
-		<case>
-			<condition>
-				<if var="perceived" value="[]"/>
-			</condition>				
+		<case>				
 			<effect prob="theta_perceive_nosee_prior[0]">
 				<set var="i_u" value="DoYouSee(RedObj)" />
 			</effect>
@@ -138,7 +135,7 @@
 			<condition>
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
-				<if var="perceived" value="X" relation="contains" />
+				<if var="perceived" value="{X}" relation="contains" />
 			</condition>
 			<effect prob="theta_pickup_see_prior[0]">
 				<set var="i_u" value="PickUp({X})" />
