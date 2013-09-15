@@ -47,13 +47,20 @@ public class TACL2013_learn {
 	// logger
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
 
-
-	public static final String domainFile = "domains//tacl2013/domain_learn.xml";
-	public static final String parametersFile = "domains//tacl2013/params_structured.xml";
 	public static final String settingsFile = "domains//tacl2013/settings_learn.xml";
+
+//	public static final String domainFile = "domains//tacl2013/domain_structured.xml";
+//	public static final String parameterFile = "domains//tacl2013/params_structured.xml";
+//	public static final String suffix = "structured";
 
 	public static void main(String[] args) {
 		try {
+			if (args.length != 3) {
+				throw new DialException("must provide arguments for domain, parameter and suffix for results");
+			}
+			String domainFile = args[0];
+			String parametersFile = args[1];
+			String suffix = args[2];
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
@@ -66,7 +73,7 @@ public class TACL2013_learn {
 		log.debug("number of collected points: " + data.size());
 		WoZSimulator simulator = new WoZSimulator(system.getState(), data);
 		system.attachSimulator(simulator);
-		simulator.specifyOutput(domainFile,"_structured");
+		simulator.specifyOutput(domainFile, suffix);
 		
 	//	NaoBehaviour b = new NaoBehaviour();
 	//	NaoTTS tts = new NaoTTS();
