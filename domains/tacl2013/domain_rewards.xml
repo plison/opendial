@@ -75,30 +75,18 @@
 			</effect>
 		</case>
 			<case>
-			<condition operator="or">
-				<and>
-					<if var="i_u" value="DoYouSee(Something)" />
-					<if var="perceived" value="[]" relation="!=" />
-				</and>
-				<and>
+			<condition operator="and">
 					<if var="i_u" value="DoYouSee({A})" />
 					<if var="perceived" value="{A}" relation="contains" />				
-				</and>
 			</condition>
 			<effect util="theta_confirmpercept">
 				<set var="a_m" value="Say(Confirm)" />
 			</effect>
 		</case>
 		<case>
-			<condition operator="or">
-			<and>
-				<if var="i_u" value="DoYouSee(Something)" />
-				<if var="perceived" value="[]" relation="=" />
-			</and>
-			<and>
+			<condition operator="and">
 				<if var="i_u" value="DoYouSee({B})" />
 				<if var="perceived" value="{B}" relation="notcontains" />			
-			</and>
 			</condition>
 			<effect util="theta_confirmpercept">
 				<set var="a_m" value="Say(Disconfirm)" />

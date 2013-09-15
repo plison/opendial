@@ -119,7 +119,7 @@
 				<if var="D5" value="it" relation="notcontains" />
 			</condition>
 			<effect>
-				<set var="a_u" value="DoYouSee(Something)" />
+				<set var="a_u" value="WhatDoYouSee" />
 			</effect>
 		</case>
 		<case>

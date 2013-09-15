@@ -117,15 +117,12 @@
 		<distrib type="dirichlet">
 			<alpha>1</alpha>
 			<alpha>1</alpha>
-			<alpha>1</alpha>
-			<alpha>1</alpha>
 			<alpha>3</alpha>
 		</distrib>
 	</variable>
 
 	<variable id="theta_perceive_nosee_prior">
 		<distrib type="dirichlet">
-			<alpha>1</alpha>
 			<alpha>1</alpha>
 			<alpha>1</alpha>
 			<alpha>1</alpha>
@@ -157,7 +154,6 @@
 	
 	<variable id="theta_pickup_see_prior">
 		<distrib type="dirichlet">
-			<alpha>1</alpha>
 			<alpha>1</alpha>
 			<alpha>3</alpha>
 		</distrib>

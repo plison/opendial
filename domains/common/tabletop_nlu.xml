@@ -102,6 +102,9 @@
 			<condition operator="or">
 				<if var="u_u" value="what * you see" relation="contains" />
 				<if var="u_u" value="what * you perceive" relation="contains" />
+
+
+
 			</condition>
 			<effect>
 				<set var="a_u^temp" value="WhatDoYouSee" />

@@ -7,7 +7,7 @@
 <value>true</value>
 </variable>
 
-<variable id="perceived"><value>[]</value></variable>
+<variable id="perceived"><value>[RedObj,BlueObj]</value></variable>
 <variable id="carried"><value>[]</value></variable>
 
 </initialstate>
