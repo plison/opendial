@@ -106,6 +106,7 @@
 	
 
 	<rule id="pickupprior">
+		<quantifier id="X"/>
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
@@ -117,9 +118,6 @@
 			</effect>
 			<effect prob="0.1">
 				<set var="i_u" value="PickUp(AtFeet)" />
-			</effect>
-			<effect prob="0.1">
-				<set var="i_u" value="PickUp(Other)" />
 			</effect>
 		</case>
 		<case>
@@ -135,9 +133,6 @@
 			</effect>
 			<effect prob="0.2">
 				<set var="i_u" value="PickUp(AtFeet)" />
-			</effect>
-			<effect prob="0.1">
-				<set var="i_u" value="PickUp(Other)" />
 			</effect>
 		</case>
 	</rule>

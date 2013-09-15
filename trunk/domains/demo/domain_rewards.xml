@@ -77,15 +77,6 @@
 				<set var="a_m" value="Say(DoNotCarryObject)" />
 			</effect>
 		</case>
-			<case>
-			<condition operator="and">
-				<if var="i_u" value="DoYouSee(Something)" />
-				<if var="perceived" value="[]" relation="!=" />
-			</condition>
-			<effect util="20">
-				<set var="a_m" value="Say(Confirm)" />
-			</effect>
-		</case>
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="DoYouSee(Something)" />
