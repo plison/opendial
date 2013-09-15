@@ -175,7 +175,7 @@ public class WoZSimulator implements Simulator {
 				if (distrib instanceof UnivariateDistribution) {
 					double mean = ((UnivariateDistribution)distrib).getMean();
 					for (String domainFile : new HashSet<String>(domainFiles.keySet())) {
-						String text = domainFiles.get(domainFile).replace(id, ""+DistanceUtils.shorten(mean));
+						String text = domainFiles.get(domainFile).replace("\""+id+"\"", "\""+DistanceUtils.shorten(mean) + "\"");
 						domainFiles.put(domainFile, text);
 					}
 				}

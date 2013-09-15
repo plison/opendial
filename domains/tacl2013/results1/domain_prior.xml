@@ -26,34 +26,34 @@
 			<condition>
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="23.8019prior[0]">
+			<effect prob="0.1552">
 				<set var="i_u" value="Move(Left)" />
 			</effect>
-			<effect prob="23.8019prior[1]">
+			<effect prob="0.1696">
 				<set var="i_u" value="Move(Forward)" />
 			</effect>
-			<effect prob="23.8019prior[2]">
+			<effect prob="0.1129">
 				<set var="i_u" value="Move(Backward)" />
 			</effect>
-			<effect prob="23.8019prior[3]">
+			<effect prob="0.0566">
 				<set var="i_u" value="Move(Right)" />
 			</effect>
-			<effect prob="23.8019prior[4]">
+			<effect prob="0.1064">
 				<set var="i_u" value="Move(Left,Short)" />
 			</effect>
-			<effect prob="23.8019prior[5]">
+			<effect prob="0.061">
 				<set var="i_u" value="Move(Forward,Short)" />
 			</effect>
-			<effect prob="23.8019prior[6]">
+			<effect prob="0.0697">
 				<set var="i_u" value="Move(Backward,Short)" />
 			</effect>
-			<effect prob="23.8019prior[7]">
+			<effect prob="0.074">
 				<set var="i_u" value="Move(Right,Short)" />
 			</effect>
-			<effect prob="23.8019prior[8]">
+			<effect prob="0.0384">
 				<set var="i_u" value="Move(Turn)" />
 			</effect>	
-			<effect prob="23.8019prior[9]"/>
+			<effect prob="0.1562"/>
 		</case>
 	</rule>
 	
@@ -129,10 +129,10 @@
 				<if var="carried" value="[]" relation="!="/>
 				<if var="carried" value="None" relation="!="/>
 			</condition>
-			<effect prob="13.2639prior[0]">
+			<effect prob="0.0267">
 				<set var="i_u" value="Release" />
 			</effect>
-			<effect prob="13.2639prior[1]" />
+			<effect prob="0.9733" />
 		</case>
 	</rule>
 	
