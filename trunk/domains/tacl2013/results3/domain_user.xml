@@ -8,13 +8,13 @@
 				<if var="a_m" value="Confirm({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
-			<effect prob="0.6498">
+			<effect prob="0.7478">
 				<set var="a_u" value="Confirm" />
 			</effect>
-			<effect prob="0.3124">
+			<effect prob="0.1978">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.0378"/>
+			<effect prob="0.0544"/>
 		</case>
 		<case>
 			<condition operator="and">
@@ -22,44 +22,44 @@
 				<if var="i_u" value="{Y}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.3913">
+			<effect prob="0.3837">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.5757">
+			<effect prob="0.3829">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.033"/>
+			<effect prob="0.2334"/>
 		</case>
 		<case>
 			<condition operator="and">
 				<if var="lastMove" value="{i_u}" />
 			</condition>
-			<effect prob="0.1769">
+			<effect prob="0.1979">
 				<set var="a_u" value="RepeatLast" />
 			</effect>
-			<effect prob="0.749">
+			<effect prob="0.7407">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.0741"/>
+			<effect prob="0.0614"/>
 		</case>
 		<case>
 			<condition operator="or">
 				<if var="a_m" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.9998">
+			<effect prob="0.9681">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="2.0E-4"/>
+			<effect prob="0.0319"/>
 		</case>
 		<case>
 			<condition>
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.7914">
+			<effect prob="0.6944">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.2086"/>
+			<effect prob="0.3056"/>
 		</case>
 	</rule>
 
@@ -69,13 +69,13 @@
 			<condition>
 				<if var="a_m" value="Do(*)" />
 			</condition>
-			<effect prob="0.0466">
+			<effect prob="0.0374">
 				<set var="a_u" value="Stop" />
 			</effect>
-			<effect prob="0.008">
+			<effect prob="0.001">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.9454"/>
+			<effect prob="0.9616"/>
 		</case>
 	</rule>
 

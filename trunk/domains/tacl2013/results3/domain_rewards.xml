@@ -7,7 +7,7 @@
 			<condition operator="and">
 				<if var="i_u" value="Move(*)" />
 			</condition>
-			<effect util="26.9278">
+			<effect util="19.7931">
 				<set var="a_m" value="Do({i_u})" />
 			</effect>
 		</case>
@@ -23,7 +23,7 @@
 				<if var="carried" value="[]"/>			
 			</and>
 			</condition>
-			<effect util="19.0529">
+			<effect util="11.5891">
 				<set var="a_m" value="Do({i_u})" />
 			</effect>
 		</case>
@@ -33,7 +33,7 @@
 				<if var="perceived" value="{Y}" relation="contains"/>
 				<if var="carried" value="[]" relation="!=" />
 			</condition>
-			<effect util="17.9996">
+			<effect util="-6.6109">
 				<set var="a_m" value="Say(AlreadyCarryObject)" />
 			</effect>
 		</case>
@@ -42,7 +42,7 @@
 				<if var="i_u" value="PickUp({Z})" />
 				<if var="Z" value="Other" relation="="/>
 			</condition>
-			<effect util="17.9996">
+			<effect util="-6.6109">
 				<set var="a_m" value="Say(CannotResolve)" />
 			</effect>
 		</case>	 -->	
@@ -51,7 +51,7 @@
 				<if var="i_u" value="PickUp({Z2})" />
 				<if var="perceived" value="{Z2}" relation="notcontains" />
 			</condition>
-			<effect util="17.9996">
+			<effect util="-6.6109">
 				<set var="a_m" value="Say(DoNotSeeObject)" />
 			</effect>
 		</case>
@@ -61,7 +61,7 @@
 				<if var="carried" value="None" relation="!="/>
 				<if var="carried" value="[]" relation="!="/>
 			</condition>
-			<effect util="9.1151">
+			<effect util="12.2876">
 				<set var="a_m" value="Do({i_u})" />
 			</effect>
 		</case>
@@ -70,7 +70,7 @@
 				<if var="i_u" value="Release" />
 				<if var="carried" value="[]"/>
 			</condition>
-			<effect util="17.9996">
+			<effect util="-6.6109">
 				<set var="a_m" value="Say(DoNotCarryObject)" />
 			</effect>
 		</case>
@@ -85,7 +85,7 @@
 					<if var="perceived" value="{A}" relation="contains" />				
 				</and>
 			</condition>
-			<effect util="-0.2263">
+			<effect util="0.0237">
 				<set var="a_m" value="Say(Confirm)" />
 			</effect>
 		</case>
@@ -100,7 +100,7 @@
 				<if var="perceived" value="{B}" relation="notcontains" />			
 			</and>
 			</condition>
-			<effect util="-0.2263">
+			<effect util="0.0237">
 				<set var="a_m" value="Say(Disconfirm)" />
 			</effect>
 		</case>
@@ -108,7 +108,7 @@
 			<condition operator="and">
 				<if var="i_u" value="WhatDoYouSee" />
 			</condition>
-			<effect util="18.338">
+			<effect util="1.8178">
 				<set var="a_m" value="Describe({perceived})" />
 			</effect>
 		</case>
@@ -116,7 +116,7 @@
 			<condition operator="and">
 				<if var="i_u" value="Greeting" />
 			</condition>
-			<effect util="7.9336">
+			<effect util="10.1818">
 				<set var="a_m" value="Say(Greet)" />
 			</effect>
 		</case>
@@ -124,7 +124,7 @@
 			<condition operator="and">
 				<if var="i_u" value="Ask(Name)" />
 			</condition>
-			<effect util="7.9336">
+			<effect util="10.1818">
 				<set var="a_m" value="Say(NameIsLenny)" />
 			</effect>
 		</case>
@@ -132,7 +132,7 @@
 			<condition operator="and">
 				<if var="i_u" value="Closing" />
 			</condition>
-			<effect util="7.9336">
+			<effect util="10.1818">
 				<set var="a_m" value="Say(Goodbye)" />
 			</effect>
 		</case>
@@ -163,7 +163,7 @@
 				<if var="a_u" value="Disconfirm" relation="!="/>
 				<if var="a_u" value="Grounding" relation="!="/>
 		</condition>
-			<effect util="6.227">
+			<effect util="-1.623">
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
@@ -171,7 +171,7 @@
 		<condition>
 				<if var="a_m" value="AskRepeat" relation="!="/>
 		</condition>
-			<effect util="5.49">
+			<effect util="8.1981">
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
@@ -189,12 +189,12 @@
 			<if var="a_u" value="Closing" relation="!="/>
 			<if var="i_u" value="None" relation="!="/>
 		</condition>
-			<effect util="12.0968">
+			<effect util="5.2766">
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
 		</case>
 		<case>
-			<effect util="26.2905">
+			<effect util="8.6923">
 				<set var="a_m" value="Confirm(*)" />
 			</effect>
 		</case>
@@ -207,7 +207,7 @@
 				<if var="motion" value="true" />
 				<if var="a_u" value="Stop" />
 			</condition>
-			<effect util="7.387">
+			<effect util="12.2033">
 				<set var="a_m" value="Do(Stop)" />
 			</effect>
 		</case>
@@ -216,7 +216,7 @@
 				<if var="motion" value="true" />			
 				<if var="a_u" value="Disconfirm" />
 			</condition>
-			<effect util="7.387">
+			<effect util="12.2033">
 				<set var="a_m" value="Do(Stop)" />
 			</effect>
 		</case>
@@ -224,7 +224,7 @@
 			<condition operator="and">
 				<if var="motion" value="true" />
 			</condition>
-			<effect util="-7.8222">
+			<effect util="-0.6807">
 				<set var="a_m" value="None" relation="!=" />
 			</effect>
 		</case>
