@@ -118,7 +118,6 @@ public class WoZSimulator implements Simulator {
 
 
 
-
 	private void performTurn() {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
