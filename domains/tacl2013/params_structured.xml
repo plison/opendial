@@ -181,16 +181,16 @@
 
 	<variable id="theta_confirmpredict">
 		<distrib type="dirichlet">
-			<alpha>5</alpha>
-			<alpha>5</alpha>
+			<alpha>10</alpha>
+			<alpha>10</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
 	
 	<variable id="theta_disconfirmpredict">
 		<distrib type="dirichlet">
-			<alpha>5</alpha>
-			<alpha>5</alpha>
+			<alpha>10</alpha>
+			<alpha>10</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
