@@ -23,10 +23,10 @@
 			</effect>
 		</case>
 		<case>
-		<effect prob="0.307">
+		<effect prob="0.812">
 				<set var="completed-task" value="false" />
 		</effect>
-		<effect prob="0.693">
+		<effect prob="0.188">
 			<set var="completed-task" value="true" />
 		</effect>
 		</case>
