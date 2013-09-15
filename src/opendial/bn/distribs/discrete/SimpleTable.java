@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
@@ -600,10 +601,16 @@ public class SimpleTable implements DiscreteProbDistribution {
 	 */
 	private String toString(double threshold) {
 		String str = "";
-		for (Assignment head: table.keySet()) {
-			double prob = DistanceUtils.shorten(table.get(head));
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(table.entrySet());
+		
+		Collections.sort(entries, new EntryComparator());
+		Collections.reverse(entries);
+				
+		for (Entry<Assignment,Double> entry : entries) {
+			double prob = DistanceUtils.shorten(entry.getValue());
 			if (prob > threshold) {
-				str += "P("+head + "):=" + prob + "\n";
+				str += "P("+entry.getKey() + "):=" + prob + "\n";
 			}
 		}
 
@@ -623,7 +630,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	@Override
 	public String prettyPrint() {
 		if (table.size() < 30) {
-			return toString(0.1).replace("\n", ", ");
+			return toString(0.05).replace("\n", ", ");
 		}
 		else {
 			return "(probability table too big to be shown)";

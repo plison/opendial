@@ -48,8 +48,8 @@
 		</case>	 -->	
 		<case>
 			<condition operator="and">
-				<if var="i_u" value="PickUp({Z2})" />
-				<if var="perceived" value="{Z2}" relation="notcontains" />
+				<if var="i_u" value="PickUp({Z})" />
+				<if var="perceived" value="{Z}" relation="notcontains" />
 			</condition>
 			<effect util="theta_excuse">
 				<set var="a_m" value="Say(DoNotSeeObject)" />
@@ -105,7 +105,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition operator="and">
+			<condition>
 				<if var="i_u" value="WhatDoYouSee" />
 			</condition>
 			<effect util="theta_describe">

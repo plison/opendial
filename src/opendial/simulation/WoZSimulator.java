@@ -260,7 +260,9 @@ public class WoZSimulator implements Simulator {
 
 	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
 	
-		log.debug("initial user action: " + newState.getContent("a_u", true).prettyPrint());
+		log.debug("Initial user action: " + newState.getContent("a_u", true).prettyPrint());
+		log.debug("Perceived objects: " + newState.getContent("perceived", true).prettyPrint() 
+				+ " and carried objects " + newState.getContent("carried", true).prettyPrint());
 		
 		if (systemState.getNetwork().hasChanceNode("i_u")) {
 			ProbDistribution iudistrib = systemState.getContent("i_u", true);
@@ -279,7 +281,7 @@ public class WoZSimulator implements Simulator {
 		systemState.setVariableToProcess("a_m");
 		systemState.triggerUpdates();
 		
-		log.debug("predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
+		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
 		// TODO Auto-generated method stub
 		
 	}
