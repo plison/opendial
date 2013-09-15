@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_u" type="decision">
+
+	<rule id="tasks">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Move(*)" />
+			</condition>
+			<effect util="22.9073">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+			<and>
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]"/>
+			</and>
+			<and>
+				<if var="i_u" value="PickUp(AtFeet)" />
+				<if var="carried" value="[]"/>			
+			</and>
+			</condition>
+			<effect util="-0.7844">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({Y})" />
+				<if var="perceived" value="{Y}" relation="contains"/>
+				<if var="carried" value="[]" relation="!=" />
+			</condition>
+			<effect util="9.1698">
+				<set var="a_m" value="Say(AlreadyCarryObject)" />
+			</effect>
+		</case>
+		<!-- 		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({Z})" />
+				<if var="Z" value="Other" relation="="/>
+			</condition>
+			<effect util="9.1698">
+				<set var="a_m" value="Say(CannotResolve)" />
+			</effect>
+		</case>	 -->	
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({Z2})" />
+				<if var="perceived" value="{Z2}" relation="notcontains" />
+			</condition>
+			<effect util="9.1698">
+				<set var="a_m" value="Say(DoNotSeeObject)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release" />
+				<if var="carried" value="None" relation="!="/>
+				<if var="carried" value="[]" relation="!="/>
+			</condition>
+			<effect util="3.598">
+				<set var="a_m" value="Do({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release" />
+				<if var="carried" value="[]"/>
+			</condition>
+			<effect util="9.1698">
+				<set var="a_m" value="Say(DoNotCarryObject)" />
+			</effect>
+		</case>
+			<case>
+			<condition operator="or">
+				<and>
+					<if var="i_u" value="DoYouSee(Something)" />
+					<if var="perceived" value="[]" relation="!=" />
+				</and>
+				<and>
+					<if var="i_u" value="DoYouSee({A})" />
+					<if var="perceived" value="{A}" relation="contains" />				
+				</and>
+			</condition>
+			<effect util="-0.0987">
+				<set var="a_m" value="Say(Confirm)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+			<and>
+				<if var="i_u" value="DoYouSee(Something)" />
+				<if var="perceived" value="[]" relation="=" />
+			</and>
+			<and>
+				<if var="i_u" value="DoYouSee({B})" />
+				<if var="perceived" value="{B}" relation="notcontains" />			
+			</and>
+			</condition>
+			<effect util="-0.0987">
+				<set var="a_m" value="Say(Disconfirm)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="WhatDoYouSee" />
+			</condition>
+			<effect util="0.2025">
+				<set var="a_m" value="Describe({perceived})" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Greeting" />
+			</condition>
+			<effect util="4.5755">
+				<set var="a_m" value="Say(Greet)" />
+			</effect>
+		</case>
+			<case>
+			<condition operator="and">
+				<if var="i_u" value="Ask(Name)" />
+			</condition>
+			<effect util="4.5755">
+				<set var="a_m" value="Say(NameIsLenny)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Closing" />
+			</condition>
+			<effect util="4.5755">
+				<set var="a_m" value="Say(Goodbye)" />
+			</effect>
+		</case>
+	</rule>
+	
+	
+	<rule>
+		<case>
+			<effect util="-10">
+				<set var="a_m" value="Do(*)" />
+			</effect>
+			<effect util="-10">	
+			<set var="a_m" value="Say(*)" />
+				</effect>
+			<effect util="-10">
+				<set var="a_m" value="Describe(*)" />
+			</effect>	
+		</case>
+	</rule>
+	
+
+	<rule>
+		<case>
+		<condition>
+				<if var="a_m" value="AskRepeat" relation="!="/>
+				<if var="a_u" value="None" relation="!="/>
+				<if var="a_u" value="Confirm" relation="!="/>
+				<if var="a_u" value="Disconfirm" relation="!="/>
+				<if var="a_u" value="Grounding" relation="!="/>
+		</condition>
+			<effect util="0.5705">
+				<set var="a_m" value="AskRepeat" />
+			</effect>
+		</case>
+		<case>
+		<condition>
+				<if var="a_m" value="AskRepeat" relation="!="/>
+		</condition>
+			<effect util="5.8212">
+				<set var="a_m" value="AskRepeat" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule>
+		<case>
+		<condition operator="and">
+			<if var="a_u" value="DoYouSee(*)" relation="!="/>
+			<if var="a_u" value="WhatDoYouSee" relation="!="/>
+			<if var="a_u" value="None" relation="!="/>
+			<if var="a_u" value="Confirm" relation="!="/>
+			<if var="a_u" value="Disconfirm" relation="!="/>
+			<if var="a_u" value="Greeting" relation="!="/>
+			<if var="a_u" value="Closing" relation="!="/>
+			<if var="i_u" value="None" relation="!="/>
+		</condition>
+			<effect util="-0.707">
+				<set var="a_m" value="Confirm({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<effect util="10.0276">
+				<set var="a_m" value="Confirm(*)" />
+			</effect>
+		</case>
+	</rule>
+
+	
+	<rule id="reactive">
+		<case>
+			<condition operator="and">
+				<if var="motion" value="true" />
+				<if var="a_u" value="Stop" />
+			</condition>
+			<effect util="13.1962">
+				<set var="a_m" value="Do(Stop)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="motion" value="true" />			
+				<if var="a_u" value="Disconfirm" />
+			</condition>
+			<effect util="13.1962">
+				<set var="a_m" value="Do(Stop)" />
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="motion" value="true" />
+			</condition>
+			<effect util="-1.6826">
+				<set var="a_m" value="None" relation="!=" />
+			</effect>
+		</case>
+	</rule>
+	
+
+</model>
