@@ -81,7 +81,13 @@ public class WoZSimulator implements Simulator {
 	
 	public void specifyOutput(String inputDomain, String suffix) {
 		this.inputDomain = inputDomain;
+		if (suffix.length() > 0) {
 		this.suffix = suffix;
+		}
+		else {
+			log.warning("suffix cannot be empty");
+			this.suffix = "default";
+		}
 	}
 
 
@@ -164,14 +170,13 @@ public class WoZSimulator implements Simulator {
 		
 		Map<String,String> domainFiles = getDomainFiles();
 		
-		for (ChanceNode n : systemState.getNetwork().getChanceNodes()) {
-			if (n.getId().contains("theta")) {
+		for (String id : systemState.getParameterIds()) {
 				try {
-				ContinuousProbDistribution distrib = n.getDistrib().toContinuous();
+				ContinuousProbDistribution distrib = systemState.getNetwork().getChanceNode(id).getDistrib().toContinuous();
 				if (distrib instanceof UnivariateDistribution) {
 					double mean = ((UnivariateDistribution)distrib).getMean();
 					for (String domainFile : new HashSet<String>(domainFiles.keySet())) {
-						String text = domainFiles.get(domainFile).replace(n.getId(), ""+DistanceUtils.shorten(mean));
+						String text = domainFiles.get(domainFile).replace(id, ""+DistanceUtils.shorten(mean));
 						domainFiles.put(domainFile, text);
 					}
 				}
@@ -180,7 +185,7 @@ public class WoZSimulator implements Simulator {
 					for (String domainFile : new HashSet<String>(domainFiles.keySet())) {
 						String text = domainFiles.get(domainFile);
 						for (int i = 0 ; i < mean.length ;i++) {
-							text = text.replace(n.getId()+"["+i+"]", ""+DistanceUtils.shorten(mean[i]));
+							text = text.replace(id+"["+i+"]", ""+DistanceUtils.shorten(mean[i]));
 						}
 						domainFiles.put(domainFile, text);
 					}
@@ -189,7 +194,20 @@ public class WoZSimulator implements Simulator {
 				catch (DialException e) {
 					log.warning("could not convert parameter into continuous probability distribution: " + e);
 				}
+		}
+		
+		String rootpath = new File(domainFiles.keySet().iterator().next()).getParent();
+		if ((new File(rootpath)).exists()) {
+			final File[] files = (new File(rootpath)).listFiles();
+			for (File f : files) {
+				log.debug("deleting file " + f.getAbsolutePath());
+				f.delete();
 			}
+			log.debug("deleting file " + rootpath);
+			(new File(rootpath)).delete();
+		}
+		if ((new File(rootpath).mkdir())) {
+			log.debug("created path " + rootpath);
 		}
 		
 		for (String domainFile : domainFiles.keySet()) {
@@ -231,7 +249,8 @@ public class WoZSimulator implements Simulator {
             text += line + "\n";
         }	
         bufferedReader.close();
-        outputFiles.put(topFile.replace(".xml", "")+suffix+".xml", text);
+        outputFiles.put(topFile.replace(rootpath, rootpath+"/" + suffix).replace(rootpath.replace("/", "//"), 
+        		rootpath+"/" + suffix), text);
 		}
 		catch (Exception e) {
 			log.warning("could not extract domain files: " + e);
