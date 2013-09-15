@@ -174,7 +174,7 @@
 	
 	<variable id="theta_changemind">
 		<distrib type="dirichlet">
-			<alpha>20</alpha>
+			<alpha>100</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
