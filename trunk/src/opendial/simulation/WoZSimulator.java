@@ -20,11 +20,19 @@
 package opendial.simulation;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 
@@ -35,6 +43,9 @@ import opendial.arch.StateListener;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.continuous.MultivariateDistribution;
+import opendial.bn.distribs.continuous.UnivariateDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
@@ -42,6 +53,7 @@ import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
 import opendial.simulation.datastructs.WoZDataPoint;
 import opendial.state.DialogueState;
+import opendial.utils.DistanceUtils;
 
 public class WoZSimulator implements Simulator {
 
@@ -55,11 +67,21 @@ public class WoZSimulator implements Simulator {
 	int curIndex = 0;
 
 	boolean paused = false;
+	
+
+	String inputDomain;
+	String suffix;
+	
 
 	public WoZSimulator (DialogueState systemState, List<WoZDataPoint> data)
 			throws DialException {
 		this.systemState = systemState;
 		this.data = data;
+	}
+	
+	public void specifyOutput(String inputDomain, String suffix) {
+		this.inputDomain = inputDomain;
+		this.suffix = suffix;
 	}
 
 
@@ -92,7 +114,7 @@ public class WoZSimulator implements Simulator {
 
 
 	private void performTurn() {
-		if (curIndex < data.size()) {
+		if (curIndex < 0) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
 			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
@@ -129,11 +151,94 @@ public class WoZSimulator implements Simulator {
 		}
 		else {
 			log.info("reached the end of the training data");
+			if (inputDomain != null && suffix != null) {
+				writeResults();
+			}
 			System.exit(0);
 		}
 		curIndex++;
 	}
 
+
+	private void writeResults() {
+		
+		Map<String,String> domainFiles = getDomainFiles();
+		
+		for (ChanceNode n : systemState.getNetwork().getChanceNodes()) {
+			if (n.getId().contains("theta")) {
+				try {
+				ContinuousProbDistribution distrib = n.getDistrib().toContinuous();
+				if (distrib instanceof UnivariateDistribution) {
+					double mean = ((UnivariateDistribution)distrib).getMean();
+					for (String domainFile : new HashSet<String>(domainFiles.keySet())) {
+						String text = domainFiles.get(domainFile).replace(n.getId(), ""+DistanceUtils.shorten(mean));
+						domainFiles.put(domainFile, text);
+					}
+				}
+				else if (distrib instanceof MultivariateDistribution) {
+					Double[] mean = ((MultivariateDistribution)distrib).getMean();
+					for (String domainFile : new HashSet<String>(domainFiles.keySet())) {
+						String text = domainFiles.get(domainFile);
+						for (int i = 0 ; i < mean.length ;i++) {
+							text = text.replace(n.getId()+"["+i+"]", ""+DistanceUtils.shorten(mean[i]));
+						}
+						domainFiles.put(domainFile, text);
+					}
+				}
+				}
+				catch (DialException e) {
+					log.warning("could not convert parameter into continuous probability distribution: " + e);
+				}
+			}
+		}
+		
+		for (String domainFile : domainFiles.keySet()) {
+			try {
+			 FileWriter fileWriter = new FileWriter(domainFile);
+		            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+		            bufferedWriter.write(domainFiles.get(domainFile));
+		            // Always close files.
+		            bufferedWriter.close();
+			}
+			catch (IOException e) {
+				log.warning("could not write output to files. " + e);
+			}
+		}
+	}
+	
+	private Map<String,String> getDomainFiles() {
+		return getDomainFiles(inputDomain);
+	}
+	
+
+	private Map<String,String> getDomainFiles(String topFile) {
+        Map<String,String> outputFiles = new HashMap<String,String>();
+
+        try {
+		FileReader fileReader =  new FileReader(topFile);
+
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+     	String rootpath = (new File(topFile)).getParent();
+        
+        String text = "";
+        String line = null;
+        while((line = bufferedReader.readLine()) != null) {
+            if (line.contains("import href")) {
+            	String fileStr = line.substring(line.indexOf("href=\"")+6, line.indexOf("/>")-1);
+            	outputFiles.putAll(getDomainFiles(rootpath +"/" + fileStr));
+            }
+            text += line + "\n";
+        }	
+        bufferedReader.close();
+        outputFiles.put(topFile.replace(".xml", "")+suffix+".xml", text);
+		}
+		catch (Exception e) {
+			log.warning("could not extract domain files: " + e);
+		}
+        return outputFiles;
+	}
+	
 
 	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
 	
