@@ -114,7 +114,7 @@ public class WoZSimulator implements Simulator {
 
 
 	private void performTurn() {
-		if (curIndex < 0) {
+		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
 			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
