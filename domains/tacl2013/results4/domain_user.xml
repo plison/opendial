@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="i_u" type="prediction">
+
+	<rule id="usermodel">
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="0.614">
+				<set var="a_u" value="Confirm" />
+			</effect>
+			<effect prob="0.3591">
+				<set var="a_u" value="{i_u}" />
+			</effect>
+			<effect prob="0.0269"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm({Y})" />
+				<if var="i_u" value="{Y}" relation="!=" />
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.2841">
+				<set var="a_u" value="Disconfirm" />
+			</effect>
+			<effect prob="0.6106">
+				<set var="a_u" value="{i_u}" />
+			</effect>
+			<effect prob="0.1053"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="lastMove" value="{i_u}" />
+			</condition>
+			<effect prob="0.3177">
+				<set var="a_u" value="RepeatLast" />
+			</effect>
+			<effect prob="0.6518">
+				<set var="a_u" value="{i_u}" />
+			</effect>
+			<effect prob="0.0305"/>
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="a_m" value="AskRepeat" />
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.9878">
+				<set var="a_u" value="{i_u}" />
+			</effect>
+			<effect prob="0.0122"/>
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.9077">
+				<set var="a_u" value="{i_u}" />
+			</effect>
+			<effect prob="0.0923"/>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="a_m" value="Do(*)" />
+			</condition>
+			<effect prob="0.0541">
+				<set var="a_u" value="Stop" />
+			</effect>
+			<effect prob="0.0564">
+				<set var="a_u" value="Disconfirm" />
+			</effect>
+			<effect prob="0.8895"/>
+		</case>
+	</rule>
+
+</model>
