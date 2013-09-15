@@ -71,13 +71,13 @@ public class DialogueState {
 	public static Logger log = new Logger("DialogueState", Logger.Level.DEBUG);
 
 	String name = "";
-	
+
 	protected BNetwork network;
 
 	Assignment evidence;
 
 	Set<String> parameterIds;
-	
+
 	Stack<String> variablesToProcess;
 
 	Map<String,Long> updateStamps;
@@ -89,7 +89,7 @@ public class DialogueState {
 	ForwardPlanner planner;
 
 	boolean isFictive = false;
-	
+
 
 	boolean activateDecisions = true;
 	boolean activatePredictions = true;
@@ -112,7 +112,7 @@ public class DialogueState {
 		pruner = new StatePruner(this);
 
 		if (Settings.getInstance().planning.isSarsa()) {
-		planner = new SARSALearner(this);
+			planner = new SARSALearner(this);
 		}
 		else if (Settings.getInstance().planning.isWoZ()) {
 			planner = new WoZLearner(this);
@@ -121,11 +121,11 @@ public class DialogueState {
 			planner = new ForwardPlanner(this);
 		}
 		listeners = new LinkedList<StateListener>();
-		
+
 		parameterIds = new HashSet<String>();
 	}
 
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -163,7 +163,7 @@ public class DialogueState {
 		modules = new ArrayList<SynchronousModule>();
 	}
 
-	
+
 	public void applyRule(Rule rule) throws DialException {
 		if (!activateDecisions && rule.getRuleType() == RuleType.UTIL) {
 			return;
@@ -209,11 +209,11 @@ public class DialogueState {
 
 
 
-	
+
 	public synchronized void triggerUpdates() {
-		
+
 		refresh();
-		
+
 		while (true) {
 			if (!variablesToProcess.isEmpty()) {
 				List<SynchronousModule> modulesToTrigger = 
@@ -236,19 +236,10 @@ public class DialogueState {
 				}
 			}
 			else if (pruner.isPruningNeeded()) {
-					pruner.run();
+				pruner.run();
 			}	
 			else if (planner.isPlanningNeeded()) {	
-				if (network.hasActionNode("a_m'")) { try { 
-					if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
-						if (network.hasChanceNode("motion")) {
-							log.debug("motion : " + getContent("motion", true).prettyPrint());
-						}
-						log.debug("interpreted a_u : " + getContent("a_u", true).prettyPrint());
-					log.debug("interpreted i_u (before action) : " +  getContent("i_u", true).prettyPrint());
-				} 
-				}
-				catch (DialException e) { e.printStackTrace(); } 	}
+				showInformation();
 				planner.run();
 			}	
 			else {
@@ -257,8 +248,22 @@ public class DialogueState {
 			}
 		}
 	}
-	
-	
+
+	private void showInformation() {
+		if (network.hasActionNode("a_m'")) { try { 
+			if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
+				if (network.hasChanceNode("motion")) {
+					log.debug("motion : " + getContent("motion", true).prettyPrint());
+				}
+				log.debug("Interpreted a_u : " + getContent("a_u", true).prettyPrint());
+				log.debug("Interpreted i_u (before action) : " +  getContent("i_u", true).prettyPrint());
+			} 
+		}
+		catch (DialException e) { e.printStackTrace(); } 	
+		}
+	}
+
+
 	public boolean isStable() {
 		return (variablesToProcess.isEmpty() && !pruner.isPruningNeeded() && !planner.isPlanningNeeded());
 	}
@@ -283,7 +288,7 @@ public class DialogueState {
 		triggerUpdates();
 	}
 
-	
+
 	public ProbDistribution getContent(String variable, boolean withEvidence) throws DialException {
 		ProbDistribution distrib = getContent(Arrays.asList(getLatestNodeId(variable)), withEvidence);
 		distrib.modifyVarId(getLatestNodeId(variable), variable);
@@ -336,7 +341,7 @@ public class DialogueState {
 	public void activateDecisions(boolean activateDecisions) {
 		this.activateDecisions = activateDecisions;
 	}
-	
+
 	public void activatePredictions(boolean activatePredictions) {
 		this.activatePredictions = activatePredictions;
 	}
@@ -374,7 +379,7 @@ public class DialogueState {
 		this.evidence = evidence;
 	}
 
-	
+
 	public boolean isUpdated(String varId, long referenceStamp) {
 		if (updateStamps.containsKey(varId)) {
 			long updateStamp = updateStamps.get(varId).longValue();
@@ -382,7 +387,7 @@ public class DialogueState {
 		}
 		return false;
 	}
-	
+
 
 	public void addParameters(BNetwork parameterNetwork) {
 		try {
@@ -393,7 +398,7 @@ public class DialogueState {
 			log.warning ("cannot add parameters to the dialogue state: " + e);
 		}
 	}
-	
+
 	public boolean isParameter(String nodeId) {
 		return parameterIds.contains(nodeId);
 	}
@@ -402,43 +407,43 @@ public class DialogueState {
 		return name;
 	}
 
-	
-	
+
+
 	public void shutdown() {
 		for (SynchronousModule module: modules) {
 			module.shutdown();
 		}
 	}
-	
-	
+
+
 
 	public Element generateXML(Document doc, boolean includePredictions) throws DialException {
-		
+
 		Element root = doc.createElement("state");
 		for (String nodeId : network.getChanceNodeIds()) {
 			if (!isParameter(nodeId) && (includePredictions || !(nodeId.contains("^p")))) {
-			Element var = doc.createElement("variable");
-			
-			Attr id = doc.createAttribute("id");
-			id.setValue(nodeId);
-			var.setAttributeNode(id);
-			
-			SimpleTable table = getContent(nodeId,true).toDiscrete().getProbTable(new Assignment());
-			for (Assignment a : table.getRows()) {
-				Element valueNode = doc.createElement("value");
-				Attr prob = doc.createAttribute("prob");
-				prob.setValue(""+DistanceUtils.shorten(table.getProb(a)));
-				valueNode.setAttributeNode(prob);
-				valueNode.setTextContent(""+a.getValue(nodeId));
-				var.appendChild(valueNode);	
-			}
-			root.appendChild(var);
+				Element var = doc.createElement("variable");
+
+				Attr id = doc.createAttribute("id");
+				id.setValue(nodeId);
+				var.setAttributeNode(id);
+
+				SimpleTable table = getContent(nodeId,true).toDiscrete().getProbTable(new Assignment());
+				for (Assignment a : table.getRows()) {
+					Element valueNode = doc.createElement("value");
+					Attr prob = doc.createAttribute("prob");
+					prob.setValue(""+DistanceUtils.shorten(table.getProb(a)));
+					valueNode.setAttributeNode(prob);
+					valueNode.setTextContent(""+a.getValue(nodeId));
+					var.appendChild(valueNode);	
+				}
+				root.appendChild(var);
 			}
 		}
 		return root;
 	}
 
-	
+
 	public List<String> getParameterIds() {
 		return new ArrayList<String>(parameterIds);
 	}

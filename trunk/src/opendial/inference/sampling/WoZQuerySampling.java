@@ -34,12 +34,13 @@ import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.datastructs.Intervals;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MAX = 100;
+	public static final double MAX = 50;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -91,9 +92,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				bestNotGold = a;
 			}
 		}
-		log.debug("gold action is " + goldAction + "(util=" + averages.get(goldAction) +
-				") and the best non-gold action is " + bestNotGold + "(util=" + averages.get(bestNotGold)+")");
-		
+		log.debug("Utility averages : " + (new UtilityTable(averages)).prettyPrint().replace("\n", ", ") + " ==> gold action = " + goldAction);
 		
 		synchronized(samples) {
 			

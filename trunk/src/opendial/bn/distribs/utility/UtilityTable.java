@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -37,6 +38,7 @@ import opendial.bn.values.Value;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.DistanceUtils;
 
 /**
  * Utility table that is empirically constructed from a set of samples.  The table
@@ -295,12 +297,17 @@ public class UtilityTable implements UtilityDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		Map<Assignment,Double> table =getTable();
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(getTable().entrySet());
+		
+		Collections.sort(entries, new EntryComparator());
+		Collections.reverse(entries);
+		
 		String str = "";
-		for (Assignment input: table.keySet()) {
-			str += "Q(" + input + "):=" + table.get(input) + "\n";
+		for (Entry<Assignment,Double> entry : entries) {
+			str += "Q(" + entry.getKey() + "):=" + DistanceUtils.shorten(entry.getValue()) + "\n";
 		}
-		return str;
+		return str.substring(0, str.length()-1);
 	}
 
 
