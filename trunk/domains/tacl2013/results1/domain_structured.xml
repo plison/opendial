@@ -12,6 +12,11 @@
 
 </initialstate>
 
+ <import href="../../common/tabletop_nlu.xml"/>
+ <import href="../../common/tabletop_nlu2.xml"/>
+ <import href="../../common/tabletop_nlg.xml"/>
+
+
  <import href="domain_effects.xml"/>
 
  <import href="domain_prior.xml"/>

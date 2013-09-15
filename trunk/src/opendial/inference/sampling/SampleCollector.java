@@ -32,6 +32,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.FuzzyDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
+import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -106,10 +107,16 @@ public class SampleCollector extends Thread {
 						// if the node is a chance node and is not evidence, sample from the values
 						if (!evidence.containsVar(n.getId())) {
 							if (!sample.getSample().containsVar(n.getId())) {
+								if (((ChanceNode)n).getDistrib() instanceof ComplexEmpiricalDistribution) {
+									Assignment full = ((ComplexEmpiricalDistribution)((ChanceNode)n).getDistrib()).getFullSample();
+									sample.addPoints(full);
+									if (!evidence.consistentWith(sample.getSample())) {
+										sample.setWeight(0);
+									}
+								}
+								else {
 								Value newVal = ((ChanceNode)n).sample(sample.getSample());
 								sample.addPoint(n.getId(), newVal);
-								if (newVal instanceof AssignmentVal && !evidence.consistentWith(sample.getSample())) {
-									sample.setWeight(0);
 								}
 							}						
 						}

@@ -123,8 +123,10 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 * @throws DialException 
 	 */
 	public Assignment sample() throws DialException {
-		return distrib.sample();
+		return distrib.sample().getTrimmed(headVars);
 	}
+	
+	
 	
 
 	/**
@@ -137,7 +139,22 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public Assignment sample(Assignment condition) throws DialException {
-		return sample();
+		Assignment a = null;
+		int nbLoops = 0;
+		while (a == null || (!a.contains(condition) && nbLoops < distrib.getSamples().size())) {
+			a = distrib.sample();
+			nbLoops++;
+		}
+		if (nbLoops >= distrib.getSamples().size()) {
+			log.warning("could not find sample of correct condition : " + condition);
+			log.debug("discrete table: " + distrib.toDiscrete());
+		}
+		return a.getTrimmed(headVars);
+	}
+	
+	
+	public Assignment getFullSample() throws DialException {
+		return distrib.sample();
 	}
 
 
@@ -258,7 +275,7 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		return "dependent empirical distribution P(" + headVars + "|" + condVars + ")";
+		return "complex empirical distribution P(" + headVars + "|" + condVars + ")";
 	}
 
 

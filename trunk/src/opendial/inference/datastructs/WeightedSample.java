@@ -71,6 +71,10 @@ public class WeightedSample {
 			sample.addPair(variable, value);
 		}
 	}
+	
+	public void addPoints(Assignment assign) {
+		sample.addAssignment(assign);
+	}
 
 	/**
 	 * Adds a logarithmic weight to the current one
