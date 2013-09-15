@@ -61,12 +61,12 @@ public class TACL2013_learn {
 		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
 		system.addParameters(params);
 		
-		log.debug("file: " + settings.planning.getWoZFile());
 		List<WoZDataPoint> data = XMLTrainingDataReader.
 				extractTrainingSample(settings.planning.getWoZFile());
 		log.debug("number of collected points: " + data.size());
 		WoZSimulator simulator = new WoZSimulator(system.getState(), data);
 		system.attachSimulator(simulator);
+		simulator.specifyOutput(domainFile,"_structured");
 		
 	//	NaoBehaviour b = new NaoBehaviour();
 	//	NaoTTS tts = new NaoTTS();
