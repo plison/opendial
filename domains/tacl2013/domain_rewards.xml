@@ -2,7 +2,7 @@
 
 <model trigger="a_u" type="decision">
 
-	<rule id="tasks">
+	<rule id="tasks-move">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Move(*)" />
@@ -11,6 +11,9 @@
 				<set var="a_m" value="Do({i_u})" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="tasks-pickup">
 		<case>
 			<condition operator="or">
 			<and>
@@ -55,6 +58,9 @@
 				<set var="a_m" value="Say(DoNotSeeObject)" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="tasks-release">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Release" />
@@ -74,6 +80,9 @@
 				<set var="a_m" value="Say(DoNotCarryObject)" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="tasks-perceive">
 			<case>
 			<condition operator="and">
 					<if var="i_u" value="DoYouSee({A})" />
@@ -92,6 +101,9 @@
 				<set var="a_m" value="Say(Disconfirm)" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="tasks-whatdoyousee">
 		<case>
 			<condition>
 				<if var="i_u" value="WhatDoYouSee" />
@@ -100,6 +112,9 @@
 				<set var="a_m" value="Describe({perceived})" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="tasks-chitchat">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Greeting" />

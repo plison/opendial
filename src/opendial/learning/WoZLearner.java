@@ -84,6 +84,7 @@ public class WoZLearner extends ForwardPlanner  {
 			recordAction(currentState, goldAction);
 			
 			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
+			log.debug("updating parameters: " + paramDistrib.getHeadVariables());
 			try {
 				currentState.addContent(paramDistrib, "planner");
 	

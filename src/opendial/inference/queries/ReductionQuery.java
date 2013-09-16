@@ -85,9 +85,9 @@ public class ReductionQuery extends Query {
 				}
 			}
 		}
+		
 		for (String var : queryVars) {
 			Set<String> ancestorIds = network.getNode(var).getAncestorsIds(queryVars);
-
 			for (String inputDepId : ancestorIds) {
 				if (reduced.hasNode(inputDepId)) {
 					
@@ -95,7 +95,6 @@ public class ReductionQuery extends Query {
 				if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
 							&& ((ChanceNode)inputDepNode).getNbValues() == 1 && 
 							!(reduced.getNode(var) instanceof ProbabilityRuleNode)) {
-				//		log.debug("cutting the link between " + inputDepId + " and " + var);
 						continue;
 					} 
 					reduced.getNode(var).addInputNode(reduced.getNode(inputDepId));
@@ -110,7 +109,7 @@ public class ReductionQuery extends Query {
 			reduced.replaceNode(originalNode.copy());
 			reduced.getNode(nodeId).addInputNodes(inputNodesInReduced);
 			reduced.getNode(nodeId).addOutputNodes(outputNodesInReduced);
-		}  	
+		}  
 	}
 	
 	
