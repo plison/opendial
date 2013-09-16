@@ -266,8 +266,10 @@ public class WoZSimulator implements Simulator {
 	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
 	
 		log.debug("Initial user action: " + newState.getContent("a_u", true).prettyPrint());
+		if (newState.getNetwork().hasChanceNode("perceived") && newState.getNetwork().hasChanceNode("carried")) {
 		log.debug("Perceived objects: " + newState.getContent("perceived", true).prettyPrint() 
 				+ " and carried objects " + newState.getContent("carried", true).prettyPrint());
+		}
 		
 		if (systemState.getNetwork().hasChanceNode("i_u")) {
 			ProbDistribution iudistrib = systemState.getContent("i_u", true);
