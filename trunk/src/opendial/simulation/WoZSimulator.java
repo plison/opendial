@@ -61,6 +61,7 @@ public class WoZSimulator implements Simulator {
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
 	public static final int NB_PASSES = 2;
+	int currentPass = 0;
 	
 	DialogueState systemState;
 
@@ -122,8 +123,7 @@ public class WoZSimulator implements Simulator {
 
 	private void performTurn() {
 		
-		for (int k = 0 ; k < NB_PASSES ; k++) {
-		if (curIndex < data.size()) {
+		if (curIndex < data.size() && currentPass < NB_PASSES) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
 			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
@@ -162,12 +162,13 @@ public class WoZSimulator implements Simulator {
 		else {
 			log.info("reached the end of the training data");
 			curIndex = 0;
+			currentPass++;
 			if (inputDomain != null && suffix != null) {
 				writeResults();
 			}
 			System.exit(0);
 		}
-		}
+		
 		curIndex++;
 	}
 
