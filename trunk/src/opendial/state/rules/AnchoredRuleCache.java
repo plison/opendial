@@ -60,6 +60,8 @@ public class AnchoredRuleCache {
 	
 	AnchoredRule rule;
 	
+	public static final double PROB_THRESHOLD = 0.1;
+	
 	// this table does not reflect real distributions
 	Map<Output, Set<Parameter>> cachedValues;
 	
@@ -114,10 +116,10 @@ public class AnchoredRuleCache {
 	 */
 	protected Set<Assignment> getPossibleConditions() {
 			
-			if (rule.getRule() instanceof DecisionRule) {
+		 	if (rule.getRule() instanceof DecisionRule) {
 				return getPossibleConditions_decision();
-			}
-			else {
+			} 
+			else { 
 				return getPossibleConditions_general();
 			}
 	}
@@ -129,7 +131,7 @@ public class AnchoredRuleCache {
 			SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
 					(new ProbQuery(rule.state, rule.getInputNodes().keySet())).toDiscrete().getProbTable(new Assignment());
 			
-			return inputVals.getAboveThreshold(0.1).getRows();
+			return inputVals.getAboveThreshold(PROB_THRESHOLD).getRows();
 		}
 		catch (DialException e) {
 			log.warning("could not extract the input values for the decision rule " + rule);

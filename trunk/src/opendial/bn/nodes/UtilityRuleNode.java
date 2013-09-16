@@ -100,15 +100,43 @@ public class UtilityRuleNode extends UtilityNode {
 	 private Set<Assignment> getPossibleInputs () throws DialException {
 		
 		 Map<String,Set<Value>> possibleValues = new HashMap<String,Set<Value>>();
-		 for (String var : rule.getInputVariables()) {
+		 for (String var : rule.getInputNodes().keySet()) {
 			 if(inputNodes.containsKey(var)) {
 				 possibleValues.put(var, inputNodes.get(var).getValues());
+			 }
+			 else if (inputNodes.containsKey(var.replace("'", ""))) {
+				 possibleValues.put(var.replace("'", ""), inputNodes.get(var.replace("'", "")).getValues());				 
+			 }
+			 else {
+				 log.debug("could not find input node: " + var);
 			 }
 		 }
 		 Set<Assignment> conditions = CombinatoricsUtils.getAllCombinations(possibleValues);
 		 
 		return conditions;
 	}
+	 
+	 /**
+	 SimpleTable getPossibleInputs () throws DialException {
+		BNetwork network = null; 
+		for (IdChangeListener listener : idChangeListeners) {
+			if (listener instanceof BNetwork) {
+				network = (BNetwork)listener;
+			}
+		}
+		if (network == null) {
+			throw new DialException("could not find including network");
+		}
+		Set<String> queryIds = new HashSet<String>();
+		for (String var : rule.getInputVariables()) {
+			if (network.hasChanceNode(var)) {
+				queryIds.add(var);
+			}
+		}
+		SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
+				(new ProbQuery(network, queryIds)).toDiscrete().getProbTable(new Assignment());
+		return inputVals;
+	} */
 		
 	
 	@Override
