@@ -62,6 +62,7 @@
 		<case>
 			<condition>
 				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="completed-task" value="true" />
 			</condition>				
 			<effect prob="theta_perceive_see_prior[0]">
 				<set var="i_u" value="DoYouSee({OBJ})" />
@@ -74,7 +75,10 @@
 	</rule>
 	
 	<rule id="perceptionprior_nosee">
-		<case>				
+		<case>		
+		<condition>
+				<if var="completed-task" value="true" />
+		</condition>		
 			<effect prob="theta_perceive_nosee_prior[0]">
 				<set var="i_u" value="DoYouSee(RedObj)" />
 			</effect>
@@ -93,6 +97,7 @@
 		<case>
 			<condition>			
 				<if var="lastMove" value="None"/>
+				<if var="completed-task" value="true" />				
 			</condition>
 			<effect prob="theta_openingprior[0]" >
 				<set var="i_u" value="Ask(Name)" />
