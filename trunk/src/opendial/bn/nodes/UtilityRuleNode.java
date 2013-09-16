@@ -57,7 +57,7 @@ public class UtilityRuleNode extends UtilityNode {
 
 	AnchoredRule rule;
 	
-	public static final double LIKELY_VALUE_THRESHOLD = 0.1;
+	public static final double LIKELY_VALUE_THRESHOLD = 0.05;
 	
 
 	public UtilityRuleNode(AnchoredRule rule) throws DialException {
