@@ -57,23 +57,35 @@ public class AnchoredRuleCache {
 
 	// logger
 	public static Logger log = new Logger("AnchoredValueCache", Logger.Level.DEBUG);
-	
+
 	AnchoredRule rule;
-	
+
 	public static final double PROB_THRESHOLD = 0.1;
-	
+
+	Set<Assignment> likelyConditions;
+
+	Set<Assignment> possibleConditions;
+
 	// this table does not reflect real distributions
 	Map<Output, Set<Parameter>> cachedValues;
-	
+
 	public AnchoredRuleCache (AnchoredRule rule) {
 		this.rule = rule;
-		
+
 		cachedValues = new HashMap<Output, Set<Parameter>>();
+
+		if (rule.getRule() instanceof DecisionRule) {
+			extractLikelyConditions();
+			if (likelyConditions.isEmpty()) {
+				return;
+			}
+		}
 		
-		Set<Assignment> conditions = getPossibleConditions();
-		for (Assignment condition : conditions) {
+		extractPossibleConditions();
+
+		for (Assignment condition : possibleConditions) {
 			OutputTable conditionedOutput = rule.getEffectOutputs(condition);
-			
+
 			for (Output o : conditionedOutput.getOutputs()) {
 				if (!cachedValues.containsKey(o)) {
 					cachedValues.put(o, new HashSet<Parameter>());
@@ -88,23 +100,27 @@ public class AnchoredRuleCache {
 				cachedValues.get(emptyOutput).add(new FixedParameter(1-conditionedOutput.getFixedMass()));
 			}
 		}
-		
+
 	}
 
-	
+
 
 	public Set<Output> getOutputs() {
 		return cachedValues.keySet();
 	}
-	
-	
+
+	public Set<Assignment> getPossibleConditions() {
+		return possibleConditions;
+	}
+
+
 	public Set<Parameter> getParameters(Output o) {
 		return cachedValues.get(o);
 	}
-	
 
-	
-	
+
+
+
 
 	/**
 	 * Returns the list of possible assignment of input values for the node.  If the
@@ -114,46 +130,18 @@ public class AnchoredRuleCache {
 	 * 
 	 * @return the (unordered) list of possible conditions.  
 	 */
-	protected Set<Assignment> getPossibleConditions() {
-			
-		 	if (rule.getRule() instanceof DecisionRule) {
-				return getPossibleConditions_decision();
-			} 
-			else { 
-				return getPossibleConditions_general();
-			}
-	}
-	
-	
-	protected Set<Assignment> getPossibleConditions_decision() {
-
-		try {
-			SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
-					(new ProbQuery(rule.state, rule.getInputNodes().keySet())).toDiscrete().getProbTable(new Assignment());
-			
-			return inputVals.getAboveThreshold(PROB_THRESHOLD).getRows();
-		}
-		catch (DialException e) {
-			log.warning("could not extract the input values for the decision rule " + rule);
-			return new HashSet<Assignment>();
-		}
-	}
-	
-	protected Set<Assignment> getPossibleConditions_general() {
-		
+	private void extractPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (ChanceNode inputNode : rule.getInputNodes().values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
 		}
-		
-		Set<Assignment> possibleConditions;
 
 		int nbCombinations = 
 				CombinatoricsUtils.getEstimatedNbCombinations(possibleInputValues);
-		
+
 		if (nbCombinations < 100) {
-		possibleConditions = 
-				CombinatoricsUtils.getAllCombinations(possibleInputValues);
+			possibleConditions = 
+					CombinatoricsUtils.getAllCombinations(possibleInputValues);
 		}
 		else {
 			possibleConditions = new HashSet<Assignment>();
@@ -172,10 +160,28 @@ public class AnchoredRuleCache {
 				possibleConditions.add(sampledA);
 			}
 		}
-		
-		return possibleConditions;  
 	}
 
 
-	
+	private void extractLikelyConditions() {
+
+		try {
+			SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
+					(new ProbQuery(rule.state, rule.getInputNodes().keySet())).toDiscrete().getProbTable(new Assignment());
+
+			likelyConditions = inputVals.getAboveThreshold(PROB_THRESHOLD).getRows();
+		}
+		catch (DialException e) {
+			log.warning("could not extract the input values for the decision rule " + rule);
+			likelyConditions = new HashSet<Assignment>();
+		}
+	}
+
+
+	public Set<Assignment> getLikelyConditions() {
+		return likelyConditions;
+	}
+
+
+
 }
