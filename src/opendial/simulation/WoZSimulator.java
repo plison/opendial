@@ -67,7 +67,7 @@ public class WoZSimulator implements Simulator {
 
 	List<WoZDataPoint> data;
 
-	int curIndex = 0;
+	int curIndex = 4;
 
 	boolean paused = false;
 	
@@ -155,7 +155,7 @@ public class WoZSimulator implements Simulator {
 				}
 			}
 			catch (DialException e) {
-				log.warning("cannot add the new content: " +e);
+				log.warning("cannot perform the turn: " +e);
 			}
 		}
 		
@@ -288,7 +288,9 @@ public class WoZSimulator implements Simulator {
 		systemState.setVariableToProcess("a_m");
 		systemState.triggerUpdates();
 		
+		if (newState.getNetwork().hasChanceNode("a_u^p")) {
 		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
+		}
 		// TODO Auto-generated method stub
 		
 	}

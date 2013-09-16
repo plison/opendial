@@ -78,8 +78,7 @@ public class AnchoredRuleCache {
 			extractLikelyConditions();
 			if (shouldBeDiscarded()) {
 				return;
-			}
-			
+			}		
 		}
 		
 		extractPossibleConditions();
