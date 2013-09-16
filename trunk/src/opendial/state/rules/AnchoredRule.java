@@ -64,6 +64,8 @@ public class AnchoredRule {
 
 	Rule rule;
 	Assignment anchor;
+	
+	public DialogueState state;
 
 	Map<String, ChanceNode> inputNodes;	
 
@@ -78,6 +80,7 @@ public class AnchoredRule {
 	String id;
 
 	public AnchoredRule(Rule rule, DialogueState state, Assignment anchor) {
+		this.state = state;
 		this.rule = rule;
 		this.anchor = anchor;
 		if (rule.getInputVariables().contains(new Template("random"))) {

@@ -7,7 +7,7 @@
 	<horizon>1</horizon>
 	<discount>0.9</discount>
 	<woz>experiments/tacl2013/wozdata.xml</woz>
-	<timeout>25000</timeout>
+	<timeout>5000</timeout>
 </planning>
 
 <gui>
@@ -20,8 +20,8 @@
 </gui>
 
 <inference>
-	<nbsamples>8000</nbsamples>
-	<timeout>25000</timeout>
+	<nbsamples>5000</nbsamples>
+	<timeout>5000</timeout>
 </inference>
 
 </settings>
