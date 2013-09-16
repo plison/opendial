@@ -119,6 +119,8 @@ public class WoZSimulator implements Simulator {
 
 
 	private void performTurn() {
+		
+		for (int k = 0 ; k < 2 ; k++) {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
@@ -154,12 +156,14 @@ public class WoZSimulator implements Simulator {
 				log.warning("cannot add the new content: " +e);
 			}
 		}
+		
 		else {
 			log.info("reached the end of the training data");
 			if (inputDomain != null && suffix != null) {
 				writeResults();
 			}
 			System.exit(0);
+		}
 		}
 		curIndex++;
 	}
@@ -233,11 +237,8 @@ public class WoZSimulator implements Simulator {
 
         try {
 		FileReader fileReader =  new FileReader(topFile);
-
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-     	String rootpath = (new File(topFile)).getParent();
-        
+     	String rootpath = (new File(topFile)).getParent();   
         String text = "";
         String line = null;
         while((line = bufferedReader.readLine()) != null) {
