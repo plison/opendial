@@ -5,8 +5,8 @@
 	<rule id="usermodel">
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({X})" />
-				<if var="i_u" value="{X}" />
+				<if var="a_m" value="Confirm({XX})" />
+				<if var="i_u" value="{XX}" />
 			</condition>
 			<effect prob="theta_confirmpredict[0]">
 				<set var="a_u" value="Confirm" />
@@ -18,8 +18,8 @@
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({Y})" />
-				<if var="i_u" value="{Y}" relation="!=" />
+				<if var="a_m" value="Confirm({YY})" />
+				<if var="i_u" value="{YY}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
 			<effect prob="theta_disconfirmpredict[0]">

@@ -60,6 +60,8 @@ public class WoZSimulator implements Simulator {
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
+	public static final int NB_PASSES = 1;
+	
 	DialogueState systemState;
 
 	List<WoZDataPoint> data;
@@ -120,7 +122,7 @@ public class WoZSimulator implements Simulator {
 
 	private void performTurn() {
 		
-		for (int k = 0 ; k < 2 ; k++) {
+		for (int k = 0 ; k < NB_PASSES ; k++) {
 		if (curIndex < data.size()) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());

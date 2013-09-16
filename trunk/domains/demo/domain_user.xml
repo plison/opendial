@@ -8,10 +8,10 @@
 				<if var="a_m" value="Confirm({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
-			<effect prob="0.7">
+			<effect prob="0.67">
 				<set var="a_u" value="Confirm" />
 			</effect>
-			<effect prob="0.3">
+			<effect prob="0.27">
 				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
@@ -21,10 +21,10 @@
 				<if var="i_u" value="{Y}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.7">
+			<effect prob="0.34">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.3">
+			<effect prob="0.25">
 				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
@@ -32,10 +32,10 @@
 			<condition operator="and">
 				<if var="lastMove" value="{i_u}" />
 			</condition>
-			<effect prob="0.5">
+			<effect prob="0.21">
 				<set var="a_u" value="RepeatLast" />
 			</effect>
-			<effect prob="0.5">
+			<effect prob="0.66">
 				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
@@ -44,7 +44,7 @@
 				<if var="a_m" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.95">
+			<effect prob="0.99">
 				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
@@ -52,7 +52,7 @@
 			<condition>
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.95">
+			<effect prob="0.86">
 				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
