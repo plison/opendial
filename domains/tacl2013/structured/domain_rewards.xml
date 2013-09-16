@@ -2,7 +2,7 @@
 
 <model trigger="a_u" type="decision">
 
-	<rule id="tasks-move">
+	<rule id="move-decision">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Move(*)" />
@@ -13,7 +13,7 @@
 		</case>
 	</rule>
 	
-	<rule id="tasks-pickup">
+	<rule id="pickup-decision">
 		<case>
 			<condition operator="or">
 			<and>
@@ -60,7 +60,7 @@
 		</case>
 	</rule>
 	
-	<rule id="tasks-release">
+	<rule id="release-decision">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Release" />
@@ -82,7 +82,7 @@
 		</case>
 	</rule>
 	
-	<rule id="tasks-perceive">
+	<rule id="perceive-decision">
 			<case>
 			<condition operator="and">
 					<if var="i_u" value="DoYouSee({A})" />
@@ -103,7 +103,7 @@
 		</case>
 	</rule>
 	
-	<rule id="tasks-whatdoyousee">
+	<rule id="whatdoyousee-decision">
 		<case>
 			<condition>
 				<if var="i_u" value="WhatDoYouSee" />
@@ -114,7 +114,7 @@
 		</case>
 	</rule>
 	
-	<rule id="tasks-chitchat">
+	<rule id="chitchat-decision">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Greeting" />
@@ -142,7 +142,7 @@
 	</rule>
 	
 	
-	<rule>
+	<rule id="allnegs-decision">
 		<case>
 			<effect util="-10">
 				<set var="a_m" value="Do(*)" />
@@ -157,10 +157,10 @@
 	</rule>
 	
 
-	<rule>
+	<rule id="repeat-decision">
 		<case>
 		<condition>
-				<if var="a_m" value="AskRepeat" relation="!="/>
+				<if var="last(a_m)" value="AskRepeat" relation="!="/>
 				<if var="a_u" value="None" relation="!="/>
 				<if var="a_u" value="Confirm" relation="!="/>
 				<if var="a_u" value="Disconfirm" relation="!="/>
@@ -172,7 +172,7 @@
 		</case>
 		<case>
 		<condition>
-				<if var="a_m" value="AskRepeat" relation="!="/>
+				<if var="last(a_m)" value="AskRepeat" relation="!="/>
 		</condition>
 			<effect util="theta_repeat2">
 				<set var="a_m" value="AskRepeat" />
@@ -180,7 +180,7 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule id="confirm-decision">
 		<case>
 		<condition operator="and">
 			<if var="a_u" value="DoYouSee(*)" relation="!="/>
@@ -204,7 +204,7 @@
 	</rule>
 
 	
-	<rule id="reactive">
+	<rule id="reactive-decision">
 		<case>
 			<condition operator="and">
 				<if var="motion" value="true" />

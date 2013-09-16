@@ -630,7 +630,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	@Override
 	public String prettyPrint() {
 		if (table.size() < 30) {
-			return toString(0.05).replace("\n", ", ");
+			return toString(0.00).replace("\n", ", ");
 		}
 		else {
 			return "(probability table too big to be shown)";
@@ -675,6 +675,19 @@ public class SimpleTable implements DiscreteProbDistribution {
 			}
 		}
 		return totalProb;
+	}
+
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		for (Assignment a : new HashSet<Assignment>(table.keySet())) {
+			if (table.get(a) < threshold) {
+				double prob = table.get(a);
+				table.remove(a);
+				 a.addPair(id, ValueFactory.none());
+				 incrementRow(a, prob);
+			}
+		}
+		
 	}
 
 

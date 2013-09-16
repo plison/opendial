@@ -85,7 +85,7 @@ public class XMLSettingsReader {
 				double discountFactor = 0.0;
 				boolean sarsa = false;
 				String woz = "";
-				
+				String woztest = "";
 				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
 					
 					Node subnode = node.getChildNodes().item(k);
@@ -104,6 +104,9 @@ public class XMLSettingsReader {
 					if (subnode.getNodeName().equalsIgnoreCase("woz")) {
 						woz = subnode.getTextContent().trim();
 					}
+					if (subnode.getNodeName().equalsIgnoreCase("woztest")) {
+						woztest = subnode.getTextContent().trim();
+					}
 					if (subnode.getNodeName().equalsIgnoreCase("timeout")) {
 						settings.planning.maximumSamplingTime = Integer.parseInt(subnode.getTextContent().trim());
 						log.debug("Timeout for sampling (fast version) : " + settings.planning.maximumSamplingTime);
@@ -114,7 +117,7 @@ public class XMLSettingsReader {
 				}
 				settings.planning.setAsSarsa(sarsa);
 				settings.planning.setAsWoZ(woz);
-				
+				settings.planning.wozTestFile = woztest;
 				
 			}
 			

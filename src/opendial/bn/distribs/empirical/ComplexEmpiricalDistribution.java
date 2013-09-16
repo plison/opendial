@@ -20,6 +20,7 @@
 package opendial.bn.distribs.empirical;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.utils.DistanceUtils;
 import opendial.utils.InferenceUtils;
@@ -145,6 +147,9 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 			a = distrib.sample();
 			nbLoops++;
 		}
+		if (nbLoops > 200) {
+			log.warning("high number of loops in sampling from complex probability distribution P("+ headVars + "| " + condVars+")");
+		}
 		if (nbLoops >= distrib.getSamples().size()) {
 			log.warning("could not find sample of correct condition : " + condition);
 			log.debug("discrete table: " + distrib.toDiscrete());
@@ -167,7 +172,7 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 
 	@Override
 	public Collection<String> getHeadVariables() {
-		return headVars;
+		return new HashSet<String>(headVars);
 	}
 
 
@@ -263,7 +268,8 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public ComplexEmpiricalDistribution copy() {
-		ComplexEmpiricalDistribution copy = new ComplexEmpiricalDistribution(headVars, condVars, distrib);
+		ComplexEmpiricalDistribution copy = new ComplexEmpiricalDistribution(
+				new HashSet<String>(headVars), new HashSet<String>(condVars), distrib.copy());
 		return copy;
 	}
 
@@ -274,10 +280,38 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 * @return the pretty print
 	 */
 	@Override
-	public String prettyPrint() {
-		return "complex empirical distribution P(" + headVars + "|" + condVars + ")";
+	public String prettyPrint() {	
+		if (!toDiscretise()) {
+			try {
+				return toContinuous().prettyPrint();
+			}
+			catch (DialException e) {
+				log.debug("could not convert distribution to a continuous format: " + e);
+			}
+		}
+		return toDiscrete().prettyPrint(); 
 	}
 
+
+	private boolean toDiscretise() {
+		int nbRealValues = 0;
+		for (int i = 0 ; i < 20 ; i++) {
+			try {
+				Set<String> allVariables = new HashSet<String>(headVars);
+				allVariables.addAll(condVars);
+			if (sample().getTrimmed(allVariables).containContinuousValues()) {
+				nbRealValues++;
+				if (nbRealValues > 2) {
+					return false;
+				}
+			}
+			}
+			catch (DialException e) {
+				log.debug("could not determine if distribution should be discretised");
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * Replace a variable label by a new one
@@ -324,6 +358,19 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	@Override
 	public Collection<Assignment> getSamples() {
 		return distrib.getSamples();
+	}
+
+
+
+	public SimpleEmpiricalDistribution getDistrib() {
+		return distrib;
+	}
+
+
+
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		distrib.filterValuesBelowThreshold(id, threshold);
 	}
 
 }

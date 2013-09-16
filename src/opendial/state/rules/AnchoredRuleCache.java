@@ -29,15 +29,20 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.Assignment;
+import opendial.bn.BNetwork;
 
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.IdChangeListener;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.datastructs.OutputTable;
 import opendial.domains.rules.DecisionRule;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.queries.ProbQuery;
 import opendial.state.rules.Rule.RuleType;
 import opendial.utils.CombinatoricsUtils;
 
@@ -52,21 +57,31 @@ public class AnchoredRuleCache {
 
 	// logger
 	public static Logger log = new Logger("AnchoredValueCache", Logger.Level.DEBUG);
-	
+
 	AnchoredRule rule;
-	
+
+	Set<Assignment> possibleConditions = new HashSet<Assignment>();
+
 	// this table does not reflect real distributions
-	Map<Output, Set<Parameter>> cachedValues;
-	
+	Map<Output, Set<Parameter>> cachedValues ;
+
 	public AnchoredRuleCache (AnchoredRule rule) {
 		this.rule = rule;
-		
+
 		cachedValues = new HashMap<Output, Set<Parameter>>();
+
+		/**if (rule.getRule() instanceof DecisionRule) {
+			extractLikelyConditions();
+			if (shouldBeDiscarded()) {
+				return;
+			}		
+		} */
 		
-		Set<Assignment> conditions = getPossibleConditions();
-		for (Assignment condition : conditions) {
+		extractPossibleConditions();
+
+		for (Assignment condition : possibleConditions) {
 			OutputTable conditionedOutput = rule.getEffectOutputs(condition);
-			
+
 			for (Output o : conditionedOutput.getOutputs()) {
 				if (!cachedValues.containsKey(o)) {
 					cachedValues.put(o, new HashSet<Parameter>());
@@ -81,23 +96,43 @@ public class AnchoredRuleCache {
 				cachedValues.get(emptyOutput).add(new FixedParameter(1-conditionedOutput.getFixedMass()));
 			}
 		}
-		
+
 	}
 
-	
+
+/**
+	private boolean shouldBeDiscarded() {
+		boolean shouldBeDiscarded = true;
+		for (Assignment cond : likelyConditions) {
+			OutputTable conditionedOutput = rule.getEffectOutputs(cond);
+
+			for (Output o : conditionedOutput.getOutputs()) {
+				if (!o.isVoid()) {
+					shouldBeDiscarded = false;
+				}
+			}
+		}
+		return shouldBeDiscarded;
+	} */
+
+
 
 	public Set<Output> getOutputs() {
 		return cachedValues.keySet();
 	}
-	
-	
+
+	public Set<Assignment> getPossibleConditions() {
+		return possibleConditions;
+	}
+
+
 	public Set<Parameter> getParameters(Output o) {
 		return cachedValues.get(o);
 	}
-	
 
-	
-	
+
+
+
 
 	/**
 	 * Returns the list of possible assignment of input values for the node.  If the
@@ -107,20 +142,18 @@ public class AnchoredRuleCache {
 	 * 
 	 * @return the (unordered) list of possible conditions.  
 	 */
-	protected Set<Assignment> getPossibleConditions() {
+	private void extractPossibleConditions() {
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (ChanceNode inputNode : rule.getInputNodes().values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
 		}
-		
-		Set<Assignment> possibleConditions;
 
 		int nbCombinations = 
 				CombinatoricsUtils.getEstimatedNbCombinations(possibleInputValues);
-		
+
 		if (nbCombinations < 100) {
-		possibleConditions = 
-				CombinatoricsUtils.getAllCombinations(possibleInputValues);
+			possibleConditions = 
+					CombinatoricsUtils.getAllCombinations(possibleInputValues);
 		}
 		else {
 			possibleConditions = new HashSet<Assignment>();
@@ -133,18 +166,16 @@ public class AnchoredRuleCache {
 						sampledA.addPair(inputNode.getId(), sampledValue); }
 					catch (DialException e) { log.warning("cannot sample " + inputNode.getId()+")"); }
 					catch (NullPointerException f) { 
-						log.debug("sampledA: " + sampledA);
-						log.debug(", inputNodeId: " + inputNode.getId());
-						log.debug(", sampled: " + sampledValue); 
+						log.debug("sampledA: " + sampledA  + "inputNodeId: " + inputNode.getId() + " sampled: " + sampledValue); 
 					}
 				}
 				possibleConditions.add(sampledA);
 			}
 		}
-		
-		return possibleConditions;
 	}
 
 
-	
+
+
+
 }

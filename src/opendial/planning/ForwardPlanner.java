@@ -54,6 +54,7 @@ import opendial.domains.Model;
 import opendial.domains.rules.PredictionRule;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
+import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.modules.SynchronousModule;
@@ -190,26 +191,26 @@ public class ForwardPlanner implements AnytimeProcess {
 				copy.setAsFictive(true);
 
 				copy.addContent(obs, "planner");
-
+		
 				UtilityTable qValues = getQValues(copy, horizon, discountFactor);
 				Assignment bestAction = qValues.getBest().getKey();
 				double afterObs = qValues.getUtil(bestAction);
 				expectedValue += obsProb * afterObs;
 			}
 		}	
+
 		return expectedValue;
 	}
 
 
 
 	protected void recordAction(DialogueState state, Assignment action) {
+	
 		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
 		
 		try {
-			if (!action.isDefault()) {
-				state.addContent(new Assignment(action.removeSpecifiers()), "planner");
-			}
+			state.addContent(new Assignment(action.removeSpecifiers()), "planner");
 		}
 		catch (DialException e) { log.warning("could not insert new action: " + e); }
 	}

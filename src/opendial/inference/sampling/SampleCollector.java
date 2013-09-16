@@ -141,6 +141,9 @@ public class SampleCollector extends Thread {
 									evidenceProb = 0.0;
 								}
 							}
+						/**	if (evidenceProb == 0) {
+								log.debug("sample is "+ sample.getSample() + " and we are at node " + n.getId() + " with distrib " + ((ChanceNode)n).getDistrib().getClass().getSimpleName());
+							} */
 							sample.addLogWeight(Math.log(evidenceProb));						
 							sample.addPoint(n.getId(), evidenceValue);
 						}
@@ -178,7 +181,7 @@ public class SampleCollector extends Thread {
 					masterSampler.addSample(sample);
 				}
 				else {
-					//		log.debug("discarding sample");
+						//	log.debug("discarding sample, weight: " + sample.getWeight());
 				}
 			}
 			catch (DialException e) {

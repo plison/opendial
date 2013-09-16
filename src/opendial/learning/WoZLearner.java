@@ -31,6 +31,8 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
@@ -58,14 +60,16 @@ public class WoZLearner extends ForwardPlanner  {
 		if (currentState.getNetwork().hasActionNode(actionVariable+"'")) {
 			Value gold = getGoldAction(currentState);
 
-			List<String> queryVars = currentState.getParameterIds();
-			for (String queryVar : new ArrayList<String>(queryVars)) {
-				if (currentState.getNetwork().getNode(queryVar).getOutputNodesIds().isEmpty()) {
-					queryVars.remove(queryVar);
+			List<String> paramVars = currentState.getParameterIds();
+			for (String paramVar : new ArrayList<String>(paramVars)) {
+				ChanceNode paramNode = currentState.getNetwork().getChanceNode(paramVar);
+				if (paramNode.getOutputNodesIds().isEmpty() || 
+						!(paramNode.getOutputNodes().iterator().next() instanceof UtilityNode)) {
+					paramVars.remove(paramVar);
 				}
 			}
 			
-			UtilQuery query = new UtilQuery(currentState, queryVars);
+			UtilQuery query = new UtilQuery(currentState, paramVars);
 			WoZQuerySampling wozquery = new WoZQuerySampling(query, new Assignment(actionVariable+"'", gold),
 					Settings.getInstance().nbSamples, Settings.getInstance().maximumSamplingTime);
 
@@ -86,7 +90,7 @@ public class WoZLearner extends ForwardPlanner  {
 			SimpleEmpiricalDistribution paramDistrib = wozquery.getResults();
 			log.debug("updating parameters: " + paramDistrib.getHeadVariables());
 			try {
-				currentState.addContent(paramDistrib, "planner");
+				currentState.addContent(paramDistrib, "wozlearner");
 	
 			} catch (DialException e) {
 				log.warning("could not update state parameters: " + e);

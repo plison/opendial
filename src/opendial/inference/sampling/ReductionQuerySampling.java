@@ -167,28 +167,6 @@ public class ReductionQuerySampling extends AbstractQuerySampling {
 	}
 	
 	
-	private boolean toDiscretise(ChanceNode node) {
-		if (node.getInputNodeIds().isEmpty()) {
-			return false;
-		}
-		else if (node.getInputNodeIds().size() > 3) {
-			return false;
-		}
-		Iterator<WeightedSample> it = samples.iterator();
-		int valuesToCheck = 0;
-		while (it.hasNext() && valuesToCheck < 20) {
-			WeightedSample a = it.next();
-			for (String nodeId : node.getInputNodeIds()) {
-				Value val = a.getSample().getValue(nodeId);
-				if (val instanceof DoubleVal || val instanceof VectorVal) {
-					return false;
-				}
-			}
-			valuesToCheck++;
-		}
-		return true;
-	}
-	
 
 	
 	/**

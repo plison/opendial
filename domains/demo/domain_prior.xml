@@ -76,7 +76,7 @@
 			<effect prob="0.2" >
 				<set var="i_u" value="Ask(Name)" />
 			</effect>
-			<effect prob="0.40" >
+			<effect prob="0.3" >
 				<set var="i_u" value="Greeting" />
 			</effect>
 		</case>

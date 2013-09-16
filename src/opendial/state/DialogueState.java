@@ -41,9 +41,15 @@ import opendial.arch.StateListener;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
+import opendial.bn.distribs.empirical.EmpiricalDistribution;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.domains.Model;
+import opendial.domains.rules.DecisionRule;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
 import opendial.inference.InferenceAlgorithm;
@@ -89,6 +95,8 @@ public class DialogueState {
 	ForwardPlanner planner;
 
 	boolean isFictive = false;
+	
+	public static double LIKELIHOOD_THRESHOLD = 0.2;
 
 
 	boolean activateDecisions = true;
@@ -232,6 +240,10 @@ public class DialogueState {
 				variablesToProcess.clear();
 
 				for (SynchronousModule module : modulesToTrigger) {
+					if (module instanceof Model && ((Model)module).getModelType().equals(DecisionRule.class)
+							& Settings.getInstance().activatePruning) {
+						filterLowProbabilityValues();
+					}
 					module.trigger(this);
 				}
 			}
@@ -261,6 +273,18 @@ public class DialogueState {
 		}
 		catch (DialException e) { e.printStackTrace(); } 	
 		}
+	}
+	
+	private void filterLowProbabilityValues() {
+			pruner.run();
+			for (ChanceNode cn : network.getChanceNodes()) {
+				if (cn.getDistrib() instanceof EmpiricalDistribution) {
+					((EmpiricalDistribution)cn.getDistrib()).filterValuesBelowThreshold(cn.getId(), LIKELIHOOD_THRESHOLD);
+				}
+				if (cn.getDistrib() instanceof DiscreteProbDistribution) {
+					((DiscreteProbDistribution)cn.getDistrib()).filterValuesBelowThreshold(cn.getId(), LIKELIHOOD_THRESHOLD);
+				}
+			}
 	}
 
 

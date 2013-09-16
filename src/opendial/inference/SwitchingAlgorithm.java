@@ -45,7 +45,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int LIGHTWEIGHT_FACTOR = 3;
 	
 	public static int MAX_BRANCHING_FACTOR = 4;
-	public static int MAX_QUERYVARS = 2;
+	public static int MAX_QUERYVARS = 3;
 	public static int MAX_CONTINUOUS = 0;
 
 	@Override
@@ -65,7 +65,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 			}
 		}
 		
-		return selectBestAlgorithm(query).queryProb(query);
+		InferenceAlgorithm algo = selectBestAlgorithm(query);
+		return algo.queryProb(query);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		return algo.reduceNetwork(query);	}
 	
 	
-	private InferenceAlgorithm selectBestAlgorithm (Query query) {
+	public InferenceAlgorithm selectBestAlgorithm (Query query) {
 			
 		int branchingFactor = 0;
 		int nbContinuous = 0;
@@ -94,10 +95,19 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 				}
 			}
 		}
-		
+		int nbQueries = 0;
+		if (query instanceof ReductionQuery) {
+			for (String cn : query.getQueryVars()) {
+				nbQueries = (cn.contains("'"))? nbQueries+1 : nbQueries;
+			}
+		}
+		else {
+			nbQueries = query.getQueryVars().size();
+		}
+
 		if (nbContinuous > MAX_CONTINUOUS ||
 				branchingFactor > MAX_BRANCHING_FACTOR || 
-				query.getQueryVars().size() > MAX_QUERYVARS) {
+				nbQueries > MAX_QUERYVARS) {
 	//		log.debug("query " + query + " with sampling");
 			if (query.isLightweight()) {
 				return new ImportanceSampling(Settings.getInstance().nbSamples / LIGHTWEIGHT_FACTOR);

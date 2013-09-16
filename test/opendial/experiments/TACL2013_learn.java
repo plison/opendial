@@ -27,10 +27,13 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.discrete.EqualityDistribution;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
 import opendial.gui.WOZFrame;
+import opendial.inference.sampling.WoZQuerySampling;
 import opendial.modules.NaoBehaviour;
 import opendial.modules.NaoPerception;
 import opendial.modules.NaoTTS;
@@ -39,8 +42,10 @@ import opendial.readers.XMLSettingsReader;
 import opendial.readers.XMLStateReader;
 import opendial.readers.XMLTrainingDataReader;
 import opendial.simulation.UserSimulator;
-import opendial.simulation.WoZSimulator;
+import opendial.simulation.WozLearnerSimulator;
 import opendial.simulation.datastructs.WoZDataPoint;
+import opendial.state.DialogueState;
+import opendial.state.rules.AnchoredRuleCache;
 
 public class TACL2013_learn {
 
@@ -55,32 +60,48 @@ public class TACL2013_learn {
 
 	public static void main(String[] args) {
 		try {
-			if (args.length != 3) {
+			if (args.length < 3) {
 				throw new DialException("must provide arguments for domain, parameter and suffix for results");
 			}
 			String domainFile = args[0];
 			String parametersFile = args[1];
 			String suffix = args[2];
+			
+			
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
-		DialogueSystem system = new DialogueSystem(settings, domain);
+		
+			settings.nbSamples = (args.length > 3)? Integer.parseInt(args[3]) : settings.nbSamples;
+			Settings.getInstance().nbSamples = settings.nbSamples;
+			log.info("Actual number of samples to employ: " + settings.nbSamples);
+			WoZQuerySampling.RATE = (args.length > 4)? Integer.parseInt(args[4]) : WoZQuerySampling.RATE;
+			WoZQuerySampling.MIN = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MIN;
+			WoZQuerySampling.MAX = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MAX;
+			WoZQuerySampling.NONE_FACTOR = (args.length > 7)? Double.parseDouble(args[7]) : WoZQuerySampling.NONE_FACTOR;
+			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Double.parseDouble (args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
+			DialogueState.LIKELIHOOD_THRESHOLD= (args.length >9)? Double.parseDouble(args[9]): DialogueState.LIKELIHOOD_THRESHOLD;
+			SimpleEmpiricalDistribution.USE_KDE = (args.length > 10)? Boolean.parseBoolean(args[10]) : SimpleEmpiricalDistribution.USE_KDE;
+			
+			DialogueSystem system = new DialogueSystem(settings, domain);
 
 		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
 		system.addParameters(params);
 		
 		List<WoZDataPoint> data = XMLTrainingDataReader.
 				extractTrainingSample(settings.planning.getWoZFile());
+		
 		log.debug("number of collected points: " + data.size());
-		WoZSimulator simulator = new WoZSimulator(system.getState(), data);
+		WozLearnerSimulator simulator = new WozLearnerSimulator(system.getState(), data);
 		system.attachSimulator(simulator);
 		simulator.specifyOutput(domainFile, suffix);
 		
-	//	NaoBehaviour b = new NaoBehaviour();
-	//	NaoTTS tts = new NaoTTS();
-	//	NaoPerception perception = new NaoPerception(system.getState());
-	//	system.attachAsynchronousModule(perception);
-	//	system.getState().attachModule(b);
-	//	system.getState().attachModule(tts);
+
+		if (!settings.planning.getWoZTestFile().equals("")) {
+		List<WoZDataPoint> test = XMLTrainingDataReader.
+				extractTrainingSample(settings.planning.getWoZTestFile());
+		simulator.setTestData(test);
+		}
+
 		system.startSystem(); 
 		
 		}

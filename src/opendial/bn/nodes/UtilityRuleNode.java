@@ -85,18 +85,15 @@ public class UtilityRuleNode extends UtilityNode {
 
 		relevantActionsCache = new HashMap<Assignment,Parameter>();
 
-		try {
-		for (Assignment input : getPossibleInputs().getAboveThreshold(LIKELY_VALUE_THRESHOLD).getRows()) {
+		for (Assignment input : rule.getPossibleConditions()) {
 			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
-		}
-		catch (DialException e) {
-			log.warning("could not build relevant actions cache: " + e);
-		}
+
 	}
 
-
-	private SimpleTable getPossibleInputs () throws DialException {
+	 
+	 /**
+	 SimpleTable getPossibleInputs () throws DialException {
 		BNetwork network = null; 
 		for (IdChangeListener listener : idChangeListeners) {
 			if (listener instanceof BNetwork) {
@@ -115,7 +112,7 @@ public class UtilityRuleNode extends UtilityNode {
 		SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
 				(new ProbQuery(network, queryIds)).toDiscrete().getProbTable(new Assignment());
 		return inputVals;
-	}
+	} */
 		
 	
 	@Override

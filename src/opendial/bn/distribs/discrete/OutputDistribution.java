@@ -291,4 +291,11 @@ public class OutputDistribution implements DiscreteProbDistribution {
 		return headVars;
 	}
 
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		for (SimpleTable table : cache.values()) {
+			table.filterValuesBelowThreshold(id,threshold);
+		}
+	}
+
 }

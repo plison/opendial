@@ -6,10 +6,11 @@
 	<variable>a_m</variable>
 	<horizon>1</horizon>
 	<discount>0.9</discount>
-	<woz>experiments/tacl2013/wozdata.xml</woz>
-	<timeout>25000</timeout>
+	<woz>experiments/tacl2013/wozdata_allbutone.xml</woz>
+	<woztest>experiments/tacl2013/student3.xml</woztest>
+	<timeout>60000</timeout>
 </planning>
-
+ 
 <gui>
 	<showgui>false</showgui>
 	<userUtterance>a_u</userUtterance>
@@ -20,8 +21,8 @@
 </gui>
 
 <inference>
-	<nbsamples>4000</nbsamples>
-	<timeout>25000</timeout>
+	<nbsamples>2000</nbsamples>
+	<timeout>60000</timeout>
 </inference>
 
 </settings>

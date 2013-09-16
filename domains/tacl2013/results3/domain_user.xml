@@ -5,61 +5,61 @@
 	<rule id="usermodel">
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({X})" />
-				<if var="i_u" value="{X}" />
+				<if var="a_m" value="Confirm({XX})" />
+				<if var="i_u" value="{XX}" />
 			</condition>
-			<effect prob="0.7478">
+			<effect prob="0.6791">
 				<set var="a_u" value="Confirm" />
 			</effect>
-			<effect prob="0.1978">
+			<effect prob="0.2994">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.0544"/>
+			<effect prob="0.0215"/>
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({Y})" />
-				<if var="i_u" value="{Y}" relation="!=" />
+				<if var="a_m" value="Confirm({YY})" />
+				<if var="i_u" value="{YY}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.3837">
+			<effect prob="0.345">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.3829">
+			<effect prob="0.3501">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.2334"/>
+			<effect prob="0.3049"/>
 		</case>
 		<case>
 			<condition operator="and">
 				<if var="lastMove" value="{i_u}" />
 			</condition>
-			<effect prob="0.1979">
+			<effect prob="0.1871">
 				<set var="a_u" value="RepeatLast" />
 			</effect>
-			<effect prob="0.7407">
+			<effect prob="0.6767">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.0614"/>
+			<effect prob="0.1361"/>
 		</case>
 		<case>
 			<condition operator="or">
 				<if var="a_m" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.9681">
+			<effect prob="0.9937">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.0319"/>
+			<effect prob="0.0063"/>
 		</case>
 		<case>
 			<condition>
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="0.6944">
+			<effect prob="0.7499">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="0.3056"/>
+			<effect prob="0.2501"/>
 		</case>
 	</rule>
 
@@ -69,13 +69,13 @@
 			<condition>
 				<if var="a_m" value="Do(*)" />
 			</condition>
-			<effect prob="0.0374">
+			<effect prob="0.1125">
 				<set var="a_u" value="Stop" />
 			</effect>
-			<effect prob="0.001">
+			<effect prob="0.021">
 				<set var="a_u" value="Disconfirm" />
 			</effect>
-			<effect prob="0.9616"/>
+			<effect prob="0.8665"/>
 		</case>
 	</rule>
 

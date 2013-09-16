@@ -31,8 +31,10 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
+import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
@@ -48,11 +50,13 @@ import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.gui.GUIFrame;
 import opendial.inference.datastructs.DistributionCouple;
 import opendial.inference.datastructs.DoubleFactor;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
+import opendial.state.DialogueState;
 import opendial.state.RuleInstantiator;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.InferenceUtils;
@@ -95,11 +99,11 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		// normal case
 		DoubleFactor queryFactor = createQueryFactor(query);
-		
+
 		queryFactor.normalise();
 
 		SimpleTable expandedTable = addEvidencePairs (query, queryFactor.getProbMatrix());
-
+		
 		return new DistributionCouple(expandedTable,
 				new UtilityTable(queryFactor.getUtilityMatrix()));
 
@@ -127,9 +131,8 @@ public class VariableElimination extends AbstractInference implements InferenceA
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 
 	//	log.debug("VE Query: " + query);
-		
-		for (BNode n: query.getFilteredSortedNodes()) {
 
+		for (BNode n: query.getFilteredSortedNodes()) {
 			// create the basic factor for every variable
 			DoubleFactor basicFactor = makeFactor(n, evidence);
 			if (!basicFactor.isEmpty()) {
@@ -139,11 +142,13 @@ public class VariableElimination extends AbstractInference implements InferenceA
 				if (!queryVars.contains(n.getId())) {
 					// && !evidence.containsVar(n.getId() ??
 					factors = sumOut(n.getId(), factors);
+					
 				}
 			}
 		}
 		// compute the final product, and normalise
 		DoubleFactor finalProduct = pointwiseProduct(factors);
+		
 		return finalProduct;
 	}
 
@@ -440,6 +445,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 				Assignment head = a.getTrimmedInverse(depVariables);
 				table.addRow(condition, head, factor.getProbEntry(a));
 			}
+			table.fillConditionalHoles();
 			return table;
 		}
 	}

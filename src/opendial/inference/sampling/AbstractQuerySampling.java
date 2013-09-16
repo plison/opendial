@@ -105,7 +105,10 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 	 */
 	@Override
 	public synchronized void terminate() {
-		if (!isTerminated()) {
+		if (samples.size() < 10) {
+			return;
+		}
+		else if (!isTerminated()) {
 			status = Status.COMPILING;
 			for (SampleCollector thread : new ArrayList<SampleCollector>(threads)) {
 				thread.terminate();

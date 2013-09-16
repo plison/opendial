@@ -55,6 +55,7 @@ import opendial.inference.queries.UtilQuery;
 import opendial.inference.VariableElimination;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.state.rules.AnchoredRuleCache;
 
 /**
  * 
@@ -166,6 +167,7 @@ public class BasicRuleTest2 {
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
 		
+		
 	 	UtilQuery query = new UtilQuery(system.getState(),"a_m'");
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
@@ -204,7 +206,8 @@ public class BasicRuleTest2 {
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
-	 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	// 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	 	assertEquals(6, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
 
 		finish();
 }
@@ -233,15 +236,19 @@ public class BasicRuleTest2 {
 		finish();
 	}
 	
+	double oldThreshold;
 	
 	public void start() {
 		Settings.getInstance().activatePlanner = false;
 		Settings.getInstance().activatePruning = false;
+		oldThreshold = DialogueState.LIKELIHOOD_THRESHOLD;
+		DialogueState.LIKELIHOOD_THRESHOLD= 0.05;
 	}
 
 	public void finish() {
 		Settings.getInstance().activatePlanner = true;
 		Settings.getInstance().activatePruning = true;
+		DialogueState.LIKELIHOOD_THRESHOLD = oldThreshold;
 	}
 
 }
