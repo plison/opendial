@@ -60,7 +60,7 @@ public class WoZSimulator implements Simulator {
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 2;
+	public static final int NB_PASSES = 1;
 	
 	DialogueState systemState;
 
