@@ -159,6 +159,7 @@ public class WoZSimulator implements Simulator {
 		
 		else {
 			log.info("reached the end of the training data");
+			curIndex = 0;
 			if (inputDomain != null && suffix != null) {
 				writeResults();
 			}
