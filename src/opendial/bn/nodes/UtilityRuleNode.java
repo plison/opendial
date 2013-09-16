@@ -57,7 +57,7 @@ public class UtilityRuleNode extends UtilityNode {
 
 	AnchoredRule rule;
 	
-	public static final double LIKELY_VALUE_THRESHOLD = 0.05;
+	public static final double LIKELY_VALUE_THRESHOLD = 0.1;
 	
 
 	public UtilityRuleNode(AnchoredRule rule) throws DialException {
@@ -86,6 +86,7 @@ public class UtilityRuleNode extends UtilityNode {
 		relevantActionsCache = new HashMap<Assignment,Parameter>();
 
 		try {
+			
 		for (Assignment input : getPossibleInputs().getAboveThreshold(LIKELY_VALUE_THRESHOLD).getRows()) {
 			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
@@ -96,7 +97,7 @@ public class UtilityRuleNode extends UtilityNode {
 	}
 
 
-	private SimpleTable getPossibleInputs () throws DialException {
+	public SimpleTable getPossibleInputs () throws DialException {
 		BNetwork network = null; 
 		for (IdChangeListener listener : idChangeListeners) {
 			if (listener instanceof BNetwork) {

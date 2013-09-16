@@ -60,7 +60,18 @@ public class DialogueSystem {
 	
 	boolean paused = false;
 
-		
+	public DialogueSystem(DialogueState state) throws DialException {
+		curState = state;
+		curState.setName("current");
+		if (Settings.getInstance().gui.showGUI) {
+			gui = new GUIFrame(this);
+			curState.addListener(gui);
+		}
+		asyncModules = new LinkedList<AsynchronousModule>();
+		attachShutDownHook();
+	}
+	
+	
 	public DialogueSystem(Domain domain) throws DialException {
 		this (Settings.getInstance(), domain);
 	}

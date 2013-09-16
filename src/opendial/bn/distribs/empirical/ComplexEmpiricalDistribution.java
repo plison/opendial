@@ -145,6 +145,9 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 			a = distrib.sample();
 			nbLoops++;
 		}
+		if (nbLoops > 200) {
+			log.warning("high number of loops in sampling from complex probability distribution P("+ headVars + "| " + condVars+")");
+		}
 		if (nbLoops >= distrib.getSamples().size()) {
 			log.warning("could not find sample of correct condition : " + condition);
 			log.debug("discrete table: " + distrib.toDiscrete());
@@ -167,7 +170,7 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 
 	@Override
 	public Collection<String> getHeadVariables() {
-		return headVars;
+		return new HashSet<String>(headVars);
 	}
 
 
@@ -263,7 +266,8 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public ComplexEmpiricalDistribution copy() {
-		ComplexEmpiricalDistribution copy = new ComplexEmpiricalDistribution(headVars, condVars, distrib);
+		ComplexEmpiricalDistribution copy = new ComplexEmpiricalDistribution(
+				new HashSet<String>(headVars), new HashSet<String>(condVars), distrib.copy());
 		return copy;
 	}
 
@@ -275,7 +279,7 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	@Override
 	public String prettyPrint() {
-		return "complex empirical distribution P(" + headVars + "|" + condVars + ")";
+		return toDiscrete().prettyPrint();
 	}
 
 

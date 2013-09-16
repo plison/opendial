@@ -5,7 +5,7 @@
 	<rule id="usermodel">
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({X})" />
+				<if var="last(a_m)" value="Confirm({X})" />
 				<if var="i_u" value="{X}" />
 			</condition>
 			<effect prob="0.7">
@@ -17,7 +17,7 @@
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({Y})" />
+				<if var="last(a_m)" value="Confirm({Y})" />
 				<if var="i_u" value="{Y}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
@@ -41,7 +41,7 @@
 		</case>
 		<case>
 			<condition operator="or">
-				<if var="a_m" value="AskRepeat" />
+				<if var="last(a_m)" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
 			<effect prob="0.95">
@@ -62,7 +62,7 @@
 	<rule>
 		<case>
 			<condition>
-				<if var="a_m" value="Do(*)" />
+				<if var="last(a_m)" value="Do(*)" />
 			</condition>
 			<effect prob="0.2">
 				<set var="a_u" value="Stop" />

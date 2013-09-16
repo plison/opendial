@@ -75,7 +75,7 @@ public class StatePruner implements Runnable {
 			reinsertActionAndUtilityNodes(reduced);
 			removeEmptyNodes(reduced);
 			state.reset(reduced, new Assignment());
-			
+
 		}
 		catch (Exception e) {
 			log.debug("nodes to keep: " + nodesToKeep); // + " nodes to isolate " + nodesToIsolate);
@@ -202,12 +202,12 @@ public class StatePruner implements Runnable {
 			an.clearListeners();
 			reduced.addNode(an.copy());
 		}
-		for (ChanceNode cn : state.getNetwork().getChanceNodes()) {
+	/**	for (BNode cn : state.getNetwork().getSortedNodes()) {
 			if (!reduced.hasChanceNode(cn.getId()) && cn.getId().contains("^p") && 
 				cn.hasDescendant(state.getEvidence().getVariables())) {
 				reintegrateNode(cn, reduced);
 			}
-		}
+		} */
 		for (UtilityNode un : state.getNetwork().getUtilityNodes()) {
 			reintegrateNode(un, reduced);
 		}
@@ -227,8 +227,8 @@ public class StatePruner implements Runnable {
 			}
 
 			else {
-				reintegrateNode(state.getNetwork().getNode(inputNodeId), reduced);
-				node.addInputNode(reduced.getNode(formattedId));
+			//	reintegrateNode(state.getNetwork().getNode(inputNodeId), reduced);
+			//	node.addInputNode(reduced.getNode(formattedId));
 	//			log.debug("node " + inputNodeId + " is not in the reduced network: " + reduced.getNodeIds()
 	//					+ " (when trying to add node " + node.getId()+")");
 			}

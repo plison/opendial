@@ -104,6 +104,7 @@ public class GUIFrame extends JFrame implements StateListener {
 	}
 	
 	
+	
 	public static GUIFrame getInstance() {
 		return guiFrameInstance;
 	}
