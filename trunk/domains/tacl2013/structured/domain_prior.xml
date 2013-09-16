@@ -61,7 +61,7 @@
 		<quantifier id="OBJ"/>
 		<case>
 			<condition>
-				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="perceived" value="{OBJ}" relation="contains"/>
 				<if var="completed-task" value="true" />
 			</condition>				
 			<effect prob="theta_perceive_see_prior[0]">
@@ -135,7 +135,7 @@
 	
 
 	<rule id="pickupprior_see">
-		<quantifier id="X"/>
+		<quantifier id="OBJ2"/>
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
