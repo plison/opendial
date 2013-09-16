@@ -92,7 +92,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				bestNotGold = a;
 			}
 		}
-		log.debug("Utility averages : " + (new UtilityTable(averages)).prettyPrint().replace("\n", ", ") + " ==> gold action = " + goldAction);
+		log.debug("Utility averages : " + (new UtilityTable(averages)).prettyPrint().replace("\n", ", "));
+		log.debug(" ==> gold action = " + goldAction);
 		
 		synchronized(samples) {
 			
