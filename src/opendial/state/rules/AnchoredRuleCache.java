@@ -29,15 +29,20 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.Assignment;
+import opendial.bn.BNetwork;
 
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.IdChangeListener;
 import opendial.bn.values.Value;
 import opendial.domains.datastructs.Output;
 import opendial.domains.datastructs.OutputTable;
 import opendial.domains.rules.DecisionRule;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.queries.ProbQuery;
 import opendial.state.rules.Rule.RuleType;
 import opendial.utils.CombinatoricsUtils;
 
@@ -108,6 +113,32 @@ public class AnchoredRuleCache {
 	 * @return the (unordered) list of possible conditions.  
 	 */
 	protected Set<Assignment> getPossibleConditions() {
+			
+			if (rule.getRule() instanceof DecisionRule) {
+				return getPossibleConditions_decision();
+			}
+			else {
+				return getPossibleConditions_general();
+			}
+	}
+	
+	
+	protected Set<Assignment> getPossibleConditions_decision() {
+
+		try {
+			SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
+					(new ProbQuery(rule.state, rule.getInputNodes().keySet())).toDiscrete().getProbTable(new Assignment());
+			
+			return inputVals.getAboveThreshold(0.1).getRows();
+		}
+		catch (DialException e) {
+			log.warning("could not extract the input values for the decision rule " + rule);
+			return new HashSet<Assignment>();
+		}
+	}
+	
+	protected Set<Assignment> getPossibleConditions_general() {
+		
 		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
 		for (ChanceNode inputNode : rule.getInputNodes().values()) {
 			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
@@ -133,16 +164,14 @@ public class AnchoredRuleCache {
 						sampledA.addPair(inputNode.getId(), sampledValue); }
 					catch (DialException e) { log.warning("cannot sample " + inputNode.getId()+")"); }
 					catch (NullPointerException f) { 
-						log.debug("sampledA: " + sampledA);
-						log.debug(", inputNodeId: " + inputNode.getId());
-						log.debug(", sampled: " + sampledValue); 
+						log.debug("sampledA: " + sampledA  + "inputNodeId: " + inputNode.getId() + " sampled: " + sampledValue); 
 					}
 				}
 				possibleConditions.add(sampledA);
 			}
 		}
 		
-		return possibleConditions;
+		return possibleConditions;  
 	}
 
 
