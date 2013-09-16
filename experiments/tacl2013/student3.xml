@@ -1612,7 +1612,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[BlueObj]</value>
 </variable>
 </state>
 <output>
@@ -1643,7 +1643,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[BlueObj]</value>
 </variable>
 </state>
 <output>
@@ -1674,7 +1674,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[BlueObj]</value>
 </variable>
 </state>
 <output>
@@ -1705,7 +1705,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[BlueObj]</value>
 </variable>
 </state>
 <output>
@@ -1736,7 +1736,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[BlueObj]</value>
 </variable>
 </state>
 <output>

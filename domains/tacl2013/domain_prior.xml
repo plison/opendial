@@ -58,7 +58,7 @@
 	</rule>
 	
 	<rule id="perceptionprior_see">
-		<quantifier var="X"/>
+		<quantifier id="X"/>
 		<case>
 			<condition>
 				<if var="perceived" value="{X}" relation="contains"/>

@@ -229,14 +229,14 @@ public class NaoBehaviour implements SynchronousModule {
 		try {
 		SimpleTable table = new SimpleTable();
 		table.addRow(new Assignment("carried", ValueFactory.create("["+obj+"]")), carriedProb);
-		table.addRow(new Assignment("carried", ValueFactory.create("[]")), 1- carriedProb);
-		state.addContent(table, "carriedObjDetection");
 		if (!obj.equals("")) {
 			NaoSession.grabSession().getService("ALMemory").call("insertData", "carryObj", true); 
+			table.addRow(new Assignment("carried", ValueFactory.create("[]")), 1- carriedProb);
 		}
 		else {
 			NaoSession.grabSession().getService("ALMemory").call("insertData", "carryObj", false); 
 		}
+		state.addContent(table, "carriedObjDetection");
 		}
 		catch (Exception e) {
 			log.warning("could not update carried variable: " + e);

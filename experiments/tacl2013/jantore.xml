@@ -744,7 +744,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 </state>
 <output>
@@ -776,7 +776,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 </state>
 <output>
@@ -807,7 +807,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 </state>
 <output>
@@ -838,7 +838,7 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="perceived">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 </state>
 <output>
@@ -2656,7 +2656,7 @@
 <value prob="1.0">OK, stopping now</value>
 </variable>
 <variable id="carried">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 <variable id="perceived">
 <value prob="1.0">[]</value>
@@ -2687,7 +2687,7 @@
 <value prob="1.0">Should I release the object?</value>
 </variable>
 <variable id="carried">
-<value prob="1.0">[]</value>
+<value prob="1.0">[redobj]</value>
 </variable>
 <variable id="perceived">
 <value prob="1.0">[]</value>
