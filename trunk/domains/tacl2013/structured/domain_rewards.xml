@@ -160,7 +160,7 @@
 	<rule>
 		<case>
 		<condition>
-				<if var="a_m" value="AskRepeat" relation="!="/>
+				<if var="last(a_m)" value="AskRepeat" relation="!="/>
 				<if var="a_u" value="None" relation="!="/>
 				<if var="a_u" value="Confirm" relation="!="/>
 				<if var="a_u" value="Disconfirm" relation="!="/>
@@ -172,7 +172,7 @@
 		</case>
 		<case>
 		<condition>
-				<if var="a_m" value="AskRepeat" relation="!="/>
+				<if var="last(a_m)" value="AskRepeat" relation="!="/>
 		</condition>
 			<effect util="theta_repeat2">
 				<set var="a_m" value="AskRepeat" />

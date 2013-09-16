@@ -5,7 +5,7 @@
 	<rule id="usermodel">
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({XX})" />
+				<if var="last(a_m)" value="Confirm({XX})" />
 				<if var="i_u" value="{XX}" />
 			</condition>
 			<effect prob="theta_confirmpredict[0]">
@@ -18,7 +18,7 @@
 		</case>
 		<case>
 			<condition operator="and">
-				<if var="a_m" value="Confirm({YY})" />
+				<if var="last(a_m)" value="Confirm({YY})" />
 				<if var="i_u" value="{YY}" relation="!=" />
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
@@ -44,7 +44,7 @@
 		</case>
 		<case>
 			<condition operator="or">
-				<if var="a_m" value="AskRepeat" />
+				<if var="last(a_m)" value="AskRepeat" />
 				<if var="completed-task" value="true" />
 			</condition>
 			<effect prob="theta_intent[0]">
@@ -67,7 +67,7 @@
 	<rule>
 		<case>
 			<condition>
-				<if var="a_m" value="Do(*)" />
+				<if var="last(a_m)" value="Do(*)" />
 			</condition>
 			<effect prob="theta_aftermove[0]">
 				<set var="a_u" value="Stop" />

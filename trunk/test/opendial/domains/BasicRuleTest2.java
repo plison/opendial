@@ -204,7 +204,8 @@ public class BasicRuleTest2 {
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
-	 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	// 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	 	assertEquals(6, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
 
 		finish();
 }

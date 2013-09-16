@@ -46,7 +46,7 @@ public final class MarginalDistributionAction extends AbstractAction {
 	try {
 			DialogueState state = this.graphViewerPopupMenu.getViewer().getDialogueState();
 			ProbDistribution distrib = state.getContent(queryVariables, true);
-			String str = StringUtils.getHtmlRendering(distrib.prettyPrint().replace("\n", "\n<br>"));
+			String str = StringUtils.getHtmlRendering(distrib.prettyPrint().replace(", ", "\n").replace("\n", "\n<br>"));
 			this.graphViewerPopupMenu.getViewer().getStateMonitorTab().writeToLogArea(
 					"<html><font face=\"helvetica\">"+ str + "</font></html>");
 			for (String queryVariable: new HashSet<String>(queryVariables)) {

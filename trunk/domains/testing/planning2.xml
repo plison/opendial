@@ -44,7 +44,7 @@
 	
 	<model type="decision" trigger="i_u">
 			
-		<rule>
+		<rule rule="wrongact">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})"/>
@@ -56,11 +56,11 @@
 			</case>
 		</rule>
 		
-		<rule>
+		<rule id="change-success">
 			<case>
 				<condition>
-					<if var="a_m" value="Do({X})"/>
-					<if var="i_u" value="Want({X})"/>
+					<if var="a_m" value="Do({Y})"/>
+					<if var="i_u" value="Want({Y})"/>
 					<if var="success" value="true"/>
 				</condition>
 				<effect util="5">
@@ -69,8 +69,8 @@
 			</case>
 			<case>
 				<condition>
-					<if var="a_m" value="Do({X})"/>
-					<if var="i_u" value="Want({X})"/>
+					<if var="a_m" value="Do({Z})"/>
+					<if var="i_u" value="Want({Z})"/>
 					<if var="success" value="false"/>
 				</condition>
 				<effect util="-1">
@@ -78,8 +78,8 @@
 			</case>	
 			<case>		
 				<condition>
-					<if var="a_m" value="Do({X})"/>
-					<if var="i_u" value="Want({X})" relation="!="/>
+					<if var="a_m" value="Do({A})"/>
+					<if var="i_u" value="Want({A})" relation="!="/>
 				</condition>
 				<effect util="-3">
 				</effect>

@@ -299,7 +299,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 				nbEmptys++;
 			}
 		}
-		return "(empirical) " + prettyPrint() + " [nb emptys: " + nbEmptys +"]";
+		return prettyPrint() ; // + " [nb emptys: " + nbEmptys +"]";
 	}
 
 

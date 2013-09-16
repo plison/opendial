@@ -65,6 +65,11 @@
 	<set var="u_u" value="Emanuele"/>
 </effect>
 </case>
+<case>
+	<effect>
+	<clear var="u_u"/>	
+	</effect>
+</case>
 </rule>
 
 </model>

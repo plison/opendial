@@ -190,26 +190,26 @@ public class ForwardPlanner implements AnytimeProcess {
 				copy.setAsFictive(true);
 
 				copy.addContent(obs, "planner");
-
+		
 				UtilityTable qValues = getQValues(copy, horizon, discountFactor);
 				Assignment bestAction = qValues.getBest().getKey();
 				double afterObs = qValues.getUtil(bestAction);
 				expectedValue += obsProb * afterObs;
 			}
 		}	
+
 		return expectedValue;
 	}
 
 
 
 	protected void recordAction(DialogueState state, Assignment action) {
+	
 		state.getNetwork().removeNodes(state.getNetwork().getActionNodeIds());
 		state.getNetwork().removeNodes(state.getNetwork().getUtilityNodeIds());
 		
 		try {
-			if (!action.isDefault()) {
-				state.addContent(new Assignment(action.removeSpecifiers()), "planner");
-			}
+			state.addContent(new Assignment(action.removeSpecifiers()), "planner");
 		}
 		catch (DialException e) { log.warning("could not insert new action: " + e); }
 	}

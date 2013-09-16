@@ -47,6 +47,7 @@ import opendial.domains.datastructs.OutputTable;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.DirichletParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.gui.GUIFrame;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
@@ -67,7 +68,7 @@ public class ParametersTest {
 	@Test
 	public void paramTest1() throws DialException, InterruptedException {
 		Settings.getInstance().activatePlanner = false;
-	//	Settings.getInstance().showGUI = true;
+	//	Settings.getInstance().gui.showGUI = true;
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);
 		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
@@ -91,9 +92,10 @@ public class ParametersTest {
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < 
 				utils.getUtil(new Assignment("u_m'", "so interesting!")));
-		assertEquals(11, system.getState().getNetwork().getNodeIds().size());
+//		assertEquals(11, system.getState().getNetwork().getNodeIds().size());
+		assertEquals(12, system.getState().getNetwork().getNodeIds().size());
 		Settings.getInstance().activatePlanner = true;
-	//	Thread.sleep(30000000);
+//		Thread.sleep(30000000);
 	}
 	
 	
@@ -165,9 +167,11 @@ public class ParametersTest {
 		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
 				
 	 	system.getState().addContent(new Assignment("u_u", "my name is"), "test");
+		
 	 	system.getState().addContent(new Assignment("u_u", "Pierre"), "test");
-
+		
 		system.getState().addContent(new Assignment("u_u", "my name is"), "test");
+		
 		system.getState().addContent(new Assignment("u_u", "Pierre"), "test");
 		
 		assertEquals(0.3, ((MultivariateDistribution)system.getState().

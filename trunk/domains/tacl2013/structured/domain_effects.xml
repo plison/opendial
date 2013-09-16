@@ -42,5 +42,16 @@
 			</effect>
 		</case>
 	</rule>
+	
+	<rule id="changeLastMove">
+		<case>
+			<condition>
+				<if var="a_m" value="None" relation="!="/>
+			</condition>
+			<effect>
+				<set var="last(a_m)" value="{a_m}"/>
+			</effect>
+		</case>
+	</rule>
 
 </model>
