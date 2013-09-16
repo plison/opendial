@@ -85,36 +85,12 @@ public class UtilityRuleNode extends UtilityNode {
 
 		relevantActionsCache = new HashMap<Assignment,Parameter>();
 
-		try {
-			
-		for (Assignment input : getPossibleInputs()) {
+		for (Assignment input : rule.getLikelyConditions()) {
 			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
-		}
-		catch (DialException e) {
-			log.warning("could not build relevant actions cache: " + e);
-		}
+
 	}
 
-
-	 private Set<Assignment> getPossibleInputs () throws DialException {
-		
-		 Map<String,Set<Value>> possibleValues = new HashMap<String,Set<Value>>();
-		 for (String var : rule.getInputNodes().keySet()) {
-			 if(inputNodes.containsKey(var)) {
-				 possibleValues.put(var, inputNodes.get(var).getValues());
-			 }
-			 else if (inputNodes.containsKey(var.replace("'", ""))) {
-				 possibleValues.put(var.replace("'", ""), inputNodes.get(var.replace("'", "")).getValues());				 
-			 }
-			 else {
-				 log.debug("could not find input node: " + var);
-			 }
-		 }
-		 Set<Assignment> conditions = CombinatoricsUtils.getAllCombinations(possibleValues);
-		 
-		return conditions;
-	}
 	 
 	 /**
 	 SimpleTable getPossibleInputs () throws DialException {
