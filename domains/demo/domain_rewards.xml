@@ -183,7 +183,6 @@
 			<if var="a_u" value="DoYouSee(*)" relation="!="/>
 			<if var="a_u" value="WhatDoYouSee" relation="!="/>
 			<if var="a_u" value="None" relation="!="/>
-			<if var="a_u" value="PickUp(Other)" relation="!="/>
 			<if var="a_u" value="Confirm" relation="!="/>
 			<if var="a_u" value="Disconfirm" relation="!="/>
 			<if var="a_u" value="Greeting" relation="!="/>
