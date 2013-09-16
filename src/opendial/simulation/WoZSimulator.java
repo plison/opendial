@@ -67,7 +67,7 @@ public class WoZSimulator implements Simulator {
 
 	List<WoZDataPoint> data;
 
-	int curIndex = 4;
+	int curIndex = 0;
 
 	boolean paused = false;
 	
