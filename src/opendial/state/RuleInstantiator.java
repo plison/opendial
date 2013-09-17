@@ -35,9 +35,12 @@ import opendial.arch.Logger.Level;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.discrete.OutputDistribution;
 import opendial.bn.distribs.discrete.RuleDistribution;
+import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -48,12 +51,18 @@ import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
+import opendial.domains.datastructs.Output;
 import opendial.domains.rules.PredictionRule;
 import opendial.domains.rules.UpdateRule;
 import opendial.domains.rules.parameters.SingleParameter;
 import opendial.domains.rules.quantification.LabelPredicate;
 import opendial.domains.rules.quantification.UnboundPredicate;
 import opendial.domains.rules.quantification.ValuePredicate;
+import opendial.inference.InferenceAlgorithm;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.VariableElimination;
+import opendial.inference.queries.ProbQuery;
 import opendial.state.rules.AnchoredRule;
 import opendial.state.rules.DistributionRule;
 import opendial.state.rules.Rule;
@@ -117,7 +126,7 @@ public class RuleInstantiator implements Runnable {
 		if (rule.getUnboundPredicates().isEmpty()) {
 			return Arrays.asList(new AnchoredRule(rule, state, new Assignment()));
 		}
-		
+
 		Map<String, Set<Value>> possibleAnchors = new HashMap<String, Set<Value>>();
 
 		for (UnboundPredicate predicate : rule.getUnboundPredicates()) {
@@ -140,9 +149,9 @@ public class RuleInstantiator implements Runnable {
 		return anchoredRules;
 	}
 
-	
+
 	private Map<String,Set<Value>> getAnchors(LabelPredicate predicate) {
-		
+
 		Map<String,Set<Value>> possibleAnchors = new HashMap<String,Set<Value>>();
 
 		for (String node : network.getChanceNodeIds()) {
@@ -156,13 +165,13 @@ public class RuleInstantiator implements Runnable {
 				}
 			}
 		}
-		
+
 		return possibleAnchors;
 	}
 
 
 	private Map<String,Set<Value>> getAnchors(ValuePredicate predicate) {
-		
+
 		Map<String,Set<Value>> possibleAnchors = new HashMap<String,Set<Value>>();
 
 		for (int i = 4 ; i >= 0; i--) {
@@ -192,11 +201,11 @@ public class RuleInstantiator implements Runnable {
 				break;
 			}
 		}
-		
+
 		return possibleAnchors;
 	}
 
-	
+
 	private void addRule(AnchoredRule arule) throws DialException {
 
 		BNode ruleNode = createRuleNode(arule);
@@ -211,10 +220,10 @@ public class RuleInstantiator implements Runnable {
 
 		Set<BNode> outputNodes = getOutputNodes(arule);
 		for (BNode outputNode : outputNodes) {
-		
+
 			if (outputNode instanceof ChanceNode) {
 				outputNode.addInputNode(ruleNode);
-			
+
 				if (ruleNode.getId().contains("^2") && outputNode.getInputNodeIds().contains(ruleNode.getId().replace("^2", ""))) {
 					log.warning("output node " + outputNode.getId() + " contains duplicates: " + ruleNode.getId());
 				}
@@ -240,7 +249,7 @@ public class RuleInstantiator implements Runnable {
 		for (ChanceNode paramNode : arule.getParameterNodes()) {
 			ruleNode.addInputNode(paramNode);
 		}
-		
+
 		return ruleNode;
 	}
 
@@ -262,12 +271,39 @@ public class RuleInstantiator implements Runnable {
 
 			else {
 				outputNodes.add(network.getNode(updatedVar));
-			}		
+			}	
+			cutSpuriousLinks(arule, updatedVar);
 		}
 
 		return outputNodes;
 	}
 
+
+	private void cutSpuriousLinks(AnchoredRule arule, String updatedVar) {
+
+		String baseVar = updatedVar.replace("'", "");
+
+		try {
+			if (network.getNode(updatedVar).hasInputNode(baseVar)) {
+				ProbQuery query = new ProbQuery(network, arule.getId());
+				InferenceAlgorithm algo = new SwitchingAlgorithm().selectBestAlgorithm(query);
+				if (algo instanceof VariableElimination) {
+					SimpleTable distrib = algo.queryProb(query).toDiscrete().getProbTable(new Assignment());
+					SimpleTable distrib2 = distrib.getAboveThreshold(0.98);
+					if (distrib2.getRows().size()==1) {
+						Value bestEl = distrib2.getRows().iterator().next().getValue(arule.getId());
+						if (((Output)bestEl).mustBeCleared(baseVar) || 
+								!((Output)bestEl).getSetValue(baseVar).equals(ValueFactory.none())) {
+							network.getNode(updatedVar).removeInputNode(baseVar);
+						}
+					}
+				}
+			}
+		}
+		catch (DialException e) {
+			log.warning("problems when cutting spurious links: " + e);
+		}
+	}
 
 	protected String getOutputLabel(String baseOutput, AnchoredRule arule) throws DialException {
 		for (int i = 1 ; i < 4 ; i++) {
@@ -309,12 +345,12 @@ public class RuleInstantiator implements Runnable {
 			state.setVariableToProcess(outputVar);
 
 			// adding the connection to the previous version of the variable (if any)
-			if (network.hasChanceNode(outputVar.replaceFirst("'", "")) && !(rule instanceof PredictionRule) 
-					&& !(rule instanceof DistributionRule && ((DistributionRule)rule).toClear())) {
+			if (network.hasChanceNode(outputVar.replaceFirst("'", "")) && !(rule instanceof PredictionRule)
+							&& !(rule instanceof DistributionRule && ((DistributionRule)rule).toClear())) {
 				outputNode.addInputNode(network.
 						getChanceNode(outputVar.replaceFirst("'", "")));
 			}
-			
+
 			// adding the connection between the predicted and observed values
 			String predictEquiv = StringUtils.removePrimes(outputVar) + "^p";
 			if (network.hasChanceNode(predictEquiv) && 

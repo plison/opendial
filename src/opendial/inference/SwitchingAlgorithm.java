@@ -81,7 +81,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		return algo.reduceNetwork(query);	}
 	
 	
-	private InferenceAlgorithm selectBestAlgorithm (Query query) {
+	public InferenceAlgorithm selectBestAlgorithm (Query query) {
 			
 		int branchingFactor = 0;
 		int nbContinuous = 0;
