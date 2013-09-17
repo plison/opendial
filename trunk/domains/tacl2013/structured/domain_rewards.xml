@@ -152,6 +152,12 @@
 				</effect>
 			<effect util="-10">
 				<set var="a_m" value="Describe(*)" />
+			</effect>
+			<effect util="-10">
+				<set var="a_m" value="Confirm(*)" />
+			</effect>
+			<effect util="-10">
+				<set var="a_m" value="AskRepeat" />
 			</effect>	
 		</case>
 	</rule>
