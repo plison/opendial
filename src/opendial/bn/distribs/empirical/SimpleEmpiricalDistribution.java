@@ -139,13 +139,16 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public Assignment sample() throws DialException {
 		
-	/**	if (!cacheCreated) {
-			try { computeContinuousCache(); } catch (DialException e) { }
+		if (!cacheCreated) {
+			if (shouldUseParametricForm()) {
+				try { computeContinuousCache(); } catch (DialException e) { }
+			}
 			cacheCreated = true;
 		}
-		if (continuousCache != null) {
+		
+		if (continuousCache != null && continuousCache.getDimensionality() == 1) {
 			return continuousCache.sample(new Assignment());
-		}  */
+		}
 		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
@@ -156,6 +159,24 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			log.warning("distribution has no samples");
 			return new Assignment();
 		}
+	}
+	
+	
+
+	private boolean shouldUseParametricForm() {
+		int nbRealValues = 0;
+		for (int i = 0 ; i < 20 ; i++) {
+			Assignment a = samples.get(sampler.nextInt(samples.size()));
+			for (String var : getHeadVariables()) {
+				if (a.containsVar(var) && a.getValue(var) instanceof DoubleVal) {
+					nbRealValues++;
+					if (nbRealValues > 2) {
+						return true;
+					}
+				}		
+			}
+			}
+		return false;
 	}
 
 
