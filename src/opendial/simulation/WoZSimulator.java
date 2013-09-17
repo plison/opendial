@@ -158,11 +158,13 @@ public class WoZSimulator implements Simulator {
 				log.warning("cannot perform the turn: " +e);
 			}
 		}
-		
-		else {
-			log.info("reached the end of the training data");
+		else if (currentPass < NB_PASSES) {
 			curIndex = 0;
 			currentPass++;
+			log.debug("---- moving to pass " + currentPass);
+		}
+		else {
+			log.info("reached the end of the training data");
 			if (inputDomain != null && suffix != null) {
 				writeResults();
 			}
@@ -173,6 +175,38 @@ public class WoZSimulator implements Simulator {
 	}
 
 
+	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
+	
+		log.debug("Initial user action: " + newState.getContent("a_u", true).prettyPrint());
+		if (newState.getNetwork().hasChanceNode("perceived") && newState.getNetwork().hasChanceNode("carried")) {
+		log.debug("Perceived objects: " + newState.getContent("perceived", true).prettyPrint() 
+				+ " and carried objects " + newState.getContent("carried", true).prettyPrint());
+		}
+		
+		if (systemState.getNetwork().hasChanceNode("i_u")) {
+			ProbDistribution iudistrib = systemState.getContent("i_u", true);
+			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
+			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
+		}
+		systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
+				"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
+		ChanceNode goldNode = new ChanceNode("a_m-gold");
+		goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
+		systemState.getNetwork().addNode(goldNode);
+		
+		systemState.getNetwork().addNetwork(newState.getNetwork());	
+		
+		systemState.activateUpdates(true);				
+		systemState.setVariableToProcess("a_m");
+		systemState.triggerUpdates();
+		
+		/** if (newState.getNetwork().hasChanceNode("a_u^p")) {
+		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
+		} */
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private void writeResults() {
 		
 		Map<String,String> domainFiles = getDomainFiles();
@@ -263,37 +297,6 @@ public class WoZSimulator implements Simulator {
 	}
 	
 
-	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
-	
-		log.debug("Initial user action: " + newState.getContent("a_u", true).prettyPrint());
-		if (newState.getNetwork().hasChanceNode("perceived") && newState.getNetwork().hasChanceNode("carried")) {
-		log.debug("Perceived objects: " + newState.getContent("perceived", true).prettyPrint() 
-				+ " and carried objects " + newState.getContent("carried", true).prettyPrint());
-		}
-		
-		if (systemState.getNetwork().hasChanceNode("i_u")) {
-			ProbDistribution iudistrib = systemState.getContent("i_u", true);
-			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
-			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
-		}
-		systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
-				"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
-		ChanceNode goldNode = new ChanceNode("a_m-gold");
-		goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
-		systemState.getNetwork().addNode(goldNode);
-		
-		systemState.getNetwork().addNetwork(newState.getNetwork());	
-		
-		systemState.activateUpdates(true);				
-		systemState.setVariableToProcess("a_m");
-		systemState.triggerUpdates();
-		
-		if (newState.getNetwork().hasChanceNode("a_u^p")) {
-		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
-		}
-		// TODO Auto-generated method stub
-		
-	}
 
 
 	@Override
