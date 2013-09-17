@@ -154,18 +154,17 @@ public class XMLUtils {
 		String rootpath = new File(domainFiles.keySet().iterator().next()).getParent();
 		if ((new File(rootpath)).exists()) {
 			final File[] files = (new File(rootpath)).listFiles();
+			log.info("Deleting all files in directory " + rootpath);
 			for (File f : files) {
-				log.debug("Deleting file " + f.getAbsolutePath());
 				f.delete();
 			}
-			log.debug("Deleting directory " + rootpath);
 		}
 		else {
 			(new File(rootpath)).mkdir();
 		}
 
+		log.info("Writing updated domain specification to files : " + domainFiles.keySet());
 		for (String domainFile : domainFiles.keySet()) {
-			log.debug("Writing to file " + domainFile);
 			try {
 				FileWriter fileWriter = new FileWriter(domainFile);
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);

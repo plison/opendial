@@ -445,6 +445,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 				Assignment head = a.getTrimmedInverse(depVariables);
 				table.addRow(condition, head, factor.getProbEntry(a));
 			}
+			table.fillConditionalHoles();
 			return table;
 		}
 	}
