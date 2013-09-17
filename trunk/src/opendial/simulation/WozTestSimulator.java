@@ -97,6 +97,8 @@ public class WozTestSimulator {
 
 				WozLearnerSimulator.addNewDialogueState(systemState, newState);
 
+				WozLearnerSimulator.showInformation(systemState, newState);
+
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woztest");		
 				}
