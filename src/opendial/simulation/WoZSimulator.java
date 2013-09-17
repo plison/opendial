@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,8 @@ public class WoZSimulator implements Simulator {
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 4;
+	public static final int NB_PASSES = 2;
+	public static final int TEST_FREQ = 2;
 	int currentPass = 0;
 	
 	DialogueState systemState;
@@ -70,7 +72,8 @@ public class WoZSimulator implements Simulator {
 	int curIndex = 0;
 
 	boolean paused = false;
-	
+
+	List<WoZDataPoint> testPoints;
 
 	String inputDomain;
 	String suffix;
@@ -91,6 +94,10 @@ public class WoZSimulator implements Simulator {
 			log.warning("suffix cannot be empty");
 			this.suffix = "default";
 		}
+	}
+	
+	public void setTestPoints(List<WoZDataPoint> testPoints) {
+		this.testPoints = testPoints;
 	}
 
 

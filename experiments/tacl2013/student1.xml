@@ -1066,7 +1066,7 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.7844">DoYouSee(Something)</value>
+<value prob="0.7844">WhatDoYouSee</value>
 <value prob="0.2156">None</value>
 </variable>
 
@@ -1089,7 +1089,7 @@
 </state>
 <output>
 <variable id="a_m">
-<value>None</value>
+<value>Describe([RedObj])</value>
 </variable>
 </output>
 </data>
@@ -2458,7 +2458,7 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.3188">DoYouSee(Something)</value>
+<value prob="0.3188">WhatDoYouSee</value>
 <value prob="0.6813">None</value>
 </variable>
 
@@ -2481,7 +2481,7 @@
 </state>
 <output>
 <variable id="a_m">
-<value>None</value>
+<value>Describe([])</value>
 </variable>
 </output>
 </data>
