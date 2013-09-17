@@ -21,7 +21,7 @@
 </gui>
 
 <inference>
-	<nbsamples>20000</nbsamples>
+	<nbsamples>8000</nbsamples>
 	<timeout>15000</timeout>
 </inference>
 
