@@ -107,7 +107,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
 					double distance = sample.getUtility() - averages.get(goldAction);
 					double factor = (goldAction.isDefault())? 0.3 : 1.0;
-					weight *= Math.abs(MAX - (factor * distance / averages.size())) / MAX;
+					weight *= Math.abs(MAX - (factor * distance / 2)) / MAX;
 				}
 
 				table.put(sample, weight);
