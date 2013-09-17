@@ -170,14 +170,14 @@
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
-		<case>
+	<!-- 	<case>
 		<condition>
 				<if var="last(a_m)" value="AskRepeat" relation="!="/>
 		</condition>
 			<effect util="theta_repeat2">
 				<set var="a_m" value="AskRepeat" />
 			</effect>
-		</case>
+		</case>  -->
 	</rule>
 
 	<rule>
@@ -196,11 +196,11 @@
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
 		</case>
-		<case>
+	<!-- 	<case>
 			<effect util="theta_confirm2">
 				<set var="a_m" value="Confirm(*)" />
 			</effect>
-		</case>
+		</case>  -->
 	</rule>
 
 	
