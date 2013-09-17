@@ -522,7 +522,6 @@ public class ChanceNode extends BNode {
 				SimpleTable table = distrib.toDiscrete().getProbTable(condition);
 				for (Assignment head : table.getRows()) {
 					if (!head.containsVar(nodeId)) {
-						log.debug("chance node is " + nodeId);
 						log.debug("input nodes are " + getInputNodeIds());
 						log.warning("head assignment " + head + " should contain " + nodeId);
 						log.debug("condition was " + condition);
