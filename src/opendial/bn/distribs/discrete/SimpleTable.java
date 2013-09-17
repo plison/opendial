@@ -230,6 +230,8 @@ public class SimpleTable implements DiscreteProbDistribution {
 		}
 		catch (DialException e) {
 			log.warning("could not reset intervals: " + e);
+			Thread.dumpStack();
+			System.exit(0);
 		}
 	}
 

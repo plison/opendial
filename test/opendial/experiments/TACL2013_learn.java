@@ -80,7 +80,7 @@ public class TACL2013_learn {
 		if (!settings.planning.getWoZTestFile().equals("")) {
 		List<WoZDataPoint> test = XMLTrainingDataReader.
 				extractTrainingSample(settings.planning.getWoZTestFile());
-		// simulator.setTestPoints(test);
+		simulator.setTestData(test);
 		}
 
 		system.startSystem(); 

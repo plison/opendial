@@ -43,7 +43,7 @@
 		</case>
 	</rule>
 	
-	<rule id="changeLastMove">
+	<rule id="changeLastAm">
 		<case>
 			<condition>
 				<if var="a_m" value="None" relation="!="/>

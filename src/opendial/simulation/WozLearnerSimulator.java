@@ -67,13 +67,15 @@ public class WozLearnerSimulator implements Simulator {
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
 	public static final int NB_PASSES = 2;
-	public static final int TEST_FREQ = 2;
+	public static final int TEST_FREQ = 50;
 	int currentPass = 0;
 
 	DialogueState systemState;
 
 	List<WoZDataPoint> data;
 	
+	List<WoZDataPoint> testData;
+
 	WozTestSimulator testSimulator;
 
 	int curIndex = 0;
@@ -101,8 +103,8 @@ public class WozLearnerSimulator implements Simulator {
 		}
 	}
 
-	public void setTestSimulator(WozTestSimulator testSimulator) {
-		this.testSimulator = testSimulator;
+	public void setTestData(List<WoZDataPoint> testData) {
+		this.testData = testData;
 	}
 
 
@@ -147,15 +149,8 @@ public class WozLearnerSimulator implements Simulator {
 			try {		
 				addNewDialogueState(newState);
 
-				systemState.activateUpdates(false);
-
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz1");		
-				}
-
-				if (goldActionValue.contains("Do(")) {
-					String lastMove = goldActionValue.replace("Do(", "").substring(0, goldActionValue.length()-4);
-					systemState.addContent(new Assignment("lastMove", lastMove), "woz2");
 				}
 
 				if ((curIndex % 10) == 9) {
@@ -166,11 +161,11 @@ public class WozLearnerSimulator implements Simulator {
 					}
 				}
 
-			/**	if ((curIndex % TEST_FREQ) == (TEST_FREQ-1)) {
+				if ((curIndex % TEST_FREQ) == (TEST_FREQ-1)) {
 					log.debug("-------------   Start testing ------------");
 							writeResults();
 							performTests();
-				} */
+				} 
 			}
 			catch (DialException e) {
 				log.warning("cannot perform the turn: " +e);
@@ -201,47 +196,55 @@ public class WozLearnerSimulator implements Simulator {
 					+ "/" + suffix + "/" + (new File(inputDomain)).getName();
 			log.debug("Path of test domain: " + testDomain);
 			Domain domain = XMLDomainReader.extractDomain(testDomain);
-			DialogueSystem system = new DialogueSystem(domain);
-			
+			new WozTestSimulator(domain, testData);
+			log.debug("back in the training phase!");
 		}
-		catch (DialException e) {
+		catch (Exception e) {
 			log.warning("cannot perform tests: " + e);
 		}
 	}
 
 	protected void addNewDialogueState(DialogueState newState) throws DialException {
+		addNewDialogueState(systemState, newState);
+	}
+		
+	protected static void addNewDialogueState(DialogueState systemState, DialogueState newState) throws DialException {
 
-		systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
-				"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
-
+		
+		if (systemState.getNetwork().hasChanceNode("a_m")) {
+			String lastAction = systemState.getContent("a_m", true).toDiscrete().getProbTable(
+					new Assignment()).getRows().iterator().next().getValue("a_m").toString();
+			log.debug("Last a_m: " + lastAction);
+		}
+			
 		if (newState.getNetwork().hasChanceNode("perceived") && 
 				newState.getNetwork().hasChanceNode("carried")) {
 			log.debug("Perceived : " + newState.getContent("perceived", true).prettyPrint() 
 					+ " and carried " + newState.getContent("carried", true).prettyPrint());
 		}
+		
+		if (newState.getNetwork().hasChanceNode("a_u")) {
+			log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
+		}
+		
 
-		/**	if (systemState.getNetwork().hasChanceNode("i_u")) {
-			ProbDistribution iudistrib = systemState.getContent("i_u", true);
-			log.debug("input and outputs for i_u" + 
-				systemState.getNetwork().getChanceNode("i_u").getInputNodeIds() + " and " + 
-				systemState.getNetwork().getChanceNode("i_u").getOutputNodesIds());
-			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
-			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
-		} */
-
-		systemState.getNetwork().addNetwork(newState.getNetwork());	
+		for (ChanceNode cn : newState.getNetwork().getChanceNodes()) {
+			if (Arrays.asList("carried", "perceived", "motion", "a_m-gold").contains(cn.getId())) {
+				if (!systemState.getNetwork().hasChanceNode(cn.getId())) {
+					systemState.getNetwork().addNode(cn);
+				}
+				else {
+					systemState.getNetwork().getChanceNode(cn.getId()).setDistrib(cn.getDistrib());
+				}
+			}
+		}
 
 		systemState.activateUpdates(true);				
 		systemState.setVariableToProcess("a_m");
 		systemState.triggerUpdates();
+		
+		systemState.activateUpdates(false);
 
-		if (newState.getNetwork().hasChanceNode("a_u")) {
-			log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
-		}
-
-		/** if (newState.getNetwork().hasChanceNode("a_u^p")) {
-		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
-		} */
 
 	}
 
