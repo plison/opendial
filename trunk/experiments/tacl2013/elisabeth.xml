@@ -1123,7 +1123,7 @@
 <state>
 <variable id="a_u">
 <value prob="0.2138">None</value>
-<value prob="0.7863">DoYouSee(it)</value>
+<value prob="0.7863">DoYouSee(RedObj)</value>
 </variable>
 
 <variable id="u_u">
@@ -1184,7 +1184,7 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.8206">DoYouSee(the cylinder)</value>
+<value prob="0.8206">DoYouSee(RedObj)</value>
 <value prob="0.1794">None</value>
 </variable>
 
@@ -1215,7 +1215,7 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.6713">DoYouSee(the object)</value>
+<value prob="0.6713">DoYouSee(RedObj)</value>
 <value prob="0.3288">None</value>
 </variable>
 
