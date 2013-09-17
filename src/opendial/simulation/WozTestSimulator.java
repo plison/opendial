@@ -110,6 +110,8 @@ public class WozTestSimulator {
 				}
 				systemState.addContent(new Assignment("a_m", goldActionValue), "woztest");	
 				
+				systemState.getNetwork().removeNode("motion");
+
 				log.info("Actual action = " + actualAction + " vs. gold standard: " + goldActionValue);
 					if (actualAction.equals(goldActionValue)) {
 						return true;

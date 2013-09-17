@@ -73,7 +73,7 @@ public class WozLearnerSimulator implements Simulator {
 	DialogueState systemState;
 
 	List<WoZDataPoint> data;
-	
+
 	List<WoZDataPoint> testData;
 
 	WozTestSimulator testSimulator;
@@ -140,9 +140,9 @@ public class WozLearnerSimulator implements Simulator {
 
 		if (curIndex < data.size() && currentPass < NB_PASSES) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
-		
+
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
-			
+
 			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
 			ChanceNode goldNode = new ChanceNode("a_m-gold");
 			goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
@@ -152,10 +152,12 @@ public class WozLearnerSimulator implements Simulator {
 				addNewDialogueState(newState);
 
 				showInformation(systemState, newState);
-				
+
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz1");		
 				}
+				
+				systemState.getNetwork().removeNode("motion");
 
 				if ((curIndex % 10) == 9) {
 					List<String> paramIds = systemState.getParameterIds();
@@ -167,8 +169,8 @@ public class WozLearnerSimulator implements Simulator {
 
 				if ((curIndex % TEST_FREQ) == (TEST_FREQ-1)) {
 					log.debug("-------------   Start testing ------------");
-							writeResults();
-							performTests();
+					writeResults();
+					performTests();
 				} 
 			}
 			catch (DialException e) {
@@ -211,7 +213,7 @@ public class WozLearnerSimulator implements Simulator {
 	protected void addNewDialogueState(DialogueState newState) throws DialException {
 		addNewDialogueState(systemState, newState);
 	}
-		
+
 	protected static void addNewDialogueState(DialogueState systemState, DialogueState newState) throws DialException {
 
 		for (ChanceNode cn : newState.getNetwork().getChanceNodes()) {
@@ -228,36 +230,44 @@ public class WozLearnerSimulator implements Simulator {
 		systemState.activateUpdates(true);				
 		systemState.setVariableToProcess("a_m");
 		systemState.triggerUpdates();
-		
+
 		systemState.activateUpdates(false);
 
 
 	}
-	
-	
+
+
 	protected static void showInformation(DialogueState systemState, DialogueState newState) {
 		try {
-		if (systemState.getNetwork().hasChanceNode("a_m")) {
-			String lastAction = systemState.getContent("a_m", true).toDiscrete().getProbTable(
-					new Assignment()).getRows().iterator().next().getValue("a_m").toString();
-			String lastRealAction = (systemState.getNetwork().hasChanceNode("last(a_m)"))? 
-					systemState.getContent("last(a_m)", true).toDiscrete().getProbTable(
-					new Assignment()).getRows().iterator().next().getValue("last(a_m)").toString() : "None";
-			String lastMove = (systemState.getNetwork().hasChanceNode("lastMove"))? 
-					systemState.getContent("lastMove", true).toDiscrete().getProbTable(
-					new Assignment()).getRows().iterator().next().getValue("lastMove").toString() : "None";
+
+			String lastAction = "None";
+			String lastRealAction = "None";
+			String lastMove = "None";
+
+			if (systemState.getNetwork().hasChanceNode("a_m")) {
+				lastAction = systemState.getContent("a_m", true).toDiscrete().getProbTable(
+						new Assignment()).getRows().iterator().next().getValue("a_m").toString();
+			}
+			if (systemState.getNetwork().hasChanceNode("last(a_m)")) {		
+				lastRealAction = systemState.getContent("last(a_m)", true).toDiscrete().getProbTable(
+						new Assignment()).getRows().iterator().next().getValue("last(a_m)").toString();
+			}
+			if (systemState.getNetwork().hasChanceNode("lastMove")) {
+				lastMove = systemState.getContent("lastMove", true).toDiscrete().getProbTable(
+						new Assignment()).getRows().iterator().next().getValue("lastMove").toString();
+			}
 			log.debug("Last a_m: " + lastAction + " (last real action: " + lastRealAction + " and last move: " + lastMove+ ")");
-		}
-			
-		if (newState.getNetwork().hasChanceNode("perceived") && 
-				newState.getNetwork().hasChanceNode("carried")) {
-			log.debug("Perceived : " + newState.getContent("perceived", true).prettyPrint() 
-					+ " and carried " + newState.getContent("carried", true).prettyPrint());
-		}
-		
-		if (newState.getNetwork().hasChanceNode("a_u")) {
-			log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
-		}
+
+
+			if (newState.getNetwork().hasChanceNode("perceived") && 
+					newState.getNetwork().hasChanceNode("carried")) {
+				log.debug("Perceived : " + newState.getContent("perceived", true).prettyPrint() 
+						+ " and carried " + newState.getContent("carried", true).prettyPrint());
+			}
+
+			if (newState.getNetwork().hasChanceNode("a_u")) {
+				log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
+			}
 		}
 		catch (DialException e) {
 			log.warning("could not show information about the current dialogue state: " + e);
@@ -270,8 +280,8 @@ public class WozLearnerSimulator implements Simulator {
 		updateDomainWithParameters(domainFiles);
 		XMLUtils.writeDomain(domainFiles);
 	}
-	
-	
+
+
 	private void updateDomainWithParameters(Map<String,String> domainFiles) {
 		for (String id : systemState.getParameterIds()) {
 			try {
