@@ -60,7 +60,7 @@ public class WoZSimulator implements Simulator {
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 4;
+	public static final int NB_PASSES = 2;
 	int currentPass = 0;
 	
 	DialogueState systemState;
@@ -166,8 +166,10 @@ public class WoZSimulator implements Simulator {
 		else {
 			log.info("reached the end of the training data");
 			if (inputDomain != null && suffix != null) {
+				log.debug("writing the results");
 				writeResults();
 			}
+			try { Thread.sleep(1000); } catch (Exception e) { }
 			System.exit(0);
 		}
 		
@@ -252,6 +254,7 @@ public class WoZSimulator implements Simulator {
 		}
 		
 		for (String domainFile : domainFiles.keySet()) {
+			log.debug("writing to file " + domainFile);
 			try {
 			 FileWriter fileWriter = new FileWriter(domainFile);
 		            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
