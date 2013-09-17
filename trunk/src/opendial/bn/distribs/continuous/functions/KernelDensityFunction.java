@@ -246,5 +246,9 @@ public class KernelDensityFunction implements UnivariateDensityFunction {
 		
 		return variance;
 	}
+	
+	public String toString() {
+		return prettyPrint();
+	}
 
 }
