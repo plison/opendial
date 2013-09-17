@@ -88,6 +88,7 @@ public class Settings {
 		public double discountFactor = 0.8;
 		public boolean isSarsa = false;
 		public String wozFile = "";
+		public String wozTestFile = "";
 		
 		// maximum sampling time (in milliseconds)
 		public long maximumSamplingTime = 1500;
@@ -151,6 +152,10 @@ public class Settings {
 			return wozFile;
 		}
 		
+		public String getWoZTestFile() {
+			return wozTestFile;
+		}
+		
 		public String toString() {
 			String s = "horizon:" + horizon + ",discount:" + discountFactor;
 			if (isSarsa) {
@@ -161,6 +166,8 @@ public class Settings {
 			}
 			return s;
 		}
+
+
 	}
 	
 	
