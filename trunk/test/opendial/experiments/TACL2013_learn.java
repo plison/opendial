@@ -39,7 +39,7 @@ import opendial.readers.XMLSettingsReader;
 import opendial.readers.XMLStateReader;
 import opendial.readers.XMLTrainingDataReader;
 import opendial.simulation.UserSimulator;
-import opendial.simulation.WoZSimulator;
+import opendial.simulation.WozLearnerSimulator;
 import opendial.simulation.datastructs.WoZDataPoint;
 
 public class TACL2013_learn {
@@ -70,17 +70,19 @@ public class TACL2013_learn {
 		
 		List<WoZDataPoint> data = XMLTrainingDataReader.
 				extractTrainingSample(settings.planning.getWoZFile());
+		
 		log.debug("number of collected points: " + data.size());
-		WoZSimulator simulator = new WoZSimulator(system.getState(), data);
+		WozLearnerSimulator simulator = new WozLearnerSimulator(system.getState(), data);
 		system.attachSimulator(simulator);
 		simulator.specifyOutput(domainFile, suffix);
 		
-	//	NaoBehaviour b = new NaoBehaviour();
-	//	NaoTTS tts = new NaoTTS();
-	//	NaoPerception perception = new NaoPerception(system.getState());
-	//	system.attachAsynchronousModule(perception);
-	//	system.getState().attachModule(b);
-	//	system.getState().attachModule(tts);
+
+		if (!settings.planning.getWoZTestFile().equals("")) {
+		List<WoZDataPoint> test = XMLTrainingDataReader.
+				extractTrainingSample(settings.planning.getWoZTestFile());
+		simulator.setTestPoints(test);
+		}
+
 		system.startSystem(); 
 		
 		}
