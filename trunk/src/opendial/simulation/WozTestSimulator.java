@@ -60,78 +60,63 @@ import opendial.simulation.datastructs.WoZDataPoint;
 import opendial.state.DialogueState;
 import opendial.utils.DistanceUtils;
 
-public class WozTestSimulator extends WozLearnerSimulator {
+public class WozTestSimulator {
 
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 2;
-	public static final int TEST_FREQ = 2;
-	int currentPass = 0;
 
-	DialogueState systemState;
-
-	List<WoZDataPoint> data;
-
-	int curIndex = 0;
-
-	boolean paused = false;
-
-	List<WoZDataPoint> testPoints;
-
-	String inputDomain;
-	String suffix;
-
-
-	public WozTestSimulator (DialogueState systemState, List<WoZDataPoint> data)
+	public WozTestSimulator (Domain domain, List<WoZDataPoint> data)
 			throws DialException {
-		super(systemState, data);
+		String origWozFile = Settings.getInstance().planning.wozFile;
+		Settings.getInstance().planning.wozFile = "";
+
+		DialogueSystem system = new DialogueSystem(domain);
+		system.startSystem();
+		
+		int curIndex = 0;
+		double nbCorrectActions = 0.0;
+
+		for (WoZDataPoint testPoint : data) {
+			log.info("-- new WOZ testing turn, current index " + curIndex);
+			nbCorrectActions = performTurn(system.getState(), testPoint)? nbCorrectActions+1 : nbCorrectActions;
+			curIndex++;
+		}
+		log.info("reached the end of the testing data");
+		log.info("number of correct actions = " + nbCorrectActions + "/"  + data.size() + " (" + (nbCorrectActions*100/data.size()) + "%)");
+		Settings.getInstance().planning.wozFile = origWozFile;
 	}
 
 
-	@Override
-	protected void performTurn() {
+	protected boolean performTurn(DialogueState systemState, WoZDataPoint point) {
 
-		if (curIndex < data.size() && currentPass < NB_PASSES) {
-			log.debug("-- new WOZ turn, current index " + curIndex);
-			DialogueState newState = new DialogueState(data.get(curIndex).getState());
-			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
+			DialogueState newState = new DialogueState(point.getState());
+			String goldActionValue= point.getOutput().getValue("a_m").toString();
 
 			try {		
 
-				addNewDialogueState(newState);
-
-				systemState.activateUpdates(false);
+				WozLearnerSimulator.addNewDialogueState(systemState, newState);
 
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woztest");		
 				}
-
-				if (goldActionValue.contains("Do(")) {
-					String lastMove = goldActionValue.replace("Do(", "").substring(0, goldActionValue.length()-4);
-					systemState.addContent(new Assignment("lastMove", lastMove), "woz2");
+				
+				String actualAction = "None";
+				if (systemState.getNetwork().hasChanceNode("a_m")) {
+					actualAction = systemState.getContent("a_m",true).toDiscrete().getProbTable(
+						new Assignment()).getRows().iterator().next().getValue("a_m").toString();
 				}
-
+				systemState.addContent(new Assignment("a_m", goldActionValue), "woztest");	
+				
+				log.info("Actual action = " + actualAction + " vs. gold standard: " + goldActionValue);
+					if (actualAction.equals(goldActionValue)) {
+						return true;
+					}
 			}
 			catch (DialException e) {
 				log.warning("cannot perform the turn: " +e);
 			}
-		}
-		else if (currentPass < NB_PASSES) {
-			curIndex = 0;
-			currentPass++;
-			log.debug("---- moving to pass " + currentPass);
-		}
-		else {
-			log.info("reached the end of the testing data");
-			if (inputDomain != null && suffix != null) {
-				log.debug("writing the results");
-			}
-			try { Thread.sleep(1000); } catch (Exception e) { }
-			System.exit(0);
-		}
-
-		curIndex++;
+			return false;
 	}
 
 

@@ -304,8 +304,7 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.5573">PickUp(RedObj)</value>
-<value prob="0.0046">PickUp(Other)</value>
+<value prob="0.5619">PickUp(Other)</value>
 <value prob="0.4381">None</value>
 </variable>
 
