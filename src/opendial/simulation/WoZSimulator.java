@@ -146,7 +146,7 @@ public class WoZSimulator implements Simulator {
 					systemState.addContent(new Assignment("lastMove", lastMove), "woz2");
 				}
 
-				if ((curIndex % 4) == 3) {
+				if ((curIndex % 10) == 9) {
 					List<String> paramIds = systemState.getParameterIds();
 					Collections.sort(paramIds);
 					for (String var: paramIds) {
