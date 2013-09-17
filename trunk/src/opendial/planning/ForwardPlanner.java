@@ -54,6 +54,7 @@ import opendial.domains.Model;
 import opendial.domains.rules.PredictionRule;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
+import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.modules.SynchronousModule;
