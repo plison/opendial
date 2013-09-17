@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import java.util.List;
@@ -42,10 +43,12 @@ import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.continuous.functions.ProductKernelDensityFunction;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.VectorVal;
+import opendial.inference.datastructs.WeightedSample;
 import opendial.utils.InferenceUtils;
 
 /**
@@ -249,6 +252,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 					"continuous distribution, headVars = " + getHeadVariables());
 		}
 	}
+	
 
 
 	// ===================================

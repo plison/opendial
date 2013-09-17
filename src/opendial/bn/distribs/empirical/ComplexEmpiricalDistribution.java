@@ -45,6 +45,7 @@ import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.VectorVal;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.utils.DistanceUtils;
 import opendial.utils.InferenceUtils;
@@ -278,10 +279,40 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	 * @return the pretty print
 	 */
 	@Override
-	public String prettyPrint() {
-		return toDiscrete().prettyPrint();
+	public String prettyPrint() {	
+		if (!toDiscretise()) {
+			try {
+				return toContinuous().prettyPrint();
+			}
+			catch (DialException e) {
+				log.debug("could not convert distribution to a continuous format: " + e);
+			}
+		}
+		return toDiscrete().prettyPrint(); 
 	}
 
+	
+
+	private boolean toDiscretise() {
+		int nbRealValues = 0;
+		for (int i = 0 ; i < 20 ; i++) {
+			try {
+			Assignment a = sample();
+			for (String var : getHeadVariables()) {
+				if (a.containsVar(var) && (a.getValue(var) instanceof DoubleVal || a.getValue(var) instanceof VectorVal)) {
+					nbRealValues++;
+					if (nbRealValues > 2) {
+						return false;
+					}
+				}		
+			}
+			}
+			catch (DialException e) {
+				log.debug("could not determine if distribution should be discretised");
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * Replace a variable label by a new one
