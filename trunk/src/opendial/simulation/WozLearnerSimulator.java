@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.Timer;
 
 import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.arch.StateListener;
@@ -52,52 +53,56 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
+import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLSettingsReader;
+import opendial.readers.XMLStateReader;
 import opendial.simulation.datastructs.WoZDataPoint;
 import opendial.state.DialogueState;
 import opendial.utils.DistanceUtils;
+import opendial.utils.XMLUtils;
 
-public class WoZSimulator implements Simulator {
+public class WozLearnerSimulator implements Simulator {
 
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 3;
+	public static final int NB_PASSES = 2;
 	public static final int TEST_FREQ = 2;
 	int currentPass = 0;
-	
+
 	DialogueState systemState;
 
 	List<WoZDataPoint> data;
+	
+	WozTestSimulator testSimulator;
 
 	int curIndex = 0;
 
 	boolean paused = false;
 
-	List<WoZDataPoint> testPoints;
-
 	String inputDomain;
 	String suffix;
-	
 
-	public WoZSimulator (DialogueState systemState, List<WoZDataPoint> data)
+
+	public WozLearnerSimulator (DialogueState systemState, List<WoZDataPoint> data)
 			throws DialException {
 		this.systemState = systemState;
 		this.data = data;
 	}
-	
+
 	public void specifyOutput(String inputDomain, String suffix) {
 		this.inputDomain = inputDomain;
 		if (suffix.length() > 0) {
-		this.suffix = suffix;
+			this.suffix = suffix;
 		}
 		else {
 			log.warning("suffix cannot be empty");
 			this.suffix = "default";
 		}
 	}
-	
-	public void setTestPoints(List<WoZDataPoint> testPoints) {
-		this.testPoints = testPoints;
+
+	public void setTestSimulator(WozTestSimulator testSimulator) {
+		this.testSimulator = testSimulator;
 	}
 
 
@@ -110,13 +115,12 @@ public class WoZSimulator implements Simulator {
 
 	@Override
 	public void run() {
-		
+
 		while (true) {
 			try {
 				while (!systemState.isStable() || paused) {
 					Thread.sleep(50);
 				}
-
 				performTurn();
 			}
 			catch (Exception e) {
@@ -128,19 +132,20 @@ public class WoZSimulator implements Simulator {
 
 
 
-	private void performTurn() {
-		
+	protected void performTurn() {
+
 		if (curIndex < data.size() && currentPass < NB_PASSES) {
 			log.debug("-- new WOZ turn, current index " + curIndex);
+		
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
-			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
 			
-			// problem: we include an a_m', which means the trigger of the system decisions is screwed up
-			try {		
+			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
+			ChanceNode goldNode = new ChanceNode("a_m-gold");
+			goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
+			newState.getNetwork().addNode(goldNode);
 
-				addNewDialogueState(newState, goldActionValue);
-				
-		//		log.debug("system state: " + systemState.getNetwork().getNodeIds());
+			try {		
+				addNewDialogueState(newState);
 
 				systemState.activateUpdates(false);
 
@@ -160,6 +165,12 @@ public class WoZSimulator implements Simulator {
 						log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
 					}
 				}
+
+			/**	if ((curIndex % TEST_FREQ) == (TEST_FREQ-1)) {
+					log.debug("-------------   Start testing ------------");
+							writeResults();
+							performTests();
+				} */
 			}
 			catch (DialException e) {
 				log.warning("cannot perform the turn: " +e);
@@ -168,63 +179,83 @@ public class WoZSimulator implements Simulator {
 		else if (currentPass < NB_PASSES) {
 			curIndex = 0;
 			currentPass++;
-			log.debug("---- moving to pass " + currentPass);
+			log.debug("----> moving to pass " + currentPass);
 		}
 		else {
-			log.info("reached the end of the training data");
+			log.info("END. reached the end of the training data");
 			if (inputDomain != null && suffix != null) {
 				log.debug("writing the results");
 				writeResults();
 			}
-			try { Thread.sleep(1000); } catch (Exception e) { }
 			System.exit(0);
 		}
-		
+
 		curIndex++;
 	}
 
 
-	private void addNewDialogueState(DialogueState newState, String goldActionValue) throws DialException {
-	
-		if (newState.getNetwork().hasChanceNode("perceived") && newState.getNetwork().hasChanceNode("carried")) {
-		log.debug("Perceived objects: " + newState.getContent("perceived", true).prettyPrint() 
-				+ " and carried objects " + newState.getContent("carried", true).prettyPrint());
+	private void performTests() {
+
+		try {
+			String testDomain = (new File(inputDomain)).getParent().toString() 
+					+ "/" + suffix + "/" + (new File(inputDomain)).getName();
+			log.debug("Path of test domain: " + testDomain);
+			Domain domain = XMLDomainReader.extractDomain(testDomain);
+			DialogueSystem system = new DialogueSystem(domain);
+			
 		}
-		
-		if (systemState.getNetwork().hasChanceNode("i_u")) {
-			ProbDistribution iudistrib = systemState.getContent("i_u", true);
-			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
-			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
+		catch (DialException e) {
+			log.warning("cannot perform tests: " + e);
 		}
+	}
+
+	protected void addNewDialogueState(DialogueState newState) throws DialException {
+
 		systemState.getNetwork().removeNodes(Arrays.asList(new String[]{"u_u", "a_m-gold", 
 				"carried", "perceived", "motion", "a_u", "a_m", "u_m"}));
-		ChanceNode goldNode = new ChanceNode("a_m-gold");
-		goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
-		systemState.getNetwork().addNode(goldNode);
-		
+
+		if (newState.getNetwork().hasChanceNode("perceived") && 
+				newState.getNetwork().hasChanceNode("carried")) {
+			log.debug("Perceived : " + newState.getContent("perceived", true).prettyPrint() 
+					+ " and carried " + newState.getContent("carried", true).prettyPrint());
+		}
+
+		/**	if (systemState.getNetwork().hasChanceNode("i_u")) {
+			ProbDistribution iudistrib = systemState.getContent("i_u", true);
+			log.debug("input and outputs for i_u" + 
+				systemState.getNetwork().getChanceNode("i_u").getInputNodeIds() + " and " + 
+				systemState.getNetwork().getChanceNode("i_u").getOutputNodesIds());
+			systemState.getNetwork().getChanceNode("i_u").removeAllRelations();
+			systemState.getNetwork().getChanceNode("i_u").setDistrib(iudistrib);
+		} */
+
 		systemState.getNetwork().addNetwork(newState.getNetwork());	
-		
+
 		systemState.activateUpdates(true);				
 		systemState.setVariableToProcess("a_m");
 		systemState.triggerUpdates();
-		
+
 		if (newState.getNetwork().hasChanceNode("a_u")) {
-		log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
+			log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
 		}
 
 		/** if (newState.getNetwork().hasChanceNode("a_u^p")) {
 		log.debug("Predicted user action: " + systemState.getContent("a_u^p", true).prettyPrint());
 		} */
-		// TODO Auto-generated method stub
-		
+
+	}
+
+	private void writeResults() {
+
+		Map<String,String> domainFiles = XMLUtils.getDomainFiles(inputDomain, suffix);
+		updateDomainWithParameters(domainFiles);
+		XMLUtils.writeDomain(domainFiles);
 	}
 	
-	private void writeResults() {
-		
-		Map<String,String> domainFiles = getDomainFiles();
-		
+	
+	private void updateDomainWithParameters(Map<String,String> domainFiles) {
 		for (String id : systemState.getParameterIds()) {
-				try {
+			try {
 				ContinuousProbDistribution distrib = systemState.getNetwork().getChanceNode(id).getDistrib().toContinuous();
 				if (distrib instanceof UnivariateDistribution) {
 					double mean = ((UnivariateDistribution)distrib).getMean();
@@ -243,73 +274,12 @@ public class WoZSimulator implements Simulator {
 						domainFiles.put(domainFile, text);
 					}
 				}
-				}
-				catch (DialException e) {
-					log.warning("could not convert parameter into continuous probability distribution: " + e);
-				}
-		}
-		
-		String rootpath = new File(domainFiles.keySet().iterator().next()).getParent();
-		if ((new File(rootpath)).exists()) {
-			final File[] files = (new File(rootpath)).listFiles();
-			for (File f : files) {
-				log.debug("deleting file " + f.getAbsolutePath());
-				f.delete();
 			}
-			log.debug("deleting file " + rootpath);
-			(new File(rootpath)).delete();
-		}
-		if ((new File(rootpath).mkdir())) {
-			log.debug("created path " + rootpath);
-		}
-		
-		for (String domainFile : domainFiles.keySet()) {
-			log.debug("writing to file " + domainFile);
-			try {
-			 FileWriter fileWriter = new FileWriter(domainFile);
-		            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-		            bufferedWriter.write(domainFiles.get(domainFile));
-		            // Always close files.
-		            bufferedWriter.close();
-			}
-			catch (IOException e) {
-				log.warning("could not write output to files. " + e);
+			catch (DialException e) {
+				log.warning("could not convert parameter into continuous probability distribution: " + e);
 			}
 		}
 	}
-	
-	private Map<String,String> getDomainFiles() {
-		return getDomainFiles(inputDomain);
-	}
-	
-
-	private Map<String,String> getDomainFiles(String topFile) {
-        Map<String,String> outputFiles = new HashMap<String,String>();
-
-        try {
-		FileReader fileReader =  new FileReader(topFile);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-     	String rootpath = (new File(topFile)).getParent();   
-        String text = "";
-        String line = null;
-        while((line = bufferedReader.readLine()) != null) {
-            if (line.contains("import href")) {
-            	String fileStr = line.substring(line.indexOf("href=\"")+6, line.indexOf("/>")-1);
-            	outputFiles.putAll(getDomainFiles(rootpath +"/" + fileStr));
-            }
-            text += line + "\n";
-        }	
-        bufferedReader.close();
-        outputFiles.put(topFile.replace(rootpath, rootpath+"/" + suffix).replace(rootpath.replace("/", "//"), 
-        		rootpath+"/" + suffix), text);
-		}
-		catch (Exception e) {
-			log.warning("could not extract domain files: " + e);
-		}
-        return outputFiles;
-	}
-	
-
 
 
 	@Override
