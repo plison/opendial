@@ -72,8 +72,8 @@ public class TACL2013_learn {
 		
 			Settings.getInstance().nbSamples = (args.length > 3)? Integer.parseInt(args[3]) : Settings.getInstance().nbSamples;
 			WoZQuerySampling.RATE = (args.length > 4)? Integer.parseInt(args[4]) : WoZQuerySampling.RATE;
-			WoZQuerySampling.MIN = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MIN;
-			WoZQuerySampling.MAX = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MAX;
+			WoZQuerySampling.MIN = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MIN;
+			WoZQuerySampling.MAX = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MAX;
 			WoZQuerySampling.NONE_FACTOR = (args.length > 7)? Double.parseDouble(args[7]) : WoZQuerySampling.NONE_FACTOR;
 			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Double.parseDouble (args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
 			AnchoredRuleCache.PROB_THRESHOLD = (args.length >9)? Double.parseDouble(args[9]): AnchoredRuleCache.PROB_THRESHOLD;
