@@ -40,7 +40,7 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MAX = 50;
+	public static final double MAX = 40;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -100,8 +100,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
 				
-				if (sample.getUtility() < -10) {
-					weight *= (1.0 / (-10 - sample.getUtility()));
+				if (sample.getUtility() < -20) {
+					weight *= (1.0 / (-20 - sample.getUtility()));
 				}
 				else if (sample.getUtility() > 20) {
 					weight *= (1.0 / (sample.getUtility() - 20));
