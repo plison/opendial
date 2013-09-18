@@ -75,7 +75,7 @@ public class TACL2013_learn {
 			WoZQuerySampling.MAX = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MAX;
 			WoZQuerySampling.MIN = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MIN;
 			WoZQuerySampling.NONE_FACTOR = (args.length > 7)? Double.parseDouble(args[7]) : WoZQuerySampling.NONE_FACTOR;
-			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Integer.parseInt(args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
+			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Double.parseDouble (args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
 			AnchoredRuleCache.PROB_THRESHOLD = (args.length >9)? Double.parseDouble(args[9]): AnchoredRuleCache.PROB_THRESHOLD;
 			SimpleEmpiricalDistribution.USE_KDE = (args.length > 10)? Boolean.parseBoolean(args[10]) : SimpleEmpiricalDistribution.USE_KDE;
 			
