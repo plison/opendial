@@ -48,16 +48,20 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.continuous.MultivariateDistribution;
 import opendial.bn.distribs.continuous.UnivariateDistribution;
+import opendial.bn.distribs.discrete.EqualityDistribution;
+import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
+import opendial.inference.sampling.WoZQuerySampling;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.readers.XMLStateReader;
 import opendial.simulation.datastructs.WoZDataPoint;
 import opendial.state.DialogueState;
+import opendial.state.rules.AnchoredRuleCache;
 import opendial.utils.DistanceUtils;
 import opendial.utils.XMLUtils;
 
@@ -113,8 +117,13 @@ public class WozLearnerSimulator implements Simulator {
 
 	public void startSimulator() {
 		log.info("starting WOZ simulator");
-			writeResults();
-			performTests();
+		log.info("PARAMETERS: Learn factor: " + WoZQuerySampling.RATE + 
+				", min/max: " + WoZQuerySampling.MIN + "/" + WoZQuerySampling.MAX +
+				", Equality factor: "+EqualityDistribution.PROB_WITH_SINGLE_NONE + 
+				", Likelihood threshold: " + AnchoredRuleCache.PROB_THRESHOLD + 
+				", using KDE: " + SimpleEmpiricalDistribution.USE_KDE);
+	//		writeResults();
+	//		performTests();
 		(new Thread(this)).start();
 	}
 
