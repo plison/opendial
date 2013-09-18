@@ -40,9 +40,9 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double RATE = 50;
+	public static final double RATE = 60;
 	public static final double MIN = -20;
-	public static final double MAX = 40;
+	public static final double MAX = 30;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
