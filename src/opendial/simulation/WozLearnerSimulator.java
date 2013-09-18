@@ -67,7 +67,7 @@ public class WozLearnerSimulator implements Simulator {
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
 	public static final int NB_PASSES = 2;
-	public static final int TEST_FREQ = 100;
+	public static final int TEST_FREQ = 200;
 	int currentPass = 0;
 
 	DialogueState systemState;
