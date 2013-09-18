@@ -143,12 +143,11 @@ public class WozLearnerSimulator implements Simulator {
 
 			DialogueState newState = new DialogueState(data.get(curIndex).getState());
 
-			String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
-			ChanceNode goldNode = new ChanceNode("a_m-gold");
-			goldNode.addProb(ValueFactory.create(goldActionValue), 1.0);
-			newState.getNetwork().addNode(goldNode);
 
 			try {		
+				String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
+				newState.addContent(new Assignment("a_m-gold", goldActionValue), "woz");
+
 				addNewDialogueState(newState);
 
 				showInformation(systemState, newState);
