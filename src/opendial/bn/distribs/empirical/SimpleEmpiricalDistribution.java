@@ -139,7 +139,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public Assignment sample() throws DialException {
 		
-		if (!cacheCreated) {
+	/**	if (!cacheCreated) {
 			if (shouldUseParametricForm()) {
 				try { computeContinuousCache(); } catch (DialException e) { }
 			}
@@ -148,7 +148,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		
 		if (continuousCache != null && continuousCache.getDimensionality() == 1) {
 			return continuousCache.sample(new Assignment());
-		}
+		} */
 		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
