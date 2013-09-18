@@ -101,10 +101,10 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				double weight = sample.getWeight();
 				
 				if (sample.getUtility() < -20) {
-					weight *= (0.5 / (-20 - sample.getUtility()));
+					weight *= (0.2 / (-20 - sample.getUtility()));
 				}
 				else if (sample.getUtility() > 30) {
-					weight *= (0.5 / (sample.getUtility() - 30));
+					weight *= (0.2 / (sample.getUtility() - 30));
 				}
 				
 				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
