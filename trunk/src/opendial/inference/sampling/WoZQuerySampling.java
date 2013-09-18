@@ -43,6 +43,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	public static final double RATE = 50;
 	public static final double MIN = -20;
 	public static final double MAX = 40;
+	public static final double NONE_FACTOR = 0.6;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -116,7 +117,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				}
 				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
 					double distance = sample.getUtility() - averages.get(goldAction);
-					weight *= Math.abs(RATE -distance ) / RATE;
+					double factor = (goldAction.isDefault())? NONE_FACTOR : 1.0;
+					weight *= Math.abs(RATE -factor*distance ) / RATE;
 				}
 				
 				table.put(sample, weight);
