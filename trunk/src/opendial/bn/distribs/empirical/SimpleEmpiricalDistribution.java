@@ -69,7 +69,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	// list of samples for the empirical distribution
 	protected List<Assignment> samples;
 
-	public static boolean USE_KDE = true;
+	public static boolean USE_KDE = false;
 	
 	Random sampler;
 
