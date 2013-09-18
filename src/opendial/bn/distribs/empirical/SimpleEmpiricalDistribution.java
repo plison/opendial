@@ -69,6 +69,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	// list of samples for the empirical distribution
 	protected List<Assignment> samples;
 
+	public static boolean USE_KDE = true;
+	
 	Random sampler;
 
 	boolean cacheCreated = false;
@@ -139,7 +141,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public Assignment sample() throws DialException {
 		
-	/**	if (!cacheCreated) {
+		if (USE_KDE) {
+		if (!cacheCreated) {
 			if (shouldUseParametricForm()) {
 				try { computeContinuousCache(); } catch (DialException e) { }
 			}
@@ -148,7 +151,8 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		
 		if (continuousCache != null && continuousCache.getDimensionality() == 1) {
 			return continuousCache.sample(new Assignment());
-		} */
+		}
+		}
 		
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
