@@ -41,8 +41,8 @@ import opendial.inference.queries.UtilQuery;
 public class WoZQuerySampling extends AbstractQuerySampling {
 
 	public static final double RATE = 100;
-	public static final double MIN = -20;
-	public static final double MAX = 40;
+	public static final double MIN = -15;
+	public static final double MAX = 35;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -103,10 +103,10 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				double weight = sample.getWeight();
 				
 				if (sample.getUtility() < MIN) {
-					weight *= (0.2 / (MIN - sample.getUtility()));
+					weight *= (0.1 / (MIN - sample.getUtility()));
 				}
 				else if (sample.getUtility() > MAX) {
-					weight *= (0.2 / (sample.getUtility() - MAX));
+					weight *= (0.1 / (sample.getUtility() - MAX));
 				}
 				
 				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
