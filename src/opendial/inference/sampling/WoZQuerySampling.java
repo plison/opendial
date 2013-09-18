@@ -112,7 +112,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 					double distance = sample.getUtility() - averages.get(goldAction);
 					double distance2 = Math.max(MAX/4, distance);
 					double factor = (goldAction.isDefault())? 1.0 : 1.0;
-					weight *= Math.abs(MAX - (factor * distance2 )) / MAX;
+					weight *= Math.abs(MAX - (factor * distance2 / averages.size())) / MAX;
 				}
 				
 				table.put(sample, weight);
