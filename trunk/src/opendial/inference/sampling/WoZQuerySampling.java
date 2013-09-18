@@ -40,7 +40,7 @@ import opendial.inference.queries.UtilQuery;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static final double MAX = 40;
+	public static final double MAX = 30;
 	
 	// logger
 	public static Logger log = new Logger("WoZQuerySampling",
@@ -100,11 +100,11 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
 				
-				if (sample.getUtility() < -20) {
-					weight *= (1.0 / (-20 - sample.getUtility()));
+				if (sample.getUtility() < -10) {
+					weight *= (0.2 / (-20 - sample.getUtility()));
 				}
 				else if (sample.getUtility() > 20) {
-					weight *= (1.0 / (sample.getUtility() - 20));
+					weight *= (0.2 / (sample.getUtility() - 20));
 				}
 				
 				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
@@ -116,8 +116,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
 					double distance = sample.getUtility() - averages.get(goldAction);
 					double distance2 = Math.max(MAX/4, distance);
-					double factor = (goldAction.isDefault())? 0.5 : 1.0;
-					weight *= Math.abs(MAX - (factor * distance2 / averages.size() )) / MAX;
+					double factor = (goldAction.isDefault())? 1.0 : 1.0;
+					weight *= Math.abs(MAX - (factor * distance2 )) / MAX;
 				}
 				
 				table.put(sample, weight);
