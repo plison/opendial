@@ -99,7 +99,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
-				if (sample.getUtility() < -10 || sample.getUtility() > 25) {
+				if (sample.getUtility() < -15 || sample.getUtility() > 25) {
 					weight = 0;
 				}
 				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
@@ -111,7 +111,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
 					double distance = sample.getUtility() - averages.get(goldAction);
 					double distance2 = Math.max(MAX/4, distance);
-					double factor = (goldAction.isDefault())? 5.0 : 1.0;
+					double factor = (goldAction.isDefault())? 1.0 : 1.0;
 					weight *= Math.abs(MAX - (factor * distance2 / averages.size())) / MAX;
 				}
 				

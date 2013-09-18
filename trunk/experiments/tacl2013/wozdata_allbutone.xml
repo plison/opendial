@@ -5,7 +5,7 @@
  <import href="gordana.xml"/>
  <import href="jantore.xml"/>
  <import href="student1.xml"/>
- <!--  <import href="lilja.xml"/>  -->
+ <import href="lilja.xml"/>  
  <import href="elisabeth.xml"/>
  <import href="arne.xml"/>
  <import href="student3.xml"/>
