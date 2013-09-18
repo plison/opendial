@@ -8,7 +8,7 @@
   <import href="lilja.xml"/>
  <import href="elisabeth.xml"/>
  <import href="arne.xml"/>
- <import href="student3.xml"/>
+ <!-- <import href="student3.xml"/> -->
  <import href="student2.xml"/>
  <import href="emanuele.xml"/>
 
