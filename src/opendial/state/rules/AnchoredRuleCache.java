@@ -60,7 +60,7 @@ public class AnchoredRuleCache {
 
 	AnchoredRule rule;
 
-	public static double PROB_THRESHOLD = 0.15;
+	public static double PROB_THRESHOLD = 0.20;
 
 	Set<Assignment> likelyConditions = new HashSet<Assignment>();
 
