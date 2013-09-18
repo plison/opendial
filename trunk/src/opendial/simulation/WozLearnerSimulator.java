@@ -123,8 +123,8 @@ public class WozLearnerSimulator implements Simulator {
 				", none weight factor: " + WoZQuerySampling.NONE_FACTOR + 
 				", Likelihood threshold: " + AnchoredRuleCache.PROB_THRESHOLD + 
 				", using KDE: " + SimpleEmpiricalDistribution.USE_KDE);
-	//		writeResults();
-	//		performTests();
+			writeResults();
+			performTests();
 		(new Thread(this)).start();
 	}
 
