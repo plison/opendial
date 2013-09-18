@@ -120,6 +120,7 @@ public class WozLearnerSimulator implements Simulator {
 		log.info("PARAMETERS: Learn factor: " + WoZQuerySampling.RATE + 
 				", min/max: " + WoZQuerySampling.MIN + "/" + WoZQuerySampling.MAX +
 				", Equality factor: "+EqualityDistribution.PROB_WITH_SINGLE_NONE + 
+				", none weight factor" + WoZQuerySampling.NONE_FACTOR + 
 				", Likelihood threshold: " + AnchoredRuleCache.PROB_THRESHOLD + 
 				", using KDE: " + SimpleEmpiricalDistribution.USE_KDE);
 	//		writeResults();
