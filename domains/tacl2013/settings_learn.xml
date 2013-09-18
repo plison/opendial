@@ -8,7 +8,7 @@
 	<discount>0.9</discount>
 	<woz>experiments/tacl2013/wozdata_allbutone.xml</woz>
 	<woztest>experiments/tacl2013/lilja.xml</woztest>
-	<timeout>25000</timeout>
+	<timeout>60000</timeout>
 </planning>
  
 <gui>
@@ -22,7 +22,7 @@
 
 <inference>
 	<nbsamples>6000</nbsamples>
-	<timeout>25000</timeout>
+	<timeout>60000</timeout>
 </inference>
 
 </settings>
