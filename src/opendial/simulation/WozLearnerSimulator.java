@@ -70,6 +70,8 @@ public class WozLearnerSimulator implements Simulator {
 	public static final int TEST_FREQ = 200;
 	int currentPass = 0;
 
+	DialogueState initState;
+
 	DialogueState systemState;
 
 	List<WoZDataPoint> data;
@@ -88,7 +90,8 @@ public class WozLearnerSimulator implements Simulator {
 
 	public WozLearnerSimulator (DialogueState systemState, List<WoZDataPoint> data)
 			throws DialException {
-		this.systemState = systemState;
+		initState = systemState;
+		this.systemState = systemState.copy();
 		this.data = data;
 	}
 
@@ -110,8 +113,8 @@ public class WozLearnerSimulator implements Simulator {
 
 	public void startSimulator() {
 		log.info("starting WOZ simulator");
-		writeResults();
-		performTests();
+			writeResults();
+			performTests();
 		(new Thread(this)).start();
 	}
 
@@ -138,13 +141,13 @@ public class WozLearnerSimulator implements Simulator {
 
 	protected void performTurn() {
 
-		if (curIndex < data.size() && currentPass < NB_PASSES) {
-			log.debug("-- new WOZ turn, current index " + curIndex);
+		try {		
 
-			DialogueState newState = new DialogueState(data.get(curIndex).getState());
+			if (curIndex < data.size() && currentPass < NB_PASSES) {
+				log.debug("-- new WOZ turn, current index " + curIndex);
 
+				DialogueState newState = new DialogueState(data.get(curIndex).getState().copy());
 
-			try {		
 				String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
 				newState.addContent(new Assignment("a_m-gold", goldActionValue), "woz");
 
@@ -155,7 +158,7 @@ public class WozLearnerSimulator implements Simulator {
 				if (newState.getNetwork().hasChanceNode("a_u")) {
 					systemState.addContent(newState.getNetwork().getChanceNode("a_u").getDistrib(), "woz1");		
 				}
-				
+
 				systemState.getNetwork().removeNode("motion");
 
 				if ((curIndex % 10) == 9) {
@@ -171,26 +174,28 @@ public class WozLearnerSimulator implements Simulator {
 					writeResults();
 					performTests();
 				} 
-			}
-			catch (DialException e) {
-				log.warning("cannot perform the turn: " +e);
-			}
-		}
-		else if (currentPass < NB_PASSES) {
-			curIndex = 0;
-			currentPass++;
-			log.debug("----> moving to pass " + currentPass);
-		}
-		else {
-			log.info("END. reached the end of the training data");
-			if (inputDomain != null && suffix != null) {
-				log.debug("writing the results");
-				writeResults();
-			}
-			System.exit(0);
-		}
 
-		curIndex++;
+				curIndex++;
+
+			}
+			else if (currentPass < NB_PASSES) {
+				curIndex = 0;
+				currentPass++;
+				log.debug("----> moving to pass " + currentPass);
+				systemState = initState.copy();		
+			}
+			else {
+				log.info("END. reached the end of the training data");
+				if (inputDomain != null && suffix != null) {
+					log.debug("writing the results");
+					writeResults();
+				}
+				System.exit(0);
+			}
+		}
+		catch (DialException e) {
+			log.warning("cannot perform the turn: " +e);
+		}
 	}
 
 
