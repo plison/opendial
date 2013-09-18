@@ -4,12 +4,12 @@
 <data>
 <state>
 <variable id="a_u">
-<value prob="0.7781">Closing</value>
+<value prob="0.7781">Greeting</value>
 <value prob="0.2219">None</value>
 </variable>
 
 <variable id="u_u">
-<value prob="0.7781">bye lenny</value>
+<value prob="0.7781">hi lenny</value>
 <value prob="0.2219">None</value>
 </variable>
 <variable id="carried">
