@@ -6621,7 +6621,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Left)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Left)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6642,7 +6641,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Right)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Right)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6663,7 +6661,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Forward)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Forward)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6684,7 +6681,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Backward)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Backward)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6705,7 +6701,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Turn)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Turn)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6726,7 +6721,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Left,Short)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Left,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6747,7 +6741,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Right,Short)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Right,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6768,7 +6761,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Forward,Short)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Forward,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6789,7 +6781,6 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Backward,Short)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Move(Backward,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6810,7 +6801,6 @@
 <case>
 <condition>
 <if var="a_u" value="PickUp(RedObj)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=PickUp(RedObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6831,7 +6821,6 @@
 <case>
 <condition>
 <if var="a_u" value="PickUp(BlueObj)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=PickUp(BlueObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6852,7 +6841,6 @@
 <case>
 <condition>
 <if var="a_u" value="PickUp(AtFeet)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=PickUp(AtFeet)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6873,7 +6861,6 @@
 <case>
 <condition>
 <if var="a_u" value="PickUp(Other)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=PickUp(Other)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6894,7 +6881,6 @@
 <case>
 <condition>
 <if var="a_u" value="Release"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Release^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6915,7 +6901,6 @@
 <case>
 <condition>
 <if var="a_u" value="WhatDoYouSee"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=WhatDoYouSee^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6936,7 +6921,6 @@
 <case>
 <condition>
 <if var="a_u" value="DoYouSee(RedObj)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6957,7 +6941,6 @@
 <case>
 <condition>
 <if var="a_u" value="DoYouSee(BlueObj)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6978,7 +6961,6 @@
 <case>
 <condition>
 <if var="a_u" value="Greeting"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Greeting^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -6999,7 +6981,6 @@
 <case>
 <condition>
 <if var="a_u" value="Closing"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Closing^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7020,7 +7001,6 @@
 <case>
 <condition>
 <if var="a_u" value="Ask(Name)"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Ask(Name)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7041,7 +7021,6 @@
 <case>
 <condition>
 <if var="a_u" value="RepeatLast"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=RepeatLast^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7062,7 +7041,6 @@
 <case>
 <condition>
 <if var="a_u" value="Stop"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Stop^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7083,7 +7061,6 @@
 <case>
 <condition>
 <if var="a_u" value="Confirm"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Confirm^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7104,7 +7081,6 @@
 <case>
 <condition>
 <if var="a_u" value="Disconfirm"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Disconfirm^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7125,7 +7101,6 @@
 <case>
 <condition>
 <if var="a_u" value="Grounding"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=Grounding^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
@@ -7146,7 +7121,6 @@
 <case>
 <condition>
 <if var="a_u" value="None"/>
-<if var="i_u" value="None" relation="!="/>
 </condition>
 <effect util="theta(a_u=None^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
