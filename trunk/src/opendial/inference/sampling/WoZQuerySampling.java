@@ -105,7 +105,9 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				}
 				
 				int position = getRanking(sample, averages);
-				weight *= FACTOR * Math.pow(1-FACTOR, position);
+				if (position != -1) {
+					weight *= FACTOR * Math.pow(1-FACTOR, position);
+				}
 								
 				table.put(sample, weight);
 			}
@@ -118,17 +120,16 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	private int getRanking(WeightedSample sample, List<AssignmentWithUtil> averages) {
 		
 		List<AssignmentWithUtil> copy = new ArrayList<AssignmentWithUtil>(averages);
-		copy.add(new AssignmentWithUtil(sample.getSample(), sample.getUtility()));
+		copy.add(new AssignmentWithUtil(sample.getSample().getTrimmed(goldAction.getVariables()), sample.getUtility()));
 		Collections.sort(copy);
 		Collections.reverse(copy);
-		
 		for (int i = 0 ; i < copy.size() ; i++) {
 			if (copy.get(i).getAssignment().equals(goldAction)) {
 				return i;
 			}
 		}
 		
-		log.warning("could not find ranked position for the goldAction " + goldAction + " in " + averages);
+	//	log.warning("could not find ranked position for the goldAction " + goldAction + " in " + averages);
 		return -1;
 	}
 	
@@ -154,10 +155,10 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			AssignmentWithUtil a2 = new AssignmentWithUtil(a, averages.get(a) / samples.size());
 			sortedAverage.add(a2);
 		}
-		if (!averages.containsKey(goldAction)) {
+	/** 	if (!averages.containsKey(goldAction)) {
 			AssignmentWithUtil a = new AssignmentWithUtil(goldAction, MAX);
 			sortedAverage.add(a);
-		}
+		} */
 		
 		Collections.sort(sortedAverage);
 		Collections.reverse(sortedAverage);
