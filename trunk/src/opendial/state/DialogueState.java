@@ -95,9 +95,6 @@ public class DialogueState {
 	ForwardPlanner planner;
 
 	boolean isFictive = false;
-	
-	public static double LIKELIHOOD_THRESHOLD = 0.2;
-
 
 	boolean activateDecisions = true;
 	boolean activatePredictions = true;
@@ -278,12 +275,7 @@ public class DialogueState {
 	private void filterLowProbabilityValues() {
 			pruner.run();
 			for (ChanceNode cn : network.getChanceNodes()) {
-				if (cn.getDistrib() instanceof EmpiricalDistribution) {
-					((EmpiricalDistribution)cn.getDistrib()).filterValuesBelowThreshold(cn.getId(), LIKELIHOOD_THRESHOLD);
-				}
-				if (cn.getDistrib() instanceof DiscreteProbDistribution) {
-					((DiscreteProbDistribution)cn.getDistrib()).filterValuesBelowThreshold(cn.getId(), LIKELIHOOD_THRESHOLD);
-				}
+				cn.filterLowProbabilityValues();
 			}
 	}
 
