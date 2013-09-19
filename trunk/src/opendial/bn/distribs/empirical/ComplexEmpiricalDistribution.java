@@ -20,6 +20,7 @@
 package opendial.bn.distribs.empirical;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -291,20 +292,18 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 		return toDiscrete().prettyPrint(); 
 	}
 
-	
 
 	private boolean toDiscretise() {
 		int nbRealValues = 0;
 		for (int i = 0 ; i < 20 ; i++) {
 			try {
-			Assignment a = sample();
-			for (String var : getHeadVariables()) {
-				if (a.containsVar(var) && (a.getValue(var) instanceof DoubleVal || a.getValue(var) instanceof VectorVal)) {
-					nbRealValues++;
-					if (nbRealValues > 2) {
-						return false;
-					}
-				}		
+				Set<String> allVariables = new HashSet<String>(headVars);
+				allVariables.addAll(condVars);
+			if (sample().getTrimmed(allVariables).containContinuousValues()) {
+				nbRealValues++;
+				if (nbRealValues > 2) {
+					return false;
+				}
 			}
 			}
 			catch (DialException e) {
@@ -359,6 +358,12 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 	@Override
 	public Collection<Assignment> getSamples() {
 		return distrib.getSamples();
+	}
+
+
+
+	public SimpleEmpiricalDistribution getDistrib() {
+		return distrib;
 	}
 
 }

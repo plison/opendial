@@ -60,10 +60,6 @@ public class AnchoredRuleCache {
 
 	AnchoredRule rule;
 
-	public static double PROB_THRESHOLD = 0.20;
-
-	Set<Assignment> likelyConditions = new HashSet<Assignment>();
-
 	Set<Assignment> possibleConditions = new HashSet<Assignment>();
 
 	// this table does not reflect real distributions
@@ -74,12 +70,12 @@ public class AnchoredRuleCache {
 
 		cachedValues = new HashMap<Output, Set<Parameter>>();
 
-		if (rule.getRule() instanceof DecisionRule) {
+		/**if (rule.getRule() instanceof DecisionRule) {
 			extractLikelyConditions();
 			if (shouldBeDiscarded()) {
 				return;
 			}		
-		}
+		} */
 		
 		extractPossibleConditions();
 
@@ -104,7 +100,7 @@ public class AnchoredRuleCache {
 	}
 
 
-
+/**
 	private boolean shouldBeDiscarded() {
 		boolean shouldBeDiscarded = true;
 		for (Assignment cond : likelyConditions) {
@@ -117,7 +113,7 @@ public class AnchoredRuleCache {
 			}
 		}
 		return shouldBeDiscarded;
-	}
+	} */
 
 
 
@@ -179,23 +175,6 @@ public class AnchoredRuleCache {
 	}
 
 
-	private void extractLikelyConditions() {
-
-		try {
-			SimpleTable inputVals = (new SwitchingAlgorithm()).queryProb
-					(new ProbQuery(rule.state, rule.getInputNodes().keySet())).toDiscrete().getProbTable(new Assignment());
-
-			likelyConditions = inputVals.getAboveThreshold(PROB_THRESHOLD).getRows();
-		}
-		catch (DialException e) {
-			log.warning("could not extract the input values for the decision rule " + rule);
-		}
-	}
-
-
-	public Set<Assignment> getLikelyConditions() {
-		return likelyConditions;
-	}
 
 
 

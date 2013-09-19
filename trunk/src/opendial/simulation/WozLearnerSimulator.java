@@ -121,7 +121,7 @@ public class WozLearnerSimulator implements Simulator {
 				", min/max: " + WoZQuerySampling.MIN + "/" + WoZQuerySampling.MAX +
 				", Equality factor: "+EqualityDistribution.PROB_WITH_SINGLE_NONE + 
 				", none weight factor: " + WoZQuerySampling.NONE_FACTOR + 
-				", Likelihood threshold: " + AnchoredRuleCache.PROB_THRESHOLD + 
+				", Likelihood threshold: " + DialogueState.LIKELIHOOD_THRESHOLD + 
 				", using KDE: " + SimpleEmpiricalDistribution.USE_KDE);
 			writeResults();
 			performTests();
@@ -282,6 +282,10 @@ public class WozLearnerSimulator implements Simulator {
 			if (newState.getNetwork().hasChanceNode("a_u")) {
 				log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
 			}
+			
+		/**	if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+				log.debug("Predicted a_u: " + systemState.getContent("a_u^p", true).prettyPrint());
+			} */
 		}
 		catch (DialException e) {
 			log.warning("could not show information about the current dialogue state: " + e);

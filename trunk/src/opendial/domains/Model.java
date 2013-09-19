@@ -276,7 +276,7 @@ public class Model<T extends CaseBasedRule> implements SynchronousModule {
 
 	public Class<? extends CaseBasedRule> getModelType() {
 		if (rules.isEmpty()) {
-			log.warning("cannot determine model type");
+			log.debug("cannot determine model type");
 			return CaseBasedRule.class;
 		}
 		else {

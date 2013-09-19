@@ -85,7 +85,7 @@ public class UtilityRuleNode extends UtilityNode {
 
 		relevantActionsCache = new HashMap<Assignment,Parameter>();
 
-		for (Assignment input : rule.getLikelyConditions()) {
+		for (Assignment input : rule.getPossibleConditions()) {
 			relevantActionsCache.putAll(distrib.getRelevantActions(input));
 		}
 

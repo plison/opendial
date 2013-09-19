@@ -630,7 +630,7 @@ public class SimpleTable implements DiscreteProbDistribution {
 	@Override
 	public String prettyPrint() {
 		if (table.size() < 30) {
-			return toString(0.05).replace("\n", ", ");
+			return toString(0.00).replace("\n", ", ");
 		}
 		else {
 			return "(probability table too big to be shown)";
