@@ -39,6 +39,7 @@ import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -92,6 +93,7 @@ public class BasicRuleTest2 {
 	@Test
 	public void test() throws DialException, InterruptedException {
 				
+		
 		start();	
 		system = new DialogueSystem(domain);
 		system.startSystem(); 
@@ -238,18 +240,26 @@ public class BasicRuleTest2 {
 	}
 	
 	double oldThreshold;
+	double eqFactor;
 	
 	public void start() {
 		Settings.getInstance().activatePlanner = false;
 		Settings.getInstance().activatePruning = false;
 		oldThreshold = ChanceNode.LIKELIHOOD_THRESHOLD;
 		ChanceNode.LIKELIHOOD_THRESHOLD= 0.05;
+		eqFactor = EqualityDistribution.PROB_WITH_SINGLE_NONE;
+		EqualityDistribution.PROB_WITH_SINGLE_NONE = 0.1;
+		EqualityDistribution.PROB_WITH_DOUBLE_NONE = 0.1;
+		
 	}
 
 	public void finish() {
 		Settings.getInstance().activatePlanner = true;
 		Settings.getInstance().activatePruning = true;
 		ChanceNode.LIKELIHOOD_THRESHOLD = oldThreshold;
+		EqualityDistribution.PROB_WITH_SINGLE_NONE = eqFactor;
 	}
+	
+	
 
 }

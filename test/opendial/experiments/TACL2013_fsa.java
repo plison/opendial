@@ -44,8 +44,9 @@ public class TACL2013_fsa {
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
 
 
-	public static final String domainFile = "domains//tacl2013/domain_fsa.xml";
-	public static final String settingsFile = "domains//tacl2013/settings_fsa.xml";
+	public static final String domainFile = "domains//tacl2013/fsa//domain_fsa.xml";
+	public static final String settingsFile = "domains//tacl2013/fsa//settings_fsa.xml";
+	public static final String testFile = "experiments//tacl2013/arne.xml";
 
 	public static void main(String[] args) {
 		try {
@@ -53,6 +54,10 @@ public class TACL2013_fsa {
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
 
+		/** List<WoZDataPoint> test = XMLTrainingDataReader.
+				extractTrainingSample(testFile);
+		new WozTestSimulator(domain, test); */
+		
 		system.startSystem(); 
 		
 		}

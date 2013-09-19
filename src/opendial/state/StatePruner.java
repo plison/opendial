@@ -67,6 +67,7 @@ public class StatePruner implements Runnable {
 
 		Set<String> nodesToKeep = getNodesToKeep();
 
+
 	//	Set<String> nodesToIsolate = getNodesToIsolate(nodesToKeep);
 		try {
 

@@ -5,9 +5,9 @@
 		<state id="start" />
 		<state id="do" action="Do({a_u})" />
 		<state id="do2" action="Do({action})" />
-		<state id="excuse-carry" action="Excuse(AlreadyCarryObject)" />
-		<state id="excuse-donotsee" action="Excuse(DoNotSeeObject)" />
-		<state id="excuse-donotcarry" action="Excuse(DoNotCarryObject)" />
+		<state id="excuse-carry" action="Say(AlreadyCarryObject)" />
+		<state id="excuse-donotsee" action="Say(DoNotSeeObject)" />
+		<state id="excuse-donotcarry" action="Say(DoNotCarryObject)" />
 		<state id="repeat" action="AskRepeat" />
 		<state id="confirm" action="Say(Confirm)" />
 		<state id="disconfirm" action="Say(Disconfirm)" />
@@ -20,29 +20,35 @@
 	</states>
 
 	<edges>
-		<edge source="start" target="do" condition="move" threshold="0.4" />
-		<edge source="start" target="do" condition="pickup" threshold="0.4" />
-		<edge source="start" target="do" condition="pickup-feet" threshold="0.4" />
-		<edge source="start" target="excuse-carry" condition="carry" threshold="0.4" />
-		<edge source="start" target="excuse-donotsee" condition="donotsee" threshold="0.4" />
-		<edge source="start" target="do" condition="release" threshold="0.4" />
-		<edge source="start" target="excuse-donotcarry" condition="notcarry" threshold="0.4" />
-		<edge source="start" target="confirm" condition="doyousee-pos" threshold="0.4" />
-		<edge source="start" target="disconfirm" condition="doyousee-neg" threshold="0.4" />
-		<edge source="start" target="describe" condition="whatdoyousee" threshold="0.4" />
-		<edge source="start" target="stop" condition="stop" threshold="0.4" />
-		<edge source="start" target="repeat" condition="notunderstood" priority="2" threshold="0.4" />
-		<edge source="start" target="wait-confirm" condition="notunderstood2" priority="2" threshold="0.3"/>
-		<edge source="wait-confirm" target="do2" condition="move-confirm" threshold="0.4"/>
-		<edge source="wait-confirm" target="do2" condition="pickup-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="do2" condition="pickup-feet-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-carry" condition="carry-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-donotsee" condition="donotsee-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="do2" condition="release-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-donotcarry" condition="notcarry-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="start" condition="notunderstood" priority="2" threshold="0.4" />
+		<edge source="start" target="do" condition="move" threshold="0.82" />
+		<edge source="start" target="do" condition="pickup" threshold="0." />
+		<edge source="start" target="do" condition="pickup-feet" threshold="0.82" />
+		<edge source="start" target="excuse-carry" condition="carry" threshold="0.82" />
+		<edge source="start" target="excuse-donotsee" condition="donotsee" threshold="0.82" />
+		<edge source="start" target="do" condition="release" threshold="0.82" />
+		<edge source="start" target="excuse-donotcarry" condition="notcarry" threshold="0.82" />
+		<edge source="start" target="confirm" condition="doyousee-pos" threshold="0.82" />
+		<edge source="start" target="disconfirm" condition="doyousee-neg" threshold="0.82" />
+		<edge source="start" target="describe" condition="whatdoyousee" threshold="0.82" />
+		<edge source="start" target="stop" condition="stop" threshold="0.82" />
+		<edge source="start" target="greet" condition="greeting" threshold="0.82"/>
+		<edge source="start" target="close" condition="closing" threshold="0.82"/>
+		<edge source="start" target="sayname" condition="askname" threshold="0.82"/>
+		<edge source="start" target="wait-confirm" condition="notunderstood2" priority="2" threshold="0.67"/>
+		<edge source="start" target="repeat" condition="notunderstood" priority="3" threshold="0.52" />
+		<edge source="wait-confirm" target="do2" condition="move-confirm" threshold="0.67"/>
+		<edge source="wait-confirm" target="do2" condition="pickup-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="do2" condition="pickup-feet-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-carry" condition="carry-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-donotsee" condition="donotsee-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="do2" condition="release-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-donotcarry" condition="notcarry-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="start" condition="notunderstood" priority="2" threshold="0.52" />
 		<edge source="do" target="start" />
 		<edge source="do2" target="start" />
+		<edge source="greet" target="start" />
+		<edge source="close" target="start" />
+		<edge source="sayname" target="start" />
 		<edge source="excuse-carry" target="start" />
 		<edge source="excuse-donotsee" target="start" />
 		<edge source="excuse-donotcarry" target="start" />
@@ -101,8 +107,15 @@
 		<condition id="notunderstood2">
 			<if var="a_u" value="None" relation="!=" />
 			<if var="a_u" value="Nothing" relation="!=" />
+			<if var="a_u" value="Confirm" relation="!=" />
+			<if var="a_u" value="Disconfirm" relation="!=" />
+			<if var="a_u" value="RepeatLast" relation="!=" />
+			<if var="a_u" value="Stop" relation="!=" />
 			<if var="a_u" value="DoYouSee(*)" relation="!=" />
 			<if var="a_u" value="WhatDoYouSee" relation="!=" />
+			<if var="a_u" value="Greeting" relation="!=" />
+			<if var="a_u" value="Closing" relation="!=" />
+			<if var="a_u" value="Ask(Name)" relation="!=" />
 		</condition>
 
 
@@ -155,6 +168,20 @@
 			<if var="a_m" value="Confirm({action})"/>
 			<if var="a_u" value="Confirm"/>
 			<if var="carried" value="{X}" relation="notcontains" />
+		</condition>
+
+		<condition id="greeting">
+			<if var="a_u" value="Greeting" />
+		</condition>
+
+
+		<condition id="closing">
+			<if var="a_u" value="Closing" />
+		</condition>
+				
+
+		<condition id="askname">
+			<if var="a_u" value="Ask(Name)" />
 		</condition>
 		
 		

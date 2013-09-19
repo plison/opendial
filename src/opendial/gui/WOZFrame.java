@@ -55,6 +55,7 @@ import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.StateListener;
 import opendial.bn.Assignment;
+import opendial.modules.DialogueRecorder;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
@@ -77,71 +78,14 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 
 	JComboBox combo;
 
-	public static final String RECORD_FILE =  "experiments//tacl2013//WoZData-" +
-			(new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss")).format(new Date()) + ".xml";
-
 	DialogueSystem system;
-
-	long referenceStamp = 0;
-
-	public static void removeLastSample() {
-		try {
-			Document doc;
-			if (new File(RECORD_FILE).exists()) {
-				doc = XMLUtils.getXMLDocument(RECORD_FILE);
-			}
-			else {
-				doc = XMLUtils.newXMLDocument();
-			}
-			Node rootNode = XMLUtils.getMainNode(doc);
-			if (rootNode.getNodeName().equals("samples") && rootNode.getChildNodes().getLength() > 1) {
-				Node lastNode = rootNode.getChildNodes().item(rootNode.getChildNodes().getLength()-2);
-				rootNode.removeChild(lastNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
-			}
-			XMLUtils.writeXMLDocument(doc, RECORD_FILE);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
-	}
 	
-	public static void recordTrainingData(DialogueState state, Assignment action) {
-		try {
+	DialogueRecorder recorder;
+	
+	long userReferenceStamp = 0;
 
-			Document doc;
-			if (new File(RECORD_FILE).exists()) {
-				doc = XMLUtils.getXMLDocument(RECORD_FILE);
-			}
-			else {
-				doc = XMLUtils.newXMLDocument();
-				Node rootNode = doc.createElement("samples");
-				doc.appendChild(rootNode);
-			}
-
-			Node rootNode = XMLUtils.getMainNode(doc);
-			if (rootNode.getNodeName().equals("samples")) {
-				Element dataNode = doc.createElement("data");
-				Element dataEl = state.generateXML(doc, false);
-				dataNode.appendChild(dataEl);
-				Element outputNode = action.generateXML(doc);
-				dataNode.appendChild(outputNode);
-				doc.renameNode(outputNode, null, "output") ;
-		/**		doc.renameNode(dataNode, null, "a_m");
-				doc.renameNode(dataNode, null, "u_m");
-				doc.renameNode(dataNode, null, "u_u"); 
-				doc.renameNode(dataNode, null, "floor"); */
-				rootNode.appendChild(dataNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
-			}
-			XMLUtils.writeXMLDocument(doc, RECORD_FILE);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
-	}
+	public static final String recordFilePath =  "experiments//tacl2013//";
+	public static final String recordFileBasename = "WoZData";
 
 	/**
 	 * Constructs the GUI frame, with its title, menus, tabs etc.
@@ -149,6 +93,8 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 	 */
 	public WOZFrame(DialogueSystem system) {
 
+		recorder = new DialogueRecorder(recordFilePath, recordFileBasename);
+		
 		// TODO: add " - domain name " when a domain is loaded
 		setTitle("Wizard-of-Oz window");
 
@@ -162,7 +108,7 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 				); 
 
 		guiFrameInstance = this;
-
+				
 		this.system = system;
 		setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
 		createButtons();
@@ -334,6 +280,14 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 		return system;
 	}
 
+	@Override
+	public void update(DialogueState state) {
+		if (state.isUpdated("a_u", userReferenceStamp)) {
+			Assignment noAction = new Assignment("a_m", "None");
+			recorder.recordTrainingData(state, noAction);
+			userReferenceStamp = System.currentTimeMillis();
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
@@ -349,13 +303,13 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 
 	}
 
-	public static void recordAction(DialogueState state, String actionValue) {
+	public void recordAction(DialogueState state, String actionValue) {
 
 		try {
 			log.debug("actionValue is " + actionValue);
 			Assignment selection = new Assignment("a_m", actionValue);
-			removeLastSample();
-			recordTrainingData(state, selection);
+			recorder.removeLastSample();
+			recorder.recordTrainingData(state, selection);
 			state.addContent(selection, "WOZ");
 		}
 		catch (DialException e) {
@@ -363,16 +317,7 @@ public class WOZFrame extends JFrame implements ActionListener, StateListener {
 		}
 	}
 
-	@Override
-	public void update(DialogueState state) {
-		
-		if (state.isUpdated("a_u", referenceStamp)) {
-			Assignment noAction = new Assignment("a_m", "None");
-			recordTrainingData(state, noAction);
-			referenceStamp = System.currentTimeMillis();
-		}
-		
-	}
+	
 
 
 }

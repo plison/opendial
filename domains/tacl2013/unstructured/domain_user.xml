@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model type="prediction" trigger="i_u">
+<model trigger="i_u" type="prediction" >
 
-<rule>
+<rule id="bigpredictionrule">
 <case>
 <condition>
 <if var="i_u" value="Move(Left)"/>

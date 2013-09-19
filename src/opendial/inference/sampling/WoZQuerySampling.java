@@ -95,17 +95,21 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug("Utility averages : " + averages.toString().replace("\n", ", "));
 		log.debug(" ==> gold action = " + goldAction);
 		
+		double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
+
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
 				
 				if (sample.getUtility() < MIN || sample.getUtility() > MAX) {
-					weight = 0;
+					weight = weight / 10;
 				}
 				
 				int position = getRanking(sample, averages);
-				weight *= FACTOR * Math.pow(1-FACTOR, position);
+				if (position != -1) {
+					weight *= factor * Math.pow(1-factor, position)  + 0.001;
+				}
 								
 				table.put(sample, weight);
 			}
@@ -118,17 +122,22 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	private int getRanking(WeightedSample sample, List<AssignmentWithUtil> averages) {
 		
 		List<AssignmentWithUtil> copy = new ArrayList<AssignmentWithUtil>(averages);
-		copy.add(new AssignmentWithUtil(sample.getSample(), sample.getUtility()));
+		Assignment sampleAssign = sample.getSample().getTrimmed(goldAction.getVariables());
+		for (int i = 0 ; i < copy.size() ; i++) {
+			if (copy.get(i).getAssignment().equals(sampleAssign)) {
+				copy.set(i, new AssignmentWithUtil(sampleAssign, sample.getUtility()));
+			}
+		}
+
 		Collections.sort(copy);
 		Collections.reverse(copy);
-		
 		for (int i = 0 ; i < copy.size() ; i++) {
 			if (copy.get(i).getAssignment().equals(goldAction)) {
 				return i;
 			}
 		}
 		
-		log.warning("could not find ranked position for the goldAction " + goldAction + " in " + averages);
+	//	log.warning("could not find ranked position for the goldAction " + goldAction + " in " + averages);
 		return -1;
 	}
 	
@@ -153,10 +162,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		for (Assignment a : averages.keySet()) {
 			AssignmentWithUtil a2 = new AssignmentWithUtil(a, averages.get(a) / samples.size());
 			sortedAverage.add(a2);
-		}
-		if (!averages.containsKey(goldAction)) {
-			AssignmentWithUtil a = new AssignmentWithUtil(goldAction, MAX);
-			sortedAverage.add(a);
 		}
 		
 		Collections.sort(sortedAverage);

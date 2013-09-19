@@ -115,9 +115,8 @@ public class ForwardPlanner implements AnytimeProcess {
 
 			UtilityTable qValues = getQValues(currentState, horizon, discountFactor);
 
-			log.debug("rows in Q-values: " + qValues.getRows());
 		//	log.debug("planning time: " + (System.currentTimeMillis() - initTime));
-			log.debug("Q values: " + qValues);
+			log.debug("Q values: " + qValues.toString().replace("\n", ", "));
 	//		Map.Entry<Assignment, Double> bestAction = qValues.getBest();
 
 			return qValues;

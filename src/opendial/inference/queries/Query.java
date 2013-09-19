@@ -144,5 +144,9 @@ public abstract class Query {
 	public boolean isLightweight() {
 		return lightweight;
 	}
+
+	public void clearEvidence() {
+		evidence = new Assignment();
+	}
 	
 }

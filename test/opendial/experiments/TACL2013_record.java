@@ -29,6 +29,7 @@ import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
 import opendial.gui.WOZFrame;
+import opendial.modules.DialogueRecorder;
 import opendial.modules.NaoASR;
 import opendial.modules.NaoBehaviour;
 import opendial.modules.NaoPerception;
@@ -46,7 +47,6 @@ public class TACL2013_record {
 
 	public static final String domainFile = "domains//tacl2013/domain_record.xml";
 	public static final String settingsFile = "domains//tacl2013/settings_record.xml";
-
 	public static void main(String[] args) {
 		try {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);

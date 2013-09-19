@@ -30,6 +30,7 @@ import java.util.regex.PatternSyntaxException;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
+import opendial.bn.values.NoneVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
@@ -259,13 +260,13 @@ public class Template {
 		if (values.getVariables().containsAll(slots.keySet())) {
 			String filledTemplate = rawString;
 			for (String slot : slots.keySet()) {
-				if (values.getValue(slot) != null && (values.getValue(slot) instanceof StringVal)) {
+				if (values.getValue(slot) != null && !(values.getValue(slot) instanceof NoneVal)) {
 					filledTemplate = filledTemplate.replace("{"+slot+"}", 
 							values.getValue(slot).toString());
 				}
 				else {
 					throw new DialException("fillers contains a ill-formatted slot (not a string): "
-							+ slot +  ". fillers is " + values);
+							+ slot +  ", while fillers are " + values);
 				}
 			}
 			return filledTemplate;

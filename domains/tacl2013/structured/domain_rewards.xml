@@ -144,14 +144,26 @@
 	
 	<rule id="allnegs-decision">
 		<case>
-			<effect util="-10">
-				<set var="a_m" value="Do(*)" />
+			<effect util="-5">
+				<set var="a_m" value="Do(Move(*))" />
 			</effect>
-			<effect util="-10">	
+			<effect util="-10">
+				<set var="a_m" value="Do(PickUp(*))" />
+			</effect>
+			<effect util="-10">
+				<set var="a_m" value="Do(Release(*))" />
+			</effect>
+			<effect util="-1">	
 			<set var="a_m" value="Say(*)" />
 				</effect>
-			<effect util="-10">
+			<effect util="-1">
 				<set var="a_m" value="Describe(*)" />
+			</effect>	
+			<effect util="-1">
+				<set var="a_m" value="AskRepeat" />
+			</effect>	
+			<effect util="-1">
+				<set var="a_m" value="Confirm(*)" />
 			</effect>	
 		</case>
 	</rule>
@@ -170,35 +182,20 @@
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
-		<case>
-		<condition>
-				<if var="last(a_m)" value="AskRepeat" relation="!="/>
-		</condition>
-			<effect util="theta_repeat2">
-				<set var="a_m" value="AskRepeat" />
-			</effect>
-		</case>
 	</rule>
 
 	<rule id="confirm-decision">
 		<case>
 		<condition operator="and">
-			<if var="a_u" value="DoYouSee(*)" relation="!="/>
-			<if var="a_u" value="WhatDoYouSee" relation="!="/>
-			<if var="a_u" value="None" relation="!="/>
-			<if var="a_u" value="Confirm" relation="!="/>
-			<if var="a_u" value="Disconfirm" relation="!="/>
-			<if var="a_u" value="Greeting" relation="!="/>
-			<if var="a_u" value="Closing" relation="!="/>
+			<if var="i_u" value="DoYouSee(*)" relation="!="/>
+			<if var="i_u" value="WhatDoYouSee" relation="!="/>
+			<if var="i_u" value="Greeting" relation="!="/>
+			<if var="i_u" value="Closing" relation="!="/>
+			<if var="i_u" value="Ask(Name)" relation="!="/>
 			<if var="i_u" value="None" relation="!="/>
 		</condition>
 			<effect util="theta_confirm1">
 				<set var="a_m" value="Confirm({i_u})" />
-			</effect>
-		</case>
-		<case>
-			<effect util="theta_confirm2">
-				<set var="a_m" value="Confirm(*)" />
 			</effect>
 		</case>
 	</rule>
@@ -224,7 +221,7 @@
 			</effect>
 		</case>
 		<case>
-			<condition operator="and">
+			<condition>
 				<if var="motion" value="true" />
 			</condition>
 			<effect util="theta_whilemove">

@@ -70,8 +70,8 @@ public class WozLearnerSimulator implements Simulator {
 	// logger
 	public static Logger log = new Logger("WoZSimulator", Logger.Level.DEBUG);
 
-	public static final int NB_PASSES = 2;
-	public static final int TEST_FREQ = 100;
+	public static final int NB_PASSES = 1;
+	public static final int TEST_FREQ = 50;
 	
 	public static boolean SHOW_PARAMS = true;
 	
@@ -163,7 +163,6 @@ public class WozLearnerSimulator implements Simulator {
 
 				String goldActionValue= data.get(curIndex).getOutput().getValue("a_m").toString();
 				newState.addContent(new Assignment("a_m-gold", goldActionValue), "woz");
-
 				addNewDialogueState(newState);
 
 				showInformation(systemState, newState);
@@ -173,6 +172,7 @@ public class WozLearnerSimulator implements Simulator {
 				}
 
 				systemState.getNetwork().removeNode("motion");
+				systemState.getNetwork().removeNode("a_m-gold");
 
 				if ((curIndex % 10) == 9 && SHOW_PARAMS) {
 					showParameterValues();
