@@ -42,7 +42,7 @@ import opendial.utils.DistanceUtils;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static double FACTOR = 0.7;
+	public static double FACTOR = 0.5;
 	
 	public static double MIN = -20;
 	public static double MAX = 30;
@@ -120,6 +120,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		List<AssignmentWithUtil> copy = new ArrayList<AssignmentWithUtil>(averages);
 		copy.add(new AssignmentWithUtil(sample.getSample(), sample.getUtility()));
 		Collections.sort(copy);
+		Collections.reverse(copy);
 		
 		for (int i = 0 ; i < copy.size() ; i++) {
 			if (copy.get(i).getAssignment().equals(goldAction)) {
@@ -159,7 +160,8 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		}
 		
 		Collections.sort(sortedAverage);
-		
+		Collections.reverse(sortedAverage);
+
 		return sortedAverage;
 	}
 	
