@@ -94,8 +94,8 @@ public class WozLearnerSimulator implements Simulator {
 
 	public WozLearnerSimulator (DialogueState systemState, List<WoZDataPoint> data)
 			throws DialException {
-		initState = systemState;
-		this.systemState = systemState.copy();
+		initState = systemState.copy();
+		this.systemState = systemState;
 		this.data = data;
 	}
 
@@ -172,11 +172,7 @@ public class WozLearnerSimulator implements Simulator {
 				systemState.getNetwork().removeNode("motion");
 
 				if ((curIndex % 10) == 9) {
-					List<String> paramIds = systemState.getParameterIds();
-					Collections.sort(paramIds);
-					for (String var: paramIds) {
-						log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
-					}
+					showParameterValues();
 				}
 
 				if ((curIndex % TEST_FREQ) == (TEST_FREQ-1)) {
@@ -192,7 +188,8 @@ public class WozLearnerSimulator implements Simulator {
 				curIndex = 0;
 				currentPass++;
 				log.debug("----> moving to pass " + currentPass);
-				systemState = initState.copy();		
+				resetDialogueState();
+				showParameterValues();
 			}
 			else {
 				log.info("END. reached the end of the training data");
@@ -205,6 +202,28 @@ public class WozLearnerSimulator implements Simulator {
 		}
 		catch (DialException e) {
 			log.warning("cannot perform the turn: " +e);
+		}
+	}
+	
+	
+	private void resetDialogueState() throws DialException {
+		for (String nodeId : new HashSet<String>(systemState.getNetwork().getChanceNodeIds())) {
+			if (!systemState.getParameterIds().contains(nodeId)) {
+				if (initState.getNetwork().hasChanceNode(nodeId)) {
+				systemState.addContent(initState.getNetwork().getChanceNode(nodeId).getDistrib(), "woz");
+				}
+				else if (!nodeId.equals("a_u")) {
+					systemState.addContent(new Assignment(nodeId, ValueFactory.none()), "woz");
+				}
+			}
+		}
+	}
+
+	private void showParameterValues() throws DialException {
+		List<String> paramIds = systemState.getParameterIds();
+		Collections.sort(paramIds);
+		for (String var: paramIds) {
+			log.debug("==> parameter " + var + ": " + systemState.getContent(var, true));
 		}
 	}
 
@@ -283,9 +302,9 @@ public class WozLearnerSimulator implements Simulator {
 				log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
 			}
 			
-		if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+	/**	if (systemState.getNetwork().hasChanceNode("a_u^p")) {
 				log.debug("Predicted a_u: " + systemState.getContent("a_u^p", true).prettyPrint());
-			} 
+			}  */
 		}
 		catch (DialException e) {
 			log.warning("could not show information about the current dialogue state: " + e);
