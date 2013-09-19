@@ -793,6 +793,14 @@ public class Assignment {
 	}
 
 	
+	public boolean containContinuousValues() {
+		for (String var : map.keySet()) {
+			if (map.get(var) instanceof DoubleVal || map.get(var) instanceof VectorVal) {
+				return true;
+			}
+		}
+		return false;
+	}
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================

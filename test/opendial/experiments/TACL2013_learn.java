@@ -44,6 +44,7 @@ import opendial.readers.XMLTrainingDataReader;
 import opendial.simulation.UserSimulator;
 import opendial.simulation.WozLearnerSimulator;
 import opendial.simulation.datastructs.WoZDataPoint;
+import opendial.state.DialogueState;
 import opendial.state.rules.AnchoredRuleCache;
 
 public class TACL2013_learn {
@@ -70,13 +71,14 @@ public class TACL2013_learn {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		
-			Settings.getInstance().nbSamples = (args.length > 3)? Integer.parseInt(args[3]) : Settings.getInstance().nbSamples;
+			settings.nbSamples = (args.length > 3)? Integer.parseInt(args[3]) : settings.nbSamples;
+			log.info("Actual number of samples to employ: " + settings.nbSamples);
 			WoZQuerySampling.RATE = (args.length > 4)? Integer.parseInt(args[4]) : WoZQuerySampling.RATE;
 			WoZQuerySampling.MIN = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MIN;
 			WoZQuerySampling.MAX = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MAX;
 			WoZQuerySampling.NONE_FACTOR = (args.length > 7)? Double.parseDouble(args[7]) : WoZQuerySampling.NONE_FACTOR;
 			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Double.parseDouble (args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
-			AnchoredRuleCache.PROB_THRESHOLD = (args.length >9)? Double.parseDouble(args[9]): AnchoredRuleCache.PROB_THRESHOLD;
+			DialogueState.LIKELIHOOD_THRESHOLD= (args.length >9)? Double.parseDouble(args[9]): DialogueState.LIKELIHOOD_THRESHOLD;
 			SimpleEmpiricalDistribution.USE_KDE = (args.length > 10)? Boolean.parseBoolean(args[10]) : SimpleEmpiricalDistribution.USE_KDE;
 			
 			DialogueSystem system = new DialogueSystem(settings, domain);

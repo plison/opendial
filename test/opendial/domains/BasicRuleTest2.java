@@ -241,14 +241,14 @@ public class BasicRuleTest2 {
 	public void start() {
 		Settings.getInstance().activatePlanner = false;
 		Settings.getInstance().activatePruning = false;
-		oldThreshold = AnchoredRuleCache.PROB_THRESHOLD;
-		AnchoredRuleCache.PROB_THRESHOLD = 0.05;
+		oldThreshold = DialogueState.LIKELIHOOD_THRESHOLD;
+		DialogueState.LIKELIHOOD_THRESHOLD= 0.05;
 	}
 
 	public void finish() {
 		Settings.getInstance().activatePlanner = true;
 		Settings.getInstance().activatePruning = true;
-		AnchoredRuleCache.PROB_THRESHOLD = oldThreshold;
+		DialogueState.LIKELIHOOD_THRESHOLD = oldThreshold;
 	}
 
 }

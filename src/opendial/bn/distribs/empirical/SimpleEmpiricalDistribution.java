@@ -20,6 +20,7 @@
 package opendial.bn.distribs.empirical;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.bn.values.VectorVal;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.utils.InferenceUtils;
@@ -70,13 +72,13 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	protected List<Assignment> samples;
 
 	public static boolean USE_KDE = true;
-	
+
 	Random sampler;
 
 	boolean cacheCreated = false;
 	DiscreteProbDistribution discreteCache;
 	ContinuousProbDistribution continuousCache;
-	
+
 	// ===================================
 	//  CONSTRUCTION METHODS
 	// ===================================
@@ -97,7 +99,9 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 */
 	public SimpleEmpiricalDistribution(Collection<Assignment> samples) {
 		this();
-		this.samples.addAll(samples);
+		for (Assignment a : samples) {
+			addSample(a);
+		}
 	}
 
 
@@ -139,21 +143,26 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 	 * @return the selected sample
 	 * @throws DialException 
 	 */
-	public Assignment sample() throws DialException {
-		
+	public Assignment sample() {
+
 		if (USE_KDE) {
-		if (!cacheCreated) {
-			if (shouldUseParametricForm()) {
-				try { computeContinuousCache(); } catch (DialException e) { }
+			if (!cacheCreated) {
+				if (shouldUseParametricForm()) {
+					try { computeContinuousCache(); } catch (DialException e) { }
+				}
+				cacheCreated = true;
 			}
-			cacheCreated = true;
+
+			if (continuousCache != null && continuousCache.getDimensionality() == 1) {
+				try {
+					return continuousCache.sample(new Assignment());
+				}
+				catch (DialException e) {
+					log.warning("could not use the reconstructed continuous distrib: " + e);
+				}
+			}
 		}
-		
-		if (continuousCache != null && continuousCache.getDimensionality() == 1) {
-			return continuousCache.sample(new Assignment());
-		}
-		}
-		
+
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
 			Assignment selected = samples.get(selection);
@@ -164,22 +173,27 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 			return new Assignment();
 		}
 	}
-	
-	
+
+
 
 	private boolean shouldUseParametricForm() {
 		int nbRealValues = 0;
+		
+		if (getHeadVariables().size() != 1) {
+			return false;
+		}
+		String var = getHeadVariables().iterator().next();
 		for (int i = 0 ; i < 20 ; i++) {
 			Assignment a = samples.get(sampler.nextInt(samples.size()));
-			for (String var : getHeadVariables()) {
+			
 				if (a.containsVar(var) && a.getValue(var) instanceof DoubleVal) {
 					nbRealValues++;
 					if (nbRealValues > 2) {
 						return true;
 					}
 				}		
-			}
-			}
+			
+		}
 		return false;
 	}
 
@@ -268,7 +282,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 
 
 	protected void computeContinuousCache() throws DialException {
-		
+
 		if (getHeadVariables().size() == 1) {
 			continuousCache = InferenceUtils.createContinuousDistrib(getHeadVariables().iterator().next(), samples);
 		}
@@ -277,7 +291,7 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 					"continuous distribution, headVars = " + getHeadVariables());
 		}
 	}
-	
+
 
 
 	// ===================================
@@ -383,4 +397,43 @@ public class SimpleEmpiricalDistribution implements EmpiricalDistribution {
 		return samples;
 	}
 
+	public Assignment getSample(int i) {
+		return samples.get(i);
+	}
+
+	public void removeSample(int i) {
+		samples.remove(i);
+	}
+
+
+	public void filterValuesBelowThreshold(String headVar, double threshold) {
+
+		if (sample().getTrimmed(headVar).containContinuousValues()) {
+			return;
+		}
+
+		int initSize = getSize();
+		Map<Value,List<Integer>> counts = new HashMap<Value,List<Integer>>();
+		for (int i = 0 ; i < getSize() ; i++) {
+			Value val = samples.get(i).getValue(headVar);
+			if (!counts.containsKey(val)) {
+				counts.put(val, new ArrayList<Integer>(Arrays.asList(i)));
+			}
+			else {
+				counts.get(val).add(i);
+			}
+		}
+
+		for (Value inCount : counts.keySet()) {
+			if (counts.get(inCount).size() < initSize*threshold) {
+				for (int i : counts.get(inCount)) {
+					samples.get(i).addPair(headVar, ValueFactory.none());
+				}
+			}
+		}
+
+		cacheCreated = false;
+		discreteCache = null;
+		continuousCache = null;
+	}
 }

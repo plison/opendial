@@ -255,9 +255,5 @@ public class AnchoredRule {
 	}
 
 
-	public Set<Assignment> getLikelyConditions() {
-		return cache.getLikelyConditions();
-	}
-
 
 }
