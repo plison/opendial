@@ -305,10 +305,10 @@ public class WozLearnerSimulator implements Simulator {
 				log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
 			}
 			
-		if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+	/**	if (systemState.getNetwork().hasChanceNode("a_u^p")) {
 				log.debug("Predicted a_u: " + systemState.getContent("a_u^p", true).prettyPrint());
-			}  
-		}
+			}  */
+		} 
 		catch (DialException e) {
 			log.warning("could not show information about the current dialogue state: " + e);
 		}
