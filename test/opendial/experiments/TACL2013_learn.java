@@ -29,6 +29,7 @@ import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.nodes.ChanceNode;
 import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
@@ -79,8 +80,9 @@ public class TACL2013_learn {
 			WoZQuerySampling.MAX = (args.length > 6)? Integer.parseInt(args[6]) : WoZQuerySampling.MAX;
 			WoZQuerySampling.NONE_FACTOR = (args.length > 7)? Double.parseDouble(args[7]) : WoZQuerySampling.NONE_FACTOR;
 			EqualityDistribution.PROB_WITH_SINGLE_NONE = (args.length > 8)? Double.parseDouble (args[8]) : EqualityDistribution.PROB_WITH_SINGLE_NONE;
-			DialogueState.LIKELIHOOD_THRESHOLD= (args.length >9)? Double.parseDouble(args[9]): DialogueState.LIKELIHOOD_THRESHOLD;
+			ChanceNode.LIKELIHOOD_THRESHOLD= (args.length >9)? Double.parseDouble(args[9]): ChanceNode.LIKELIHOOD_THRESHOLD;
 			SimpleEmpiricalDistribution.USE_KDE = (args.length > 10)? Boolean.parseBoolean(args[10]) : SimpleEmpiricalDistribution.USE_KDE;
+			WozLearnerSimulator.SHOW_PARAMS = (args.length > 11)? Boolean.parseBoolean(args[11]) : WozLearnerSimulator.SHOW_PARAMS;
 			
 			DialogueSystem system = new DialogueSystem(settings, domain);
 

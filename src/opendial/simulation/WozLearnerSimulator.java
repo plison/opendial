@@ -72,6 +72,9 @@ public class WozLearnerSimulator implements Simulator {
 
 	public static final int NB_PASSES = 2;
 	public static final int TEST_FREQ = 100;
+	
+	public static boolean SHOW_PARAMS = true;
+	
 	int currentPass = 0;
 
 	DialogueState initState;
@@ -121,7 +124,7 @@ public class WozLearnerSimulator implements Simulator {
 				", min/max: " + WoZQuerySampling.MIN + "/" + WoZQuerySampling.MAX +
 				", Equality factor: "+EqualityDistribution.PROB_WITH_SINGLE_NONE + 
 				", none weight factor: " + WoZQuerySampling.NONE_FACTOR + 
-				", Likelihood threshold: " + DialogueState.LIKELIHOOD_THRESHOLD + 
+				", Likelihood threshold: " + ChanceNode.LIKELIHOOD_THRESHOLD + 
 				", using KDE: " + SimpleEmpiricalDistribution.USE_KDE);
 			writeResults();
 			performTests();
@@ -171,7 +174,7 @@ public class WozLearnerSimulator implements Simulator {
 
 				systemState.getNetwork().removeNode("motion");
 
-				if ((curIndex % 10) == 9) {
+				if ((curIndex % 10) == 9 && SHOW_PARAMS) {
 					showParameterValues();
 				}
 
@@ -189,7 +192,7 @@ public class WozLearnerSimulator implements Simulator {
 				currentPass++;
 				log.debug("----> moving to pass " + currentPass);
 				resetDialogueState();
-				showParameterValues();
+				if (SHOW_PARAMS) showParameterValues();
 			}
 			else {
 				log.info("END. reached the end of the training data");
@@ -302,9 +305,9 @@ public class WozLearnerSimulator implements Simulator {
 				log.debug("Initial a_u: " + newState.getContent("a_u", true).prettyPrint());
 			}
 			
-	/**	if (systemState.getNetwork().hasChanceNode("a_u^p")) {
+		if (systemState.getNetwork().hasChanceNode("a_u^p")) {
 				log.debug("Predicted a_u: " + systemState.getContent("a_u^p", true).prettyPrint());
-			}  */
+			}  
 		}
 		catch (DialException e) {
 			log.warning("could not show information about the current dialogue state: " + e);

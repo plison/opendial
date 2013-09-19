@@ -31,6 +31,7 @@ import opendial.arch.Settings;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
 import opendial.bn.distribs.discrete.OutputDistribution;
 import opendial.bn.distribs.discrete.RuleDistribution;
@@ -56,6 +57,8 @@ public class ChanceNode extends BNode {
 
 	// logger
 	public static Logger log = new Logger("ChanceNode", Logger.Level.DEBUG);
+
+	public static double LIKELIHOOD_THRESHOLD = 0.2;
 
 	// the probability distribution for the node
 	protected ProbDistribution distrib;
@@ -544,5 +547,13 @@ public class ChanceNode extends BNode {
 		fillCachedValues();
 	}
 
+	public void filterLowProbabilityValues() {
+		if (distrib instanceof EmpiricalDistribution) {
+			((EmpiricalDistribution)distrib).filterValuesBelowThreshold(nodeId, LIKELIHOOD_THRESHOLD);
+		}
+		if (distrib instanceof DiscreteProbDistribution) {
+			((DiscreteProbDistribution)distrib).filterValuesBelowThreshold(nodeId, LIKELIHOOD_THRESHOLD);
+		}
+	}
 
 }
