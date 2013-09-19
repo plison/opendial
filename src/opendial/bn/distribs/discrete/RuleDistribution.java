@@ -334,4 +334,10 @@ public class RuleDistribution implements DiscreteProbDistribution {
 	}
 
 
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		cache.filterValuesBelowThreshold(id, threshold);
+	}
+
+
 }

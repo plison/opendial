@@ -451,6 +451,14 @@ implements DiscreteProbDistribution {
 	}
 
 
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		for (Assignment a : table.keySet()) {
+			table.get(a).filterValuesBelowThreshold(id, threshold);
+		}
+	}
+
+
 
 
 }

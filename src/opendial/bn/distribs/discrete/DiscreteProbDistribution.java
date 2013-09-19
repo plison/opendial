@@ -79,5 +79,7 @@ public interface DiscreteProbDistribution extends ProbDistribution {
 	public abstract SimpleTable getProbTable(Assignment condition) throws DialException ;
 	
 	
+	public void filterValuesBelowThreshold(String id, double threshold);
+
 	
 }

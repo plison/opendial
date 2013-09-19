@@ -32,5 +32,7 @@ public interface EmpiricalDistribution extends ProbDistribution {
 
 	public Collection<Assignment> getSamples();
 
+	public void filterValuesBelowThreshold(String id, double threshold);
+
 }
 

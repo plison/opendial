@@ -677,5 +677,18 @@ public class SimpleTable implements DiscreteProbDistribution {
 		return totalProb;
 	}
 
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		for (Assignment a : new HashSet<Assignment>(table.keySet())) {
+			if (table.get(a) < threshold) {
+				double prob = table.get(a);
+				table.remove(a);
+				 a.addPair(id, ValueFactory.none());
+				 incrementRow(a, prob);
+			}
+		}
+		
+	}
+
 
 }
