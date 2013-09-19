@@ -41,6 +41,7 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
@@ -241,14 +242,14 @@ public class BasicRuleTest2 {
 	public void start() {
 		Settings.getInstance().activatePlanner = false;
 		Settings.getInstance().activatePruning = false;
-		oldThreshold = DialogueState.LIKELIHOOD_THRESHOLD;
-		DialogueState.LIKELIHOOD_THRESHOLD= 0.05;
+		oldThreshold = ChanceNode.LIKELIHOOD_THRESHOLD;
+		ChanceNode.LIKELIHOOD_THRESHOLD= 0.05;
 	}
 
 	public void finish() {
 		Settings.getInstance().activatePlanner = true;
 		Settings.getInstance().activatePruning = true;
-		DialogueState.LIKELIHOOD_THRESHOLD = oldThreshold;
+		ChanceNode.LIKELIHOOD_THRESHOLD = oldThreshold;
 	}
 
 }
