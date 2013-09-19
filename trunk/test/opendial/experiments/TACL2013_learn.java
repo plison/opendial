@@ -72,6 +72,7 @@ public class TACL2013_learn {
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		
 			settings.nbSamples = (args.length > 3)? Integer.parseInt(args[3]) : settings.nbSamples;
+			Settings.getInstance().nbSamples = settings.nbSamples;
 			log.info("Actual number of samples to employ: " + settings.nbSamples);
 			WoZQuerySampling.RATE = (args.length > 4)? Integer.parseInt(args[4]) : WoZQuerySampling.RATE;
 			WoZQuerySampling.MIN = (args.length > 5)? Integer.parseInt(args[5]) : WoZQuerySampling.MIN;
