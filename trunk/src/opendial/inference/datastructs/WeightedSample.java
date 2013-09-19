@@ -56,6 +56,13 @@ public class WeightedSample {
 	}
 	
 	/**
+	 * Creates a new sample
+	 */
+	public WeightedSample(Assignment a) {
+		sample = new Assignment(a);
+	}
+	
+	/**
 	 * Adds a new assignment to the sample
 	 * 
 	 * @param variable the variable label

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,12 @@ import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.datastructs.WeightedSample;
 import opendial.inference.queries.UtilQuery;
+import opendial.utils.DistanceUtils;
 
 public class WoZQuerySampling extends AbstractQuerySampling {
 
-	public static double RATE = 50;
+	public static double FACTOR = 0.7;
+	
 	public static double MIN = -20;
 	public static double MAX = 30;
 	public static double NONE_FACTOR = 1.0;
@@ -80,7 +83,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 
 		Map<WeightedSample,Double> table = new HashMap<WeightedSample,Double>();
 
-		Map<Assignment,Double> averages = getAverages();
+		List<AssignmentWithUtil> averages = getAverages();
 		
 		if (averages.size() == 1) {
 			for (WeightedSample sample : samples) {
@@ -89,13 +92,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			return new Intervals<WeightedSample>(table);	
 		}
 		
-		Assignment bestNotGold = new Assignment();
-		for (Assignment a : averages.keySet()) {
-			if (!a.equals(goldAction) && (bestNotGold.isEmpty() || averages.get(a) > averages.get(bestNotGold))) {
-				bestNotGold = a;
-			}
-		}
-		log.debug("Utility averages : " + (new UtilityTable(averages)).prettyPrint().replace("\n", ", "));
+		log.debug("Utility averages : " + averages.toString().replace("\n", ", "));
 		log.debug(" ==> gold action = " + goldAction);
 		
 		synchronized(samples) {
@@ -107,17 +104,9 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 					weight = 0;
 				}
 				
-				Assignment action = sample.getSample().getTrimmed(goldAction.getVariables());
-				if (action.equals(goldAction)  && sample.getUtility() <= averages.get(bestNotGold)) {
-					double distance = averages.get(bestNotGold) - sample.getUtility();
-						weight *= Math.abs(RATE - Math.sqrt(distance)) / RATE;
-				}
-				else if (!action.equals(goldAction) && sample.getUtility() >= averages.get(goldAction)) {
-					double distance = sample.getUtility() - averages.get(goldAction);
-					double factor = (goldAction.isDefault())? NONE_FACTOR : 1.0;
-					weight *= Math.abs(RATE -factor*Math.sqrt(distance)) / RATE;
-				}
-				
+				int position = getRanking(sample, averages);
+				weight *= FACTOR * Math.pow(1-FACTOR, position);
+								
 				table.put(sample, weight);
 			}
 		}
@@ -126,7 +115,25 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	}
 	
 	
-	private Map<Assignment,Double> getAverages() {
+	private int getRanking(WeightedSample sample, List<AssignmentWithUtil> averages) {
+		
+		List<AssignmentWithUtil> copy = new ArrayList<AssignmentWithUtil>(averages);
+		copy.add(new AssignmentWithUtil(sample.getSample(), sample.getUtility()));
+		Collections.sort(copy);
+		
+		for (int i = 0 ; i < copy.size() ; i++) {
+			if (copy.get(i).getAssignment().equals(goldAction)) {
+				return i;
+			}
+		}
+		
+		log.warning("could not find ranked position for the goldAction " + goldAction + " in " + averages);
+		return -1;
+	}
+	
+	
+	
+	private List<AssignmentWithUtil> getAverages() {
 		
 		Map<Assignment,Double> averages = new HashMap<Assignment,Double>();
 		
@@ -141,14 +148,19 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			}
 		}
 		
+		List<AssignmentWithUtil> sortedAverage = new ArrayList<AssignmentWithUtil>();
 		for (Assignment a : averages.keySet()) {
-			averages.put(a, averages.get(a) * averages.size() / samples.size());
+			AssignmentWithUtil a2 = new AssignmentWithUtil(a, averages.get(a) / samples.size());
+			sortedAverage.add(a2);
 		}
 		if (!averages.containsKey(goldAction)) {
-			averages.put(goldAction, 10.0);
+			AssignmentWithUtil a = new AssignmentWithUtil(goldAction, MAX);
+			sortedAverage.add(a);
 		}
 		
-		return averages;
+		Collections.sort(sortedAverage);
+		
+		return sortedAverage;
 	}
 	
 
@@ -158,6 +170,35 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	}
 	
 	
+	
+	private final class AssignmentWithUtil implements Comparable<AssignmentWithUtil> {
+
+		Assignment a;
+		double util;
+		
+		public AssignmentWithUtil(Assignment a, double util) {
+			this.a = a;
+			this.util = util;
+		}
+		
+		public Assignment getAssignment() {
+			return a;
+		}
+		
+		public double getUtil() {
+			return util;
+		}
+		
+		@Override
+		public int compareTo(AssignmentWithUtil otherA) {
+			return (int)(1000*(util - otherA.getUtil()));
+		}
+		
+		public String toString() {
+			return "U("+a+")="+DistanceUtils.shorten(util);
+		}
+		
+	}
 	
 }
 
