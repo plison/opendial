@@ -9,11 +9,14 @@
 		<state id="excuse-donotsee" action="Excuse(DoNotSeeObject)" />
 		<state id="excuse-donotcarry" action="Excuse(DoNotCarryObject)" />
 		<state id="repeat" action="AskRepeat" />
-		<state id="confirm" action="Confirm" />
-		<state id="disconfirm" action="Disconfirm" />
+		<state id="confirm" action="Say(Confirm)" />
+		<state id="disconfirm" action="Say(Disconfirm)" />
 		<state id="describe" action="Describe({perceived})" />
 		<state id="stop" action="Do(Stop)" />
 		<state id="wait-confirm" action="Confirm({a_u})" />
+		<state id="greet" action="Say(Greet)" />
+		<state id="close" action="Say(Goodbye)" />
+		<state id="sayname" action="Say(NameIsLenny)" />
 	</states>
 
 	<edges>
