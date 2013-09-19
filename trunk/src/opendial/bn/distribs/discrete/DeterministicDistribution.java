@@ -138,5 +138,11 @@ public class DeterministicDistribution implements DiscreteProbDistribution {
 		return prettyPrint();
 	}
 
+
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		return;
+	}
+
 }
 

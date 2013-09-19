@@ -366,4 +366,11 @@ public class ComplexEmpiricalDistribution implements EmpiricalDistribution {
 		return distrib;
 	}
 
+
+
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		distrib.filterValuesBelowThreshold(id, threshold);
+	}
+
 }

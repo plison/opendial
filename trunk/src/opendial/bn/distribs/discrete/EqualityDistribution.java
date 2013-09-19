@@ -212,6 +212,12 @@ public class EqualityDistribution implements DiscreteProbDistribution {
 					") cannot process condition " + trimmed);
 		}
 	}
+
+
+	@Override
+	public void filterValuesBelowThreshold(String id, double threshold) {
+		return;
+	}
 	
 	
 }
