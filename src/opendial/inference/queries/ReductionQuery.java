@@ -113,8 +113,7 @@ public class ReductionQuery extends Query {
 				
 				BNode inputDepNode = network.getNode(inputDepId);
 			if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
-						&& ((ChanceNode)inputDepNode).getNbValues() == 1 && 
-						!(reduced.getNode(queryVar) instanceof ProbabilityRuleNode)) {
+						&& ((ChanceNode)inputDepNode).getNbValues() == 1) {
 					continue;
 				} 
 				relevantAncestors.add(inputDepId);
@@ -123,6 +122,7 @@ public class ReductionQuery extends Query {
 		
 		for (BNode output : network.getNode(queryVar).getOutputNodes()) {
 			if (output instanceof ChanceNode && ((ChanceNode)output).getDistrib() instanceof EqualityDistribution) {
+	
 				Set<String> relevantAncestorsFromEq = getRelevantAncestors(output.getId());
 				relevantAncestorsFromEq.remove(queryVar);
 				relevantAncestors.addAll(relevantAncestorsFromEq);
