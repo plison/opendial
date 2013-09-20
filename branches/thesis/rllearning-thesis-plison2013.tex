@@ -9,7 +9,7 @@ The chapter is divided in three sections.  After a short survey of the core conc
 \section{Bayesian reinforcement learning}
 \label{sec:brl}
 
-Bayesian reinforcement learning has recently emerged as a generic framework for learning and acting in uncertain environments \citep{poupart2008,Ross:2011,brl2012}. As in other types of Bayesian learning methods, the core idea of Bayesian reinforcement learning is to maintain explicit probability distributions over the domain parameters and gradually narrow down the spread of these distributions as more experience is collected. However, reinforcement learning agents are no longer mere passive observers in the interaction.  The agent must indeed actively decide how to act after each turn in order to move the interaction forward. 
+Bayesian reinforcement learning has recently emerged as a generic framework for learning and acting in uncertain environments \citep{poupart2008,Ross:2011,brl2012}. As in other types of Bayesian learning methods, the core idea of Bayesian reinforcement learning is to maintain explicit probability distributions over the domain parameters and gradually narrow down the spread of these distributions as more experience is collected. However, in contrast to supervised approaches, reinforcement learning agents are no longer mere passive observers in the interaction.  The agent must indeed actively decide how to act after each turn in order to move the interaction forward. 
 
 As explained in Section \ref{sec:rl}, the actions selected by the agent must strike a balance between exploration (trying out new actions) and exploitation (preferring actions that are most likely to yield higher rewards). Bayesian reinforcement learning can offer principled solutions to the exploration-exploitation dilemma, as model uncertainty is explicitly accounted for in the action selection process \citep{Duff:2002,Ross:2011}.  A Bayesian agent will therefore select actions that are expected to provide the highest long-term return given the current model uncertainty. When the uncertainty is high, information-gathering actions are preferred since they lead to a better understanding of the environment dynamics and are therefore more likely to result in higher future rewards. This inclination to explore gradually fades away as the learning agent develops a better grasp of its domain and becomes more confident about the relative merits of its own actions.
 %\footnote{The representation of this model uncertainty and its inclusion in the action selection process can however take multiple forms \cite[see e.g.][for more details]{brl2012}.}
@@ -640,14 +640,14 @@ The performance was first measured in terms of average return per simulated inte
 
 \begin{figure}[p]
 \centering
-\includegraphics[scale=0.45]{imgs/return_exp21.pdf}
+\includegraphics[scale=0.42]{imgs/return_exp21.pdf}
 \caption{Average return as a function of the number of simulated interactions.}
 \label{fig:return_exp21}
 \end{figure}
 
 \begin{figure}[p] 
 \begin{center}
-\includegraphics[scale=0.45]{imgs/kldivergence.pdf}
+\includegraphics[scale=0.42]{imgs/kldivergence.pdf}
 \end{center} 
 \caption{Kullback-Leibler divergence between the distribution $P(a_u')$ estimated from the current model and the actual distribution followed by the simulator.}
 \label{fig:divergence}
@@ -696,14 +696,14 @@ The simulator was coupled to the dialogue system to compare the learning perform
 
 \begin{figure}[p]
 \centering
-\includegraphics[scale=0.45]{imgs/episodes.pdf}
+\includegraphics[scale=0.42]{imgs/episodes.pdf}
 \caption{Average return as a function of the number of episodes}
 \label{fig:return_episodes}
 \end{figure}
 
 \begin{figure}[p]
 \centering
-\includegraphics[scale=0.45]{imgs/timing.pdf}
+\includegraphics[scale=0.42]{imgs/timing.pdf}
 \caption{Average return as a function of the elapsed time}
 \label{fig:return_time}
 \end{figure}

@@ -50,7 +50,9 @@ Despite these merits, probabilistic rules cannot naturally model all dialogue re
 
 \subsubsection*{Dialogue domains}
 
-A dialogue domain is represented in \opendial by a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$ composed of an initial dialogue state $\mathcal{B}_0$ and a set of rule-structured models $\mathcal{M}$. Dialogue domains are encoded in an XML format\footnote{Extensible Markup Language, cf. \urlsmall{http://w3.org/xml}.} with a specifically designed syntax. The specification of a dialogue domain in XML takes the following form:
+As already mentioned in Section \ref{sec:processing-workflow}, a dialogue domain is represented in \opendial by a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$ defined by an initial dialogue state $\mathcal{B}_0$ and a set of models $\mathcal{M}$, each model being itself composed of a set of probability or utility rules. Dialogue domains are encoded in an XML format\footnote{Extensible Markup Language, cf. \urlsmall{http://w3.org/xml}.} with a syntax specifically designed for the toolkit. 
+
+In practice, the specification of a dialogue domain in XML takes the following form:
 \lstset{language=XML}
 \begin{lstlisting}
     <domain> 

@@ -259,13 +259,22 @@ Practically, the presupposed rationality of the wizard implies that the likeliho
 The goal of the learning process is to estimate the posterior distribution $P(\boldsymbol\theta \, | \, \mathcal{D})$ over the rule parameters given the collected Wizard-of-Oz data set. The procedure operates in an incremental fashion by traversing the (state,action) pairs one by one and re-estimating the posterior distribution after each pair.  
 
 \subsubsection*{Likelihood distribution}
+ 
+One key element of the learning cycle is the definition of the probability $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$, which specifies the likelihood of the wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ given the parameters $\boldsymbol\theta$. The purpose of this likelihood is intuitively to favour the parameter values that provide a good fit for the wizard action choices. In practice, this is achieved by defining the likelihood of the wizard action in terms of the relative utility of this action compared to the alternative choices.  More precisely, the probability of the wizard action will depend on its position in the ranked list of possible actions (in descending order).  The action at the top of this ranked list will thus be considered as the one that is most likely to be selected by the wizard. Formally, the likelihood of action $a_i$ given the parameters $\bold\theta$ is defined as:
+\begin{align}
+P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) & = \begin{cases} \alpha p & \text{if } a_i \ \text{ is the action with highest utility} \\
+\alpha (1-p) p & \text{ if } a_i \ \text{is the second-highest action} \\
+\alpha (1-p)^2 p & \text{ if } a_i \ \text{is the third-highest action} \\ 
+\cdots
+\end{cases} \nonumber \\\vspace{2mm}
+& = (1-p)^x p \ \ \ \ \ \ \ \ \ \ \text{ where } x \text{ is the position of action } a_i \label{eq:likelihood1} \\ 
+&  \phantom{= (1-p)^x p} \ \ \ \ \ \ \ \ \ \ \ \text{ in the ranked list of actions}  \nonumber
+\end{align}
 
-One key element of the learning cycle is the definition of the probability distribution $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$, which specifies the likelihood of the wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ given the parameters $\boldsymbol\theta$. The purpose of this likelihood is intuitively to favour the parameter values that provide a good fit for the wizard action choices. This is practically achieved by defining the likelihood as the relative utility of the action $a_i$ compared to all other actions: 
-\begin{equation}
-P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \leftarrow \dfrac{U_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) - U_{\mathrm{min}}}{\sum_{a \in Val(A)} \left(U_{\mathcal{B}_i}(a\,; \boldsymbol\theta) - U_{\mathrm{min}}\right)} \label{eq:likelihood}
-\end{equation}
+The $\alpha$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalisation factor, while the probability $p$  represents the learner confidence in the judgement of the wizard.  A value $p = 0.7$ will hence indicate that the wizard is assumed to be rational -- and thus select the highest-utility action -- with probability $0.7$. The probability $p$ indirectly defines the learning rate of the estimation process: the higher the probability, the faster the learner will converge to a policy that imitate the Wizard actions.  On the other end, a high value for $p$ makes the learner more vulnerable to the occasional errors and inconsistencies of the wizard. 
 
-Optimal parameter values with respect to the wizard action will therefore assign a high utility to the action $a_i$ and low utilities to the other actions. Equation \eqref{eq:likelihood} includes a minimal utility threshold $U_{\mathrm{min}}$ to ensure that the likelihood remains positive. This minimal threshold can be either set manually by the system designer (which is the approach taken in our experiment) or automatically derived from the domain models. 
+Equation \eqref{eq:likelihood1} is a particular instance of a geometric distribution.\footnote{Technically speaking, the definition in Equation \eqref{eq:likelihood1} corresponds to a truncated version of the geometric distribution, as the support of the distribution is finite in our case (as the number of possible actions is bounded). The reduction of the distribution to a finite support is achieved via the normalisation factor $\alpha$.}.  Geometric distributions represent the number of Bernoulli trials required to get one success. The use of a geometric distribution is motivated by the presupposed rationality of the wizard, as we assume that she/he will select the highest utility action with probability $p$, the second-highest action with probability $(1-p)p$, and so forth. The geometric distribution is monotonically decreasing, thus ensuring that the probability of a high-utility action will always be higher than its lower-utility alternatives.  
+
 
 \subsubsection*{Posterior parameter distribution}
 
@@ -274,7 +283,7 @@ Given the aforementioned likelihood distribution, the posterior distribution ove
 P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta ) \label{eq:paramposterior}
 \end{equation}
 
-The factor $\eta$ is used for normalisation. The value range for parameter distributions is typically continuous and contains as a consequence an infinite number of possible values. Inference in hybrid graphical models featuring both continuous and discrete variables is known to be a non-trivial problem.  Two types of solutions can be distinguished:
+The factor $\eta$ is used for normalisation. The value range for parameter distributions is typically continuous and has therefore an infinite number of possible values. Inference in hybrid graphical models featuring both continuous and discrete variables is known to be a non-trivial problem.  Two types of solutions can be distinguished:
 \begin{itemize}
 \item The first strategy is to discretise the range of parameter values into distinct, mutually exclusive buckets, and thereby transform continuous variables into discrete variables, with a number of values equivalent to the number of buckets employed for the discretisation.
 \item The second strategy is to retain the continuous nature of the parameters, but approximate the inference process through the use of sampling techniques.  
