@@ -20,30 +20,30 @@
 	</states>
 
 	<edges>
-		<edge source="start" target="do" condition="move" threshold="0.4" />
-		<edge source="start" target="do" condition="pickup" threshold="0.4" />
-		<edge source="start" target="do" condition="pickup-feet" threshold="0.4" />
-		<edge source="start" target="excuse-carry" condition="carry" threshold="0.4" />
-		<edge source="start" target="excuse-donotsee" condition="donotsee" threshold="0.4" />
-		<edge source="start" target="do" condition="release" threshold="0.4" />
-		<edge source="start" target="excuse-donotcarry" condition="notcarry" threshold="0.4" />
-		<edge source="start" target="confirm" condition="doyousee-pos" threshold="0.4" />
-		<edge source="start" target="disconfirm" condition="doyousee-neg" threshold="0.4" />
-		<edge source="start" target="describe" condition="whatdoyousee" threshold="0.4" />
-		<edge source="start" target="stop" condition="stop" threshold="0.4" />
-		<edge source="start" target="greet" condition="greeting" threshold="0.4"/>
-		<edge source="start" target="close" condition="closing" threshold="0.4"/>
-		<edge source="start" target="sayname" condition="askname" threshold="0.4"/>
-		<edge source="start" target="repeat" condition="notunderstood" priority="2" threshold="0.4" />
-		<edge source="start" target="wait-confirm" condition="notunderstood2" priority="2" threshold="0.3"/>
-		<edge source="wait-confirm" target="do2" condition="move-confirm" threshold="0.4"/>
-		<edge source="wait-confirm" target="do2" condition="pickup-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="do2" condition="pickup-feet-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-carry" condition="carry-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-donotsee" condition="donotsee-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="do2" condition="release-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="excuse-donotcarry" condition="notcarry-confirm" threshold="0.4" />
-		<edge source="wait-confirm" target="start" condition="notunderstood" priority="2" threshold="0.4" />
+		<edge source="start" target="do" condition="move" threshold="0.82" />
+		<edge source="start" target="do" condition="pickup" threshold="0." />
+		<edge source="start" target="do" condition="pickup-feet" threshold="0.82" />
+		<edge source="start" target="excuse-carry" condition="carry" threshold="0.82" />
+		<edge source="start" target="excuse-donotsee" condition="donotsee" threshold="0.82" />
+		<edge source="start" target="do" condition="release" threshold="0.82" />
+		<edge source="start" target="excuse-donotcarry" condition="notcarry" threshold="0.82" />
+		<edge source="start" target="confirm" condition="doyousee-pos" threshold="0.82" />
+		<edge source="start" target="disconfirm" condition="doyousee-neg" threshold="0.82" />
+		<edge source="start" target="describe" condition="whatdoyousee" threshold="0.82" />
+		<edge source="start" target="stop" condition="stop" threshold="0.82" />
+		<edge source="start" target="greet" condition="greeting" threshold="0.82"/>
+		<edge source="start" target="close" condition="closing" threshold="0.82"/>
+		<edge source="start" target="sayname" condition="askname" threshold="0.82"/>
+		<edge source="start" target="repeat" condition="notunderstood" priority="2" threshold="0.52" />
+		<edge source="start" target="wait-confirm" condition="notunderstood2" priority="2" threshold="0.67"/>
+		<edge source="wait-confirm" target="do2" condition="move-confirm" threshold="0.67"/>
+		<edge source="wait-confirm" target="do2" condition="pickup-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="do2" condition="pickup-feet-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-carry" condition="carry-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-donotsee" condition="donotsee-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="do2" condition="release-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="excuse-donotcarry" condition="notcarry-confirm" threshold="0.67" />
+		<edge source="wait-confirm" target="start" condition="notunderstood" priority="2" threshold="0.52" />
 		<edge source="do" target="start" />
 		<edge source="do2" target="start" />
 		<edge source="greet" target="start" />

@@ -28,6 +28,7 @@ import opendial.arch.DialException;
 import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
+import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -87,18 +88,8 @@ public class ReductionQuery extends Query {
 		}
 		
 		for (String var : queryVars) {
-			Set<String> ancestorIds = network.getNode(var).getAncestorsIds(queryVars);
-			for (String inputDepId : ancestorIds) {
-				if (reduced.hasNode(inputDepId)) {
-					
-					BNode inputDepNode = network.getNode(inputDepId);
-				if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
-							&& ((ChanceNode)inputDepNode).getNbValues() == 1 && 
-							!(reduced.getNode(var) instanceof ProbabilityRuleNode)) {
-						continue;
-					} 
-					reduced.getNode(var).addInputNode(reduced.getNode(inputDepId));
-				}
+			for (String ancestor : getRelevantAncestors(var)) {
+				reduced.getNode(var).addInputNode(reduced.getNode(ancestor));
 			}
 		}
 		identicalNodes = network.getIdenticalNodes(reduced, evidence);
@@ -113,6 +104,33 @@ public class ReductionQuery extends Query {
 	}
 	
 	
+	private Set<String> getRelevantAncestors(String queryVar) {
+		Set<String> relevantAncestors = new HashSet<String>();
+
+		Set<String> ancestorIds = network.getNode(queryVar).getAncestorsIds(queryVars);
+		for (String inputDepId : ancestorIds) {
+			if (reduced.hasNode(inputDepId)) {
+				
+				BNode inputDepNode = network.getNode(inputDepId);
+			if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
+						&& ((ChanceNode)inputDepNode).getNbValues() == 1 && 
+						!(reduced.getNode(queryVar) instanceof ProbabilityRuleNode)) {
+					continue;
+				} 
+				relevantAncestors.add(inputDepId);
+			}
+		}
+		
+		for (BNode output : network.getNode(queryVar).getOutputNodes()) {
+			if (output instanceof ChanceNode && ((ChanceNode)output).getDistrib() instanceof EqualityDistribution) {
+				Set<String> relevantAncestorsFromEq = getRelevantAncestors(output.getId());
+				relevantAncestorsFromEq.remove(queryVar);
+				relevantAncestors.addAll(relevantAncestorsFromEq);
+			}
+		}
+
+		return relevantAncestors;
+	}
 
 	
 	/**
