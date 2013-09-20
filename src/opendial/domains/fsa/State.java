@@ -55,7 +55,7 @@ public class State {
 			return action.fillSlots(fillers);
 		}
 		catch (DialException e) {
-			log.warning("could not fill all slots: " + action + " with " + fillers);
+			log.warning("could not fill all slots: " + action + " with " + fillers + " (" + e + ")");
 			return action.toString();
 		}
 	}
