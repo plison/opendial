@@ -102,7 +102,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				double weight = sample.getWeight();
 				
 				if (sample.getUtility() < MIN || sample.getUtility() > MAX) {
-					weight = 0;
+					weight = weight / 10;
 				}
 				
 				int position = getRanking(sample, averages);
