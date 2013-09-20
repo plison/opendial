@@ -107,7 +107,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				
 				int position = getRanking(sample, averages);
 				if (position != -1) {
-					weight *= factor * Math.pow(1-factor, position);
+					weight *= factor * Math.pow(1-factor, position)  + 0.01;
 				}
 								
 				table.put(sample, weight);
