@@ -5,9 +5,9 @@
 		<state id="start" />
 		<state id="do" action="Do({a_u})" />
 		<state id="do2" action="Do({action})" />
-		<state id="excuse-carry" action="Excuse(AlreadyCarryObject)" />
-		<state id="excuse-donotsee" action="Excuse(DoNotSeeObject)" />
-		<state id="excuse-donotcarry" action="Excuse(DoNotCarryObject)" />
+		<state id="excuse-carry" action="Say(AlreadyCarryObject)" />
+		<state id="excuse-donotsee" action="Say(DoNotSeeObject)" />
+		<state id="excuse-donotcarry" action="Say(DoNotCarryObject)" />
 		<state id="repeat" action="AskRepeat" />
 		<state id="confirm" action="Say(Confirm)" />
 		<state id="disconfirm" action="Say(Disconfirm)" />
@@ -31,6 +31,9 @@
 		<edge source="start" target="disconfirm" condition="doyousee-neg" threshold="0.4" />
 		<edge source="start" target="describe" condition="whatdoyousee" threshold="0.4" />
 		<edge source="start" target="stop" condition="stop" threshold="0.4" />
+		<edge source="start" target="greet" condition="greeting" threshold="0.4"/>
+		<edge source="start" target="close" condition="closing" threshold="0.4"/>
+		<edge source="start" target="sayname" condition="askname" threshold="0.4"/>
 		<edge source="start" target="repeat" condition="notunderstood" priority="2" threshold="0.4" />
 		<edge source="start" target="wait-confirm" condition="notunderstood2" priority="2" threshold="0.3"/>
 		<edge source="wait-confirm" target="do2" condition="move-confirm" threshold="0.4"/>
@@ -43,6 +46,9 @@
 		<edge source="wait-confirm" target="start" condition="notunderstood" priority="2" threshold="0.4" />
 		<edge source="do" target="start" />
 		<edge source="do2" target="start" />
+		<edge source="greet" target="start" />
+		<edge source="close" target="start" />
+		<edge source="sayname" target="start" />
 		<edge source="excuse-carry" target="start" />
 		<edge source="excuse-donotsee" target="start" />
 		<edge source="excuse-donotcarry" target="start" />
@@ -155,6 +161,20 @@
 			<if var="a_m" value="Confirm({action})"/>
 			<if var="a_u" value="Confirm"/>
 			<if var="carried" value="{X}" relation="notcontains" />
+		</condition>
+
+		<condition id="greeting">
+			<if var="a_u" value="Greeting" />
+		</condition>
+
+
+		<condition id="closing">
+			<if var="a_u" value="Closing" />
+		</condition>
+				
+
+		<condition id="askname">
+			<if var="a_u" value="Ask(Name)" />
 		</condition>
 		
 		

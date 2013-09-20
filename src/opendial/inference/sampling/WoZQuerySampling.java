@@ -95,6 +95,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug("Utility averages : " + averages.toString().replace("\n", ", "));
 		log.debug(" ==> gold action = " + goldAction);
 		
+		double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
@@ -106,7 +107,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				
 				int position = getRanking(sample, averages);
 				if (position != -1) {
-					weight *= FACTOR * Math.pow(1-FACTOR, position);
+					weight *= factor * Math.pow(1-factor, position);
 				}
 								
 				table.put(sample, weight);
@@ -155,10 +156,6 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			AssignmentWithUtil a2 = new AssignmentWithUtil(a, averages.get(a) / samples.size());
 			sortedAverage.add(a2);
 		}
-	/** 	if (!averages.containsKey(goldAction)) {
-			AssignmentWithUtil a = new AssignmentWithUtil(goldAction, MAX);
-			sortedAverage.add(a);
-		} */
 		
 		Collections.sort(sortedAverage);
 		Collections.reverse(sortedAverage);
