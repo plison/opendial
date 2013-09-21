@@ -58,7 +58,7 @@ public class ChanceNode extends BNode {
 	// logger
 	public static Logger log = new Logger("ChanceNode", Logger.Level.DEBUG);
 
-	public static double LIKELIHOOD_THRESHOLD = 0.1;
+	public static double LIKELIHOOD_THRESHOLD = 0.2;
 
 	// the probability distribution for the node
 	protected ProbDistribution distrib;
