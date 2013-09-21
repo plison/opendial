@@ -170,6 +170,11 @@
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
+		<case>
+			<effect util="-1">
+				<set var="a_m" value="AskRepeat" />
+			</effect>
+		</case>
 	</rule>
 
 	<rule id="confirm-decision">
@@ -181,10 +186,14 @@
 			<if var="i_u" value="Closing" relation="!="/>
 			<if var="i_u" value="Ask(Name)" relation="!="/>
 			<if var="i_u" value="None" relation="!="/>
-			<if var="a_u" value="{i_u}"/>
 		</condition>
 			<effect util="theta_confirm1">
 				<set var="a_m" value="Confirm({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<effect util="-1">
+				<set var="a_m" value="Confirm(*)" />
 			</effect>
 		</case>
 	</rule>
