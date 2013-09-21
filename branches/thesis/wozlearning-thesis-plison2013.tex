@@ -249,7 +249,7 @@ Many conversational situations allow for multiple, equally ``correct'' system re
 
 \subsubsection*{Assumptions about the wizard behaviour}
 
-Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g. speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should hence be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard. 
+Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g. speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should hence be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  
 
 Practically, the presupposed rationality of the wizard implies that the likelihood $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ of a wizard action $a_i$ in a particular dialogue state $\mathcal{B}_i$ under the parameters $\boldsymbol\theta$ will be proportional to the corresponding utility of action $a_i$ in $\mathcal{B}_i$ relative to other actions (as formalised below).
 
@@ -260,20 +260,32 @@ The goal of the learning process is to estimate the posterior distribution $P(\b
 
 \subsubsection*{Likelihood distribution}
  
-One key element of the learning cycle is the definition of the probability $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$, which specifies the likelihood of the wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ given the parameters $\boldsymbol\theta$. The purpose of this likelihood is intuitively to favour the parameter values that provide a good fit for the wizard action choices. In practice, this is achieved by defining the likelihood of the wizard action in terms of the relative utility of this action compared to the alternative choices.  More precisely, the probability of the wizard action will depend on its position in the ranked list of possible actions (in descending order).  The action at the top of this ranked list will thus be considered as the one that is most likely to be selected by the wizard. Formally, the likelihood of action $a_i$ given the parameters $\bold\theta$ is defined as:
+One key element of the learning cycle is the definition of the probability $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$, which specifies the likelihood of the wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ given the parameters $\boldsymbol\theta$. The purpose of this likelihood is intuitively to favour the parameter values that provide a good fit for the wizard action choices. 
+
+In practice, this is achieved by representing the likelihood of the wizard action $a_i$ in terms of the relative utility of action $a_i$ compared to the alternative action choices. The first step is to calculate the utility $U_{\mathcal{B}_i}(a\,; \boldsymbol\theta)$ for all possible actions $a$, and to subsequently rank the actions in descending order of utility.  As the wizard is presupposed to act rationally in most cases, the wizard action will thus most likely appear at the top of this ranked list of actions. Formally, the likelihood of action $a_i$ given the parameters $\bold\theta$ is expressed as:
 \begin{align}
 P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) & = \begin{cases} \alpha p & \text{if } a_i \ \text{ is the action with highest utility} \\
 \alpha (1-p) p & \text{ if } a_i \ \text{is the second-highest action} \\
 \alpha (1-p)^2 p & \text{ if } a_i \ \text{is the third-highest action} \\ 
 \cdots
-\end{cases} \nonumber \\\vspace{2mm}
-& = (1-p)^x p \ \ \ \ \ \ \ \ \ \ \text{ where } x \text{ is the position of action } a_i \label{eq:likelihood1} \\ 
+\end{cases} \nonumber \\[3mm]
+& = \alpha (1-p)^x p \ \ \ \ \ \ \ \text{ where } x \text{ is the position of action } a_i \label{eq:likelihood1} \\ 
 &  \phantom{= (1-p)^x p} \ \ \ \ \ \ \ \ \ \ \ \text{ in the ranked list of actions}  \nonumber
 \end{align}
 
-The $\alpha$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalisation factor, while the probability $p$  represents the learner confidence in the judgement of the wizard.  A value $p = 0.7$ will hence indicate that the wizard is assumed to be rational -- and thus select the highest-utility action -- with probability $0.7$. The probability $p$ indirectly defines the learning rate of the estimation process: the higher the probability, the faster the learner will converge to a policy that imitate the Wizard actions.  On the other end, a high value for $p$ makes the learner more vulnerable to the occasional errors and inconsistencies of the wizard. 
+The $\alpha$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalisation factor, while the probability $p$  represents the learner confidence in the judgement of the wizard.  A value $p = 0.7$ will hence indicate that the wizard is assumed to act rationally -- and thus select the highest-utility action -- with probability $0.7$. The probability $p$ indirectly defines the learning rate of the estimation process: the higher the probability, the faster the learner will converge to a policy that imitate the wizard actions.  A high value for $p$ makes the learner however more vulnerable to the occasional errors and inconsistencies on the part of the wizard. 
 
-Equation \eqref{eq:likelihood1} is a particular instance of a geometric distribution.\footnote{Technically speaking, the definition in Equation \eqref{eq:likelihood1} corresponds to a truncated version of the geometric distribution, as the support of the distribution is finite in our case (as the number of possible actions is bounded). The reduction of the distribution to a finite support is achieved via the normalisation factor $\alpha$.}.  Geometric distributions represent the number of Bernoulli trials required to get one success. The use of a geometric distribution is motivated by the presupposed rationality of the wizard, as we assume that she/he will select the highest utility action with probability $p$, the second-highest action with probability $(1-p)p$, and so forth. The geometric distribution is monotonically decreasing, thus ensuring that the probability of a high-utility action will always be higher than its lower-utility alternatives.  
+
+\begin{wrapfigure}[18]{r}{65mm}
+\vspace{-2mm}
+\centering
+\includegraphics[scale=0.35]{imgs/geometric.pdf} 
+\vspace{-6mm}
+\caption{Distribution $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ for four action values $[a_1, a_2, a_3, a_4]$ ranked by decreasing utility, with $p=0.7$.}
+\label{fig:geometric}
+\end{wrapfigure}
+
+The probability distribution represented by Equation \eqref{eq:likelihood1} is a particular instance of a \textit{geometric} distribution.\footnote{Technically speaking, the definition in Equation \eqref{eq:likelihood1} corresponds to a truncated version of the geometric distribution, as the support of the distribution is finite (the number of possible actions is bounded). The reduction of the distribution to a finite support is achieved via the normalisation factor $\alpha$.} Geometric distributions correspond the number of Bernoulli trials required to get one success. The reliance on geometric distributions to formalise the likelihood of the observed actions is motivated by the posited rationality of the wizard decisions.  In other words, the formalisation is grounded in the assumption that the wizard will select the highest utility action with probability $p$, the second-highest action with probability $(1-p)p$, and so forth. The geometric distribution is monotonically decreasing, which ensures that the probability of a high-utility action will always be higher than its lower-utility alternatives.   Figure \ref{fig:geometric} illustrates an example of likelihood distribution over four action values $[a_1, a_2, a_3, a_4]$, where $U_{\mathcal{B}_i}(a_1\,; \boldsymbol\theta) > U_{\mathcal{B}_i}(a_2\,; \boldsymbol\theta) > \cdots > U_{\mathcal{B}_i}(a_4\,; \boldsymbol\theta)$.
 
 
 \subsubsection*{Posterior parameter distribution}
