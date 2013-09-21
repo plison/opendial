@@ -148,7 +148,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -159,7 +159,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -170,7 +170,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -181,7 +181,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -192,7 +192,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -203,7 +203,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -214,7 +214,7 @@
 
 <variable id="theta(i_u=move(left)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -225,7 +225,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -236,7 +236,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -247,7 +247,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -258,7 +258,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -269,7 +269,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -280,7 +280,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -291,7 +291,7 @@
 
 <variable id="theta(i_u=move(right)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -302,7 +302,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -313,7 +313,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -324,7 +324,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -335,7 +335,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -346,7 +346,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -357,7 +357,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -368,7 +368,7 @@
 
 <variable id="theta(i_u=move(forward)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -379,7 +379,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -390,7 +390,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -401,7 +401,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -412,7 +412,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -423,7 +423,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -434,7 +434,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -445,7 +445,7 @@
 
 <variable id="theta(i_u=move(backward)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -456,7 +456,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -467,7 +467,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -478,7 +478,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -489,7 +489,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -500,7 +500,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -511,7 +511,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -522,7 +522,7 @@
 
 <variable id="theta(i_u=move(turn)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -533,7 +533,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -544,7 +544,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -555,7 +555,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -566,7 +566,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -577,7 +577,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -588,7 +588,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -599,7 +599,7 @@
 
 <variable id="theta(i_u=move(left,short)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -610,7 +610,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -621,7 +621,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -632,7 +632,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -643,7 +643,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -654,7 +654,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -665,7 +665,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -676,7 +676,7 @@
 
 <variable id="theta(i_u=move(right,short)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -687,7 +687,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -698,7 +698,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -709,7 +709,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -720,7 +720,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -731,7 +731,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -742,7 +742,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -753,7 +753,7 @@
 
 <variable id="theta(i_u=move(forward,short)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -764,7 +764,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -775,7 +775,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -786,7 +786,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -797,7 +797,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -808,7 +808,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -819,7 +819,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -830,7 +830,7 @@
 
 <variable id="theta(i_u=move(backward,short)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -841,7 +841,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -852,7 +852,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -863,7 +863,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -874,7 +874,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -885,7 +885,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -896,7 +896,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -907,7 +907,7 @@
 
 <variable id="theta(i_u=pickup(redobj)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -918,7 +918,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -929,7 +929,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -940,7 +940,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -951,7 +951,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -962,7 +962,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -973,7 +973,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -984,7 +984,7 @@
 
 <variable id="theta(i_u=pickup(blueobj)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -995,7 +995,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1006,7 +1006,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1017,7 +1017,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1028,7 +1028,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1039,7 +1039,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1050,7 +1050,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1061,7 +1061,7 @@
 
 <variable id="theta(i_u=pickup(atfeet)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1072,7 +1072,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1083,7 +1083,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1094,7 +1094,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1105,7 +1105,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1116,7 +1116,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1127,7 +1127,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1138,7 +1138,7 @@
 
 <variable id="theta(i_u=release^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1149,7 +1149,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1160,7 +1160,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1171,7 +1171,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1182,7 +1182,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1193,7 +1193,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1204,7 +1204,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1215,7 +1215,7 @@
 
 <variable id="theta(i_u=whatdoyousee^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1226,7 +1226,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1237,7 +1237,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1248,7 +1248,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1259,7 +1259,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1270,7 +1270,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1281,7 +1281,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1292,7 +1292,7 @@
 
 <variable id="theta(i_u=doyousee(redobj)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1303,7 +1303,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1314,7 +1314,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1325,7 +1325,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1336,7 +1336,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1347,7 +1347,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1358,7 +1358,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1369,7 +1369,7 @@
 
 <variable id="theta(i_u=doyousee(blueobj)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1380,7 +1380,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1391,7 +1391,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1402,7 +1402,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1413,7 +1413,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1424,7 +1424,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1435,7 +1435,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1446,7 +1446,7 @@
 
 <variable id="theta(i_u=greeting^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1457,7 +1457,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1468,7 +1468,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1479,7 +1479,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1490,7 +1490,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1501,7 +1501,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1512,7 +1512,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1523,7 +1523,7 @@
 
 <variable id="theta(i_u=closing^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1534,7 +1534,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=askrepeat)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1545,7 +1545,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=confirm_match)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1556,7 +1556,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=describe)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1567,7 +1567,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=say)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1578,7 +1578,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=do_same)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1589,7 +1589,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=confirm_nomatch)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
@@ -1600,7 +1600,7 @@
 
 <variable id="theta(i_u=ask(name)^last(a_m)=do_differ)">
 <distrib type="dirichlet">
-<alpha>2</alpha>
+<alpha>10</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
 <alpha>2</alpha>
