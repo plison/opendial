@@ -180,8 +180,8 @@ public class FSA extends Model<DecisionRule> {
 					action = new Assignment(actionVar, curState.getAction(filler));
 					traverseEmptyEdges();
 				}
+				dstate.addContent(action, "fsa");
 			}
-			dstate.addContent(action, "fsa");
 		}
 		catch (DialException e) {
 			log.warning("could not select next action: " + e);

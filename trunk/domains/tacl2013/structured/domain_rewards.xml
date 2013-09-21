@@ -191,11 +191,11 @@
 				<set var="a_m" value="Confirm({i_u})" />
 			</effect>
 		</case>
-	<!--  <case>
+		<case>
 			<effect util="theta_confirm2">
 				<set var="a_m" value="Confirm(*)" />
 			</effect>
-		</case>  -->
+		</case>
 	</rule>
 
 	
