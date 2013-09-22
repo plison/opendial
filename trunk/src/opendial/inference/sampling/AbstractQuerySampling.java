@@ -106,7 +106,13 @@ public abstract class AbstractQuerySampling implements AnytimeProcess {
 	@Override
 	public synchronized void terminate() {
 		if (samples.size() < 10) {
-			return;
+			log.debug("resampling without the evidence");
+			query.clearEvidence();
+			threads.clear();
+			for (int i =0 ; i < NB_THREADS && i < nbSamples ; i++) {
+				SampleCollector newThread = new SampleCollector(this, query);
+				newThread.start();
+			}
 		}
 		else if (!isTerminated()) {
 			status = Status.COMPILING;
