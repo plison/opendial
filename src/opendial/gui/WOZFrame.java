@@ -68,7 +68,7 @@ import opendial.utils.XMLUtils;
  *
  */
 @SuppressWarnings("serial")
-public class WOZFrame extends JFrame implements ActionListener {
+public class WOZFrame extends JFrame implements ActionListener, StateListener {
 
 	// logger
 	public static Logger log = new Logger("GUIFrame", Logger.Level.DEBUG);
@@ -82,14 +82,19 @@ public class WOZFrame extends JFrame implements ActionListener {
 	
 	DialogueRecorder recorder;
 	
+	long userReferenceStamp = 0;
 
+	public static final String recordFilePath =  "experiments//tacl2013//";
+	public static final String recordFileBasename = "WoZData";
 
 	/**
 	 * Constructs the GUI frame, with its title, menus, tabs etc.
 	 * 
 	 */
-	public WOZFrame(DialogueSystem system, DialogueRecorder recorder) {
+	public WOZFrame(DialogueSystem system) {
 
+		recorder = new DialogueRecorder(recordFilePath, recordFileBasename);
+		
 		// TODO: add " - domain name " when a domain is loaded
 		setTitle("Wizard-of-Oz window");
 
@@ -103,9 +108,7 @@ public class WOZFrame extends JFrame implements ActionListener {
 				); 
 
 		guiFrameInstance = this;
-		
-		this.recorder = recorder;
-		
+				
 		this.system = system;
 		setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
 		createButtons();
@@ -277,6 +280,14 @@ public class WOZFrame extends JFrame implements ActionListener {
 		return system;
 	}
 
+	@Override
+	public void update(DialogueState state) {
+		if (state.isUpdated("a_u", userReferenceStamp)) {
+			Assignment noAction = new Assignment("a_m", "None");
+			recorder.recordTrainingData(state, noAction);
+			userReferenceStamp = System.currentTimeMillis();
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
