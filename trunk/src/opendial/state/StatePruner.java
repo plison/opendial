@@ -63,9 +63,10 @@ public class StatePruner implements Runnable {
 	@Override
 	public void run() {
 
-	//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
+		log.debug("start pruning for state " + state.getNetwork().getNodeIds());
 
 		Set<String> nodesToKeep = getNodesToKeep();
+
 
 	//	Set<String> nodesToIsolate = getNodesToIsolate(nodesToKeep);
 		try {

@@ -130,14 +130,13 @@ public class VariableElimination extends AbstractInference implements InferenceA
 
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 
-	//	log.debug("VE Query: " + query);
+	//	log.debug("VE Query: " + query + " filtered sorted nodes: " + query.getFilteredSortedNodes());
 
 		for (BNode n: query.getFilteredSortedNodes()) {
 			// create the basic factor for every variable
 			DoubleFactor basicFactor = makeFactor(n, evidence);
 			if (!basicFactor.isEmpty()) {
 				factors.add(basicFactor);
-
 				// if the variable is hidden, we sum it out
 				if (!queryVars.contains(n.getId())) {
 					// && !evidence.containsVar(n.getId() ??
@@ -147,8 +146,8 @@ public class VariableElimination extends AbstractInference implements InferenceA
 			}
 		}
 		// compute the final product, and normalise
+
 		DoubleFactor finalProduct = pointwiseProduct(factors);
-		
 		return finalProduct;
 	}
 
@@ -232,7 +231,7 @@ public class VariableElimination extends AbstractInference implements InferenceA
 	 * @return the pointwise product of the factors
 	 */
 	private DoubleFactor pointwiseProduct (List<DoubleFactor> factors) {
-
+		
 		if (factors.size() == 1) {
 			return factors.get(0);
 		}

@@ -20,10 +20,13 @@
 package opendial.modules;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,70 +39,55 @@ import opendial.bn.Assignment;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
-public class DialogueRecorder implements StateListener {
+public class DialogueRecorder {
 
 	// logger
 	public static Logger log = new Logger("DialogueRecorder", Logger.Level.DEBUG);
 
-
-	public static final String RECORD_FILE =  "experiments//tacl2013//WoZData-" +
-			(new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss")).format(new Date()) + ".xml";
-
-	DialogueSystem system;
-
-	long referenceStamp = 0;
+	String recordFile;			
+	
+	Node rootNode;
+	Document doc;	
 	
 	
-	@Override
-	public void update(DialogueState state) {
+	public DialogueRecorder(String basePath, String baseName) {
 		
-		if (state.isUpdated("a_u", referenceStamp)) {
-			Assignment noAction = new Assignment("a_m", "None");
-			recordTrainingData(state, noAction);
-			referenceStamp = System.currentTimeMillis();
+		this.recordFile = basePath + baseName.replace(".xml", "") + 
+				(new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss")).format(new Date()) + ".xml";
+
+		try {
+		if (new File(recordFile).exists()) {
+			doc = XMLUtils.getXMLDocument(recordFile);
 		}
-		
+		else {
+			doc = XMLUtils.newXMLDocument();
+			log.debug("creating new xml file " + recordFile);
+			Node rootNode = doc.createElement("samples");
+			doc.appendChild(rootNode);
+		}
+		rootNode = XMLUtils.getMainNode(doc);
+		}
+		catch (DialException e) {
+			log.warning("could not create file " + recordFile);
+		}
 	}
 
+	
 
-	public static void removeLastSample() {
-		try {
-			Document doc;
-			if (new File(RECORD_FILE).exists()) {
-				doc = XMLUtils.getXMLDocument(RECORD_FILE);
-			}
-			else {
-				doc = XMLUtils.newXMLDocument();
-			}
-			Node rootNode = XMLUtils.getMainNode(doc);
+	public void removeLastSample() {
 			if (rootNode.getNodeName().equals("samples") && rootNode.getChildNodes().getLength() > 1) {
 				Node lastNode = rootNode.getChildNodes().item(rootNode.getChildNodes().getLength()-2);
 				rootNode.removeChild(lastNode);
 			}
 			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
+				log.warning("root node is ill-formatted: " + rootNode.getNodeName() 
+						+ "(with " + rootNode.getChildNodes().getLength() + " children)");
 			}
-			XMLUtils.writeXMLDocument(doc, RECORD_FILE);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
 	}
 	
 	
-	public static void recordTrainingData(DialogueState state, Assignment action) {
+	public void recordTrainingData(DialogueState state, Assignment action) {
 		try {
-
-			Document doc;
-			if (new File(RECORD_FILE).exists()) {
-				doc = XMLUtils.getXMLDocument(RECORD_FILE);
-			}
-			else {
-				doc = XMLUtils.newXMLDocument();
-				Node rootNode = doc.createElement("samples");
-				doc.appendChild(rootNode);
-			}
-
-			Node rootNode = XMLUtils.getMainNode(doc);
 			if (rootNode.getNodeName().equals("samples")) {
 				Element dataNode = doc.createElement("data");
 				Element dataEl = state.generateXML(doc, false);
@@ -116,10 +104,69 @@ public class DialogueRecorder implements StateListener {
 			else {
 				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
 			}
-			XMLUtils.writeXMLDocument(doc, RECORD_FILE);
+			XMLUtils.writeXMLDocument(doc, recordFile);
 		} catch (DialException e) {
 			log.warning("cannot record training data : " + e.toString());
 		}
 	}
+	
+	
+	public void recordTurn(DialogueState state) {
+		try {
+			if (rootNode.getNodeName().equals("samples")) {
+				Element dataNode = doc.createElement("userTurn");
+				Element dataEl = state.generateXML(doc, false);
+				dataNode.appendChild(dataEl);
+				rootNode.appendChild(dataNode);
+			}
+			else {
+				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
+			}
+
+			XMLUtils.writeXMLDocument(doc, recordFile);
+		} catch (DialException e) {
+			log.warning("cannot record training data : " + e.toString());
+		}
+	}
+	
+
+	
+	public void recordTurn(Assignment assign) {
+
+		try {
+			if (rootNode.getNodeName().equals("samples")) {
+				Element dataNode = doc.createElement("systemTurn");
+				Element dataEl = assign.generateXML(doc);
+				dataNode.appendChild(dataEl);
+				rootNode.appendChild(dataNode);
+			}
+			else {
+				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
+			}
+			XMLUtils.writeXMLDocument(doc, recordFile);
+		} catch (DialException e) {
+			log.warning("cannot record training data : " + e.toString());
+		}
+	}
+	
+	
+
+	public void addComment(String comment) {
+		try {
+			if (rootNode.getNodeName().equals("samples")) {
+			Comment com = doc.createComment(comment);
+			rootNode.appendChild(com);
+			}
+			else {
+				log.warning("could not add comment");
+			}
+			XMLUtils.writeXMLDocument(doc, recordFile);
+		}
+		catch (Exception e) {
+			log.warning("could not add preamble to file " + recordFile);
+		}
+	}
+
+
 }
 

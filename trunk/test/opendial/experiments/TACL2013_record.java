@@ -47,14 +47,12 @@ public class TACL2013_record {
 
 	public static final String domainFile = "domains//tacl2013/domain_record.xml";
 	public static final String settingsFile = "domains//tacl2013/settings_record.xml";
-
 	public static void main(String[] args) {
 		try {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
-		DialogueRecorder recorder = new DialogueRecorder();
-		WOZFrame woz = new WOZFrame(system, recorder);
+		WOZFrame woz = new WOZFrame(system);
 		
 		NaoBehaviour b = new NaoBehaviour();
 		NaoTTS tts = new NaoTTS();
@@ -64,7 +62,7 @@ public class TACL2013_record {
 		system.attachAsynchronousModule(perception);
 		system.getState().attachModule(b);
 		system.getState().attachModule(tts);
-		system.getState().addListener(recorder);
+		system.getState().addListener(woz);
 		system.startSystem(); 
 		
 		}

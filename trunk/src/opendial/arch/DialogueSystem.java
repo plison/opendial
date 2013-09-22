@@ -154,5 +154,10 @@ public class DialogueSystem {
 	public boolean isPaused() {
 		return paused;
 	}
+
+
+	public Domain getDomain() {
+		return domain;
+	}
 	
 }

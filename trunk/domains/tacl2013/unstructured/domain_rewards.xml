@@ -6,16 +6,16 @@
 <effect util="-10">
 <set var="a_m" value="Do(*)" />
 </effect>
-<effect util="-10">
+<effect util="-2">
 <set var="a_m" value="Say(*)" />
 </effect>
-<effect util="-10">
+<effect util="-2">
 <set var="a_m" value="Describe(*)" />
 </effect>
-<effect util="-1">
+<effect util="-2">
 <set var="a_m" value="AskRepeat" />
 </effect>
-<effect util="-1">
+<effect util="-2">
 <set var="a_m" value="Confirm(*)" />
 </effect>
 </case>

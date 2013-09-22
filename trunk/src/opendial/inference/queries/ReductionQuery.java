@@ -120,6 +120,8 @@ public class ReductionQuery extends Query {
 			}
 		}
 		
+		// caused problems when doing reduction via VE
+		/**
 		for (BNode output : network.getNode(queryVar).getOutputNodes()) {
 			if (output instanceof ChanceNode && ((ChanceNode)output).getDistrib() instanceof EqualityDistribution) {
 	
@@ -127,7 +129,7 @@ public class ReductionQuery extends Query {
 				relevantAncestorsFromEq.remove(queryVar);
 				relevantAncestors.addAll(relevantAncestorsFromEq);
 			}
-		}
+		} */
 
 		return relevantAncestors;
 	}
