@@ -39,6 +39,7 @@ import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.discrete.EqualityDistribution;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
