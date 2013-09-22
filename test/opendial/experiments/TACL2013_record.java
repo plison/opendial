@@ -29,6 +29,7 @@ import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
 import opendial.gui.GUIFrame;
 import opendial.gui.WOZFrame;
+import opendial.modules.DialogueRecorder;
 import opendial.modules.NaoASR;
 import opendial.modules.NaoBehaviour;
 import opendial.modules.NaoPerception;
@@ -52,7 +53,8 @@ public class TACL2013_record {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
-		WOZFrame woz = new WOZFrame(system);
+		DialogueRecorder recorder = new DialogueRecorder();
+		WOZFrame woz = new WOZFrame(system, recorder);
 		
 		NaoBehaviour b = new NaoBehaviour();
 		NaoTTS tts = new NaoTTS();
@@ -62,7 +64,7 @@ public class TACL2013_record {
 		system.attachAsynchronousModule(perception);
 		system.getState().attachModule(b);
 		system.getState().attachModule(tts);
-		system.getState().addListener(woz);
+		system.getState().addListener(recorder);
 		system.startSystem(); 
 		
 		}
