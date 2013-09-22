@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model type="decision" trigger="a_u">
 
+<rule id="allnegs-decision">
+<case>
+<effect util="-10">
+<set var="a_m" value="Do(*)" />
+</effect>
+<effect util="-10">
+<set var="a_m" value="Say(*)" />
+</effect>
+<effect util="-10">
+<set var="a_m" value="Describe(*)" />
+</effect>
+<effect util="-1">
+<set var="a_m" value="AskRepeat" />
+</effect>
+<effect util="-1">
+<set var="a_m" value="Confirm(*)" />
+</effect>
+</case>
+</rule>
+
 <rule>
 <case>
 <condition>
@@ -1491,286 +1511,624 @@
 <case>
 <condition>
 <if var="a_u" value="Move(Left)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Left)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Left)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Left)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Left)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Left)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Left)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Left)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Right)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Right)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Right)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Right)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Right)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Right)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Right)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Right)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Forward)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Forward)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Forward)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Forward)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Forward)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Forward)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Forward)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Forward)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Backward)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Backward)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Backward)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Backward)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Backward)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Backward)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Backward)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Backward)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Turn)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Turn)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Turn)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Turn)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Turn)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Turn)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Turn)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Turn)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Left,Short)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Left,Short)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Left,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Left,Short)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Left,Short)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Left,Short)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Left,Short)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Left,Short)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Right,Short)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Right,Short)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Right,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Right,Short)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Right,Short)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Right,Short)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Right,Short)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Right,Short)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Forward,Short)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Forward,Short)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Forward,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Forward,Short)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Forward,Short)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Forward,Short)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Forward,Short)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Forward,Short)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Move(Backward,Short)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Move(Backward,Short)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Move(Backward,Short)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Move(Backward,Short)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Move(Backward,Short)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Move(Backward,Short)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Move(Backward,Short)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Move(Backward,Short)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="PickUp(RedObj)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=PickUp(RedObj)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=PickUp(RedObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=PickUp(RedObj)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=PickUp(RedObj)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="PickUp(RedObj)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=PickUp(RedObj)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=PickUp(RedObj)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="PickUp(BlueObj)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=PickUp(BlueObj)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=PickUp(BlueObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=PickUp(BlueObj)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=PickUp(BlueObj)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="PickUp(BlueObj)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=PickUp(BlueObj)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=PickUp(BlueObj)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="PickUp(AtFeet)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=PickUp(AtFeet)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=PickUp(AtFeet)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=PickUp(AtFeet)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=PickUp(AtFeet)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="PickUp(AtFeet)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=PickUp(AtFeet)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=PickUp(AtFeet)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="PickUp(Other)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=PickUp(Other)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=PickUp(Other)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=PickUp(Other)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=PickUp(Other)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="PickUp(Other)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=PickUp(Other)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=PickUp(Other)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Release"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Release^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Release^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Release^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Release^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Release"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Release^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Release^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="WhatDoYouSee"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=WhatDoYouSee^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=WhatDoYouSee^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=WhatDoYouSee^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=WhatDoYouSee^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="WhatDoYouSee"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=WhatDoYouSee^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=WhatDoYouSee^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="DoYouSee(RedObj)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="DoYouSee(RedObj)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="DoYouSee(BlueObj)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="DoYouSee(BlueObj)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Greeting"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Greeting^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Greeting^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Greeting^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Greeting^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Greeting"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Greeting^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Greeting^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Closing"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Closing^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Closing^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Closing^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Closing^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Closing"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Closing^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Closing^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Ask(Name)"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Ask(Name)^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Ask(Name)^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Ask(Name)^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Ask(Name)^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Ask(Name)"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Ask(Name)^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Ask(Name)^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="RepeatLast"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=RepeatLast^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=RepeatLast^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=RepeatLast^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=RepeatLast^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="RepeatLast"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=RepeatLast^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=RepeatLast^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Stop"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Stop^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Stop^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Stop^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Stop^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Stop"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Stop^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Stop^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Confirm"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Confirm^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Confirm^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Confirm^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Confirm^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Confirm"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Confirm^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Confirm^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Disconfirm"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Disconfirm^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Disconfirm^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Disconfirm^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Disconfirm^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Disconfirm"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Disconfirm^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Disconfirm^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="Grounding"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=Grounding^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=Grounding^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=Grounding^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=Grounding^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="Grounding"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=Grounding^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=Grounding^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>
 <case>
 <condition>
 <if var="a_u" value="None"/>
+<if var="motion" value="true"/>
 </condition>
-<effect util="theta(a_u=None^a_m=AskRepeat)">
+<effect util="theta(motion=true^a_u=None^a_m=AskRepeat)">
 <set var="a_m" value="AskRepeat"/>
 </effect>
-<effect util="theta(a_u=None^a_m=Do(Stop))">
+<effect util="theta(motion=true^a_u=None^a_m=Do(Stop))">
+<set var="a_m" value="Do(Stop)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_u" value="None"/>
+<if var="motion" value="None"/>
+</condition>
+<effect util="theta(motion=None^a_u=None^a_m=AskRepeat)">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="theta(motion=None^a_u=None^a_m=Do(Stop))">
 <set var="a_m" value="Do(Stop)"/>
 </effect>
 </case>

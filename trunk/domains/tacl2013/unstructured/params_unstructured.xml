@@ -3157,364 +3157,728 @@
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Left)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Left)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Left)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Left)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Right)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Left)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Right)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Left)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Forward)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Right)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Forward)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Right)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Backward)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Right)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Backward)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Right)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Turn)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Forward)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Turn)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Forward)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Left,Short)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Forward)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Left,Short)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Forward)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Right,Short)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Backward)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Right,Short)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Backward)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Forward,Short)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Backward)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Forward,Short)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Backward)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Backward,Short)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Turn)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Move(Backward,Short)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Turn)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(RedObj)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Turn)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(RedObj)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Turn)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(BlueObj)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Left,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(BlueObj)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Left,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(AtFeet)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Left,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(AtFeet)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Left,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(Other)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Right,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=PickUp(Other)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Right,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Release^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Right,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Release^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Right,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=WhatDoYouSee^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Forward,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=WhatDoYouSee^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Forward,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Forward,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Forward,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=Move(Backward,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=Move(Backward,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Greeting^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=Move(Backward,Short)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Greeting^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=Move(Backward,Short)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Closing^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=PickUp(RedObj)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Closing^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=PickUp(RedObj)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Ask(Name)^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=PickUp(RedObj)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Ask(Name)^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=PickUp(RedObj)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=RepeatLast^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=PickUp(BlueObj)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=RepeatLast^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=PickUp(BlueObj)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Stop^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=PickUp(BlueObj)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Stop^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=PickUp(BlueObj)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Confirm^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=PickUp(AtFeet)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Confirm^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=PickUp(AtFeet)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Disconfirm^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=PickUp(AtFeet)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Disconfirm^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=PickUp(AtFeet)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Grounding^a_m=AskRepeat)">
+<variable id="theta(motion=true^a_u=PickUp(Other)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=Grounding^a_m=Do(Stop))">
+<variable id="theta(motion=true^a_u=PickUp(Other)^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=None^a_m=AskRepeat)">
+<variable id="theta(motion=None^a_u=PickUp(Other)^a_m=AskRepeat)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
 </distrib>
 </variable>
 
-<variable id="theta(a_u=None^a_m=Do(Stop))">
+<variable id="theta(motion=None^a_u=PickUp(Other)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Release^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Release^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Release^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Release^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=WhatDoYouSee^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=WhatDoYouSee^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=WhatDoYouSee^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=WhatDoYouSee^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=DoYouSee(RedObj)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=DoYouSee(RedObj)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=DoYouSee(BlueObj)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=DoYouSee(BlueObj)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Greeting^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Greeting^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Greeting^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Greeting^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Closing^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Closing^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Closing^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Closing^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Ask(Name)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Ask(Name)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Ask(Name)^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Ask(Name)^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=RepeatLast^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=RepeatLast^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=RepeatLast^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=RepeatLast^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Stop^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Stop^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Stop^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Stop^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Confirm^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Confirm^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Confirm^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Confirm^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Disconfirm^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Disconfirm^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Disconfirm^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Disconfirm^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Grounding^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=Grounding^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Grounding^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=Grounding^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=None^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=true^a_u=None^a_m=Do(Stop))">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=None^a_m=AskRepeat)">
+<distrib type="uniform">
+<min>-10</min>
+<max>30</max>
+</distrib>
+</variable>
+
+<variable id="theta(motion=None^a_u=None^a_m=Do(Stop))">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
