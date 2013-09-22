@@ -23,64 +23,192 @@
 <case>
 <condition>
 <if var="completed-task" value="true"/>
+<if var="perceived" value="[]" relation="!="/>
+<if var="carried" value="[]" relation="!="/>
+</condition>
+<effect prob="theta(perceived=yes^carried=yes)[0]">
+<set var="i_u" value="Move(Left)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[1]">
+<set var="i_u" value="Move(Right)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[2]">
+<set var="i_u" value="Move(Forward)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[3]">
+<set var="i_u" value="Move(Backward)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[4]">
+<set var="i_u" value="Move(Turn)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[5]">
+<set var="i_u" value="Move(Left,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[6]">
+<set var="i_u" value="Move(Right,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[7]">
+<set var="i_u" value="Move(Forward,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[8]">
+<set var="i_u" value="Move(Backward,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[9]">
+<set var="i_u" value="PickUp(RedObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[10]">
+<set var="i_u" value="PickUp(BlueObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[11]">
+<set var="i_u" value="PickUp(AtFeet)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[12]">
+<set var="i_u" value="Release"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[13]">
+<set var="i_u" value="WhatDoYouSee"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[14]">
+<set var="i_u" value="DoYouSee(RedObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[15]">
+<set var="i_u" value="DoYouSee(BlueObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[16]">
+<set var="i_u" value="Greeting"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[17]">
+<set var="i_u" value="Closing"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=yes)[18]">
+<set var="i_u" value="Ask(Name)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="completed-task" value="true"/>
+<if var="perceived" value="[]" relation="!="/>
+<if var="carried" value="[]"/>
+</condition>
+<effect prob="theta(perceived=yes^carried=no)[0]">
+<set var="i_u" value="Move(Left)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[1]">
+<set var="i_u" value="Move(Right)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[2]">
+<set var="i_u" value="Move(Forward)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[3]">
+<set var="i_u" value="Move(Backward)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[4]">
+<set var="i_u" value="Move(Turn)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[5]">
+<set var="i_u" value="Move(Left,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[6]">
+<set var="i_u" value="Move(Right,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[7]">
+<set var="i_u" value="Move(Forward,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[8]">
+<set var="i_u" value="Move(Backward,Short)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[9]">
+<set var="i_u" value="PickUp(RedObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[10]">
+<set var="i_u" value="PickUp(BlueObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[11]">
+<set var="i_u" value="PickUp(AtFeet)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[12]">
+<set var="i_u" value="Release"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[13]">
+<set var="i_u" value="WhatDoYouSee"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[14]">
+<set var="i_u" value="DoYouSee(RedObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[15]">
+<set var="i_u" value="DoYouSee(BlueObj)"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[16]">
+<set var="i_u" value="Greeting"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[17]">
+<set var="i_u" value="Closing"/>
+</effect>
+<effect prob="theta(perceived=yes^carried=no)[18]">
+<set var="i_u" value="Ask(Name)"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="completed-task" value="true"/>
 <if var="perceived" value="[]"/>
 <if var="carried" value="[]" relation="!="/>
 </condition>
-<effect prob="theta(perceived=nothing^carried=yes)[0]">
+<effect prob="theta(perceived=no^carried=yes)[0]">
 <set var="i_u" value="Move(Left)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[1]">
+<effect prob="theta(perceived=no^carried=yes)[1]">
 <set var="i_u" value="Move(Right)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[2]">
+<effect prob="theta(perceived=no^carried=yes)[2]">
 <set var="i_u" value="Move(Forward)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[3]">
+<effect prob="theta(perceived=no^carried=yes)[3]">
 <set var="i_u" value="Move(Backward)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[4]">
+<effect prob="theta(perceived=no^carried=yes)[4]">
 <set var="i_u" value="Move(Turn)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[5]">
+<effect prob="theta(perceived=no^carried=yes)[5]">
 <set var="i_u" value="Move(Left,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[6]">
+<effect prob="theta(perceived=no^carried=yes)[6]">
 <set var="i_u" value="Move(Right,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[7]">
+<effect prob="theta(perceived=no^carried=yes)[7]">
 <set var="i_u" value="Move(Forward,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[8]">
+<effect prob="theta(perceived=no^carried=yes)[8]">
 <set var="i_u" value="Move(Backward,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[9]">
+<effect prob="theta(perceived=no^carried=yes)[9]">
 <set var="i_u" value="PickUp(RedObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[10]">
+<effect prob="theta(perceived=no^carried=yes)[10]">
 <set var="i_u" value="PickUp(BlueObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[11]">
+<effect prob="theta(perceived=no^carried=yes)[11]">
 <set var="i_u" value="PickUp(AtFeet)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[12]">
+<effect prob="theta(perceived=no^carried=yes)[12]">
 <set var="i_u" value="Release"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[13]">
+<effect prob="theta(perceived=no^carried=yes)[13]">
 <set var="i_u" value="WhatDoYouSee"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[14]">
+<effect prob="theta(perceived=no^carried=yes)[14]">
 <set var="i_u" value="DoYouSee(RedObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[15]">
+<effect prob="theta(perceived=no^carried=yes)[15]">
 <set var="i_u" value="DoYouSee(BlueObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[16]">
+<effect prob="theta(perceived=no^carried=yes)[16]">
 <set var="i_u" value="Greeting"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[17]">
+<effect prob="theta(perceived=no^carried=yes)[17]">
 <set var="i_u" value="Closing"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=yes)[18]">
+<effect prob="theta(perceived=no^carried=yes)[18]">
 <set var="i_u" value="Ask(Name)"/>
 </effect>
 </case>
@@ -90,317 +218,61 @@
 <if var="perceived" value="[]"/>
 <if var="carried" value="[]"/>
 </condition>
-<effect prob="theta(perceived=nothing^carried=no)[0]">
+<effect prob="theta(perceived=no^carried=no)[0]">
 <set var="i_u" value="Move(Left)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[1]">
+<effect prob="theta(perceived=no^carried=no)[1]">
 <set var="i_u" value="Move(Right)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[2]">
+<effect prob="theta(perceived=no^carried=no)[2]">
 <set var="i_u" value="Move(Forward)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[3]">
+<effect prob="theta(perceived=no^carried=no)[3]">
 <set var="i_u" value="Move(Backward)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[4]">
+<effect prob="theta(perceived=no^carried=no)[4]">
 <set var="i_u" value="Move(Turn)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[5]">
+<effect prob="theta(perceived=no^carried=no)[5]">
 <set var="i_u" value="Move(Left,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[6]">
+<effect prob="theta(perceived=no^carried=no)[6]">
 <set var="i_u" value="Move(Right,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[7]">
+<effect prob="theta(perceived=no^carried=no)[7]">
 <set var="i_u" value="Move(Forward,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[8]">
+<effect prob="theta(perceived=no^carried=no)[8]">
 <set var="i_u" value="Move(Backward,Short)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[9]">
+<effect prob="theta(perceived=no^carried=no)[9]">
 <set var="i_u" value="PickUp(RedObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[10]">
+<effect prob="theta(perceived=no^carried=no)[10]">
 <set var="i_u" value="PickUp(BlueObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[11]">
+<effect prob="theta(perceived=no^carried=no)[11]">
 <set var="i_u" value="PickUp(AtFeet)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[12]">
+<effect prob="theta(perceived=no^carried=no)[12]">
 <set var="i_u" value="Release"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[13]">
+<effect prob="theta(perceived=no^carried=no)[13]">
 <set var="i_u" value="WhatDoYouSee"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[14]">
+<effect prob="theta(perceived=no^carried=no)[14]">
 <set var="i_u" value="DoYouSee(RedObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[15]">
+<effect prob="theta(perceived=no^carried=no)[15]">
 <set var="i_u" value="DoYouSee(BlueObj)"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[16]">
+<effect prob="theta(perceived=no^carried=no)[16]">
 <set var="i_u" value="Greeting"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[17]">
+<effect prob="theta(perceived=no^carried=no)[17]">
 <set var="i_u" value="Closing"/>
 </effect>
-<effect prob="theta(perceived=nothing^carried=no)[18]">
-<set var="i_u" value="Ask(Name)"/>
-</effect>
-</case>
-<case>
-<condition>
-<if var="completed-task" value="true"/>
-<if var="perceived" value="RedObj" relation="in"/>
-<if var="carried" value="[]" relation="!="/>
-</condition>
-<effect prob="theta(perceived=redobj^carried=yes)[0]">
-<set var="i_u" value="Move(Left)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[1]">
-<set var="i_u" value="Move(Right)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[2]">
-<set var="i_u" value="Move(Forward)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[3]">
-<set var="i_u" value="Move(Backward)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[4]">
-<set var="i_u" value="Move(Turn)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[5]">
-<set var="i_u" value="Move(Left,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[6]">
-<set var="i_u" value="Move(Right,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[7]">
-<set var="i_u" value="Move(Forward,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[8]">
-<set var="i_u" value="Move(Backward,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[9]">
-<set var="i_u" value="PickUp(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[10]">
-<set var="i_u" value="PickUp(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[11]">
-<set var="i_u" value="PickUp(AtFeet)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[12]">
-<set var="i_u" value="Release"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[13]">
-<set var="i_u" value="WhatDoYouSee"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[14]">
-<set var="i_u" value="DoYouSee(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[15]">
-<set var="i_u" value="DoYouSee(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[16]">
-<set var="i_u" value="Greeting"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[17]">
-<set var="i_u" value="Closing"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=yes)[18]">
-<set var="i_u" value="Ask(Name)"/>
-</effect>
-</case>
-<case>
-<condition>
-<if var="completed-task" value="true"/>
-<if var="perceived" value="RedObj" relation="in"/>
-<if var="carried" value="[]"/>
-</condition>
-<effect prob="theta(perceived=redobj^carried=no)[0]">
-<set var="i_u" value="Move(Left)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[1]">
-<set var="i_u" value="Move(Right)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[2]">
-<set var="i_u" value="Move(Forward)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[3]">
-<set var="i_u" value="Move(Backward)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[4]">
-<set var="i_u" value="Move(Turn)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[5]">
-<set var="i_u" value="Move(Left,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[6]">
-<set var="i_u" value="Move(Right,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[7]">
-<set var="i_u" value="Move(Forward,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[8]">
-<set var="i_u" value="Move(Backward,Short)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[9]">
-<set var="i_u" value="PickUp(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[10]">
-<set var="i_u" value="PickUp(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[11]">
-<set var="i_u" value="PickUp(AtFeet)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[12]">
-<set var="i_u" value="Release"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[13]">
-<set var="i_u" value="WhatDoYouSee"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[14]">
-<set var="i_u" value="DoYouSee(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[15]">
-<set var="i_u" value="DoYouSee(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[16]">
-<set var="i_u" value="Greeting"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[17]">
-<set var="i_u" value="Closing"/>
-</effect>
-<effect prob="theta(perceived=redobj^carried=no)[18]">
-<set var="i_u" value="Ask(Name)"/>
-</effect>
-</case>
-<case>
-<condition>
-<if var="completed-task" value="true"/>
-<if var="perceived" value="BlueObj" relation="in"/>
-<if var="carried" value="[]" relation="!="/>
-</condition>
-<effect prob="theta(perceived=blueobj^carried=yes)[0]">
-<set var="i_u" value="Move(Left)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[1]">
-<set var="i_u" value="Move(Right)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[2]">
-<set var="i_u" value="Move(Forward)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[3]">
-<set var="i_u" value="Move(Backward)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[4]">
-<set var="i_u" value="Move(Turn)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[5]">
-<set var="i_u" value="Move(Left,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[6]">
-<set var="i_u" value="Move(Right,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[7]">
-<set var="i_u" value="Move(Forward,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[8]">
-<set var="i_u" value="Move(Backward,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[9]">
-<set var="i_u" value="PickUp(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[10]">
-<set var="i_u" value="PickUp(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[11]">
-<set var="i_u" value="PickUp(AtFeet)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[12]">
-<set var="i_u" value="Release"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[13]">
-<set var="i_u" value="WhatDoYouSee"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[14]">
-<set var="i_u" value="DoYouSee(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[15]">
-<set var="i_u" value="DoYouSee(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[16]">
-<set var="i_u" value="Greeting"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[17]">
-<set var="i_u" value="Closing"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=yes)[18]">
-<set var="i_u" value="Ask(Name)"/>
-</effect>
-</case>
-<case>
-<condition>
-<if var="completed-task" value="true"/>
-<if var="perceived" value="BlueObj" relation="in"/>
-<if var="carried" value="[]"/>
-</condition>
-<effect prob="theta(perceived=blueobj^carried=no)[0]">
-<set var="i_u" value="Move(Left)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[1]">
-<set var="i_u" value="Move(Right)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[2]">
-<set var="i_u" value="Move(Forward)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[3]">
-<set var="i_u" value="Move(Backward)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[4]">
-<set var="i_u" value="Move(Turn)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[5]">
-<set var="i_u" value="Move(Left,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[6]">
-<set var="i_u" value="Move(Right,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[7]">
-<set var="i_u" value="Move(Forward,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[8]">
-<set var="i_u" value="Move(Backward,Short)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[9]">
-<set var="i_u" value="PickUp(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[10]">
-<set var="i_u" value="PickUp(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[11]">
-<set var="i_u" value="PickUp(AtFeet)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[12]">
-<set var="i_u" value="Release"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[13]">
-<set var="i_u" value="WhatDoYouSee"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[14]">
-<set var="i_u" value="DoYouSee(RedObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[15]">
-<set var="i_u" value="DoYouSee(BlueObj)"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[16]">
-<set var="i_u" value="Greeting"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[17]">
-<set var="i_u" value="Closing"/>
-</effect>
-<effect prob="theta(perceived=blueobj^carried=no)[18]">
+<effect prob="theta(perceived=no^carried=no)[18]">
 <set var="i_u" value="Ask(Name)"/>
 </effect>
 </case>
