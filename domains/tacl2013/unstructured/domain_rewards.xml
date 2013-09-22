@@ -21,6 +21,28 @@
 </case>
 </rule>
 
+<rule id="avoid-loops">
+<case>
+<condition>
+<if var="last(a_m)" value="AskRepeat"/>
+</condition>
+<effect util="-10">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+</case>
+<case>
+<condition>
+<if var="last(a_m)" value="Confirm(*)"/>
+</condition>
+<effect util="-10">
+<set var="a_m" value="AskRepeat"/>
+</effect>
+<effect util="-10">
+<set var="a_m" value="{last(a_m)}"/>
+</effect>
+</case>
+</rule>
+
 <rule>
 <case>
 <condition>
