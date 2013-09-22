@@ -201,7 +201,7 @@
 
 	<variable id="theta_intent">
 		<distrib type="dirichlet">
-			<alpha>10</alpha>
+			<alpha>100</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
