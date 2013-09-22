@@ -2660,21 +2660,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=whatdoyousee^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=whatdoyousee^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=whatdoyousee^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2688,21 +2674,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=whatdoyousee^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=whatdoyousee^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=whatdoyousee^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2716,21 +2688,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=whatdoyousee^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=whatdoyousee^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=whatdoyousee^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2744,21 +2702,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(redobj)^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(redobj)^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(redobj)^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2772,21 +2716,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(redobj)^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(redobj)^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(redobj)^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2800,21 +2730,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2828,21 +2744,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2856,21 +2758,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2884,21 +2772,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2912,21 +2786,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=greeting^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=greeting^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=greeting^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2940,21 +2800,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=greeting^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=greeting^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=greeting^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2968,21 +2814,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=greeting^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=greeting^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=greeting^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -2996,21 +2828,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=closing^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=closing^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=closing^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -3024,21 +2842,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=closing^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=closing^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=closing^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -3052,21 +2856,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=closing^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=closing^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=closing^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -3080,21 +2870,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=ask(name)^perceived=nothing^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=ask(name)^perceived=nothing^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=ask(name)^perceived=nothing^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -3108,21 +2884,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=ask(name)^perceived=redobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=ask(name)^perceived=redobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=ask(name)^perceived=redobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>
@@ -3136,21 +2898,7 @@
 </distrib>
 </variable>
 
-<variable id="theta(i_u=ask(name)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
 <variable id="theta(i_u=ask(name)^perceived=blueobj^carried=no)">
-<distrib type="uniform">
-<min>-10</min>
-<max>30</max>
-</distrib>
-</variable>
-
-<variable id="theta(i_u=ask(name)^perceived=blueobj^carried=no^a_m=Confirm)">
 <distrib type="uniform">
 <min>-10</min>
 <max>30</max>

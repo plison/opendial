@@ -1045,9 +1045,6 @@
 <effect util="theta(i_u=whatdoyousee^perceived=nothing^carried=yes)">
 <set var="a_m" value="Describe({perceived})"/>
 </effect>
-<effect util="theta(i_u=whatdoyousee^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1057,9 +1054,6 @@
 </condition>
 <effect util="theta(i_u=whatdoyousee^perceived=nothing^carried=no)">
 <set var="a_m" value="Describe({perceived})"/>
-</effect>
-<effect util="theta(i_u=whatdoyousee^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1071,9 +1065,6 @@
 <effect util="theta(i_u=whatdoyousee^perceived=redobj^carried=yes)">
 <set var="a_m" value="Describe({perceived})"/>
 </effect>
-<effect util="theta(i_u=whatdoyousee^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1083,9 +1074,6 @@
 </condition>
 <effect util="theta(i_u=whatdoyousee^perceived=redobj^carried=no)">
 <set var="a_m" value="Describe({perceived})"/>
-</effect>
-<effect util="theta(i_u=whatdoyousee^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1097,9 +1085,6 @@
 <effect util="theta(i_u=whatdoyousee^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Describe({perceived})"/>
 </effect>
-<effect util="theta(i_u=whatdoyousee^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1109,9 +1094,6 @@
 </condition>
 <effect util="theta(i_u=whatdoyousee^perceived=blueobj^carried=no)">
 <set var="a_m" value="Describe({perceived})"/>
-</effect>
-<effect util="theta(i_u=whatdoyousee^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1123,9 +1105,6 @@
 <effect util="theta(i_u=doyousee(redobj)^perceived=nothing^carried=yes)">
 <set var="a_m" value="Say(Disconfirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1135,9 +1114,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(redobj)^perceived=nothing^carried=no)">
 <set var="a_m" value="Say(Disconfirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1149,9 +1125,6 @@
 <effect util="theta(i_u=doyousee(redobj)^perceived=redobj^carried=yes)">
 <set var="a_m" value="Say(Confirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1161,9 +1134,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(redobj)^perceived=redobj^carried=no)">
 <set var="a_m" value="Say(Confirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1175,9 +1145,6 @@
 <effect util="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Say(Disconfirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1187,9 +1154,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=no)">
 <set var="a_m" value="Say(Disconfirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(redobj)^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1201,9 +1165,6 @@
 <effect util="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=yes)">
 <set var="a_m" value="Say(Disconfirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1213,9 +1174,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=no)">
 <set var="a_m" value="Say(Disconfirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1227,9 +1185,6 @@
 <effect util="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=yes)">
 <set var="a_m" value="Say(Disconfirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1239,9 +1194,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=no)">
 <set var="a_m" value="Say(Disconfirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1253,9 +1205,6 @@
 <effect util="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Say(Confirm)"/>
 </effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1265,9 +1214,6 @@
 </condition>
 <effect util="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=no)">
 <set var="a_m" value="Say(Confirm)"/>
-</effect>
-<effect util="theta(i_u=doyousee(blueobj)^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1279,9 +1225,6 @@
 <effect util="theta(i_u=greeting^perceived=nothing^carried=yes)">
 <set var="a_m" value="Say(Greet)"/>
 </effect>
-<effect util="theta(i_u=greeting^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1291,9 +1234,6 @@
 </condition>
 <effect util="theta(i_u=greeting^perceived=nothing^carried=no)">
 <set var="a_m" value="Say(Greet)"/>
-</effect>
-<effect util="theta(i_u=greeting^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1305,9 +1245,6 @@
 <effect util="theta(i_u=greeting^perceived=redobj^carried=yes)">
 <set var="a_m" value="Say(Greet)"/>
 </effect>
-<effect util="theta(i_u=greeting^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1317,9 +1254,6 @@
 </condition>
 <effect util="theta(i_u=greeting^perceived=redobj^carried=no)">
 <set var="a_m" value="Say(Greet)"/>
-</effect>
-<effect util="theta(i_u=greeting^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1331,9 +1265,6 @@
 <effect util="theta(i_u=greeting^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Say(Greet)"/>
 </effect>
-<effect util="theta(i_u=greeting^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1343,9 +1274,6 @@
 </condition>
 <effect util="theta(i_u=greeting^perceived=blueobj^carried=no)">
 <set var="a_m" value="Say(Greet)"/>
-</effect>
-<effect util="theta(i_u=greeting^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1357,9 +1285,6 @@
 <effect util="theta(i_u=closing^perceived=nothing^carried=yes)">
 <set var="a_m" value="Say(Goodbye)"/>
 </effect>
-<effect util="theta(i_u=closing^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1369,9 +1294,6 @@
 </condition>
 <effect util="theta(i_u=closing^perceived=nothing^carried=no)">
 <set var="a_m" value="Say(Goodbye)"/>
-</effect>
-<effect util="theta(i_u=closing^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1383,9 +1305,6 @@
 <effect util="theta(i_u=closing^perceived=redobj^carried=yes)">
 <set var="a_m" value="Say(Goodbye)"/>
 </effect>
-<effect util="theta(i_u=closing^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1395,9 +1314,6 @@
 </condition>
 <effect util="theta(i_u=closing^perceived=redobj^carried=no)">
 <set var="a_m" value="Say(Goodbye)"/>
-</effect>
-<effect util="theta(i_u=closing^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1409,9 +1325,6 @@
 <effect util="theta(i_u=closing^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Say(Goodbye)"/>
 </effect>
-<effect util="theta(i_u=closing^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1421,9 +1334,6 @@
 </condition>
 <effect util="theta(i_u=closing^perceived=blueobj^carried=no)">
 <set var="a_m" value="Say(Goodbye)"/>
-</effect>
-<effect util="theta(i_u=closing^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1435,9 +1345,6 @@
 <effect util="theta(i_u=ask(name)^perceived=nothing^carried=yes)">
 <set var="a_m" value="Say(NameIsLenny)"/>
 </effect>
-<effect util="theta(i_u=ask(name)^perceived=nothing^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1447,9 +1354,6 @@
 </condition>
 <effect util="theta(i_u=ask(name)^perceived=nothing^carried=no)">
 <set var="a_m" value="Say(NameIsLenny)"/>
-</effect>
-<effect util="theta(i_u=ask(name)^perceived=nothing^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1461,9 +1365,6 @@
 <effect util="theta(i_u=ask(name)^perceived=redobj^carried=yes)">
 <set var="a_m" value="Say(NameIsLenny)"/>
 </effect>
-<effect util="theta(i_u=ask(name)^perceived=redobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1473,9 +1374,6 @@
 </condition>
 <effect util="theta(i_u=ask(name)^perceived=redobj^carried=no)">
 <set var="a_m" value="Say(NameIsLenny)"/>
-</effect>
-<effect util="theta(i_u=ask(name)^perceived=redobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 <case>
@@ -1487,9 +1385,6 @@
 <effect util="theta(i_u=ask(name)^perceived=blueobj^carried=yes)">
 <set var="a_m" value="Say(NameIsLenny)"/>
 </effect>
-<effect util="theta(i_u=ask(name)^perceived=blueobj^carried=yes^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
-</effect>
 </case>
 <case>
 <condition>
@@ -1499,9 +1394,6 @@
 </condition>
 <effect util="theta(i_u=ask(name)^perceived=blueobj^carried=no)">
 <set var="a_m" value="Say(NameIsLenny)"/>
-</effect>
-<effect util="theta(i_u=ask(name)^perceived=blueobj^carried=no^a_m=Confirm)">
-<set var="a_m" value="Confirm({i_u})"/>
 </effect>
 </case>
 
