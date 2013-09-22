@@ -38,6 +38,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousProbDistribution;
 import opendial.bn.distribs.discrete.DiscreteProbDistribution;
 import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.inference.ImportanceSampling;
 import opendial.inference.InferenceAlgorithm;
