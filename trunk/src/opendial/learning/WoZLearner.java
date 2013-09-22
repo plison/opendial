@@ -63,8 +63,8 @@ public class WoZLearner extends ForwardPlanner  {
 			List<String> paramVars = currentState.getParameterIds();
 			for (String paramVar : new ArrayList<String>(paramVars)) {
 				ChanceNode paramNode = currentState.getNetwork().getChanceNode(paramVar);
-				if (paramNode.getOutputNodesIds().isEmpty()) { 
-		//				!(paramNode.getOutputNodes().iterator().next() instanceof UtilityNode)) {
+				if (paramNode.getOutputNodesIds().isEmpty() || 
+						!(paramNode.getOutputNodes().iterator().next() instanceof UtilityNode)) {
 					paramVars.remove(paramVar);
 				}
 			}
