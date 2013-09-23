@@ -285,13 +285,12 @@ public class DerivedActionNode extends ActionNode {
 				}
 			}
 		}
+		
+		// we should drop this frequency thing
 		frequencies.put(ValueFactory.none(), 1.0);
-		double total = 0.0;
-		for (Value val : frequencies.keySet()) {
-			total += frequencies.get(val);
-		}
+		
 		for (Value val : new HashSet<Value>(frequencies.keySet())) {
-			frequencies.put(val, frequencies.get(val)/total);
+			frequencies.put(val, (1.0 / frequencies.size()));
 		}
 		try {
 		relevantActionsCache.put(new Assignment(input), new Intervals<Value>(frequencies));
