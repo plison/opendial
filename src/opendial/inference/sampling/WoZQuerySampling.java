@@ -96,6 +96,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug(" ==> gold action = " + goldAction);
 		
 		double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
+
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
@@ -107,7 +108,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				
 				int position = getRanking(sample, averages);
 				if (position != -1) {
-					weight *= factor * Math.pow(1-factor, position)  + 0.01;
+					weight *= factor * Math.pow(1-factor, position)  + 0.001;
 				}
 								
 				table.put(sample, weight);
