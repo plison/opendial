@@ -135,7 +135,7 @@ public class NaoTTS implements SynchronousModule {
 					synthesisEnded = true;
 				}
 				else {
-					try { Thread.currentThread().sleep(100); } catch (InterruptedException e) { }
+					try { Thread.currentThread().sleep(50); } catch (InterruptedException e) { }
 					nbLoops++;
 		//			log.debug("not yet done with the text!");
 				} 
