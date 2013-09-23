@@ -140,7 +140,7 @@ public class NaoTTS implements SynchronousModule {
 		//			log.debug("not yet done with the text!");
 				} 
 			}
-			log.debug("synthesis time: " + (System.currentTimeMillis()-initTime) + " ms (" + nbLoops + " loops)");
+	//		log.debug("synthesis time: " + (System.currentTimeMillis()-initTime) + " ms (" + nbLoops + " loops)");
 		}
 		catch (Exception e) {
 			log.warning("cannot use TTS: " + e.toString());
