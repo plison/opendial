@@ -144,13 +144,13 @@
 	
 	<rule id="allnegs-decision">
 		<case>
-			<effect util="-5">
+			<effect util="-3">
 				<set var="a_m" value="Do(Move(*))" />
 			</effect>
-			<effect util="-10">
+			<effect util="-5">
 				<set var="a_m" value="Do(PickUp(*))" />
 			</effect>
-			<effect util="-10">
+			<effect util="-5">
 				<set var="a_m" value="Do(Release(*))" />
 			</effect>
 			<effect util="-1">	
