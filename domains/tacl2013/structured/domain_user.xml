@@ -42,7 +42,7 @@
 			</effect>
 			<effect prob="theta_samemove[2]"/>
 		</case>
-		<case>
+	<!-- <case>
 			<condition operator="or">
 				<if var="last(a_m)" value="AskRepeat" />
 				<if var="completed-task" value="true" />
@@ -51,15 +51,15 @@
 				<set var="a_u" value="{i_u}" />
 			</effect>
 			<effect prob="theta_intent[1]"/>
-		</case>
+		</case>  -->	
 		<case>
 			<condition>
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
-			<effect prob="theta_othercase[0]">
+			<effect prob="theta_intent[0]">
 				<set var="a_u" value="{i_u}" />
 			</effect>
-			<effect prob="theta_othercase[1]"/>
+			<effect prob="theta_intent[1]"/>
 		</case>
 	</rule>
 
