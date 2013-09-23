@@ -56,6 +56,7 @@
 						</or>
 					</and>
 					<and>
+						<if var="D2" value="the" relation="contains" />
 						<if var="perceived" value="BlueObj" relation="contains" />
 						<if var="perceived" value="RedObj" relation="notcontains" />
 					</and>
@@ -78,6 +79,7 @@
 						</or>
 					</and>
 					<and>
+						<if var="D21" value="the" relation="contains" />
 						<if var="perceived" value="RedObj" relation="contains" />
 						<if var="perceived" value="BlueObj" relation="notcontains" />
 					</and>

@@ -45,7 +45,10 @@
 	<rule>
 		<case>
 			<condition operator="or">
-				<if var="u_u" value="right" relation="contains" />
+				<if var="u_u" value="go * right" relation="contains" />
+				<if var="u_u" value="turn * right" relation="contains" />
+				<if var="u_u" value="move * right" relation="contains" />
+				<if var="u_u" value="rotate * right" relation="contains" />
 			</condition>
 			<effect>
 				<set var="a_u^temp" value="Move(Right)" />
@@ -146,7 +149,13 @@
 				<if var="u_u" value="correct" relation="contains" />
 				<if var="u_u" value="perfect" relation="contains" />
 				<if var="u_u" value="great" relation="contains" />
-				<if var="u_u" value="right" relation="=" />
+				<and>
+					<if var="u_u" value="right" relation="contains" />
+					<if var="u_u" value="turn" relation="notcontains" />
+					<if var="u_u" value="rotate" relation="notcontains" />
+					<if var="u_u" value="move" relation="notcontains" />
+					<if var="u_u" value="go" relation="notcontains" />
+					</and>
 				<if var="u_u" value="ok" relation="contains" />
 				<if var="u_u" value="good" relation="contains" />
 			</condition>

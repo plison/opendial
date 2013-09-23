@@ -19,7 +19,7 @@
 <Modif>: !optional(just) a !optional(little) bit | again;
 <Modif2>: <Modif> | (thirty | sixty) degrees ;
 
-<PickUp>: <Front> (take <Object> | take it | pick up <Object> | grasp <Object> | grasp it | pick <Object> up | pick it up) <Back>;
+<PickUp>: <Front> (take <Object> | take it | pick up <Object> | grasp <Object> | grasp it | pick it up) <Back>;
 
 <Release>: <Front> ((release | put down) <Object> | put <Object> (down | on the floor | on the table)) <Back>;
 
