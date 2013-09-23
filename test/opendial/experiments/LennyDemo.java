@@ -32,6 +32,7 @@ import opendial.gui.WOZFrame;
 import opendial.modules.NaoASR;
 import opendial.modules.NaoBehaviour;
 import opendial.modules.NaoPerception;
+import opendial.modules.NaoSession;
 import opendial.modules.NaoTTS;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLSettingsReader;
@@ -52,7 +53,6 @@ public class LennyDemo {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
-	/**	WOZFrame woz = new WOZFrame(system);
 		NaoTTS tts = new NaoTTS();
 		system.getState().attachModule(tts);
 		NaoBehaviour b = new NaoBehaviour();
@@ -61,9 +61,10 @@ public class LennyDemo {
 		system.attachAsynchronousModule(perception);
 		
 		NaoASR asr = new NaoASR(system);
-		system.attachAsynchronousModule(asr); */
+		system.attachAsynchronousModule(asr); 
 
 		system.startSystem(); 
+
 		
 		}
 		catch (Exception e) {

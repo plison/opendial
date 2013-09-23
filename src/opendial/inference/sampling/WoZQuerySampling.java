@@ -121,20 +121,12 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 	private int getRanking(WeightedSample sample, List<AssignmentWithUtil> averages) {
 		
 		List<AssignmentWithUtil> copy = new ArrayList<AssignmentWithUtil>(averages);
-		
-		int toRemove = -1;
+		Assignment sampleAssign = sample.getSample().getTrimmed(goldAction.getVariables());
 		for (int i = 0 ; i < copy.size() ; i++) {
-			if (copy.get(i).getAssignment().equals(sample.getSample().getTrimmed(goldAction.getVariables()))) {
-				toRemove = i;
+			if (copy.get(i).getAssignment().equals(sampleAssign)) {
+				copy.set(i, new AssignmentWithUtil(sampleAssign, sample.getUtility()));
 			}
 		}
-		if (toRemove != -1) {
-			copy.remove(toRemove);
-		}
-		else {
-			log.debug("could not remove assignment with the sample value in the averages");
-		}
-		copy.add(new AssignmentWithUtil(sample.getSample().getTrimmed(goldAction.getVariables()), sample.getUtility()));
 
 		Collections.sort(copy);
 		Collections.reverse(copy);
