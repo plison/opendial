@@ -39,7 +39,6 @@ import opendial.bn.Assignment;
 import opendial.bn.distribs.discrete.SimpleTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
-import opendial.modules.asr.ASRLock;
 import opendial.modules.behaviour.CarriedObjectDetection;
 import opendial.state.DialogueState;
 
@@ -178,7 +177,7 @@ public class NaoBehaviour implements SynchronousModule {
 		public void run() {
 			try {
 				String id = "behaviour" + (new Random()).nextInt()/100000;
-				log.debug("starting behaviour " + behaviour + " (and locking ASR)");
+				log.debug("starting behaviour " + behaviour);
 	
 			//	ASRLock.addLock(id);
 				behaviour = behaviour.toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
