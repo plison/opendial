@@ -58,28 +58,10 @@ public class NaoSession extends QimessagingService {
 		return session;
 	}
 	
-	public void subscribeToEvent(String eventName, QimessagingService
-			service, String method) throws CallError, QimessagingException {
-		
-		createService(service, method);
-		memory.call("subscribeToEvent", service.toString(), method);
-	}
-	
 	
 	public com.aldebaran.qimessaging.Object getService(String serviceName) throws Exception {
 		return sess.service(serviceName);
 	}
-	
-	public void createService(QimessagingService service, String method) throws QimessagingException {
-	    DynamicObjectBuilder objectBuilder = new DynamicObjectBuilder();
-	    objectBuilder.advertiseMethod(method+"::s(s,o,o)", service, "callback " + method);
-	    Object object = objectBuilder.object();
-	    super.init(object);
-
-	    sess.registerService(service.toString(), objectBuilder.object());
-	    log.debug("finished advertising for module " + service.toString() + " service " + service.getClass().getSimpleName() + " method " + method);
-	}
-	
 
 }
 

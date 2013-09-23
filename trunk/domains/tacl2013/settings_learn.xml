@@ -7,7 +7,7 @@
 	<horizon>1</horizon>
 	<discount>0.9</discount>
 	<woz>experiments/tacl2013/wozdata_allbutone.xml</woz>
-	<woztest>experiments/tacl2013/arne.xml</woztest>
+	<woztest>experiments/tacl2013/student1.xml</woztest>
 	<timeout>60000</timeout>
 </planning>
  
