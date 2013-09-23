@@ -144,27 +144,15 @@
 	
 	<rule id="allnegs-decision">
 		<case>
-			<effect util="-5">
-				<set var="a_m" value="Do(Move(*))" />
-			</effect>
 			<effect util="-10">
-				<set var="a_m" value="Do(PickUp(*))" />
+				<set var="a_m" value="Do(*)" />
 			</effect>
-			<effect util="-10">
-				<set var="a_m" value="Do(Release(*))" />
-			</effect>
-			<effect util="-1">	
+			<effect util="-10">	
 			<set var="a_m" value="Say(*)" />
-				</effect>
-			<effect util="-1">
+			</effect>
+			<effect util="-10">
 				<set var="a_m" value="Describe(*)" />
-			</effect>	
-			<effect util="-1">
-				<set var="a_m" value="AskRepeat" />
-			</effect>	
-			<effect util="-1">
-				<set var="a_m" value="Confirm(*)" />
-			</effect>	
+			</effect>		
 		</case>
 	</rule>
 	
@@ -182,6 +170,11 @@
 				<set var="a_m" value="AskRepeat" />
 			</effect>
 		</case>
+		<case>
+			<effect util="theta_repeat2">
+				<set var="a_m" value="AskRepeat"/>
+			</effect>
+		</case>
 	</rule>
 
 	<rule id="confirm-decision">
@@ -196,6 +189,11 @@
 		</condition>
 			<effect util="theta_confirm1">
 				<set var="a_m" value="Confirm({i_u})" />
+			</effect>
+		</case>
+		<case>
+			<effect util="theta_confirm2">
+				<set var="a_m" value="Confirm(*)"/>
 			</effect>
 		</case>
 	</rule>

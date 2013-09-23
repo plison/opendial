@@ -57,30 +57,30 @@
 
 	<variable id="theta_repeat1">
 		<distrib type="uniform">
-			<min>-10</min>
-			<max>30</max>
+			<min>2</min>
+			<max>10</max>
 		</distrib>
 	</variable>
 
 
 	<variable id="theta_repeat2">
 		<distrib type="uniform">
-			<min>-10</min>
-			<max>30</max>
+			<min>-5</min>
+			<max>0</max>
 		</distrib>
 	</variable>
 
 	<variable id="theta_confirm1">
 		<distrib type="uniform">
-			<min>-10</min>
-			<max>30</max>
+			<min>2</min>
+			<max>10</max>
 		</distrib>
 	</variable>
 
 	<variable id="theta_confirm2">
 		<distrib type="uniform">
-			<min>-10</min>
-			<max>30</max>
+			<min>-5</min>
+			<max>0</max>
 		</distrib>
 	</variable>
 
@@ -201,14 +201,14 @@
 
 	<variable id="theta_intent">
 		<distrib type="dirichlet">
-			<alpha>20</alpha>
+			<alpha>30</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>
 
 	<variable id="theta_othercase">
 		<distrib type="dirichlet">
-			<alpha>10</alpha>
+			<alpha>20</alpha>
 			<alpha>1</alpha>
 		</distrib>
 	</variable>		

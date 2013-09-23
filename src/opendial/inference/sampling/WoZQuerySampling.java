@@ -95,20 +95,21 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug("Utility averages : " + averages.toString().replace("\n", ", "));
 		log.debug(" ==> gold action = " + goldAction);
 		
-		double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
+	//	double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
 
 		synchronized(samples) {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
+				Assignment sampleAssign = sample.getSample().getTrimmed(goldAction.getVariables());
 				
 				if (sample.getUtility() < MIN || sample.getUtility() > MAX) {
 					weight = weight / 10;
 				}
 				
-				int position = getRanking(sample, averages);
+				double position = getRanking(sample, averages);
 				if (position != -1) {
-					weight *= factor * Math.pow(1-factor, position)  + 0.001;
+					weight *= (FACTOR * Math.pow(1-FACTOR, position))  + 0.00001;
 				}
 								
 				table.put(sample, weight);
