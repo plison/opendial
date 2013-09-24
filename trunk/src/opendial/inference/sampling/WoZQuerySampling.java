@@ -101,14 +101,15 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 			
 			for (WeightedSample sample : samples) {
 				double weight = sample.getWeight();
+				Assignment sampleAssign = sample.getSample().getTrimmed(goldAction.getVariables());
 				
 				if (sample.getUtility() < MIN || sample.getUtility() > MAX) {
 					weight = weight / 10;
 				}
 				
 				double position = getRanking(sample, averages);
-				if (position == 2 && sample.getSample().toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
-					position = 1.5;
+				if (position == 1 && sampleAssign.toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
+					position = 0.5;
 				}
 				if (position != -1) {
 					weight *= factor * Math.pow(1-factor, position)  + 0.0001;
