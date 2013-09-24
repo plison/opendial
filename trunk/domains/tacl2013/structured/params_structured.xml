@@ -57,7 +57,7 @@
 
 	<variable id="theta_repeat1">
 		<distrib type="uniform">
-			<min>3</min>
+			<min>2</min>
 			<max>10</max>
 		</distrib>
 	</variable>
@@ -72,14 +72,14 @@
 
 	<variable id="theta_confirm1">
 		<distrib type="uniform">
-			<min>3</min>
+			<min>2</min>
 			<max>10</max>
 		</distrib>
 	</variable>
 
 	<variable id="theta_confirm2">
 		<distrib type="uniform">
-			<min>-5/min>
+			<min>-5</min>
 			<max>0</max>
 		</distrib>
 	</variable>
