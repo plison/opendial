@@ -103,7 +103,7 @@ public class NaoASR extends AsynchronousModule {
 			ASRLock.connectASR(this);
 			while (true) {
 				try {	
-					Thread.currentThread().sleep(100);  
+					Thread.currentThread().sleep(80);  
 					NaoASR_loop thread = new NaoASR_loop(memoryProxy, state, !ASRLock.getLocks().isEmpty());
 					thread.start();
 					int counter = 0;

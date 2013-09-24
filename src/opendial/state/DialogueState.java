@@ -260,10 +260,15 @@ public class DialogueState {
 
 	private void showInformation() {
 		if (network.hasActionNode("a_m'")) { try { 
+			if (network.hasChanceNode("motion")) {
+				log.debug("motion : " + getContent("motion", true).prettyPrint());
+			}
+			if (network.hasChanceNode("perceived") && network.hasChanceNode("carried")) {
+				log.debug("perceived : " + getContent("perceived", true).prettyPrint() 
+						+ " and carried: " + getContent("carried", true).prettyPrint());
+			} 
 			if (network.hasChanceNode("a_u") && network.hasChanceNode("i_u") && !isFictive()) { 
-				if (network.hasChanceNode("motion")) {
-					log.debug("motion : " + getContent("motion", true).prettyPrint());
-				}
+
 				log.debug("Interpreted a_u : " + getContent("a_u", true).prettyPrint());
 				log.debug("Interpreted i_u (before action) : " +  getContent("i_u", true).prettyPrint());
 			} 
