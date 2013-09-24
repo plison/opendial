@@ -120,7 +120,7 @@ public class WozLearnerSimulator implements Simulator {
 
 	public void startSimulator() {
 		log.info("starting WOZ simulator");
-		log.info("PARAMETERS: Learn factor: " + WoZQuerySampling.FACTOR + 
+		log.info("-- PARAMETERS: Learn factor: " + WoZQuerySampling.FACTOR + 
 				", min/max: " + WoZQuerySampling.MIN + "/" + WoZQuerySampling.MAX +
 				", Equality factor: "+EqualityDistribution.PROB_WITH_SINGLE_NONE + 
 				", none weight factor: " + WoZQuerySampling.NONE_FACTOR + 
