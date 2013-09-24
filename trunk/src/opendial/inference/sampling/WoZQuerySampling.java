@@ -109,7 +109,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 				
 				double position = getRanking(sample, averages);
 				if (position == 1 && sampleAssign.toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
-					position = 0.8;
+					position = 0.2;
 				}
 				if (position != -1) {
 					weight *= factor * Math.pow(1-factor, position)  + 0.0001;
