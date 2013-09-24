@@ -171,7 +171,7 @@
 			</effect>
 		</case>
 		<case>
-			<effect util="-1">
+			<effect util="theta_repeat2">
 				<set var="a_m" value="AskRepeat"/>
 			</effect>
 		</case>
@@ -192,7 +192,7 @@
 			</effect>
 		</case>
 		<case>
-			<effect util="-1">
+			<effect util="theta_confirm2">
 				<set var="a_m" value="Confirm(*)"/>
 			</effect>
 		</case>
