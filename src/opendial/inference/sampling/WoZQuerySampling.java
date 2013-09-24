@@ -132,7 +132,10 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Collections.sort(copy);
 		Collections.reverse(copy);
 		for (int i = 0 ; i < copy.size() ; i++) {
-			if (copy.get(i).getAssignment().equals(goldAction)) {
+			if (copy.get(i).getAssignment().toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
+				return i;
+			}
+			else if (copy.get(i).getAssignment().equals(goldAction)) {
 				return i;
 			}
 		}
