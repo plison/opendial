@@ -95,7 +95,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		log.debug("Utility averages : " + averages.toString().replace("\n", ", "));
 		log.debug(" ==> gold action = " + goldAction);
 		
-		double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
+	//	double factor = (goldAction.isDefault()) ? FACTOR * NONE_FACTOR : FACTOR;
 
 		synchronized(samples) {
 			
@@ -112,7 +112,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 					position = NONE_FACTOR;
 				}
 				if (position != -1) {
-					weight *= factor * Math.pow(1-factor, position)  + 0.0001;
+					weight *= FACTOR * Math.pow(1-FACTOR, position)  + 0.0001;
 				}
 								
 				table.put(sample, weight);
