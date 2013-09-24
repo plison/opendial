@@ -106,9 +106,12 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 					weight = weight / 10;
 				}
 				
-				int position = getRanking(sample, averages);
+				double position = getRanking(sample, averages);
+				if (position == 2 && sample.getSample().toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
+					position = 1.5;
+				}
 				if (position != -1) {
-					weight *= factor * Math.pow(1-factor, position)  + 0.001;
+					weight *= factor * Math.pow(1-factor, position)  + 0.0001;
 				}
 								
 				table.put(sample, weight);
@@ -132,10 +135,7 @@ public class WoZQuerySampling extends AbstractQuerySampling {
 		Collections.sort(copy);
 		Collections.reverse(copy);
 		for (int i = 0 ; i < copy.size() ; i++) {
-			if (copy.get(i).getAssignment().toString().replace("Confirm(", "Do(").equals(goldAction.toString())) {
-				return i;
-			}
-			else if (copy.get(i).getAssignment().equals(goldAction)) {
+			if (copy.get(i).getAssignment().equals(goldAction)) {
 				return i;
 			}
 		}
