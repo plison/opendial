@@ -166,13 +166,14 @@ public class FSA extends Model<DecisionRule> {
 
 	@Override
 	public void trigger(DialogueState dstate) {
-		
+		log.debug("triggering FSA....");
 		StatePruner pruner = new StatePruner(dstate);
 		pruner.run();
-		
+		log.debug("Current state: " + curState.getId());
 		try {
 			Assignment action = Assignment.createDefault(Arrays.asList(actionVar));
 			Edge edge = selectEdge(dstate);
+			log.debug("Found edge: " + edge);
 			if (edge != null) {
 				curState = states.get(edge.getTarget());
 				if (!curState.isEmpty()) {
