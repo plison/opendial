@@ -39,7 +39,7 @@ import opendial.readers.XMLSettingsReader;
 import opendial.readers.XMLStateReader;
 import opendial.simulation.UserSimulator;
 
-public class LennyDemo {
+public class DemoWithoutRobot {
 
 	// logger
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
@@ -53,19 +53,8 @@ public class LennyDemo {
 			Domain domain = XMLDomainReader.extractDomain(domainFile);
 			Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
 		DialogueSystem system = new DialogueSystem(settings, domain);
-	
-		NaoTTS tts = new NaoTTS();
-		system.getState().attachModule(tts);
-		NaoBehaviour b = new NaoBehaviour();
-		system.getState().attachModule(b);
-		NaoPerception perception = new NaoPerception(system);
-		system.attachAsynchronousModule(perception);
-		
-		NaoASR asr = new NaoASR(system);
-		system.attachAsynchronousModule(asr); 
 
 		system.startSystem(); 
-
 		
 		}
 		catch (Exception e) {
