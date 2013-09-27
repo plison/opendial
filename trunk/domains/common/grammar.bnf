@@ -9,18 +9,18 @@
 
 <Back>: !optional(please) !optional(again) ;
 
-<Move1>: <Front> !optional(<Move4>) !optional(<Modif>) (forward | forwards | backward | backwards | back | straight) !optional(<Modif>) <Back>;
+<Move1>: <Front> !optional(<Move4>) !optional(<Modif>) (forward | forwards | straight forward | backward | backwards | back | straight | straight ahead) !optional(<Modif>) <Back>;
 <Move2>: <Front> !optional(<Move5>)  !optional(<Modif>) !optional(to the) (left | right) !optional(<Modif>) <Back>;
 <Move3>: <Front> (turn back | turn one hundred eighty degrees | make a u turn | turn around) <Back>;
 
-<Move4>: walk | go | move;
+<Move4>: walk | go | move | continue ;
 <Move5>: go | move | turn | rotate ;
 
-<Modif>: !optional(just) a !optional(little) bit ;
+<Modif>: !optional(just) a !optional(little) bit !optional(more);
 
 <PickUp>: <Front> (take <Object> | take it | pick up <Object> | grasp <Object> | grasp it | pick it up) <Back>;
 
-<Release>: <Front> ((release | put down) <Object> | put <Object> (down | on the floor | on the table)) <Back>;
+<Release>: <Front> ((release | put down | drop) <Object> | put <Object> (down | on the floor | on the table)) <Back>;
 
 <Object>: something | (the | a) !optional(<Colour>) (food can | object | cylinder) !optional(at your feet);
 

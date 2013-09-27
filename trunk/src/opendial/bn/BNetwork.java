@@ -91,6 +91,7 @@ public class BNetwork implements IdChangeListener {
 	public synchronized void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
+			Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
 		node.addIdChangeListener(this);
