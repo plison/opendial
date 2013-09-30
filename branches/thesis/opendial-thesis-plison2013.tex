@@ -186,7 +186,7 @@ In order to bring together the best of both approaches, a switching mechanism ha
 
 \subsubsection*{Sampling techniques}
 
-The use of likelihood weighting necessitates the implementation of efficient sampling techniques for each possible probability distribution.  In the interest of the statistically inclined reader, we describe below how sampling was implemented for various types of distributions: 
+The use of likelihood weighting necessitates the implementation of efficient sampling techniques for each possible probability distribution.  In the interest of the statistically inclined reader, we describe below the sampling methods employed in \opendial to efficiently draw values from both discrete and continuous distributions:
 \begin{itemize}
 \item \textit{Categorical distributions}:  Sampling a categorical distribution is done through inverse random sampling, following the method described in \cite[][p. 489]{Koller+Friedman:09}. When constructing the distribution, the variable values are sorted according to some particular order (e.g. lexicographic), and a cumulative density function (CDF) calculated relative to this order.  Sample values are then extracted at runtime by (1) generating a pseudo-random float number between 0 and 1 and then (2) locating the greatest number in the CDF that is less than or equal to the number just generated.  The latter operation is done through binary search. The value corresponding to this number is then selected as the sample.
 \item \textit{Uniform distributions}:  Uniform distributions are directly sampled as $g (b-a) + a$, where $g$ is a pseudo-random number between 0 and 1, and $a,b$ are the distribution boundaries.
