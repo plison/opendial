@@ -43,7 +43,7 @@ public class DemoWithoutRobot {
 
 	// logger
 	public static Logger log = new Logger("Main", Logger.Level.DEBUG);
-
+ 
 
 	public static final String domainFile = "domains//demo/domain.xml";
 	public static final String settingsFile = "domains//demo/settings.xml";
@@ -55,6 +55,7 @@ public class DemoWithoutRobot {
 		DialogueSystem system = new DialogueSystem(settings, domain);
 
 		system.startSystem(); 
+
 		
 		}
 		catch (Exception e) {
