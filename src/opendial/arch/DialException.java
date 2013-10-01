@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -24,7 +24,7 @@ package opendial.arch;
  * Generic exception thrown in openDial
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *  
  */ 
 public class DialException extends Exception {

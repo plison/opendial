@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -26,7 +26,10 @@ import org.junit.Test;
 
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.datastructs.Output;
+import opendial.datastructs.Template;
+import opendial.domains.rules.effects.BasicEffect;
+import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 public class OutputsTest {
 
@@ -37,19 +40,19 @@ public class OutputsTest {
 	@Test
 	public void OutputParsing() {
 		
-		Output o = new Output();
-		assertEquals(o, Output.parseOutput("Void"));
-		o.setValueForVariable("v1", ValueFactory.create("val1"));
-		assertEquals(o, Output.parseOutput("v1:=val1"));
+		Effect o = new Effect();
+		assertEquals(o, Effect.parseEffect("Void"));
+		o.addSubEffect(new BasicEffect(new Template("v1"), new Template("val1"), EffectType.SET));
+		assertEquals(o, Effect.parseEffect("v1:=val1"));
 
-		o.addValueForVariable("v2", ValueFactory.create("val2"));
-		assertEquals(o, Output.parseOutput("v1:=val1 ^ v2+=val2"));
+		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val2"), EffectType.ADD));
+		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 		
-		o.discardValueForVariable("v2", ValueFactory.create("val3"));
-		assertEquals(o, Output.parseOutput("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
+		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val3"), EffectType.DISCARD));
+		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 		
-		o.clearVariable("v3");
-		assertEquals(o, Output.parseOutput("v1:=val1 ^ v2+=val2 ^ v2!=val3 ^ v3:={}"));
+		o.addSubEffect(new BasicEffect(new Template("v3"), null, EffectType.CLEAR));
+		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3 ^ v3:={}"));
 		
 	}
 }

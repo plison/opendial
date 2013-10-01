@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -31,6 +31,20 @@ package opendial.bn.values;
  */
 public interface Value extends Comparable<Value> {
 	
+	/**
+	 * Copies the value
+	 * 
+	 * @return the value
+	 */
 	public abstract Value copy();
+
+	
+	/**
+	 * Return true if the value contains the value given as argument
+	 * 
+	 * @param subvalue the value to check for inclusion
+	 * @return true if the value is contained, false otherwise
+	 */
+	public abstract boolean contains(Value subvalue);
 	
 }

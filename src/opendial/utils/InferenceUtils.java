@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -21,35 +21,36 @@ package opendial.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousProbabilityTable;
-import opendial.bn.distribs.continuous.MultivariateDistribution;
-import opendial.bn.distribs.continuous.UnivariateDistribution;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
-import opendial.bn.distribs.continuous.functions.ProductKernelDensityFunction;
-import opendial.bn.distribs.discrete.DiscreteProbDistribution;
-import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
-import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.distribs.empirical.SimpleEmpiricalDistribution;
+import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
+import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.other.EmpiricalDistribution;
+import opendial.bn.distribs.other.ConditionalDistribution;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
-import opendial.bn.values.VectorVal;
+import opendial.bn.values.ArrayVal;
+import opendial.datastructs.Assignment;
 
 /**
  * Utility functions for inference operations.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class InferenceUtils {
@@ -143,6 +144,12 @@ public class InferenceUtils {
 	}
 
 
+	/**
+	 * Normalises the double array (ensuring that the sum is equal to 1.0).
+	 * 
+	 * @param initProbs the unnormalised values
+	 * @return the normalised values
+	 */
 	public static Double[] normalise(Double[] initProbs) {
 		for (int i = 0 ; i < initProbs.length; i++) {
 			if (initProbs[i] < 0) {
@@ -170,133 +177,79 @@ public class InferenceUtils {
 		return result;
 	}
 
-	public static SimpleTable createTable(Collection<String> headVars, Collection<Assignment> samples) {
-		SimpleTable table = new SimpleTable();
 
-		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
+	/**
+	 * Returns a smaller version of the initial table that only retains the N elements with a
+	 * highest value
+	 * 
+	 * @param initTable the full initial table
+	 * @param nbest the number of elements to retain
+	 * @return the resulting subset of the table
+	 */
+	public static Map<Assignment,Double> getNBest (Map<Assignment,Double> initTable, int nbest) {
+		if (nbest < 1) {
+			log.warning("nbest should be >= 1");
+			nbest = 1;
+		}
 
-		for (Assignment sample : samples) {
-			Assignment trimmed = sample.getTrimmed(headVars);
-			if (counts.containsKey(trimmed)) {
-				counts.put(trimmed, counts.get(trimmed) + 1);
-			}
-			else {
-				counts.put(trimmed,1);
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(initTable.entrySet());
+
+		Collections.sort(entries, new AssignComparator());
+		Collections.reverse(entries);
+
+		Map<Assignment,Double> newTable = new LinkedHashMap<Assignment,Double>();
+		int nb = 0;
+		for (Map.Entry<Assignment,Double> entry : entries) {
+			if (nb < nbest) {
+				newTable.put(entry.getKey(), entry.getValue());
+				nb++;
 			}
 		}
-		for (Assignment value : counts.keySet()) {
-			table.addRow(value, 1.0 * counts.get(value) / samples.size());
+		return newTable;
+	}
+	
+	
+	/**
+	 * Returns the ranking of the given assignment in the table, assuming an ordering of the
+	 * table in descending order.
+	 * 
+	 * @param initTable the table 
+	 * @param assign the assignment to find
+	 * @return the index in the ordered table, or -1 if the element is not in the table
+	 */
+	public static int getRanking(Map<Assignment,Double> initTable, Assignment assign) {
+	
+		List<Map.Entry<Assignment,Double>> entries = 
+				new ArrayList<Map.Entry<Assignment,Double>>(initTable.entrySet());
+
+		Collections.sort(entries, new AssignComparator());
+		Collections.reverse(entries);
+
+		for (Map.Entry<Assignment,Double> entry : entries) {
+			if (entry.getKey().equals(assign)) {
+				return entries.indexOf(entry);
+			}
 		}
-		return table;
+		return -1;
 	}
 
 
-	public static DiscreteProbabilityTable createTable(Set<String> condVars,
-			Set<String> headVars, Collection<Assignment> samples) {
+	/**
+	 * A comparator for the pair (assignment, double) that sorts the entries according
+	 * to their double values.
+	 * 
+	 * @author  Pierre Lison (plison@ifi.uio.no)
+	 * @version $Date::                      $
+	 */
+	static final class AssignComparator implements Comparator<Map.Entry<Assignment,Double>> {
 
-		DiscreteProbabilityTable table = new DiscreteProbabilityTable();
-
-		Map<Assignment,SimpleEmpiricalDistribution> temp = 
-				new HashMap<Assignment,SimpleEmpiricalDistribution>();
-
-		for (Assignment sample: samples) {
-			Assignment condition = sample.getTrimmed(condVars);
-			Assignment head = sample.getTrimmed(headVars);
-			if (!temp.containsKey(condition)) {
-				temp.put(condition, new SimpleEmpiricalDistribution());
-			}
-
-			temp.get(condition).addSample(head);
+		@Override
+		public int compare(Entry<Assignment, Double> arg0, Entry<Assignment, Double> arg1) {
+			return (int)((arg0.getValue() - arg1.getValue())*1000);
 		}
 
-		for (Assignment condition : temp.keySet()) {
-			table.addRows(condition, (SimpleTable)(temp.get(condition).toDiscrete()));
-		}
-		table.fillConditionalHoles();
-		return table;
 	}
-
-
-	public static ContinuousProbDistribution createContinuousDistrib 
-	(String headVar, Collection<Assignment> samples) throws DialException {
-		
-		Assignment firstSample = samples.iterator().next();
-		if (firstSample.getValue(headVar) instanceof DoubleVal) {
-			return extractUnivariateDistribution(headVar, samples);
-		}
-		else if (firstSample.getValue(headVar) instanceof VectorVal) {
-			return extractMultivariateDistribution(headVar, samples);				
-		}
-		else {
-			throw new DialException ("empirical distribution for " + headVar + " could not be " +
-					"converted to a continuous distribution: value is " + 
-					firstSample.getValue(headVar).getClass().getSimpleName());
-		}
-	}
-
-
-	private static  UnivariateDistribution extractUnivariateDistribution 
-	(String headVar, Collection<Assignment> samples) throws DialException {
-
-		List<Double> values = new ArrayList<Double>(samples.size());
-		for (Assignment sample : samples) {
-			Value value = sample.getValue(headVar);
-			if (value instanceof DoubleVal) {
-				values.add(((DoubleVal)sample.getValue(headVar)).getDouble());
-			}
-			else {
-				throw new DialException ("value type is not allowed in " +
-						"continuous distribution: " + value.getClass().getName());
-			}
-		}
-		return new UnivariateDistribution(headVar, new KernelDensityFunction(values));
-	}
-
-
-	private static MultivariateDistribution extractMultivariateDistribution 
-	(String headVar, Collection<Assignment> samples) throws DialException {
-
-		List<Double[]> values = new ArrayList<Double[]>(samples.size());
-		for (Assignment sample : samples) {
-			Value value = sample.getValue(headVar);
-			if (value instanceof VectorVal) {
-				values.add(((VectorVal)sample.getValue(headVar)).getArray());
-			}
-			else {
-				throw new DialException ("value type is not allowed in " +
-						"continuous distribution: " + value.getClass().getName());
-			}
-		}
-		ProductKernelDensityFunction pkde = new ProductKernelDensityFunction(values);
-		pkde.setAsBounded(true);
-		return new MultivariateDistribution(headVar, pkde);
-	}
-
-
-	public static ContinuousProbDistribution createContinuousDistrib(
-			Set<String> condVars, String headVar, Collection<Assignment> samples) throws DialException {
-		
-		ContinuousProbabilityTable distrib = new ContinuousProbabilityTable();
-		
-		Map<Assignment,SimpleEmpiricalDistribution> temp = new HashMap<Assignment,SimpleEmpiricalDistribution>();
-		for (Assignment sample: samples) {
-			Assignment condition = sample.getTrimmed(condVars);
-			if (!temp.containsKey(condition)) {
-				temp.put(condition, new SimpleEmpiricalDistribution());
-			}
-			temp.get(condition).addSample(sample.getTrimmed(headVar));
-		}
-		
-		for (Assignment condition : temp.keySet()) {
-			SimpleEmpiricalDistribution subdistrib = temp.get(condition);
-			ContinuousProbDistribution continuousEquiv = subdistrib.toContinuous();
-			distrib.addDistrib(condition, continuousEquiv);
-		}
-		
-		return distrib;
-	}
-
-
 
 
 }

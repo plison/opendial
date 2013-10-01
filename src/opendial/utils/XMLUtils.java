@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -22,9 +22,11 @@ package opendial.utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -46,6 +48,9 @@ import javax.xml.validation.SchemaFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -59,7 +64,7 @@ import opendial.readers.XMLDomainReader;
  * Utility functions for manipulating XML content
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 public class XMLUtils {
@@ -84,8 +89,9 @@ public class XMLUtils {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
 			builder.setErrorHandler(new XMLErrorHandler());
-			Document doc = builder.parse(new InputSource(filename));
-	//		log.info("XML parsing of file: " + filename + " successful!");
+			InputStreamReader streamReader = new InputStreamReader(new FileInputStream(filename));
+			Document doc = builder.parse(new InputSource(streamReader));
+			//		log.info("XML parsing of file: " + filename + " successful!");
 			return doc;
 		}
 		catch (SAXException e) {
@@ -103,9 +109,33 @@ public class XMLUtils {
 	}
 
 
+	/**
+	 * Serialises the XML node into a string.
+	 * 
+	 * @param node the XML node
+	 * @return the corresponding string
+	 */
+	public static String serialise(Node node) {
+		try {
+			DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+			DOMImplementationLS lsImpl = (DOMImplementationLS)registry.getDOMImplementation("LS");
+			LSSerializer serializer = lsImpl.createLSSerializer();
+			return serializer.writeToString(node);
+		} 
+		catch (Exception e) {
+			log.debug("could not serialise XML node: " + e);
+			return "";
+		}
+	}
 
+	/**
+	 * Creates a new XML, empty document
+	 * 
+	 * @return the empty XML document
+	 * @throws DialException if the document could not be created
+	 */
 	public static Document newXMLDocument() throws DialException {
-		
+
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
@@ -114,14 +144,14 @@ public class XMLUtils {
 			Document doc = builder.newDocument();
 			return doc;
 		}
-		 
+
 		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			throw new DialException("cannot create XML file");
 		} 	
 	}
-	
 
+	/**
 	public static Map<String,String> getDomainFiles(String topFile, String suffix) {
 		Map<String,String> outputFiles = new HashMap<String,String>();
 
@@ -146,11 +176,11 @@ public class XMLUtils {
 			log.warning("could not extract domain files: " + e);
 		}
 		return outputFiles;
-	}
+	} 
 
-	
+
 	public static void writeDomain(Map<String,String> domainFiles) {
-		
+
 		String rootpath = new File(domainFiles.keySet().iterator().next()).getParent();
 		if ((new File(rootpath)).exists()) {
 			final File[] files = (new File(rootpath)).listFiles();
@@ -176,8 +206,15 @@ public class XMLUtils {
 				log.warning("could not write output to files. " + e);
 			}
 		}
-	}
-	
+	} */
+
+
+	/**
+	 * Writes the XML document to the particular file specified as argument
+	 * @param doc the document
+	 * @param filename the path to the file in which to write the XML data
+	 * @throws DialException if the writing operation fails
+	 */
 	public static void writeXMLDocument(Document doc, String filename) throws DialException {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -265,8 +302,10 @@ public class XMLUtils {
 	}
 
 
+
 	/**
-	 * Extract included filenames in the XML document
+	 * Extract included filenames in the XML document, assuming that filenames are provided
+	 * with the attribute "href".
 	 * 
 	 * @param xmlDocument the XML document
 	 * @return the filenames to include
@@ -288,96 +327,19 @@ public class XMLUtils {
 						includedFiles.add(fileName);
 					}
 				}
-				
+
 			}
 		}
 		return includedFiles;
 	}
-
-
-
-
-	/**
-	 * Returns the probability of the value defined in the XML node
-	 * (default to 1.0f is none is declared)
-	 * 
-	 * @param node the XML node
-	 * @return the value probability
-	 * @throws DialException if probability is ill-formatted
-	 */
-	public static float getProbability (Node node) {
-	
-		float prob = 1.0f;
-	
-		if (node.hasAttributes() && 
-				node.getAttributes().getNamedItem("prob") != null) {
-			String probStr = node.getAttributes().getNamedItem("prob").getNodeValue();
-	
-			try { prob = Float.parseFloat(probStr);	}
-			catch (NumberFormatException e) {
-				XMLDomainReader.log.warning("probability " + probStr +  " not valid, assuming 1.0f");
-			}
-		}
-		return prob;
-	}
-
-
-
-
-	/**
-	 * If the XML node contains a "href" attribute containing a filename, returns it.
-	 * Else, throws an exception
-	 * 
-	 * @param node the XML node
-	 * @return the referenced filename
-	 * @throws DialException 
-	 */
-	public static String getReference(Node node) throws DialException {
-	
-		if (node.hasAttributes() && node.getAttributes().getNamedItem("href") != null) {
-			String filename = node.getAttributes().getNamedItem("href").getNodeValue();
-			return filename;
-		}
-		else {
-			throw new DialException("Not file attribute in which to extract the reference");
-		}
-	}
-
-
-
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public static float getUtility(Node node) {
-
-		float util = 1.0f;
-	
-		if (node.hasAttributes() && 
-				node.getAttributes().getNamedItem("util") != null) {
-			String probStr = node.getAttributes().getNamedItem("util").getNodeValue();
-	
-			try { util = Float.parseFloat(probStr);	}
-			catch (NumberFormatException e) {
-				XMLDomainReader.log.warning("probability " + probStr +  " not valid, assuming 1.0f");
-			}
-		}
-		return util;
-	}
-
-
 }
-
-
-
 
 
 /**
  * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 final class XMLErrorHandler extends DefaultHandler {

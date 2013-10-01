@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -98,7 +98,9 @@ public final class SetVal implements Value {
 	 * @return the string
 	 */
 	@Override
-	public String toString() { return ""+set; }
+	public String toString() { 
+		return ""+set.toString();
+	}
 
 	
 	/**
@@ -130,6 +132,16 @@ public final class SetVal implements Value {
 
 	public void add(Value object) {
 		set.add(object);
+	}
+
+	/**
+	 * Returns true if subvalue is contained, and false otherwise
+	 * 
+	 * @return true if contained, false otherwise
+	 */
+	@Override
+	public boolean contains(Value subvalue) {
+		return set.contains(subvalue);
 	}
 
 

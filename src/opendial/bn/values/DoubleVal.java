@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,7 +19,7 @@
 
 package opendial.bn.values;
 
-import opendial.utils.DistanceUtils;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -72,6 +72,8 @@ public final class DoubleVal implements Value {
 	 */
 	public Double getDouble() {return d; }
 
+
+	
 	/**
 	 * Returns a copy of the double value
 	 *
@@ -87,7 +89,7 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public String toString() { 
-		return "" + DistanceUtils.shorten(d);
+		return "" + StringUtils.getShortForm(d);
 	}
 
 
@@ -104,6 +106,14 @@ public final class DoubleVal implements Value {
 		else {
 			return hashCode() - o.hashCode();
 		}
+	}
+
+	/**
+	 * Returns false
+	 */
+	@Override
+	public boolean contains(Value subvalue) {
+		return false;
 	}
 	
 }

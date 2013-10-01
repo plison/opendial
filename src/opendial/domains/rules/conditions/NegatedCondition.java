@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,13 +19,12 @@
 
 package opendial.domains.rules.conditions;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Template;
-import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
 
 
 /**
@@ -76,15 +75,9 @@ public class NegatedCondition implements Condition {
 		return initCondition.getInputVariables();
 	}
 
-	/**
-	 * Returns the set of unbound predicates for the basic condition, which could
-	 * be either associated with the variable label or its content.
-	 * 
-	 * @return the set of unbound predicates
-	 */
 	@Override
-	public Set<UnboundPredicate> getUnboundPredicates() {
-		return initCondition.getUnboundPredicates();
+	public ValueRange getGroundings(Assignment input) {
+		return initCondition.getGroundings(input);
 	}
 
 	
@@ -109,18 +102,6 @@ public class NegatedCondition implements Condition {
 		return initCondition;
 	}
 	
-	
-	/**
-	 * Returns the local output for the condition, if any
-	 * 
-	 * @param input the input assignment in which to extract the local output
-	 * @return the extracted local output
-	 */
-	@Override
-	public Assignment getLocalOutput(Assignment input) {
-		return initCondition.getLocalOutput(input);
-	}
-	
 
 	// ===================================
 	//  UTILITY FUNCTIONS
@@ -138,8 +119,6 @@ public class NegatedCondition implements Condition {
 	
 	/**
 	 * Returns the string representation of the condition
-	 *
-	 * @return the string representation
 	 */
 	public String toString() {
 		return "!"+ initCondition.toString();

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,11 +20,9 @@
 package opendial.domains.rules.parameters;
 
 import java.util.Collection;
-import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.bn.Assignment;
-
+import opendial.datastructs.Assignment;
 
 
 /**
@@ -36,7 +34,6 @@ import opendial.bn.Assignment;
  */
 public interface Parameter {
 
-	
 	/**
 	 * Returns the actual parameter value given the inputs provided as arguments.
 	 * If the actual value cannot be retrieved (missing information), throws 
@@ -58,10 +55,21 @@ public interface Parameter {
 	public Collection<String> getParameterIds();
 
 	
+	
 	/**
-	 * Copies the parameter
+	 * Adds the value of the two parameters and returns the result
 	 * 
-	 * @return the copy
+	 * @param otherPram the parameter to add
+	 * @return the result of the addition
 	 */
-	public Parameter copy();
+	public Parameter sumParameter(Parameter otherPram); 
+	
+	/**
+	 * Multiplies the value of the two parameters and returns the result
+	 * 
+	 * @param otherPram the parameter to multiply
+	 * @return the result of the multiplication
+	 */
+	public Parameter multiplyParameter(Parameter otherPram); 
+	
 }

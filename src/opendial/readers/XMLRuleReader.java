@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,24 +19,20 @@
 
 package opendial.readers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Node;
 
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-
-import opendial.domains.rules.Case;
-import opendial.domains.rules.CaseBasedRule;
-import opendial.domains.rules.DecisionRule;
-import opendial.domains.rules.PredictionRule;
-import opendial.domains.rules.UpdateRule;
+import opendial.datastructs.Template;
+import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.Rule;
+import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
@@ -46,19 +42,16 @@ import opendial.domains.rules.conditions.NegatedCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
-import opendial.domains.rules.effects.ClearEffect;
-import opendial.domains.rules.effects.ComplexEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.VoidEffect;
 import opendial.domains.rules.parameters.CompositeParameter;
-import opendial.domains.rules.parameters.DirichletParameter;
+import opendial.domains.rules.parameters.CompositeParameter.Operator;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.SingleParameter;
+import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.utils.XMLUtils;
 
 /**
- * 
+ *  Extraction of a probabilistic rule given an XML specification
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -67,36 +60,44 @@ import opendial.utils.XMLUtils;
 public class XMLRuleReader {
 
 	static Logger log = new Logger("XMLRuleReader", Logger.Level.DEBUG);
-	
+
+
+	static int idCounter = 1;
 
 	/**
+	 * Extracts the rule corresponding to the XML specification.
 	 * 
-	 * @param node
-	 * @return
-	 * @throws DialException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @param topNode the XML node
+	 * @return the corresponding rule
+	 * @throws DialException if the specification is ill-defined.
 	 */
-	public static <T extends CaseBasedRule> T getRule(Node topNode, Class<T> cls) throws DialException {
-		
-		try {
-		T rule = cls.newInstance();
-		
-		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("id") != null) {
-			String ruleId = topNode.getAttributes().getNamedItem("id").getNodeValue();
-			rule.setRuleId(ruleId);
+	public static Rule getRule(Node topNode) throws DialException {
+
+		// extracting the rule type
+		RuleType type = RuleType.PROB;
+		if (XMLUtils.serialise(topNode).contains("util=")) {
+			type = RuleType.UTIL;
 		}
 
+		// setting the rule identifier
+		String ruleId;
+		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("id") != null) {
+			ruleId = topNode.getAttributes().getNamedItem("id").getNodeValue();
+		}
+		else {
+			ruleId = "rule" + idCounter;
+			idCounter++;
+		}
+
+		//creating the rule
+		Rule rule = new Rule(ruleId, type);
+
+		// extracting the rule cases
 		for (int i = 0 ; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
 
-			if (node.getNodeName().equals("quantifier")) {
-				String quantifier = getQuantifier(node);
-				rule.addQuantifier(quantifier);
-			}
-			
-			else if (node.getNodeName().equals("case")) {
-				Case newCase = getCase(node, cls);
+			if (node.getNodeName().equals("case")) {
+				RuleCase newCase = getCase(node, type);
 				rule.addCase(newCase);
 			}
 			else if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
@@ -105,40 +106,26 @@ public class XMLRuleReader {
 		}
 
 		return rule;
-		}
-		catch (IllegalAccessException e) {
-			throw new DialException(e.toString());
-		} catch (InstantiationException e) {
-			throw new DialException(e.toString());
-		}
 	}
 
-
-
-	private static String getQuantifier(Node node) {
-		if (node.getNodeName().equals("quantifier") && node.hasAttributes() &&
-				node.getAttributes().getNamedItem("id") != null) {
-			return node.getAttributes().getNamedItem("id").getNodeValue().replace("{", "").replace("}", "");
-		}
-		else {
-			return "";
-		}
-	}
 
 
 	/**
+	 * Returns the case associated with the rule specification.
 	 * 
-	 * @param node
-	 * @param domain
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @param type the rule type
+	 * @return the associated rule case
+	 * @throws DialException if the specification is ill-defined.
 	 */
-	private static <T extends CaseBasedRule> Case getCase(Node caseNode, Class<T> cls) throws DialException {
+	private static RuleCase getCase(Node caseNode, RuleType type) throws DialException {
 
-		Case newCase = new Case();
+		RuleCase newCase = new RuleCase();
 
 		for (int i = 0 ; i < caseNode.getChildNodes().getLength(); i++) {
 			Node node = caseNode.getChildNodes().item(i);
+
+			// extracting the condition
 			if (node.getNodeName().equals("condition")) {
 				Condition condition = getFullCondition(node);
 				if (newCase.getCondition() instanceof VoidCondition) {
@@ -149,29 +136,32 @@ public class XMLRuleReader {
 							+ newCase.getCondition() + " and " + condition);
 				}
 			}
+			// extracting an effect
 			else if (node.getNodeName().equals("effect")) {
 				Effect effect = getFullEffect(node);
-				Parameter prob = getParameter(node, cls);
-				newCase.addEffect(effect, prob);
+				if (effect != null) {
+					Parameter prob = getParameter(node, type);
+					newCase.addEffect(effect, prob);
+				}
 			}
 			else if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
 				throw new DialException("Ill-formed rule: " + node.getNodeName() + " not accepted");
 			}
 		}
-		
+
 		return newCase;
 	}
 
 
 
 	/**
+	 * Extracting the condition associated with an XML specification.
 	 * 
-	 * @param node
-	 * @param domain
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node 
+	 * @return the associated condition
+	 * @throws DialException if the specification is ill-defined.
 	 */
-	public static Condition getFullCondition(Node conditionNode) throws DialException {
+	private static Condition getFullCondition(Node conditionNode) throws DialException {
 
 		List<Condition> subconditions = new LinkedList<Condition>();
 
@@ -194,7 +184,7 @@ public class XMLRuleReader {
 			BinaryOperator operator = getBinaryOperator(conditionNode);
 			ComplexCondition condition = new ComplexCondition(subconditions);
 			condition.setOperator(operator);
-			
+
 			return condition;
 		}
 	}
@@ -202,38 +192,37 @@ public class XMLRuleReader {
 
 
 	/**
+	 * Extracting a partial condition from a rule specification
 	 * 
-	 * @param node
-	 * @param domain
-	 * @param rule
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @return the corresponding condition
+	 * @throws DialException if the condition is ill-defined
 	 */
 	private static Condition getSubcondition(Node node) throws DialException {
 
-
+		// extracting a basic condition
 		if (node.getNodeName().equals("if") && node.hasAttributes() && 
 				node.getAttributes().getNamedItem("var")!= null) {
-			
-			Condition condition = new VoidCondition();
 
-			String variable = getStandardVariable(node, "var");
+			BasicCondition condition;
+
+			String variable = node.getAttributes().getNamedItem("var").getNodeValue();
 
 			if (node.getAttributes().getNamedItem("value") != null) {
 				String valueStr = node.getAttributes().getNamedItem("value").getNodeValue();
 				Relation relation = getRelation(node);			
-				condition = new BasicCondition(variable, valueStr, relation);
+				condition = new BasicCondition(new Template(variable), new Template(valueStr), relation);
 			}
-			
+
 			else if (node.getAttributes().getNamedItem("var2") !=null) {
-				String variable2 = getStandardVariable(node, "var2");
+				String variable2 = node.getAttributes().getNamedItem("var2").getNodeValue();
 				Relation relation = getRelation(node);		
-				condition = new BasicCondition(variable, "{"+variable2+"}", relation);
+				condition = new BasicCondition(new Template(variable), new Template("{"+variable2+"}"), relation);
 			}
 			else {
 				throw new DialException("unrecognized format for condition ");
 			}
-			
+
 			for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
 				Node attr = node.getAttributes().item(i);
 				if (!attr.getNodeName().equals("var") && !attr.getNodeName().equals("var2")
@@ -243,51 +232,30 @@ public class XMLRuleReader {
 			}
 			return condition;
 		}
-		else if (node.getNodeName().equals("or")) {
+
+		// extracting a conjunction, disjunction, or negated conjunction
+		else if (node.getNodeName().equals("or") || node.getNodeName().equals("and") || node.getNodeName().equals("neg")) {
 			ComplexCondition condition = new ComplexCondition();
-			condition.setOperator(BinaryOperator.OR);
-			
+			BinaryOperator operator = (node.getNodeName().equals("or"))? BinaryOperator.OR : BinaryOperator.AND;
+			condition.setOperator(operator);
+
 			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
 				Node subNode = node.getChildNodes().item(i);
 				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
 					condition.addCondition(getSubcondition(subNode));
 				}
 			}
-			return condition;
-		}
-		else if (node.getNodeName().equals("and")) {
-			ComplexCondition condition = new ComplexCondition();
-			condition.setOperator(BinaryOperator.AND);
-			
-			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
-				Node subNode = node.getChildNodes().item(i);
-				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
-					condition.addCondition(getSubcondition(subNode));
-				}		
-			}
-			return condition;
-		}
-		else if (node.getNodeName().equals("neg")) {
-			ComplexCondition condition = new ComplexCondition();
-			condition.setOperator(BinaryOperator.AND);
-			
-			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
-				Node subNode = node.getChildNodes().item(i);
-				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
-					condition.addCondition(getSubcondition(subNode));
-				}
-			}
-			return new NegatedCondition(condition);
+			return (!node.getNodeName().equals("neg"))? condition : new NegatedCondition(condition);
 		}
 		return new VoidCondition();
 	}
 
 
 	/**
-	 * 
-	 * @param node
-	 * @return
-	 * @throws DialException 
+	 * Extracts the relation specified in a condition
+	 * @param node the XML node containing the relation
+	 * @return the corresponding relation
+	 * @throws DialException  if the relation is ill-defined
 	 */
 	private static Relation getRelation(Node node) throws DialException {
 		Relation relation = Relation.EQUAL;
@@ -314,7 +282,7 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.CONTAINS;
 			}
-	/**		else if (relationStr.toLowerCase().trim().equals("length")) {
+			/**		else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
 			} */
 			else if (relationStr.toLowerCase().trim().equals("notcontains")) {
@@ -332,12 +300,18 @@ public class XMLRuleReader {
 			else {
 				throw new DialException("unrecognized relation: " + relationStr);
 			}
-			
+
 		}
 		return relation;
 	}
 
 
+	/**
+	 * Extracting the binary operator specified at the top of a condition (if any).
+	 * 
+	 * @param conditionNode the XML node
+	 * @return the corresponding operator
+	 */
 	private static BinaryOperator getBinaryOperator(Node conditionNode) {
 		BinaryOperator operator = BinaryOperator.AND;
 		if (conditionNode.hasAttributes() && conditionNode.getAttributes().getNamedItem("operator")!=null) {
@@ -360,109 +334,59 @@ public class XMLRuleReader {
 		return operator;
 	}
 
-	
-	
-	private static String getStandardVariable(Node node, String varTag) throws DialException {
-		
-		if (node.hasAttributes() && node.getAttributes().getNamedItem(varTag)!=null) {
-			return node.getAttributes().getNamedItem(varTag).getNodeValue();		
-		}
-		else {
-			throw new DialException("attribute "  + varTag + " is mandatory");
-		}
-	}
-
 
 
 	/**
+	 * Extracts a full effect from the XML specification.
 	 * 
-	 * @param node
-	 * @param domain
-	 * @return
+	 * @param node the XML node
+	 * @return the corresponding effect
 	 * @throws DialException 
 	 */
 	private static Effect getFullEffect(Node effectNode) throws DialException {
 
-		List<Effect> effects = new LinkedList<Effect>();
+		List<BasicEffect> effects = new LinkedList<BasicEffect>();
 
 		for (int i = 0 ; i < effectNode.getChildNodes().getLength(); i++) {
 			Node node = effectNode.getChildNodes().item(i);
 
 			if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment") && node.hasAttributes()) {
-				Effect subeffect = getSubEffect(node);
+				BasicEffect subeffect = getSubEffect(node);
 				effects.add(subeffect);
 			}
 		}
 
-		if (effects.isEmpty()) {
-			return new VoidEffect();
-		}
-		else if (effects.size() == 1) {
-			return effects.get(0);
-		}
-		else {
-			ComplexEffect effect = new ComplexEffect(effects);
-			return effect;
-		}
+		return new Effect(effects);		
 	}
 
 
 	/**
+	 * Extracts a basic effect from the XML specification.
 	 * 
-	 * PS: we should have distinct relations: equal, unequal, include, substring
-	 * 
-	 * @param node
-	 * @param domain
-	 * @param rule
-	 * @return
-	 * @throws DialException 
+	 * @param node the XML node
+	 * @return the corresponding basic effect
+	 * @throws DialException if the effect is ill-defined
 	 */
-	private static Effect getSubEffect(Node node) throws DialException {
+	private static BasicEffect getSubEffect(Node node) throws DialException {
 
-		Effect effect = new VoidEffect();
-
-		if (node.getAttributes().getNamedItem("var")!=null) {
-
-			String variable = getStandardVariable(node, "var");
-			String valueStr = "";
-			if (node.getAttributes().getNamedItem("value")!=null) {
-				valueStr = node.getAttributes().getNamedItem("value").getNodeValue();
-			}
-		 	else if (node.getAttributes().getNamedItem("var2")!=null) {
-		 		valueStr ="{" + node.getAttributes().getNamedItem("var2").getNodeValue() + "}";
-			} 
-			else if (node.getNodeName().equals("clear")) {
-				effect = new ClearEffect(variable);
-			}
-			else {
-				throw new DialException("effect must be either basic or equality");
-			}
-			
-			if ((node.getNodeName().equalsIgnoreCase("set"))) {
-				if (node.getAttributes().getNamedItem("relation")!=null && getRelation(node) == Relation.UNEQUAL) {
-					effect = new BasicEffect(variable, valueStr, EffectType.DISCARD);
-				}
-				else {
-					effect = new BasicEffect(variable, valueStr, EffectType.SET);
-				}
-			}
-			else if ((node.getNodeName().equalsIgnoreCase("add"))) {
-				effect = new BasicEffect(variable, valueStr, EffectType.ADD);
-			}
-			else if ((node.getNodeName().equalsIgnoreCase("remove"))) {
-				effect = new BasicEffect(variable, valueStr, EffectType.DISCARD);
-			}
-			else if (!node.getNodeName().equals("clear") && !node.getNodeName().equals("#text") 
-					&& ! node.getNodeName().equals("#comment")) {
-				throw new DialException("unrecognized effect: " + node.getNodeName());
-			}
-		}
-	
-		else {
+		if (node.getAttributes().getNamedItem("var")==null) {
 			throw new DialException("invalid format for effect: " + node.getNodeName() +
 					" and var " + node.getAttributes().getNamedItem("var"));
 		}
+
+		Template variable = new Template(node.getAttributes().getNamedItem("var").getNodeValue());
 		
+		Template value = null;
+		if (node.getAttributes().getNamedItem("value")!=null) {
+			value = new Template(node.getAttributes().getNamedItem("value").getNodeValue());
+		}
+		else if (node.getAttributes().getNamedItem("var2")!=null) {
+			value = new Template("{" + node.getAttributes().getNamedItem("var2").getNodeValue() + "}");
+		} 
+		
+		EffectType type = getEffectType(node);
+
+		// checking for other attributes
 		for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
 			Node attr = node.getAttributes().item(i);
 			if (!attr.getNodeName().equals("var") && !attr.getNodeName().equals("var2")
@@ -470,56 +394,109 @@ public class XMLRuleReader {
 				throw new DialException("unrecognized attribute: " + attr.getNodeName());
 			}
 		}
-		
-		return effect;
+
+		return new BasicEffect (variable, value, type);
 	}
 
 	
-	private static <T> Parameter getParameter(Node node, Class<T> cls) throws DialException {
+	/**
+	 * Returns the effect type corresponding to an XML specification
+	 * 
+	 * @param node the XML node
+	 * @return the corresponding type
+	 * @throws DialException if the effect type is ill-defined
+	 */
+	private static EffectType getEffectType(Node node) throws DialException {
 		
-		if (cls.equals(UpdateRule.class) || cls.equals(PredictionRule.class)) {
+		if (node.getNodeName().equalsIgnoreCase("set") & node.getAttributes().getNamedItem("relation")!=null 
+				&& getRelation(node) == Relation.UNEQUAL) {
+				return EffectType.DISCARD;
+		}
+		else if (node.getNodeName().equalsIgnoreCase("set")) {
+			return EffectType.SET;
+		}
+		else if ((node.getNodeName().equalsIgnoreCase("add"))) {
+			return EffectType.ADD;
+		}
+		else if ((node.getNodeName().equalsIgnoreCase("remove"))) {
+			return EffectType.DISCARD;
+		}
+		else if (node.getNodeName().equalsIgnoreCase("clear")) {
+			return EffectType.CLEAR;
+		}
+		else  {
+			throw new DialException("unrecognized effect: " + node.getNodeName());
+		}
+	}
+
+	
+	/**
+	 * Returns the parameter described by the XML specification.
+	 * 
+	 * @param node the XML node
+	 * @param type the rule type
+	 * @return the parameter representation
+	 * @throws DialException
+	 */
+	private static Parameter getParameter(Node node, RuleType type) throws DialException {
+
+		if (type == RuleType.PROB) {
 			if (node.getAttributes().getNamedItem("prob")!= null) {
-				String weightStr = node.getAttributes().getNamedItem("prob").getNodeValue();
-				return getInnerParameter(weightStr);
+				String prob = node.getAttributes().getNamedItem("prob").getNodeValue();
+				return getInnerParameter(prob);
 			}
 			else {
 				return new FixedParameter(1.0);
 			}
 		}
-		else if (cls.equals(DecisionRule.class)) {
+		else if (type == RuleType.UTIL) {
 			if (node.getAttributes().getNamedItem("util")!= null) {
-				String utilStr = node.getAttributes().getNamedItem("util").getNodeValue();
-				return getInnerParameter(utilStr);
+				String util = node.getAttributes().getNamedItem("util").getNodeValue();
+				return getInnerParameter(util);
 			}
 		}
-		throw new DialException("rule class is not accepted: " + cls.getCanonicalName());
+		throw new DialException("parameter is not accepted");
 	}
+
 	
-	
+	/** Returns the parameter described by the XML specification.
+	 * 
+	 * @param node the XML node
+	 * @return the parameter representation
+	 * @throws DialException
+	 */
 	private static Parameter getInnerParameter(String paramStr) throws DialException {
+		
+		// we first try to extract a fixed value
 		try {
 			double weight = Double.parseDouble(paramStr);
 			return new FixedParameter(weight);
 		}
+		
+		// if it fails, we extract an actual unknown parameter
 		catch (NumberFormatException e) {
+			
+			// if we have a linear model
 			if (paramStr.contains("+")) {
 				String[] split = paramStr.split("\\+");
-				CompositeParameter param = new CompositeParameter();
+				CompositeParameter param = new CompositeParameter(Operator.ADD);
 				for (int i = 0 ; i < split.length ; i++) {
-					param.addParameter(split[i]);
+					param.addParameter(new StochasticParameter(split[i]));
 				}
 				return param;
 			}
+			
+			// else, we extract a stochastic parameter
 			else {
 				Pattern p = Pattern.compile(".+(\\[[0-9]+\\])");
 				Matcher m = p.matcher(paramStr);
 				if (m.matches()) {
 					int index = Integer.parseInt(m.group(1).replace("[", "").replace("]", ""));
 					String paramId = paramStr.replace(m.group(1), "").trim();
-					return new DirichletParameter(paramId, index);
+					return new StochasticParameter(paramId, index);
 				}
 				else {
-					return new SingleParameter(paramStr);					
+					return new StochasticParameter(paramStr);					
 				}
 			}
 		}

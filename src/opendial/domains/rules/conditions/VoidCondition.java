@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -23,9 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Template;
-import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
 
 /**
  * Representation of a void condition, which is always true.
@@ -62,27 +62,13 @@ public class VoidCondition implements Condition {
 	}
 	
 	/**
-	 * Returns an empty assignment (no local output)
-	 *
-	 * @param input the input assignment (ignored)
-	 * @return an empty assignment
+	 * Returns an empty set of groundings
 	 */
 	@Override
-	public Assignment getLocalOutput(Assignment input) {
-		return new Assignment();
+	public ValueRange getGroundings(Assignment input) {
+		return new ValueRange();
 	}
 	
-	
-	/**
-	 * Returns the set of unbound predicates for the basic condition, which could
-	 * be either associated with the variable label or its content.
-	 * 
-	 * @return the set of unbound predicates
-	 */
-	@Override
-	public Set<UnboundPredicate> getUnboundPredicates() {
-		return new HashSet<UnboundPredicate>();
-	}
 	
 	
 	/**

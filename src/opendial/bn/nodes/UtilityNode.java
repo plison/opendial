@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -21,27 +21,21 @@ package opendial.bn.nodes;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.bn.distribs.utility.RuleUtilDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
-import opendial.domains.rules.parameters.FixedParameter;
-import opendial.domains.rules.parameters.Parameter;
-import opendial.utils.CombinatoricsUtils;
+import opendial.datastructs.Assignment;
 
 /**
  * Representation of a utility node (sometimes also called utility node)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class UtilityNode extends BNode {
@@ -50,9 +44,7 @@ public class UtilityNode extends BNode {
 	public static Logger log = new Logger("UtilityNode", Logger.Level.DEBUG);
 
 	// the utility distribution
-	UtilityDistribution distrib;
-
-	Map<Assignment, Parameter> relevantActionsCache;
+	protected UtilityDistribution distrib;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -141,21 +133,13 @@ public class UtilityNode extends BNode {
 	}
 
 	/**
-	 * Returns the set of possible utilities for the node
+	 * Returns an empty set (a utility node has no "value", only utilities).
 	 * 
-	 * @return the possible utilities
+	 * @return the empty set
 	 */
 	@Override
 	public Set<Value> getValues() {
-
-		Set<Value> utilities = new HashSet<Value>();
-
-		Set<Assignment> possibleConditions = getPossibleConditions();
-		for (Assignment condition : possibleConditions) {
-			double value = distrib.getUtil(condition);
-			utilities.add(ValueFactory.create(value));
-		}
-		return utilities;
+		return new HashSet<Value>();
 	}
 
 	/**
@@ -163,7 +147,7 @@ public class UtilityNode extends BNode {
 	 * 
 	 * @return the utility distribution
 	 */
-	public UtilityDistribution getDistribution() {
+	public UtilityDistribution getDistrib() {
 		return distrib;
 	}
 
@@ -185,36 +169,6 @@ public class UtilityNode extends BNode {
 		return factor;
 	}
 
-
-	/**
-	 * Returns the set of all possible actions that are allowed by the node
-	 * 
-	 * @return the set of all relevant action values
-	 */
-	public Map<Assignment,Parameter> getRelevantActions() {
-		if (relevantActionsCache == null) {
-			buildRelevantActionsCache();
-		}
-		return relevantActionsCache;
-	}
-	
-	public boolean hasPositiveUtility() {
-		if (relevantActionsCache == null) {
-			buildRelevantActionsCache();
-		}
-		for (Assignment action : relevantActionsCache.keySet()) {
-			Parameter param = relevantActionsCache.get(action);
-			if (param instanceof FixedParameter) {
-				if (((FixedParameter)param).getParameterValue() > 0.0) {
-					return true;
-				}
-			}
-			else {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	// ===================================
 	//  UTILITIES
@@ -238,8 +192,6 @@ public class UtilityNode extends BNode {
 	/**
 	 * Returns a string representation of the node, consisting of 
 	 * the node identifier and its distribution
-	 *
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -258,37 +210,6 @@ public class UtilityNode extends BNode {
 		return nodeId.hashCode() - distrib.hashCode();
 	}
 
-
-	/**
-	 * Returns a pretty print representation of the node, which
-	 * displays its utility distribution
-	 * 
-	 * @return the pretty print representation
-	 */
-	@Override
-	public String prettyPrint() {
-		return distrib.prettyPrint();
-	}
-
-
-
-	protected void buildRelevantActionsCache() {
-		relevantActionsCache = new HashMap<Assignment,Parameter>();
-		// here, we must be careful not to include the action nodes themselves 
-		// (else, we would create an infinite cycle of calls)
-		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
-		for (BNode inputNode : inputNodes.values()) {
-			if (!(inputNode instanceof ActionNode)) {
-				possibleInputValues.put(inputNode.getId(), inputNode.getValues());
-			}
-		}
-		Set<Assignment> possibleConditions = 
-				CombinatoricsUtils.getAllCombinations(possibleInputValues);
-
-		for (Assignment input : possibleConditions) {
-			relevantActionsCache.putAll(distrib.getRelevantActions(input));
-		}
-	}
 
 
 }

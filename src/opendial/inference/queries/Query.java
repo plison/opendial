@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -24,69 +24,92 @@ import java.util.List;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
-import opendial.state.DialogueState;
+import opendial.datastructs.Assignment;
 
+/**
+ * Abstract class representing a generic inference query. Each query is composed of a
+ * Bayesian network, a set of query variables, and some evidence.
+ *  
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public abstract class Query {
 	
+	// logger
 	public static Logger log = new Logger("Query", Logger.Level.DEBUG);
 	
+	// the Bayesian network for the query
 	BNetwork network;
+	
+	// the query variables
 	Collection<String> queryVars;
+	
+	// the evidence
 	Assignment evidence;
-	Collection<String> conditionalVars;
 	
-	boolean lightweight = false;
-
-	
+	/**
+	 * Creates a new query with the three elements.
+	 * 
+	 * @param network the Bayesian network
+	 * @param queryVars the query variables
+	 * @param evidence the query evidence
+	 */
 	protected Query (BNetwork network, Collection<String> queryVars, 
 			Assignment evidence) {
-		this(network, queryVars, evidence, new ArrayList<String>());
-	}
-	
-	protected Query (BNetwork network, Collection<String> queryVars, 
-			Assignment evidence, Collection<String> conditionalVars) {
 		this.network = network;
-		this.queryVars = new ArrayList<String>(queryVars);
-		this.evidence = new Assignment(evidence);
-		this.conditionalVars = new ArrayList<String>(conditionalVars);
-	}
-
-	
-	public void addEvidence(Assignment evidence) {
-		this.evidence.addAssignment(evidence);
-	}
-	
-
-	protected static Collection<String> getCollection(String...args) {
-		List<String> list = new ArrayList<String>();
-		for (int i = 0 ; i < args.length ; i++) {
-			list.add(args[i]);
+		this.queryVars = queryVars;
+		this.evidence = evidence; 
+		
+		if (queryVars.isEmpty()) {
+			log.warning("empty set of query variables: " + toString());
 		}
-		return list;
+		else if (!network.getNodeIds().containsAll(queryVars)) {
+			log.warning("mismatch between query variables and network nodes: " 
+					+ queryVars + " not included in " + network.getNodeIds());
+
+		}
+	/**	else if (!network.getNodeIds().containsAll(evidence.getVariables())) {
+			log.warning("mismatch between evidence variables and network nodes: " 
+					+ evidence.getVariables() + " not included in " + network.getNodeIds());
+		} */
 	}
 
-
+	
+	/**
+	 * Returns the Bayesian network for the query
+	 * 
+	 * @return the network
+	 */
 	public BNetwork getNetwork() {
 		return network;
 	}
 	
+	/**
+	 * Returns the query variables for the query
+	 * @return
+	 */
 	public Collection<String> getQueryVars() {
-		return new ArrayList<String>(queryVars);
+		return new HashSet<String>(queryVars);
 	}
 	
+	/**
+	 * Returns the evidence
+	 * 
+	 * @return the evidence
+	 */
 	public Assignment getEvidence() {
 		return evidence;
 	}
 	
-	public Collection<String> getConditionalVars() {
-		return new ArrayList<String>(conditionalVars);
-	}
 	
-	public abstract Set<String> getIrrelevantNodes() ;
-	
+	/**
+	 * Returns a list of nodes sorted according to the ordering in 
+	 * BNetwork.getSortedNodes() and pruned from the irrelevant nodes
+	 * 
+	 * @return the ordered list of relevant nodes
+	 */
 	public List<BNode> getFilteredSortedNodes() {
 		List<BNode> filteredNodes = new ArrayList<BNode>();
 		Set<String> irrelevantNodes = getIrrelevantNodes();
@@ -98,6 +121,10 @@ public abstract class Query {
 		return filteredNodes;
 	}
 	
+	
+	/**
+	 * Returns a string representation of the query
+	 */
 	public String toString() {
 		String str = "";
 		for (String q : queryVars) {
@@ -106,19 +133,10 @@ public abstract class Query {
 		if (!queryVars.isEmpty()) {
 			str = str.substring(0, str.length()-1);
 		}
-		if (!evidence.isEmpty() || !conditionalVars.isEmpty()) {
+		if (!evidence.isEmpty()) {
 			str += "|";
 			if (!evidence.isEmpty()) {
 				str += evidence;
-				if (!conditionalVars.isEmpty()) {
-					str += ",";
-				}
-			}
-			if (!conditionalVars.isEmpty()) {
-				for (String c : conditionalVars) {
-					str+= c + ",";
-				}
-				str = str.substring(0, str.length()-1);
 			}
 		}
 		str += "";
@@ -126,27 +144,22 @@ public abstract class Query {
 	}
 
 	
+	/**
+	 * Returns the hashcode for the query
+	 * 
+	 * @return hashcode
+	 */
 	public int hashCode() {
-		return queryVars.hashCode() - network.getNodeIds().hashCode() 
-				+2*evidence.hashCode() -3*conditionalVars.hashCode();
+		return queryVars.hashCode() +2*evidence.hashCode();
 	}
 	
 	
-	public void removeQueryVar(String queryVar) {
-		queryVars.remove(queryVar);
-	}
-	
-	public void setAsLightweight(boolean lightweight) {
-		this.lightweight = lightweight;
-	}
-	
-	
-	public boolean isLightweight() {
-		return lightweight;
-	}
-
-	public void clearEvidence() {
-		evidence = new Assignment();
-	}
+	/**
+	 * Returns the set of nodes in the network that are not relevant for 
+	 * the given query and can therefore be pruned from the inference.
+	 * 
+	 * @return the list of irrelevant nodes for the query
+	 */
+	protected abstract Set<String> getIrrelevantNodes() ;
 	
 }

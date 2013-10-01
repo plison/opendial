@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
  * Utility for logging on the standard output (console).  
  *
  * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
+ * @version $Date::                      $
  *  
  */
 public class Logger {

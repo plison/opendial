@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -28,55 +28,77 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import opendial.DialogueSystem;
 import opendial.arch.DialException;
-import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.MultivariateDistribution;
-import opendial.bn.distribs.continuous.UnivariateDistribution;
-import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.values.ValueFactory;
-import opendial.bn.values.VectorVal;
 import opendial.common.InferenceChecks;
-import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.OutputTable;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.Rule;
+import opendial.domains.rules.effects.BasicEffect;
+import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.parameters.CompositeParameter;
-import opendial.domains.rules.parameters.DirichletParameter;
-import opendial.domains.rules.parameters.Parameter;
-import opendial.gui.GUIFrame;
-import opendial.inference.ImportanceSampling;
+import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
-import opendial.state.rules.Rule;
 
 public class ParametersTest {
 
 	// logger
 	public static Logger log = new Logger("ParametersTest", Logger.Level.DEBUG);
 	
-	public static final String domainFile = "domains//testing//testwithparams.xml";
-	public static final String domainFile2 = "domains//testing//testwithparams2.xml";
-	public static final String paramFile = "domains//testing//params.xml";
+	public static final String domainFile = "test//domains//testwithparams.xml";
+	public static final String domainFile2 = "test//domains//testwithparams2.xml";
+	public static final String paramFile = "test//domains//params.xml";
 
+	
+	static InferenceChecks inference;
+	static Domain domain1;
+	static Domain domain2;
+	static BNetwork params;
+
+	static {
+		try { 
+			params = XMLStateReader.extractBayesianNetwork(paramFile);
+
+			domain1 = XMLDomainReader.extractDomain(domainFile); 
+			domain1.setParameters(params);
+
+			domain2 = XMLDomainReader.extractDomain(domainFile2); 
+			domain2.setParameters(params);
+
+			inference = new InferenceChecks();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	@Test
 	public void paramTest1() throws DialException, InterruptedException {
-		Settings.getInstance().activatePlanner = false;
-	//	Settings.getInstance().gui.showGUI = true;
-		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		DialogueSystem system = new DialogueSystem(domain);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
-		system.addParameters(params);
-		
-		assertTrue(system.getState().getNetwork().hasChanceNode("theta_1"));
-		InferenceChecks inference = new InferenceChecks();
+
 		inference.EXACT_THRESHOLD = 0.1;
+
+		//	Settings.gui.showGUI = true;
+
+		DialogueSystem system = new DialogueSystem(domain1);
+		system.getSettings().enablePlan = false;
+		system.getSettings().showGUI = false;
+		
+		assertTrue(system.getState().hasChanceNode("theta_1"));
 		ProbQuery query = new ProbQuery(system.getState(), "theta_1");
 		inference.checkCDF(query, new Assignment("theta_1", 0.5), 0.5);
 		inference.checkCDF(query, new Assignment("theta_1", 5), 0.99);
@@ -86,127 +108,139 @@ public class ParametersTest {
 		inference.checkCDF(query, new Assignment("theta_2", 2), 0.5);
 		
 		system.startSystem();
-		system.getState().addContent(new Assignment("u_u", "hello there"), "test");
-		UtilityTable utils = ((new ImportanceSampling()).queryUtil(new UtilQuery(system.getState(), "u_m'")));
+		system.addContent(new Assignment("u_u", "hello there"));
+		UtilityTable utils = ((new LikelihoodWeighting()).queryUtil(new UtilQuery(system.getState(), "u_m'")));
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) > 0);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < 
 				utils.getUtil(new Assignment("u_m'", "so interesting!")));
-//		assertEquals(11, system.getState().getNetwork().getNodeIds().size());
-		assertEquals(12, system.getState().getNetwork().getNodeIds().size());
-		Settings.getInstance().activatePlanner = true;
-//		Thread.sleep(30000000);
+		assertEquals(12, system.getState().getNodeIds().size());
+
+		//		Thread.sleep(30000000);
 	}
 	
 	
 	@Test
 	public void paramTest2() throws DialException, InterruptedException {
-		Settings.getInstance().activatePlanner = false;
-		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		DialogueSystem system = new DialogueSystem(domain);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
-		system.addParameters(params);
-		
-		assertTrue(system.getState().getNetwork().hasChanceNode("theta_3"));
-		InferenceChecks inference = new InferenceChecks();
+
 		inference.EXACT_THRESHOLD = 0.1;
+		
+		DialogueSystem system = new DialogueSystem(domain1);
+		system.getSettings().enablePlan = false;
+		system.getSettings().showGUI = false;
+		
+		assertTrue(system.getState().hasChanceNode("theta_3"));
 		ProbQuery query = new ProbQuery(system.getState(), "theta_3");
 		inference.checkCDF(query, new Assignment("theta_3", 0.6), 0.0);
 		inference.checkCDF(query, new Assignment("theta_3", 0.8), 0.5);
 		inference.checkCDF(query, new Assignment("theta_3", 0.95), 1.0);
 
 		system.startSystem();
-		system.getState().addContent(new Assignment("u_u", "brilliant"), "test");
-		ProbDistribution distrib = system.getState().getContent("a_u", true);
-		Settings.getInstance().activatePlanner = true;
+		system.addContent(new Assignment("u_u", "brilliant"));
+		ProbDistribution distrib = system.getContent("a_u");
 
 		assertEquals(0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u", "Approval")), 0.05);
-	}
+
+}
 	
 
 	@Test
 	public void paramTest3() throws DialException, InterruptedException {
-		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		DialogueSystem system = new DialogueSystem(domain);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
-		system.getState().activateDecisions(false);
-		system.addParameters(params);
+
+		DialogueSystem system = new DialogueSystem(domain1);
+		system.getSettings().enablePlan = false;
+		system.getSettings().showGUI = false;
+		system.startSystem();
 		
-		List<Rule> rules = new ArrayList<Rule>(domain.getModels().get(1).getRules());
-		OutputTable outputs = rules.get(1).getEffectOutputs(new Assignment("u_u", "no no"));
-		Output o = new Output();
-		o.setValueForVariable("a_u", ValueFactory.create("Disapproval"));
-		assertTrue(outputs.getParameter(o) instanceof DirichletParameter);
-		Assignment input = new Assignment("theta_4", ValueFactory.create("(0.36, 0.64)"));
+		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0).getRules());
+		RuleCase outputs = rules.get(1).getMatchingCase(new Assignment("u_u", "no no"));
+		Effect o = new Effect();
+		o.addSubEffect(new BasicEffect(new Template("a_u"), new Template("Disapproval"), EffectType.SET));
+		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
+		Assignment input = new Assignment("theta_4", ValueFactory.create("[0.36, 0.64]"));
 		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input), 0.01);
 		
-		system.getState().addContent(new Assignment("u_u", "no no"), "test");
-
-		assertEquals(0.36, ((MultivariateDistribution)system.getState().
-				getContent("theta_4", true).toContinuous()).getMean()[0], 0.1);
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(new Assignment("u_u", "no no"));
+		assertEquals(0.36, system.getState().
+				queryProb("theta_4").toContinuous().getFunction().getMean()[0], 0.1);
 		
-		assertEquals(0.64, system.getState().getContent("a_u", true).toDiscrete().
-				getProb(new Assignment(), new Assignment("a_u", "Disapproval")), 0.1);
-	}
+		assertEquals(0.64, system.getContent("a_u").toDiscrete().
+				getProb(new Assignment("a_u", "Disapproval")), 0.1);
+		
+}
 	
 	
 	@Test
 	public void paramTest4() throws DialException, InterruptedException {
-		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		DialogueSystem system = new DialogueSystem(domain);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
-		system.getState().activateDecisions(false);
-		system.addParameters(params);
-		
-		List<Rule> rules = new ArrayList<Rule>(domain.getModels().get(2).getRules());
-		OutputTable outputs = rules.get(0).getEffectOutputs(new Assignment("u_u", "my name is"));
-		Output o = new Output();
-		o.setValueForVariable("u_u^p", ValueFactory.create("Pierre"));
-		assertTrue(outputs.getParameter(o) instanceof DirichletParameter);
-		Assignment input = new Assignment("theta_5", ValueFactory.create("(0.36, 0.24, 0.40)"));
+
+		DialogueSystem system = new DialogueSystem(domain1);
+		system.getSettings().enablePlan = false;
+		system.getSettings().showGUI = false;
+		system.startSystem();
+	
+		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1).getRules());
+		RuleCase outputs = rules.get(0).getMatchingCase(new Assignment("u_u", "my name is"));
+		Effect o = new Effect();
+		o.addSubEffect(new BasicEffect(new Template("u_u^p"), new Template("Pierre"), EffectType.SET));		
+		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
+		Assignment input = new Assignment("theta_5", ValueFactory.create("[0.36, 0.24, 0.40]"));
 		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
-				
-	 	system.getState().addContent(new Assignment("u_u", "my name is"), "test");
+
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+	 	system.addContent(new Assignment("u_u", "my name is"));
+
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+	 	system.addContent(new Assignment("u_u", "Pierre"));
+
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(new Assignment("u_u", "my name is"));
 		
-	 	system.getState().addContent(new Assignment("u_u", "Pierre"), "test");
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(new Assignment("u_u", "Pierre"));
 		
-		system.getState().addContent(new Assignment("u_u", "my name is"), "test");
-		
-		system.getState().addContent(new Assignment("u_u", "Pierre"), "test");
-		
-		assertEquals(0.3, ((MultivariateDistribution)system.getState().
-				getContent("theta_5", true).toContinuous()).getMean()[0], 0.12); 
+		assertEquals(0.3,system.getState().
+				queryProb("theta_5").toContinuous().getFunction().getMean()[0], 0.12); 
 	}
 	
 	
 
 	@Test
 	public void paramTest5() throws DialException, InterruptedException {
-		Domain domain = XMLDomainReader.extractDomain(domainFile2);
-		DialogueSystem system = new DialogueSystem(domain);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
-		system.getState().activateDecisions(false);
-		system.addParameters(params);
+
+		DialogueSystem system = new DialogueSystem(domain2);
+		system.getSettings().enablePlan = false;
+		system.getSettings().showGUI = false;
+		system.startSystem();
+
+		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0).getRules());
+		RuleCase outputs = rules.get(0).getMatchingCase(new Assignment("u_u", "brilliant"));
+		Effect o = new Effect();
+		o.addSubEffect(new BasicEffect(new Template("a_u"), new Template("Approval"), EffectType.SET));
 		
-		List<Rule> rules = new ArrayList<Rule>(domain.getModels().get(0).getRules());
-		OutputTable outputs = rules.get(0).getEffectOutputs(new Assignment("u_u", "brilliant"));
-		Output o = new Output();
-		o.setValueForVariable("a_u", ValueFactory.create("Approval"));
 		assertTrue(outputs.getParameter(o) instanceof CompositeParameter);
 		Assignment input = new Assignment(new Assignment("theta_6", 2.1), new Assignment("theta_7", 1.3));
 		assertEquals(3.4, outputs.getParameter(o).getParameterValue(input), 0.01);
 		
-		system.getState().addContent(new Assignment("u_u", "brilliant"), "test");
-
-		assertEquals(1.0, ((UnivariateDistribution)system.getState().
-				getContent("theta_6", true).toContinuous()).getMean(), 0.06);
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(new Assignment("u_u", "brilliant"));
 		
-		assertEquals(0.72, ((SimpleTable)system.getState().getContent("a_u", true).toDiscrete()).
-				getProb(new Assignment("a_u", "Approval")), 0.06);
+		assertEquals(1.0, system.getState(). 
+				queryProb("theta_6").toContinuous().getFunction().getMean()[0], 0.07);
 		
-		assertEquals(0.28, ((SimpleTable)system.getState().getContent("a_u", true).toDiscrete()).
-				getProb(new Assignment("a_u", "Irony")), 0.06);
-	}
+		assertEquals(0.72, ((CategoricalTable)system.getContent("a_u").toDiscrete()).
+				getProb(new Assignment("a_u", "Approval")), 0.07);
+		
+		assertEquals(0.28, ((CategoricalTable)system.getContent("a_u").toDiscrete()).
+				getProb(new Assignment("a_u", "Irony")), 0.07);
+		
+}
 	
 }
 

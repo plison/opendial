@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -30,8 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.bn.nodes.BNode;
+import opendial.datastructs.Assignment;
 
 /**
  * Factory for creating variable values
@@ -48,9 +47,12 @@ public class ValueFactory {
 	// none value (no need to recreate one everytime)
 	static NoneVal noneValue = new NoneVal();
 
-	static Pattern p = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
-	static Pattern p2 = Pattern.compile("\\(([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
-			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\)");
+	// pattern to find a double value
+	static Pattern doublePattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+
+	// pattern to find an array of doubles
+	static Pattern arrayPattern = Pattern.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
+			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
 
 	/**
@@ -64,8 +66,8 @@ public class ValueFactory {
 	 */
 	public static Value create(String str) {
 		str = str.trim();
-		
-		Matcher m = p.matcher(str);
+
+		Matcher m = doublePattern.matcher(str);
 		if (m.matches()) {
 			return new DoubleVal(Double.parseDouble(str));
 		}
@@ -79,43 +81,27 @@ public class ValueFactory {
 			return none();
 		}
 		// adds the converted value
-		else if (str.startsWith("[") && str.endsWith("]")) {
+		else {
+			Matcher m2 = arrayPattern.matcher(str);
+			if (m2.matches()){
+				List<Double> subVals = new ArrayList<Double>();
+				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+					subVals.add(Double.parseDouble(subVal));
+				}
+				return new ArrayVal(subVals);
+			}
+			else if (str.startsWith("[") && str.endsWith("]")) {
 
-			Set<Value> subVals = new HashSet<Value>();
-			for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
-				if (subVal.length() > 0) {
-				subVals.add(create(subVal.trim()));
+				Set<Value> subVals = new HashSet<Value>();
+				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+					if (subVal.length() > 0) {
+						subVals.add(create(subVal.trim()));
+					}
 				}
+				return new SetVal(subVals);
 			}
-			return new SetVal(subVals);
 		}
-		// adds the converted value
-				else if (str.startsWith("<") && str.endsWith(">")) {
-					Map<String,Value> subVals = new HashMap<String,Value>();
-					for (String subVal : str.replace("<", "").replace(">", "").split(";")) {
-						if (subVal.length() > 0  && subVal.contains(":")) {
-							String key = subVal.split(":")[0];
-							Value value = create(subVal.split(":")[1].trim());
-							subVals.put(key, value);
-						}
-					}
-					return new MapVal(subVals);
-				}
-				else if (str.startsWith("Assign(") && str.endsWith(")")) {
-					Assignment a = Assignment.createFromString(str.replace("Assign(", "").substring(0, str.length()-8));
-					return new AssignmentVal(a);
-				}
-		// adds the converted value
-			else {
-				Matcher m2 = p2.matcher(str);
-				if (m2.matches()){
-					List<Double> subVals = new ArrayList<Double>();
-					for (String subVal : str.replace("(", "").replace(")", "").split(",")) {
-						subVals.add(Double.parseDouble(subVal));
-					}
-					return new VectorVal(subVals);
-				}
-			}
+
 		return new StringVal(str);
 	}
 
@@ -128,10 +114,10 @@ public class ValueFactory {
 	public static DoubleVal create(double d) {
 		return new DoubleVal(d);
 	}
-	
-	
-	public static VectorVal create(Double[] d) {
-		return new VectorVal(d);
+
+
+	public static ArrayVal create(Double[] d) {
+		return new ArrayVal(d);
 	}
 
 	/**

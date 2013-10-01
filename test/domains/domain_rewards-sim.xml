@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_m" type="decision">
+
+	<rule id="move-decision-sim">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Move(*)" />
+				<if var="a_m" value="Do({i_u})" />
+			</condition>
+			<effect util="20"/>
+		</case>
+	</rule>
+	
+	<rule id="pickup-decision-sim">
+		<case>
+			<condition operator="or">
+			<and>
+				<if var="i_u" value="PickUp({X})" />
+				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="carried" value="[]"/>
+				<if var="a_m" value="Do({i_u})" />
+			</and>
+			<and>
+				<if var="i_u" value="PickUp(AtFeet)" />
+				<if var="carried" value="[]"/>			
+				<if var="a_m" value="Do({i_u})" />
+			</and>
+			</condition>
+			<effect util="20"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({Y})" />
+				<if var="perceived" value="{Y}" relation="contains"/>
+				<if var="carried" value="[]" relation="!=" />
+				<if var="a_m" value="AlreadyCarryObject" />				
+			</condition>
+			<effect util="20"/>
+		</case>	
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="PickUp({Z})" />
+				<if var="perceived" value="{Z}" relation="notcontains" />
+				<if var="a_m" value="Say(DoNotSeeObject)" />				
+			</condition>
+			<effect util="20"/>
+		</case>
+	</rule>
+	
+	<rule id="release-decision-sim">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release" />
+				<if var="carried" value="None" relation="!="/>
+				<if var="carried" value="[]" relation="!="/>
+				<if var="a_m" value="Do({i_u})" />
+			</condition>
+			<effect util="20"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Release" />
+				<if var="carried" value="[]"/>
+				<if var="a_m" value="Say(DoNotCarryObject)" />
+			</condition>
+			<effect util="20"/>
+		</case>
+	</rule>
+	
+	<rule id="perceive-decision-sim">
+			<case>
+			<condition operator="and">
+					<if var="i_u" value="DoYouSee({A})" />
+					<if var="perceived" value="{A}" relation="contains" />				
+				<if var="a_m" value="Say(Confirm)" />
+			</condition>
+			<effect util="20"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="DoYouSee({B})" />
+				<if var="perceived" value="{B}" relation="notcontains" />			
+				<if var="a_m" value="Say(Disconfirm)" />
+			</condition>
+			<effect util="20"/>
+		</case>
+	</rule>
+	
+	<rule id="whatdoyousee-decision-sim">
+		<case>
+			<condition>
+				<if var="i_u" value="WhatDoYouSee" />
+				<if var="a_m" value="Describe({perceived})" />
+			</condition>
+			<effect util="20"/>
+		</case>
+	</rule>
+	
+	<rule id="chitchat-decision-sim">
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Greeting" />
+				<if var="a_m" value="Say(Greet)" />
+			</condition>
+			<effect util="15"/>
+		</case>
+			<case>
+			<condition operator="and">
+				<if var="i_u" value="Ask(Name)" />
+				<if var="a_m" value="Say(NameIsLenny)" />
+			</condition>
+			<effect util="15"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="i_u" value="Closing" />
+				<if var="a_m" value="Say(Goodbye)" />
+			</condition>
+			<effect util="15"/>
+		</case>
+	</rule>
+	
+	
+	<rule id="allnegs-decision-sim">
+		<case>
+			<condition>
+				<if var="a_m" value="Do(*)" />			
+			</condition>
+			<effect util="-10"/>
+		</case>
+		<case>
+		<condition>
+				<if var="a_m" value="Say(*)" />			
+			</condition>
+			<effect util="-10"/>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Describe(*)"/>
+			</condition>
+			<effect util="-10"/>
+		</case>
+	</rule>
+	
+
+	<rule id="repeat-decision-sim">
+		<case>
+		<condition>
+				<if var="last(a_m)" value="AskRepeat" relation="!="/>
+				<if var="a_u" value="None" relation="!="/>
+				<if var="a_u" value="Confirm" relation="!="/>
+				<if var="a_u" value="Disconfirm" relation="!="/>
+				<if var="a_u" value="Grounding" relation="!="/>
+				<if var="a_m" value="AskRepeat" />
+		</condition>
+			<effect util="1"/>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="AskRepeat" />
+			</condition>
+			<effect util="-1"/>
+		</case>
+	</rule>
+
+	<rule id="confirm-decision-sim">
+		<case>
+		<condition operator="and">
+			<if var="i_u" value="DoYouSee(*)" relation="!="/>
+			<if var="i_u" value="WhatDoYouSee" relation="!="/>
+			<if var="i_u" value="Greeting" relation="!="/>
+			<if var="i_u" value="Closing" relation="!="/>
+			<if var="i_u" value="Ask(Name)" relation="!="/>
+			<if var="i_u" value="None" relation="!="/>
+			<if var="a_m" value="Confirm({i_u})" />
+		</condition>
+			<effect util="2"/>
+		</case>
+		<case>
+			<condition>
+				<if var="a_m" value="Confirm(*)"/>			
+			</condition>
+			<effect util="-2"/>
+		</case>
+	</rule>
+
+	
+	<rule id="reactive-decision-sim">
+		<case>
+			<condition operator="and">
+				<if var="motion" value="true" />
+				<if var="a_u" value="Stop" />
+				<if var="a_m" value="Do(Stop)" />
+			</condition>
+			<effect util="20"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="motion" value="true" />			
+				<if var="a_u" value="Disconfirm" />
+				<if var="a_m" value="Do(Stop)" />
+			</condition>
+			<effect util="20"/>
+		</case>
+		<case>
+			<condition>
+				<if var="motion" value="true" />
+				<if var="a_m" value="None" relation="!=" />
+			</condition>
+			<effect util="-10"/>
+		</case>
+	</rule>
+	
+
+</model>

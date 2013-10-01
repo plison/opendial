@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,7 +20,6 @@
 package opendial.bn;
 
 import opendial.arch.Logger;
-
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -28,25 +27,24 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import opendial.arch.DialException;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
+import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.NetworkExamples;
+import opendial.datastructs.Assignment;
  
 /**
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * 
- * @version $Date:: 2012-06-11 18:14:37 #$
+ * @version $Date::                      $
  *
  */
 public class BNetworkStructureTest {
@@ -155,7 +153,7 @@ public class BNetworkStructureTest {
 		ChanceNode e = bn.getChanceNode("Earthquake");
 		assertTrue(e.getDistrib().isWellFormed());
 		e.removeProb(ValueFactory.create(false));
-		DiscreteProbabilityTable.log.setLevel(Logger.Level.NONE);
+		ConditionalCategoricalTable.log.setLevel(Logger.Level.NONE);
 	//	assertFalse(e.getDistribution().isWellFormed());
 		e.addProb(ValueFactory.create(false), 0.1f);
 	//	assertFalse(e.getDistribution().isWellFormed());
@@ -174,15 +172,15 @@ public class BNetworkStructureTest {
 		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),ValueFactory.create(true), 0.29f);
 		assertTrue(a.getDistrib().isWellFormed());
 
-		DiscreteProbabilityTable.log.setLevel(Logger.Level.NORMAL);
+		ConditionalCategoricalTable.log.setLevel(Logger.Level.NORMAL);
 
 		UtilityTable.log.setLevel(Logger.Level.NONE);
 		UtilityNode v = bn.getUtilityNode("Util1");
-		assertTrue(v.getDistribution().isWellFormed());
+		assertTrue(v.getDistrib().isWellFormed());
 		v.removeUtility(new Assignment(new Assignment("Burglary", false), "Action", ValueFactory.create("CallPolice")));
-		assertFalse(v.getDistribution().isWellFormed());
+		assertFalse(v.getDistrib().isWellFormed());
 		v.addUtility(new Assignment(new Assignment("Burglary", false), "Action", ValueFactory.create("CallPolice")), 100f);
-		assertTrue(v.getDistribution().isWellFormed());
+		assertTrue(v.getDistrib().isWellFormed());
 		UtilityTable.log.setLevel(Logger.Level.NORMAL);		
 	}
 	
@@ -272,10 +270,10 @@ public class BNetworkStructureTest {
 		assertEquals(node.getProb(ValueFactory.none()), 0.199, 0.0001);
 		node.removeProb(ValueFactory.create(false));
 		assertEquals(node.getProb(ValueFactory.none()), 0.999, 0.0001);
-		assertTrue(node.hasProb(new Assignment(), ValueFactory.none()));
+	//	assertTrue(node.hasProb(new Assignment(), ValueFactory.none()));
 	node.addProb(ValueFactory.create(false), 0.999);
 		assertEquals(node.getProb(ValueFactory.none()), 0.0, 0.000001);
-		assertFalse(node.hasProb(new Assignment(), ValueFactory.none()));
+	//	assertFalse(node.hasProb(new Assignment(), ValueFactory.none()));
 	}
 	
 	@Test
@@ -301,13 +299,34 @@ public class BNetworkStructureTest {
 		assertEquals("a_m.place'", bn2.getSortedNodes().get(0).getId());			
 	}
 	
-	@Test
+/** 	@throws DialException 
+ * @Test
 	public void derivedActionNodes () throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = NetworkExamples.constructBasicNetwork3();
-		assertTrue(bn2.getActionNode("Action") instanceof DerivedActionNode);
+		assertTrue(bn2.getActionNode("Action") instanceof ActionNode);
 		assertEquals(2, bn2.getUtilityNode("Util1").getRelevantActions().size());
 		assertEquals(2, bn2.getUtilityNode("Util2").getRelevantActions().size());
 		assertEquals(bn.getActionNode("Action").getValues(), bn2.getActionNode("Action").getValues());
+	} */
+	
+	
+	
+	@Test
+	public void cliques() throws DialException {
+		BNetwork bn = NetworkExamples.constructBasicNetwork();
+		assertEquals(1, bn.getCliques().size());
+		assertEquals(8, bn.getCliques().get(0).size());
+		bn.getNode("JohnCalls").removeInputNode("Alarm");
+		assertEquals(2, bn.getCliques().size());
+		assertEquals(7, bn.getCliques().get(0).size());
+		assertEquals(1, bn.getCliques().get(1).size());
+		bn.getNode("Alarm").removeInputNode("Burglary");
+		bn.getNode("Alarm").removeInputNode("Earthquake");
+		assertEquals(4, bn.getCliques().size());
+		assertEquals(2, bn.getCliques().get(0).size());
+		assertEquals(4, bn.getCliques().get(1).size());
+		assertEquals(1, bn.getCliques().get(2).size());
+		assertEquals(1, bn.getCliques().get(3).size());		
 	}
 }

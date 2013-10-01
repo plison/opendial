@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,21 +19,31 @@
 
 package opendial.bn.distribs.discrete.functions;
 
-
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 
+/**
+ * Deterministic function that outputs the sum of 
+ * all double values in the input assignment.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $ *
+ */
 public class AdditionFunction implements DeterministicFunction {
 
 	// logger
-	public static Logger log = new Logger("AdditionFunction",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("AdditionFunction", Logger.Level.NORMAL);
 
+	/**
+	 * Returns the sum of all double values in the input
+	 * 
+	 * @return the sum of all values.
+	 */
 	@Override
-	public Value getFunctionValue(Assignment input) {
+	public Value getValue(Assignment input) {
 		double total = 0.0;
 		for (Value val : input.getValues()) {
 			if (val instanceof DoubleVal) {
@@ -43,24 +53,41 @@ public class AdditionFunction implements DeterministicFunction {
 		return ValueFactory.create(total);
 	}
 
+	
+	/**
+	 * Returns "addition function".
+	 * 
+	 */
 	@Override
-	public String prettyPrint() {
-		return "addition";
+	public String toString() {
+		return "addition function";
 	}
 
+	
+	/**
+	 * Returns a copy of the function.
+	 */
 	@Override
 	public DeterministicFunction copy() {
 		return new AdditionFunction();
 	}
 
+	
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
 		return;
 	}
 	
-	public String toString() {
-		return prettyPrint();
-	}
 
+	/**
+	 * Returns a constant.
+	 * @return
+	 */
+	public int hashcode() {
+		return 456;
+	}
 }
 

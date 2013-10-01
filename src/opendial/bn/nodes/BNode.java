@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -21,7 +21,6 @@ package opendial.bn.nodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,20 +34,23 @@ import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.ValueRange;
 import opendial.utils.CombinatoricsUtils;
+import opendial.utils.StringUtils;
 
 /**
  * Basic representation of a node integrated in a Bayesian Network.  The node is defined
  * via a unique identifier and a set of incoming and outgoing relations with other nodes.
  * 
  * The class is abstract -- each node needs to be instantiated in a concrete subclass 
- * such as DiscreteChanceNode, ContinuousChanceNode, DecisionNode or UtilityNode.
+ * such as ChanceNode, ActionNode or UtilityNode.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public abstract class BNode implements Comparable<BNode> {
@@ -57,17 +59,16 @@ public abstract class BNode implements Comparable<BNode> {
 	public static Logger log = new Logger("BNode", Logger.Level.DEBUG);
 
 	// unique identifier for the node
-	String nodeId;
+	protected String nodeId;
 
 	// set of nodes with incoming relations to the node
-	Map<String,BNode> inputNodes;
+	protected Map<String,BNode> inputNodes;
 
 	// set of nodes with outgoing relations to the node
-	Map<String,BNode> outputNodes;
+	protected Map<String,BNode> outputNodes;
 
-	// objects listening to changes of identifiers for this node
-	List<IdChangeListener> idChangeListeners;
-
+	// Graphical model in which the node is included (can be null)
+	BNetwork network;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -84,16 +85,15 @@ public abstract class BNode implements Comparable<BNode> {
 		this.nodeId = nodeId;
 		inputNodes = new HashMap<String,BNode>();
 		outputNodes = new HashMap<String,BNode>();
-		idChangeListeners = new LinkedList<IdChangeListener>();
 	}
 
 	/**
 	 * Adds a new relation from the node given as argument to the current node.
 	 * 
-	 * @param node the node to add
+	 * @param inputNode the node to add
 	 * @throws DialException if the network becomes corrupted
 	 */
-	public synchronized void addInputNode (BNode inputNode) throws DialException {
+	public void addInputNode (BNode inputNode) throws DialException {
 
 		if (inputNode == this) {
 			throw new DialException("cannot add itself: " + nodeId);
@@ -113,10 +113,23 @@ public abstract class BNode implements Comparable<BNode> {
 
 		addInputNode_internal(inputNode);
 		inputNode.addOutputNode_internal(this);
-
 	}
 
 
+
+	/**
+	 * Adds new relations from the nodes given as arguments to the current node
+	 * 
+	 * @param inputNodes the nodes to add
+	 * @throws DialException if the network becomes corrupted
+	 */
+	public void addInputNodes(Collection<? extends BNode> inputNodes) throws DialException {
+		for (BNode node : inputNodes) {
+			addInputNode(node);
+		}
+	}
+	
+	
 
 	/**
 	 * Removes a relation between an input node and the current node.  
@@ -124,14 +137,15 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @param nodeId the identifier for the incoming node to remove
 	 * @return true if a relation between the nodes existed, false otherwise
 	 */
-	public synchronized boolean removeInputNode (String inputNodeId) {
+	public boolean removeInputNode (String inputNodeId) {
 		if (!inputNodes.containsKey(inputNodeId)) {
 			log.warning("node " + inputNodeId + " is not an input node for " + nodeId);
 		}
-		boolean removal1 = inputNodes.containsKey(inputNodeId) && inputNodes.get(inputNodeId).removeOutputNode_internal(nodeId);
+		boolean removal1 = inputNodes.containsKey(inputNodeId) && 
+				inputNodes.get(inputNodeId).removeOutputNode_internal(nodeId);
 		boolean removal2 = removeInputNode_internal(inputNodeId);
 		if (removal1!=removal2) {
-			log.warning("inconsistency between the input and output links for " + inputNodeId + " and " + nodeId);
+			log.warning("inconsistency between input and output links for " + inputNodeId + " and " + nodeId);
 		}
 
 		return removal2;
@@ -145,14 +159,15 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @param nodeId the identifier for the outgoing node to remove
 	 * @return true if a relation between the nodes existed, false otherwise
 	 */
-	public synchronized boolean removeOutputNode (String outputNode) {
+	public boolean removeOutputNode (String outputNode) {
 		if (!outputNodes.containsKey(outputNode)) {
 			log.warning("node " + outputNode + " is not an input node for " + nodeId);
 		}
-		boolean removal1 = outputNodes.containsKey(outputNode) && outputNodes.get(outputNode).removeInputNode_internal(nodeId);
+		boolean removal1 = outputNodes.containsKey(outputNode) && 
+				outputNodes.get(outputNode).removeInputNode_internal(nodeId);
 		boolean removal2 = removeOutputNode_internal(outputNode);
 		if (removal1!=removal2) {
-			log.warning("inconsistency between the input and output links for " + outputNode + " and " + nodeId);
+			log.warning("inconsistency between input and output links for " + outputNode + " and " + nodeId);
 		}
 
 		return removal2;
@@ -162,7 +177,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Removes all input and output relations to the node
 	 */
-	public synchronized void removeAllRelations() {
+	public void removeAllRelations() {
 		for (BNode inputNode: new LinkedList<BNode>(inputNodes.values())) {
 			removeInputNode(inputNode.getId());
 		}
@@ -176,43 +191,34 @@ public abstract class BNode implements Comparable<BNode> {
 	 * 
 	 * @param nodeId the new identifier
 	 */
-	public synchronized void setId(String newNodeId) {
+	public void setId(String newNodeId) {
 		String oldNodeId = this.nodeId;
 		this.nodeId = newNodeId;
 
-		modifyNodeId(oldNodeId, newNodeId);
+		modifyVariableId(oldNodeId, newNodeId);
 
 		for (BNode inputNode : inputNodes.values()) {
-			inputNode.modifyNodeId(oldNodeId, newNodeId);
+			inputNode.modifyVariableId(oldNodeId, newNodeId);
 		}
 		for (BNode outputNode : outputNodes.values()) {
-			outputNode.modifyNodeId(oldNodeId, newNodeId);
+			outputNode.modifyVariableId(oldNodeId, newNodeId);
 		}
-		for (IdChangeListener listener : 
-			new HashSet<IdChangeListener>(idChangeListeners)) {
-			listener.modifyNodeId(oldNodeId, newNodeId);
+		if (network != null) {
+		network.modifyVariableId(oldNodeId, newNodeId);
 		}
 	}
 
 
 	/**
-	 * Adds the given listener on node identifier changes
+	 * Sets the Bayesian network associated with the node (useful to inform
+	 * the network of change of identifiers).
 	 * 
-	 * @param listener the listener to add
+	 * @param network the Bayesian network to associate to the node.
 	 */
-	public synchronized void addIdChangeListener(IdChangeListener listener) {
-		idChangeListeners.add(listener);
+	public void setNetwork(BNetwork network) {
+		this.network = network;
 	}
 	
-	public void removeIdChangeListener(IdChangeListener listener) {
-		idChangeListeners.remove(listener);
-	}
-	
-	public synchronized void clearListeners() {
-		idChangeListeners.clear();
-	}
-
-
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -379,24 +385,6 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 		return ancestors;
 	}
-
-
-
-	public int getAncestorDistance(String ancestorId) {
-	
-		if (inputNodes.containsKey(ancestorId)) {
-			return 1;
-		}
-		else if (!inputNodes.isEmpty()){
-			List<Integer> distances = new LinkedList<Integer>();
-			for (BNode inputNode : inputNodes.values()) {
-				distances.add(1 + inputNode.getAncestorDistance(ancestorId));
-			}
-			Collections.sort(distances);
-			return distances.get(0);
-		}
-		return Integer.MAX_VALUE;
-	}
 	
 	
 	/**
@@ -507,7 +495,13 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 	
 	
-
+	/**
+	 * Returns true if the node has at least one output node in the set of identifiers
+	 * provided as argument
+	 * 
+	 * @param variables the variable identifiers to check
+	 * @return true if at least one variable is an output node, false otherwise
+	 */
 	public boolean hasOutputNode(Set<String> variables) {
 		for (String outputNode : getOutputNodesIds()) {
 			if (variables.contains(outputNode)) {
@@ -536,6 +530,64 @@ public abstract class BNode implements Comparable<BNode> {
 	public abstract Map<Assignment,Double> getFactor();
 
 
+	/**
+	 * Returns the (maximal) clique in the network that contains this node.
+	 * 
+	 * @return the maximal clique
+	 */
+	public Set<String> getClique() {
+		Set<String> clique = new HashSet<String>();
+		clique.add(nodeId);
+		Stack<BNode> toProcess = new Stack<BNode>();
+		toProcess.addAll(inputNodes.values());
+		toProcess.addAll(outputNodes.values());
+		while (!toProcess.isEmpty()) {
+			BNode node = toProcess.pop();
+			clique.add(node.getId());
+			for (BNode i : node.getInputNodes()) {
+				if (!clique.contains(i.getId())) {
+					toProcess.add(i);
+				}
+			}
+			for (BNode o : node.getOutputNodes()) {
+				if (!clique.contains(o.getId())) {
+					toProcess.add(o);
+				}
+			}
+		}
+		
+		return clique;
+	}
+
+
+	/**
+	 * Returns the list of possible assignment of input values for the node.  If the
+	 * node has no input, returns a list with a single, empty assignment.
+	 * 
+	 * <p>NB: this is a combinatorially expensive operation, use with caution.
+	 * 
+	 * @return the (unordered) list of possible conditions.  
+	 */
+	public Set<Assignment> getPossibleConditions() {
+		ValueRange possibleInputValues = new ValueRange();
+		for (BNode inputNode : inputNodes.values()) {
+			possibleInputValues.addValues(inputNode.getId(), inputNode.getValues());
+		}
+		try {
+			return possibleInputValues.linearise();
+		}
+		catch (OutOfMemoryError e) {
+			log.debug("input node is: " + nodeId + " and possibleInputValues: " + possibleInputValues);
+			throw e;
+		}
+	}
+
+	
+	public BNetwork getNetwork() {
+		return network;
+	}
+	
+	
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -566,7 +618,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 *
 	 */
 	@Override
-	public synchronized int compareTo(BNode otherNode) {
+	public int compareTo(BNode otherNode) {
 
 		// if one node has no incoming nodes, the answer is straightforward
 		if (!otherNode.getInputNodeIds().isEmpty() && getInputNodeIds().isEmpty()) {
@@ -585,7 +637,9 @@ public abstract class BNode implements Comparable<BNode> {
 			else if (otherNode instanceof ActionNode && !(this instanceof ActionNode)) {
 				return -10;
 			}
-			return (nodeId.compareTo(otherNode.getId()) < 0) ? +1 : -1;
+			else {
+				return StringUtils.compare(nodeId, otherNode.getId());			
+			}
 		} 
 
 		// if both nodes have ancestors, we check whether one is contained in the other
@@ -604,8 +658,9 @@ public abstract class BNode implements Comparable<BNode> {
 		if (sizeDiff != 0) {
 			return sizeDiff;
 		}
+
 		else {
-			return (nodeId.compareTo(otherNode.getId()) < 0) ? +1 : -1;
+			return StringUtils.compare(nodeId, otherNode.getId());
 		}
 	}
 
@@ -647,13 +702,6 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 
-	/**
-	 * Returns a pretty print representation of the node content
-	 * 
-	 * @return the node content (e.g. its distribution)
-	 */
-	public abstract String prettyPrint();
-
 
 	// ===================================
 	//  PROTECTED AND PRIVATE METHODS
@@ -667,7 +715,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @param oldNodeId the old label for the node
 	 * @param newNodeId the new label for the node
 	 */
-	protected void modifyNodeId(String oldNodeId, String newNodeId) {
+	protected void modifyVariableId(String oldNodeId, String newNodeId) {
 		if (inputNodes.containsKey(oldNodeId)) {
 			BNode inputNode = inputNodes.get(oldNodeId);
 			removeInputNode_internal(oldNodeId);
@@ -682,31 +730,6 @@ public abstract class BNode implements Comparable<BNode> {
 
 
 	/**
-	 * Returns the list of possible assignment of input values for the node.  If the
-	 * node has no input, returns a list with a single, empty assignment.
-	 * 
-	 * <p>NB: this is a combinatorially expensive operation, use with caution.
-	 * 
-	 * @return the (unordered) list of possible conditions.  
-	 */
-	public Set<Assignment> getPossibleConditions() {
-		Map<String,Set<Value>> possibleInputValues = new HashMap<String,Set<Value>>();
-		for (BNode inputNode : inputNodes.values()) {
-			possibleInputValues.put(inputNode.getId(), inputNode.getValues());
-		}
-		try {
-		Set<Assignment> possibleConditions = 
-				CombinatoricsUtils.getAllCombinations(possibleInputValues);
-		return possibleConditions;
-		}
-		catch (OutOfMemoryError e) {
-			log.debug("input node is: " + nodeId + " and possibleInputValues: " + possibleInputValues);
-			throw e;
-		}
-	}
-
-
-	/**
 	 * Adds a new incoming relation to the node. This method should never be 
 	 * called outside the addRelation method, to ensure consistency between 
 	 * the input and output links.
@@ -716,6 +739,8 @@ public abstract class BNode implements Comparable<BNode> {
 	protected void addInputNode_internal(BNode inputNode) {
 		if (inputNodes.containsKey(inputNode.getId())) {
 			log.warning("node " + inputNode.getId() + " already included in the input nodes of " + nodeId);
+			Thread.dumpStack();
+			System.exit(0);
 		}
 		inputNodes.put(inputNode.getId(), inputNode);
 	}
@@ -731,7 +756,6 @@ public abstract class BNode implements Comparable<BNode> {
 	protected void addOutputNode_internal(BNode outputNode) {
 		if (outputNodes.containsKey(outputNode.getId())) {
 			log.debug("node " + outputNode.getId() + " already included in the output nodes of " + nodeId);
-			Thread.dumpStack();
 		}
 		else {
 			outputNodes.put(outputNode.getId(), outputNode);
@@ -772,39 +796,6 @@ public abstract class BNode implements Comparable<BNode> {
 			return true;
 		}
 		return false;
-	}
-
-	public void addInputNodes(Collection<BNode> inputNodes) throws DialException {
-		for (BNode node : inputNodes) {
-			addInputNode(node);
-		}
-	}
-	
-	public void addOutputNodes(Collection<BNode> outputNodes) throws DialException {
-		for (BNode node : outputNodes) {
-			node.addInputNode(this);
-		}
-	}
-
-	protected List<String> getClusterIds(List<String> toExclude) {
-		List<String> cluster = new ArrayList<String>();
-		cluster.add(nodeId);
-		toExclude.add(nodeId);
-		for (String inputNode : inputNodes.keySet()) {
-			if (!toExclude.contains(inputNode)) {
-				cluster.addAll(inputNodes.get(inputNode).getClusterIds(toExclude));
-			}
-		}
-		for (String outputNode : outputNodes.keySet()) {
-			if (!toExclude.contains(outputNode)) {
-				cluster.addAll(outputNodes.get(outputNode).getClusterIds(toExclude));
-			}
-		}
-		return cluster;
-	}
-
-	public List<String> getClusterIds() {
-		return getClusterIds(new ArrayList<String>());
 	}
 
 

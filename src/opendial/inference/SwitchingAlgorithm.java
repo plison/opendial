@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,121 +20,177 @@
 package opendial.inference;
 
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
+import opendial.bn.distribs.ProbDistribution.DistribType;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.other.ConditionalDistribution;
+import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.datastructs.Assignment;
+import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
 
+
+/**
+ * Switching algorithms that alternative between an exact algorithm (variable elimination) and
+ * an approximate algorithm (likelihood weighting) depending on the query.
+ * 
+ * <p>The switching mechanism is defined via three thresholds: <ul>
+ * <li> one threshold on the maximum branching factor of the network
+ * <li> one threshold on the maximum number of query variables 
+ * <li> one threshold on the maximum number of continuous variables
+ * </ul>
+ * 
+ * <p>If at least one of these thresholds is exceeded, the selected algorithm will be likelihood
+ * weighting.  Variable elimination is selected in the remaining cases.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 
-	
 	// logger
 	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
 	
-	public static int LIGHTWEIGHT_FACTOR = 3;
-	
+	// maximum branching factor (in-degree)
 	public static int MAX_BRANCHING_FACTOR = 4;
-	public static int MAX_QUERYVARS = 3;
+	
+	// maximum number of query variables
+	public static int MAX_QUERYVARS = 6;
+	
+	// maximum number of continuous variables
 	public static int MAX_CONTINUOUS = 0;
-
+	
+	VariableElimination ve;
+	LikelihoodWeighting lw;
+	
+	public SwitchingAlgorithm() {
+		this.ve = new VariableElimination();
+		this.lw = new LikelihoodWeighting();
+	}
+	
+	/**
+	 * Selects the best algorithm for performing the inference on the provided
+	 * probability query and return its result.
+	 * 
+	 * @param query the probability query
+	 * @return the inference result
+	 */
 	@Override
-	public ProbDistribution queryProb(ProbQuery query) throws DialException {
-		
-		if (query.getQueryVars().size() == 1 && query.getEvidence().isEmpty()) {
-			String queryVar = query.getQueryVars().iterator().next();
-			if (query.getNetwork().hasChanceNode(queryVar) && query.getNetwork().
-					getChanceNode(queryVar).getInputNodeIds().isEmpty()) {
-				ProbDistribution distrib = query.getNetwork().getChanceNode(queryVar).getDistrib().copy();
-				if (distrib instanceof DiscreteProbabilityTable) {
-					return distrib.toDiscrete().getProbTable(new Assignment());
-				}
-				else {
-					return distrib;
-				}
-			}
-		}
-		
+	public IndependentProbDistribution queryProb(ProbQuery query) throws DialException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
-
+	
+	/**
+	 * Selects the best algorithm for performing the inference on the provided
+	 * utility query and return its result.
+	 * 
+	 * @param query the utility query
+	 * @return the inference result
+	 */
 	@Override
 	public UtilityTable queryUtil(UtilQuery query) throws DialException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryUtil(query);
 	}
 
+	
+	/**
+	 * Reduces a Bayesian network to a subset of variables.  The method is divided in 
+	 * three steps: <ul>
+	 * <li> The method first checks whether inference is necessary at all or whether 
+	 * the current network can be returned as it is.  
+	 * <li> If inference is necessary, the algorithm divides the network into cliques
+	 * and performs inference on each clique separately.
+	 * <li> Finally, if only one clique is present, the reduction selects the best
+	 * algorithm and return the result of the reduction process.
+	 * </ul>
+	 * 
+	 * @param query the reduction query
+	 * @return the reduced network
+	 */
 	@Override
-	public BNetwork reduceNetwork(ReductionQuery query) throws DialException {
+	public BNetwork reduce(ReductionQuery query) throws DialException {
+		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds()) && query.getEvidence().isEmpty()) {	
+			BNetwork subnetwork = query.getNetwork();
+			return subnetwork;
+		}
+		
+		else if (query.getEvidence().getVariables().containsAll(query.getQueryVars())) {
+			BNetwork subnetwork = new BNetwork();
+			for (String qvar : query.getQueryVars()) {
+				ChanceNode newNode = new ChanceNode(qvar, new CategoricalTable
+						(new Assignment(qvar, query.getEvidence().getValue(qvar))));
+				subnetwork.addNode(newNode);
+			}
+			return subnetwork;
+		}
+		
+		else if (query.getNetwork().getCliques().size() > 1) {
+			BNetwork fullNetwork = new BNetwork();
+			for (BNetwork clique : query.getNetwork().createCliques()) {
+				Collection<String> subQueryVars = query.getQueryVars();
+				subQueryVars.retainAll(clique.getNodeIds());
+				if (!subQueryVars.isEmpty()) {
+				Assignment evidence = query.getEvidence().getTrimmed(clique.getNodeIds());
+				ReductionQuery subQuery = new ReductionQuery(clique, subQueryVars, evidence);
+				BNetwork subnetwork = reduce(subQuery);
+				fullNetwork.addNetwork(subnetwork);			
+				}
+			}
+			return fullNetwork;
+		}
+		
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
-		return algo.reduceNetwork(query);	}
+		BNetwork result = algo.reduce(query);	
+		return result;
+	}
+	
+
 	
 	
 	public InferenceAlgorithm selectBestAlgorithm (Query query) {
 			
+		int nbQueries = query.getQueryVars().size();
 		int branchingFactor = 0;
 		int nbContinuous = 0;
 		for (BNode node : query.getFilteredSortedNodes()) {
 			if (node.getInputNodeIds().size() > branchingFactor) {
 				branchingFactor = node.getInputNodeIds().size();
 			}
-			if (node instanceof ChanceNode && node.getInputNodeIds().isEmpty()) {
-				if (isContinuous(((ChanceNode)node).getDistrib())) {
-					nbContinuous++;
-				}
+			if (node instanceof ChanceNode && ((ChanceNode)node).getDistrib().
+					getPreferredType() != DistribType.DISCRETE) {
+				nbContinuous++;
 			}
-		}
-		int nbQueries = 0;
-		if (query instanceof ReductionQuery) {
-			for (String cn : query.getQueryVars()) {
-				nbQueries = (cn.contains("'"))? nbQueries+1 : nbQueries;
-			}
-		}
-		else {
-			nbQueries = query.getQueryVars().size();
-		}
-
+		}		
 		if (nbContinuous > MAX_CONTINUOUS ||
 				branchingFactor > MAX_BRANCHING_FACTOR || 
-				nbQueries > MAX_QUERYVARS) {
-	//		log.debug("query " + query + " with sampling");
-			if (query.isLightweight()) {
-				return new ImportanceSampling(Settings.getInstance().nbSamples / LIGHTWEIGHT_FACTOR);
-			}
-			else {
-				return new ImportanceSampling(Settings.getInstance().nbSamples);
-			}
+				nbQueries > MAX_QUERYVARS) {	
+			return lw;
+		
 		}
 		else {
-	//		log.debug("query " + query + " with V.E.");
-			return new VariableElimination();
+			return ve;
 		}
 	}
-	
-	
-	private boolean isContinuous(ProbDistribution distrib) {
-		if (distrib instanceof ContinuousProbDistribution) {
-			return true;
-		}
-		try {
-			distrib.toContinuous();
-			return true;
-		}
-		catch (DialException e) {
-			return false;
-		}
-	}
+
 
 }
 
