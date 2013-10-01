@@ -319,12 +319,16 @@ The values that delineate these four regions can be calculated using linear inte
 
 \subsection{Approach 2: factored statistical model}
 
-The second approach developed for this experiment consist of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.  
+The second approach developed for this experiment consist of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.   We assume that both the transition model and utility model of the domain are initially unknown. 
 
-Figure \ref{fig:unstructuredmodel-exp3} shows the complete factored model employed to structure the dialogue domain of the experiment.  As evidenced in the figure, the model is factored in four distinct distributions: 
+Both this approach and the next one assume that the domain can be captured with a planning horizon limited to one.  In other words, the approach does not rely on online forward planning (which has proven to be practically difficult to reconcile with real-time constraints), and the dialogue manager determines the next action to perform by directly selecting the action that shows the highest utility in the current dialogue state.\footnote{In other words, the utility model expresses what is called a $Q$-value model in the reinforcement learning literature.}
+
+\subsubsection*{Domain modelling}
+
+Figure \ref{fig:unstructuredmodel-exp3} shows the factored model employed to structure the dialogue domain of the experiment.  As evidenced in the figure, the domain models are factored in four major distributions (the three first ones being part of the transition model, while the first one is a utility model): 
 \begin{itemize}
-\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ describes the probability that the current intention $i_u$ is fulfilled by the last system action $a_m$. 
-\item The user goal model \\ $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ encodes the likelihood of a new user intention $i_u'$ given the current user intention $i_u$, task completion status $\mathit{completed\mbox{-}task}$, as well as the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
+\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ describes the probability that the current intention $i_u$ is fulfilled by the last system action $a_m$.  The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is essentially a deterministic distribution that marks the task as completed when the executed action $a_m$ fulfils the (hidden) user intention $i_u$,  marks it as not completed in other cases. The task completion model is therefore defined without parameters. 
+\item The user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ encodes the likelihood of a new user intention $i_u'$ given the current intention $i_u$, task completion $\mathit{completed\mbox{-}task}$, as well as the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
 \item The user action model $P(a_u'\, | \, i_u', a_m)$ describes the probability of the next user dialogue act $a_u'$ given the user intention $i_u'$ and the last system action $a_m$.
 \item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ describes the utility of a given system action $a_m'$ given the user intention $i_u'$, last user dialogue act $a_u'$, robot motion status $\mathit{motion'}$ and contextual variables $\mathit{carried}$ and $\mathit{perceived}$. 
 \end{itemize}
@@ -336,13 +340,11 @@ Figure \ref{fig:unstructuredmodel-exp3} shows the complete factored model employ
 \label{fig:unstructuredmodel-exp3}
 \end{figure}
 
-\subsubsection*{Simplifying assumptions}
+\subsubsection*{Dimensionality reduction}
 
 % As shall be explained shortly, the probabilistic models developed in this approach do include a fair amount of internal structure and rely on a number of assumptions to limit the number of parameters, but without resorting to the more advanced modelling techniques that characterise rule-structured models (such as latent rule nodes and quantification). The purpose of this model is thus to evaluate the performance of a classical statistical approach when provided with the Wizard-of-Oz interaction data set at our disposal. 
 
-The four factored models remain however too large to be directly estimated from the limited amounts of data made available from the Wizard-of-Oz interactions.  We therefore introduced additional simplifying assumptions to further reduce the number of parameters associated with the model.
-
-The first assumption serves to reduce the task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ to a deterministic distribution that marks the task as completed when the executed action $a_m$ fulfils the (hidden) user intention $i_u$ and marks it as not completed  in other cases. The task completion model can therefore be defined without any parameters.
+The four factored models remain however too large to be directly estimated from the limited amounts of data made available from the Wizard-of-Oz interactions.  We therefore introduced a range of additional constraints and simplifying assumptions that aim to further reduce the number of parameters associated with the model.
 
 %\begin{align}
 %&&&P(\mathit{completed\mbox{-}task}\!=\!\mathit{true} \, | \, i_u, a_m) = \nonumber \\
@@ -351,7 +353,7 @@ The first assumption serves to reduce the task completion model $P(\mathit{compl
 %\theta_{\text{changeOfMind}} & \text{otherwise} \end{cases} \label{eq:completedtask-exp3}
 %\end{align} 
 
-The second assumption pertains to the user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived}, \mathit{carried})$, and rests on the idea that the user intention only changes when the current intention has been completed.  The values of the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$ variables are furthermore grouped into two partitions: empty set or non-empty set. These two simplifications reduce the number of parameters required for the model to four Dirichlet distributions, each with 18 dimensions (which is the number of possible user intentions). 
+The first simplifying assumption pertains to the user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task},$ $\mathit{perceived}, \mathit{carried})$, and rests on the idea that the user intention remains more or less constant (albeit with a small probability of change) until the task is marked as completed. The values of the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$ variables are furthermore grouped into two partitions: empty set or non-empty set. These two simplifications reduce the number of parameters required for the model to four Dirichlet distributions, each with 18 dimensions (which is the number of possible user intentions). 
 
 %\begin{align}
 %&&&P(i_u'  = x \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived}, \mathit{carried}) = \nonumber \\
@@ -359,11 +361,9 @@ The second assumption pertains to the user goal model $P(i_u' \, | \, i_u, \math
 %\mathbf{1}(x = i_u) & \text{otherwise} \end{cases}
 %\end{align}
 
-The third assumption reduces the size of the user action model $P(a_u'\, | \, i_u', a_m)$ by exploiting the fact that only a fraction of user dialogue acts $a_u'$ are locally relevant for a given user intention $i_u'$ and last system action $a_m$.  A manually specified function $relevant: Val(i_u') \times Val(a_m) \rightarrow 2^{Val(a_u')}$ is used to derive the set of relevant user actions given a particular pair of user intention and system action. For instance, the relevant dialogue acts for the user intention $\mathrm{Move(Left,Short)}$ are $\mathrm{Ask(Move(Left,Short))}$, $\mathrm{RepeatLast}$, $\mathrm{Confirm}$, $\mathrm{Disconfirm}$, $\mathrm{Stop}$ and $\mathrm{Grounding}$. The resulting set of parameters associated with the user action model contains 133 Dirichlet distributions, each with 6 dimensions (the number of relevant actions allowed per intention). 
+We also compressed the size of the user action model $P(a_u'\, | \, i_u', a_m)$ by exploiting the fact that only a fraction of user dialogue acts $a_u'$ are locally relevant for a given user intention $i_u'$ and last system action $a_m$.  A manually specified function $relevant: Val(i_u) \times Val(a_m) \rightarrow 2^{Val(a_u)}$ is used to derive the set of relevant user actions given a particular pair of user intention and system action. For instance, the relevant dialogue acts for the user intention $\mathrm{Move(Left,Short)}$ are $\mathrm{Ask(Move(Left,Short))}$, $\mathrm{RepeatLast}$, $\mathrm{Confirm}$, $\mathrm{Disconfirm}$, $\mathrm{Stop}$ and $\mathrm{Grounding}$. The resulting set of parameters associated with the user action model contains 133 Dirichlet distributions, each with 6 dimensions (the number of relevant actions allowed per intention). 
 
-The fourth and final assumption tackles the utility distribution $U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}$, $\mathit{motion'})$.  Similarly to the user action model, the simplifying assumption is based on the idea that only a fraction of system actions are relevant in a given state, and that the non-relevant ones have a constant negative utility. In order to express this constraint, we first define a function $best: Val(i_u) \times Val(\mathit{perceived}) \times \mathit{carried} \rightarrow Val(a_m)$ that maps each user intention and context to the ``best'' action that can be executed at that state if we were to assume no uncertainty. This best action is identical to the action selected by the finite state automaton in Figure \ref{fig:fsa-exp3}. 
-
-Based on this function, the utility distribution is expressed as: 
+The third and final heuristic employed to reduce the number of parameters is to reduce the number of relevant system actions in the utility distribution $U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}$, $\mathit{motion'})$.  Similarly to the user action model, one can exploit the fact that only a fraction of system actions are relevant in a given state, and that the non-relevant ones have a constant negative utility. In order to express this constraint, we first define a function $best: Val(i_u) \times Val(\mathit{perceived}) \times \mathit{carried} \rightarrow Val(a_m)$ that maps each user intention and context to the ``best'' action that can be executed at that state if we were to assume no uncertainty. This best action is identical to the action selected by the finite state automaton in Figure \ref{fig:fsa-exp3}. In addition to this best action, we also allow the actions $\mathrm{AskConfirm(i_u')}$, $\mathrm{AskRepeat}$ and $Do(Stop)$ to be executed at any state. The utility distribution is then expressed as: 
 \begin{align}
 &&& U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}, \mathit{motion'}) = \nonumber \\
 &&& \ \ \ \ \ \ \  \begin{cases} \ \theta_{best(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = best(i_u', \mathit{carried}, \mathit{perceived}) \\ 
@@ -374,18 +374,72 @@ Based on this function, the utility distribution is expressed as:
 \end{cases} \label{eq:utilunstruct-exp3}
 \end{align}
 
-The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} results in a total of 296 parameters. 
+The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} results in 296 parameters. In total, the numbers of parameters associated with all factored models in this approach (including both univariate and multivariate parameters) equals to 433.
 
 \subsubsection*{Parameter estimation}
 
-The parameter estimation follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. 
+The parameter estimation follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. The learning algorithm operates by cycling through the collection of turns recorded in the Wizard-of-Oz experiments, and updating the parameter distributions after each.  The wizard is assumed to act rationally in most cases and select the action that yields the highest utility given the current dialogue state. 
 
+It should be noted that, in contrast to the experiment presented in Section \ref{sec:wozlearning-experiments} (which concentrated on the estimation of a single model), the parameters to estimate in this setting include both the transition model and the utility model.  The learning algorithm is thus an instance of a joint optimisation problem, as the system must simultaneously optimise both models in order to find the parameters that provide the best fit for the Wizard-of-Oz dataset as a whole. 
 
-\note{numbers of params}
+The parameters of categorical distributions are all encoded by Dirichlet distributions initialised with weakly informative priors, while the utility parameters are encoded by uniform distributions with a support of $[-10, 30]$.  Section \ref{sec:learningcurve-exp3} details the learning curve followed during the estimation process as well as the degree of agreement between the learned model and the ``gold standard'' actions selected by the wizard. 
 
 \subsection{Approach 3: rule-structured model}
 
+The third dialogue management approach developed in this experiment relies on the formalism of probabilistic rules presented through this thesis.  The general structure of the domain models remain similar to the one shown in Figure \ref{fig:unstructuredmodel-exp3}.  As in the second approach, the transition model is divided into a task completion model, a user goal model, and a user action model.  Action selection is also formalised by searching for the highest-utility action (assuming a planning horizon of one) as specified by the utility model of the domain.  However, the approach relies here on the specification of probabilistic rules to express these models, and the parameter of these rules are optimised on the basis of the Wizard-of-Oz data set.
+
+\subsubsection*{Domain modelling}
+
+The transition model is again factored in three distinct models, but are in this approach structured through probability rules:
+\begin{itemize}
+\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is encoded by one single deterministic rule that define when the current intention $i_u$ is fulfilled by the last system action $a_m$. 
+\item The user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ consists of a set of seven rules that define the probability of the new user intention $i_u'$ given the dialogue context. One rule defines the prior probability of the user intentions $\mathrm{Move(*)}$, four rules specify the prior probability of $\mathrm{PickUp(*)}$, $\mathrm{WhatDoYouSee}$ and $\mathrm{DoYouSee(*)}$ (depending on the value of the $\mathit{perceived}$ variable), one rule specify the prior probability of $\mathrm{Release}$ (depending on the value of the $\mathit{carried}$ variable), and one final rule specifies the probability of the conventional $\mathrm{Greeting}$ and $\mathrm{Closing}$ intentions (depending on the last system movement). 
+
+\item The user action model $P(a_u'\, | \, i_u', a_m)$ is formalised with two rules that maps user intentions to their potential verbal realisations in terms of user dialogue acts. The first rule expresses the likelihood of various user dialogue acts depending on the user intention and last system action (in particular, whether the system uttered a clarification or confirmation request).  The second rule expresses the specific likelihood of the $\mathrm{Ask(Stop)}$ and $\mathrm{Disconfirm}$ actions directly following a physical movement (to convey that the executed action was the wrong one).
+
+\item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ is encoded with a total of eleven utility rules.  The model essentially contains one rule for each family of possible system actions.  There is therefore one rule to define the relative utility of movement actions, one rule for grasping actions, one rule for the release action, two rules for the $\mathrm{Describe(*)}$ and $\mathrm{(Dis)confirmDetection}$ actions, one rule to handle the conventional $\mathrm{Greet}$ and $\mathrm{Goodbye}$ actions, three rules for the clarification and confirmation requests, and one rule to stop the current movement. The last rule fixes an initial, negative utility for all actions to ensure that non-relevant actions have a utility lower than zero.  
+
+\end{itemize}
+
+The probability and utility models described by these rules include a total of 28 parameters, amongst which 15 probability parameters and 13 utility parameters.  
+
+\subsubsection*{Parameter estimation}
+
+The rule parameters were optimised on the basis of the collected Wizard-of-Oz data following the same procedure as the one followed for the second approach.  The parameters of probability rules are all encoded by Dirichlet distributions (of varying dimensions, from 2 to 10 depending on the rule) initialised with weakly informative priors, while the parameters of utility rules are encoded by uniform distributions on the range $[-10, 30]$.  
+
+
 \subsection{Learning curves}
+\label{sec:learningcurve-exp3}
+
+Figure \ref{fig:curve-exp3} presents the learning curves that characterise the three dialogue management approaches presented in the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing up to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard. This measurement was repeated at regular intervals during the parameter estimation process (after each sequence of 50 training samples).  It should be stressed once more that system actions that do not correspond to the ones selected by the wizard are not necessarily wrong or inappropriate, as they may reflect different but perfectly legitimate conversational strategies. The degree of agreement between the model and the wizard examples is however a good indication of the model ability to capture the dynamics of the interaction and the trade-offs of the action selection process. 
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.42]{imgs/curve-exp3.pdf}
+\end{center} 
+\caption{Learning curve for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a test set of 71 system turns.}
+\label{fig:curve-exp3}
+\end{figure}
+
+
+Each curve in Figure \ref{fig:curve-exp3} shows the evolution of the model accuracy as the function of the number of training samples processed by the learning algorithm.  As the finite-state approach is entirely handcrafted and does not include any parameters to optimise, its accuracy remains constant at all time steps. We can notice that both statistical approaches (Approach 2 and 3) do improve their accuracy as they process more training samples, but do so at different learning speeds.  While the rule-structured model is able to converge to a high-quality dialogue policy after observing only a fraction of the training data, the traditional, factored statistical model converges at a much slower rate due to its larger set of parameters and weaker generalisation capacity. 
+
+The final agreement results obtained after processing the complete training set are shown in Table \ref{table:learning-exp3}.  As one can observe, the rule-structured approach is the one that is best able to imitate the conversational behaviour of the wizard. 
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|} \hline
+\textit{Type of model} & \textit{Agreement (in \%) } \\ \hline \hline
+Finite state automaton & 43.66 \\ \hline
+Factored statistical model & 54.93 \\ \hline
+Rule-structured model & \textbf{71.83} \\ \hline
+\end{tabular}
+\end{center}
+\vspace{-2mm}
+\caption{Agreement results on the test test for the three approaches.}
+\vspace{-2mm}
+\label{table:learning-exp3}
+\end{table}
 
 \section{User trials}
 

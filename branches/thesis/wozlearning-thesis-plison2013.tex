@@ -607,31 +607,31 @@ The parameter estimation procedure followed the Bayesian learning approach detai
 
 Given the utility models defined above, the action to execute corresponds to the action associated with the maximum utility in the current state. In this particular experiment, utility maximisation only considered the current (immediate) utility and did not perform forward planning.
 
-The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state-action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their \textit{accuracy} -- that is, the percentage of actions corresponding to the action selected by the wizard in the held-out test set. The accuracy results for the three models were evaluated at various stages of the estimation process in order to analyse and compare their learning performance. The accuracy figures were calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
+The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state-action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their  agreement with the wizard actions -- that is, on the percentage of actions corresponding to the action selected by the wizard in the held-out test set. The agreement results for the three models were evaluated at various stages of the estimation process in order to analyse and compare their learning performance. The results were calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
 
 \subsection{Empirical results and analysis}
 \label{sec:wozlearning-experiments-results}
 
-Table \ref{table} presents the accuracy results for the three utility models. The differences between the rule-structured model and the two baselines are statistically significant using Bonferroni-corrected paired $t$-tests, with $p$-value $< 0.0001$.   
+Table \ref{table} presents the agreement results for the three utility models. The differences between the rule-structured model and the two baselines are statistically significant using Bonferroni-corrected paired $t$-tests, with $p$-value $< 0.0001$.   
 
 We performed an error analysis on the 17\% of actions that deviate from the wizard behaviour.\footnote{One should be wary of labelling these actions as ``incorrect'', since they are in most cases relevant dialogue moves, but simply result from slightly different decision strategies than the one followed by the wizard.} The analysis revealed that the discrepancy is mainly due to two factors.  The first factor is the lack of complete consistency on the part of the wizard, who occasionally decided to follow distinct strategies in similar situations (especially regarding the use of clarification requests). The second factor is the presence of a non negligible number of spurious and noisy data points, notably caused by e.g. interruptions in the middle of the experiments and technical issues with the control of the robotic platform (e.g. movements that had to be repeated due to motor failures).
 
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{|l|c|} \hline
-\textit{Type of model} & \textit{Accuracy (in \%) } \\ \hline \hline
+\textit{Type of model} & \textit{Agreement (in \%) } \\ \hline \hline
 Plain model & 67.35 \\ \hline
 Linear model & 61.85 \\ \hline
 Rule-structured model & \textbf{82.82} \\ \hline
 \end{tabular}
 \end{center}
 \vspace{-2mm}
-\caption{Accuracy results for the three models on a held-out test.}
+\caption{Agreement results for the three models on a held-out test.}
 \vspace{-2mm}
 \label{table}
 \end{table}
 
-The learning curves for the three models are shown in Figure \ref{results}.   Note that since the parameters are initially uniformly distributed, the accuracy is already non-zero before learning, since a random assignment of parameters has a low but non-zero chance of leading to the right action. 
+The learning curves for the three models are shown in Figure \ref{results}.   Note that since the parameters are initially uniformly distributed, the agreement is already non-zero before learning, since a random assignment of parameters has a low but non-zero chance of leading to the right action. 
 
 
 \begin{figure*}[p!]
@@ -643,14 +643,14 @@ The learning curves for the three models are shown in Figure \ref{results}.   No
 \centering\includegraphics[scale=0.42]{imgs/results_log.pdf}
 \label{subfig:exp_results}
 }\end{center}
-\caption{Learning curves for the learned utility models on a held-out test set of 255 actions as a function of the number of processed data points.  The accuracy results are given for the plain, linear and rule-structured utility models, using both linear (top) and logarithmic scales (bottom).}
+\caption{Learning curves for the learned utility models on a held-out test set of 255 actions as a function of the number of processed data points.  The agreement results are given for the plain, linear and rule-structured utility models, using both linear (top) and logarithmic scales (bottom).}
 \label{results}
 \end{figure*}
 
 
-Thanks to its considerably reduced number of parameters, the rule-structured model is able to converge to near-optimal values after observing only a small fraction of the training set.  The incorporation of domain knowledge via the rule structure has a clearly beneficial effect on the learning performance and on the generalisation capacity of the model.  As the figure shows, the two baseline models do also improve their accuracies over time, but at a much slower rate.   The linear model is comparatively faster than the plain model, but levels off towards the end. The suboptimal learning performance of the linear model is most likely due to the non-linearity of some dialogue strategies.  The plain model continues its convergence and would probably reach an accuracy similar to the rule-structured model if given much larger amounts of training data. 
+Thanks to its considerably reduced number of parameters, the rule-structured model is able to converge to near-optimal values after observing only a small fraction of the training set.  The incorporation of domain knowledge via the rule structure has a clearly beneficial effect on the learning performance and on the generalisation capacity of the model.  As the figure shows, the two baseline models do also improve their accuracies over time, but at a much slower rate.   The linear model is comparatively faster than the plain model, but levels off towards the end. The suboptimal learning performance of the linear model is most likely due to the non-linearity of some dialogue strategies.  The plain model continues its convergence and would probably reach an agreement level similar to the rule-structured model if given much larger amounts of training data. 
 
-The learning results are in line with our expectations based on the respective sizes of the parameter space for the three utility models, and are not \textit{per se} highly surprising.  The main lesson to draw from this experiment is however not the exact difference in accuracy or learning rates for each particular model, but the fact that probabilistic rules can be successfully applied to structure a small but non-trivial dialogue domain and derive its parameters from collected interaction data.  Through the use of abstraction mechanisms such as partitioning and quantification, the experiment demonstrates that the utility rules specified for the domain (see Appendix \ref{chap:domainspecs}) can cover large regions of the problem space without degrading the model performance.  The utility model can hence be optimised with only modest amounts of in-domain data. 
+The learning results are in line with our expectations based on the respective sizes of the parameter space for the three utility models, and are not \textit{per se} highly surprising.  The main lesson to draw from this experiment is however not the exact difference in agreement or learning rates for each particular model, but the fact that probabilistic rules can be successfully applied to structure a small but non-trivial dialogue domain and derive its parameters from collected interaction data.  Through the use of abstraction mechanisms such as partitioning and quantification, the experiment demonstrates that the utility rules specified for the domain (see Appendix \ref{chap:domainspecs}) can cover large regions of the problem space without degrading the model performance.  The utility model can hence be optimised with only modest amounts of in-domain data. 
 
 
 \section{Conclusion}
