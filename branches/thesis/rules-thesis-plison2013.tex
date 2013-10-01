@@ -688,8 +688,8 @@ The use of a distinct node to express the evidence is motivated by the fact that
 
 The assignment $eq_{X} \!=\! true$ is added to the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
 \begin{align}
-&P(X = x \, | eq_{X}\!=\!true) \nonumber \\
-&=  \alpha \ P(X\!=\!x)  \sum_{x_p \in Val(X_p)} P(eq_{X}\!=\!true | X\!=\!x, X_p \!=\!x_p ) P(X_p\!=\!x_p) \\
+&P(X = x \, | \, eq_{X}\!=\!true) \nonumber \\
+&=  \alpha \ P(X\!=\!x)  \sum_{x_p \in Val(X_p)} P(eq_{X}\!=\!true\, |\, X\!=\!x, X_p \!=\!x_p ) P(X_p\!=\!x_p) \\
 &= \alpha \ P(X\!=\!x) \ P(X_p\!=\!x) \label{eq:equivalence}
 \end{align}
 
@@ -797,7 +797,7 @@ Figure \ref{fig:pruning} illustrates the input and output of the pruning process
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.20]{imgs/pruning.pdf}
+\includegraphics[scale=0.25]{imgs/pruning.pdf}
 \caption{Illustration of the state pruning process. Only the nodes $A'$, $B$, $C$, $D$ and $E'$ are retained. The dotted lines denote the correspondence between nodes.}
 \label{fig:pruning}
 \end{figure}

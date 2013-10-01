@@ -147,8 +147,8 @@ Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtu
 \begin{center}
 \begin{tabular}{|p{35mm}||p{7cm}p{5mm}|p{34mm}p{5mm}|p{27mm}|p{4cm}|} \hline
 \textbf{Variable label:} & \textbf{Description:}  && \textbf{Range of values:} && \textbf{Observability: } & \textbf{Dependencies: }\\ \hline\hline
-$\mathit{perceived}$ & Objects perceived in the visual field && (possibly empty) set of object identifiers && Partial& $\emptyset$ \\\hline
-$\mathit{carried}$ & Object carried by the robot && (possibly empty) set of object identifiers && Full  & $\emptyset$ \\\hline
+$\mathit{perceived}$ & (Possibly empty) set of perceived objects && Object identifiers && Partial& $\emptyset$ \\\hline
+$\mathit{carried}$ & (Possibly empty) set of carried objects && Object identifiers && Full  & $\emptyset$ \\\hline
 $i_u$ & Current user intention && cf. Table \ref{table:userintents_exp3} && Partial  & $\mathit{completed\mbox{-}task}$, $\mathit{perceived}$, $\mathit{carried}$ \\\hline
 $u_u$ & Last user utterance && ASR hypotheses && Partial & $\emptyset$ \\ \hline
 $a_u$ & Last dialogue act from the user && cf. Table \ref{table:userdas_exp3} && Partial & $u_u$, $i_u$, $a_m$, $\mathit{lastMove}$ \\\hline
@@ -271,11 +271,13 @@ Each dialogue management approaches is represented by its own mechanism for dial
 
 We detail below how the exact design of each approach.
 
-\subsection{Handcrafted model}
+\subsection{Approach 1: handcrafted model}
+
+The first approach relies on a traditional finite state automaton to determine the current conversational situation and its corresponding system action.  The finite state automaton is triggered upon each new user dialogue act $a_u$. Attached to each edge is a logical condition that determines when the edge can be rightfully traversed. The conditions are defined on the basis of the current dialogue act $a_u$, previous dialogue act $a_{u\mbox{-}prev}$, and contextual variables $\mathit{perceived}$ and $\mathit{carried}$.\footnote{Note that the finite state automaton directly operates at the level of user dialogue acts $a_u$ without trying to evaluate the underlying user intention $i_u$, since the user intention remains at its core a hidden variable that is difficult to account without resorting to probabilistic methods.}
 
 \subsubsection*{Finite state automaton}
 
-The first approach relies on a traditional finite state automaton to determine the current conversational situation and its corresponding system action.  The finite state automaton is triggered upon each new user dialogue act $a_u$.  The automaton designed for the dialogue domain operates on the basis of three specified threshold values $T_1$, $T_2$ and $T_3$ (whose estimation is described shortly):
+The automaton designed for the dialogue domain operates on the basis of three specified threshold values $T_1$, $T_2$ and $T_3$ (whose estimation is described shortly):
 \begin{enumerate}
 \item If the incoming dialogue act has an hypothesis whose probability is higher than a given threshold $T_3$, the system action associated to the user request is directly selected.  For instance, if the new user act contains a hypothesis $a_u = \mathrm{Ask(Move(Left))}$ with probability $p > T_3$, the action $a_m = \mathrm{Do(Move(Left)})$ will be executed.
 \item If the probability of the top hypothesis for $a_u$ lies between $T_2$ and $T_3$ and corresponds to a request for a physical movement, the system will ask the user to confirm her/his intention.  The system response to a user act $a_u = \mathrm{Ask(Move(Left))}$ with probability $T_2 < p < T_3$ will hence be set to $a_m \mathrm{AskConfirm(Move(Left)})$
@@ -310,18 +312,78 @@ The values that delineate these four regions can be calculated using linear inte
 \begin{figure}[h!]
 \centering
 \includegraphics[scale=0.45]{imgs/asrconfidence.pdf} 
-\caption{Probability density function for the probability values of the top hypothesis specified in the user dialogue act $a_u$, divided into four non-overlapping regions that respectively correspond to the first, second, third, and fourth+fifth quintiles of the distribution. The actual probability values are marked as red crosses on the X axis. }
+\caption{Probability density function for the probability values of the top hypothesis specified in the user dialogue act $a_u$, divided into four non-overlapping regions that respectively correspond to the first, second, third, and fourth+fifth quintiles of the distribution. Red crosses on the X axis represent the actual probability values on the basis of which the density function was empirically estimated. }
 \label{fig:asrconfidence-exp3}
 \end{figure}
 
 
-\subsection{Factored statistical model}
+\subsection{Approach 2: factored statistical model}
 
-The second approach developed for this experiment consist of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.  The parameter estimation is follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. 
+The second approach developed for this experiment consist of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.  
 
-To reduce the problem of data sparsity, the model is factored in several smaller models. 
+Figure \ref{fig:unstructuredmodel-exp3} shows the complete factored model employed to structure the dialogue domain of the experiment.  As evidenced in the figure, the model is factored in four distinct distributions: 
+\begin{itemize}
+\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ describes the probability that the current intention $i_u$ is fulfilled by the last system action $a_m$. 
+\item The user goal model \\ $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ encodes the likelihood of a new user intention $i_u'$ given the current user intention $i_u$, task completion status $\mathit{completed\mbox{-}task}$, as well as the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
+\item The user action model $P(a_u'\, | \, i_u', a_m)$ describes the probability of the next user dialogue act $a_u'$ given the user intention $i_u'$ and the last system action $a_m$.
+\item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ describes the utility of a given system action $a_m'$ given the user intention $i_u'$, last user dialogue act $a_u'$, robot motion status $\mathit{motion'}$ and contextual variables $\mathit{carried}$ and $\mathit{perceived}$. 
+\end{itemize}
 
-\subsection{Rule-structured model}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.4]{imgs/unstructuredmodel.pdf} 
+\caption{Factored transition and utility models for the dialogue domain.}
+\label{fig:unstructuredmodel-exp3}
+\end{figure}
+
+\subsubsection*{Simplifying assumptions}
+
+% As shall be explained shortly, the probabilistic models developed in this approach do include a fair amount of internal structure and rely on a number of assumptions to limit the number of parameters, but without resorting to the more advanced modelling techniques that characterise rule-structured models (such as latent rule nodes and quantification). The purpose of this model is thus to evaluate the performance of a classical statistical approach when provided with the Wizard-of-Oz interaction data set at our disposal. 
+
+The four factored models remain however too large to be directly estimated from the limited amounts of data made available from the Wizard-of-Oz interactions.  We therefore introduced additional simplifying assumptions to further reduce the number of parameters associated with the model.
+
+The first assumption serves to reduce the task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ to a deterministic distribution that marks the task as completed when the executed action $a_m$ fulfils the (hidden) user intention $i_u$ and marks it as not completed  in other cases. The task completion model can therefore be defined without any parameters.
+
+%\begin{align}
+%&&&P(\mathit{completed\mbox{-}task}\!=\!\mathit{true} \, | \, i_u, a_m) = \nonumber \\
+%&&& \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \begin{cases} 1 & \text{if } \ a_m \  %\text{fulfills the intention } i_u \\
+%0 & \text{if } \ a_m\!=\!\mathrm{AskRepeat} \text{ or } \mathrm{AskConfirm} \\
+%\theta_{\text{changeOfMind}} & \text{otherwise} \end{cases} \label{eq:completedtask-exp3}
+%\end{align} 
+
+The second assumption pertains to the user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived}, \mathit{carried})$, and rests on the idea that the user intention only changes when the current intention has been completed.  The values of the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$ variables are furthermore grouped into two partitions: empty set or non-empty set. These two simplifications reduce the number of parameters required for the model to four Dirichlet distributions, each with 18 dimensions (which is the number of possible user intentions). 
+
+%\begin{align}
+%&&&P(i_u'  = x \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived}, \mathit{carried}) = \nonumber \\
+%&&& \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \begin{cases} \theta_{i_u'\!=\!x|\mathit{perceived}, \mathit{carried}} & \text{if } \  \mathit{completed\mbox{-}task}= true \\
+%\mathbf{1}(x = i_u) & \text{otherwise} \end{cases}
+%\end{align}
+
+The third assumption reduces the size of the user action model $P(a_u'\, | \, i_u', a_m)$ by exploiting the fact that only a fraction of user dialogue acts $a_u'$ are locally relevant for a given user intention $i_u'$ and last system action $a_m$.  A manually specified function $relevant: Val(i_u') \times Val(a_m) \rightarrow 2^{Val(a_u')}$ is used to derive the set of relevant user actions given a particular pair of user intention and system action. For instance, the relevant dialogue acts for the user intention $\mathrm{Move(Left,Short)}$ are $\mathrm{Ask(Move(Left,Short))}$, $\mathrm{RepeatLast}$, $\mathrm{Confirm}$, $\mathrm{Disconfirm}$, $\mathrm{Stop}$ and $\mathrm{Grounding}$. The resulting set of parameters associated with the user action model contains 133 Dirichlet distributions, each with 6 dimensions (the number of relevant actions allowed per intention). 
+
+The fourth and final assumption tackles the utility distribution $U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}$, $\mathit{motion'})$.  Similarly to the user action model, the simplifying assumption is based on the idea that only a fraction of system actions are relevant in a given state, and that the non-relevant ones have a constant negative utility. In order to express this constraint, we first define a function $best: Val(i_u) \times Val(\mathit{perceived}) \times \mathit{carried} \rightarrow Val(a_m)$ that maps each user intention and context to the ``best'' action that can be executed at that state if we were to assume no uncertainty. This best action is identical to the action selected by the finite state automaton in Figure \ref{fig:fsa-exp3}. 
+
+Based on this function, the utility distribution is expressed as: 
+\begin{align}
+&&& U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}, \mathit{motion'}) = \nonumber \\
+&&& \ \ \ \ \ \ \  \begin{cases} \ \theta_{best(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = best(i_u', \mathit{carried}, \mathit{perceived}) \\ 
+\ \theta_{askConfirm(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = \mathrm{Confirm(i_u')} \\
+\ \theta_{askRepeat(a_u, \mathit{motion'})} & \text{if } \ a_m = \mathrm{AskRepeat} \\
+\ \theta_{stop(a_u,\mathit{motion'})} & \text{if } \ a_m = \mathrm{Stop} \\ 
+\mbox{-}10 & \text{otherwise}
+\end{cases} \label{eq:utilunstruct-exp3}
+\end{align}
+
+The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} results in a total of 296 parameters. 
+
+\subsubsection*{Parameter estimation}
+
+The parameter estimation follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. 
+
+
+\note{numbers of params}
+
+\subsection{Approach 3: rule-structured model}
 
 \subsection{Learning curves}
 
