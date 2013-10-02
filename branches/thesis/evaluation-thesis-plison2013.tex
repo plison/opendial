@@ -3,9 +3,9 @@
 
 \note{NOT READY YET!!}
 
-This chapter presents the last (and most extensive) experiment carried out in the course of this thesis. The empirical studies exposed so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the learning performance of rule-structured models compared to more classical representations. But albeit such empirical measures can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
+This chapter presents the last (and most extensive) experiment carried out for this thesis. The empirical studies exposed so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the empirical learning performance of rule-structured models compared to more classical representations. But albeit such measures can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
 
-In order to corroborate our claims regarding the benefits of structured probabilistic modelling for dialogue management and contrast it to traditional approaches, we conducted an user evaluation experiment with a total of \note{xxx} users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in an human--robot interaction domain.  The three approaches respectively correspond to a purely handcrafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. 
+In order to corroborate our claims regarding the benefits of hybrid approaches to dialogue management and contrast it to traditional methods, we conducted an user evaluation experiment with a total of \note{xxx} users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in an human--robot interaction domain.  The three approaches respectively correspond to a purely handcrafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. 
 
 The collected interactions were subsequently analysed to extract various metrics of interaction quality and efficiency.  The metrics included both objective measures such as the number of errors, clarification requests, and task outcome, but also subjective measures of user satisfaction, based on a survey completed by the participants after each interaction. \note{give here a teaser about the results}
 
@@ -13,11 +13,9 @@ The collected interactions were subsequently analysed to extract various metrics
 
 \section{Interaction scenario}
 
-The interaction scenario employed for the user evaluation is similar in most respects to the one presented in Section \ref{sec:rllearning-experiments}, but has been adapted (as a follow-up to the feedback provided by some participants) to circumscribe more precisely the task that is to be performed. 
+The interaction scenario employed for the user evaluation is similar in most respects to the one presented in Section \ref{sec:rllearning-experiments}, modulo some minor adaptations to circumscribe more precisely the task that is to be performed.\footnote{This change was suggested by several participants in the previous study.} 
 
-A Nao robot stands on a large table and can move around across the table, as illustrated in Figure \ref{fig:scenario}.  The purpose of the interaction is to instruct the robot to (1) move to the other side of the table without bumping into the (imaginary) walls, (2) pick up one of the object, (3) bring it back to the left side of the table, and (4) release it at a specific landmark. 
-
-The robot can perceive the presence, colour and location of each physical object thanks to visual markings placed at their top.  It can also grasp each object with the help of permanent magnets fixed on the hands of the robot. 
+The interactions revolve around a human user and a Nao robot standing on a large table, as illustrated in Figure \ref{fig:scenario}.  The purpose of the interaction is to instruct the robot to (1) move to the other side of the table without bumping into the (imaginary) walls placed in the middle of the scene, (2) pick up the designated object, (3) bring it back to the left side of the table, and (4) release it on a yellow landmark.  The robot is able to perceive the presence, colour and location of each physical object thanks to visual markings placed at their top.  It can also grasp each object with the help of permanent magnets fixed on the hands of the robot. 
 
 \begin{figure}[h]
 \vspace{3mm}
@@ -34,14 +32,14 @@ The robot can perceive the presence, colour and location of each physical object
 
 As for the previous experiment, we represent each basic instruction (such as moving forward, turning left, picking up an object, etc.) as a distinct user intention $i_u$. After the fulfilment of each instruction, the user intention is reinitialised to represent the next instruction to perform.  The possible user intentions for the domain are shown in Table \ref{table:userintents_exp3}.  
 
-A few changes can be noted compared to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}.  First, the basic movements are now completed with a second argument specifying the duration of the movement, e.g. short or long. The human user can therefore explicitly request the robot to perform a short or long movement. A new type of movement has also been added, $\mathrm{Move(Turn)}$ to make the robot turn around by 180 degrees.  Finally, specific intentions are used to capture the opening (engagement) and closing (disengagement) phases of the dialogue. 
+A few changes can be noted compared to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}. The basic movements are now completed with a second argument specifying the duration of the movement, e.g. short or long. The human user can therefore explicitly request the robot to perform a short or long movement. A new type of movement has also been added, $\mathrm{Move(Turn)}$ to make the robot turn around by 180 degrees.  Finally, specific intentions are used to capture the opening (engagement) and closing (disengagement) phases of the dialogue. 
 
-The possible user actions $a_u$, listed in Table \ref{table:userdas_exp3} are a reflection of these user intentions. The user can directly utter an instruction, ask the robot to repeat its last movement, or respond to a clarification or confirmation request. Two new additions are the user action $\mathrm{Ask(Stop)}$ to tell the robot to stop its current movement, and the grounding action $\mathrm{Grounding}$ to represent explicit positive feedback provided by the user on the robot behaviour.
+The possible user actions $a_u$, listed in Table \ref{table:userdas_exp3} correspond to the verbal realisations of these user intentions. The user can directly utter an instruction, ask the robot to repeat its last movement, or respond to a clarification or confirmation request.   The user action $\mathrm{Ask(Stop)}$ can also be used to command the robot to stop its current movement, while the grounding action $\mathrm{Grounding}$ represents explicit  feedback provided by the user on the robot behaviour.
 
 \subsubsection*{System actions}
 As shown in Table \ref{table:systemdas_exp3}, the system actions $a_m$ include: \begin{itemize}
 \item Physical movements to move around in various directions and lengths, pick up or put down physical objects on the table, or stop the current move.
-\item Verbal responses to the user's requests, in order to confirm or deny the detection of a particular object, describe the robot's current perception, or tell the user that it cannot perform a requested movement due to some impeding factor (e.g. not being able to pick up an object whose location is currently not known). 
+\item Verbal responses to the user requests, in order to confirm or deny the detection of a particular object, describe the robot's current perception, or tell the user that it cannot perform a requested movement due to some impeding factor (e.g. not being able to pick up an object whose location is currently not known). 
 \item Clarification and confirmation requests, such as asking the user to repeat her/his last utterance, or confirming a particular intention.
 \end{itemize}
 
@@ -120,25 +118,25 @@ $\cdot$ $\mathrm{AskConfirm}(x) $\\ $ \ \ \ \text{ where } x=\{\mathrm{Move}(y,z
 
 The dialogue state $\mathcal{B}$ chosen for the dialogue domain is factored in eleven distinct state variables, encoding both the user intentions and actions, the external context, the recent interaction history, and the physical status of the robot. Table \ref{table:statevariables} details the name, purpose, range of possible values, observability and dependencies of each state variable. 
 
-One can distinguish in this table three distinct types of state variables:
+One can distinguish three distinct types of state variables in this factorisation:
 \begin{enumerate}
-\item State variables such as $u_u$, $\mathit{perceived}$, $\mathit{carried}$ and $\mathit{motion}$ represent \textit{observations} arising from the robot sensors and speech recognition engine. Observations such as $\mathit{carried}$ and $\mathit{motion}$ are (near-)certain, while the last user utterance and the set of perceived objects are uncertain observations expressed through categorical distributions over alternative values. 
-\item State variables such as $i_u$, $a_u$, $a_{u\mbox{-}prev}$ and $\mathit{completed\mbox{-}task}$ are essentially \textit{hidden variables}. Hidden variables are always expressed as categorical distributions and are indirectly inferred from the accumulated observations and actions.
-\item Finally, variables such as $a_m$, $u_m$ and $\mathit{lastMove}$ represent (present or past) \textit{decisions} made by the system. These decisions are naturally known to the system and are thus fully observed. 
+\item State variables such as $u_u$, $\mathit{perceived}$, $\mathit{carried}$ and $\mathit{motion}$ represent observations arising from the robot sensors and speech recognition engine. Observations such as $\mathit{carried}$ and $\mathit{motion}$ are (near-)certain, while the last user utterance and the set of perceived objects are uncertain observations expressed through categorical distributions over alternative values. 
+\item State variables such as $i_u$, $a_u$, $a_{u\mbox{-}prev}$ and $\mathit{completed\mbox{-}task}$ correspond to hidden variables that must be indirectly inferred from the accumulated observations and actions.
+\item Finally, variables such as $a_m$, $u_m$ and $\mathit{lastMove}$ represent (present or past) decisions made by the system. These decisions are naturally known to the system and are thus fully observed. 
 \end{enumerate}
 
-Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtually infinite set of possible values, as they can accept any string) and assuming the presence of only two objects, the total size of the joint state space is a non-trivial one to tackle: 
+Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtually infinite set of possible values, as they can accept any string) and assuming the presence of only two objects, the total size of the joint state space is non-trivial to tackle: 
 \begin{align}
-|\mathcal{S}| & = & 4 &&& [\text{size of } Val(\mathit{perceived})] \nonumber \\
- && \times 3 &&&  [\text{size of } Val(carried)] \nonumber \\
- && \times 18 &&&  [\text{size of } Val(i_u)] \nonumber \\
-&&  \times 25 &&&  [\text{size of } Val(a_u)] \nonumber \\
-&&  \times 25 &&&  [\text{size of } Val(a_{u\mbox{-}prev})] \nonumber \\
-&&  \times 41 &&&  [\text{size of } Val(a_m)] \nonumber \\
-&&  \times 2 &&&  [\text{size of } Val(\mathit{motion})] \nonumber \\
-&&  \times 14 &&&  [\text{size of } Val(\mathit{lastMove})] \nonumber \\
-&&  \times 2 &&&  [\text{size of } Val(\mathit{completed\mbox{-}task})] \nonumber \\
- & =  & 30 \ 9960 \ 000 &&& \nonumber 
+|\mathcal{S}| & = & 4 \ \ \ \ \ \ \ \ \ \ &&& \ \ \ \ \ \ \ \ \ \ [\text{size of } Val(\mathit{perceived})] \nonumber \\
+ && \times 3 \ \ \ \ \ \ \ \ \ \ &&&  \ \ \ \ \ \ \ \ \ \ [\text{size of } Val(carried)] \nonumber \\
+ && \times 18 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(i_u)] \nonumber \\
+&&  \times 25 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(a_u)] \nonumber \\
+&&  \times 25 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(a_{u\mbox{-}prev})] \nonumber \\
+&&  \times 41 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(a_m)] \nonumber \\
+&&  \times 2 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(\mathit{motion})] \nonumber \\
+&&  \times 14 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(\mathit{lastMove})] \nonumber \\
+&&  \times 2 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } Val(\mathit{completed\mbox{-}task})] \nonumber \\
+ & =  & \!\!\!\!\!\!\!\!\!\! 30 \ 9960 \ 000 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \ \nonumber 
   \end{align}
  
 \renewcommand{\arraystretch}{1.9}
@@ -185,7 +183,7 @@ The dialogue system employed for the experiment follows the architecture describ
 
 <PickUp> ::= <Front> ((take | pick up | grasp) <Object>) | pick it up | take it) <Back>
 
-<Release> ::= <Front> (release | put down | drop) <Object> (down | on the table)? <Back>
+<Release> ::= <Front> ((release | put down | drop) <Object>) | (put <Object> down)) <Back> 
 
 <Perception-1> ::= what (can | do) you (see | perceive)
 
@@ -193,7 +191,7 @@ The dialogue system employed for the experiment follows the architecture describ
 
 <Confirmation> ::= yes (please)? | no | exactly | ok 
 
-<Grounding> ::= (that is | this is)? (correct | incorrect | wrong | right | perfect | great | good) 
+<Grounding> ::= (that is | this is)? (correct  | incorrect | wrong | right | perfect | great | good) 
 %| (thanks | thank you) <Name>?
 
 <Repeat> ::= <Front> (do (it | that) (again | once more | one more time) | repeat that)
@@ -225,13 +223,13 @@ The dialogue system employed for the experiment follows the architecture describ
 \label{table:asr}
 \end{table}
 
-\item[Natural language understanding: ] Natural language understanding is implemented in the dialogue system through probability rules.  A total of 20 rules (of varying size) have been written for the domain, based on simple template-matching methods. One probability rule is specifically responsible for the resolution of referring expressions based on the current visual context. 
+\item[Natural language understanding: ] Natural language understanding is implemented in the dialogue system through probability rules.  A total of 20 rules (of varying size) have been written for the domain, based on simple template-matching methods. One rule is responsible for the resolution of referring expressions based on the current visual context. 
 
-\item[Dialogue management: ] Three distinct types of dialogue managers have been developed for this experiment: a finite-state automata, a purely statistical dialogue manager, and a dialogue manager based on probabilistic rules.  The design of these three dialogue management models is presented in Section \ref{sec:dialmodels_exp3}. 
+\item[Dialogue management: ] Three distinct types of dialogue managers have been developed for this experiment: a finite-state automata, a purely statistical dialogue manager, and a dialogue manager based on probabilistic rules.  The development of these three dialogue management approaches is presented in Section \ref{sec:dialmodels_exp3}. 
 
-\item[Generation: ] The natural language generation is realised through the application of one single, large rule (with 37 distinct cases) responsible for the mapping between the selected system action and its verbal realisation. The generated sentence is then converted to a speech signal with the text-to-speech library installed on the robot platform.
+\item[Generation: ] The natural language generation is realised through the application of one single rule (with 37 distinct cases) responsible for the mapping between the selected system action and its verbal realisation. The generated sentence is then converted to a speech signal with the text-to-speech library installed on the robot platform.
 
-\item [Other modules: ] As detailed in the previous chapter, the integrated dialogue system also comprises specific modules dedicated to object detection and motor control.  The detection and localisation of the physical objects is facilitated by the use of visual markings that can be easily recognised.  The robot uses permanent magnets to pick up and hold objects in its hand. 
+\item [Other modules: ] As detailed in the previous chapter, the integrated dialogue system also comprises specific modules dedicated to object detection and motor control.  The detection and localisation of the physical objects is facilitated by the use of visual markings on top of the objects.  The robot uses permanent magnets to pick up and hold objects in its hand. 
 
 \end{description}
 
@@ -242,14 +240,14 @@ In order to design accurate dialogue management models for the experiment, we st
 
 The interactions were once again encoded as a sequence of pairs $\langle \mathcal{B}_i, a_i \rangle$, where each system turn $i$ is represented by the selected wizard action $a_i$ and the dialogue state $\mathcal{B}_i$ in effect at the time the selection was made. the interactions collected here are left without further annotation. The interactions had on average 84.2 system turns.  39 \% of these turns resulted in an void action (i.e. no action at all), 40 \% to a physical action (complemented by a grounding describing the action), and the remaining 21 \% to a verbal response such as a factual answer or a clarification request. 
 
-Contrary to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}, the interactions recorded in this data collection effort are not augmented with supplementary annotation.\footnote{As we shall see in the next section, the relations between the user actions and the underlying intentions they express are automatically estimated as part of the learning procedure.} The recorded state variables include therefore only the ones that are directly observed by the system, such as the last and next-to-last user actions $a_u$ and $a_{u\mbox{-}prev}$ (as provided by the ASR and NLU modules), the last system action $a_m$, the set of objects currently perceived and carried by the robot, the last physical movement of the robot, and the $\mathit{motion}$ variable denoting whether the robot is currently in movement. 
+Contrary to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}, the interactions recorded in this data collection effort are not augmented with supplementary annotation.\footnote{As we shall see in the next section, the relations between the user actions and the underlying intentions they express are automatically estimated as part of the learning procedure.} The recorded state includes therefore only variables that are directly observed by the system: the last and next-to-last user actions $a_u$ and $a_{u\mbox{-}prev}$ (as provided by the ASR and NLU modules), the last system action $a_m$, the set of objects currently perceived and carried by the robot, the last physical movement of the robot, and the $\mathit{motion}$ variable denoting whether the robot is currently in movement. 
 
 Here is an example of data point extracted from the collected data, corresponding to the user utterance \utt{yes} after a confirmation request, followed by the system action $\mathrm{Do(Move(Right))}$. 
 
 \begin{align*}
 \mathcal{B} = \begin{cases} u_u = \langle (``\text{yes}", p\!=\!0.95), (\mathit{None}, p\!=\!0.05) \rangle \\
 a_u = \langle (\mathrm{Confirm}, p\!=\!0.95), (\mathit{None}, p\!=\!0.05) \rangle \\
-a_{u\mbox{-}prev} = \langle (\mathrm{Move(Right)}, p\!=\!0.63), (\mathit{None}, p\!=\!0.37) \rangle \\
+a_{u\mbox{-}prev} = \langle (\mathrm{Ask(Move(Right))}, p\!=\!0.63), (\mathit{None}, p\!=\!0.37) \rangle \\
 a_m = \langle (\mathrm{AskConfirm(Move(Right))}, p\!=\!1.0) \rangle \\
 u_m = \langle (``\text{should i move right?}", p\!=\!1.0) \rangle \\
 \mathit{perceived} = \langle ([\mathit{RedObj}], p\!=\!1.0) \rangle \\
@@ -262,30 +260,30 @@ u_m = \langle (``\text{should i move right?}", p\!=\!1.0) \rangle \\
 \section{Dialogue management models}
 \label{sec:dialmodels_exp3}
 
-Each dialogue management approaches is represented by its own mechanism for dialogue state update and action selection.  As already mentioned at the beginning of the chapter, three competing approaches have been developed:
+In order to evaluate how the choice of a dialogue management framework can influence the interaction quality, we developed three competing dialogue management approaches for the dialogue domain:
 \begin{itemize} 
 \item The first approach is a purely handcrafted dialogue manager using a finite-state automaton to process the user inputs and determine the corresponding responses. 
 \item The second approach is a purely statistical dialogue manager that encodes the transition and utility model of the domain based on classical, factored probabilistic models.
-\item Finally, the third dialogue manager relies on a hybrid modelling strategy and employs the formalism of probabilistic rules to structure the domain models.
+\item Finally, the third approach relies on a hybrid modelling strategy and uses the formalism of probabilistic rules to structure the domain models.
 \end{itemize}
 
 We detail below how the exact design of each approach.
 
 \subsection{Approach 1: handcrafted model}
 
-The first approach relies on a traditional finite state automaton to determine the current conversational situation and its corresponding system action.  The finite state automaton is triggered upon each new user dialogue act $a_u$. Attached to each edge is a logical condition that determines when the edge can be rightfully traversed. The conditions are defined on the basis of the current dialogue act $a_u$, previous dialogue act $a_{u\mbox{-}prev}$, and contextual variables $\mathit{perceived}$ and $\mathit{carried}$.\footnote{Note that the finite state automaton directly operates at the level of user dialogue acts $a_u$ without trying to evaluate the underlying user intention $i_u$, since the user intention remains at its core a hidden variable that is difficult to account without resorting to probabilistic methods.}
+The first approach relies on a traditional finite state automaton to determine the current conversational situation and its corresponding system action.  The finite state automaton is triggered upon each new user dialogue act $a_u$. Attached to each edge is a logical condition that determines when the edge can be traversed. The conditions are defined on the basis of the current dialogue act $a_u$, previous dialogue act $a_{u\mbox{-}prev}$, and contextual variables $\mathit{perceived}$ and $\mathit{carried}$.\footnote{It should be noted that the finite state automaton directly operates at the level of user dialogue acts $a_u$ without trying to evaluate the underlying user intention $i_u$, since the user intention is a hidden variable that is intrinsically difficult to account without resorting to probabilistic methods.}
 
 \subsubsection*{Finite state automaton}
 
 The automaton designed for the dialogue domain operates on the basis of three specified threshold values $T_1$, $T_2$ and $T_3$ (whose estimation is described shortly):
 \begin{enumerate}
 \item If the incoming dialogue act has an hypothesis whose probability is higher than a given threshold $T_3$, the system action associated to the user request is directly selected.  For instance, if the new user act contains a hypothesis $a_u = \mathrm{Ask(Move(Left))}$ with probability $p > T_3$, the action $a_m = \mathrm{Do(Move(Left)})$ will be executed.
-\item If the probability of the top hypothesis for $a_u$ lies between $T_2$ and $T_3$ and corresponds to a request for a physical movement, the system will ask the user to confirm her/his intention.  The system response to a user act $a_u = \mathrm{Ask(Move(Left))}$ with probability $T_2 < p < T_3$ will hence be set to $a_m \mathrm{AskConfirm(Move(Left)})$
+\item If the probability of the top hypothesis for $a_u$ lies between $T_2$ and $T_3$ and corresponds to a request for a physical movement, the system will ask the user to confirm her/his intention.  The system response to a user act $a_u = \mathrm{Ask(Move(Left))}$ with probability $T_2 < p < T_3$ will hence be set to $a_m = \mathrm{AskConfirm(Move(Left)})$
 \item If the probability of the top hypothesis lies between $T_1$ and $T_2$, the system will ask the user to repeat her/his utterance by triggering the action $a_m = \mathrm{AskRepeat}$. 
 \item Finally, if no hypothesis reaches the minimal threshold $T_1$, the user action is assumed to correspond to a spurious recognition result, and is simply ignored.
 \end{enumerate}
 
-A (slightly simplified) graphical depiction of the corresponding finite state automaton is provided in Figure \ref{fig:fsa-exp3}.  The finite state contains 16 distinct states revolving around the key state $s_1$.  Depending on the probability of the top hypothesis in the user dialogue act $a_u$, the automaton will either directly transit from the state $s_1$ to the states $s_4 \cdots s_{15}$ (corresponding to actions that aim to fulfil the user intentions), or redirect to state $s_2$ or $s_3$ for clarification. After each user action in the states $s_4 \cdots s_{15}$, the current state is re-initialised to state $s_1$, as illustrated in the Figure with empty transitions. 
+A (slightly simplified) graphical depiction of the corresponding finite state automaton is provided in Figure \ref{fig:fsa-exp3}.  The finite state contains 16 distinct states revolving around the key state $s_1$.  Depending on the probability of the top hypothesis in the user dialogue act $a_u$, the automaton will either directly transit from the state $s_1$ to the states $s_4 \cdots s_{15}$ or be redirected to state $s_2$ or $s_3$ for clarification. After each user action in the states $s_4 \cdots s_{15}$, the current state is re-initialised to state $s_1$, through empty transitions. 
 
 
 \begin{figure}[p]
@@ -312,22 +310,22 @@ The values that delineate these four regions can be calculated using linear inte
 \begin{figure}[h!]
 \centering
 \includegraphics[scale=0.45]{imgs/asrconfidence.pdf} 
-\caption{Probability density function for the probability values of the top hypothesis specified in the user dialogue act $a_u$, divided into four non-overlapping regions that respectively correspond to the first, second, third, and fourth+fifth quintiles of the distribution. Red crosses on the X axis represent the actual probability values on the basis of which the density function was empirically estimated. }
+\caption{Probability density function for the probability values of the top hypothesis specified in the user dialogue act $a_u$, divided into four non-overlapping regions that respectively correspond to the first, second, third, and fourth+fifth quintiles of the distribution. Red crosses on the X axis represent the actual probability values used to construct the kernel density function. }
 \label{fig:asrconfidence-exp3}
 \end{figure}
 
 
 \subsection{Approach 2: factored statistical model}
 
-The second approach developed for this experiment consist of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.   We assume that both the transition model and utility model of the domain are initially unknown. 
+The second approach developed for this experiment consists of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.   We assume that both the transition model and utility model of the domain are initially unknown. 
 
-Both this approach and the next one assume that the domain can be captured with a planning horizon limited to one.  In other words, the approach does not rely on online forward planning (which has proven to be practically difficult to reconcile with real-time constraints), and the dialogue manager determines the next action to perform by directly selecting the action that shows the highest utility in the current dialogue state.\footnote{In other words, the utility model expresses what is called a $Q$-value model in the reinforcement learning literature.}
+Both this approach and Approach 3 assume that the domain can be captured with a planning horizon limited to the present time step.  In other words, the approach does not rely on online forward planning (which has proven to be practically difficult to reconcile with real-time constraints) and directly selects the action yielding the highest utility in the current dialogue state.\footnote{In other words, the utility model represents what is called a $Q$-value model in the reinforcement learning literature.}
 
 \subsubsection*{Domain modelling}
 
-Figure \ref{fig:unstructuredmodel-exp3} shows the factored model employed to structure the dialogue domain of the experiment.  As evidenced in the figure, the domain models are factored in four major distributions (the three first ones being part of the transition model, while the first one is a utility model): 
+Figure \ref{fig:unstructuredmodel-exp3} shows the factored model employed to structure the dialogue domain of the experiment.  As evidenced in the figure, the domain models are factored in four major distributions (the three first ones being part of the transition model, while the fourth one is a utility model): 
 \begin{itemize}
-\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ describes the probability that the current intention $i_u$ is fulfilled by the last system action $a_m$.  The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is essentially a deterministic distribution that marks the task as completed when the executed action $a_m$ fulfils the (hidden) user intention $i_u$,  marks it as not completed in other cases. The task completion model is therefore defined without parameters. 
+\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ describes the probability that the current intention $i_u$ is fulfilled by the last system action $a_m$.  The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is essentially a deterministic distribution that marks the task as completed when the executed action $a_m$ fulfils the user intention $i_u$,  and as not completed in other cases. %The task completion model is therefore defined without parameters. 
 \item The user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ encodes the likelihood of a new user intention $i_u'$ given the current intention $i_u$, task completion $\mathit{completed\mbox{-}task}$, as well as the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
 \item The user action model $P(a_u'\, | \, i_u', a_m)$ describes the probability of the next user dialogue act $a_u'$ given the user intention $i_u'$ and the last system action $a_m$.
 \item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ describes the utility of a given system action $a_m'$ given the user intention $i_u'$, last user dialogue act $a_u'$, robot motion status $\mathit{motion'}$ and contextual variables $\mathit{carried}$ and $\mathit{perceived}$. 
@@ -363,13 +361,13 @@ The first simplifying assumption pertains to the user goal model $P(i_u' \, | \,
 
 We also compressed the size of the user action model $P(a_u'\, | \, i_u', a_m)$ by exploiting the fact that only a fraction of user dialogue acts $a_u'$ are locally relevant for a given user intention $i_u'$ and last system action $a_m$.  A manually specified function $relevant: Val(i_u) \times Val(a_m) \rightarrow 2^{Val(a_u)}$ is used to derive the set of relevant user actions given a particular pair of user intention and system action. For instance, the relevant dialogue acts for the user intention $\mathrm{Move(Left,Short)}$ are $\mathrm{Ask(Move(Left,Short))}$, $\mathrm{RepeatLast}$, $\mathrm{Confirm}$, $\mathrm{Disconfirm}$, $\mathrm{Stop}$ and $\mathrm{Grounding}$. The resulting set of parameters associated with the user action model contains 133 Dirichlet distributions, each with 6 dimensions (the number of relevant actions allowed per intention). 
 
-The third and final heuristic employed to reduce the number of parameters is to reduce the number of relevant system actions in the utility distribution $U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}$, $\mathit{motion'})$.  Similarly to the user action model, one can exploit the fact that only a fraction of system actions are relevant in a given state, and that the non-relevant ones have a constant negative utility. In order to express this constraint, we first define a function $best: Val(i_u) \times Val(\mathit{perceived}) \times \mathit{carried} \rightarrow Val(a_m)$ that maps each user intention and context to the ``best'' action that can be executed at that state if we were to assume no uncertainty. This best action is identical to the action selected by the finite state automaton in Figure \ref{fig:fsa-exp3}. In addition to this best action, we also allow the actions $\mathrm{AskConfirm(i_u')}$, $\mathrm{AskRepeat}$ and $Do(Stop)$ to be executed at any state. The utility distribution is then expressed as: 
+The third and final heuristic is to reduce the number of relevant system actions in the utility distribution $U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}$, $\mathit{motion'})$.  Similarly to the user action model, one can exploit the fact that only a fraction of system actions are relevant in a given state, and that the non-relevant ones have a constant negative utility. In order to express this constraint, we first define a function $best: Val(i_u) \times Val(\mathit{perceived}) \times \mathit{carried} \rightarrow Val(a_m)$ that maps each user intention and context to the ``best'' action that can be executed at that state if we were to assume no uncertainty. This best action is identical to the action selected by the finite state automaton in Figure \ref{fig:fsa-exp3}. In addition to this best action, we also allow the actions $\mathrm{AskConfirm(i_u')}$, $\mathrm{AskRepeat}$ and $Do(Stop)$ to be executed at any state. The utility distribution is then expressed as: 
 \begin{align}
 &&& U(a_m', i_u', a_u', \mathit{carried}, \mathit{perceived}, \mathit{motion'}) = \nonumber \\
-&&& \ \ \ \ \ \ \  \begin{cases} \ \theta_{best(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = best(i_u', \mathit{carried}, \mathit{perceived}) \\ 
-\ \theta_{askConfirm(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = \mathrm{Confirm(i_u')} \\
-\ \theta_{askRepeat(a_u, \mathit{motion'})} & \text{if } \ a_m = \mathrm{AskRepeat} \\
-\ \theta_{stop(a_u,\mathit{motion'})} & \text{if } \ a_m = \mathrm{Stop} \\ 
+&&& \ \ \ \ \ \ \  \begin{cases} \ \theta_{\text{best}(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = best(i_u', \mathit{carried}, \mathit{perceived}) \\ 
+\ \theta_{\text{askConfirm}(i_u', \mathit{carried}, \mathit{perceived})} & \text{if } \ a_m = \mathrm{Confirm(i_u')} \\
+\ \theta_{\text{askRepeat}(a_u, \mathit{motion'})} & \text{if } \ a_m = \mathrm{AskRepeat} \\
+\ \theta_{\text{stop}(a_u,\mathit{motion'})} & \text{if } \ a_m = \mathrm{Stop} \\ 
 \mbox{-}10 & \text{otherwise}
 \end{cases} \label{eq:utilunstruct-exp3}
 \end{align}
@@ -378,51 +376,54 @@ The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} 
 
 \subsubsection*{Parameter estimation}
 
-The parameter estimation follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. The learning algorithm operates by cycling through the collection of turns recorded in the Wizard-of-Oz experiments, and updating the parameter distributions after each.  The wizard is assumed to act rationally in most cases and select the action that yields the highest utility given the current dialogue state. 
+The parameter estimation follows the Bayesian learning procedure presented in Chapter \ref{chap:wozlearning}. The learning algorithm operates by cycling through the collection of turns recorded in the Wizard-of-Oz experiments, and updating the parameter distributions after each turn using Bayesian inference.  The wizard is assumed to act rationally in most cases and select the action that yields the highest utility given the current dialogue state. 
 
 It should be noted that, in contrast to the experiment presented in Section \ref{sec:wozlearning-experiments} (which concentrated on the estimation of a single model), the parameters to estimate in this setting include both the transition model and the utility model.  The learning algorithm is thus an instance of a joint optimisation problem, as the system must simultaneously optimise both models in order to find the parameters that provide the best fit for the Wizard-of-Oz dataset as a whole. 
 
-The parameters of categorical distributions are all encoded by Dirichlet distributions initialised with weakly informative priors, while the utility parameters are encoded by uniform distributions with a support of $[-10, 30]$.  Section \ref{sec:learningcurve-exp3} details the learning curve followed during the estimation process as well as the degree of agreement between the learned model and the ``gold standard'' actions selected by the wizard. 
+The parameters of categorical distributions are all encoded by Dirichlet distributions initialised with weakly informative priors, while the utility parameters are encoded by uniform distributions with a support range of $[-10, 30]$.  Section \ref{sec:learningcurve-exp3} presents the exact learning curve followed during the estimation process.
+% as well as the degree of agreement between the learned model and the ``gold standard'' actions selected by the wizard. 
 
 \subsection{Approach 3: rule-structured model}
 
-The third dialogue management approach developed in this experiment relies on the formalism of probabilistic rules presented through this thesis.  The general structure of the domain models remain similar to the one shown in Figure \ref{fig:unstructuredmodel-exp3}.  As in the second approach, the transition model is divided into a task completion model, a user goal model, and a user action model.  Action selection is also formalised by searching for the highest-utility action (assuming a planning horizon of one) as specified by the utility model of the domain.  However, the approach relies here on the specification of probabilistic rules to express these models, and the parameter of these rules are optimised on the basis of the Wizard-of-Oz data set.
+The final dialogue management approach developed in this experiment is couched in the formalism of probabilistic rules presented in this thesis.  
+
+%approach relies here on the specification of probabilistic rules to express these models, and the parameter of these rules are optimised on the basis of the Wizard-of-Oz data set.
 
 \subsubsection*{Domain modelling}
 
-The transition model is again factored in three distinct models, but are in this approach structured through probability rules:
+The general structure of the domain remains similar to the one shown in Figure \ref{fig:unstructuredmodel-exp3}.  As in the second approach, the models are decomposed into a task completion model, a user goal model, a user action model, and a utility model.  Action selection is similarly formalised as a search for the highest-utility action in the current state (assuming a planning horizon limited to the current time step).  However, in contrast to Approach 2, the internal structure of the domain models is here encoded through probabilistic rules instead of standard categorical distributions:
 \begin{itemize}
-\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is encoded by one single deterministic rule that define when the current intention $i_u$ is fulfilled by the last system action $a_m$. 
-\item The user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ consists of a set of seven rules that define the probability of the new user intention $i_u'$ given the dialogue context. One rule defines the prior probability of the user intentions $\mathrm{Move(*)}$, four rules specify the prior probability of $\mathrm{PickUp(*)}$, $\mathrm{WhatDoYouSee}$ and $\mathrm{DoYouSee(*)}$ (depending on the value of the $\mathit{perceived}$ variable), one rule specify the prior probability of $\mathrm{Release}$ (depending on the value of the $\mathit{carried}$ variable), and one final rule specifies the probability of the conventional $\mathrm{Greeting}$ and $\mathrm{Closing}$ intentions (depending on the last system movement). 
+\item The task completion model $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is encoded by one single deterministic rule that define when the current intention $i_u$ is fulfilled by the system action $a_m$. 
+\item The user goal model $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ consists of a collection of seven rules that define the probability of the new user intention $i_u'$ given the dialogue context. One rule defines the prior probability of the user intentions $\mathrm{Move(\mathit{x})}$, four rules specify the prior probability of $\mathrm{PickUp(\mathit{x})}$, $\mathrm{WhatDoYouSee}$ and $\mathrm{DoYouSee(\mathit{x})}$ (depending on the value of the $\mathit{perceived}$ variable), one rule specify the prior probability of $\mathrm{Release}$ (depending on the value of the $\mathit{carried}$ variable), and one final rule specifies the probability of the conventional $\mathrm{Greeting}$ and $\mathrm{Closing}$ intentions (depending on the last system move). 
 
-\item The user action model $P(a_u'\, | \, i_u', a_m)$ is formalised with two rules that maps user intentions to their potential verbal realisations in terms of user dialogue acts. The first rule expresses the likelihood of various user dialogue acts depending on the user intention and last system action (in particular, whether the system uttered a clarification or confirmation request).  The second rule expresses the specific likelihood of the $\mathrm{Ask(Stop)}$ and $\mathrm{Disconfirm}$ actions directly following a physical movement (to convey that the executed action was the wrong one).
+\item The user action model $P(a_u'\, | \, i_u', a_m)$ is formalised with two rules that maps user intentions to their potential verbal realisations in terms of user dialogue acts. The first rule expresses the likelihood of various user dialogue acts depending on the user intention and last system action (in particular, whether the system uttered a clarification or confirmation request).  The second rule expresses the likelihood of the $\mathrm{Ask(Stop)}$ and $\mathrm{Disconfirm}$ actions during the execution of a physical movement.
 
-\item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ is encoded with a total of eleven utility rules.  The model essentially contains one rule for each family of possible system actions.  There is therefore one rule to define the relative utility of movement actions, one rule for grasping actions, one rule for the release action, two rules for the $\mathrm{Describe(*)}$ and $\mathrm{(Dis)confirmDetection}$ actions, one rule to handle the conventional $\mathrm{Greet}$ and $\mathrm{Goodbye}$ actions, three rules for the clarification and confirmation requests, and one rule to stop the current movement. The last rule fixes an initial, negative utility for all actions to ensure that non-relevant actions have a utility lower than zero.  
+\item Finally, the utility model $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ is encoded with a total of eleven utility rules.  The model essentially contains one rule for each family of possible system actions.  There is therefore one rule to define the relative utility of movement actions, one rule for grasping actions, one rule for the release action, two rules for the $\mathrm{Describe(\mathit{x})}$, $\mathrm{ConfirmDetection}$ and $\mathrm{DisconfirmDetection}$ actions, one rule to handle the  $\mathrm{Greet}$ and $\mathrm{Goodbye}$ actions, three rules for the clarification and confirmation requests, and one rule to stop the current movement. The last rule fixes an initial, negative utility for all actions to ensure that non-relevant actions have a utility lower than zero.  
 
 \end{itemize}
 
-The probability and utility models described by these rules include a total of 28 parameters, amongst which 15 probability parameters and 13 utility parameters.  
+The probability and utility models described by these rules include a total of 28 parameters, amongst which 15 probability parameters and 13 utility parameters.  The complete specification of the domain is provided in Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-usereval}). 
 
 \subsubsection*{Parameter estimation}
 
-The rule parameters were optimised on the basis of the collected Wizard-of-Oz data following the same procedure as the one followed for the second approach.  The parameters of probability rules are all encoded by Dirichlet distributions (of varying dimensions, from 2 to 10 depending on the rule) initialised with weakly informative priors, while the parameters of utility rules are encoded by uniform distributions on the range $[-10, 30]$.  
+The rule parameters were optimised on the basis of the collected Wizard-of-Oz data following the same procedure as the one followed for the second approach.  The parameters of probability rules are all encoded by Dirichlet distributions (of varying dimensions, from 2 to 10 depending on the rule) initialised with weakly informative priors, while the parameters of utility rules are encoded by uniform distributions on the support range $[-10, 30]$.  
 
 
 \subsection{Learning curves}
 \label{sec:learningcurve-exp3}
 
-Figure \ref{fig:curve-exp3} presents the learning curves that characterise the three dialogue management approaches presented in the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing up to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard. This measurement was repeated at regular intervals during the parameter estimation process (after each sequence of 50 training samples).  It should be stressed once more that system actions that do not correspond to the ones selected by the wizard are not necessarily wrong or inappropriate, as they may reflect different but perfectly legitimate conversational strategies. The degree of agreement between the model and the wizard examples is however a good indication of the model ability to capture the dynamics of the interaction and the trade-offs of the action selection process. 
+Figure \ref{fig:curve-exp3} presents the learning curves that characterise the three dialogue management approaches presented in the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing up to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard. This measurement is repeated at regular intervals during the parameter estimation process.  It should be stressed once more that system actions that do not correspond to the ones selected by the wizard are not necessarily wrong or inappropriate, as they may reflect different but perfectly legitimate conversational strategies. The degree of agreement between the model and the wizard examples is however a good indication of the model ability to capture the dynamics of the interaction and the trade-offs of the action selection process. 
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.42]{imgs/curve-exp3.pdf}
+\includegraphics[scale=0.38]{imgs/curve-exp3.pdf}
 \end{center} 
-\caption{Learning curve for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a test set of 71 system turns.}
+\caption{Learning curve for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a separate test set of 71 system turns.}
 \label{fig:curve-exp3}
 \end{figure}
 
 
-Each curve in Figure \ref{fig:curve-exp3} shows the evolution of the model accuracy as the function of the number of training samples processed by the learning algorithm.  As the finite-state approach is entirely handcrafted and does not include any parameters to optimise, its accuracy remains constant at all time steps. We can notice that both statistical approaches (Approach 2 and 3) do improve their accuracy as they process more training samples, but do so at different learning speeds.  While the rule-structured model is able to converge to a high-quality dialogue policy after observing only a fraction of the training data, the traditional, factored statistical model converges at a much slower rate due to its larger set of parameters and weaker generalisation capacity. 
+The learning curves in Figure \ref{fig:curve-exp3} illustrate the evolution of the model accuracy as the function of the number of training samples processed by the learning algorithm.  As the finite-state approach is entirely handcrafted and does not include any parameters to optimise, its accuracy remains constant at all time steps. We can notice that both statistical approaches (Approach 2 and 3) do improve their accuracy as they process more training samples, but do so at different learning speeds.  While the rule-structured model is able to converge to a high-quality dialogue policy after observing only a fraction of the training data, the traditional, factored statistical model converges at a much slower rate due to its larger set of parameters and weaker generalisation capacity. 
 
 The final agreement results obtained after processing the complete training set are shown in Table \ref{table:learning-exp3}.  As one can observe, the rule-structured approach is the one that is best able to imitate the conversational behaviour of the wizard. 
 

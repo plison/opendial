@@ -334,7 +334,9 @@ Multivariate distributions are encoded with a multivariate extension of KDE base
 
 \subsubsection*{Learning algorithm}
 
-Algorithm \ref{algo:wozlearning} presents the general procedure for estimating model parameters from Wizard-of-Oz data.  The algorithm loops on each instance pair in the training data.  For each pair, the algorithm starts by including the parameters in the dialogue state and triggering the domain models (line 2 and 3). The posterior parameter distribution is then estimated via sampling, based on the wizard action likelihood (line 4).  The posterior distribution for each parameter is finally expressed as a kernel density estimator on the sampled values (line 5-7), and the process is repeated. 
+Algorithm \ref{algo:wozlearning} presents the general procedure for estimating model parameters from Wizard-of-Oz data.  The algorithm loops on each instance pair in the training data.   The posterior parameter distribution is estimated via sampling, based on the likelihood of the wizard action (line 2).  The individual posterior distributions for each parameter are then reconstructed via kernel density estimation on the sampled values (line 3-5), and the process is repeated. 
+
+%For each pair, the algorithm starts by including the parameters in the dialogue state and triggering the domain models (line 2 and 3).
 
 \begin{algorithm}[h!]
 \caption{: \textsc{WoZ-learning} ($\mathcal{M}, \boldsymbol\theta, \mathcal{D}, N$)}
@@ -345,8 +347,8 @@ Algorithm \ref{algo:wozlearning} presents the general procedure for estimating m
 \REQUIRE Number $N$ of samples to draw for each learning example
 \ENSURE Posterior distribution $P(\boldsymbol\theta \; | \; \mathcal{D})$ for the parameters  \vspace{1mm}
 \FORALL {$\langle \mathcal{B}_i, a_i \rangle \in \mathcal{D}$}
-\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\theta$
-\STATE $\mathcal{B}_i, \mathbf{e} \leftarrow$ \textsc{TriggerModels} ($\mathcal{B}_i, \emptyset,  \mathcal{B}_i$) 
+%\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\theta$
+%\STATE $\mathcal{B}_i, \mathbf{e} \leftarrow$ \textsc{TriggerModels} ($\mathcal{B}_i, \emptyset,  \mathcal{B}_i$) 
 %\STATE Let $U_{\mathrm{min}}$ be the minimal threshold for the utilities in $\mathcal{B}_i$ \vspace{2mm} 
 %\STATE Define likelihood  $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \leftarrow \dfrac{U_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) - U_{\mathrm{min}}}{\sum_{a \in Val(A)} \left(U_{\mathcal{B}_i}(a\,; \boldsymbol\theta) - U_{\mathrm{min}}\right)} $ \vspace{2mm} 
 \STATE Draw $N$ samples $\mathbf{x}_1,...\mathbf{x}_N$ from posterior $P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta )$
@@ -626,7 +628,7 @@ Rule-structured model & \textbf{82.82} \\ \hline
 \end{tabular}
 \end{center}
 \vspace{-2mm}
-\caption{Agreement results for the three models on a held-out test.}
+\caption{Agreement results for the three models on a held-out test set.}
 \vspace{-2mm}
 \label{table}
 \end{table}
