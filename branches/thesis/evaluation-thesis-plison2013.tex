@@ -242,18 +242,18 @@ The interactions were once again encoded as a sequence of pairs $\langle \mathca
 
 Contrary to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}, the interactions recorded in this data collection effort are not augmented with supplementary annotation.\footnote{As we shall see in the next section, the relations between the user actions and the underlying intentions they express are automatically estimated as part of the learning procedure.} The recorded state includes therefore only variables that are directly observed by the system: the last and next-to-last user actions $a_u$ and $a_{u\mbox{-}prev}$ (as provided by the ASR and NLU modules), the last system action $a_m$, the set of objects currently perceived and carried by the robot, the last physical movement of the robot, and the $\mathit{motion}$ variable denoting whether the robot is currently in movement. 
 
-Here is an example of data point extracted from the collected data, corresponding to the user utterance \utt{yes} after a confirmation request, followed by the system action $\mathrm{Do(Move(Right))}$. 
+Here is an example of data point extracted from the collected data, corresponding to the user utterance \utt{yes} after a confirmation request, followed by the system action $\mathrm{Do(Move(Right))}$: 
 
 \begin{align*}
-\mathcal{B} = \begin{cases} u_u = \langle (``\text{yes}", p\!=\!0.95), (\mathit{None}, p\!=\!0.05) \rangle \\
-a_u = \langle (\mathrm{Confirm}, p\!=\!0.95), (\mathit{None}, p\!=\!0.05) \rangle \\
-a_{u\mbox{-}prev} = \langle (\mathrm{Ask(Move(Right))}, p\!=\!0.63), (\mathit{None}, p\!=\!0.37) \rangle \\
-a_m = \langle (\mathrm{AskConfirm(Move(Right))}, p\!=\!1.0) \rangle \\
-u_m = \langle (``\text{should i move right?}", p\!=\!1.0) \rangle \\
-\mathit{perceived} = \langle ([\mathit{RedObj}], p\!=\!1.0) \rangle \\
-\mathit{carried} = \langle ([], p\!=\!1.0) \rangle \\
-\mathit{motion} = \langle (\mathit{false}, p\!=\!1.0) \rangle \\
- \end{cases} \Rightarrow a_m' = \mathrm{Do(Move(Right))}
+\mathcal{B} = \begin{cases} u_u = \langle (``\text{yes}", p\!=\!.95), (\mathit{None}, p\!=\!.05) \rangle \\
+a_u = \langle (\mathrm{Confirm}, p\!=\!.95), (\mathit{None}, p\!=\!.05) \rangle \\
+a_{u\mbox{-}prev} = \langle (\mathrm{Ask(Move(Right))}, p\!=\!.63), (\mathit{None}, p\!=\!.37) \rangle \\
+a_m = \langle (\mathrm{AskConfirm(Move(Right))}, p\!=\!1) \rangle \\
+u_m = \langle (``\text{should I move right?}", p\!=\!1) \rangle \\
+\mathit{perceived} = \langle ([\mathit{RedObj}], p\!=\!1) \rangle \\
+\mathit{carried} = \langle ([], p\!=\!1) \rangle \\
+\mathit{motion} = \langle (\mathit{false}, p\!=\!1) \rangle \\
+ \end{cases} \!\!\!\!\!\Rightarrow a_m' = \mathrm{Do(Move(Right))}
 \end{align*}
 
 
@@ -304,7 +304,7 @@ The threshold values $T_1$, $T_2$ and $T_3$ are determined empirically on the ba
 \item Finally, the fourth and final region corresponds to user actions that are sufficiently confident to be directly executed without user confirmation. This region defines the top 40 \% of the probability mass, with cumulative densities between $0.6$ and $1.0$.
 \end{itemize}
 
-The values that delineate these four regions can be calculated using linear interpolation. In practice, the estimated thresholds for the density function shown in Figure \ref{fig:asrconfidence-exp3} were derived to be $T_1 = 0.49$, $T_2 = 0.61$ and $T_3 = 0.73$. These values reflect the three thresholds employed in the finite state automaton. 
+The values that delineate these four regions are calculated using linear interpolation. In practice, the estimated thresholds for the density function shown in Figure \ref{fig:asrconfidence-exp3} were derived to be $T_1 = 0.49$, $T_2 = 0.61$ and $T_3 = 0.73$. These values reflect the three thresholds employed in the finite state automaton. 
 
 
 \begin{figure}[h!]
