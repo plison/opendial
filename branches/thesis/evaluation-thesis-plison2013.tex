@@ -3,13 +3,12 @@
 
 \note{NOT READY YET!!}
 
-This chapter presents the last (and most extensive) experiment carried out for this thesis. The empirical studies exposed so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the empirical learning performance of rule-structured models compared to more classical representations. But albeit such measures can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
+This chapter presents the last (and most extensive) experiment carried out in this thesis. The empirical studies exposed so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the empirical learning performance of rule-structured models compared to more classical representations. But albeit such measures can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
 
-In order to corroborate our claims regarding the benefits of hybrid approaches to dialogue management and contrast it to traditional methods, we conducted an user evaluation experiment with a total of \note{xxx} users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in an human--robot interaction domain.  The three approaches respectively correspond to a purely handcrafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. 
+In order to corroborate our claims regarding the benefits of hybrid approaches to dialogue management and contrast it to traditional methods, we conducted an user evaluation experiment with a total of 37 users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in an human--robot interaction domain.  The three approaches respectively correspond to a purely handcrafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. The empirical results collected through this experiment show that the  hybrid, rule-structured approach is able to outperform the two baselines on most of the metrics defined for the domain.  The metrics include not only objective metrics extracted from the interaction logs but also subjective metrics of user satisfaction, based on a survey completed by the participants after each interaction. 
 
-The collected interactions were subsequently analysed to extract various metrics of interaction quality and efficiency.  The metrics included both objective measures such as the number of errors, clarification requests, and task outcome, but also subjective measures of user satisfaction, based on a survey completed by the participants after each interaction. \note{give here a teaser about the results}
 
-\note{The chapter is structured in four sections: ...}
+The chapter is structured in three sections.  The first section describes the human-robot interaction scenario within which the experiment is carried out, and details both the state variables, system architecture, and training data made available for the domain. The second section then exposes the three alternative dialogue management approaches developed for the experiment, with a particular emphasis on the design choices that characterise each strategy.   Finally, the third section presents the user evaluation itself, and surveys the experimental setup, quality metrics, and of course the obtained empirical results and their analysis. 
 
 \section{Interaction scenario}
 
@@ -444,21 +443,106 @@ Rule-structured model & \textbf{71.83} \\ \hline
 
 \section{User trials}
 
+In order to assess the relative performance of the three dialogue management approaches presented in the previous section, we conducted a total of $3 \times 36$ user trials.
+
 \subsection{Experimental setup}
 
+\subsubsection*{Participants}
+
+\note{age, gender, provenance}
+\note{reward for participation}
+
+\subsubsection*{Procedure}
+
+\note{shuffling the order of the approaches}
+\note{questionnaire right after the completion of each approach}
+
+\note{system responsible could intervene after systematic system failures}
+
+\subsubsection*{User expectations}
+
+\note{show question and answers}
+
 \subsection{Metrics}
+
+
+\subsubsection*{Objective metrics}
+
+\subsubsection*{Subjective metrics}
 
 
 \note{various measures (number of turns, duration, number of disconfirm)}
 
 \note{direct assessment of user satisfaction}
 
+\note{no tasks completion since the notion of failure is not well defined}
+
 \subsection{Results}
+
+\note{to say: user turns based on ASR, duration cuts the system crashes, no repetitions requests in structured model}
+
+\note{users feedback after experiment corroborate our claims}
+
+\note{describe the limitations of each system (e.g. no accumulation of evidence or context-based reasoning in FSA, no good policy for states that have not been observed in the Woz interactions for unstructured model}
 
 \note{ANOVA, since we would have two baselines and our approach? (see e.g. Passonneau's article)}
 
+\note{how ANOVA is calculated, and post-hoc tests}
+
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.5]{imgs/objective.pdf}
+\end{center} 
+\caption{Objective metrics extracted from the collected dialogues. }
+\label{fig:objective}
+\end{figure}
+
+
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.5]{imgs/subjective.pdf}
+\end{center} 
+\caption{Survey responses obtained from the participants in the user trial. }
+\label{fig:subjective}
+\end{figure}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{sidewaystable}
+\begin{tabular}{|cp{110mm}c|>{\centering}p{13mm}<{\centering}:p{13mm}:>{\centering}p{13mm}<{\centering}|p{16mm}|p{16mm}|} \hline
+&\centering \multirow{2}{*}{Metrics} & & \multicolumn{3}{c|}{Approaches} & \multirow{2}{*}{\parbox{16mm}{$\phantom{0000000}$ $p$-values ANOVA }} & \multirow{2}{*}{\parbox{16mm}{$\phantom{0000000}$ $p$-values $1^{\text{st}}$ vs. $2^{\text{nd}}$ ($t$-test) }} \\ \cline{4-6} 
+&&& \begin{footnotesize}Finite-state automata\end{footnotesize} & \begin{footnotesize}Factored statistical model\end{footnotesize} & \begin{footnotesize}Rule-structured model\end{footnotesize} & & \\ \hline \hline
+& \vspace{-2mm} \textbf{Objective metrics}:  && & & & & \\ 
+1.& Average number of repetition requests per dialogue && 18.68 & 12.24 & \textbf{0}$^{\mathbf{*}}$ & $9\!\times\!10^{-19}$ & $1\!\times\!10^{-16}$ \\
+2.& Average number of confirmation requests per dialogue &&9.16 & 10.32 & \textbf{5.78}$^{\mathbf{*}}$ & $1.7\!\times\!10^{-4}$& $0.001$ \\ 
+3.& Average number of repeated instructions per dialogue && 3.73 &
+7.97 & \textbf{2.78} & $3.8\!\times\!10^{-9}$ & $0.18$ \\ 
+4.& Average number of ``$\mathrm{Disconfirm}$'' acts per dialogue &&\textbf{2.16} & 2.59 & 2.59 & \num{0.65} & $0.33$ \\ 
+5.& Average number of physical movements per dialogue & & \textbf{26.68}
+ & 29.89 & 27.08 & \num{0.13} &  0.80 \\ 
+6.& Average number of (user and system) turns between movements &&3.63 & 3.1 & \textbf{2.54}$^{\mathbf{*}}$ & $4.\!\times\!10^{-4}$ & $2.2\!\times\!10^{-4}$ \\ 
+7.& Average number of user turns per dialogue && 78.95 & 77.3 & \textbf{69.14} & \num{0.17} & 0.11 \\ 
+8.& Average number of system turns per dialogue && 57.27 & 54.59 & \textbf{35.11}$^{\mathbf{*}}$ & $4.4\!\times\!10^{-9}$ &  $5.6\!\times\!10^{-8}$\\ 
+9.& Average duration of each dialogue  (in minutes) \vspace{3mm} && 6'18 & 7'13 &\textbf{ 5'24}$^{\mathbf{*}}$ & $1.4\!\times\!10^{-4}$ & 0.02 \\ \hdashline
+& \vspace{-2mm} \textbf{Subjective metrics}:  && & & & & \\ 
+&\textit{``Did you feel that ...}  && & & & & \\ 
+10.&\ \ \textit{... the robot correctly understood what you said?''}  && 3.32 & 2.92 &  \textbf{3.68}$^{\mathbf{*}}$ & $1.3\!\times\!10^{-4}$ & 0.03 \\
+11.& \ \ \textit{.. the robot reacted appropriately to your instructions?''}   && 3.70 & 3.32 & \textbf{3.86} & $7.6\!\times\!10^{-3}$ & 0.23 \\
+12.&\ \ \textit{... the robot asked you to repeat or confirm your instructions ...''}   & & 2.16 & 2.19 & \textbf{3.3}$^{\mathbf{*}}$ & $1.7\!\times\!10^{-9}$ & $4.7\!\times\!10^{-7}$ \\
+13.&\ \ \textit{... the robot sometimes ignored when you were speaking?''}  & & 3.24 & 2.76 & \textbf{3.43} & $6.7\!\times\!10^{-3}$ & 0.21 \\
+14.&\ \ \textit{... the robot sometimes thought you were talking when you were not?''}  & & 3.43 & 3.14 & \textbf{4.41}$^{\mathbf{*}}$ & $3.4\!\times\!10^{-6}$ & $4.7\!\times\!10^{-5}$ \\
+15.&\ \ \textit{... the interaction flowed in a pleasant and natural manner?''} \vspace{3mm}  & & 2.97 & 2.46 & \textbf{3.32}$^{\mathbf{*}}$ & $8.6\!\times\!10^{-4}$ & 0.03 \\ \hline
+\end{tabular} \vspace{3mm}
+\label{table:results_exp3}
+\caption{Empirical results obtained for the user evaluation with a total of 37 participants, based on a set of 15 metrics (9 objective and 6 subjective). The $\mathbf{*}$ symbol indicates results that outperform the two other approaches with a level of statistical significance $\alpha = 0.05$. }
+\end{sidewaystable}
+
 
 \subsection{Analysis}
+
+\note{also evaluate the difference between the first approach tested and the other ones?}
 
 \section{Conclusion}
 

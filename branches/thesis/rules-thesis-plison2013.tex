@@ -240,25 +240,25 @@ Rule $r_2$ stipulates the respective utilities of the two possible utility value
 Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Logical variables can be included in the specification of both the conditions and effects of a given rule, and are universally quantified on top of the rule.\footnote{These variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the quantified variables $y_1...y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
 \begin{aligned}
-\forall \mathbf{y} = y_1, y_2,...y_p: \\
-& \textbf{if} \ \ (c_{1}(\mathbf{y})) \ \ \textbf{then} \\ 
+\forall \ y_1, y_2,...y_p: \\
+& \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_1\!=\!e_{(1,1)}(\mathbf{y})) = p_{(1,1)} \\
+P(E_1\!=\!e_{(1,1)}) = p_{(1,1)} \\
  ... \\
-P(E_1\!=\!e_{(1,m_1)}(\mathbf{y})) = p_{(1,m_1)} 
+P(E_1\!=\!e_{(1,m_1)}) = p_{(1,m_1)} 
 \end{cases} \\[3mm]
-& \textbf{else if} \ \ (c_{2}(\mathbf{y})) \ \ \textbf{then} \\ 
+& \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
-P(E_2\!=\!e_{(2,1)}(\mathbf{y})) = p_{(2,1)} \\
+P(E_2\!=\!e_{(2,1)}) = p_{(2,1)} \\
  ... \\
-P(E_2\!=\!e_{(2,m_2)}(\mathbf{y})) = p_{(2,m_2)} 
+P(E_2\!=\!e_{(2,m_2)}) = p_{(2,m_2)} 
 \end{cases} \\ 
 & ...  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-P(E_n\!=\!e_{(n,1)}(\mathbf{y})) = p_{(n,1)} \\
+P(E_n\!=\!e_{(n,1)}) = p_{(n,1)} \\
 ... \\
-P(E_n\!=\!e_{(n,m_n)}(\mathbf{y})) = p_{(n,m_n)}
+P(E_n\!=\!e_{(n,m_n)}) = p_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \label{eq:rulewithquant}
