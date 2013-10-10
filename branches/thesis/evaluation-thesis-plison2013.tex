@@ -319,9 +319,9 @@ The estimated thresholds for the density function shown in Figure \ref{fig:asrco
 \subsection{Approach 2: factored statistical model}
 \label{sec:approach2}
 
-The second approach developed for this experiment consists of a traditional statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment.   We assume that both the transition model and utility model of the domain are initially unknown. 
+The second approach developed for this experiment consists of a statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment. We assume that both the transition model and utility model of the domain are initially unknown. 
 
-Both this approach and Approach 3 assume that the domain can be captured with a planning horizon limited to the present time step.  In other words, the approach does not rely on online forward planning (which is often practically difficult to reconcile with real-time constraints) and directly selects the action yielding the highest utility in the current dialogue state.\footnote{In other words, the utility model represents what is called a $Q$-value model in reinforcement learning.}
+Both this approach and Approach 3 assume that the domain can be captured with a planning horizon limited to the present time step.  In other words, the approach does not rely on online forward planning (which is often practically difficult to reconcile with real-time constraints) and directly selects the action yielding the highest utility in the current dialogue state.\footnote{In other words, the utility model represents what is called a $Q$-value model in reinforcement learning.} The approach stands relatively close to the POMDP-based systems described in Chapter \ref{chap:probmodelling}, with the notable difference that the estimation of model parameters is performed in this experiment on the basis of Wizard-of-Oz data rather than through a user simulator. 
 
 \subsubsection*{Domain modelling}
 
