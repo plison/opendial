@@ -125,6 +125,7 @@ P(x \,; \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ \operatorname{exp}\left\{
 \label{fig:norm-appendix}
 \end{figure}
 
+
 Multivariate normal distributions can be used to generalise one-dimensional normal distributions to higher dimensions. Multivariate normal distributions of dimensions $K$ are parametrised by a $K$-dimensional mean vector $\boldsymbol\mu$ and a $K \times K$ - dimensional covariance matrix $\boldsymbol\Sigma$. 
 
 \section*{Dirichlet distribution}
@@ -150,8 +151,37 @@ in which $ \mathrm{B}(\boldsymbol\alpha)$ is a normalisation factor and $\Gamma$
 \centering
 \includegraphics[scale=0.40]{imgs/dirichlet_appendix.pdf}
 \caption{Probability density function for a three-dimensional Dirichlet distribution.} 
-\label{fig:norm-appendix}
+\label{fig:dirichlet-appendix}
 \end{figure}
+
+
+
+\section*{Geometric distribution}
+
+A geometric distribution is a discrete probability distribution that describes the number of Bernoulli trials required to get one success. 
+
+\begin{description}
+\item [Parameters: ] Geometric distributions are defined by the parameter $p$ that encodes the probability of success for each Bernoulli trial. 
+
+\item [Probability mass function: ] Given a constant probability $p$ of success for each trial, the probability that the $k$th trial will result in the first success is:
+\begin{equation}
+P(X = k) = (1-p)^{k-1}\,p\,
+\end{equation}
+
+\item [Mean: ] The expected number of trials needed to get one success is $\frac{1}{p}$.
+
+\item [Variance: ] The variance on the numbers of trials to get the first success is $\frac{1-p}{p^2}$. 
+
+\end{description}
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[scale=0.40]{imgs/geometric_appendix.pdf}  \vspace{-2mm}
+\caption{Probability mass function for two geometric distributions. } 
+\label{fig:geometric-appendix}
+\end{figure}
+
 
 
 \section*{Kernel distribution}
@@ -171,19 +201,11 @@ P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
 
 \end{description}
 
-\newpage 
-
-\begin{figure}[t]
+\begin{figure}[h]
 \centering
-\includegraphics[scale=0.40]{imgs/kde_appendix.pdf}
+\includegraphics[scale=0.40]{imgs/kde_appendix.pdf} \vspace{-2mm}
 \caption{Probability density function for a kernel density estimate with ten points. The Gaussian distributions making up the estimate are shown with red dashed lines. } 
-\label{fig:norm-appendix}
+\label{fig:kde-appendix}
 \end{figure}
 
 
-\section*{Geometric distribution}
-
-\note{Add geometric distribution here}
-
-
-$\phantom{aa}$
