@@ -157,9 +157,10 @@ To make our discussion of inference algorithms for graphical models more concret
 
 The key principle behind all types of sampling algorithms is to estimate the posterior distribution expressed in the query by collecting a large quantity of samples (i.e. assignments of values to the random variables) drawn from the graphical model.  Likelihood weighting proceeds by sampling the random variables in the graphical model one by one, in topological order (i.e. from parents to children).\footnote{A partial order on the nodes in the graph can always be found since the network is a directed acyclic graph.} For instance, sampling the network in Figure \ref{fig:plainbn} will start with the variable $\mathit{Weather}$, then $\mathit{Fire}$ (based on the value drawn for the parent $\mathit{Weather}$), and finally $\mathit{Ground}$ and $\mathit{Satellite}$ (based on the value drawn for $\mathit{Fire}$).  In order to account for the evidence $\mathbf{e}$, every sample is associated with a specific \textit{weight} that expresses the likelihood of the evidence given the assignment for all the other variables.  For graphical models that include utility variables, samples also record the total utility accumulated for the sampled values. The pseudocode in Algorithm \ref{algo:getsample} outlines the sampling procedure.  
 % (modified from \cite{aima2010,Koller+Friedman:09})
-\begin{algorithm}[h]
-\begin{algorithmic} \vspace{2mm} 
+
+\begin{algorithm}[h!]
 \caption{: \textsc{Get-Sample} $(\mathcal{B}, \mathbf{e})$}
+\begin{algorithmic}[1] \vspace{2mm} 
 \REQUIRE Bayesian/decision network $\mathcal{B}$ over $\mathbf{X}$ with topological ordering $X_1,...X_n$
 \REQUIRE Evidence $\mathbf{E} =\mathbf{e}$
 \ENSURE Full sample drawn from $\mathcal{B}$ together with a weight and utility \\[2mm]
@@ -182,11 +183,11 @@ The key principle behind all types of sampling algorithms is to estimate the pos
 
 The notation $\mathbf{e}(X_i)$ refers to the value specified for the variable $X_i$ in the assignment $\mathbf{e}$. 
 
-A large number of samples can be accumulated in such manner. Once enough samples are collected (or the inference engine has run out of time) the resulting posterior distribution for the query variables $\mathbf{Q}$ is derived by normalising the weighted counts associated with each value of the query variables, as shown in Algorithm \ref{algo:lw}. Algorithm \ref{algo:lwu} extends the procedure to the calculation of utility distributions. In this case, the utility values are not normalised but correspond to a weighted average of the sampled utilities. 
+A large number of samples can be accumulated in this manner. Once enough samples are collected (or the inference engine has run out of time) the resulting posterior distribution for the query variables $\mathbf{Q}$ is derived by normalising the weighted counts associated with each value of the query variables, as shown in Algorithm \ref{algo:lw}. Algorithm \ref{algo:lwu} extends the procedure to the calculation of utility distributions. In this case, the utility values are not normalised but correspond to a weighted average of the sampled utilities. 
 
 \begin{algorithm}[h]
-\begin{algorithmic} \vspace{2mm} 
 \caption{:\textsc{Likelihood-Weighting} $(\mathcal{B},\mathbf{Q}, \mathbf{e}, N)$}
+\begin{algorithmic} \vspace{2mm} 
 \REQUIRE Bayesian/decision network $\mathcal{B}$ over $\mathbf{X}$ with topological ordering $X_1,...X_n$
 \REQUIRE Set of query variables $\mathbf{Q}$ and evidence $\mathbf{E} =\mathbf{e}$
 \REQUIRE Number $N$ of samples to draw
@@ -203,8 +204,8 @@ A large number of samples can be accumulated in such manner. Once enough samples
 \end{algorithm}
 
 \begin{algorithm}[h]
-\begin{algorithmic} \vspace{2mm} 
 \caption{: \textsc{Likelihood-Weighting-Utility} $(\mathcal{B},\mathbf{Q}, \mathbf{e}, N)$}
+\begin{algorithmic} \vspace{2mm} 
 \REQUIRE (see above)
 \ENSURE Approximate utility distribution $U(\mathbf{Q}, \mathbf{e})$ given $\mathcal{B}$ \\[2mm]
 \STATE Let $\mathbf{W}, \mathbf{U}$ be vectors of weighted counts for each possible value of $\mathbf{Q}$, initialised to zero
