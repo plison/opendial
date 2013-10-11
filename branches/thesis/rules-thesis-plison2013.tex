@@ -90,7 +90,6 @@ The key idea is to represent distributions with the help of \textit{if...then...
 & \textbf{else} \\
 & \;\;\;\;\; \text{Distribution } n \text{ over possible effects} \\ 
 \end{aligned}
-\label{eq:probrule}
 \end{equation*}
 
 Each \textit{if...then} branch specifies both a \textit{condition} on particular state variables and an associated distribution over possible \textit{effects}.   The \textit{if...then...else} construction is read in sequential order, as in programming languages, until a satisfied condition is found, which causes the activation of the corresponding probabilistic effects. 
@@ -585,7 +584,7 @@ Utility rules can be similarly extended to accommodate quantified variables. As 
 
 After discarding empty and redundant distributions, the result is a set of utility distributions $ \langle U_{\mathbf{g}_1}, \dots, U_{\mathbf{g}_p} \rangle$. The total utility distribution for the rule is then constructed by adding up the grounding-specific utility distributions:   
 \begin{align}
-& U_{r}(I_1, \dots, I_k, A_1\, \dots, A_l) = \sum_{j=1}^{q} U_{\mathbf{g}_j}(I_1, \dots, I_k, A_1, \dots, A_l) \label{eq:quantifruledistrib}
+& U_{r}(I_1, \dots, I_k, A_1\, \dots, A_l) = \sum_{j=1}^{q} U_{\mathbf{g}_j}(I_1, \dots, I_k, A_1, \dots, A_l) \label{eq:quantifuruledistrib}
 \end{align}
 
 
@@ -613,7 +612,7 @@ The groundings are always extracted \textit{given a specific value assignment} f
 \section{Processing workflow}
 \label{sec:processing-workflow}
 
-The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsason:2000}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
+The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsson:2000}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
 
 The following section first describes how dialogue domains are organised in collections of rules called ``models'', and then goes on to explain how these models are applied to update state variables and express the utility of particular actions. We also demonstrate the general processing workflow on a detailed example. 
 

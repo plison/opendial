@@ -38,7 +38,6 @@ P(E_{n}\!=\!e_{(n,1)}) = \theta_{(n,1)} \\
 P(E_{n}\!=\!e_{(n,m_n)}) = \theta_{(n,m_n)}
 \end{cases}
 \end{aligned}
-\label{eq:probrule}
 \end{equation}
 
 As the $\theta$ values represent probability values, they must satisfy as before the two probability axioms $\theta_{(i,j)} \geq 0  \ \forall i,j$ and $\sum_{j = 1}^{m_i} \theta_{(i,j)} = 1 \ \forall i$.
@@ -201,10 +200,10 @@ The conditional probability distribution of a rule node $r$ given its input vari
 
 \subsubsection*{Parameters of utility rules}
 
-The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \ref{eq:utildistrib} as follows:
+The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
 \begin{align}
 & U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(1, \cdot)}, \dots, \boldsymbol\theta_{r(n, \cdot)}) \nonumber \\ 
-& = U_i(A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(i, \cdot)})  \label{eq:utildistrib}\\
+& = U_i(A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(i, \cdot)})  \label{eq:utildistrib_params}\\
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
@@ -262,7 +261,7 @@ The goal of the learning process is to estimate the posterior distribution $P(\b
  
 One key element of the learning cycle is the definition of the probability $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$, which specifies the likelihood of the wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ given the parameters $\boldsymbol\theta$. The purpose of this likelihood is intuitively to favour the parameter values that provide a good fit for the wizard action choices. 
 
-In practice, this is achieved by representing the likelihood of the wizard action $a_i$ in terms of the relative utility of action $a_i$ compared to the alternative action choices. The first step is to calculate the utility $U_{\mathcal{B}_i}(a\,; \boldsymbol\theta)$ for all possible actions $a$, and to subsequently rank the actions in descending order of utility.  As the wizard is presupposed to act rationally in most cases, the wizard action will thus most likely appear at the top of this ranked list of actions. Formally, the likelihood of action $a_i$ given the parameters $\bold\theta$ is expressed as:
+In practice, this is achieved by representing the likelihood of the wizard action $a_i$ in terms of the relative utility of action $a_i$ compared to the alternative action choices. The first step is to calculate the utility $U_{\mathcal{B}_i}(a\,; \boldsymbol\theta)$ for all possible actions $a$, and to subsequently rank the actions in descending order of utility.  As the wizard is presupposed to act rationally in most cases, the wizard action will thus most likely appear at the top of this ranked list of actions. Formally, the likelihood of action $a_i$ given the parameters $\boldsymbol\theta$ is expressed as:
 \begin{align}
 P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) & = \begin{cases} \alpha p & \text{if } a_i \ \text{ is the action with highest utility} \\
 \alpha (1-p) p & \text{ if } a_i \ \text{is the second-highest action} \\
@@ -639,11 +638,9 @@ The learning curves for the three models are shown in Figure \ref{results}.   No
 \begin{figure*}[p!]
 \begin{center}\subfigure[Linear scale]{
 \includegraphics[scale=0.4]{imgs/results_linear.pdf}
-\label{subfig:linear_results}
 }\end{center} $\phantom{a}$\vspace{1cm}$\phantom{a}$ 
 \begin{center}\subfigure[Logarithmic scale (base 2)]{
 \centering\includegraphics[scale=0.4]{imgs/results_log.pdf}
-\label{subfig:exp_results}
 }\end{center}
 \caption{Learning curves for the three utility models on a held-out test set of 255 actions as a function of the number of processed data points.  The agreement results are given for the plain, linear and rule-structured utility models, using both linear (top) and logarithmic scales (bottom).}
 \label{results}
