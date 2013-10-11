@@ -21,20 +21,20 @@ The overall structure of parametrised rules remains essentially identical to the
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
 P(E_1\!=\!e_{(1,1)}) = \theta_{(1,1)} \\
- ... \\
+ \dots \\
 P(E_1\!=\!e_{(1,m_1)}) = \theta_{(1,m_1)} 
 \end{cases} \\[3mm]
 %& \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
 %& \;\;\;\;\; \begin{cases}
 %P(E_2\!=\!e_{(2,1)}) = \theta_{(2,1)}, \\
-% ... \\
+% \dots \\
 %P(E_2\!=\!e_{(2,m_2)}) = \theta_{(2,m_2)}
 %\end{cases} \\ 
-& ...  \\
+& \dots  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
 P(E_{n}\!=\!e_{(n,1)}) = \theta_{(n,1)} \\
-... \\
+\dots \\
 P(E_{n}\!=\!e_{(n,m_n)}) = \theta_{(n,m_n)}
 \end{cases}
 \end{aligned}
@@ -49,28 +49,28 @@ Parametrised utility rules analogously replace utility values with unknown param
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
 U_1(d_{(1,1)}) = \theta_{(1,1)} \\
- ... \\
+ \dots \\
 U_1(d_{(1,m_1)}) = \theta_{(1,m_1)}
 \end{cases} \\[3mm]
 %& \textbf{else if} \ \ (c_{2}) \ \ \textbf{then} \\ 
 %& \;\;\;\;\; \begin{cases}
 %U_2(d_{(2,1)}) = \theta_{(2,1)} \\
-% ... \\
+% \dots \\
 %U_2(d_{(2,m_2)}) = \theta_{(2,m_2)}
 %\end{cases} \\
-& ...  \\
+& \dots  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
 U_n(d_n^1) = \theta_{(n,1)} \\
-... \\
+\dots \\
 U_n(d_{(n,m_n)}) = \theta_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \end{equation} 
 
-We shall focus in this work on the problem of parameter estimation given a known rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables, but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  The interested reader is invited to consult e.g. \cite{KahnemanSlovicTversky81,morganhenrion} for more details on the psychological aspects of the human perception of uncertainty and the difficult problem of probability elicitation from experts.}
+We shall focus in this work on the problem of parameter estimation given a known rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables, but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  The interested reader is invited to consult e.g.\ \cite{KahnemanSlovicTversky81,morganhenrion} for more details on the psychological aspects of the human perception of uncertainty and the difficult problem of probability elicitation from experts.}
 
-It should nevertheless be noted that some approaches have been recently developed in the literature on statistical relational learning \citep[see e.g. ][]{PasulaZK07,Kok:2009} to automatically extract both the structure and parameters of stochastic rules from raw data. These methods are however generally confined to domains of limited size and full observability and are therefore difficult to apply to the types of domains investigated in this thesis.  
+It should nevertheless be noted that some approaches have been recently developed in the literature on statistical relational learning \citep[see e.g.\ ][]{PasulaZK07,Kok:2009} to automatically extract both the structure and parameters of stochastic rules from raw data. These methods are however generally confined to domains of limited size and full observability and are therefore difficult to apply to the types of domains investigated in this thesis.  
 
 
 %Domain models can be composed of both fixed and parametrised rules and can therefore accommodate a wide spectrum of learning tasks from fully statistical models with virtually no prior knowledge to manually designed models with only a handful of parameters. 
@@ -80,7 +80,7 @@ It should nevertheless be noted that some approaches have been recently develope
 
 We follow in this thesis a Bayesian approach to parameter estimation and associate the rule parameters with explicit prior distributions over their range of possible values.  The benefits of Bayesian approaches compared to traditional maximum likelihood methods are multiple:
 \begin{enumerate} 
-\item Bayesian methods allow domain knowledge to be directly included into the learning cycle through the use of informative priors (cf. discussion below). The system designer is thus free to bias the initial prior distributions according to her/his domain expertise.
+\item Bayesian methods allow domain knowledge to be directly included into the learning cycle through the use of informative priors (cf. discussion below). The system designers are thus free to bias the initial prior distributions according to their domain expertise.
 \item Bayesian methods explicitly capture the model uncertainty both before and after learning.  The outputs of a Bayesian learning cycle are indeed full posterior distributions over the possible parameter values instead of being reduced to point estimates (as for maximum likelihood estimation).  The dialogue agent can therefore explicitly account for parameter uncertainty at runtime and use it to simultaneously learn, reason and act in its environment \citep{Ross:2011}. Furthermore, the reliance on full parameter distributions facilitates the combination of multiple learning processes, as the posterior distribution generated by one learner can be passed on as the prior distribution of another. 
 \end{enumerate}
 
@@ -107,13 +107,13 @@ P(\mathit{Fire}\!=\!\mathit{false}) = \theta_{r_{1}(2,2)}
 
 The parameters of rule $r_{1}$ can be expressed with two Dirichlets $\boldsymbol\theta_{r_{1}(1,\cdot)} = \langle \theta_{r_{1}(1,1)},\theta_{r_{1}(1,2)} \rangle$ and $\boldsymbol\theta_{r_{1}(2,\cdot)} = \langle \theta_{r_{1}(2,1)}, \theta_{r_{1}(2,2)} \rangle$ respectively associated with the effect distributions for the first and second condition.  The Dirichlet distributions in this example have two dimensions (since two alternative effects are mentioned in the rule), which make them equivalent to \textit{Beta} distributions. 
 
-Dirichlet distributions are continuous, multivariate distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1,... \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1,... \theta_k$ are formally expressed by the following probability density function:
+Dirichlet distributions are continuous, multivariate distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1, \dots, \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1, \dots, \theta_k$ are formally expressed by the following probability density function:
 \begin{align}
-P(\theta_1,...\theta_k\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
+P(\theta_1, \dots, \theta_k\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
 \end{align}
 
 where $ \mathrm{B}(\boldsymbol\alpha)$ serves as normalisation factor and builds upon on the gamma function $\Gamma$.\footnote{The gamma function is a generalisation of the factorial for real numbers, and is defined as $\Gamma(z) = \int_0^\infty  t^{z-1} e^{-t}\,{\rm d}t$.} 
-We remind the reader that the notation $P(\theta_1,...\theta_k\,; \boldsymbol\alpha)$ refers to the joint density function of the random variables $\theta_1,... \theta_k$ given the specified (hyper-)parameters $\boldsymbol\alpha$. 
+We remind the reader that the notation $P(\theta_1, \dots, \theta_k\,; \boldsymbol\alpha)$ refers to the joint density function of the random variables $\theta_1, \dots, \theta_k$ given the specified (hyper-)parameters $\boldsymbol\alpha$. 
 
 Figure \ref{fig:dirichletfun} depicts the shape of the probability density functions for several variants of the two-dimensional Dirichlet distribution $P(\theta_1,\theta_2\,; \boldsymbol\alpha)$.  The second dimension $\theta_2$ is not explicitly shown on the figure but can be directly derived from the first dimension, since $\theta_1 + \theta_2=1$.  The figure illustrates how the $\boldsymbol\alpha$ hyper-parameters determine the shape of the distribution. As the $\boldsymbol\alpha$ counts grow larger, the density function becomes increasingly focused on a particular region of the parameter space.  The $\boldsymbol\alpha$ counts can therefore be tuned to skew the distribution in a particular way based on prior domain knowledge. Such prior distributions are called ``informative'' priors, since their shape is influenced by expert information. In the absence of such information, non-informative distributions such as $\mathrm{Dirichlet}(1,1)$ can also be employed. 
 
@@ -191,21 +191,21 @@ Parameters are instantiated in the dialogue state as distinct chance nodes.  One
 
 \subsubsection*{Parameters of probability rules}
 
-A parametrised probability rule $r$ structured with $n$ conditions is associated with $n$ multivariate parameter nodes $\boldsymbol\theta_{r(1, \cdot)}, ... \boldsymbol\theta_{r(n, \cdot)}$.  Each distribution $P(\boldsymbol\theta_{r(i, \cdot)})$ is a Dirichlet distribution of dimension $m_i$, where $m_i$ is the number of effects associated with the condition $c_i$ (including the empty effect). Figure \ref{fig:ruleinstantiation_params} illustrates this instantiation procedure with two probability rules.  
+A parametrised probability rule $r$ structured with $n$ conditions is associated with $n$ multivariate parameter nodes $\boldsymbol\theta_{r(1, \cdot)}, \dots, \boldsymbol\theta_{r(n, \cdot)}$.  Each distribution $P(\boldsymbol\theta_{r(i, \cdot)})$ is a Dirichlet distribution of dimension $m_i$, where $m_i$ is the number of effects associated with the condition $c_i$ (including the empty effect). Figure \ref{fig:ruleinstantiation_params} illustrates this instantiation procedure with two probability rules.  
 
-The conditional probability distribution of a rule node $r$ given its input variables $I_1,...I_k$ and parameters $\boldsymbol\theta_{r(1, \cdot)}, ... \boldsymbol\theta_{r(n, \cdot)}$ is a straightforward adaptation of Equation \eqref{eq:ruledistrib}:
+The conditional probability distribution of a rule node $r$ given its input variables $I_1,...I_k$ and parameters $\boldsymbol\theta_{r(1, \cdot)}, \dots, \boldsymbol\theta_{r(n, \cdot)}$ is a straightforward adaptation of Equation \eqref{eq:ruledistrib}:
 \begin{align}
-& P(r\!=\!e \, | \, I_1\!=\!i_1,... I_k\!=\!i_k\,; \boldsymbol\theta_{r(1, \cdot)}, ... \boldsymbol\theta_{r(n, \cdot)})  = P(E_i = e\,; \boldsymbol\theta_{r(i, \cdot)}) \\
-& \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land ... I_k\!=\!i_k) \nonumber
+& P(r\!=\!e \, | \, I_1\!=\!i_1, \dots,  I_k\!=\!i_k\,; \boldsymbol\theta_{r(1, \cdot)}, \dots, \boldsymbol\theta_{r(n, \cdot)})  = P(E_i = e\,; \boldsymbol\theta_{r(i, \cdot)}) \\
+& \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
 \subsubsection*{Parameters of utility rules}
 
 The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \ref{eq:utildistrib} as follows:
 \begin{align}
-& U_r(I_1\!=\!i_1,... I_k\!=\!i_k, A_1\!=\!a_1,... A_l\!=\!a_l\,; \boldsymbol\theta_{r(1, \cdot)} ... \boldsymbol\theta_{r(n, \cdot)}) \nonumber \\ 
-& = U_i(A_1\!=\!a_1,... A_l\!=\!a_l\,; \boldsymbol\theta_{r(i, \cdot)})  \label{eq:utildistrib}\\
-& \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land ... I_k\!=\!i_k) \nonumber
+& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(1, \cdot)}, \dots, \boldsymbol\theta_{r(n, \cdot)}) \nonumber \\ 
+& = U_i(A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(i, \cdot)})  \label{eq:utildistrib}\\
+& \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
 \begin{figure}[h!]
@@ -233,7 +233,7 @@ The estimation of rule parameters from data is practically achieved by cycling t
 \subsection{Wizard-of-Oz training data}
 \label{sec:rule-supervised-oz}
 
-This chapter focus on parameter estimation from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which are remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system.\footnote{Developing spoken dialogue systems can indeed lead to a classical ``chicken-and-egg'' dilemma: in order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.}
+The focus of this chapter is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which are remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system.\footnote{Developing spoken dialogue systems can indeed lead to a classical ``chicken-and-egg'' dilemma: in order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.}
 
 %We describe below the representation format used to encode these interactions and how domain models can be optimised given some reasonable assumptions about the wizard behaviour. 
 
@@ -249,7 +249,7 @@ Many conversational situations allow for multiple, equally ``correct'' system re
 
 \subsubsection*{Assumptions about the wizard behaviour}
 
-Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g. speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should hence be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  
+Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g.\ speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should hence be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  
 
 Practically, the presupposed rationality of the wizard implies that the likelihood $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ of a wizard action $a_i$ in a particular dialogue state $\mathcal{B}_i$ under the parameters $\boldsymbol\theta$ will be proportional to the corresponding utility of action $a_i$ in $\mathcal{B}_i$ relative to other actions (as formalised below).
 
@@ -316,7 +316,7 @@ The result of the posterior calculation in Equation \eqref{eq:paramposterior} is
 \item Additionally, fitting multivariate distributions such as Dirichlets based on sampled values is a laborious computational process with no closed-form solutions.\footnote{Numerical methods based on fixed-point and Newton-Raphson iterations do however exist \citep{minka2003}.}
 \end{enumerate}
 
-We have consequently adopted a non-parametric representation of the posterior distributions, based on \textit{Kernel Density Estimation} (KDE).  The kernel density estimator for a continuous variable $X$ for which a set of samples $x_1, ... x_n$ is available is given by:
+We have consequently adopted a non-parametric representation of the posterior distributions, based on \textit{Kernel Density Estimation} (KDE).  The kernel density estimator for a continuous variable $X$ for which a set of samples $x_1, \dots, x_n$ is available is given by:
 \begin{equation}
 P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big) \label{eq:kde}
 \end{equation}
@@ -350,10 +350,10 @@ Algorithm \ref{algo:wozlearning} presents the general procedure for estimating m
 %\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\theta$
 %\STATE $\mathcal{B}_i, \mathbf{e} \leftarrow$ \textsc{TriggerModels} ($\mathcal{B}_i, \emptyset,  \mathcal{B}_i$) 
 %\STATE Let $U_{\mathrm{min}}$ be the minimal threshold for the utilities in $\mathcal{B}_i$ \vspace{2mm} 
-%\STATE Define likelihood  $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \leftarrow \dfrac{U_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) - U_{\mathrm{min}}}{\sum_{a \in Val(A)} \left(U_{\mathcal{B}_i}(a\,; \boldsymbol\theta) - U_{\mathrm{min}}\right)} $ \vspace{2mm} 
-\STATE Draw $N$ samples $\mathbf{x}_1,...\mathbf{x}_N$ from posterior $P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta )$
+%\STATE Define likelihood  $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \leftarrow \dfrac{U_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) - U_{\mathrm{min}}}{\sum_{a \in \mathit{Val}(A)} \left(U_{\mathcal{B}_i}(a\,; \boldsymbol\theta) - U_{\mathrm{min}}\right)} $ \vspace{2mm} 
+\STATE Draw $N$ samples $\mathbf{x}_1, \dots, \mathbf{x}_N$ from posterior $P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta )$
 \FORALL {parameter variable $\theta \in \boldsymbol\theta$}
-\STATE Set $P(\theta) \leftarrow \mathrm{KDE}(\mathbf{x}_1(\theta),...\mathbf{x}_N(\theta))$
+\STATE Set $P(\theta) \leftarrow \mathrm{KDE}(\mathbf{x}_1(\theta), \dots, \mathbf{x}_N(\theta))$
 \ENDFOR
 \ENDFOR
 \RETURN $P(\boldsymbol\theta)$
@@ -367,7 +367,7 @@ Algorithm \ref{algo:wozlearning} presents the general procedure for estimating m
 
 We evaluated the learning approach outlined in this chapter in the context of a dialogue policy learning task for a human-robot interaction scenario.  The goal of the experiment, originally presented in \cite{rulebasedmodels-sigdial2012}, was to evaluate whether the parameters of a rule-structured utility model could be efficiently optimised from small amounts of Wizard-of-Oz data.  The evaluation metric was defined in this experiment as the proportion of actions corresponding to the wizard selections. The rule-structured model was compared to two baselines where the action utilities was represented using classical representations (respectively utility tables and linear functions). %The empirical results showed that the model encoded with utility rules were able to reproduce the wizard policy  than the more weakly structured baseline models. 
 
-It should be stressed that the purpose of the experiment is limited to the evaluation of the \textit{learning} performance of the model. The evaluation of the model in terms of e.g. qualitative and quantitative metrics of interaction success (and user satisfaction) constitutes an important but separate question, which will be addressed in Chapter \ref{chap:user-evaluation}. 
+It should be stressed that the purpose of the experiment is limited to the evaluation of the \textit{learning} performance of the model. The evaluation of the model in terms of e.g.\ qualitative and quantitative metrics of interaction success (and user satisfaction) constitutes an important but separate question, which will be addressed in Chapter \ref{chap:user-evaluation}. 
 
 We first describe the dialogue domain used for the experiment, after which we detail the data collection procedure and experimental setup, and finally present and analyse the empirical results. 
 
@@ -575,7 +575,7 @@ the utility for the system action $a_m'$ is therefore defined by:
 \begin{equation}
 U(X_1=x_1,...X_n=x_n, a_m') = \theta_{(x_1,...x_n, a_m')}
 \end{equation}
-where the $\theta_{(x_1,...x_n, a_m')}$ value corresponds to the utility encoded in the table for the state-action pair. The total number of required parameters is therefore $|Val(X_1)| \times ... |Val(X_n)| \times |Val(a_m')|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
+where the $\theta_{(x_1,...x_n, a_m')}$ value corresponds to the utility encoded in the table for the state-action pair. The total number of required parameters is therefore $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m')|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
 %\begin{align*}
 %&U(a_u,a_m,\mathit{lastMove},\mathit{moveSequence},\mathit{silence},a_{m}') \\ 
 %&= U(a_u, a_m,a_{m}') + U(a_u,\mathit{lastMove},a_{m}') + U(a_m,\mathit{silence},a_{m}') 
@@ -584,7 +584,7 @@ where the $\theta_{(x_1,...x_n, a_m')}$ value corresponds to the utility encoded
 \begin{equation}
 U(X_1=x_1,...X_n=x_n, a_m') = \sum_{i=1}^{n} \theta_{(x_i, a_m')}
 \end{equation}
-where $\theta_{(x_i, a_m')}$ corresponds to the utility weight of the variable value $x_i$ for the action $a_m'$.  Note that the weights are specific to a given action value. The number of required parameters is here $|Val(a_m')| \times (|Val(X_1)| + ... |Val(X_n)|)$.  As a consequence, the size of the linear model is reduced to 581 independent parameters.  This baseline hinges however on the assumption that the total utility of a given action can be decomposed as a linear combination of weights for each state variable value.
+where $\theta_{(x_i, a_m')}$ corresponds to the utility weight of the variable value $x_i$ for the action $a_m'$.  Note that the weights are specific to a given action value. The number of required parameters is here $|\mathit{Val}(a_m')| \times (|\mathit{Val}(X_1)| + \dots + |\mathit{Val}(X_n)|)$.  As a consequence, the size of the linear model is reduced to 581 independent parameters.  This baseline hinges however on the assumption that the total utility of a given action can be decomposed as a linear combination of weights for each state variable value.
 \end{enumerate}
 
 \subsubsection*{Rule-structured model}
@@ -616,7 +616,7 @@ The data collected from the Wizard-of-Oz interactions was split into a training 
 
 Table \ref{table} presents the agreement results for the three utility models. The differences between the rule-structured model and the two baselines are statistically significant using Bonferroni-corrected paired $t$-tests, with $p$-value $< 0.0001$.   
 
-We performed an error analysis on the 17\% of actions that deviate from the wizard behaviour.\footnote{One should be wary of labelling these actions as ``incorrect'', since they are in most cases relevant dialogue moves, but simply result from slightly different decision strategies than the one followed by the wizard.} The analysis revealed that the discrepancy is mainly due to two factors.  The first factor is the lack of complete consistency on the part of the wizard, who occasionally decided to follow distinct strategies in similar situations (especially regarding the use of clarification requests). The second factor is the presence of a non negligible number of spurious and noisy data points, notably caused by e.g. interruptions in the middle of the experiments and technical issues with the control of the robotic platform (e.g. movements that had to be repeated due to motor failures).
+We performed an error analysis on the 17\% of actions that deviate from the wizard behaviour.\footnote{One should be wary of labelling these actions as ``incorrect'', since they are in most cases relevant dialogue moves, but simply result from slightly different decision strategies than the one followed by the wizard.} The analysis revealed that the discrepancy is mainly due to two factors.  The first factor is the lack of complete consistency on the part of the wizard, who occasionally decided to follow distinct strategies in similar situations (especially regarding the use of clarification requests). The second factor is the presence of a non negligible number of spurious and noisy data points, notably caused by e.g.\ interruptions in the middle of the experiments and technical issues with the control of the robotic platform (e.g.\ movements that had to be repeated due to motor failures).
 
 \begin{table}[h]
 \begin{center}
