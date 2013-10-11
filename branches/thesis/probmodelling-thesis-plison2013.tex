@@ -151,7 +151,7 @@ Exact inference remains unfortunately difficult to scale to large, densely inter
 Probabilistic inference is a difficult computational task.  In fact, inference on unconstrained Bayesian Networks is known to be {\#}P-hard, which is a complexity class that is strictly harder than NP-complete problems.  This holds both for exact inference \citep{Cooper90}, and -- perhaps more surprisingly -- also for approximate inference \citep{Dagum1993}.  
 
 
-The \opendial toolkit we have developed for this thesis includes two inference algorithms: generalised variable elimination \citep[][p. 1103]{Koller+Friedman:09} and a specific type of importance sampling algorithm called likelihood weighting, which we outline below. These algorithms are used in the processing workflow of the dialogue manager to (1) update the dialogue state upon the reception of new observations and (2) select system actions on the basis of this updated dialogue state. The details of this workflow will be provided in Section \ref{sec:processing-workflow}.  
+The \opendial{} toolkit we have developed for this thesis includes two inference algorithms: generalised variable elimination \citep[][p. 1103]{Koller+Friedman:09} and a specific type of importance sampling algorithm called likelihood weighting, which we outline below. These algorithms are used in the processing workflow of the dialogue manager to (1) update the dialogue state upon the reception of new observations and (2) select system actions on the basis of this updated dialogue state. The details of this workflow will be provided in Section \ref{sec:processing-workflow}.  
 
 \subsubsection*{Likelihood weighting} 
 

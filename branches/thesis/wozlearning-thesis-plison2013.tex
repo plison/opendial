@@ -300,7 +300,7 @@ The factor $\eta$ is used for normalisation. The value range for parameter distr
 \item The second strategy is to retain the continuous nature of the parameters, but approximate the inference process through the use of sampling techniques.  
 \end{itemize}
 
-Although both solutions are implemented in the \opendial toolkit, sampling techniques such as likelihood weighting have proved to be in practice more efficient and scalable than discretisation. 
+Although both solutions are implemented in the \opendial{} toolkit, sampling techniques such as likelihood weighting have proved to be in practice more efficient and scalable than discretisation. 
 
 After sampling, the full joint distribution $P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i)$ is factored into its individual parameter variables. This factoring is a simplifying assumption, since parameter independence is theoretically no longer guaranteed when handling partially observed data. 
 %:\begin{equation}
