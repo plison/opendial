@@ -101,23 +101,23 @@ P(\{\cdot\}) = \theta_{r_{11}(1,2)} \\
 \end{align*}
 
 
-Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1,\cdot)}$ is automatically modified as part of the state update operation.  The dialogue example remains unchanged:
+Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1)}$ is automatically modified as part of the state update operation.  The dialogue example remains unchanged:
 \begin{dialogue} 
 \speak{User } Now move forward \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)\rangle$  \\[-3mm]
 \speak{System } Could you please repeat? \\[-3mm]
 \speak{User } Please move forward! \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) \rangle$ \\[-4mm]
 \end{dialogue} 
 
-To keep the procedure as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The prior distribution $P(\boldsymbol\theta_{r_{11}(1,\cdot)})$ is set in this example to $\sim \mathrm{Dirichlet}(2,1)$, as we can reasonably presuppose that the users are more likely than not to repeat their last utterance after an explicit request from the system.
+To keep the procedure as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The prior distribution $P(\boldsymbol\theta_{r_{11}(1)})$ is set in this example to $\sim \mathrm{Dirichlet}(2,1)$, as we can reasonably presuppose that the users are more likely than not to repeat their last utterance after an explicit request from the system.
 
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.30]{imgs/learningexample.pdf}
-\caption{Parameter update for $\boldsymbol\theta_{r_{11}(1,\cdot)}$ after the reception of a new user input. }
+\caption{Parameter update for $\boldsymbol\theta_{r_{11}(1)}$ after the reception of a new user input. }
 \label{fig:learningexample}
 \end{figure}
 
-The first step illustrates the instantiation of the rule along with its parameter. Upon the reception of a new observation in the form of a user input $a_u'$, the dialogue state and parameters are updated (step 2). After pruning and integration of the evidence (step 3), we notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1,\cdot)})$ has shifted part of its probability mass further to the right. In other words, the probability of the users repeating their last utterance becomes somewhat more likely. The posterior distribution $P(\boldsymbol\theta_{r_{11}(1,\cdot)})$ after the update is constructed using kernel density estimation. 
+The first step illustrates the instantiation of the rule along with its parameter. Upon the reception of a new observation in the form of a user input $a_u'$, the dialogue state and parameters are updated (step 2). After pruning and integration of the evidence (step 3), we notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1)})$ has shifted part of its probability mass further to the right. In other words, the probability of the users repeating their last utterance becomes somewhat more likely. The posterior distribution $P(\boldsymbol\theta_{r_{11}(1)})$ after the update is constructed using kernel density estimation. 
 
 \subsubsection*{Action selection}
 
