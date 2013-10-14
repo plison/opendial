@@ -190,7 +190,7 @@ The use of likelihood weighting necessitates the implementation of efficient sam
 \item \textit{Normal distributions}:  Normal distributions are sampled in \opendial{} via the well-known Box-Muller method \citep{rBOX58a}, which derives two sample values for a given normal distribution based on two pseudo-random numbers.
 
 \item \textit{Dirichlet distributions}:  Sampling Dirichlet distributions relies on a slightly more intricate procedure based on Gamma sampling.   The first step is to derive $K$ samples from $\mathrm{Gamma} (\alpha_i, 1)$ with $K$ denoting the dimension of the Dirichlet and $1 \leq i \leq K$.  This sampling procedure is implemented in \opendial{} using the method presented in \cite{cheng1979}.  The sampled Dirichlet value is then defined as $[x_1,...x_K]$ where $x_i = \frac{y_i}{\sum_{j=1}^K y_j}$ and $y_i$ is the sampled Gamma value for dimension $i$.
-\item \textit{Kernel distributions}:  We sample non-parametric distributions defined via kernel density estimation (KDE) in two steps. The first is to draw at random one point $x_i$ from the set of points $x_1,...x_n$ included in the KDE. A value is then drawn from the kernel associated with the point. In our case, this corresponds to drawing a sample from the normal distribution $\mathcal{N}(x_i,h)$ centered at $x_i$ and of variance $h$ (the bandwidth). 
+\item \textit{Kernel distributions}:  We sample non-parametric distributions defined via kernel density estimation (KDE) in two steps. The first is to draw at random one point $x_i$ from the set of points $x_1,...x_n$ included in the KDE. A value is then drawn from the kernel associated with the point. In our case, this corresponds to drawing a sample from the normal distribution $\mathcal{N}(x_i,h)$ centred at $x_i$ and of variance $h$ (the bandwidth). 
 \end{itemize}
 
 \subsubsection*{Forward planning}
@@ -334,7 +334,7 @@ All the movements were programmed using the motion control libraries available o
 The graphical user interface developed for the \opendial{} toolkit enables the system designer to monitor and control in real-time the state of the system.  The interface is divided in two  views, shown as distinct tabs in the application window: the chat window and the dialogue state monitor.
 
 \subsubsection*{Chat window}
-The chat window presents the interaction history as a chat window, as illustrated by the screenshot in Figure \ref{fig:gui-chatbox}.
+The chat window presents the interaction history as a chat window, as illustrated by the screen capture in Figure \ref{fig:gui-chatbox}.
 
 
 \begin{figure}[h]
