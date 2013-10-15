@@ -145,7 +145,6 @@ $\mathit{completed\mbox{-}task}$ & Completion status of the user intention (deno
 \label{table:statevariables}
 \end{sidewaystable}
 
-
 Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtually infinite set of possible values, as they accept arbitrary strings) and assuming the presence of only two objects, the total size of the joint state space is non-trivial to tackle: 
 \begin{align}
 |\mathcal{S}| & = & 4 \ \ \ \ \ \ \ \ \ \ &&& \ \ \ \ \ \ \ \ \ \ [\text{size of } \mathit{Val}(\mathit{perceived})] \nonumber \\
@@ -157,7 +156,7 @@ Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtu
 &&  \times 2 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } \mathit{Val}(\mathit{motion})] \nonumber \\
 &&  \times 14 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } \mathit{Val}(\mathit{lastMove})] \nonumber \\
 &&  \times 2 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \  [\text{size of } \mathit{Val}(\mathit{completed\mbox{-}task})] \nonumber \\
- & =  & \!\!\!\!\!\!\!\!\!\! 30 \ 9960 \ 000 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \ \nonumber 
+ & =  & \!\!\!\!\!\!\!\!\!\! 309 \, 960 \, 000 \ \ \ \ \ \ \ \ \ \ &&&\ \ \ \ \ \ \ \ \ \ \nonumber 
   \end{align}
 
 
@@ -540,11 +539,11 @@ In order to analyse the statistical significance of the results obtained for eac
 \begin{itemize}
 \item The first $p$-value is derived via the ANOVA procedure (Analysis of Variance) with one single factor corresponding to the chosen dialogue manager. The null hypothesis $H_0$ corresponds in this case to the assumption that the observed measures extracted with the three models are drawn from populations with the same mean values.  
 
-\item As we are more specifically interested in the difference between the rule-structured approach and the two baselines, we also calculated a second test statistic that compares for each metric the means of the best and second-best approaches. The test statistic is in this case derived using Student's paired $t$-tests.
+\item As we are more specifically interested in the difference between the rule-structured approach and the two baselines, we also calculated a second test statistic that compares for each metric the means of the best and second-best approaches. The test statistic is in this case derived using Bonferroni-corrected Student's paired $t$-tests.
 
 \end{itemize}
 
-Results for which a statistically significant difference (with $\alpha = 0.05$) is found are decorated with a star sign. As one can observe from the table, 9 of the 15 metrics demonstrate statistically significant differences for the rule-structured model, while 4 metrics show higher means for the rule-structured model but without achieving statistical significance, and 2 metrics yield better results for the finite-state approach, although both without statistical significance. 
+Results for which a statistically significant difference (with $\alpha = 0.05$) is found are decorated with a star sign. As one can observe from the table, 7 of the 15 metrics demonstrate statistically significant differences for the rule-structured model, while 6 metrics show higher means for the rule-structured model but without achieving statistical significance, and 2 metrics yield better results for the finite-state approach, although both without statistical significance. 
 
 It is also useful to contrast the results obtained from the survey with the initial user expectations, as shown in Table \ref{table:compexpectation-exp3}.  We can observe that for all six questions, the actual system behaviour of the rule-structure approach exceeded the initial expectations of the user. 
 
@@ -568,12 +567,12 @@ It is also useful to contrast the results obtained from the survey with the init
 9.& Average duration of each dialogue  (in minutes) \vspace{3mm} && 6'18 & 7'13 &\textbf{ 5'24}$^{\mathbf{*}}$ & $1.4\!\times\!10^{-4}$ & 0.02 \\ \hdashline
 & \vspace{-2mm} \textbf{Subjective metrics}:  && & & & & \\ 
 &\textit{``Did you feel that ...}  && & & & & \\ 
-10.&\ \ \textit{... the robot correctly understood what you said?''}  && 3.32 & 2.92 &  \textbf{3.68}$^{\mathbf{*}}$ & $1.3\!\times\!10^{-4}$ & 0.03 \\
+10.&\ \ \textit{... the robot correctly understood what you said?''}  && 3.32 & 2.92 &  \textbf{3.68} & $1.3\!\times\!10^{-4}$ & 0.03 \\
 11.& \ \ \textit{.. the robot reacted appropriately to your instructions?''}   && 3.70 & 3.32 & \textbf{3.86}$^{\phantom{*}}$ & $7.6\!\times\!10^{-3}$ & 0.23 \\
 12.&\ \ \textit{... the robot asked you to repeat or confirm your instructions ...''}   & & 2.16 & 2.19 & \textbf{3.30}$^{\mathbf{*}}$ & $1.7\!\times\!10^{-9}$ & $4.7\!\times\!10^{-7}$ \\
 13.&\ \ \textit{... the robot sometimes ignored when you were speaking?''}  & & 3.24 & 2.76 & \textbf{3.43}$^{\phantom{*}}$ & $6.7\!\times\!10^{-3}$ & 0.21 \\
 14.&\ \ \textit{... the robot sometimes thought you were talking when you were not?''}  & & 3.43 & 3.14 & \textbf{4.41}$^{\mathbf{*}}$ & $3.4\!\times\!10^{-6}$ & $4.7\!\times\!10^{-5}$ \\
-15.&\ \ \textit{... the interaction flowed in a pleasant and natural manner?''} \vspace{3mm}  & & 2.97 & 2.46 & \textbf{3.32}$^{\mathbf{*}}$ & $8.6\!\times\!10^{-4}$ & 0.03 \\ \hline
+15.&\ \ \textit{... the interaction flowed in a pleasant and natural manner?''} \vspace{3mm}  & & 2.97 & 2.46 & \textbf{3.32} & $8.6\!\times\!10^{-4}$ & 0.03 \\ \hline
 \end{tabular} \vspace{3mm}
 \label{table:results_exp3}
 \caption{Empirical results obtained for the user evaluation with a total of 37 participants, based on a set of 15 metrics (9 objective and 6 subjective). The $\mathbf{*}$ symbol indicates results that outperform the two other approaches with a level of statistical significance $\alpha = 0.05$. }
@@ -626,7 +625,7 @@ This chapter presented an extensive user evaluation of the hybrid dialogue model
 
 The experiment was again set in a human--robot interaction domain.  The participants were asked to instruct the robot to locate a given object, pick it up and bring it back to the starting position.  Each of the 37 participants performed 3 dialogues (one for each dialogue management approach), thus amounting to $3 \times 37$ collected interactions.  After each interaction, the participants completed a survey with 6 questions inquiring about their perception of the dialogue.  
 
-The three approaches were compared on the basis of 15 metrics with the aim to measure the quality and efficiency of the dialogues. The 15 metrics included both the user answers to the survey questions as well as 9 objective metrics extracted from the interaction logs.   The empirical results indicate that the rule-structured approach outperforms the two baselines on both objective and subjective metrics, with statistically significant differences for 9 metrics. The outcome of this user evaluation provides as a consequence further empirical support for the central argument developed in this thesis, namely that the formalism of probabilistic rules is well-suited to capture the structure of dialogue domains and can contribute to the development of more robust and conversationally competent dialogue systems through a combination of expert domain knowledge and probabilistic reasoning. 
+The three approaches were compared on the basis of 15 metrics with the aim to measure the quality and efficiency of the dialogues. The 15 metrics included both the user answers to the survey questions as well as 9 objective metrics extracted from the interaction logs.   The empirical results indicate that the rule-structured approach outperforms the two baselines on both objective and subjective metrics, with statistically significant differences for 7 metrics. The outcome of this user evaluation provides as a consequence further empirical support for the central argument developed in this thesis, namely that the formalism of probabilistic rules is well-suited to capture the structure of dialogue domains and can contribute to the development of more robust and conversationally competent dialogue systems through a combination of expert domain knowledge and probabilistic reasoning. 
 
 
 % note about our approach: generalisation enable a better account of the data sparsity problem.  plus, the state dynamics are not lost since we perform belief update.  Finally, the appraoch can be seen as an initial boostrapping that can then be further refined through online reinforcement learning (Bayesian prior), as in Williams etc. also, we learn utilities, not a direct classification. Also: a user simulator is difficult for situated and open-ended environments.  we learn a POMDP policy by simulation

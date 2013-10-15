@@ -123,12 +123,14 @@ Figure \ref{fig:dirichletfun} depicts the shape of the probability density funct
 As Dirichlet distributions are conjugate priors of categorical distributions, their posterior distribution after the observation of their corresponding variable remains a Dirichlet distribution with updated counts. As an illustrative example, the posterior distribution of $\boldsymbol\theta_{r_{1}(1)}$ after observing a fire when $\mathit{Rain}\!=\!\mathit{false} \land \mathit{Weather}\!=\!\mathit{hot}$ can be derived from Bayes' rule: 
 \begin{align}
 &P(\boldsymbol\theta_{r_{1}(1)} \; | \; \mathit{Fire}\!=\!\mathit{true}, \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}) \nonumber \\
-& = \eta \ P(\mathit{Fire}\!=\!\mathit{true} \; | \; \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}, \boldsymbol\theta_{r_{1}(1)}) \ P(\boldsymbol\theta_{r_{1}(1)}) \nonumber \\
+& = \eta \ P(\mathit{Fire}\!=\!\mathit{true} \; | \; \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}\,; \boldsymbol\theta_{r_{1}(1)}) \ P(\boldsymbol\theta_{r_{1}(1)}) \nonumber \\
 & = \eta \ \theta_{r_{1}(1,1)} \ \mathrm{Dirichlet}(\alpha_1,\alpha_2) \nonumber \\
 & = \eta' \ \theta_{r_{1}(1,1)} \ [ \theta_{r_{1}(1,1)}^{\alpha_1 - 1} \times \theta_{r_{1}(1,2)}^{\alpha_2 - 1} ]   = \eta' \ \textrm{Dirichlet}(\alpha_1+1,\alpha_2) \nonumber 
 \end{align}
 
-where $\eta, \eta'$ are normalisation factors.  Given a prior distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  As explained in Section \ref{sec:learning}, this property is, however, contingent on the full observability of the domain variables. 
+where $\eta, \eta'$ are normalisation factors.  Given a prior distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  This updated Dirichlet distribution results in a slightly higher probability for the occurrence of fire, reflecting the evidence provided by the observation. 
+
+%As explained in Section \ref{sec:learning}, this property is, however, contingent on the full observability of the domain variables. 
 
 %$For instance, we can encode the fact that the user is unlikely to change his intention after a clarification request by assigning a higher $\alpha$ value to the intention $i_u'$ corresponding to the current value $i_u$ when $a_m$ is a clarification request. 
 
@@ -183,7 +185,7 @@ Figure \ref{fig:uniformn} illustrates three instances of probability density fun
 \subsection{Instantiation}
 \label{sec:rule-params-instantiation}
 
-Parameters are instantiated in the dialogue state as chance nodes.  One distinct node is created  for each (univariate or multivariate) parameter distribution and is included as parents of its corresponding rule node.   The rule distributions defined in Section \ref{sec:ruleinstantiation} must be slightly adapted to account for these parameters in the parent nodes of the rule.  The rest of the instantiation process remains unchanged. 
+Parameters are instantiated in the dialogue state as chance nodes.  One distinct node is created for each (univariate or multivariate) parameter distribution and included as a parent of its corresponding rule node. The rule distributions defined in Section \ref{sec:ruleinstantiation} must be slightly adapted to account for these parameters in the parent nodes of the rule.  The rest of the instantiation process remains unchanged. 
 
 \subsubsection*{Parameters of probability rules}
 
@@ -229,7 +231,7 @@ The estimation of rule parameters from data is practically achieved by cycling t
 \subsection{Wizard-of-Oz training data}
 \label{sec:rule-supervised-oz}
 
-The focus of this chapter is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which are remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system.\footnote{Developing spoken dialogue systems can indeed lead to a classical ``chicken-and-egg'' dilemma: in order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.}
+The focus of this chapter is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which is remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system.\footnote{Developing spoken dialogue systems can indeed lead to a classical ``chicken-and-egg'' dilemma: in order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.}
 
 %We describe below the representation format used to encode these interactions and how domain models can be optimised given some reasonable assumptions about the wizard behaviour. 
 
@@ -237,7 +239,7 @@ The focus of this chapter is on the estimation of rule parameters from a specifi
 
 For the specific purpose of estimating the parameters of dialogue management models, we can represent Wizard-of-Oz interactions as a sequence of state--action pairs $\mathcal{D} = \{( \mathcal{B}_i, a_i ) : 1 \leq i \leq n\}$, where $\mathcal{B}_i$ corresponds to the dialogue state at time $i$, and $a_i$ is the associated action performed by the wizard.  The number $n$ corresponds to the total number of recorded actions. 
 
-The dialogue state $\mathcal{B}_i$ represents the current conversational situation at time $i$ as it was perceived by the wizard.  Its representation usually includes the recent dialogue history as well as important contextual features.  As explained in the previous chapter, the dialogue state can be encoded as a Bayesian network to reflect state uncertainty and dependencies amongst state variables. Associated to each dialogue state is the corresponding action $a_i$ selected by the wizard at that state. This action can be void if the wizard decides to take no action at that specific step in the dialogue. 
+The dialogue state $\mathcal{B}_i$ represents the current conversational situation at time $i$ as it was perceived by the wizard.  The dialogue state usually includes the recent dialogue history as well as important contextual features.  As explained in the previous chapter, the dialogue state can be encoded as a Bayesian network to reflect state uncertainty and dependencies amongst state variables. Associated to each dialogue state is the corresponding action $a_i$ selected by the wizard at that state. This action can be void if the wizard decides to take no action at that specific step in the dialogue. 
 
 %The sequence of state-action pairs $\mathcal{D}$ is in our approach automatically extracted from the collected interactions, without any manual annotation.  
 
@@ -245,14 +247,14 @@ Many conversational situations allow for multiple, equally ``correct'' system re
 
 \subsubsection*{Assumptions about the wizard behaviour}
 
-Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g.\ speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should hence be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  
+Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is a rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. It should be stressed that the agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g.\ speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should therefore be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  
 
 Practically, the posited rationality of the wizard implies that the likelihood $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ of a wizard action $a_i$ in a particular dialogue state $\mathcal{B}_i$ under the parameters $\boldsymbol\theta$ will depend on the utility of action $a_i$ in $\mathcal{B}_i$ relative to other possible actions (as formalised below).
 
 \subsection{Learning cycle}
 \label{sec:rule-supervised-learning}
 
-The goal of the learning process is to estimate the posterior distribution $P(\boldsymbol\theta \, | \, \mathcal{D})$ over the rule parameters given the collected Wizard-of-Oz data set. The procedure operates in an incremental fashion by traversing the (state,action) pairs one by one and re-estimating the posterior distribution after each pair.  
+The goal of the learning process is to estimate the posterior distribution $P(\boldsymbol\theta \, | \, \mathcal{D})$ over the rule parameters given the collected Wizard-of-Oz data set. The procedure operates in an incremental fashion by traversing the state--action pairs one by one and updating the posterior parameter distributions after each pair.  
 
 \subsubsection*{Likelihood distribution}
  
@@ -464,7 +466,7 @@ The modules used for the experiments include in particular an off-the-shelf spee
 
  Each recorded dialogue involved one human subject interacting with the Nao robot in a shared visual scene.  The dialogues were relatively short, with an average duration of about four minutes. We collected a total of 20 interactions with 7 distinct users, for a total of 1020 system turns, summing to around one hour of interaction.  The users were recruited amongst the students and researchers in the Department of Informatics at the University of Oslo, while the role of the wizard was taken by the author of the present thesis.  All the interactions were performed in English. All but one users were non-native speakers of English.\footnote{This mismatch between the acoustic model trained on native American speakers and the foreign accents of the participants may partly explain the relatively high level of speech recognition errors.}  As the speech recogniser relied on a language model of limited coverage, the users were briefed before each experiment about the comprehension capabilities of the robot in order to adjust their expectations about what the robot could and could not understand, and thereby limit the number of out-of-coverage utterances.
 
-Wizard-of-Oz experiments should ideally place the wizard in the same types of decision contexts as the ones encountered by the dialogue manager. To this end, the wizard was prevented from listening directly to the spoken utterances of the user and was instead provided with the N-best list $\tilde{a}_u$ generated by the dialogue act recognition (which is itself based on the speech recogniser outputs).  The N-best lists appeared on the wizard control screen as lists of hypotheses accompanied with their respective probabilities. On the basis of these inputs (and the interaction context), the wizard could then select the action to perform from a list of alternatives.  
+Wizard-of-Oz experiments should ideally place the wizard in the same types of decision contexts as the ones encountered by the dialogue manager. To this end, the wizard was prevented from listening directly to the spoken utterances of the user and was instead provided with the N-best list generated by the speech recogniser.  The N-best lists appeared on the wizard control screen as hypotheses accompanied with their respective probabilities. On the basis of these inputs, the wizard could then select the action to perform from a list of alternatives.  
 
 Transcripts 1 and 2 present two recorded excerpts of Wizard-of-Oz interactions.  The user utterances are displayed as N-best lists of speech recognition hypotheses. 
 
@@ -551,11 +553,11 @@ Each selected action $a_m$ was recorded along with the complete dialogue state $
 
 The state variables are represented with their full probability distributions. The dialogue state recorded right before the wizard registers the first movement in Transcript 1 corresponds for instance to the following specification: 
 \begin{align*}
-\mathcal{B} = \begin{cases} a_u = \langle (\mathrm{Confirm}, p\!=\!0.88), (\mathrm{SayThankYou}, p\!=\!0.10), (\mathit{None}, p\!=\!0.02) \rangle \\
+\mathcal{B} = \begin{cases} a_u = \langle (\mathrm{Confirm}, p\!=\!0.88), (\mathrm{Say(ThankYou)}, p\!=\!0.10), (\mathit{None}, p\!=\!0.02) \rangle \\
 a_m = \langle (\mathrm{AskConfirmation}, p\!=\!1) \rangle \\
 \mathit{moveSequence} = \langle ( \emptyset, p\!=\!1) \rangle \\
 \mathit{lastMove} = \langle (\mathrm{MoveArm(Left,Up)}, p\!=\!1) \rangle \\
-\mathit{silenceTime} = \langle (3 \textrm{ seconds}, p\!=\!1) \rangle \end{cases}
+\mathit{silenceTime} = \langle (0 \textrm{ seconds}, p\!=\!1) \rangle \end{cases}
 \end{align*}
 
 \subsection{Experimental setup}
@@ -599,13 +601,15 @@ Figure \ref{fig:exp1_baselines} offers a graphical comparison of the utility mod
 \end{figure}
 
 
-The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}. For the baseline models, the function \textsc{triggerModels}(...) resulted in the creation of one single utility node connected to the system action, as illustrated in Figure \ref{fig:exp1_baselines}. The prior distributions on the utility values were initialised with uniform priors on the interval $[-1,6]$ in all three models. 
+The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}.  The prior distributions on the utility values were initialised with uniform priors on the interval $[-1,6]$ in all three models. 
 
-\subsubsection*{Evaluation}
+%For the baseline models, the function \textsc{triggerModels}(...) resulted in the creation of one single utility node connected to the system action, as illustrated in Figure \ref{fig:exp1_baselines}.
+
+\subsubsection*{Evaluation of learning performance}
 
 Given the utility models defined above, the selected action simply corresponds to the action associated with the maximum utility in the current state. In this particular experiment, utility maximisation only considered the current (immediate) utility and did not perform forward planning.
 
-The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state--action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their agreement with the wizard actions in the held-out test set. This agreement is determined to be the proportion of system-selected actions that are identical to the action chosen by the wizard. The agreement results for the three models were evaluated at various stages of the estimation process in order to analyse and compare their learning performance. The results were calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
+The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state--action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their agreement with the wizard actions in the held-out test set. This agreement is determined to be the proportion of system-selected actions that are identical to the action chosen by the wizard. The agreement results for the three models were evaluated at various stages of the estimation process in order to analyse and compare their learning performance. The results were practically calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
 
 \subsection{Empirical results and analysis}
 \label{sec:wozlearning-experiments-results}
@@ -667,4 +671,4 @@ As shown in the experiments, Wizard-of-Oz interaction data can be a useful and i
 \item The technical setup of a Wizard-of-Oz environment from which the wizard can perceive the user inputs, monitor contextual features, select possible actions to execute, and get all relevant information recorded and stored in a generic format. 
 \end{enumerate}
 
-A natural alternative to supervised learning from Wizard-of-Oz data is to let the dialogue system learn the best conversational behaviour via trial-and-error from its own interaction experience (that is, through reinforcement learning), without relying on the provision of external examples.  The next chapter demonstrates how such strategy can be practically implemented, based once again on the formalism of probabilistic rules to structure the domain models. 
+A natural alternative to supervised learning from Wizard-of-Oz data is to let the dialogue system learn the best conversational behaviour via trial and error from its own interaction experience (that is, through reinforcement learning), without relying on the provision of external examples.  The next chapter demonstrates how such strategy can be practically implemented, based once again on the formalism of probabilistic rules to structure the domain models. 
