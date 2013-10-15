@@ -479,7 +479,9 @@ We saw in Section \ref{sec:quantification} that conditions and effects could inc
 
 \subsubsection*{Extraction of input variables}
 
-Universally quantified rules may underspecify both the names and values of random variables, as we saw in the examples of Section \ref{sec:quantification}.  Rule $r_3$ includes for instance a reference to an underspecified random variable $\mathit{shape}(y)$.  In order to instantiate the rule, the system must therefore first determine the set of all random variables in the current state that match the underspecified description, as these variables should be included in the conditional dependencies of the rule node. In practice, this extraction of input variables is simply done by looping over all current state variables and searching for those that may offer a potential match for at least one underspecified description. If rule $r_3$ is instantiated in a state containing two objects $o_1$ and $o_2$ (each with a specific shape), the resulting input variables will be $\mathit{shape}(o_1)$ and $\mathit{shape}(o_2)$. 
+Universally quantified rules may underspecify both the names and values of random variables, as we saw in the examples of Section \ref{sec:quantification}.  Rule $r_3$ includes for instance a reference to an underspecified random variable $\mathit{shape}(y)$.  In order to instantiate the rule, the system must therefore first determine the set of all random variables in the current state that match the underspecified description, as these variables should be included in the conditional dependencies of the rule node. 
+
+In practice, this extraction of input variables is simply achieved by looping over all current state variables and searching for those that may offer a potential match for at least one underspecified description. If rule $r_3$ is instantiated in a state containing two objects $o_1$ and $o_2$ (each with a specific shape), the resulting input variables will be $\mathit{shape}(o_1)$ and $\mathit{shape}(o_2)$. 
 
 %Algorithm \ref{algo:getinputvariables} outlines how this search for matching input variables can proceed. The first step is to extract the initial input variables associated with the rule, which may include underspecified descriptions such as $\mathit{shape}(y)$. The algorithm then loops on each underspecified description to find possible groundings in the random variables of the Bayesian network.  The final result corresponds to the union of the fully specified input variables and the set of possible groundings for the underspecified variables.  
 
@@ -511,7 +513,9 @@ Universally quantified rules may underspecify both the names and values of rando
 
 \subsubsection*{Extraction of relevant groundings}
 
-Once the input variables for the rules are retrieved, the next step is to establish the set of relevant groundings $G$ for the universally quantified variables.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$. Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$, the set of groundings $G$ is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables. These ground terms define the domain of discourse for these variables. At the end of the extraction procedure, the universally quantified variables $\mathbf{y}$ of the rule will therefore be associated with a set of possible groundings $G = \{\mathbf{g}_1, \dots, \mathbf{g}_{|G|}\}$.  For instance, the rule $r_3$ combined with the input assignment $ \mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_2)\!=\!\mathit{cone}$ yields the set of possible groundings $G= \{[o_1], [o_2]\}$.
+Once the input variables for the rules are retrieved, the next step is to establish the set of relevant groundings $G$ for the universally quantified variables.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$. 
+
+Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$, the set of groundings $G$ is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables. These ground terms define the domain of discourse for these variables. At the end of the extraction procedure, the universally quantified variables $\mathbf{y}$ of the rule will therefore be associated with a set of possible groundings $G = \{\mathbf{g}_1, \dots, \mathbf{g}_{|G|}\}$.  For instance, the rule $r_3$ and the input assignment $ \mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_2)\!=\!\mathit{cone}$ yields a set of possible groundings $G= \{[o_1], [o_2]\}$.
 
 
 
@@ -523,9 +527,9 @@ As we have seen, probability rules are instantiated as chance nodes associated w
  \\
 & \; \; \; \; \; \; \; \; \text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \end{align}
 
-The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$. The rule distribution in Equation \eqref{eq:quantifruledistrib} is thus identical to Equation \eqref{eq:ruledistrib} where all universally quantified variables are replaced by their grounded value in $\mathbf{g}_j$.
+The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$. The rule distribution in Equation \eqref{eq:quantifruledistrib} is thus identical to Equation \eqref{eq:ruledistrib} where all universally quantified variables in the conditions and effects are replaced by their grounded value in $\mathbf{g}_j$.
 
-The grounding procedure results in a collection of distributions $ \{ P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_{|G|}}) \}$. Empty and redundant effect distributions are discarded. The final conditional probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
+The procedure results in a collection of grounding-specific rule distributions $ \{ P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_{|G|}}) \}$. Empty and redundant effect distributions are discarded. The final conditional probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
 \begin{align}
 & P(r\!=\![e_1 \land \dots \land e_{|G|}] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = \prod_{j=1}^{|G|} P(r_{\mathbf{g}_j}\!=\!e_j)
 \end{align}
@@ -572,7 +576,7 @@ The result of instantiating rule $r_4$ on a state with two objects $o_1$ and $o_
 
 Although the use of universal quantifiers can greatly improve the expressivity of probabilistic rules, they also tend to increase the in- and out-degrees of rule nodes (that is, the cardinality of their parents and children nodes). Approximate inference techniques are thus necessary to handle this conditional structure in a tractable manner. Sampling methods such as likelihood weighting have in practice proved to work well in this setting (cf. Section \ref{sec:inference}).
 
-The groundings are always extracted \textit{given a specific value assignment} for the input variables. By restricting the groundings to this limited domain of discourse, we ensure that the number of alternative effects remains bounded and avoid the generation of spurious effects.   This procedure was found to be much more efficient than copying the rule in distinct nodes, as investigated in earlier implementations of the formalism \citep{relational-apl2012}.  This procedure departs from other frameworks such as Markov Logic Networks, where the functions and predicates are duplicated for every possible grounding of variables in the domain \citep{Richardson:2006}.
+The groundings are always extracted \textit{given a specific assignment of values} for the input variables. By restricting the groundings to this limited domain of discourse, we ensure that the number of alternative effects remains bounded and avoid the generation of spurious effects.   This procedure was found to be much more efficient than copying the rule in distinct nodes, as investigated in earlier implementations of the formalism \citep{relational-apl2012}.  This procedure departs from other frameworks such as Markov Logic Networks, where the functions and predicates are duplicated for every possible grounding of variables in the domain \citep{Richardson:2006}.
 
 
  %In order to keep the number of groundings under control, the specification of probabilistic rules should nevertheless refrain from introducing more universally quantified variables than necessary.
@@ -589,7 +593,7 @@ The following section first describes how dialogue domains are organised in coll
 
 \subsection{Domain representation}
 
-Dialogue domains can consist of multiple probability and utility rules. These rules are internally grouped in collections of rules called \textit{models}. A model is simply a collection of rules that is associated with one or more ``trigger'' variables that specify when the model is to be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When these trigger variables are changed at runtime by another module, they lead to the instantiation of the model rules. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules included in the model.
+Dialogue domains can consist of multiple probability and utility rules. These rules are internally grouped in collections of rules that we call \textit{models}. A model is simply a collection of rules that is associated with one or more ``trigger'' variables that specify when the model is to be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When these trigger variables are changed at runtime by another module, they lead to the instantiation of the model rules. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules included in the model.
 
 A dialogue domain is represented as a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$, where $\mathcal{B}_0$ is the initial dialogue state  and $\mathcal{M}$ the set of rule-based models attached to it. The organisation of rules into models allows the system designer to structure the application pipeline in a modular manner. Each model can be intuitively viewed as a distinct component responsible for a particular inference or decision step. 
 
@@ -680,7 +684,7 @@ After inserting the new variables in the dialogue state and connecting them to t
 Algorithm \ref{algo:triggerModels} summarises the steps involved in the instantiation of the domain models. The algorithm takes three arguments: a dialogue state $\mathcal{B}$ represented as a Bayesian network, an assignment of evidence values and a list of random variables that have been recently updated in the dialogue state. The algorithm loops on all domain models and instantiates the ones that are triggered by the updated variables. The rules are instantiated one by one, following the procedure we have outlined in the previous section. Once all models are traversed, the output variables of the instantiated rules become updated variables themselves, and the procedure is repeated until no more models can be applied.  To avoid the occurrence of infinite triggering cycles, models are limited to one instantiation per update. The algorithm returns both the dialogue state expanded with new variables, and the evidence assignment attached to the equivalence nodes. 
 
 
-\begin{algorithm}[h]
+\begin{algorithm}[t]
 \caption{: \textsc{TriggerModels} ($\mathcal{B}, \mathbf{e}, \mathit{UpdatedVars}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \WHILE {$\mathit{UpdatedVars} \neq \emptyset$}
@@ -711,8 +715,10 @@ Algorithm \ref{algo:triggerModels} summarises the steps involved in the instanti
 
 Whenever the new dialogue state contains utility and decision nodes, the system must decide on the action to perform.  Algorithm \ref{algo:actionselection} illustrates how actions can be selected on the basis of the current dialogue state augmented with the decision and utility nodes created by the utility rules. The algorithm searches for the assignment of action values that maximise the current utility given the dialogue state and the evidence and returns it. This utility maximisation is based on standard inference algorithms for decision networks such as likelihood weighting (cf. Section \ref{sec:inference}). 
 
+The utility nodes are removed from the state once the decision is made. The action selection procedure described here only takes into account the current (immediate) utility and does not rely on any forward planning.  Chapter \ref{chap:rllearning} demonstrates how this procedure can be extended to perform online planning on a limited horizon. 
 
-\begin{algorithm}[h]
+
+\begin{algorithm}[t]
 \caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \STATE Let $\mathbf{A}'$ be the set of all decision variables in $\mathcal{B}$
@@ -722,10 +728,6 @@ Whenever the new dialogue state contains utility and decision nodes, the system 
 \end{algorithmic}
 \label{algo:actionselection}
 \end{algorithm}
-
-The utility nodes are removed from the state once the decision is made. The action selection procedure described here only takes into account the current (immediate) utility and does not rely on any forward planning.  Chapter \ref{chap:rllearning} demonstrates how this procedure can be extended to perform online planning on a limited horizon. 
-
-
 
 \subsubsection*{State pruning}
 
