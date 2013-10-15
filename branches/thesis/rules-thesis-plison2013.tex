@@ -36,11 +36,11 @@ A random variable $X$ with parent variables $Y_1,\dots, Y_m$ must specify a sepa
 
 %Utility distributions can also partition the values of their dependent variables in a similar way.  
 
-Figure \ref{fig:partitioning} illustrates such a partitioning operation for the conditional probability distribution $P(\mathit{Fire} \, | \mathit{Weather}, \mathit{Rain})$.  The space of possible values for the parent variables is defined in this example as $\textit{Val}(\mathit{Weather}) \times \textit{Val}(\mathit{Rain})$ and contains 6 possible elements.  We can observe that this space can be split in two partitions: $\mathit{Rain}\!=\mathit{true} \lor \mathit{Weather}\!\neq\mathit{hot}$ and $\mathit{Rain}\!=\mathit{false} \land \mathit{Weather}\!=\mathit{hot}$. This partitioning allows a significant reduction of the number of parameters required for the conditional probability distribution.  It should be noted that grouping value assignments into partitions corresponds to a modelling choice and can degrade the model accuracy if the partitions do not reflect actual similarities in the predicted outcomes.
+Figure \ref{fig:partitioning} illustrates such a partitioning operation for the conditional probability distribution $P(\mathit{Fire} \, | \mathit{Weather}, \mathit{Rain})$.  The space of possible values for the parent variables is defined in this example as $\mathit{Val}(\mathit{Weather}) \times \mathit{Val}(\mathit{Rain})$ and contains 6 possible elements.  We can observe that this space can be split in two partitions: $\mathit{Rain}\!=\mathit{true} \lor \mathit{Weather}\!\neq\mathit{hot}$ and $\mathit{Rain}\!=\mathit{false} \land \mathit{Weather}\!=\mathit{hot}$. This partitioning allows a significant reduction of the number of parameters required for the conditional probability distribution.  It should be noted that grouping value assignments into partitions corresponds to a modelling choice and can degrade the model accuracy if the partitions do not reflect actual similarities in the predicted outcomes.
 
 %As illustration, consider a minimalistic dialogue in a robot learning scenario where the robot can ask the user yes/no questions pertaining to the colour of one specific object (e.g.\ \utt{Is the object red?}). In this simple scenario, the state is represented with two variables: the user dialogue act $a_u = \{\mathit{yes,no}\}$ and a variable representing the object colour, $\mathit{colour} = \{\mathit{blue,green, ...}\}$ with $n$ possible colours.  The system actions take the form $a_m = \{ \mathit{VerifyColour(c)}: c \in \mathit{colour}\}$, where $VerifyColour(c)$ corresponds to asking the user whether the object is of colour $c$.  Since the object colour remains constant, the transition function for this domain is defined as $P(a_u'|a_m, \mathit{colour})$. The number of parameters required to specify the transition function is $n^2$ (since $a_m$ and $\mathit{colour}$ have $n$ possible values each). 
 
-%However, one can reasonably assume in this example that the particular colour mentioned in the question is irrelevant to predict the next user dialogue act $P(a_u'|a_m,\mathit{colour})$ as long as it matches (or fails to match) the actual colour of the object.  Based on this assumption, one can divide the space $\textit{Val}(a_m) \times \textit{Val}(\mathit{colour})$ into two distinct partitions: 
+%However, one can reasonably assume in this example that the particular colour mentioned in the question is irrelevant to predict the next user dialogue act $P(a_u'|a_m,\mathit{colour})$ as long as it matches (or fails to match) the actual colour of the object.  Based on this assumption, one can divide the space $\mathit{Val}(a_m) \times \mathit{Val}(\mathit{colour})$ into two distinct partitions: 
 %\begin{enumerate}
 %\item One partition in which the verification question corresponds to the actual colour of the object: $\exists c: colour\!=\!c \land a_m\!=\!\mathit{VerifyColour(c)}$.
 %\item One partition in which there is a mismatch between the colour mentioned in the question and the actual colour: $\exists c: colour\!=\!c \land a_m\!\neq\!\mathit{VerifyColour(c)}$.
@@ -101,7 +101,7 @@ A terminological note is at this point in order: We shall use the term \textit{p
 \subsection{Probability rules}
 \label{sec:probabirules}
 
-Probability rules take the form of \textit{if...then...else} control structures and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $\langle br_1, \dots, br_{n}\rangle$, where each branch $br_i$ is a pair $(c_i, P(E_i))$, $c_i$ is a condition and $P(E_i)$ an associated distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $\textit{Val}(E_i) = \{e_{(i,1)}, \dots, e_{(i,m_i)}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_{(i,j)} \in \textit{Val}(E_i)$ has a particular probability denoted $p_{(i,j)}$. 
+Probability rules take the form of \textit{if...then...else} control structures and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $\langle br_1, \dots, br_{n}\rangle$, where each branch $br_i$ is a pair $(c_i, P(E_i))$, $c_i$ is a condition and $P(E_i)$ an associated distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $\mathit{Val}(E_i) = \{e_{(i,1)}, \dots, e_{(i,m_i)}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_{(i,j)} \in \mathit{Val}(E_i)$ has a particular probability denoted $p_{(i,j)}$. 
 
 Given these elements, a basic probability rule reads as such:
 \begin{equation}
@@ -327,7 +327,7 @@ The two rules $r_5$ and $r_6$ are applied on the state variables $A$, $B$, $C$ a
 \label{fig:instantiationprob}
 \end{figure}
 
-The random variable represented by the node $r_5$ has three possible values, reflecting the effects described in the rule: $\textit{Val}(r_5) = \{ \{A\!=\!a_1\}, \{A\!=\!a_2\}, \{\cdot\}\}$, where $\{\cdot\}$ denotes the empty effect.  Similarly, the random variable $r_5$ has four alternative effects: $\textit{Val}(r_6) = \{\{A\!=\!a_2 \land E\!=\!e_2\}, \{A\!=\!a_2 \land E\!=\!e_1\}, \{E=e_2\}, \{\cdot\}\}$. 
+The random variable represented by the node $r_5$ has three possible values that correspond to the three effects described in the rule: $\mathit{Val}(r_5) = \{ \{A\!=\!a_1\}, \{A\!=\!a_2\}, \{\cdot\}\}$, where $\{\cdot\}$ denotes the empty effect.  Similarly, the random variable $r_5$ has four alternative effects: $\mathit{Val}(r_6) = \{\{A\!=\!a_2 \land E\!=\!e_2\}, \{A\!=\!a_2 \land E\!=\!e_1\}, \{E=e_2\}, \{\cdot\}\}$. 
 
 We shall also adopt the following terminology to denote the probability distributions created through the instantiation procedure: 
 \begin{itemize}
@@ -397,7 +397,7 @@ The procedure for instantiating a rule in a given dialogue state is detailed in 
 \STATE $I_1, \dots, I_k \leftarrow$ input variables for $\mathit{r}$
 \STATE Create chance node $r$ with the rule distribution in Eq. \eqref{eq:ruledistrib}
 \STATE Add node $r$ and dependency edges $I_1, \dots, I_k \rightarrow r$ to $\mathcal{B}$ 
-\IF {$\textit{Val}(r) = \{\cdot\}$}
+\IF {$\mathit{Val}(r) = \{\cdot\}$}
 \STATE Prune $r$ from $\mathcal{B}$
 \ELSE
 \STATE $O_1, \dots, O_l \leftarrow$ output variables mentioned in the effects of $r$
@@ -464,7 +464,7 @@ The procedure for instantiating a utility rule is similar in most respects to th
 \IF {$A'$ not already in $\mathcal{B}$}
 \STATE Create decision node $A'$ and add it to $\mathcal{B}$
 \ENDIF
-\STATE Add in $\textit{Val}(A')$ the action values specified in the effects of $r$
+\STATE Add in $\mathit{Val}(A')$ the action values specified in the effects of $r$
 \STATE Add dependency edge $A' \rightarrow r$ to $\mathcal{B}$ 
 \ENDFOR
 \ENDIF
@@ -479,29 +479,29 @@ We saw in Section \ref{sec:quantification} that conditions and effects could inc
 
 \subsubsection*{Extraction of input variables}
 
-Universally quantified rules may underspecify both the names and values of random variables, as we saw in the examples of Section \ref{sec:quantification}.  Rule $r_3$ includes for instance a reference to an underspecified random variable $\mathit{shape}(y)$.  In order to instantiate the rule, the system must therefore first determine all random variables included in the model that match the underspecified description. If rule $r_3$ is instantiated on a state containing two objects $o_1$ and $o_2$, the resulting input variables will therefore be $\mathit{shape}(o_1)$ and $\mathit{shape}(o_2)$. 
+Universally quantified rules may underspecify both the names and values of random variables, as we saw in the examples of Section \ref{sec:quantification}.  Rule $r_3$ includes for instance a reference to an underspecified random variable $\mathit{shape}(y)$.  In order to instantiate the rule, the system must therefore first determine the set of all random variables in the current state that match the underspecified description, as these variables should be included in the conditional dependencies of the rule node. In practice, this extraction of input variables is simply done by looping over all current state variables and searching for those that may offer a potential match for at least one underspecified description. If rule $r_3$ is instantiated in a state containing two objects $o_1$ and $o_2$ (each with a specific shape), the resulting input variables will be $\mathit{shape}(o_1)$ and $\mathit{shape}(o_2)$. 
 
-Algorithm \ref{algo:getinputvariables} outlines how this search for matching input variables can proceed. The first step is to extract the initial input variables associated with the rule, which may include underspecified descriptions such as $\mathit{shape}(y)$. The algorithm then loops on each underspecified description to find possible groundings in the random variables of the Bayesian network.  The final result corresponds to the union of the fully specified input variables and the set of possible groundings for the underspecified variables.  
+%Algorithm \ref{algo:getinputvariables} outlines how this search for matching input variables can proceed. The first step is to extract the initial input variables associated with the rule, which may include underspecified descriptions such as $\mathit{shape}(y)$. The algorithm then loops on each underspecified description to find possible groundings in the random variables of the Bayesian network.  The final result corresponds to the union of the fully specified input variables and the set of possible groundings for the underspecified variables.  
 
-\begin{algorithm}[h!]
-\caption{: \textsc{GetInputVariables} ($\mathcal{B}, \mathit{r}$)}
-\begin{algorithmic}[1] \vspace{1mm}
-\REQUIRE Bayesian network $\mathcal{B}$ for the current state
-\REQUIRE Probability or utility rule $\mathit{r}$ \vspace{1mm}
-\STATE $\mathcal{I}_{r} \leftarrow $ Initial (possibly underspecified) input variables for $\mathit{r}$
-\STATE $\mathcal{U}_{r} \leftarrow $ Subset of variable names in $\mathcal{I}_{r}$ that are underspecified
-\STATE $\mathcal{G}_{r} \leftarrow$ Set of possible groundings for $\mathcal{U}_{r}$, initially empty
-\FOR {underspecified variable name $u \in \mathcal{U}_{r}$}
-\FOR {random variable $X$ in $\mathcal{B}$}
-\IF {$X$ matches $u$}
-\STATE $\mathcal{G}_{r} \leftarrow \mathcal{G}_{r} \cup [X]$
-\ENDIF
-\ENDFOR
-\ENDFOR
-\RETURN $(\mathcal{I}_{r} \ / \ \mathcal{U}_{r}) \ \cup \  \mathcal{G}_{r}$
-\end{algorithmic}
-\label{algo:getinputvariables}
-\end{algorithm}
+%\begin{algorithm}[h!]
+%\caption{: \textsc{GetInputVariables} ($\mathcal{B}, \mathit{r}$)}
+%\begin{algorithmic}[1] \vspace{1mm}
+%\REQUIRE Bayesian network $\mathcal{B}$ for the current state
+%\REQUIRE Probability or utility rule $\mathit{r}$ \vspace{1mm}
+%\STATE $\mathcal{I}_{r} \leftarrow $ Initial (possibly underspecified) input variables for $\mathit{r}$
+%\STATE $\mathcal{U}_{r} \leftarrow $ Subset of variable names in $\mathcal{I}_{r}$ that are underspecified
+%\STATE $\mathcal{G}_{r} \leftarrow$ Set of possible groundings for $\mathcal{U}_{r}$, initially empty
+%\FOR {underspecified variable name $u \in \mathcal{U}_{r}$}
+%\FOR {random variable $X$ in $\mathcal{B}$}
+%\IF {$X$ matches $u$}
+%\STATE $\mathcal{G}_{r} \leftarrow \mathcal{G}_{r} \cup [X]$
+%\ENDIF
+%\ENDFOR
+%\ENDFOR
+%\RETURN $(\mathcal{I}_{r} \ / \ \mathcal{U}_{r}) \ \cup \  \mathcal{G}_{r}$
+%\end{algorithmic}
+%\label{algo:getinputvariables}
+%\end{algorithm}
 
  %Line 1 in Algorithms \ref{algo:instantiateProbRule} and \ref{algo:instantiateUtilRule} is then replaced by: 
 %\begin{algorithmic}[1] \vspace{1mm}
@@ -511,53 +511,25 @@ Algorithm \ref{algo:getinputvariables} outlines how this search for matching inp
 
 \subsubsection*{Extraction of relevant groundings}
 
-Once the input variables for the rules are retrieved, the next step is to establish the set of relevant groundings $G$ for the universally quantified variables.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$.
+Once the input variables for the rules are retrieved, the next step is to establish the set of relevant groundings $G$ for the universally quantified variables.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$. Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$, the set of groundings $G$ is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables. These ground terms define the domain of discourse for these variables. At the end of the extraction procedure, the universally quantified variables $\mathbf{y}$ of the rule will therefore be associated with a set of possible groundings $G = \{\mathbf{g}_1, \dots, \mathbf{g}_{|G|}\}$.  For instance, the rule $r_3$ combined with the input assignment $ \mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_2)\!=\!\mathit{cone}$ yields the set of possible groundings $G= \{[o_1], [o_2]\}$.
 
-Given an input assignment $\{I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k\}$, the set of groundings $G$ is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables.  These ground terms define the domain of discourse for these variables. The collection of relevant ground terms is then combined into subsets of size $p$, where $p$ corresponds to the number of universally quantified variables $\mathbf{y} = y_1, \dots, y_p$. These combinations form the groundings $G$ for the input assignment. 
-
-
-%The groundings are always determined relative to a particular assignment of values for the input variables. Given such input assignment, the groundings are defined as substitutions of quantified variables to ground terms that result in the satisfaction of at least one condition. Let us assume a rule with input variables $I_1,...I_k$ and quantified over $\mathbf{y}$. Given a particular assignment for the input variables $I_1,...I_k$, each condition $c_i$ is checked to find the possible groundings of its quantified variables that lead to the satisfaction of the condition.\footnote{The search for possible groundings is limited to a set of ground terms (constants and functions of constants) determined in a heuristic manner, based on the ground terms used in the parent variables of the rule node.}  The number of groundings can be zero if the condition cannot be satisfied. As illustrated in Algorithm \ref{algo:getgroundings}, the result of this process is a set of groundings $G$ that leads to the satisfaction of at least one condition when substituted to the quantified variables in this condition. The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$.
-
-% specified in the input assignment. For instance, the assignment $\mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_1)\!=\!\mathit{cone}$ includes a total of six ground terms: $o_1$, $o_2$, $\mathit{sphere}$, $\mathit{cone}$, $\mathit{shape}(o_1)$ and $\mathit{shape}(o_1)$.
- 
-% For instance, the assignment $\mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_1)\!=\!\mathit{cone}$ includes 6 ground terms: $o_1$, $o_2$, $\mathit{sphere}$, $\mathit{cone}$, $\mathit{shape}(o_1)$ and $\mathit{shape}(o_1)$.
-
- %The possible groundings for a given input must be in this setting restricted to a finite set. In order to retain tractability, the maximum number of groundings is also capped by a threshold.
- %Groundings that satisfy a condition leading to an empty effect can be discarded. 
- 
-%\begin{algorithm}[h!]
-%\caption{: \textsc{GetGroundings} ($\mathit{r}, \{I_1\!=\!i_1 \land ... I_k\!=\!i_k\}$)}
-%\begin{algorithmic}[1] \vspace{1mm}
-%\REQUIRE $\mathit{r}$: Probability or utility rule 
-%\REQUIRE $\{I_1\!=\!i_1 \land ... I_k\!=\!i_k\}$ assignment for the parent variables of the rule  \vspace{1mm}
-%\STATE $G \leftarrow \emptyset$
-%\FORALL {condition $c_i$ in $\mathit{r}$}
-%\STATE Let $\mathbf{y}_i \subset \mathbf{y} $ be the quantified variables present in $c_i$
-%\STATE $G_i \leftarrow \{\text{groundings } \mathbf{g} $ such that $ \ c_i [\mathbf{y}_i / \mathbf{g} ] \text{ is satisfied with } I_1\!=\!i_1 \land ... I_k\!=\!i_k \}$
-%\STATE $G \leftarrow G \cup G_i$
-%\ENDFOR
-%\RETURN $G$
-%\end{algorithmic}
-%\label{algo:getgroundings}
-%\end{algorithm}
 
 
 \subsubsection*{Quantified probability rules}
 
-As we have seen, probability rules are instantiated as chance nodes associated with a rule distribution.  For rules including universal quantifiers, each grounding in $G$ gives rise to a particular distribution over effects.  The instantiation procedure generates a distinct effect distribution for each grounding $\mathbf{g}_j$: 
+As we have seen, probability rules are instantiated as chance nodes associated with a rule distribution.  For rules including universal quantifiers, each grounding in $G$ gives rise to a particular distribution over effects.  The instantiation procedure generates a distinct effect distribution for each grounding.  We can define a grounding-specific rule distribution where the universally quantified variables $\mathbf{y} = y_1,... y_p$ are replaced by a specific grounding $\mathbf{g}_j$:
 \begin{align}
-& P(r_{\mathbf{g}_j}\!=\!e' \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = P(E_i = e) \label{eq:quantifruledistrib}
+& P(r_{\mathbf{g}_j}\!=\!e [\mathbf{y} / \mathbf{g}_j] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = P(E_i = e) \label{eq:quantifruledistrib}
  \\
-& \; \; \; \; \; \; \; \; \text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \\ 
-& \; \; \; \; \; \; \; \; \text{and } e' = e [\mathbf{y} / \mathbf{g}_j] \nonumber
-\end{align}
+& \; \; \; \; \; \; \; \; \text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \end{align}
 
-The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$.
+The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$. The rule distribution in Equation \eqref{eq:quantifruledistrib} is thus identical to Equation \eqref{eq:ruledistrib} where all universally quantified variables are replaced by their grounded value in $\mathbf{g}_j$.
 
-Empty and redundant effect distributions are discarded. The grounding procedure results in a  collection of distributions $ \langle P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_p}) \rangle$.    The final conditional probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
+The grounding procedure results in a collection of distributions $ \{ P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_{|G|}}) \}$. Empty and redundant effect distributions are discarded. The final conditional probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
 \begin{align}
-& P(r\!=\![e_1 \land \dots \land e_{q}] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = \prod_{j=1}^{q} P(r_{\mathbf{g}_j}\!=\!e_j)
+& P(r\!=\![e_1 \land \dots \land e_{|G|}] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = \prod_{j=1}^{|G|} P(r_{\mathbf{g}_j}\!=\!e_j)
 \end{align}
+
 
 Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$ in a state with two objects $o_1$ and $o_2$, each associated with a random variable describing its shape. The effects specified for $r_3$ have two output variables: $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ which are thus placed as children of the node $r_3$.  
 
@@ -568,26 +540,25 @@ Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$
 \label{fig:quantinstantitionprob}
 \end{figure}
 
-As an illustration, the probability distribution $P(r_3 \, | \, \mathit{shape}(o_1)\!=\!\mathit{sphere}, \mathit{shape}(o_2)\!=\!\mathit{cone})$ has two relevant groundings $y\!=\!o_1$ and $y\!=\!o_2$, from which we derive four effects: $\{\mathit{graspable}(o_1) \land \mathit{graspable}(o_2) \} $ with probability $0.9\times0.2\!=\!0.18$, $\{\mathit{graspable}(o_1) \ \land \  \lnot\mathit{graspable}(o_2)\}$ with probability $0.9\times0.8\!=\!0.72$, $\{\lnot \mathit{graspable}(o_1) \land \mathit{graspable}(o_2) \}$ with probability $0.1\times0.2\!=\!0.02$, and finally $\{\lnot \mathit{graspable}(o_1) \land \lnot \mathit{graspable}(o_2)\}$ with probability $0.1\times0.8\!=\!0.08$.\footnote{For notational convenience, we write $pred(X)\!=\!true$ as $pred(X)$ and $pred(X)\!=\!false$ as $\lnot pred(X)$.}
+To illustrate the application of Equation \eqref{eq:quantifruledistrib}, the probability distribution $P(r_3 \, | \, \mathit{shape}(o_1)\!=\!\mathit{sphere}, \mathit{shape}(o_2)\!=\!\mathit{cone})$ has two relevant groundings $y\!=\!o_1$ and $y\!=\!o_2$, from which we derive four effects: $\{\mathit{graspable}(o_1) \land \mathit{graspable}(o_2) \} $ with probability $0.9\times0.2\!=\!0.18$, $\{\mathit{graspable}(o_1) \ \land \  \lnot\mathit{graspable}(o_2)\}$ with probability $0.9\times0.8\!=\!0.72$, $\{\lnot \mathit{graspable}(o_1) \land \mathit{graspable}(o_2) \}$ with probability $0.1\times0.2\!=\!0.02$, and finally $\{\lnot \mathit{graspable}(o_1) \land \lnot \mathit{graspable}(o_2)\}$ with probability $0.1\times0.8\!=\!0.08$.\footnote{For notational convenience, we write $graspable(X)\!=\!true$ as $graspable(X)$ and $graspable(X)\!=\!false$ as $\lnot graspable(X)$.}
 
 \subsubsection*{Quantified utility rules}
 
 Utility rules can be similarly extended to accommodate quantified variables. As for probability rules, the instantiation of universally quantified utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. 
 For a utility rule $r$ with input variables $I_1, \dots, I_k$, decision variables $A_1, \dots, A_l$ and quantified variables $\mathbf{y}$, the rule utility for the specific grounding $\mathbf{g}_j$ is defined as:
  \begin{align}
-& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1', \dots A_l\!=\!a_l') = U_i(A_1\!=\!a_1 \land \dots \land A_l\!=\!a_l) 
- \\
-& \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \\
-& \; \; \; \; \; \; \; \;   \; \;  \text{and } a_1' = a_1[\mathbf{y} / \mathbf{g}_j], \dots, \ \ a_l' = a_l[\mathbf{y} / \mathbf{g}_j] \nonumber
+& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1[\mathbf{y} / \mathbf{g}_j], \dots A_l\!=\!a_l[\mathbf{y} / \mathbf{g}_j] ) \\ 
+& \; \; \; \; \; \; \; \;   \; \; = U_i(A_1\!=\!a_1 \land \dots \land A_l\!=\!a_l) \nonumber \\
+& \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
-After discarding empty and redundant distributions, the result is a set of utility distributions $ \{ U_{\mathbf{g}_1}, \dots, U_{\mathbf{g}_p} \}$. The total utility distribution for the rule $r$ is then constructed by adding up the grounding-specific utility distributions:   
+After discarding empty and redundant distributions, the result is a set of utility distributions $ \{ U_{\mathbf{g}_1}, \dots, U_{\mathbf{g}_{|G|}} \}$. The total utility distribution for the rule $r$ is then constructed by adding up the grounding-specific utility distributions:   
 \begin{align}
-& U_{r}(I_1, \dots, I_k, A_1\, \dots, A_l) = \sum_{j=1}^{q} U_{\mathbf{g}_j}(I_1, \dots, I_k, A_1, \dots, A_l) \label{eq:quantifuruledistrib}
+& U_{r}(I_1, \dots, I_k, A_1\, \dots, A_l) = \sum_{j=1}^{|G|} U_{\mathbf{g}_j}(I_1, \dots, I_k, A_1, \dots, A_l) \label{eq:quantifuruledistrib}
 \end{align}
 
 
-The result of instantiating rule $r_4$ on a state with two objects $o_1$ and $o_2$ with associated random variables $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ is shown in Figure  \ref{fig:quantinstantitionutil}.  The utility distribution $U_{r_4}(\mathit{task}\!=\!\mathit{grasp}(o_1), \mathit{graspable}(o_1) \!=\!\mathit{true}, \mathit{graspable}(o_2)\!=\!\mathit{false}, a_m)$ assigns for instance the action $a_m\!=\!\mathit{grasp}(o_1)$ to a utility of 2, while $a_m\!=\!\mathit{grasp(o_2)}$ is assigned to a utility of -2. 
+The result of instantiating rule $r_4$ on a state with two objects $o_1$ and $o_2$ with associated random variables $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ is shown in Figure  \ref{fig:quantinstantitionutil}.  The utility distribution $U_{r_4}(\mathit{task}\!=\!\mathit{grasp}(o_1), \mathit{graspable}(o_1) \!=\!\mathit{true}, \mathit{graspable}(o_2)\!=\!\mathit{false}, a_m)$ assigns for instance the action $a_m\!=\!\mathit{grasp}(o_1)$ to a utility of 2, while the action $a_m\!=\!\mathit{grasp(o_2)}$ is assigned to a utility of -2. 
 
 
 \begin{figure}[h]
@@ -653,11 +624,11 @@ The update procedure is shown in Algorithm \ref{algo:stateupdate}. The procedure
 We now describe each of these steps in detail.
 
 
-\subsubsection*{Connecting predictions and observations}
+\subsubsection*{Relating predictions and observations}
 
 Rules are sometimes used to provide predictions on variables that will be observed in the next time steps.\footnote{This is notably the case for the user action model $P(a_u \, | \, i_u, a_m)$, that estimates the relative probabilities for the next dialogue action from the user. The predictions provide a prior on the future observation of the user action.} In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote predictive variables with a subscript $p$. A variable $X_p$ represents therefore a random variable on the predicted values of the variable $X$ to be observed in the future. 
 
-\begin{wrapfigure}[10]{r}{48mm}
+\begin{wrapfigure}[11]{r}{48mm}
 \vspace{-5mm}
 \centering
 \includegraphics[scale=0.25]{imgs/prediction.pdf} 
@@ -679,7 +650,7 @@ The use of a distinct node to express the evidence is motivated by the fact that
 The assignment $eq_{X} \!=\! true$ is added to the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
 \begin{align}
 &P(X = x \, | \, eq_{X}\!=\!true) \nonumber \\
-&=  \alpha \ P(X\!=\!x)  \sum_{x_p \in \textit{Val}(X_p)} P(eq_{X}\!=\!true\, |\, X\!=\!x, X_p \!=\!x_p ) P(X_p\!=\!x_p) \\
+&=  \alpha \ P(X\!=\!x)  \sum_{x_p \in \mathit{Val}(X_p)} P(eq_{X}\!=\!true\, |\, X\!=\!x, X_p \!=\!x_p ) P(X_p\!=\!x_p) \\
 &= \alpha \ P(X\!=\!x) \ P(X_p\!=\!x) \label{eq:equivalence}
 \end{align}
 
@@ -740,7 +711,6 @@ Algorithm \ref{algo:triggerModels} summarises the steps involved in the instanti
 
 Whenever the new dialogue state contains utility and decision nodes, the system must decide on the action to perform.  Algorithm \ref{algo:actionselection} illustrates how actions can be selected on the basis of the current dialogue state augmented with the decision and utility nodes created by the utility rules. The algorithm searches for the assignment of action values that maximise the current utility given the dialogue state and the evidence and returns it. This utility maximisation is based on standard inference algorithms for decision networks such as likelihood weighting (cf. Section \ref{sec:inference}). 
 
-The utility nodes are removed from the state once the decision is made. The action selection procedure described here only takes into account the current (immediate) utility and does not rely on any forward planning.  Chapter \ref{chap:rllearning} demonstrates how this procedure can be extended to perform online planning on a limited horizon.  \\
 
 \begin{algorithm}[h]
 \caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$)}
@@ -752,6 +722,9 @@ The utility nodes are removed from the state once the decision is made. The acti
 \end{algorithmic}
 \label{algo:actionselection}
 \end{algorithm}
+
+The utility nodes are removed from the state once the decision is made. The action selection procedure described here only takes into account the current (immediate) utility and does not rely on any forward planning.  Chapter \ref{chap:rllearning} demonstrates how this procedure can be extended to perform online planning on a limited horizon. 
+
 
 
 \subsubsection*{State pruning}
@@ -787,8 +760,8 @@ Figure \ref{fig:pruning} illustrates the input and output of the pruning process
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.21]{imgs/pruning.pdf}
-\caption{Illustration of the state pruning process. Only the nodes $A'$, $B$, $C$, $D$ and $E'$ are retained. The dotted lines denote the correspondence between nodes.}
+\includegraphics[scale=0.23]{imgs/pruning.pdf}
+\caption{Illustration of the state pruning process. Only the nodes $A'$, $B$, $C$, $D$, $E'$ are retained. The dotted lines denote the correspondence between nodes.}
 \label{fig:pruning}
 \end{figure}
 
