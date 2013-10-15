@@ -291,7 +291,7 @@ U(a_m\!=\!\mathit{grasp}(y)) = 2 \\
 U(a_m\!=\!\mathit{grasp}(y)) = -2 \\
 \end{cases} 
 \end{align*}
-Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ when it corresponds to the task and is feasible. Grasping the object in any other case results in a negative utility of -2. 
+Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ when the object is graspable and corresponds to the task to perform. Grasping the object in any other case results in a negative utility of -2. 
 
 %The careful reader may notice that quantified variables can be placed both inside the name of particular variables, as in $\mathit{graspable}(y)$, as well as inside the variable values, as in $grasp(y)$.  
 
@@ -345,20 +345,23 @@ The rule distributions directly reflect the rule semantics.  Formally, the condi
 \end{align}
 Formally speaking, a condition $c_i$ is said to be satisfied iff the input assignment logically entails that the condition is true, that is: $(I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \vdash c_i$. The rule conditions are checked in sequential order until one condition is found to be satisfied. The rule distribution is then simply determined as the effect distribution $P(E_i\!=\!e)$ associated with the first satisfied condition $c_i$.  As the last condition $c_n$ corresponds to the final \textbf{else} block and is therefore always trivially true, there will always be at least one satisfied condition. 
 
-As an example, the rule distribution $P(r_5 \, | \, B\!=\!b_1, C\!=\!c_1)$ for the node $r_5$ in Figure \ref{fig:instantiationprob} is defined as:
+As an example, the rule distribution $P(r_5 \, | \, B\!=\!b_1, C\!=\!c_1)$ for the node $r_5$ in Figure \ref{fig:instantiationprob} is straightforwardly defined as:
 \begin{itemize}
 \item $P(r_5 = \{A\!=\!a_1\} \, | \, B\!=\!b_1, C\!=\!c_1) = 0.6$
 \item  $P(r_5 = \{\cdot\} \, | \, B\!=\!b_1, C\!=\!c_1) = 0.4$
 %\item $P(r_5 = \{A\!=\!a_2\} \, | \, B\!=\!b_1, C\!=\!c_1) = 0$
 \end{itemize}
+
 Similarly, the distribution $P(r_6 \, | \, C\!=\!c_1, D\!=\!d_1)$ is a distribution with the empty effect $\{\cdot\}$ assigned to a probability 1. 
 
 \subsubsection*{Output distributions} 
 
-An output node $X'$ is conditionally dependent on all the rule nodes that refer to the variable $X$ in their effects.  In addition, output nodes that correspond to the updated version of existing nodes (such as $A'$ in the example of Figure \ref{fig:instantiationprob}) also include a conditional dependence on these existing nodes. The output distribution is a reflection of the combination of effects specified in the parent rules. The conditional probability distribution $P(X'|r_1\!=\!e_1, \dots, r_n\!=\!e_n)$ for an output variable $X'$ with $n$ incoming rule nodes is defined in the following manner:
+An output node $X'$ is conditionally dependent on all the rule nodes that refer to it in their effects.  In addition, output nodes that correspond to the updated version of existing nodes (such as $A'$ in the example of Figure \ref{fig:instantiationprob}) also include a conditional dependence on these existing nodes.
+
+The output distribution is a reflection of the combination of effects specified in the parent rules. The conditional probability distribution $P(X'|r_1\!=\!e_1, \dots, r_n\!=\!e_n)$ for an output variable $X'$ with $n$ incoming rule nodes is defined in the following manner:
 \begin{align}
 &P(X'\!=\!x' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n) = \begin{dcases}
-\frac{\sum_{v \in {\mathbf{e}(X)}} \mathbf{1}(x' = v)} { |\mathbf{e}(X)| } & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
+\frac{\mathbf{1}(x' \in {\mathbf{e}(X)})} { |\mathbf{e}(X)| } & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
 \mathbf{1}(x' = \mathit{None}) & \text{otherwise}
 \end{dcases}
 \label{eq:outputdist1}
@@ -366,7 +369,7 @@ An output node $X'$ is conditionally dependent on all the rule nodes that refer 
 where the following notation is used: \begin{itemize}
 \item $\mathbf{e}$ is the conjunction of all effects, i.e.\ $\mathbf{e} = e_1 \land \dots \land e_n$.  This conjunction can include more than one assigned value for a particular variable.
 \item $\mathbf{e}(X)$ denotes the (possibly empty) list of values specified for the variable $X$ in $\mathbf{e}$. 
-\item $\mathbf{1}(b)$ is the indicator function for the Boolean $b$, with $\mathbf{1}(b)=1$ if $b$ is true and $0$ otherwise.
+\item $\mathbf{1}(b)$ is the indicator function for a boolean $b$, with $\mathbf{1}(b)=1$ if $b$ is true and $0$ otherwise.
 \end{itemize}
 
 Equation \eqref{eq:outputdist1} stipulates that the distribution for $X'$ will follow the values assigned in the effect(s) provided that at least one effect specifies a value for it. If the effects include conflicting assignments, the distribution is spread uniformly over the alternative values. If no effects $e_1, \dots, e_n$ specifies a value for $X$ , the value for $X'$ is set to a default $None$ value with probability 1. 
@@ -374,7 +377,7 @@ Equation \eqref{eq:outputdist1} stipulates that the distribution for $X'$ will f
 If the node $X'$ is an update of an existing node $X$, the procedure remains essentially the same as for \eqref{eq:outputdist1}, except when all the effects specify empty assignments for the variable. In such a case, the distribution for $X'$ will fall back to the value defined for the existing node $X$ instead of being assigned a $\mathit{None}$ value:
 \begin{align}
 &P(X'\!=\!x' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n, X\!=\!x) = \begin{dcases} 
-\frac{\sum_{v \in {\mathbf{e}(X)}} \mathbf{1}(x' = v)} { |\mathbf{e}(X)| }  & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
+\frac{\mathbf{1}(x' \in {\mathbf{e}(X)})} { |\mathbf{e}(X)| }  & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
 \mathbf{1}(x' = x) & \text{otherwise}
 \end{dcases}\label{eq:outputdist2}
 \end{align}
@@ -874,7 +877,7 @@ These new effects can be incorporated to the framework through a simple modifica
 The output distribution in Equation \eqref{eq:outputdist2} is then rewritten as:
 \begin{align}
 &P(X'\!=\!x' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n, X\!=\!x) = \hspace{5cm} \nonumber \\ & \; \; \; \; \; \; \; \; \; \;  \begin{dcases} 
-\frac{\sum_{v \in {\mathbf{e}(X)}} \mathbf{1}(x' = v)} { |\mathbf{e}(X)| }  & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
+\frac{ \mathbf{1}(x' \in {\mathbf{e}(X)})} { |\mathbf{e}(X)| }  & \text{if } \mathbf{e}(X)\!\neq\!\emptyset \\
 \mathbf{1}(x' = \left(\mathbf{e}_{add}(X) \cup \left(x \; / \; \mathbf{e}_{del}(X)\right)\right)) & \text{otherwise} \\
 \end{dcases}\label{eq:outputdist4}
 \end{align} 
