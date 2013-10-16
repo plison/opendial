@@ -82,7 +82,7 @@
 \definecolor{cyan}{rgb}{0.0,0.6,0.6}
 
 \lstset{
-  basicstyle=\footnotesize\ttfamily,
+  basicstyle=\sffamily\footnotesize,
   columns=fullflexible,
   showstringspaces=false,
   commentstyle=\color{gray}\upshape
@@ -91,12 +91,12 @@
 \lstdefinelanguage{XML}
 {
   morestring=[b]",
-  morestring=[s]{>}{<},
-  morecomment=[s]{<?}{?>},
-  stringstyle=\color{black},
+  morecomment=[s]{<!}{->},
+  stringstyle=\color{teal},
+  commentstyle=\color{gray},
   identifierstyle=\color{darkblue},
-  keywordstyle=\color{cyan},
-  morekeywords={xmlns,version,type}% list your attributes here
+    escapechar=&,
+  morekeywords={<,>}% list your attributes here
 }
 
 \title{\Huge{Structured Probabilistic Modelling \\ for Dialogue Management}}

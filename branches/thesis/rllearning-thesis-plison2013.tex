@@ -348,7 +348,7 @@ $\cdot$ $\mathrm{WhatDoYouSee}$ \\
 $\cdot$ $\mathrm{DoYouSee}(x) $ \\ $\ \ \ \ \  \text{ where } x \text{ is an object identifier}$ 
 \end{tabular}
 \end{footnotesize}
- \caption{List of user intentions $i_u$} 
+ \caption{List of user intentions $i_u$.} 
 \label{table:userintents_exp2}
 \end{table}
 
@@ -370,7 +370,7 @@ $\cdot$ $\mathrm{Disconfirm}$ \\
 $\cdot$ $\mathrm{Other}$ 
 \end{tabular}
 \end{footnotesize}
- \caption{List of user actions $a_u$} 
+ \caption{List of user actions $a_u$.} 
 \label{table:userdas_exp2}
 \end{table}
 
@@ -390,7 +390,7 @@ $\cdot$ $\mathrm{AskClarify}$ \\
 $\cdot$ $\mathrm{AskConfirm}(x) $ \\ $\ \ \ \text{ where } x=\{\mathrm{Move}(y),\mathrm{PickUp}(z),$  \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{Release}(z), \mathrm{DoYouSee}(z),$ \\ $ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{WhatDoYouSee} \} $ \\ $\ \ \ \ \ \  \text{ and } y = \{\mathrm{Left,Right,Forward,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{Backward}\} $ \\ $\ \ \ \ \ \  \text{ and } z = \ \text{an object identifier}$ \
 \end{tabular}
 \end{footnotesize}
- \caption{List of system actions $a_m$} 
+ \caption{List of system actions $a_m$.} 
 \label{table:systemdas_exp2}
 \end{table}
 
@@ -488,27 +488,27 @@ A total of eight interactions were recorded, each with a different speaker (5 ma
 After the recording, the dialogues were segmented and annotated by hand. The first layer of annotation encodes the user dialogue acts $a_u$ and system actions $a_m$ listed in Table \ref{table:userdas_exp2} and \ref{table:systemdas_exp2}. The user intentions $i_u$ underlying the user commands are annotated on top of this sequence of turns.\footnote{Although the user intentions are in principle hidden ``mentalistic'' entities, they can in our domain be easily determined by a human annotator from the dialogue transcript.} The annotation also includes two contextual variables respectively expressing the lists of objects perceived and carried by the robot at a given time. Transcript 4 provides a concrete example of annotation for the first part of the interaction in Transcript 3. 
 
 \begin{Transcript}[p]
-\begin{dialogue} \vspace{3mm}
+\begin{dialogue} \vspace{5mm}
 \speak{Human} Would you please move forward \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(Move(Forward))}$\\ $\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![]$\end{footnotesize} \vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(Move(Forward))}$\\ $\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![]$\end{footnotesize} \vspace{3mm}
 \speak{Robot} OK, moving forward \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Ground(Move(Forward)) }  \ + \ \mathrm{ Do(Move(Forward))}$ \end{footnotesize}\vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Ground(Move(Forward)) }  \ + \ \mathrm{ Do(Move(Forward))}$ \end{footnotesize}\vspace{3mm}
 \speak{Human} Would you please move a bit more forward \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(Move(Forward))}$\\$\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize}\vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(Move(Forward))}$\\$\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize}\vspace{3mm}
 \speak{Robot} Should I move backward \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskConfirm(Move(Backward))}$\end{footnotesize} \vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskConfirm(Move(Backward))}$\end{footnotesize} \vspace{3mm}
 \speak{Human} No, a bit more forward \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Disconfirm } \ + \ \mathrm{ Ask(Move(Forward))}, $ \\$\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![], \mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize}\vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Disconfirm } \ + \ \mathrm{ Ask(Move(Forward))}, $ \\$\phantom{1}$\hspace{16mm} $i_u\!=\!\mathrm{Move(Forward)}, \mathit{carried}\!=\![], \mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize}\vspace{3mm}
 \speak{Robot} OK, forward then \\[1mm] 
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Ground(Move(Forward)) }  \ + \ \mathrm{ Do(Move(Forward))}$ \end{footnotesize} \vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Ground(Move(Forward)) }  \ + \ \mathrm{ Do(Move(Forward))}$ \end{footnotesize} \vspace{3mm}
 \speak{Human} Do you see any object? \\[1mm] 
-\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)},$\\ $\phantom{1}$ \hspace{16mm}$ i_u\!=\!\mathrm{WhatDoYouSee},\mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$ \end{footnotesize} \vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)},$\\ $\phantom{1}$ \hspace{16mm}$ i_u\!=\!\mathrm{WhatDoYouSee},\mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$ \end{footnotesize} \vspace{3mm}
 \speak{Robot} Sorry I do not understand \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskClarify}$ \end{footnotesize}\vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskClarify}$ \end{footnotesize}\vspace{3mm}
 \speak{Human} Do you see any object? \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)}, $ \\ $\phantom{1}$ \hspace{16mm}$i_u\!=\! \mathrm{WhatDoYouSee}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize} \vspace{2mm}
+\begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)}, $ \\ $\phantom{1}$ \hspace{16mm}$i_u\!=\! \mathrm{WhatDoYouSee}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize} \vspace{3mm}
 \speak{Robot} I see a blue cylinder \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Describe}([\mathit{object}_1])$ \end{footnotesize}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{Describe}([\mathit{object}_1])$ \end{footnotesize} \vspace{1mm}
 \end{dialogue}
 \caption{Annotated dialogue excerpt}
 \end{Transcript}
