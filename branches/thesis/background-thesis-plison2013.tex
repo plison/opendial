@@ -277,7 +277,7 @@ The simplest approach to dialogue management is based on finite-state automata (
 \label{fig:fsa}
 \end{figure}
 
-A finite-state automaton is formally defined as a tuple $\langle \mathcal{S}, \Sigma, \delta, s_0, \mathcal{F} \rangle$, where $\mathcal{S}$ is the set of possible states, $\Sigma$ the set of inputs that the system can accept (in this case, the possible user inputs),  $\delta: \mathcal{S} \times \Sigma \rightarrow \mathcal{S}$ the transition function mapping every (state,input) pair to its successor state, $s_0$ the start state, and $\mathcal{F}$ the set of final states. 
+A finite-state automaton is formally defined as a tuple $\langle \mathcal{S}, \Sigma, \delta, s_0, \mathcal{F} \rangle$, where $\mathcal{S}$ is the set of possible states, $\Sigma$ the set of inputs that the system can accept (in this case, the possible user inputs),  $\delta: \mathcal{S} \times \Sigma \rightarrow \mathcal{S}$ the transition function mapping every $\langle$state, input$\rangle$ pair to its successor state, $s_0$ the start state, and $\mathcal{F}$ the set of final states. 
 
 Finite-state automata provide a simple and versatile framework for the development of a dialogue manager. However, their expressive power is rather limited, as the dialogue state of an FSA is represented as a single, atomic symbol, and the possible user moves by a finite enumeration of possible transitions allowed for each state.  Finite-state automata are therefore difficult to scale to more complex domains where the dialogue state might need to track numerous variables and allow for a large (possibly infinite) number of dialogue acts from the user.  
 
