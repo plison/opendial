@@ -65,7 +65,7 @@ U_n(d_{(n,m_n)}) = \theta_{(n,m_n)}
 \end{aligned}
 \end{equation} 
 
-We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  The interested reader is invited to consult e.g.\ \cite{KahnemanSlovicTversky81,morganhenrion} for more details on the psychological aspects of the human perception of uncertainty and the difficult problem of probability elicitation from experts.}
+We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  The interested reader is invited to consult e.g.\ \cite{ohagan2006} for more details on the psychological aspects of the human perception of uncertainty and the difficult problem of probability elicitation from experts.}
 
 Although our work concentrates on parameter estimation with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the types of dialogue domains investigated in this thesis work.  
 
@@ -557,7 +557,7 @@ The state variables are represented with their full probability distributions. T
 a_m = \langle (\mathrm{AskConfirmation}, p\!=\!1) \rangle \\
 \mathit{moveSequence} = \langle ( \emptyset, p\!=\!1) \rangle \\
 \mathit{lastMove} = \langle (\mathrm{MoveArm(Left,Up)}, p\!=\!1) \rangle \\
-\mathit{silenceTime} = \langle (0 \textrm{ seconds}, p\!=\!1) \rangle \end{cases}
+\mathit{silence} = \langle (0 \textrm{ seconds}, p\!=\!1) \rangle \end{cases}
 \end{align*}
 
 \subsection{Experimental setup}
