@@ -1,9 +1,10 @@
 \chapter{Probabilistic rules}
 \label{chap:rules}
+\index{probabilistic rule|textbf}
 
 The previous chapter fleshed out how dialogue could be represented as a stochastic process and argued for the use of probabilistic graphical models to efficiently encode the probability and utility models employed in dialogue management. Plain graphical models, however, must face non-trivial scalability issues when applied to dialogue domains associated with rich conversational contexts. The number of parameters necessary to perform dialogue state update and action selection can indeed increase rapidly with the complexity of the domain models. Alas, only small quantities of genuine training data are available in most dialogue domains, and usually cover only a small fraction of the state--action space of interest. 
 
-To address this discrepancy between the size of the parameter space and the amount of data available to estimate them, we introduce in this chapter a new approach to probabilistic dialogue modelling, based on the notion of \textit{probabilistic rules}\index{probabilistic rule}.  Probabilistic rules are structured mappings between conditions and effects, and function as \textit{high-level templates} for the construction of a dynamic decision network.  The key advantage of this structured modelling approach is the drastic reduction of the number of parameters compared to traditional representations.  We also argue that these expressive representations are particularly well suited to encode the probability and utility models of dialogue domains, where substantial amounts of expert knowledge can often be leveraged to structure the relationships between variables. 
+To address this discrepancy between the size of the parameter space and the amount of data available to estimate them, we introduce in this chapter a new approach to probabilistic dialogue modelling, based on the notion of \textit{probabilistic rules}.  Probabilistic rules are structured mappings between conditions and effects, and function as \textit{high-level templates} for the construction of a dynamic decision network.  The key advantage of this structured modelling approach is the drastic reduction of the number of parameters compared to traditional representations.  We also argue that these expressive representations are particularly well suited to encode the probability and utility models of dialogue domains, where substantial amounts of expert knowledge can often be leveraged to structure the relationships between variables. 
 
 The chapter is divided in six sections. Section \ref{sec:rmotivation} exposes in general terms how structural assumptions can be applied to reduce the size and complexity of probabilistic models.  Section \ref{sec:formalisation} defines our novel formalism of probabilistic rules and its main theoretical properties.  These definitions are then connected in Section \ref{sec:ruleinstantiation} to the graphical models described in the previous chapter by showing how the rules are practically instantiated in the Bayesian network representing the dialogue state. Section \ref{sec:processing-workflow} explains how this instantiation procedure is incorporated in the processing workflow for updating the dialogue state and selecting the system actions. Finally, Section \ref{sec:amodelling} addresses some advanced modelling questions and Section \ref{sec:relatedwork} relates our approach to previous work.
 
@@ -31,7 +32,7 @@ The number of parameters required to estimate the distributions of a graphical m
 Dialogue models can benefit from the inclusion of such latent variables. The transition function can for instance be modelled in terms of a limited number of latent variables, each responsible for capturing specific aspects of the interaction dynamics.  We shall see in the forthcoming sections that probabilistic rules precisely operate as latent variables when instantiated in the dialogue state. 
 
 \subsubsection*{Partitioning}
-\index{state space partitioning}
+\index{state space!partitioning of}
 A random variable $X$ with parent variables $Y_1,\dots, Y_m$ must specify a separate probability distribution for every possible assignment of values for the parent variables. In other words, the number of parameters required to specify the distribution $P(X \, | \, Y_1, \dots, Y_m)$ is exponential in the number of parents $m$. Fortunately, the values of these parent variables can be grouped into \textit{partitions} yielding similar outcomes for $X$. One can therefore directly define the conditional probability distributions on these groups rather than on the full enumeration of combined values for the parent variables. Partitioning is an example of an \textit{abstraction mechanism} which can be used to reduce the model complexity and improve its ability to generalise to unseen examples. 
 
 %Utility distributions can also partition the values of their dependent variables in a similar way.  
@@ -60,6 +61,7 @@ Partitions must be both exhaustive (each combination of values for the parent va
 
 \subsubsection*{Quantification}
 \index{quantification}
+
 Many dialogue domains are composed of objects or entities related to one another. These domains are often difficult to directly encode by a fixed set of random variables, as the number of entities and relations may vary over time.  Examples of relational structures include: 
 \begin{itemize}
 \item Collections of physical objects in a visual scene, each described by specific features (colour, shape) and relations with other objects (e.g.\ spatial relations).
@@ -102,9 +104,9 @@ A terminological note is at this point in order: We shall use the term \textit{p
 \label{sec:probabirules}
 \index{probability rule}
 
-Probability rules take the form of \textit{if...then...else} constructions and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $\langle br_1, \dots, br_{n}\rangle$ in which $br_i$ denotes the $i$-th branch of the \textit{if...then...else}. Each branch $br_i$ is a pair $\langle c_i, P(E_i) \rangle$ where $c_i$ is a logical condition and $P(E_i)$ the corresponds distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $\mathit{Val}(E_i) = \{e_{(i,1)}, \dots, e_{(i,m_i)}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_{(i,j)} \in \mathit{Val}(E_i)$ has a particular probability denoted $p_{(i,j)}$. 
+Probability rules take the form of \textit{if...then...else} constructions and map a list of conditions on input variables to probabilistic effects on output variables. More formally, a rule is expressed as an ordered list $[ br_1, \dots, br_{n}]$ in which $br_i$ denotes the $i$-th branch of the \textit{if...then...else}. Each branch $br_i$ is a pair $\langle c_i, P(E_i) \rangle$ where $c_i$ is a logical condition and $P(E_i)$ the corresponds distribution over possible effects.  The distribution $P(E_i)$ is a categorical distribution with possible effects $\mathit{Val}(E_i) = \{e_{(i,1)}, \dots, e_{(i,m_i)}\}$, where $m_i$ is the number of alternative effects in $P(E_i)$.  Each effect $e_{(i,j)} \in \mathit{Val}(E_i)$ has a particular probability denoted $p_{(i,j)}$. 
 
-Given these elements, a probability rule reads as such:
+Given these elements, a probability rule reads as such:\index{probability rule!structure of}
 \begin{equation}
 \begin{aligned}
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
@@ -135,6 +137,8 @@ We will often use $P(e_{(i,j)})$ as a notational convenience for $P(E_i = e_{(i,
 %The three following sections describe how the conditions $c_i$, effects $e_{(i,j)}$ and associated effect probabilities $p_{(i,j)}$ are respectively defined. 
 
 \subsubsection*{Conditions}
+\index{probabilistic rule!conditions of}
+
 The conditions $c_i$ are expressed as logical formulae grounded in a subset of random variables in the dialogue state. This subset of state variables corresponds to the \textit{input variables} of the rule, which we shall denote as $I_1, \dots, I_{k}$. Conditions can be arbitrarily complex logical formulae connected by conjunction, disjunction and negation, and (as we shall see in Section \ref{sec:quantification}) can also include universally quantified variables. The examples $(\mathit{Rain}\!=\mathit{true} \lor \mathit{Weather}\!\neq\mathit{hot})$ and $(\mathit{Rain}\!=\mathit{false} \land \mathit{Weather}\!=\mathit{hot})$ in Figure \ref{fig:partitioning} are instances of valid conditions on the two input variables $Rain$ and $\mathit{Weather}$. 
 
 Given that a rule is defined through an \textit{if...then...else} construction, the partitioning is guaranteed by construction to be exhaustive and mutually exclusive (only one branch will be followed).  When provided with an assignment of values on the input variables, the conditions are tested in sequential order until one is satisfied. When no terminating \textbf{else} block is explicitly specified at the end of a rule, the framework assumes a final \textbf{else} block associated with a void effect to ensure that the partitioning is exhaustive. The last condition $c_n$ is thus guaranteed to always be trivially satisfied irrespective of the input variable values. 
@@ -143,6 +147,7 @@ The conditions on the input variables offer a compact partitioning of the state 
 
 
 \subsubsection*{Effects}
+\index{probabilistic rule!effects of}
 
 Associated to each condition $c_i$ stands a collection of mutually exclusive effects $e_{(i,1)}, \dots, e_{(i,m_i)}$. Each effect $e_{(i,j)}$ defines a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is represented as an assignment of values $O_1\!=\!o_1 \land \dots \land O_{l}\!=\!o_{l}$ where $O_1, \dots, O_{l}$ are the output variables (which may already exist in the current state or yet to be created) and $o_1, \dots, o_{l}$ the corresponding values assigned to these variables. In the partitioning example from Figure \ref{fig:partitioning}, the output variable is a singleton and corresponds to $Fire$. We shall, however, encounter examples of rules with more than one output variable. 
 
@@ -186,7 +191,7 @@ Rule $r_1$ has two input variables: $\mathit{Rain}$ and $\mathit{Weather}$ as we
 
 The rule-based formalism we have outlined can also be used to express utility distributions with only minor notational changes. Utility rules essentially retain the same form as probability rules, with one important exception, namely that the probabilistic effects are replaced by utility distributions over particular assignments of decision variables. 
 
-Formally, a utility rule is an ordered list $\langle br_1, \dots, br_n\rangle$, where each branch $br_i$ is a pair $\langle c_i, U_i \rangle$, $c_i$ is a condition and $U_i$ an associated utility distribution over possible assignments of decision variables. The utility distribution $U_i$ specifies a set of possible decisions $d_{(i,1)}, \dots, d_{(i,m_i)}$.  Each decision $d_{(i,j)}$ has a particular utility value denoted $u_{(i,j)}$.  Utility rules can be expressed in the following manner:
+Formally, a utility rule is an ordered list $[ br_1, \dots, br_n]$, where each branch $br_i$ is a pair $\langle c_i, U_i \rangle$, $c_i$ is a condition and $U_i$ an associated utility distribution over possible assignments of decision variables. The utility distribution $U_i$ specifies a set of possible decisions $d_{(i,1)}, \dots, d_{(i,m_i)}$.  Each decision $d_{(i,j)}$ has a particular utility value denoted $u_{(i,j)}$.  Utility rules can be expressed in the following manner:\index{utility rule!structure of}
 \begin{equation}
 \begin{aligned}
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
@@ -236,7 +241,7 @@ Rule $r_2$ stipulates the respective utilities of the two possible utility value
 
 \subsection{Quantification}
 \label{sec:quantification}
-\index{quantification}
+\index{probabilistic rule!quantifiers in}
 
 Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Logical variables can be included in the specification of both the conditions and effects of a given rule, and are universally quantified on top of the rule.\footnote{These variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the quantified variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
@@ -265,7 +270,7 @@ P(E_n\!=\!e_{(n,m_n)}) = p_{(n,m_n)}
 \label{eq:rulewithquant}
 \end{equation}
 
-The formalisation allows specific elements $y_1, \dots, y_p$ in the conditions and effects to be \textit{underspecified}.  The mapping between conditions and effects specified by the rule holds for every possible assignment of the underspecified variables. Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the main advantages of this representation is that it allows for powerful forms of \textit{parameter sharing}\index{parameter sharing}, as the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various possible instantiations of the variables $y_1, \dots, y_p$. Quantification also applies to utility rules in the same manner. 
+The formalisation allows specific elements $y_1, \dots, y_p$ in the conditions and effects to be \textit{underspecified}.\index{probabilistic rule!underspecified variables in}  The mapping between conditions and effects specified by the rule holds for every possible assignment of the underspecified variables. Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the main advantages of this representation is that it allows for powerful forms of \textit{parameter sharing}\index{parameter sharing}, as the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various possible instantiations of the variables $y_1, \dots, y_p$. Quantification also applies to utility rules in the same manner. 
 
 \subsubsection*{Example}
 
@@ -308,7 +313,7 @@ Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ whe
 
 \section{Rule instantiation}
 \label{sec:ruleinstantiation}
-\index{instantiation of probabilistic rules}
+\index{probabilistic rule!instantiation of}
 
 We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. These rule nodes are essentially latent variables\index{latent variables} that serve as intermediaries between input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
 
@@ -316,6 +321,7 @@ We describe below the instantiation procedure for each type of rule. For the sak
 
 \subsection{Probability rules}
 \label{sec:probruleinstantiation}
+\index{probability rule!instantiation of}
 
 Let $\mathcal{B}$ be the Bayesian network representing the current dialogue state, and $\mathcal{R}$ a set of rules to apply to this dialogue state.  For each rule $r \in \mathcal{R}$, a distinct chance node is created.\footnote{The original instantiation algorithm presented in \citep{rulebasedmodels-sigdial2012} included two separate nodes: one for the rule condition and one for the effect.  The formalism was later simplified to one single node as we realised that only one node was necessary to represent the semantics of the rule.} This chance node represents a random variable defined on the possible effects of the rule.  The node is conditionally dependent on the input variables of the rule (i.e.\ the set of all variables that are mentioned in the rule conditions), and is also connected via outgoing edges to its output variables (i.e.\ the set of all variables that are mentioned in the rule effects). 
 
@@ -425,6 +431,7 @@ The first steps of the instantiation process are to extract in the Bayesian netw
 
 
 \subsection{Utility rules}
+\index{utility rule!instantiation of}
 
 Utility rules are instantiated in the Bayesian network according to a similar procedure, with two notable differences compared to probability rules: \begin{itemize}
 \item As utility rules define utility distributions, their instantiation corresponds to utility nodes instead of chance nodes.
@@ -481,7 +488,7 @@ The procedure for instantiating a utility rule is similar to the one already out
 
 \subsection{Quantification}
 \label{sec:applicationquantif}
-\index{quantification}
+\index{probabilistic rule!quantifiers in}
 
 We saw in Section \ref{sec:quantification} that conditions and effects could include universally quantified variables, but have not yet discussed how such underspecified rules could be practically instantiated in the Bayesian network. The general instantiation principle remains unchanged: To each rule corresponds a distinct rule node responsible for the mapping between input and output variables (or decision variables for utility rules). The instantiation procedure must nevertheless be extended to accommodate the presence of quantified variables.  The key idea is to find all relevant \textit{groundings} for the quantified variables, and then calculate the effect distribution for each grounding. This method of handling quantifiers by extracting all possible groundings and reasoning at the propositional level is an instance of \textit{ground inference}\index{ground inference} \citep{getoor:srlbook07}. 
 
@@ -520,6 +527,7 @@ In practice, this extraction of input variables is simply achieved by looping ov
 
 
 \subsubsection*{Extraction of relevant groundings}
+\index{probabilistic rule!grounding of}
 
 Once the input variables are retrieved, the next step is to establish the set of relevant groundings for the universally quantified variables in the rule.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$. 
 
@@ -528,6 +536,7 @@ Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$,
 
 
 \subsubsection*{Quantified probability rules}
+\index{probability rule!quantifiers in}
 
 As we have seen, probability rules are instantiated as chance nodes associated with a rule distribution.  For rules including universal quantifiers, each grounding in $G$ gives rise to a particular distribution over effects.   We can define a grounding-specific rule distribution where the universally quantified variables $\mathbf{y} = y_1,... y_p$ are replaced by a specific grounding $\mathbf{g}_j$:
 \begin{align}
@@ -562,6 +571,7 @@ To illustrate the application of Equation \eqref{eq:quantifruledistrib}, the pro
 
 
 \subsubsection*{Quantified utility rules}
+\index{utility rule!quantifiers in}
 
 Utility rules are similarly extended to accommodate universally quantified variables. As for probability rules, the instantiation of utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. 
 For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $A_1, \dots, A_l$, the rule utility for the grounding $\mathbf{g}_j$ is defined as:
@@ -600,6 +610,7 @@ The groundings are always extracted \textit{given a specific assignment of value
 
 \section{Processing workflow}
 \label{sec:processing-workflow}
+\index{dialogue state!update of}
 
 The two previous sections detailed how probability and utility rules are internally defined, and how they can be instantiated as latent nodes of a graphical model. We are now ready to explain how collections of rules are practically applied at runtime to update the dialogue state and perform action selection. The general workflow is strongly inspired by information-state approaches to dialogue management \citep{Larsson:2000}, as the dialogue state serves as a central blackboard monitored by various groups of rules that are ``triggered'' upon relevant changes. 
 
@@ -607,17 +618,15 @@ The following section first describes how dialogue domains are organised in coll
 
 
 \subsection{Domain representation}
-\index{dialogue domain}
-\index{rule-structured models}
 
-Dialogue domains can consist of multiple probability and utility rules. These rules are internally grouped in collections of rules called \textit{models}. A model is simply a set of rules that is associated with one or more ``trigger'' variables that specify when the model should be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When at least one trigger variable is modified at runtime by another module, they lead to the instantiation of all rules included in the model. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules in the model.
+The specification of dialogue domains\index{dialogue domain} can comprise multiple probability and utility rules. These rules are internally grouped in collections of rules called \textit{models}\index{rule-structured model}. A model is simply a set of rules that is associated with one or more ``trigger'' variables that specify when the model should be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When at least one trigger variable is modified at runtime by another module, they lead to the instantiation of all rules included in the model. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules in the model.
 
 A dialogue domain is represented as a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$, where $\mathcal{B}_0$ is the initial dialogue state  and $\mathcal{M}$ the set of models attached to it. The organisation of rules into models allows the system designer to structure the application pipeline in a modular manner. Each model can be intuitively viewed as a distinct component responsible for a particular inference or decision step. 
 
-Section \ref{sec:domain-specification} explains how dialogue domains (and the models that compose them) are practically encoded in the \opendial{} architecture, based on an XML specification. \index{\opendial{}}
+Section \ref{sec:domain-specification} explains how dialogue domains (and the models that compose them) are practically encoded in the \opendial{} architecture, based on an XML specification. \index{openDial@\opendial{}}
 
 \subsection{Update algorithm} 
-\index{state update algorithm}
+\index{dialogue state!update of}
 
 %The software architecture adopted in this thesis takes the form of an event-driven blackboard architecture revolving around a dialogue state $\mathcal{B}$ represented as a Bayesian network.  %As in information state approaches, this dialogue state functions as a central informational hub for the architecture and is continuously read and written by the system modules. 
 
@@ -701,7 +710,7 @@ Algorithm \ref{algo:AddToState} details how the insertion of new observation var
 
 
 \subsubsection*{Model instantiation}
-\index{instantiation of rule-structured models}
+\index{rule-structured model!instantiation of}
 
 After inserting the new variables in the dialogue state and connecting them to their predicted values, the next step in the processing workflow is to trigger the relevant rule-structured models. 
 
@@ -755,7 +764,7 @@ The utility nodes are removed from the state once the decision is made. The acti
 \end{algorithm}
 
 \subsubsection*{State pruning}
-\index{pruning of dialogue state}
+\index{dialogue state!pruning of}
 
 The instantiation of the domain models results in the inclusion of numerous new nodes in the dialogue state. However, many nodes in this expanded Bayesian network  only serve as intermediaries and do not directly express meaningful information about the current state of the dialogue. The last step is therefore to reduce the dialogue state to its minimal size, by removing all intermediary nodes -- including rule nodes, outdated versions of state variables, equivalence nodes and predictive nodes that are attached to them -- in order to only retain current state variables. The accumulated evidence is also integrated in the posterior distribution of the state variables.
 
@@ -847,9 +856,9 @@ Rule $r_{11}$ specifies that the probability that the user will repeat the last 
 
 We now detail the processing workflow associated with the following constructed interaction:
 \begin{dialogue} 
-\speak{User } Now move forward \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)\rangle$  \\[-3mm]
+\speak{User } Now move forward \\ \begin{small} $\phantom{b}$ \textit{Hypotheses for} $\tilde{a}_u = [ (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)]$\end{small}  \\[-3mm]
 \speak{System } Could you please repeat? \\[-3mm]
-\speak{User } Please move forward! \\ $\phantom{b}$ $\tilde{a}_u = \langle (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) \rangle$ \\[-3mm]
+\speak{User } Please move forward! \\ \begin{small}$\phantom{b}$ \textit{Hypotheses for} $\tilde{a}_u = [ (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.2), (\mathit{Request(Backward)}, 0.1) ]$\end{small} \\[-3mm]
 \speak{System } OK, moving forward!
 \end{dialogue}
 The (constructed) recognition hypotheses $\tilde{a}_u$ produced by the ASR/NLU components are indicated underneath each user utterance. 
@@ -928,25 +937,25 @@ Figure \ref{fig:stringmanip} illustrates how such templates are applied in pract
 \section{Relation to previous work}
 \label{sec:relatedwork}
 
-The idea of using structural knowledge in probabilistic models has been explored in many directions, both in the fields of decision-theoretic planning and reinforcement learning \citep{Hauskrecht98,Pineau:2004,KerstingR04,lang10jair,Otterlo2012} and in statistical relational learning\index{statistical relational learning} \citep{Jaeger01,Richardson:2006,getoor:srlbook07}.  The introduced structure may be hierarchical, relational, or both. As in our approach, most of these frameworks rely on the use of expressive representations serving as templates for the generation of classical probabilistic models.  The surveys of \cite{Otterlo2006,Otterlo2012} provide a complete overview of relational and first-order logical approaches for reinforcement learning in Markov decision processes, covering both model-free and model-based methods.  While the formalisation presented in this thesis and the aforementioned approaches share many insights, they also reveal several interesting differences: 
+The idea of using structural knowledge in probabilistic models has been explored in many directions, both in the fields of decision-theoretic planning and reinforcement learning \citep{Hauskrecht98,Pineau:2004,KerstingR04,lang10jair,Otterlo2012} and in statistical relational learning\index{statistical relational learning}\index{decision-theoretic planning} \citep{Jaeger01,Richardson:2006,getoor:srlbook07}.  The introduced structure may be hierarchical, relational, or both. As in our approach, most of these frameworks rely on the use of expressive representations serving as templates for the generation of classical probabilistic models.  The surveys of \cite{Otterlo2006,Otterlo2012} provide a complete overview of relational and first-order logical approaches for reinforcement learning in Markov decision processes, covering both model-free and model-based methods.  While the formalisation presented in this thesis and the aforementioned approaches share many insights, they also reveal several interesting differences: 
 
 \begin{itemize}
 
 \item Probabilistic rules are primarily tailored for dialogue management tasks and seek to capture dialogue domains by striking a balance between propositional and first-order logic. The formalism deliberately eschews the complexity of full-scale first-order probabilistic inference to ensure that the domains models can be applied under real-time constraints. This design choice sets it apart from other frameworks such as Markov logic networks\index{Markov logic network} which can express arbitrary first-order formulae but are often tedious to instantiate due to the size and complexity of the resulting models.\footnote{Although see \cite{Kennington:2012} for an approach that attempts to apply Markov Logic Networks to natural language understanding tasks.} 
 
-\item Probabilistic rules are also designed to operate under partially observable settings, as state uncertainty is a pervasive and unavoidable aspect of verbal interactions.  By contrast, most previous work on relational probabilistic models are limited to fully observable environments, with the exception of some limited theoretical studies by \cite{Wang:2010,SannerK10}. 
+\item Probabilistic rules are also designed to operate under partially observable settings\index{partial observability}, as state uncertainty is a pervasive and unavoidable aspect of verbal interactions.  By contrast, most previous work on relational probabilistic models are limited to fully observable environments, with the exception of some limited theoretical studies by \cite{Wang:2010,SannerK10}. 
 
 \item Finally, the presented framework posits that the \textit{if...then...else} skeletons of probabilistic rules are best encoded by the system designers based on their expert knowledge of the domain, while the rule parameters can be estimated empirically. We therefore exclude the problem of structure learning from the scope of this thesis, as opposed to several approaches in which the domain rules and constraints are extracted via machine learning techniques \citep{PasulaZK07,Kok:2009}.
 
 \end{itemize}
 
-Probabilistic rules also bear similarities with planning description languages such as the Planning Domain Definition Language\index{planning domain definition language} \citep[PDDL, see ][]{mcdermott1998} and its probabilistic extension, the Probabilistic Planning Domain Definition Language \citep[PPDDL, see ][]{younes2004ppddl1}.  These languages are structured through action schemas that specify how (parametrised) actions can yield particular effects under various conditions. As in probabilistic rules, these languages try to carefully balance between the language expressivity and the complexity of the planning algorithm, based on a subset of first-order logic. A relational extension of PDDL, named RDDL, has also been introduced in recent planning competitions \citep{Sanner:RDDL}. The learning techniques presented by \cite{PasulaZK07} to estimate transition functions based on noisy indeterministic deictic rules are directly related to our approach, as is the recent work of \cite{lang10jair} on probabilistic noisy planning rules.   Both frameworks define conditions associated with probabilistic distributions over effects. Their approaches are, however, restricted to fully observable settings. 
+Probabilistic rules also bear similarities with planning description languages such as the Planning Domain Definition Language\index{Planning Domain Definition Language} \citep[PDDL, see ][]{mcdermott1998} and its probabilistic extension, the Probabilistic Planning Domain Definition Language \citep[PPDDL, see ][]{younes2004ppddl1}.  These languages are structured through action schemas that specify how (parametrised) actions can yield particular effects under various conditions. As in probabilistic rules, these languages try to carefully balance between the language expressivity and the complexity of the planning algorithm, based on a subset of first-order logic. A relational extension of PDDL, named RDDL, has also been introduced in recent planning competitions \citep{Sanner:RDDL}. The learning techniques presented by \cite{PasulaZK07} to estimate transition functions based on noisy indeterministic deictic rules are directly related to our approach, as is the recent work of \cite{lang10jair} on probabilistic noisy planning rules.   Both frameworks define conditions associated with probabilistic distributions over effects. Their approaches are, however, restricted to fully observable settings. 
 
 In the dialogue management literature, most structural approaches rely on a clear-cut task decomposition into goals and sub-goals \citep{Allen:2000:AGD:973935.973937,Steedman-Petrick:07,Bohus:2009}, where the completion of each goal is assumed to be fully observable, discarding any remaining uncertainty.  Our own work on multi-policy dialogue management in \cite{multipolicy-sigdial2011} relaxes the assumption of perfect knowledge of task completion, handling multiple policies as a problem of probabilistic inference over activation variables.  Probabilistic rules can be considered an extension of this early work, where the structural knowledge is not confined to task decomposition but is extended to generic rules over state variables.  
 
 The formalism presented in this chapter is strongly inspired by information state\index{information state} approaches to dialogue management \citep{Larsson:2000,Bos2003}, which are also based on a shared state representation that is updated according to a rich repository of rules.  \cite{Ginzburg2012} also models conversational phenomena by way of update operations that are encoded with rules mapping conditions to effects. However, contrary to the framework presented here, the rules specified in these approaches are generally deterministic and do not include learnable parameters. The action selection mechanism is also conceptualised slightly differently, as information-state frameworks rely on rules that directly select the most appropriate action given the current state. By contrast, probabilistic rules adopt a decision-theoretic approach that decomposes action selection in two stages: utility rules first determine the utility distributions associated with the space of possible system actions in the current dialogue state, after which the system searches for the action that yields the maximum expected utility on the basis of these distributions.  
 
-The literature on dialogue policy optimisation with reinforcement learning also contains several approaches dedicated to dimensionality reduction\index{dimensionality reduction} for large state--action spaces, such as function approximation \citep{Henderson:2008}, hierarchical reinforcement learning \citep{Cuayahuitl:2010} and summary POMDPs \citep{Young:2010}.  Many of these techniques have already been discussed in Section \ref{sec:application-dm} and will therefore not be repeated here. Most current approaches in dialogue policy optimisation focus on large but weakly structured state spaces (generally encoded as large lists of features), which are suited for slot-filling dialogue applications but are difficult to transfer to more open-ended or relational domains.  The idea of state space partitioning\index{state space partitioning}, implemented here via high-level conditions, has also been explored in recent papers \citep[see e.g.\ ][]{Williams2010}. \cite{Crook:2010} explored the introduction of complex user goal states including disjunction and negation operators. \cite{Heriberto2011} describes a policy optimisation approach based on logic-based representations of the state--action space for relational MDPs. The main difference to our approach lies in his reduction of the belief state to fully observable variables whereas we retain the partial observability associated with each variable.  The work of \cite{Mehta:2010} and \cite{Raux2011} demonstrated how tree-structured Bayesian networks called probabilistic ontology trees can improve belief tracking performance.  The tree structure is derived in their work from a hierarchical concept structure.  Finally, \cite{neill2011} describe a procedure for the selection of dialogue strategies based on probabilistic logic programming. 
+The literature on dialogue policy optimisation with reinforcement learning also contains several approaches dedicated to dimensionality reduction\index{dimensionality reduction} for large state--action spaces, such as function approximation \citep{Henderson:2008}, hierarchical reinforcement learning \citep{Cuayahuitl:2010} and summary POMDPs \citep{Young:2010}.  Many of these techniques have already been discussed in Section \ref{sec:application-dm} and will therefore not be repeated here. Most current approaches in dialogue policy optimisation focus on large but weakly structured state spaces (generally encoded as large lists of features), which are suited for slot-filling dialogue applications but are difficult to transfer to more open-ended or relational domains.  The idea of state space partitioning\index{state space!partitioning of}, implemented here via high-level conditions, has also been explored in recent papers \citep[see e.g.\ ][]{Williams2010}. \cite{Crook:2010} explored the introduction of complex user goal states including disjunction and negation operators. \cite{Heriberto2011} describes a policy optimisation approach based on logic-based representations of the state--action space for relational MDPs. The main difference to our approach lies in his reduction of the belief state to fully observable variables whereas we retain the partial observability associated with each variable.  The work of \cite{Mehta:2010} and \cite{Raux2011} demonstrated how tree-structured Bayesian networks called probabilistic ontology trees can improve belief tracking performance.  The tree structure is derived in their work from a hierarchical concept structure.  Finally, \cite{neill2011} describe a procedure for the selection of dialogue strategies based on probabilistic logic programming. 
 
 \section{Conclusion}
 

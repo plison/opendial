@@ -48,11 +48,11 @@ $\pi(b)$ && POMDP dialogue policy, defined as a function $\pi: \mathcal{B} \righ
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Dialogue-specific variables:}} \vspace{2mm} \\
 
-$u_u$ && User utterance \\
+$u_u$ && Last user utterance \\
 $\tilde{u}_u$ && Speech recognition hypotheses for user utterance \\
-$a_u$ && User dialogue act \\
-$\tilde{a}_u$ && Speech understanding hypotheses for the user dialogue act \\
-$i_u$ && User intention \\
+$a_u$ && Last user dialogue act \\
+$\tilde{a}_u$ && Speech understanding hypotheses for user dialogue act \\
+$i_u$ && Current user intention \\
 $c$ && Interaction context \\
 $a_m$ && System dialogue act \\
 $u_m$ && System utterance \\
@@ -65,7 +65,7 @@ $e_{(i,j)}$ && $j$-th effect for condition $c_i$, expressed as a value assignmen
 $p_{(i,j)}$ && Probability of effect $e_{(i,j)}$ \\
 $I_1, \dots, I_{k}$  && Set of input variables of a rule\\
 $O_1, \dots, O_{l}$ && Set of output variables of a probability rule \\
-$A_1, \dots, A_{l}$ && Set of decision variables of an utility rule \\
+$A_1, \dots, A_{l}$ && Set of decision variables of a utility rule \\
 $\mathbf{e}$ && Conjunction of effects $e_1 \land \dots \land e_n$ \\
 $\mathbf{e}(X)$ && (Possibly empty) set of values specified for variable $X$ in $\mathbf{e}$ \\
 $\mathbf{y}$ && Universally quantified variables $y_1, \dots, y_p$ of a rule  \\
