@@ -49,7 +49,7 @@ P(X \, | \, Y, \mathbf{e}) = \frac{P(Y \, | \, X, \mathbf{e}) P(X \, | \, \mathb
 
 As an illustration, Figure \ref{fig:plainbn} provides an example of a Bayesian network that models the probability of occurrence of a fire at a given time.  The probability of this event is dependent on the current weather.  In addition, two (imperfect) monitoring systems are used to detect possible fires; one on the ground, and one via satellite.  
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/plainbn.pdf}
 \caption{Example of a Bayesian network with four random variables.}
@@ -89,7 +89,7 @@ Given these two assumptions, we can define a stochastic process with a probabili
 
 Given the specification of the distribution $P(\mathbf{X}_t  \, | \,  \mathbf{X}_{t\!-\!1})$ and an initial distribution $P(\mathbf{X}_0)$, a dynamic Bayesian network can be ``unrolled'' onto multiple time slices.  This unrolled model corresponds to a classical Bayesian network.  
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/dbn.pdf}
 \caption{Example of a dynamic Bayesian network. }
@@ -121,7 +121,7 @@ Decision networks combined with temporal dependencies are called \textit{dynamic
 
 %The utility variable $U$ encodes the utility function associated with these two actions depending on the current state of the fire -- in this case, a large positive value ($+5$) if the water is dropped when a fire occurs, a large negative value ($-5$) if no water is dropped when a fire occurs, and a small negative value ($-1$) if the water is dropped in the absence of a fire.  It is also worth noting that $\mathit{Fire}_t$ depends on both the $Fire_{t\!-\!1}$ and the action variable $Tanker_{t-1}$.  The system is therefore able to actively influence the evolution of the state based on its own actions. 
  
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/ddn.pdf}
 \caption{Example of a dynamic decision network. By convention, chance nodes are represented with circles, decision nodes with squares, and utility nodes with diamonds. }
@@ -192,7 +192,7 @@ The notation $\mathbf{e}(X_i)$ refers to the value specified for the variable $X
 
 A large number of samples can be accumulated in this manner. Once enough samples are collected (or the inference engine has run out of time) the resulting posterior distribution for the query variables $\mathbf{Q}$ is derived by normalising the weighted counts associated with each value of the query variables, as shown in Algorithm \ref{algo:lw}. Algorithm \ref{algo:lwu} extends the procedure to the calculation of utility distributions. In this case, the utility values are not normalised but correspond to a weighted average of the sampled utilities. 
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{:\textsc{Likelihood-Weighting} $(\mathcal{B},\mathbf{Q}, \mathbf{e}, N)$}
 \begin{algorithmic} \vspace{2mm} 
 \REQUIRE Bayesian/decision network $\mathcal{B}$
@@ -210,7 +210,7 @@ A large number of samples can be accumulated in this manner. Once enough samples
 \label{algo:lw}
 \end{algorithm}
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{: \textsc{Likelihood-Weighting-Utility} $(\mathcal{B},\mathbf{Q}, \mathbf{e}, N)$}
 \begin{algorithmic} \vspace{2mm} 
 \REQUIRE (see above)
@@ -270,7 +270,7 @@ If the data samples cover the complete set of variables in the model\index{param
 
 The learning problem becomes more complex for partially observed domains\index{parameter estimation!with partial data} in which the data samples contain hidden variables.  For the Bayesian network in Figure \ref{fig:plainbn}, an example of a partially observed sample is $[ \mathit{Weather}\!=\!\mathit{mild}, \mathit{Ground}\!=\!alarm, \mathit{Satellite} \!=\!quiet]$, where the occurrence of fire is not specified.  In such cases, the likelihood function is no longer decomposable, which implies that the maximum likelihood estimate is not amenable to a closed-form solution. The only alternative is to resort to iterative optimisation methods such as gradient ascent \citep{binder1997} and Expectation Maximisation \citep{green1990}. 
 
-The main drawback of maximum likelihood estimation is its vulnerability to overfitting\index{parameter estimation!overfitting in} when learning from small data sets. For instance, if we only had collected one single data point $\mathit{Weather}\!=\!\mathit{cold}$ for the previous example, the maximum likelihood estimate for the distribution of $P(\mathit{Weather})$ would be $\langle 1, 0,0\rangle$.  In other words, maximum likelihood estimation does not take into account any prior knowledge about the relative probability of particular parameter hypotheses, which often leads to unreasonable estimates for low frequency events. 
+The main drawback of maximum likelihood estimation is its vulnerability to overfitting\index{parameter estimation!overfitting in} when learning from small data sets. For instance, if we only had collected one single data point $\mathit{Weather}$ $= \mathit{cold}$ for the example above, the maximum likelihood estimate for the probability distribution $P(\mathit{Weather})$ would be $\langle 1, 0,0\rangle$.  In other words, maximum likelihood estimation does not take into account any prior knowledge about the relative probability of particular parameter hypotheses, which often leads to unreasonable estimates for low frequency events. 
 
 \subsubsection*{Bayesian learning}
 \index{Bayesian learning|textbf}
@@ -293,7 +293,7 @@ It is often convenient to encode the distributions of the parameter variables as
 Figure \ref{fig:baysianlearning} illustrates this Bayesian approach to parameter estimation for the variable $\mathit{Weather}$.  As the variable possesses three alternative values, the allowed values for the parameter $\boldsymbol\theta_{\mathit{Weather}}$ are three-dimensional vectors $[ \theta_{\mathrm{Weather}(1)}, \theta_{\mathrm{Weather}(2)}, \theta_{\mathrm{Weather}(3)} ]$, with the standard constraints on probability values: $\theta_{\mathrm{Weather}(i)} \geq 0 \text{ for } i=\{1,2,3\} $ and $\theta_{\mathrm{Weather}(1)} + \theta_{\mathrm{Weather}(2)} + \theta_{\mathrm{Weather}(3)} = 1$.   As we can observe in the figure, these constraints effectively limit the range of possible values to a 2-dimensional simplex. The $\boldsymbol\alpha$ hyperparameters can be intuitively interpreted as ``virtual counts'' of the number of observations in each category.   In Figure \ref{fig:baysianlearning}, we can see that the hyperparameters $[5,10,5]$ lead to higher probability densities for parameters around the peak $\langle 0.25, 0.5, 0.25 \rangle$.  As the number of observations increases, the Dirichlet distribution will gradually concentrate on a particular region of the parameter space until convergence.
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.28]{imgs/bayesianlearning.pdf}
 \caption{Bayesian network with variable $\mathit{Weather}$ and associated parameter $\theta_{Weather}$.  As $\mathit{Weather}$ is a categorical distribution, $P(\theta_{Weather})$ is expressed as a Dirichlet distribution with three dimensions that reflect the relative probabilities for the three values in $\mathit{Val}(\mathit{Weather})$. }
@@ -306,7 +306,7 @@ P(\mathcal{D} \, ; \, \boldsymbol\theta) = \prod_{\theta_i \in \boldsymbol\theta
 \end{equation}
 As in the maximum likelihood estimation case, the learning task becomes more complicated when dealing with partially observed data, as the posterior distribution can no longer be represented as a product of independent posteriors over each parameter.  In this setting, the full posterior is often too complex to be amenable to an analytic solution.  Sampling techniques can be applied to offer reasonable approximations of this posterior.  As we shall see in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning}, the work presented in this thesis is grounded in these approximate Bayesian learning methods. Table \ref{table:gmlearning} briefly summarises the parameter estimation methods discussed in this section.
 
-\begin{table}[h]
+\begin{table}[ht]
 \renewcommand{\arraystretch}{1.8}
 \setlength{\tabcolsep}{10pt}
 \vspace{3mm}
@@ -345,7 +345,7 @@ Reinforcement learning tasks are typically based on the definition of a \textit{
  
 Markov Decision Processes can be explicitly represented as dynamic decision networks\index{dynamic decision network}.  As we can see from the graphical illustration in Figure \ref{fig:mdp}, the state at time $t+1$ is dependent both on the previous state at time $t$ and the action $a_t$ performed by the system. After each action, the system receives a reward $r_t = R(s_t, a_t)$ that depends both on the state and selected action. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 $\phantom{d}$\hspace{20mm}
 \includegraphics[scale=0.25]{imgs/MDP.pdf}
 \caption{Graphical model of a Markov Decision Process (MDP) unfolded on a few time steps.  Greyed entities indicate observed variables. In the MDP case, all past states, actions and rewards are observed, as well as the current state.}
@@ -396,7 +396,7 @@ One key question that must be addressed in both model-based and model-free appro
 
 A limitation faced by MDP approaches is the assumption that the current state is fully observable. As we already noted in the previous chapter, this assumption does not hold for most dialogue systems, owing to the presence of multiple sources of uncertainty.  As briefly alluded to in Chapter \ref{chap:background}, an elegant solution to this shortcoming is to extend the MDP framework by allowing the state to be a hidden variable that is indirectly inferred from observations.  Such an extension gives rise to a  \textit{Partially Observable Markov Decision Process} (POMDP).  POMDPs are formally defined as tuples $\langle \mathcal{S}, \mathcal{A}, T, R, \mathcal{O}, Z \rangle$.  As in a classical MDP, $\mathcal{S}$ represents the state space, $\mathcal{A}$ the action space, $T$ the transition probability $P(s'\, | \, s,a)$ between states, and $R$ the reward function $R(s,a)$.  However, the actual state is no longer directly observable.  Instead, the process is associated with an observation space $\mathcal{O}$\index{observation space} that expresses the set of possible observations that can be perceived by the system. The function $Z$ then defines the probability $P(o\, |\, s)$ of observing $o$ in the current state $s$\index{observation model}.  Figure \ref{fig:pomdp} provides a graphical illustration of the POMDP framework.  As we can see, POMDPs can also be expressed as dynamic decision networks in which the state variable is not directly observed. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/POMDP.pdf}
 \caption{Graphical model of a Partially Observable Markov Decision Process (POMDP) unfolded on a few time steps.  Compared to Figure \ref{fig:mdp}, we notice that the state is no longer directly accessible but must be inferred from the observations and (predicted) state history. }
@@ -446,7 +446,7 @@ In the previous pages, we modelled the system states and actions as atomic symbo
 POMDPs can be factored in a similar way, with the inclusion of observation variables $\mathbf{O}_t$ connected to the state variables $\mathbf{S}_t$ through conditional dependencies $P(\mathbf{O}_t \, | \, \mathbf{S}_t)$.  At time $t$, the observation variables $\mathbf{O}_t$ will be observed while the state variables  $\mathbf{S}_t$ remain hidden. 
 Figure \ref{fig:pomdp3} illustrates this factorisation. As we can observe from the figure, both plain and factored (PO)MDPs form specific cases of dynamic decision networks.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/pomdp3.pdf}
 \caption{Factored representation of a POMDP with state variables $\mathbf{S}$, action variables $\mathbf{A}$, observation variables $\mathbf{O}$, and rewards $\mathbf{R}$. }
@@ -539,7 +539,7 @@ The transition model\index{transition model} is decomposed in this factorisation
 
 These two distributions are usually derived from collected interaction data. A graphical illustration of this state factorisation is shown in Figure \ref{fig:pomdp2}. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.28]{imgs/POMDP2.pdf}
 \caption{Common factorisation of the state space for a POMDP-based dialogue system, where $c$ represents the dialogue context, $i_u$ the user intention, $a_u$ the last user dialogue act, $a_m$ the last system act, and $o$ the observation. The representation omits the conditional dependencies and probability distribution for the variable $c'$, which are contingent on the dialogue domain.}

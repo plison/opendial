@@ -22,7 +22,7 @@ We have already discussed in the previous chapter one simple instance of this in
  \index{latent variables}
 The number of parameters required to estimate the distributions of a graphical model can often be reduced by introducing \textit{latent variables} (i.e.\ unobserved or hidden variables) that act as intermediaries between the source and target variables. Indeed, many application domains are often best explained by the combination of a small number of distinct factors or influences, each encoded by a separate random variable and associated with a subset of input and output variables. This layer of latent variables is usually never observed directly, but can contribute to structuring the model.\footnote{The construction of layered computational models is one of the most active research topics in artificial intelligence and machine learning, and form the foundations of deep learning approaches \citep{Bengio:2009}.} In the domain of medical diagnosis, the relations between predisposing factors and observed symptoms are for instance best described by postulating an intermediary layer of variables -- possible diseases -- that mediates between the predisposing factors and the observed symptoms.  Figure \ref{fig:latentvariables} illustrates how latent variables can be exploited to provide an additional layer of abstraction within a graphical model.
 
- \begin{figure}[h]
+ \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/latentvariables.pdf}
 \caption{Comparison between a model that directly maps variables $\mathbf{Y}$ to $\mathbf{X}$ (left side) and one relying on latent variables $\mathbf{L}$ to serve as intermediaries (right side).}
@@ -50,7 +50,7 @@ Figure \ref{fig:partitioning} illustrates such a partitioning operation for the 
 %By abstracting over the specific colour mentioned in the question, partitioning allows us to drastically reduce the number of parameters required for the conditional probability distribution $P(a_u'|a_m,\mathit{colour})$ from a total of $n^2$ to only $2$. Figure \ref{fig:partitioning} illustrates this reduction. 
 
 
- \begin{figure}[h]
+ \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/partitioning.pdf}
 \caption{Partitioning for the conditional probability distribution $P(\mathit{Fire} \, | \mathit{Weather}, \mathit{Rain})$.}
@@ -329,7 +329,7 @@ Figure \ref{fig:instantiationprob} illustrates this instantiation process on an 
 
 The two rules $r_5$ and $r_6$ are applied on the state variables $A$, $B$, $C$ and $D$.  The application of the two rules results in an update of the variable $A$ and the creation of a new variable $E$. The nodes corresponding to the output variables are by convention denoted with a prime to distinguish them from the input nodes.  
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/ruleinstantiation.pdf}
 \caption{Example of instantiation for the two probability rules $r_5$ and $r_6$. }
@@ -440,7 +440,7 @@ Utility rules are instantiated in the Bayesian network according to a similar pr
 
 The result of the instantiation process is a decision network that incorporates chance nodes (corresponding to the state variables), utility nodes (corresponding to the utility rules) and associated decision nodes. Figure \ref{fig:instantitionutil} illustrates the instantiation of two utility rules $r_7$ and $r_8$. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/ruleinstantiation2.pdf}
 \caption{Example of instantiation for the two utility rules $r_7$ and $r_8$.}
@@ -554,7 +554,7 @@ The procedure results in a set of grounding-specific rule distributions $ \{ P(r
 
 Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$ in a state with two objects $o_1$ and $o_2$, each associated with a random variable describing its shape. The effects specified for $r_3$ have two output variables: $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ which are thus placed as children of the node $r_3$.  
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/quantruleinstantiation.pdf}
 \caption{Instantiation of the probability rule $r_3$ on a state with two objects $o_1$ and $o_2$.}
@@ -590,7 +590,7 @@ After discarding empty and redundant distributions, the result is a set of utili
 The instantiation of rule $r_4$ on a state with two objects $o_1$ and $o_2$ with associated random variables $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ is shown in Figure  \ref{fig:quantinstantitionutil}.  The utility distribution $U_{r_4}(\mathit{task}\!=\!\mathit{grasp}(o_1), \mathit{graspable}(o_1) \!=\!\mathit{true}, \mathit{graspable}(o_2)\!=\!\mathit{false}, a_m)$ assigns for instance the action $a_m\!=\!\mathit{grasp}(o_1)$ to a utility of 2, while $a_m\!=\!\mathit{grasp(o_2)}$ is assigned to a utility of -2. 
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/quantutilruleinstantiation.pdf}
 \caption{Instantiation of the quantified utility rule $r_9$ on a state with two objects $o_1$ and $o_2$.}
@@ -634,7 +634,7 @@ The dialogue state is represented in our approach as a Bayesian network and is d
 
 The general procedure for updating this dialogue state upon the reception of new observations is shown in Algorithm \ref{algo:stateupdate}. The observations may for instance correspond to new user inputs processed by the ASR/NLU components or to new elements perceived in the external context. The first step is to insert the variables in the dialogue state (line 2). The algorithm then triggers the instantiation of the relevant domain models (line 3), leading to a recursive chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithm searches for the optimal action, selects it, and activates the models that are triggered as a result  (lines 5-7). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 9). 
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{: \textsc{UpdateState} ($\mathcal{B}, \mathbf{X}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \REQUIRE Bayesian network $\mathcal{B}$ for the current state
@@ -689,7 +689,7 @@ The assignment $\mathit{eq}_{X} \!=\! true$ is added to the evidence. The poster
 
 Algorithm \ref{algo:AddToState} details how the insertion of new observation variables $\mathit{Vars}$ into the dialogue state is practically performed. 
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{: \textsc{AddToState} ($\mathcal{B}, \mathbf{e}, \mathit{Vars}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \FORALL {$X \in \mathit{Vars}$}
@@ -773,7 +773,7 @@ The nodes are then added one by one in a new dialogue state $\mathcal{B}'$.  The
 
 Figure \ref{fig:pruning} illustrates the input and output of the pruning process. Note that the primes attached to the labels of output variables are deleted from the random variable names.
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{: \textsc{PruneState} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \STATE $\mathit{NodesToKeep} \leftarrow \emptyset$
@@ -795,7 +795,7 @@ Figure \ref{fig:pruning} illustrates the input and output of the pruning process
 \end{algorithm}
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.23]{imgs/pruning.pdf}
 \caption{Illustration of the state pruning process. Only the nodes $A'$, $B$, $C$, $D$, $E'$ are retained. The dotted lines denote the correspondence between nodes.}
@@ -869,7 +869,7 @@ Figure \ref{fig:detailedexample} details the steps involved in the state update 
 
 \begin{figure}[p]
 \centering
-\includegraphics[scale=0.25]{imgs/detailedexample.pdf}
+\includegraphics[scale=0.238]{imgs/detailedexample.pdf}
 \caption{Detailed example of processing workflow. }
 \label{fig:detailedexample}
 \end{figure}
@@ -897,7 +897,7 @@ Special-purpose operators for the manipulation of such lists can be integrated i
 
 Figure \ref{fig:seteffects} illustrates two rules that apply these new effects to update a state variable $A$. 
  
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/seteffects.pdf}
 \caption{Example of rules using add/delete effects to manipulate lists.}
@@ -927,7 +927,7 @@ The output distribution associated for a new variable (cf. Equation \eqref{eq:ou
 Many of the data structures present in the dialogue state are strings -- the most prominent ones being the last user utterance $u_u$ and the last system utterance $u_m$. The integration of special-purpose functions for manipulating strings within the conditions and effects of probabilistic rules is therefore desirable. In particular, rules can be extended to perform template-based string matching operations.  The idea is to include a new type of conditions that checks whether a string matches a given template.  Both full and partial matching can be employed. Templates are allowed to include slots to fill. These slots are conceptually similar to the quantified variables discussed in Sections \ref{sec:quantification} and \ref{sec:applicationquantif}. A successful match will thus generate values for the filled slots, which will be included as part of the groundings for the rule. 
 
 Figure \ref{fig:stringmanip} illustrates how such templates are applied in practice.  $\{OBJ\}$ denotes a slot that is to be filled through matching the template with the value specified in $u_u$. 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/stringmanip.pdf}
 \caption{Example of rule using string matching operations.}

@@ -13,7 +13,7 @@ The chapter is structured in three sections.  The first section describes the hu
 \index{human--robot interaction}
 The interaction scenario employed for the user evaluation is similar in most respects to the one presented in Section \ref{sec:rllearning-experiments}, modulo some minor adaptations to circumscribe more precisely the task to be performed.\footnote{This change was suggested by several participants in the previous study.} The interactions revolve around a human user and a Nao robot\index{Nao robot} standing on a large table, as illustrated in Figure \ref{fig:scenario}.  The purpose of the interaction is to instruct the robot to (1) walk to the other end of the table without bumping into the imaginary walls placed in the middle of the scene, (2) pick up the designated object, (3) bring it back to the left side of the table, and (4) release it on a yellow landmark.  The robot is able to perceive the presence, colour and location of each physical object thanks to visual markings placed at their top.  It can also grasp each object with the help of permanent magnets fixed inside the hands of the robot. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \vspace{3mm}
 \centering
 \includegraphics[scale=0.13]{imgs/scenario.jpg} \vspace{3mm}
@@ -341,7 +341,7 @@ Figure \ref{fig:unstructuredmodel-exp3} illustrates the factored model employed 
 \item Finally, the utility model\index{utility model} $U(a_m', i_u', a_u', \mathit{carried'}, \mathit{perceived'}, \mathit{motion'})$ describes the utility of a given system action $a_m'$ given the user intention $i_u'$, last user dialogue act $a_u'$, robot motion status $\mathit{motion'}$ and contextual variables $\mathit{carried}$ and $\mathit{perceived}$. 
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.4]{imgs/unstructuredmodel.pdf} 
 \caption{Factored transition and utility models for the dialogue domain.}
@@ -431,7 +431,7 @@ The rule parameters were optimised on the basis of the collected Wizard-of-Oz da
 
 Figure \ref{fig:curve-exp3} presents the learning curves for the three dialogue management approaches presented in the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing up to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard in the test set. This measurement is repeated at regular intervals during the parameter estimation process.  As the finite-state approach is entirely hand-crafted and does not include any parameters to optimise, its agreement with the wizard actions remains constant at all time steps. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \vspace{3mm}\centering\includegraphics[scale=0.35]{imgs/curve-exp3.pdf}
 \caption{Learning curve for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a separate test set of 71 system turns.}
 \label{fig:curve-exp3}
@@ -442,7 +442,7 @@ The learning curves in Figure \ref{fig:curve-exp3} illustrate the evolution of t
 
 The final agreement results obtained after processing the complete training set are shown in Table \ref{table:learning-exp3}.  As one can observe, the rule-structured approach is the one that is best able to imitate the conversational behaviour of the wizard. 
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{center}
 \begin{tabular}{|l|c|} \hline
 \textit{Type of model} & \textit{Agreement with the wizard actions (in \%) } \\ \hline \hline
@@ -478,7 +478,7 @@ Before the start of each experiment, we briefed the participants about the inter
 The participants were also asked to fill a short survey about their age, gender, and their expectations regarding the robot verbal behaviour. The user expectations were measured with a set of six multiple-answer questions as shown in Figure \ref{fig:expectations}. The questions cover multiple aspects that may affect the interaction quality in the domain, such as the comprehension abilities of the robot (Q1), its ability to find select appropriate reactions (Q2), its use of clarification requests (Q3), its ability to distinguish between noise and actual utterances (Q4 and Q5), and finally the naturalness of the interaction (Q6). One should note that the participants were told during the briefing phase to be aware of the technical limitations of the speech recogniser. The user responses must therefore be read in the light of this cautionary statement. 
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[scale=0.5]{imgs/expectations.pdf}
 \end{center} 
@@ -573,7 +573,7 @@ It is also useful to contrast the results obtained from the survey with the init
 \begin{sidewaystable}
 \begin{tabular}{|cp{110mm}c|r:r:r|p{16mm}|p{16mm}|} \hline
 &\centering \multirow{2}{*}{Metrics} & & \multicolumn{3}{c|}{Approaches} & \multirow{2}{*}{\parbox{16mm}{$\phantom{0000000}$ $p$-values ANOVA }} & \multirow{2}{*}{\parbox{16mm}{$\phantom{0000000}$ $p$-values $1^{\text{st}}$ vs. $2^{\text{nd}}$ ($t$-test) }} \\ \cline{4-6} 
-&&& \multicolumn{1}{p{13mm}:}{\centering\begin{footnotesize}Finite-state automata\end{footnotesize}} & \multicolumn{1}{p{13mm}:}{\centering\begin{footnotesize}Factored statistical model\end{footnotesize}} & \multicolumn{1}{p{13mm}|}{\centering\begin{footnotesize}Rule-structured model\end{footnotesize}} & & \\ \hline \hline
+&&& \multicolumn{1}{p{14mm}:}{\centering\begin{footnotesize}Finite-state automata\end{footnotesize}} & \multicolumn{1}{p{14mm}:}{\centering\begin{footnotesize}Factored statistical model\end{footnotesize}} & \multicolumn{1}{p{14mm}|}{\centering\begin{footnotesize}Rule- structured model\end{footnotesize}} & & \\ \hline \hline
 & \vspace{-2mm} \textbf{Objective metrics}:  && & & & & \\ 
 1.& Average number of repetition requests per dialogue && 18.68 & 12.24 & \textbf{0}$^{\mathbf{*}}$ & $9\!\times\!10^{-19}$ & $1\!\times\!10^{-16}$ \\
 2.& Average number of confirmation requests per dialogue &&9.16 & 10.32 & \textbf{5.78}$^{\mathbf{*}}$ & $1.7\!\times\!10^{-4}$& $0.001$ \\ 
@@ -599,7 +599,7 @@ It is also useful to contrast the results obtained from the survey with the init
 \caption{Empirical results obtained for the user evaluation with a total of 37 participants, based on a set of 15 metrics (9 objective and 6 subjective). The $\mathbf{*}$ symbol indicates results that outperform the two other approaches with a level of statistical significance $\alpha = 0.05$ and Bonferroni correction. }
 \end{sidewaystable}
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{center}
 \begin{tabular}{|cp{55mm}c|r:r|p{18mm}|p{0mm}} \cline{1-6}
 &\centering $\phantom{00000}$ Survey questions: $\phantom{00000}$ \textit{``Did you feel that ...} & & \multicolumn{1}{p{20mm}:}{\centering Initial expectations} & \multicolumn{1}{p{26mm}|}{\centering Rule-structured model} &\centering $p$-values ($t$-test) & \\ \cline{1-6} 

@@ -107,7 +107,7 @@ P(\mathit{Fire}\!=\!\mathit{false}) = \theta_{r_{1}(2,2)}
 
 The parameters of rule $r_{1}$ can be expressed with two Dirichlets $\boldsymbol\theta_{r_{1}(1)} = \langle \theta_{r_{1}(1,1)},\theta_{r_{1}(1,2)} \rangle$ and $\boldsymbol\theta_{r_{1}(2)} = \langle \theta_{r_{1}(2,1)}, \theta_{r_{1}(2,2)} \rangle$ respectively associated with the effect distributions for the first and second condition.  The Dirichlet distributions in this example have two dimensions (since two alternative effects are mentioned in the rule), which make them equivalent to \textit{Beta} distributions. 
 
-Dirichlet distributions are continuous, multivariate distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1, \dots, \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1, \dots, \theta_k$ are formally expressed by the following probability density function:
+Dirichlet distributions are continuous, multivariate probability distributions defined by the meta-parameters $\boldsymbol\alpha = [\alpha_1, \dots, \alpha_k]$, where $k$ corresponds to the dimensionality of the categorical distribution of interest.  Dirichlet distributions over the parameters $\theta_1, \dots, \theta_k$ are formally expressed by the following probability density function:
 \begin{align}
 P(\theta_1, \dots, \theta_k\,; \boldsymbol\alpha) = \frac{1}{\mathrm{B}(\boldsymbol\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1} \ \ \ \text{with } \mathrm{B}(\boldsymbol\alpha) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\bigl(\sum_{i=1}^k \alpha_i\bigr)}
 \end{align}
@@ -116,7 +116,7 @@ where $ \mathrm{B}(\boldsymbol\alpha)$ serves as normalisation factor and builds
 
 Figure \ref{fig:dirichletfun} depicts the shape of the probability density functions for several variants of the two-dimensional Dirichlet distribution $P(\theta_1,\theta_2\,; \boldsymbol\alpha)$.  The second dimension $\theta_2$ is not explicitly shown on the figure but can be directly derived from the first dimension, since $\theta_1 + \theta_2=1$.  The figure illustrates how the $\boldsymbol\alpha$ hyper-parameters determine the shape of the distribution. As the $\boldsymbol\alpha$ counts grow larger, the density function becomes increasingly focused on a particular region of the parameter space.  The $\boldsymbol\alpha$ counts can therefore be tuned to skew the distribution in a particular way based on prior domain knowledge. Such prior distributions are called ``informative'' priors, since their shape is influenced by expert information. In the absence of such information, non-informative distributions such as $\mathrm{Dirichlet}(1,1)$ can also be employed. 
 \index{informative and non-informative prior}
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.45]{imgs/dirichletfun.pdf}
 \caption{Probability density functions for the Dirichlet distribution $P(\theta_1 \,; \boldsymbol\alpha)$  according to various values for the $\boldsymbol\alpha$ hyper-parameters.}
@@ -131,7 +131,7 @@ As Dirichlet distributions are conjugate priors of categorical distributions, th
 & = \eta' \ \theta_{r_{1}(1,1)} \ [ \theta_{r_{1}(1,1)}^{\alpha_1 - 1} \times \theta_{r_{1}(1,2)}^{\alpha_2 - 1} ]   = \eta' \ \textrm{Dirichlet}(\alpha_1+1,\alpha_2) \nonumber 
 \end{align}
 
-where $\eta$ and $\eta'$ are normalisation factors.  Given a prior distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  This updated Dirichlet distribution results in a slightly higher probability for the occurrence of fire, reflecting the evidence provided by the observation. 
+where $\eta$ and $\eta'$ are normalisation factors.  Given a prior probability distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  This updated Dirichlet distribution results in a slightly higher probability for the occurrence of fire, reflecting the evidence provided by the observation. 
 
 %As explained in Section \ref{sec:learning}, this property is, however, contingent on the full observability of the domain variables. 
 
@@ -179,7 +179,7 @@ Normal distributions are well suited to represent utility values for which rough
 
 Figure \ref{fig:uniformn} illustrates three instances of probability density functions for a parameter $\theta$.  The first distribution corresponds to a uniform distribution on the interval $[-2,4]$, while the second and third distributions are truncated normal distributions with mean $\mu=2$ and variances respectively assigned to $\sigma^2=4$ and $\sigma^2=1$ . The two normal distributions illustrate how prior knowledge about the utility value can be incorporated in the prior -- in this case, the distributions rest on the assumption that the true utility value is likely to revolve around the value 2. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.45]{imgs/uniformn.pdf}
 \caption{Probability density functions $P(\theta)$ over the interval $[-2,4]$ using an uniform distribution, a truncated normal distribution $\mathcal{N}(2,4)$ and a truncated normal distribution $\mathcal{N}(2,1)$.} 
@@ -282,7 +282,7 @@ The $\eta$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalis
 \begin{wrapfigure}[18]{r}{65mm}
 \vspace{-2mm}
 \centering
-\includegraphics[scale=0.35]{imgs/geometric.pdf} 
+\includegraphics[scale=0.34]{imgs/geometric.pdf} 
 \vspace{-6mm}
 \caption{Distribution $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ for four action values $[a_1, a_2, a_3, a_4]$ ranked by decreasing utility, with $p=0.7$.}
 \label{fig:geometric}
@@ -325,7 +325,7 @@ P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big) \label{eq:kde}
 \end{equation}
 where $K(\cdot)$ is a \textit{kernel function}\index{kernel function} and $h$ is a smoothing parameter called the \textit{bandwidth}. Multiple kernel functions can be used, but a common choice is to adopt a Gaussian kernel. The kernel density estimator corresponds in this case to a combination of $n$ Gaussians, where each Gaussian is centred on a sample point $x_i$.  This combination of Gaussians is smoothed proportionally to the bandwidth parameter. Figure \ref{fig:kde} illustrate the use of kernel density estimation for a continuous variable based on a set of 50 samples and a Gaussian kernel. The figure shows the influence of the bandwidth parameter on the shape of the resulting density function. Kernel density estimators do not necessitate any particular assumption about the nature of the underlying distribution, and are therefore well-suited to represent distributions of indeterminate type -- as is the case for posterior distributions over the parameters of probabilistic rules. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.45]{imgs/kde.pdf} 
 \caption{Kernel density estimators (KDEs) for a continuous variable $X$ based on 50 samples (shown on the X axis). The density function is shown for three possible bandwidths $h$. }
@@ -380,14 +380,14 @@ We first describe in this section the dialogue domain employed for the experimen
 \label{sec:wozlearning-experiments-domain}
 \index{dialogue domain}
 
-The scenario for the Wizard-of-Oz experiment involved a human user and a Nao robot (nicknamed ``Lenny''), which is a programmable humanoid robot developed by Aldebaran Robotics. Figure \ref{fig:nao} shows a human user interacting with the robot during a data collection experiment. \index{human--robot interaction}\index{Nao robot}
+The scenario for the Wizard-of-Oz experiment involved a human user and a Nao robot (nicknamed ``Lenny''), which is a programmable humanoid robot developed by Aldebaran Robotics. Figure \ref{fig:nao2} shows a human user interacting with the robot during a data collection experiment. \index{human--robot interaction}\index{Nao robot}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[scale=0.25]{imgs/bilde.jpg}
 \end{center}
 \caption{Human user interacting with the Nao robot during the Wizard-of-Oz data collection.}
-\label{fig:nao}
+\label{fig:nao2}
 \end{figure}
 
 The users were instructed to teach the robot a sequence of body movements such as lifting arms, stepping forward, backward, kneeling down, etc.  The movements could be performed either in consecutive order or in parallel (provided the movements were not in conflict).  The users were free to decide on the movements to perform, and communicated their intention using spoken commands (no gesture recognition was here involved).  The robot was programmed to memorise the instructed sequence and could ``replay'' it at any time.
@@ -396,7 +396,7 @@ The list of possible dialogue acts\index{dialogue acts} for the user is shown in
 
 \renewcommand{\arraystretch}{1.3}
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{footnotesize}
 \begin{tabular}{p{60mm}} 
 $\cdot$ $\mathrm{MoveArm}(x,y) $ \\ $ \ \ \ \ \ \text{ where } x=\{\mathrm{Left,Right,Both}\} $ \\ $ \ \ \ \ \  \text{ and } y = \{\mathrm{Up,Down,Lateral,}$ \\ $\ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{Forward,Folded}\}$ \\
@@ -424,7 +424,7 @@ $\cdot$ $\mathrm{Stop}$
 \label{table:userdas}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{footnotesize}
 \begin{tabular}{p{60mm}} 
 $\cdot$ $\mathrm{Demonstrate}(z)$ \\ $\ \ \ \ \ \text { where } z = \{\mathrm{MoveArm}(x,y), $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{MoveHead}(y),\mathrm{Kneel}, $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{StandUp},\mathrm{SitDown}, $ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{MoveFoot}(x,y), \mathrm{Turn}(y)\}$ \\ $\ \ \ \ \ \text{ and } x, y \text{ take the same values}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \text{as for the user actions}$ \\
@@ -457,7 +457,7 @@ $\cdot$ $\mathrm{FollowUser}$
 An integrated dialogue system was developed in order to collect Wizard-of-Oz interactions for the human--robot interaction domain described above. The dialogue system is equipped with all standard processing modules for speech understanding, generation and robot control.  Figure \ref{fig:exp1_architecture} illustrates the general system architecture and its connection to the robotic platform. At the centre of the architecture lies a shared dialogue state to which multiple system components are attached. These components monitor the dialogue state for relevant changes and read/write to it as they process their data flow. The dialogue manager is replaced by the wizard during data collection. 
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[scale=0.30]{imgs/exp1_architecture.pdf}
 \end{center}
@@ -579,7 +579,7 @@ the utility for the system action $a_m$ is therefore defined by:
 \begin{equation}
 U(X_1=x_1, \dots, X_n=x_n, a_m) = \theta_{(x_1, \dots, x_n, a_m)}
 \end{equation}
-where the $\theta_{(x_1, \dots, x_n, a_m)}$ value corresponds to the utility encoded in the table for the state--action pair. The total number of required parameters is therefore $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m)|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
+where the $\theta_{(x_1, \dots, x_n, a_m)}$ value corresponds to the utility encoded in the table for the state--action pair. The number of required parameters is thus $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m)|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
 %\begin{align*}
 %&U(a_u,a_m,\mathit{lastMove},\mathit{moveSequence},\mathit{silence},a_{m}') \\ 
 %&= U(a_u, a_m,a_{m}') + U(a_u,\mathit{lastMove},a_{m}') + U(a_m,\mathit{silence},a_{m}') 
@@ -600,7 +600,7 @@ The two baselines were compared to a utility model structured with 15 utility ru
 
 Figure \ref{fig:exp1_baselines} offers a graphical comparison of the utility models produced for the two baselines and the rule-structured approach.  The two baselines are essentially ``flattened'' or unstructured versions of the rule-based model.  The input and output variables remain identical in all three models. However, the two baselines directly associate each state--action combination to a single utility value, while the rule-structured approach defines this overall utility in a more indirect manner, through the instantiation of multiple utility rules. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.40]{imgs/exp1_baselines.pdf}
 \caption{Baseline utility models (left) compared to the rule-structured utility model (right).}
@@ -625,7 +625,7 @@ Table \ref{table} presents the agreement results for the three utility models. T
 
 We performed an error analysis on the 17\% of actions that deviate from the wizard behaviour.\footnote{One should be wary of labelling these actions as ``incorrect'', since they are in most cases relevant dialogue moves, but simply result from slightly different decision strategies than the one followed by the wizard.} The analysis revealed that the discrepancy is mainly due to two factors.  The first factor is the lack of complete consistency on the part of the wizard, who occasionally decided to follow distinct strategies in similar situations (especially regarding the use of clarification requests). The second factor is the presence of a non-negligible number of spurious and noisy data points, notably caused by interruptions and technical issues with the robotic platform (e.g.\ movements that had to be repeated due to motor failures).
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{center}
 \begin{tabular}{|l|c|} \hline
 \textit{Type of model} & \textit{Agreement (in \%) } \\ \hline \hline

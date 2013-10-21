@@ -82,7 +82,7 @@ Given the repetition of $n$ independent trials where each trial leads to one of 
 
 \item [Probability mass function: ] For $n$ trials,  the probability of having $x_1$ outcomes for category 1, $x_2$ outcomes for category 2, \dots, and $x_K$ outcomes for category $K$ is:
 \begin{align}
-P(X_1 = x_1,\dots, X_K = x_K)  = \begin{cases} { \displaystyle {n! \over x_1!\dots x_K!}\ p_1^{x_1} \dots p_K^{x_K}} \quad &
+P(X_1 = x_1,\dots, X_K = x_K)  = \begin{cases} { \displaystyle \frac{n!}{x_1!\dots x_K!}\ p_1^{x_1} \dots p_K^{x_K}} \quad &
 \mbox{when } \sum_{i=1}^K x_i=n \\
 0 & \mbox{otherwise} \end{cases}
 \end{align} 
@@ -133,7 +133,7 @@ Multivariate normal distributions can be used to generalise one-dimensional norm
 A Dirichlet is a continuous, multivariate probability distribution that is often used to describe the parameters of categorical or multinomial distributions.  The Dirichlet distribution is indeed the conjugate prior of these distributions. 
 
 \begin{description}
-\item [Parameters: ] A Dirichlet distribution of dimension $K$ is encoded by $K$ parameters $\boldsymbol\alpha = \alpha_1, \dots, \alpha_K$. 
+\item [Parameters: ] A Dirichlet of dimension $K$ is encoded by $K$ parameters $\boldsymbol\alpha = \alpha_1, \dots, \alpha_K$. 
 
 \item [Probability density function: ] The density function of a Dirichlet distribution is defined as:
 \begin{align}
@@ -201,7 +201,7 @@ P(x) = \frac{1}{nh} \sum_{i=1}^n K\Big(\frac{x-x_i}{h}\Big)
 
 \end{description}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[scale=0.40]{imgs/kde_appendix.pdf} \vspace{-2mm}
 \caption{Probability density function for a kernel density estimate with ten points. The Gaussian distributions making up the estimate are shown with red dashed lines. } 

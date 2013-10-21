@@ -3,13 +3,13 @@
 \thispagestyle{empty}
 \pagestyle{empty}                                                           
 
-\begin{longtable}{lp{5mm}p{11cm}}
+\begin{longtable}{lp{5mm}p{95mm}}
 \multicolumn{3}{l}{\textbf{Probability distributions:}} \vspace{2mm} \\
 $X$ && Random variable \\
 $\mathit{Val}(X)$ && Range of values for the random variable $X$ \\
 $P(X)$ && Probability distribution for the random variable $X$ \\
 $P(X_1, \dots, X_n)$ && Joint probability distribution for $X_1, \dots, X_n$ \\
-$P(X_1, \dots, X_n \, | \, Y_1, \dots, Y_m)$ && Conditional prob. distribution for $X_1, \dots, X_n$ given $Y_1, \dots, Y_m$  \\ 
+$P(X_1, \dots, X_n \, | \, Y_1, \dots, Y_m)$ && Conditional distribution for $X_1, \dots, X_n$ given $Y_1, \dots, Y_m$  \\ 
 $E(X)$ && Expectation of the random variable $X$ \\
  $P(\mathbf{X}  \, | \,  \mathbf{e})$ && Posterior distribution of variables $\mathbf{X}$ given evidence $\mathbf{e}$ \\ 
  $U(\mathbf{X}  \, | \,  \mathbf{e})$ && Utility distribution of variables $\mathbf{X}$ given evidence $\mathbf{e}$ \\ 
@@ -22,7 +22,7 @@ $E(X)$ && Expectation of the random variable $X$ \\
  $P_\mathcal{B}(X)$ && Probability distribution for $X$ in the Bayesian network $\mathcal{B}$ \\ 
 $(\mathbf{X} \, \bot \, \mathbf{Y} \, | \, \mathbf{Z})$ && Conditional independence of variables $\mathbf{X} $ and $\mathbf{Y}$ given $\mathbf{Z}$ \\
 $Y \rightarrow X$ && Directed edge from variable $Y$ to variable $X$ \\
-$\mathit{parents}(X)$ && Parents of variable $X$ such that $Y \rightarrow X$ for all $Y\!\in\!parents(X)$ \\
+$\mathit{parents}(X)$ && Parents of $X$ such that $Y \rightarrow X$ for all $Y\!\in\!parents(X)$ \\
 
 &&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Reinforcement learning:}} \vspace{2mm} \\
@@ -43,7 +43,7 @@ $b$ && Belief state $b(s) = P(s)$ \\
 $\mathcal{B}$ && Belief state space $\subset \Re^{|S|-1}$ \\
 $V(b)$ && Value function for belief state $b$  \\
 $Q(b,a)$ && Action--value function for action $a$ in belief state $b$ \\
-$\pi(b)$ && POMDP dialogue policy, defined as a function $\pi: \mathcal{B} \rightarrow \mathcal{A} $ \\
+$\pi(b)$ && POMDP dialogue policy as a function $\pi: \mathcal{B} \rightarrow \mathcal{A} $ \\
 
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Dialogue-specific variables:}} \vspace{2mm} \\
@@ -60,19 +60,19 @@ $u_m$ && System utterance \\
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Probabilistic rules:}} \vspace{2mm} \\
 $r$ && Probability or utility rule \\
-$c_i$ && $i$-th condition of a rule, expressed as a logical formula \\
-$e_{(i,j)}$ && $j$-th effect for condition $c_i$, expressed as a value assignment \\
+$c_i$ && $i$-th condition of a rule \\
+$e_{(i,j)}$ && $j$-th effect for condition $c_i$ \\
 $p_{(i,j)}$ && Probability of effect $e_{(i,j)}$ \\
 $I_1, \dots, I_{k}$  && Set of input variables of a rule\\
 $O_1, \dots, O_{l}$ && Set of output variables of a probability rule \\
 $A_1, \dots, A_{l}$ && Set of decision variables of a utility rule \\
 $\mathbf{e}$ && Conjunction of effects $e_1 \land \dots \land e_n$ \\
-$\mathbf{e}(X)$ && (Possibly empty) set of values specified for variable $X$ in $\mathbf{e}$ \\
+$\mathbf{e}(X)$ && (Possibly empty) set of values for variable $X$ in $\mathbf{e}$ \\
 $\mathbf{y}$ && Universally quantified variables $y_1, \dots, y_p$ of a rule  \\
-$\mathbf{g}$ && Possible grounding for the universally quantified variables $\mathbf{y}$ \\
+$\mathbf{g}$ && Possible grounding for the quantified variables $\mathbf{y}$ \\
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Miscellaneous:}} \vspace{2mm} \\
-$\mathbf{1}(\phi)$ && Indicator function, with $\mathbf{1}(\phi) = 1$ if $\phi$ is true and 0 otherwise \\
-$\phi[a / b]$ && First-order formula $\phi$ where all occurrences of $a$ are replaced by $b$ \\
+$\mathbf{1}(\phi)$ && Indicator function: $\mathbf{1}(\phi)\!=\!1$ if $\phi$ is true and 0 otherwise \\
+$\phi[a / b]$ && Formula $\phi$ where occurrences of $a$ are replaced by $b$ \\
 $|\mathcal{S}|$ && Cardinality of the set $\mathcal{S}$ (i.e. number of elements) 
 \end{longtable}
