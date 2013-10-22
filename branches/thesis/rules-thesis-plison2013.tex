@@ -72,7 +72,7 @@ Many dialogue domains are composed of objects or entities related to one another
 
 \textit{First-order logic}\index{first-order logic} provides an excellent basis for representing and manipulating such relational structures, as it offers a mathematically principled language for (1) referring to objects connected with one another through functions and relations and (2) describing their properties in a concise way through the use of universal and existential quantifiers.\footnote{We shall not cover in this thesis the mathematical foundations of first-order logic, but the interested reader is invited to refer to e.g.\ \cite{gamut1991logic} for a formal overview of the logical concepts mentioned throughout this thesis.}
 
-Graphical models can represent relational domains by instantiating one random variable for every possible grounding of the functions and predicates defined for the domain for a collection of objects.\footnote{Such an operation is akin to \textit{propositionalisation} in the terminology of first-order logic.}  A domain with two objects $o_1$ and $o_2$ and a relation $\mathit{leftOf}(x,y)$ will for instance generate the four groundings $\mathit{leftOf}(o_1,o_2)$, $\mathit{leftOf}(o_2,o_1)$, $\mathit{leftOf}(o_1,o_1)$ and $\mathit{leftOf}(o_2,o_2)$. The definition of probability and utility distributions that can capture the relational semantics of such a representation can, however, be problematic. In particular, universal properties and constraints such as $\forall x, \neg \mathit{leftOf}(x,x)$ and $\forall x, y, z, \mathit{leftOf}(x,y) \land \mathit{leftOf}(y,z) \Rightarrow \mathit{leftOf}(x,z)$ can be difficult to enforce at a global level, since classical probabilistic models offer no direct support for quantifiers.  Their expressive power is indeed intrinsically limited to propositional logic. 
+Graphical models can represent relational domains by instantiating one random variable for every possible grounding of the functions and predicates defined for the domain for a collection of objects.\footnote{Such an operation is akin to \textit{propositionalisation} in the terminology of first-order logic.}  A domain with two objects $o_1$ and $o_2$ and a relation $\mathit{leftOf}(x,y)$ will for instance generate the four groundings $\mathit{leftOf}(o_1,o_2)$, $\mathit{leftOf}(o_2,o_1)$, $\mathit{leftOf}(o_1,o_1)$ and $\mathit{leftOf}(o_2,o_2)$. The definition of probability and utility distributions that can capture the relational semantics of such a representation can, however, be problematic. In particular, universal properties and constraints such as $\forall x, \neg \mathit{leftOf}(x,x)$ and $\forall x, y, z, \mathit{leftOf}(x,y) \land \mathit{leftOf}(y,z) \Rightarrow \mathit{leftOf}(x,z)$ can be difficult to enforce at a global level, since classical probabilistic models are intrinsically limited to propositional logic and offer no direct support for quantifiers. 
  
 The unification of first-order logic and probability theory has spanned a new research area called \textit{statistical relational learning}\index{statistical relational learning} \citep{getoor:srlbook07}. A common trait of most approaches to statistical relational learning is the definition of a logic-based description language which is employed as a template to generate classical probabilistic models given a set of constants. The introduction of quantifiers provides an abstraction mechanism to reduce the complexity of probability and utility models by describing constraints or relations that hold for all possible groundings of a given formula and can therefore apply to large sets of random variables. 
 
@@ -246,7 +246,7 @@ Rule $r_2$ stipulates the respective utilities of the two possible utility value
 Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Logical variables can be included in the specification of both the conditions and effects of a given rule, and are universally quantified on top of the rule.\footnote{These variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the quantified variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
 \begin{aligned}
-\forall \ y_1, y_2, \dots, y_p: \\
+\forall \ y_1, y_2, \dots, y_p, \\
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
 P(E_1\!=\!e_{(1,1)}) = p_{(1,1)} \\
@@ -276,7 +276,7 @@ The formalisation allows specific elements $y_1, \dots, y_p$ in the conditions a
 
 Rule $r_3$ provides a simple example of a probability rule including a quantified variable:
 \begin{align*}
-r_3: \ \ & \forall y: \\ 
+r_3: \ \ & \forall y, \\ 
 & \textbf{if} \ (\mathit{shape}(y) = \mathit{sphere})  \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
 P(\mathit{graspable}(y)\!=\!\mathit{true}) = 0.9 \\
@@ -288,7 +288,7 @@ P(\mathit{graspable}(y)\!=\!\mathit{true}) = 0.2 \\
 P(\mathit{graspable}(y)\!=\!\mathit{false}) = 0.8
 \end{cases}
 \intertext{Rule $r_3$ specifies how the graspability of a given object $y$ depends on its shape (a sphere being easier to grasp than a cone). Similarly, rule $r_4$ defines the utility of a grasping action depending on the task and object graspability:}
-r_4: \ \ & \forall y: \\ 
+r_4: \ \ & \forall y, \\ 
 & \textbf{if} \ (task= grasp(y) \land \mathit{graspable}(y) = \mathit{true})  \ \textbf{then} \\ 
 & \;\;\;\;\; \begin{cases}
 U(a_m\!=\!\mathit{grasp}(y)) = 2 \\
@@ -668,7 +668,7 @@ The first step in the update procedure is to insert the chance nodes correspondi
 \label{fig:prediction}
 \end{wrapfigure}
 
-Prediction and observation variables must be connected with one another at runtime.  In the case where the observation is known with certainty, this connection can simply be represented as an assignment of evidence values.  However, dialogue domains often include observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}.  Several techniques are available to practically encode this evidence. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node}\index{equivalence node} $\mathit{eq}_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}. The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ may have arbitrary incoming and outgoing edges with other variables. 
+Prediction and observation variables must be related with one another at runtime.  In the case where the observation is known with certainty, this connection can simply be represented as an assignment of evidence values.  However, dialogue domains often include observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}.  Several techniques are available to practically encode this evidence. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node}\index{equivalence node} $\mathit{eq}_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}. The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ may have arbitrary incoming and outgoing edges with other variables. 
 
 The conditional probability distribution of $\mathit{eq}_X$ is deterministic:
 \begin{equation}
@@ -826,7 +826,7 @@ The domain specification for this constructed example comprises an empty initial
 % = \langle \langle a_u \rangle, \langle r_9, r_{10} \rangle \rangle$
 \item Model $m_1$ is triggered by $a_u$ and includes two utility rules $r_{9}$ and $r_{10}$:
 \begin{align*}
-r_{9}: \ \ & \forall y: \\ 
+r_{9}: \ \ & \forall y, \\ 
 & \textbf{if} \ (a_u = Request(y)) \ \textbf{then} \\ 
 & \; \; \begin{cases} 
 U(a_m = Move(y)) = 2 \\ 
@@ -843,7 +843,7 @@ Rule $r_{9}$ specifies that the utility of executing the action corresponding to
 %= \langle \langle a_m \rangle, \langle r_{11} \rangle \rangle
 \item Model $m_2$ is triggered by $a_m$ and has one single predictive rule $r_{11}$: 
 \begin{align*}
-r_{11}: \ \ & \forall y: \\ 
+r_{11}: \ \ & \forall y, \\ 
 & \textbf{if} \ (a_m = \mathit{AskRepeat} \land a_u=y) \ \textbf{then} \\ 
 & \; \;  \begin{cases} 
 P(a_{u\mbox{-}p} = y) = 0.9 \\ 
