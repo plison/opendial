@@ -368,16 +368,16 @@ Table \ref{table:approaches} presents a comparison of the most important hand-cr
 \setlength{\tabcolsep}{8pt}
 \begin{sidewaystable}
 \begin{center}
-\begin{tabular}{|p{55mm}||p{29mm}|p{16mm}|p{50mm}|p{55mm}|} \hline
+\begin{tabular}{|p{55mm}||p{29mm}|p{16mm}|p{50mm}|p{52mm}|} \hline
 \centering \textbf{Approach} &  \centering \textbf{State representation} &  \centering \textbf{State uncertainty} &  \centering \textbf{State update mechanism} & \textbf{Action selection mechanism} \vspace{5pt} \\  \hline \hline
 Finite state automata & Atomic state & no & Traversal of matching edge & Action associated with node \vspace{5pt} \\ \hline
 Frame-based systems \; \; \; \; \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{seneff2000}\end{footnotesize}& Slot/value pairs & no & Slot-filling given user inputs & Production rules \vspace{5pt} \\ \hline
 Information state update \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Larsson:2000}\end{footnotesize} & Typed feature $\phantom{bbb}$ structure \vspace{5pt} & no & Update rules & Decision rules \vspace{5pt} \\ \hline
 Plan-based systems   \; \;  \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Freedman:2000,Allen:2000:AGD:973935.973937}\end{footnotesize} & BDI model \vspace{5pt} & no & Plan recognition and update of BDI model & Classical planning \vspace{5pt} \\ \hline
-Supervised approaches \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Hurtado:2005}\end{footnotesize} & Atomic/factored state & no & Extraction of state variables from history and task status & Dialogue policy learned by imitation from Wizard-of-Oz data \vspace{5pt} \\ \hline
-MDP-based systems  \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Walker:2000,817450}\end{footnotesize} & Atomic/factored state & no & Extraction of state variables from history and task status &  \multirow{2}{50mm}{$\phantom{aaaaajjjjjaaaaaaaaa}$ Dialogue policy optimised via reinforcement learning from real or simulated dialogues} \vspace{5pt} \\ \cline{1-4}
-POMDP-based systems \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Roy:2000,Young:2010}\end{footnotesize}\vspace{5pt} & Atomic/factored state & yes & Update of belief state & \vspace{5pt} \\ \hline
-Probabilistic rules \; \; \; \; \; \; \; \; \; \; \begin{footnotesize} (this thesis)\end{footnotesize} & Factored state & yes & Update of belief state \; \; \; \; \; \; (with probabilistic rules) & Dialogue policy optimised via (Bayesian) supervised or reinforcement learning \vspace{5pt} \\ \hline 
+Supervised approaches \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Hurtado:2005}\end{footnotesize} & Factored state & no & Extraction of state variables $\phantom{aa}$ from history and task status & Dialogue policy learned $\phantom{aaaa}$ from Wizard-of-Oz data \vspace{5pt} \\ \hline
+MDP-based systems  \; \; \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Walker:2000,817450}\end{footnotesize} & Factored state & no & Extraction of state variables $\phantom{aa}$ from history and task status &  \multirow{2}{50mm}{$\phantom{aaaaajjjjjaaaaaaaaa}$ Dialogue policy optimised via reinforcement learning from real or simulated dialogues} \vspace{5pt} \\ \cline{1-4}
+POMDP-based systems \; \; \; \; \; \; \begin{footnotesize}\citep[e.g.][]{Roy:2000,Young:2010}\end{footnotesize}\vspace{5pt} & Factored state & yes & Update of belief state & \vspace{5pt} \\ \hline
+Probabilistic rules \; \; \; \; \; \; \; \; \; \; \begin{footnotesize} (this thesis)\end{footnotesize} & Factored state & yes & Update of belief state \; \; \; \; \; \; (with probabilistic rules) & Dialogue policy optimised $\phantom{aaaa}$ via (Bayesian) supervised or $\phantom{aa}$ reinforcement learning \vspace{5pt} \\ \hline 
 \end{tabular}
 \end{center}
 \caption{Comparison of dialogue management approaches.}

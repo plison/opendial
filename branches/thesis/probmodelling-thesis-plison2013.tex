@@ -286,7 +286,7 @@ P(\boldsymbol\theta  \, | \, \mathcal{D}) =  \frac{P(\mathcal{D} \, ; \, \boldsy
 
 %Note that the maximum likelihood estimators described in the previous section coincide with the most probable Bayesian estimator given a uniform prior distribution on the parameters.
 
-Equation \ref{eq:bl} allows us to calculate the posterior distribution $P(\boldsymbol\theta  \, | \, \mathcal{D})$ through the use of standard inference algorithms for graphical models. 
+Equation \eqref{eq:bl} allows us to calculate the posterior distribution $P(\boldsymbol\theta  \, | \, \mathcal{D})$ through the use of standard inference algorithms for graphical models. 
 
 It is often convenient to encode the distributions of the parameter variables as \textit{conjugate priors}\index{probability distribution!conjugate prior} of their associated CPD distribution. In such case, the prior $P(\boldsymbol\theta)$ and posterior $P(\boldsymbol\theta  \, | \, \mathcal{D})$ after observing the data points $\mathcal{D}$ are ensured to remain within the same distribution family. In particular, if the distribution of interest is a categorical distribution, its parameter distribution can be encoded with a Dirichlet distribution\index{Dirichlet distribution}, which is known as the conjugate prior of categorical and multinomial distributions. A Dirichlet distribution is a continuous, multivariate distribution of dimension $k$ (with $k$ being the size of the multinomial) that is itself parametrised with so-called concentration hyperparameters denoted $\boldsymbol\alpha = [ \alpha_1, \dots, \alpha_k ]$. Additional details about the formal properties of Dirichlet distributions can be found in Appendix \ref{chap:probdistributions}.
 
