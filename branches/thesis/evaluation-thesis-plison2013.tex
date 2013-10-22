@@ -163,7 +163,7 @@ Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtu
   \end{align}
 
 
-\subsection{System design}
+\subsection{System architecture}
 \index{dialogue system architecture}
 
 The dialogue system employed for the experiment follows the architecture described in the previous chapter (Section \ref{sec:system-integration}).  We briefly describe below the configuration of each component. It should be stressed that the only component that varies across the three evaluated approaches is the dialogue manager.  All other modules are fixed and remain identical for all interactions.
@@ -285,7 +285,7 @@ The finite state automaton is triggered upon each new user dialogue act $a_u$. A
 The automaton constructed for the domain operates on the basis of three specified threshold values $T_1$, $T_2$ and $T_3$ (whose estimation is described shortly):
 \begin{enumerate}
 \item If the incoming dialogue act contains an hypothesis whose probability is higher than a given threshold $T_3$, the system action associated to the user request is directly selected.  For instance, if the new user act contains a hypothesis $a_u = \mathrm{Ask(Move(Left))}$ with probability $p > T_3$, the action $a_m = \mathrm{Do(Move(Left)})$ will be executed.
-\item If the probability of the top hypothesis for $a_u$ lies between $T_2$ and $T_3$ and corresponds to a request for a physical movement, the system will ask the users to confirm their intention.  The system response to a user act $a_u = \mathrm{Ask(Move(Left))}$ with probability $T_2 < p < T_3$ will hence be set to $a_m = \mathrm{AskConfirm(Move(Left)})$
+\item If the probability of the top hypothesis for $a_u$ lies between $T_2$ and $T_3$ and corresponds to a request for a physical movement, the system will ask the users to confirm their intention.  The system response to a user act $a_u = \mathrm{Ask(Move(Left))}$ with probability $T_2 < p < T_3$ will hence be set to $a_m = \mathrm{AskConfirm(Move(Left)})$.
 \item If the probability of the top hypothesis lies between $T_1$ and $T_2$, the system will ask the users to repeat their utterance by triggering the action $a_m = \mathrm{AskRepeat}$. 
 \item Finally, if no hypothesis reaches the minimal threshold $T_1$, the user action is assumed to correspond to a spurious recognition result, and is simply ignored.
 \end{enumerate}

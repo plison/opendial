@@ -338,7 +338,7 @@ Reinforcement learning tasks are typically based on the definition of a \textit{
 \begin{itemize}
 \item $\mathcal{S}$ is the state space of the domain and represents the set of all (mutually exclusive) states.\index{state space}
 \item $\mathcal{A}$ is the action space and represents the possible actions that can be executed by the agent.\index{action space}
-\item $T: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ is the transition function and encodes the probability $P(s'|s,a)$ of reaching state $s'$ after executing action $a$ in state $s$.\index{transition model}
+\item $T: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ is the transition function and encodes the probability $P(s'\, | \, s,a)$ of reaching state $s'$ after executing action $a$ in state $s$.\index{transition model}
 \item $R:  \mathcal{S} \times \mathcal{A} \rightarrow \Re$ is the reward function associated with the execution of action $a$ in state $s$.\index{reward model}
 %\item $s_0 \in \mathcal{S}$ is the initial state of the process.
 \end{itemize}
@@ -359,13 +359,13 @@ V^{\pi}(s) & = \  E \left\{ r_0 + \gamma r_1 + \gamma^2 r_2 + \dots \ \big| \ s_
 \end{align} 
 where $r_i = R(s_i, \pi(s_i))$ is the reward received at time $i$ after performing the action specified by the policy $\pi$  in state $s_i$.  Equation \eqref{eq:value}  can be rewritten in a recursive form, leading to the well-known Bellman equation \citep{Bellman:1957}:\index{Bellman's equation}
 \begin{align}
-V^{\pi}(s) & = \    R(s, \pi(s)) + \gamma  \sum_{s' \in \mathcal{S}} P(s'|s,\pi(s)) V^{\pi}(s') \label{eq:bellman}
+V^{\pi}(s) & = \    R(s, \pi(s)) + \gamma  \sum_{s' \in \mathcal{S}} P(s'\, | \, s,\pi(s)) V^{\pi}(s') \label{eq:bellman}
 \end{align} 
 In other words, the expected return in state $s$ equals its immediate reward plus the expected return of its successor state.  The recursive definition offered by the Bellman equation is crucial for many reinforcement learning methods, since it allows the value function to be estimated by an iterative process in which the value function is gradually refined until convergence.
 
 Another useful concept is the action--value function\index{Markov Decision Process!action--value function} $Q^{\pi}(s,a)$ that expresses the return expected after performing action $a$ in state $s$ and following the policy $\pi$ afterwards:
 \begin{equation}
-Q^{\pi}(s,a) = R(s,a) + \gamma  \sum_{s' \in \mathcal{S}} P(s'|s,a) V^{\pi}(s')
+Q^{\pi}(s,a) = R(s,a) + \gamma  \sum_{s' \in \mathcal{S}} P(s'\, | \, s,a) V^{\pi}(s')
 \end{equation}
 
 The value and action--value functions are closely related, as $V^{\pi}(s) = Q^{\pi}(s,\pi(s))$.
@@ -405,14 +405,14 @@ A limitation faced by MDP approaches is the assumption that the current state is
 
 The agent knowledge at a given time is represented by the \textit{belief state}\index{Partially Observable Markov Decision Process!belief state of}\index{belief state} $b$, which is a probability distribution $P(s)$ over possible states.  After each system action $a$ and subsequent observation $o$, the belief state $b$ is updated to $b'$ in order to incorporate the new information.  This belief update is a simple application of Bayes' theorem:
 \begin{align}
-b'(s) = \ \!P(s'|b, a,o) & = \ \frac{P(o|s') \ P(s'|b,a)}{P(o|b,a)} \\[3mm]
-& = \eta \ P(o|s') \sum_{s} P(s'|s,a) \ b(s) \label{eq:update}
+b'(s) = \ \!P(s'\, | \, b, a,o) & = \ \frac{P(o\, | \, s') \ P(s'\, | \, b,a)}{P(o\, | \, b,a)} \\[3mm]
+& = \eta \ P(o\, | \, s') \sum_{s} P(s'\, |\, s,a) \ b(s) \label{eq:update}
 \end{align}
-where $\eta = P(o|b,a)$ serves as a normalisation constant and is usually never calculated explicitly. 
+where $\eta = P(o\, | \, b,a)$ serves as a normalisation constant and is usually never calculated explicitly. 
 
 In the POMDP setting, a policy is a function $\pi = \mathcal{B} \rightarrow \mathcal{A}$ mapping each possible belief state to its optimal action.  Mathematically, the belief state space $\mathcal{B}$ is a $(|\mathcal{S}|\!-\!1)$-dimensional simplex (where $|\mathcal{S}|$ is the size of the state space), which is a continuous and high-dimensional space. The optimisation of the dialogue policy is therefore considerably more complex than for MDPs. The value function\index{Partially Observable Markov Decision Process!value function of} $V^{\pi}$ for a policy $\pi$ is the fixed point of Bellman's equation:\index{Bellman's equation} 
 \begin{equation}
-V^{\pi}(b) = \sum_{s \in S} \ R(s,a) b(s) + \gamma \sum_{o \in \mathcal{O}} P(o|b,\pi(b)) \ V^{\pi}(b')
+V^{\pi}(b) = \sum_{s \in S} \ R(s,a) b(s) + \gamma \sum_{o \in \mathcal{O}} P(o\, |\, b,\pi(b)) \ V^{\pi}(b')
 \end{equation}
 where $b'$ is the updated belief state following the execution of action $\pi(b)$ and the observation of $o$, as in Equation \eqref{eq:update}.  The optimal value function $V^*(b)$ for finite-horizon problems is known to be piecewise linear and convex in the belief space, as proved by \cite{Sondik1971}. The value function can therefore be represented by a finite set of vectors, called $\alpha$-vectors. Each vector $\alpha_i$ is associated with a specific action $a(i) \in \mathcal{A}$.\footnote{The converse is not true: each action can be associated with an arbitrary number of vectors.}  The vectors are of size $|\mathcal{S}|$ and $\alpha_i(s)$ is a scalar value representing the value of action $a(i)$ in state $s$.  Given these vectors, the value function simplifies to:\index{$\alpha$-vectors}
 \begin{equation}
@@ -522,11 +522,11 @@ To capture the uncertainty associated with many state variables, dialogue can be
 
 POMDP approaches express state uncertainty through the definition of a belief state $b$, which is a probability distribution $P(s)$ over possible states.  After a system action $a$ in belief state $b$ followed by observation $o$, the belief state $b$ is updated according to Equation \eqref{eq:update}\index{dialogue state!update of}, repeated here for convenience:
 \begin{align}
-b' = P(s'|b, a,o) = \eta \ P(o|s') \sum_{s} P(s'|s,a) \ b(s)   \tag{\ref{eq:update}}
+b' = P(s'\ | \, b, a,o) = \eta \ P(o\, |\, s') \sum_{s} P(s'\, |\, s,a) \ b(s)   \tag{\ref{eq:update}}
 \end{align}
 
 \index{belief update}
-Belief update requires the specification of two probabilistic models: the observation model $P(o|s')$ and the transition model $P(s'|s,a)$. Many POMDP approaches to dialogue management factor the state $s$ into (at least) three distinct variables $s = \langle a_u, i_u, c \rangle$, where $a_u$ is the last user dialogue act, $i_u$ the current user intention(s), and $c$ the interaction context\index{dialogue state!factorisation of}\index{dialogue context}\index{user intention}\index{user action}.\footnote{Some approaches also define a specific variable for the dialogue history \citep{Young:2010}.}   Assuming that the observation $o$ only depends on the last user act $a_u$, and that $a_u$ depends on both the user intention $i_u$ and the last system action $a_m$, Equation \eqref{eq:update} is then rewritten as:
+Belief update requires the specification of two probabilistic models: the observation model $P(o\, |\, s')$ and the transition model $P(s'\, |\, s,a)$. Many POMDP approaches to dialogue management factor the state $s$ into (at least) three distinct variables $s = \langle a_u, i_u, c \rangle$, where $a_u$ is the last user dialogue act, $i_u$ the current user intention(s), and $c$ the interaction context\index{dialogue state!factorisation of}\index{dialogue context}\index{user intention}\index{user action}.\footnote{Some approaches also define a specific variable for the dialogue history \citep{Young:2010}.}   Assuming that the observation $o$ only depends on the last user act $a_u$, and that $a_u$ depends on both the user intention $i_u$ and the last system action $a_m$, Equation \eqref{eq:update} is then rewritten as:
 \begin{align}
 b' & = \ P(a_u', i_u', c' \, | \, b, a_m,o)\\
 & = \ \eta \ P(o \, | \, a_u') \ P(a_u' \, | \, i_u', a_m) \sum_{i_u, c'} P(i_u' \, | \, i_u,a_m, c') P(c') \ b(i_u) \label{eq:update2}
