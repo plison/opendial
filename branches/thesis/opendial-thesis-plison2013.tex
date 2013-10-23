@@ -296,7 +296,7 @@ Natural language understanding is practically implemented in \opendial{} via pro
 r_{15}: &\;\;\textbf{if} \ (u_u \textit{ matches } \text{``(*) left arm down''} ) \\ 
 & \lor (u_u \textit{ matches } \text{``(*) lower (the\,|\,your) left arm''} ) \\
 & \lor (u_u \textit{ matches } \text{``(*) down (the\,|\,your) left arm''}   )  \ \ \textbf{then} \\ 
-& \; \; \begin{cases} P\left(a_u = \mathrm{MoveArm(Left,Down)}\right) = 1.0 \end{cases}
+& \; \; \begin{cases} P\left(a_u' = \mathrm{MoveArm(Left,Down)}\right) = 1.0 \end{cases}
 \end{align*}
 
 \subsubsection*{Dialogue management}
@@ -311,7 +311,7 @@ If the system action selected by the dialogue manager is non-empty and denotes a
 The generation templates are also encoded with probabilistic rules.  The rules correspond here to utility rules, since natural language generation is at its core a decision-making task corresponding to the choice of a particular linguistic realisation for the intended communicative goal.  As an example, rule $r_{16}$ generates the system response $u_m$ given the system act $a_m=\mathrm{Acknowledgement}$.  The rule specifies in this case three alternatives with equal utility:
 \begin{align*}
 r_{16}: &\;\;\textbf{if} \ (a_m = \mathrm{Acknowledgement} )  \ \ \textbf{then} \\ 
-& \;\; \begin{cases} U(u_m=\text{``ok''}) = 1 \\ U(u_m=\text{``great''}) = 1 \\ U(u_m=\text{``thanks''}) = 1 \end{cases}
+& \;\; \begin{cases} U(u_m'=\text{``ok''}) = 1 \\ U(u_m=\text{``great''}) = 1 \\ U(u_m'=\text{``thanks''}) = 1 \end{cases}
 \end{align*}
 
 The presence of multiple realisations allows for some variation in the system behaviour, since the system will automatically select one realisation at random due to the uniform utility assigned to the alternative realisations.

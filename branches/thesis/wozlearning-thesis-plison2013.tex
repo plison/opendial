@@ -94,13 +94,13 @@ Each distribution over effects $P(E_i)$ is associated with its own Dirichlet dis
 \begin{align*}
 r_{1}: \ \ \ \ \ & \textbf{if} \ (\mathit{Rain}\!=\!\mathit{false} \land \mathit{Weather}\!=\!\mathit{hot}) \ \textbf{then} \\
 & \;\;\;\;\;  \begin{cases}
- P(\mathit{Fire}\!=\!\mathit{true}) = \theta_{r_{1}(1,1)} \\ 
-P(\mathit{Fire}\!=\!\mathit{false}) = \theta_{r_{1}(1,2)}
+ P(\mathit{Fire}'\!=\!\mathit{true}) = \theta_{r_{1}(1,1)} \\ 
+P(\mathit{Fire}'\!=\!\mathit{false}) = \theta_{r_{1}(1,2)}
 \end{cases}  \\ 
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-P(\mathit{Fire}\!=\!\mathit{true}) = \theta_{r_{1}(2,1)} \\
-P(\mathit{Fire}\!=\!\mathit{false}) = \theta_{r_{1}(2,2)}
+P(\mathit{Fire}'\!=\!\mathit{true}) = \theta_{r_{1}(2,1)} \\
+P(\mathit{Fire}'\!=\!\mathit{false}) = \theta_{r_{1}(2,2)}
 \end{cases} 
 \end{align*}
 
@@ -125,8 +125,8 @@ Figure \ref{fig:dirichletfun} depicts the shape of the probability density funct
 
 As Dirichlet distributions are conjugate priors of categorical distributions, their posterior distribution after the observation of their corresponding variable remains a Dirichlet distribution with updated counts. As an illustrative example, the posterior distribution of $\boldsymbol\theta_{r_{1}(1)}$ after observing a fire when $\mathit{Rain}\!=\!\mathit{false} \land \mathit{Weather}\!=\!\mathit{hot}$ can be derived from Bayes' rule: 
 \begin{align}
-&P(\boldsymbol\theta_{r_{1}(1)} \; | \; \mathit{Fire}\!=\!\mathit{true}, \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}) \nonumber \\
-& = \eta \ P(\mathit{Fire}\!=\!\mathit{true} \; | \; \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}\,; \boldsymbol\theta_{r_{1}(1)}) \ P(\boldsymbol\theta_{r_{1}(1)}) \nonumber \\
+&P(\boldsymbol\theta_{r_{1}(1)} \; | \; \mathit{Fire}'\!=\!\mathit{true}, \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}) \nonumber \\
+& = \eta \ P(\mathit{Fire}'\!=\!\mathit{true} \; | \; \mathit{Rain}\!=\!\mathit{false}, \mathit{Weather}\!=\!\mathit{hot}\,; \boldsymbol\theta_{r_{1}(1)}) \ P(\boldsymbol\theta_{r_{1}(1)}) \nonumber \\
 & = \eta \ \theta_{r_{1}(1,1)} \ \mathrm{Dirichlet}(\alpha_1,\alpha_2) \nonumber \\
 & = \eta' \ \theta_{r_{1}(1,1)} \ [ \theta_{r_{1}(1,1)}^{\alpha_1 - 1} \times \theta_{r_{1}(1,2)}^{\alpha_2 - 1} ]   = \eta' \ \textrm{Dirichlet}(\alpha_1+1,\alpha_2) \nonumber 
 \end{align}
@@ -147,13 +147,13 @@ Rule $r_{2}$ illustrates a utility rule with four independent parameters:
 \begin{align*}
 r_{2}: \ \ & \textbf{if} \ (\mathit{Fire}\!=\!\mathit{true}) \ \textbf{then} \\
 & \;\;\;\;\;  \begin{cases}
-U(\mathit{Tanker}\!=\!\mathit{drop\mbox{-}water}) = \theta_{r_{2}(1,1)} \\
-U(\mathit{Tanker}\!=\!\mathit{wait}) = \theta_{r_{2}(1,2)}
+U(\mathit{Tanker}'\!=\!\mathit{drop\mbox{-}water}) = \theta_{r_{2}(1,1)} \\
+U(\mathit{Tanker}'\!=\!\mathit{wait}) = \theta_{r_{2}(1,2)}
 \end{cases} \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-U (\mathit{Tanker}\!=\!\mathit{drop\mbox{-}water}) = \theta_{r_{2}(2,1)} \\
-U(\mathit{Tanker}\!=\!\mathit{wait}) = \theta_{r_{2}(2,2)}
+U (\mathit{Tanker}'\!=\!\mathit{drop\mbox{-}water}) = \theta_{r_{2}(2,1)} \\
+U(\mathit{Tanker}'\!=\!\mathit{wait}) = \theta_{r_{2}(2,2)}
 \end{cases}
 \end{align*}
 
@@ -205,8 +205,8 @@ The conditional probability distribution of a rule node $r$ given its input vari
 
 The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
 \begin{align}
-& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
-& = U_i(A_1\!=\!a_1, \dots, A_l\!=\!a_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
+& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1'\!=\!a_1, \dots, A_l'\!=\!a_l\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
+& = U_i(A_1'\!=\!a_1, \dots, A_l'\!=\!a_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
