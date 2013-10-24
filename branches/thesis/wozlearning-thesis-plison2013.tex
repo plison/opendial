@@ -4,6 +4,7 @@
 
 The previous chapter presented the formalism of probabilistic rules and described their practical instantiation as latent nodes of a graphical model. Probabilistic rules are generally associated to a number of parameters, which may either express probabilities over effects (for probability rules) or utilities associated with particular decisions (for utility rules). But where exactly do these probabilities and utilities come from?
 \index{supervised learning}
+
 This thesis develops two distinct approaches to this question. The present chapter concentrates on the first approach, which is grounded in supervised learning techniques. We demonstrate how rule parameters can be optimised to best imitate the action choices of a human expert through a process of statistical estimation based on Wizard-of-Oz data. The next chapter will then detail an alternative reinforcement learning approach to the same task.
 
 The chapter is divided in three sections.  Section \ref{sec:rule-params} describes how uncertainty regarding the value of rule parameters can be explicitly represented through prior distributions. Section \ref{sec:rule-supervised} goes on to explain how these distributions can be gradually refined through Bayesian learning on data gathered from Wizard-of-Oz interactions.  The learning algorithm  is used to progressively narrow down the spread of the parameter distributions to the values providing the best fit for the training data. Finally, Section \ref{sec:wozlearning-experiments} reports on experimental results in a human--robot interaction domain for which small amounts of Wizard-of-Oz data were recorded. The experiment compared the learning performance of a utility model structured with probabilistic rules against two baselines respectively encoded with plain utility tables and with linear models. The evaluation showed that the rule-structured model was able to imitate the dialogue policy followed by the wizard significantly better than its unstructured counterparts.
@@ -58,14 +59,14 @@ U_1(d_{(1,m_1)}) = \theta_{(1,m_1)}
 & \dots  \\
 & \textbf{else} \\
 & \;\;\;\;\; \begin{cases}
-U_n(d_n^1) = \theta_{(n,1)} \\
+U_n(d_{(n,1)}) = \theta_{(n,1)} \\
 \dots \\
 U_n(d_{(n,m_n)}) = \theta_{(n,m_n)}
 \end{cases}
 \end{aligned}
 \end{equation} 
 
-We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  The interested reader is invited to consult e.g.\ \cite{ohagan2006} for more details on the psychological aspects of the human perception of uncertainty and the difficult problem of probability elicitation from experts.}\index{probability distribution!elicitation of}
+We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  \cite{ohagan2006} provides more details on the human perception of uncertainty and the difficult problem of probability elicitation from experts.}\index{probability distribution!elicitation of}
 
 Although our work concentrates on parameter estimation \index{parameter estimation} with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the types of dialogue domains investigated in this thesis work.  \index{statistical relational learning}
 
@@ -205,8 +206,8 @@ The conditional probability distribution of a rule node $r$ given its input vari
 
 The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
 \begin{align}
-& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1'\!=\!a_1, \dots, A_l'\!=\!a_l\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
-& = U_i(A_1'\!=\!a_1, \dots, A_l'\!=\!a_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
+& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1, \dots, D_l'\!=\!d_l\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
+& = U_i(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
@@ -350,8 +351,8 @@ Algorithm \ref{algo:wozlearning} presents the general procedure for estimating m
 \REQUIRE Number $N$ of samples to draw for each learning example
 \ENSURE Posterior distribution $P(\boldsymbol\theta \; | \; \mathcal{D})$ for the parameters  \vspace{1mm}
 \FORALL {$\langle \mathcal{B}_i, a_i \rangle \in \mathcal{D}$}
-%\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\theta$
-%\STATE $\mathcal{B}_i, \mathbf{e} \leftarrow$ \textsc{TriggerModels} ($\mathcal{B}_i, \emptyset,  \mathcal{B}_i$) 
+\STATE Set $\mathcal{B}_i \leftarrow \mathcal{B}_i \cup \boldsymbol\theta$
+\STATE Trigger models $\mathcal{M}$ on $\mathcal{B}_i$ (cf. Section \ref{sec:processing-workflow})
 %\STATE Let $U_{\mathrm{min}}$ be the minimal threshold for the utilities in $\mathcal{B}_i$ \vspace{2mm} 
 %\STATE Define likelihood  $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \leftarrow \dfrac{U_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) - U_{\mathrm{min}}}{\sum_{a \in \mathit{Val}(A)} \left(U_{\mathcal{B}_i}(a\,; \boldsymbol\theta) - U_{\mathrm{min}}\right)} $ \vspace{2mm} 
 \STATE Draw $N$ samples $\mathbf{x}_1, \dots, \mathbf{x}_N$ from posterior $P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta )$

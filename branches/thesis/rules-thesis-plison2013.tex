@@ -152,7 +152,7 @@ The conditions on the input variables offer a compact partitioning of the state 
 \vspace{3mm}
 \begin{grammar}
 
-<Condition> ::= <AtomicCondition> | <ComplexCondition> | $\emptyset$
+<Condition> ::= <AtomicCondition> | <ComplexCondition> | `true'
 
 <AtomicCondition> ::= <InputVariable> <BinaryOperator> <Value>
 
@@ -262,7 +262,7 @@ U_n(d_{(n,m_n)}) = u_{(n,m_n)}
 \end{aligned}
 \end{equation}
 
-A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1, \dots, I_k$.  The decisions $d_{(i,j)}$ are assignments $A_1'\!=\!a_1 \land \dots \land A_{l}'\!=\!a_{l}$ where the variables $A_1',..A_{l}'$ are decision variables and $a_1, \dots, a_{l}$ possible values for these variables. Similarly to the output variables of probability rules, we shall always denote decision variables with a prime. The utility values $u_{(i,j)}$ are real numbers (which may be positive or negative).  
+A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1, \dots, I_k$.  The decisions $d_{(i,j)}$ are assignments $D_1'\!=\!D_1 \land \dots \land A_{l}'\!=\!a_{l}$ where the variables $D_1',..A_{l}'$ are decision variables and $d_1, \dots, a_{l}$ possible values for these variables. Similarly to the output variables of probability rules, we shall always denote decision variables with a prime. The utility values $u_{(i,j)}$ are real numbers (which may be positive or negative).  
 
 Although most utility rules only include one single decision variable, the possibility to integrate multiple decision variables is helpful in domains where the system can execute multiple actions in parallel. Such situations can arise in human--robot interaction and multi-modal applications, as the system can communicate through both verbal and non-verbal channels and is often able to perform physical actions in addition to communicative acts. 
  
@@ -288,7 +288,7 @@ Rule $r_2$ stipulates the respective utilities of the two possible utility value
 \label{sec:quantification}
 \index{probabilistic rule!quantifiers in}
 
-Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Free variables can be included in the specification of both the conditions and effects of a given rule and are universally quantified on top of the rule.\footnote{These variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the free variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
+Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Free variables can be included in the specification of both the conditions and effects of a given rule and are universally quantified on top of the rule.\footnote{These free variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the free variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
 \begin{aligned}
 \forall \ y_1, y_2, \dots, y_p, \\
@@ -315,9 +315,9 @@ P(E_n\!=\!e_{(n,m_n)}) = p_{(n,m_n)}
 \label{eq:rulewithquant}
 \end{equation}
 
-The formalisation allows specific elements $y_1, \dots, y_p$ inside the conditions and effects of a rule to be \textit{underspecified}.\index{probabilistic rule!quantified variables in}  The mapping between conditions and effects specified by the rule is therefore duplicated for every possible assignment of the free variables.  Section \ref{sec:applicationquantif} explains how this finite set of possible assignments (also called \textit{groundings}) is practically determined on the basis of the current state. 
+The formalisation allows specific elements $y_1, \dots, y_p$ inside the conditions and effects of a rule to be \textit{underspecified}.\index{probabilistic rule!quantified variables in}  The mapping between conditions and effects specified by the rule is therefore duplicated for every possible assignment of the free variables.  Section \ref{sec:applicationquantif} explains how this finite set of possible assignments (also called \textit{groundings} of the free variables) is practically determined on the basis of the current state. 
 
-Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the main advantages of this representation is that it allows for powerful forms of \textit{parameter sharing}\index{parameter sharing}, as the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various instantiations of the variables $y_1, \dots, y_p$.  The quantification mechanism adopted in this thesis is similar to the one used in Markov logic networks \citep{Richardson:2006}, with the constraint that universal quantifiers are in this framework only allowed at the top of the rule.  As in most approaches to statistical relational learning \citep{getoor:srlbook07} and logic programming \citep{Poole:2008}, the formalisation relies on a ``database semantics'' that assumes domain closure (the domain does not contain more elements than those explicitly specified). 
+Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the main advantages of this representation is that it allows for powerful forms of \textit{parameter sharing}\index{parameter sharing}, as the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various instantiations of the variables $y_1, \dots, y_p$.  The quantification mechanism adopted in this thesis is similar to the one used in Markov logic networks \citep{Richardson:2006}, with the constraint that universal quantifiers are in this framework only allowed at the top of the rule.  In line with most approaches to statistical relational learning \citep{getoor:srlbook07} and logic programming \citep{Poole:2008}, the formalisation relies on a ``database semantics'' that assumes domain closure (the domain does not contain more elements than those explicitly specified). 
 
 Quantification also applies to utility rules in the same manner, through the inclusion of logical variables in the conditions $c_i$ and decisions $d_{(i,j)}$  of the utility rule. 
 
@@ -366,7 +366,7 @@ Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ whe
 
 We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. These rule nodes are essentially latent variables\index{latent variables} that serve as intermediaries between input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
 
-We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without quantifiers, and then demonstrate how quantifiers can be accounted for in the instantiation process. 
+We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without universal quantification, and then demonstrate how quantification can be accounted for in the instantiation process. 
 
 \subsection{Probability rules}
 \label{sec:probruleinstantiation}
@@ -374,7 +374,7 @@ We describe below the instantiation procedure for each type of rule. For the sak
 
 Let $\mathcal{B}$ be the Bayesian network representing the current dialogue state, and $\mathcal{R}$ a set of rules to apply to this dialogue state.  For each rule $r \in \mathcal{R}$, a distinct chance node is created.\footnote{The original instantiation algorithm presented in \citep{rulebasedmodels-sigdial2012} included two separate nodes: one for the rule condition and one for the effect.  The formalism was later simplified to one single node as we realised that only one node was necessary to represent the semantics of the rule.} This chance node represents a random variable defined on the possible effects of the rule.  The node is conditionally dependent on the input variables of the rule (i.e.\ the set of all variables that are mentioned in the rule conditions), and is also connected via outgoing edges to its output variables (i.e.\ the set of all variables that are mentioned in the rule effects). 
 
-Figure \ref{fig:instantiationprob} illustrates this instantiation process on an abstract, constructed example composed of the two rules $r_5$ and $r_6$.  To simplify the rule representation, we shall usually omit the explicit specification of the probability for the empty effect in the effect distributions.  The remaining probability mass in each rule specification  is thus by default assigned to the empty effect.
+Figure \ref{fig:instantiationprob} illustrates this instantiation process on an abstract, constructed example composed of the two rules $r_5$ and $r_6$.  To simplify the rule representation, we shall usually omit the explicit specification of the probability for the empty effect in the effect distributions.  The remaining probability mass in each effect specification  is thus by default assigned to the empty effect.  The first $\mathbf{if}$ branch of rule $r_5$ has for instance an empty effect with probability 0.4.
 
 The two rules $r_5$ and $r_6$ are applied on the state variables $A$, $B$, $C$ and $D$.  The application of the two rules results in an updated variable $A'$ and the creation of a new variable $E'$. 
 
@@ -385,7 +385,7 @@ The two rules $r_5$ and $r_6$ are applied on the state variables $A$, $B$, $C$ a
 \label{fig:instantiationprob}
 \end{figure}
 
-The random variable represented by the node $r_5$ has three possible values that correspond to the three effects described in the rule: $\mathit{Val}(r_5) = \{ \{A'\!=\!a_1\}, \{A'\!=\!a_2\}, \{\cdot\}\}$, where $\{\cdot\}$ denotes the empty effect.  Similarly, the random variable $r_5$ has four alternative effects: $\mathit{Val}(r_6) = \{\{A'\!=\!a_2 \land E'\!=\!e_2\}, \{A'\!=\!a_2 \land E'\!=\!e_1\}, \{E'=e_2\}, \{\cdot\}\}$. 
+The random variable represented by the node $r_5$ has three possible values that correspond to the three effects described in the rule: $\mathit{Val}(r_5) = \{ \{A'\!=\!d_1\}, \{A'\!=\!a_2\}, \{\cdot\}\}$, where $\{\cdot\}$ denotes the empty effect.  Similarly, the random variable $r_5$ has four alternative effects: $\mathit{Val}(r_6) = \{\{A'\!=\!a_2 \land E'\!=\!e_2\}, \{A'\!=\!a_2 \land E'\!=\!e_1\}, \{E'=e_2\}, \{\cdot\}\}$. 
 
 We shall adopt the following terminology to denote the probability distributions created through the instantiation procedure: 
 \begin{itemize}
@@ -402,7 +402,7 @@ The rule distributions directly reflect the rule semantics.  Formally, the condi
  \\ 
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber 
 \end{align}
-Formally speaking, a condition $c_i$ is said to be satisfied iff the input assignment logically entails that the condition is true, that is: $(I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \vdash c_i$. The rule conditions are checked in sequential order until one condition is found to be satisfied. The rule distribution is then determined as the effect distribution $P(E_i\!=\!e)$ associated with the first satisfied condition $c_i$.  As the last condition $c_n$ corresponds to the final \textbf{else} block and is therefore always trivially true, there will always be at least one satisfied condition. 
+Formally speaking, a condition $c_i$ is said to be satisfied iff the input assignment logically entails that the condition is true, that is: $(I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \vdash c_i$. The rule conditions are checked in sequential order until one condition is found to be satisfied. As the last condition $c_n$ corresponds to the final \textbf{else} block and is therefore always trivially true, there will always be at least one satisfied condition. Once the first satisfied condition $c_i$ is found, the rule distribution is determined as the effect distribution $P(E_i\!=\!e)$.
 
 As an example, the rule distribution $P(r_5 \, | \, B\!=\!b_1, C\!=\!c_1)$ for the node $r_5$ in Figure \ref{fig:instantiationprob} is straightforwardly defined as:
 \begin{itemize}
@@ -437,12 +437,12 @@ Equation \eqref{eq:outputdist1} stipulates that the distribution for $X'$ will f
 If the node $X'$ is an update of an existing node $X$, the procedure remains essentially the same as for \eqref{eq:outputdist1}, except when all the effects specify empty assignments for the variable. In such a case, the distribution for $X'$ will fall back to the value defined for the existing node $X$ instead of being assigned a $\mathit{None}$ value:
 \begin{align}
 &P(X'\!=\!x' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n, X\!=\!x) = \begin{dcases} 
-\frac{\mathbf{1}(x' \in {\mathbf{e}(X)})} { |\mathbf{e}(X')| }  & \text{if } \mathbf{e}(X')\!\neq\!\emptyset \\
+\frac{\mathbf{1}(x' \in {\mathbf{e}(X')})} { |\mathbf{e}(X')| }  & \text{if } \mathbf{e}(X')\!\neq\!\emptyset \\
 \mathbf{1}(x' = x) & \text{otherwise}
 \end{dcases}\label{eq:outputdist2}
 \end{align}
 
-As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A') = \{a_2\}$. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values.   The output distribution $P(A' \, | \, r_5\!=\!\{A'\!=\!a_1\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A'$: $\mathbf{e}(A') = \{a_1,a_2\}$. The output distribution is thus in this case equivalent to a discrete uniform distribution with two values: $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are void, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A'\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
+As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A') = \{a_2\}$. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values.   The output distribution $P(A' \, | \, r_5\!=\!\{A'\!=\!a_1\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A'$, since $\mathbf{e}(A')$ equates to $\{a_1,a_2\}$. The output distribution is thus in this case equivalent to a discrete uniform distribution with two values: $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are void, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A'\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
 
 %Output distributions are directly derived from the definition of effects in the rule nodes and are thus entirely parameter-free.  The ordering of the parent rules in the conditional probability distribution is arbitrary. %The resulting distribution bears resemblance to the probabilistic Independence of Causal Influence (pICI) described by \cite{diez06}. 
 
@@ -496,15 +496,15 @@ The result of the instantiation process is a decision network that incorporates 
 \label{fig:instantitionutil}
 \end{figure}
 
-The utility distribution associated with each rule is a direct translation of the  \textit{if...then...else} rule.  Formally, the utility distribution generated by a rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $A_1, \dots, A_l$ is defined as:
+The utility distribution associated with each rule is a direct translation of the  \textit{if...then...else} rule.  Formally, the utility distribution generated by a rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$ is defined as:
 \begin{align}
-& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1, \dots, A_l\!=\!a_l) = U_i(A_1\!=\!a_1 \land \dots \land A_l\!=\!a_l) \label{eq:utildistrib}\\
+& U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1, \dots, D_l'\!=\!a_l) = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!a_l) \label{eq:utildistrib}\\
 &  \; \; \; \; \; \; \; \;  \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
-If no utility is explicitly specified for $A_1\!=\!a_1 \land \dots \land A_l\!=\!a_l$, the default value is zero. 
+If no utility is explicitly specified for $D_1'\!=\!d_1 \land \dots \land D_l'\!=\!a_l$, the default value is zero. 
 
-As is conventionally assumed in decision networks, the total utility for a given assignment of decision variables is defined as the \textit{sum} of all utilities.  In the case where $A\!=\!a_1$, $B\!=\!b_1$ and $C\!=\!c_1$, we can therefore calculate the total utility for the actions $D'\!=\!d_1 \ \land \ E'\!=\!e_1$ to be equal to $2 - 4 = -2$. 
+As is conventionally assumed in decision networks, the total utility for a given assignment of decision variables is defined as the \textit{sum} of all utilities.  On the example of Figure \ref{fig:instantitionutil}, we can therefore calculate the total utility for the actions $D'\!=\!d_1 \ \land \ E'\!=\!e_1$ in the case where $A\!=\!a_1$, $B\!=\!b_1$ and $C\!=\!c_1$ to be equal to $2 - 4 = -2$. 
 
 
 \subsubsection*{Instantiation algorithm} 
@@ -522,8 +522,8 @@ The procedure for instantiating a utility rule is similar to the one already out
 \IF {utility distribution is empty for all inputs}
 \STATE Prune $r$ from $\mathcal{B}$
 \ELSE
-\STATE $A_1, \dots, A_l \leftarrow$ decision variables mentioned in the effects of $r$
-\FORALL {variable $A \in A_1, \dots, A_l$}
+\STATE $D_1', \dots, D_l' \leftarrow$ decision variables mentioned in the effects of $r$
+\FORALL {variable $A' \in D_1', \dots, D_l'$}
 \IF {$A'$ not already in $\mathcal{B}$}
 \STATE Create decision node $A'$ and add it to $\mathcal{B}$
 \ENDIF
@@ -623,20 +623,20 @@ To illustrate the application of Equation \eqref{eq:quantifruledistrib}, the pro
 \index{utility rule!quantifiers in}
 
 Utility rules are similarly extended to accommodate universally quantified variables. As for probability rules, the instantiation of utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. 
-For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $A_1, \dots, A_l$, the rule utility for the grounding $\mathbf{g}_j$ is defined as:
+For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$, the rule utility for the grounding $\mathbf{g}_j$ is defined as:
  \begin{align}
-& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, A_1\!=\!a_1[\mathbf{y} / \mathbf{g}_j], \dots A_l\!=\!a_l[\mathbf{y} / \mathbf{g}_j] ) \label{eq:quantifuruledistrib} \\ 
-& \; \; \; \; \; \; \; \;   \; \; = U_i(A_1\!=\!a_1 \land \dots \land A_l\!=\!a_l) \nonumber \\
+& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1[\mathbf{y} / \mathbf{g}_j], \dots D_l'\!=\!a_l[\mathbf{y} / \mathbf{g}_j] ) \label{eq:quantifuruledistrib} \\ 
+& \; \; \; \; \; \; \; \;   \; \; = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!a_l) \nonumber \\
 & \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
 After discarding empty and redundant distributions, the result is a set of utility distributions $ \{ U_{\mathbf{g}_1}, \dots, U_{\mathbf{g}_{|G|}} \}$. The total utility distribution for the rule $r$ is finally constructed by adding up the grounding-specific utility distributions:   
 \begin{align}
-& U_{r}(I_1, \dots, I_k, A_1\, \dots, A_l) = \sum_{j=1}^{|G|} U_{\mathbf{g}_j}(I_1, \dots, I_k, A_1, \dots, A_l) \label{eq:quantifuruledistrib2}
+& U_{r}(I_1, \dots, I_k, D_1'\, \dots, D_l') = \sum_{j=1}^{|G|} U_{\mathbf{g}_j}(I_1, \dots, I_k, D_1', \dots, D_l') \label{eq:quantifuruledistrib2}
 \end{align}
 
 
-The instantiation of rule $r_4$ given the input variables $\mathit{task}$, $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ is shown in Figure  \ref{fig:quantinstantitionutil}.  The utility distribution $U_{r_4}(\mathit{task}\!=\!\mathit{grasp}(o_1), \mathit{graspable}(o_1) \!=\!\mathit{true},$ $\mathit{graspable}(o_2)\!=\!\mathit{false}, a_m)$ assigns for instance the action $a_m\!=\!\mathit{grasp}(o_1)$ to a utility of 2, while $a_m\!=\!\mathit{grasp(o_2)}$ is assigned to a utility of -2 in this situation.
+The instantiation of rule $r_4$ given the input variables $\mathit{task}$, $\mathit{graspable}(o_1)$ and $\mathit{graspable}(o_2)$ is shown in Figure  \ref{fig:quantinstantitionutil}.  The utility distribution for the input assignment $\mathit{task}\!=\!\mathit{grasp}(o_1) \land \mathit{graspable}(o_1) \!=\!\mathit{true} \land \mathit{graspable}(o_2)\!=\!\mathit{false}$ assigns for instance the action $a_m'\!=\!\mathit{grasp}(o_1)$ to a utility of 2, while $a_m'\!=\!\mathit{grasp(o_2)}$ is assigned to a utility of -2 in this situation.
 
 \begin{figure}[ht]
 \centering
