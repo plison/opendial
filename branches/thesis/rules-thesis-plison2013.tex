@@ -152,7 +152,7 @@ The conditions on the input variables offer a compact partitioning of the state 
 \vspace{3mm}
 \begin{grammar}
 
-<Condition> ::= <AtomicCondition> | <ComplexCondition> | `true'
+<Condition> ::= <AtomicCondition> | <ComplexCondition> | \ `true'
 
 <AtomicCondition> ::= <InputVariable> <BinaryOperator> <Value>
 
@@ -175,18 +175,18 @@ The conditions on the input variables offer a compact partitioning of the state 
 \subsubsection*{Effects}
 \index{probabilistic rule!effects of}
 
-Associated to each condition $c_i$ stands a collection of possible effects $e_{(i,1)}, \dots, e_{(i,m_i)}$. Each effect $e_{(i,j)}$ represents a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is formally defined as an assignment of values $O_1'\!=\!o_1 \land \dots \land O_{l}'\!=\!o_{l}$ where $O_1', \dots, O_{l}'$ are the output variables (which may already exist in the current state or yet to be created) and $o_1, \dots, o_{l}$ the corresponding values assigned to these variables. We shall adopt throughout this thesis the convention of denoting output variables with a prime to distinguish them from other types of variables. 
+Associated to each condition $c_i$ stands a collection of possible effects $e_{(i,1)}, \dots, e_{(i,m_i)}$. Each effect $e_{(i,j)}$ represents a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is formally defined as an assignment of values $O_1'\!=\!o_1 \land \dots \land O_{l}'\!=\!o_{l}$ where $O_1', \dots, O_{l}'$ are the output variables (which may already exist in the current state or yet to be created) and $o_1, \dots, o_{l}$ the corresponding values assigned to these variables. Effects can be void -- that is, represent an empty assignment. We shall adopt throughout this thesis the convention of denoting output variables with a prime to distinguish them from other types of variables. 
 
 Table \ref{table:syntaxeffects} details the syntax of a rule effect. In the example from Figure \ref{fig:partitioning}, the output variable is a singleton and corresponds to $Fire'$. We shall, however, encounter examples of rules with more than one output variable. As for the rule conditions, the output variables and values correspond to arbitrary terms of the domain, and can also include logical variables. 
-
-Effects can be void -- that is, represent an empty assignment.  In such a case, the effect does not lead to any change in the distribution of the output variables for the rule. 
 
 
 \begin{table}[h]
 \vspace{3mm}
 \begin{grammar}
 
-<Effect> ::= <AtomicEffect> | <Effect> $\land$ <Effect> | $\emptyset$
+<Effect> ::= <NonVoidEffect> | \ $\emptyset$
+
+<NonVoidEffect> ::= <AtomicEffect> | <NonVoidEffect> $\land$ <NonVoidEffect> 
 
 <AtomicEffect> ::= <OutputVariable> `=' Value
 
