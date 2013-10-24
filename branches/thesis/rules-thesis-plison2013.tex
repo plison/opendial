@@ -625,8 +625,8 @@ To illustrate the application of Equation \eqref{eq:quantifruledistrib}, the pro
 Utility rules are similarly extended to accommodate universally quantified variables. As for probability rules, the instantiation of utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. 
 For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$, the rule utility for the grounding $\mathbf{g}_j$ is defined as:
  \begin{align}
-& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1[\mathbf{y} / \mathbf{g}_j], \dots D_l'\!=\!a_l[\mathbf{y} / \mathbf{g}_j] ) \label{eq:quantifuruledistrib} \\ 
-& \; \; \; \; \; \; \; \;   \; \; = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!a_l) \nonumber \\
+& U_{\mathbf{g}_j}(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1[\mathbf{y} / \mathbf{g}_j], \dots D_l'\!=\!d_l[\mathbf{y} / \mathbf{g}_j] ) \label{eq:quantifuruledistrib} \\ 
+& \; \; \; \; \; \; \; \;   \; \; = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!d_l) \nonumber \\
 & \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
