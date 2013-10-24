@@ -5,21 +5,21 @@ We summarise in this final chapter the main contributions of this thesis.  We br
 
 \section{Summary of contributions}
 
-The introduction chapter enumerated three research questions at the core of this thesis:
+The introductory chapter enumerated three research questions at the core of this thesis:
 \begin{enumerate}
 \item How can we integrate prior domain knowledge into probabilistic models of dialogue?
 \item How can the parameters of these structured probabilistic models be estimated from data, using both supervised and reinforcement learning methods?  
 \item What is the empirical effect of such modelling techniques on the quality and efficiency of verbal interactions?
 \end{enumerate}
 
-The first question was addressed in Chapter \ref{chap:rules}, which presented the formalism of probabilistic rules and its use in dialogue management.  We also showed in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} how to optimise the parameters of these rules through a process of Bayesian inference.  Finally, Chapter \ref{chap:user-evaluation} described an empirical evaluation of our modelling approach based on user trials in a human--robot interaction domain.
+The first question was addressed in Chapter \ref{chap:rules}, which presented the formalism of probabilistic rules and its application to dialogue management.  We also showed in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} how to optimise the parameters of these rules through a process of Bayesian inference.  Chapter \ref{chap:opendial} discussed the design of the \opendial{} toolkit and its integration in a full-fledged spoken dialogue system. Finally, Chapter \ref{chap:user-evaluation} described an empirical evaluation of our modelling approach based on user trials in a human--robot interaction domain.
 
 \subsubsection*{A new, hybrid approach to dialogue management}
 \index{dialogue management!hybrid approach to}
 
 The single most important scientific contribution made in this thesis is (in our view) the development of a new theoretical framework for dialogue modelling and control based on the notion of \textit{probabilistic rules}.\index{probabilistic rule}  As we have seen, probabilistic rules are defined as structured mappings between conditions and effects and can be used to describe both probability and utility distributions.  The conditions and effects are encoded as arbitrarily complex logical formulae and can make use of universal quantification as well as special-purpose operators to manipulate strings and sets of elements. At runtime, these probabilistic rules are instantiated as latent nodes in the graphical model representing the current dialogue state.  
 
-The formalism allows the system designer to express the internal structure of a given dialogue domain in a compact set of rules. This modelling methodology offers two important benefits for dialogue management.  The first benefit is a substantial diminution of the number of parameters associated with the model, thereby allowing probabilistic rules to be optimised from limited amounts of interactions. This advantage is in our opinion crucial for many application domains, as high-quality, in-domain interaction data is typically scarce and difficult to acquire.
+The formalism allows the system designer to express the internal structure of a given dialogue domain in a compact set of rules. This modelling methodology offers two important benefits for dialogue management.  The first benefit is a substantial reduction of the number of parameters associated with the model, thereby allowing probabilistic rules to be optimised from limited amounts of interactions. This advantage is in our opinion crucial for many application domains, as high-quality, in-domain interaction data is typically scarce and difficult to acquire.
 
 In addition, probabilistic rules are also well-suited to capture the particular constraints, conventions and assumptions that characterise a given dialogue domain.  Due to its combination of logical and probabilistic reasoning, we believe the formalism of probabilistic rules can serve as a useful bridge between symbolic and statistical approaches to dialogue management.  The presented framework is very general and can express a wide spectrum of models, from classical probabilistic models fully estimated from data to manually designed models associated with only a handful of parameters. The choice of model within this spectrum is therefore essentially a design decision dependent on the relative availabilities of training data and domain knowledge.
 
@@ -38,7 +38,7 @@ Both approaches are grounded in Bayesian inference.\index{Bayesian learning}  Ea
 \begin{equation}
 P(\boldsymbol\theta \, | \, \mathcal{D}) = \eta \ P(\mathcal{D} \,; \boldsymbol\theta) \ P(\boldsymbol\theta)
 \end{equation}
-where $\eta$ is again a normalisation factor. Depending on the rule type and availability of expert knowledge, the parameter priors can be encoded through multiple families of distributions such as Dirichlet, Gaussian or uniform distributions. 
+where $\eta$ is a normalisation factor. Depending on the rule type and availability of expert knowledge, the parameter priors can be encoded through multiple families of distributions such as Dirichlet, Gaussian or uniform distributions. 
 
 \subsubsection*{Experimental studies}
 
