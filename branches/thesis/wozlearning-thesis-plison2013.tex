@@ -68,8 +68,7 @@ U_n(d_{(n,m_n)}) = \theta_{(n,m_n)}
 
 We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological stance adopted in this thesis rests on the idea that the structure of probabilistic rules is best defined by the system designer, while the rule parameters is best determined by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  \cite{ohagan2006} provides more details on the human perception of uncertainty and the difficult problem of probability elicitation from experts.}\index{probability distribution!elicitation of}
 
-Although our work concentrates on parameter estimation \index{parameter estimation} with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the types of dialogue domains investigated in this thesis work.  \index{statistical relational learning}
-
+Although our work concentrates on parameter estimation \index{parameter estimation} with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}.\index{statistical relational learning}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the dialogue domains investigated in this thesis work.  
 
 %Domain models can be composed of both fixed and parametrised rules and can therefore accommodate a wide spectrum of learning tasks from fully statistical models with virtually no prior knowledge to manually designed models with only a handful of parameters. 
 
@@ -202,9 +201,11 @@ The conditional probability distribution of a rule node $r$ given its input vari
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
+The rule distribution in the presence of universally quantified variables defined in Equation \eqref{eq:quantifruledistrib} can be similarly adapted to include parameters.
+
 \subsubsection*{Parameters of utility rules}
 
-The parameters of utility rules are instantiated in a similar manner, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
+The parameters of utility rules are also instantiated as distinct chance nodes in the dialogue state, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
 \begin{align}
 & U_r(I_1\!=\!i_1, \dots, I_k\!=\!i_k, D_1'\!=\!d_1, \dots, D_l'\!=\!d_l\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
 & = U_i(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
