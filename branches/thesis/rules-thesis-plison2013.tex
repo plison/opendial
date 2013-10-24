@@ -720,7 +720,7 @@ In order to distinguish random variables that express a prediction on a future o
 
 Prediction and observation variables must be related with one another at runtime.  In the case where the observation is known with certainty, this relation can simply take the form of an assignment of evidence values.  However, dialogue domains often include observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}.  Several techniques are available to practically encode such kind of evidence \citep{Pan06beliefupdate}. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node}\index{equivalence node} $\mathit{eq}_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}. The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ may have arbitrary incoming and outgoing edges with other variables. 
 
-The conditional probability distribution for the variable $\mathit{eq}_X$ given $X$ and $X_p$ is deterministic:
+The conditional probability distribution for $\mathit{eq}_X$ given $X$ and $X_p$ is deterministic:
 \begin{equation}
 P(\mathit{eq}_{X}\!=\!true \, | \, X\!=\!x, X_p\!=\!x_p) = \begin{cases}
 1 & \text{if } x = x_p \\
