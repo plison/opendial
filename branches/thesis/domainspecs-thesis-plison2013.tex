@@ -138,7 +138,7 @@ P(\cdot)\!=\!\theta_{\mathrm{othercase[2]}} \end{cases}$
 
 \subsubsection*{Second experiment}
 
-The second experiment focuses on the comparison of two rule-structured models: a transition model for the model-based approach, and an action--value model for the model-free approach. The transition model is identical to the one listed above and will hence not be repeated.  The action-value model is specified with a set of eleven rules.  The input variables of these rules are the last user dialogue act $a_u$, the user dialogue act preceding it $a_{u\mbox{-}prev}$, the last system act $a_m$, and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
+The second experiment focuses on the comparison of two rule-structured models: a transition model for the model-based approach, and an action--value model for the model-free approach. The transition model is identical to the one listed above and will hence not be repeated.  The action-value model is specified with a set of eleven rules.  The input variables of these rules are the last user dialogue act $a_u$, the next-to-last user dialogue act $a_{u\mbox{-}prev}$, the last system act $a_m$, and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
 
 \begin{footnotesize}
 \begin{longtable}{p{1cm}p{14cm}}
@@ -209,25 +209,25 @@ $r_{11}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{RepeatLast}) \ \textbf
 \section{Experiments in Chapter \ref{chap:user-evaluation}}
 \label{sec:domainspecs-usereval}
 
-We list below the collection of rule-structured models employed for the Approach 3 of the user evaluation experiment. 
+We list below the collection of rule-structured models employed for the user evaluation experiment.  The models for natural language understanding and generation are common to all three approaches, while the four other models are specific to Approach 3.
 
 \subsubsection*{Natural language understanding model}
 
 The natural language understanding model is composed of a set of simple, deterministic template-matching rules.  The rules map the presence of particular words or phrases in the user utterance $u_u$ to specific user dialogue acts $a_u$. 
 
-The model is divided in two phases.  Rules $r_1$ to $r_{16}$ are responsible for defining the general structure of the dialogue acts.  The last rule $r_{17}$ is specifically devoted to the resolution of references to visual objects and the distinction between short and long movements. 
+The model is divided in two phases.  Rules $r_1$ to $r_{16}$ are responsible for defining the general structure of the dialogue acts.  The last rule $r_{17}$ builds on the results from the previous rules and refines their dialogue act classification through the resolution of references to visual objects and the distinction between short and long movements. 
 
 \begin{footnotesize}
 \begin{longtable}{p{1cm}l} 
 $r_{1}$: \ \ & $ \textbf{if} \ (\text{"forward"}\!\in\!\mathit{u_u} \lor \text{"forwards"}\!\in\!\mathit{u_u} \lor \text{"straight"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Move(Forward)})\!=\!1 \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $ \textbf{if} \ (\text{"backward"}\!\in\!\mathit{u_u} \lor \text{"backwards"}\!\in\!\mathit{u_u} \lor \text{"back"}\!\in\!\mathit{u_u} \lor \text{"turn"}\!\notin\!\mathit{u_u}) \ \textbf{then} $ \\
+$r_{2}$: \ \ & $ \textbf{if} \ (\text{"backward"}\!\in\!\mathit{u_u} \lor \text{"backwards"}\!\in\!\mathit{u_u} \lor (\text{"back"}\!\in\!\mathit{u_u} \land \text{"turn"}\!\notin\!\mathit{u_u})) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Move(Backward)})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{3}$: \ \ & $ \textbf{if} \ (\text{"left"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Move(Left)})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{4}$: \ \ & $ \textbf{if} \ (\text{"go * right"}\!\in\!\mathit{u_u} \lor \text{"turn * right"}\!\in\!\mathit{u_u} \lor \text{"move * right"}\!\in\!\mathit{u_u} \lor \text{"rotate * right"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Move(Right)})\!=\!1 \end{cases}$ \\ \\[-1mm]
-$r_{5}$: \ \ & $ \textbf{if} \ (\text{"turn back"}\!\in\!\mathit{u_u} \lor \text{"turn around"}\!\in\!\mathit{u_u} \lor \text{"one hundred eighty degrees"}\!\in\!\mathit{u_u} \lor \text{"u turn"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
+$r_{5}$: \ \ & $ \textbf{if} \ (\text{"turn back"}\!\in\!\mathit{u_u} \lor \text{"turn around"}\!\in\!\mathit{u_u} \lor \text{"one hundred eighty degrees"}\!\in\!\mathit{u_u} \lor \text{"U turn"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Move(Turn)})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{6}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\text{"pick up \{x\}"}\!\in\!\mathit{u_u} \lor \text{"pick \{x\} up"}\!\in\!\mathit{u_u} \lor \text{"take \{x\}"}\!\in\!\mathit{u_u} \lor \text{"grasp \{x\}"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{PickUp({x})})\!=\!1 \end{cases}$ \\ \\[-1mm]
@@ -254,8 +254,7 @@ $r_{16}$: \ \ & $ \textbf{if} \ (\text{"stop"}\!\in\!\mathit{u_u}) \ \textbf{the
 $r_{17}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\text{"bit"}\!\in\!\mathit{u_u} \land \mathit{a_u^{\text{temp}}}\!=\!\mathit{Move({x})}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Move({x},Short)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{Move({x})} \land (\mathit\{x\}\!=\!\mathit{Left} \lor \mathit\{x\}\!=\!\mathit{Right}) \land \text{"thirty degrees"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Move({x},Short)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(\cdot)} \land \text{"feet"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(AtFeet)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land \text{"red"}\!=\!\mathit\{x\}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(RedObj)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"blue"}\!=\!\mathit\{x\} \lor (\text{"it"}\!=\!\mathit\{x\} \land (\mathit{BlueObj}\!\in\!\mathit{a_u} \lor \mathit{BlueObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \ \lor (\text{"the"}\!=\!\mathit\{x\} \land \mathit{perceived}\!=\![BlueObj] ))) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(AtFeet)})\!=\!1 \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"blue"}\!=\!\mathit\{x\} \lor (\text{"it"}\!=\!\mathit\{x\} \land (\mathit{BlueObj}\!\in\!\mathit{a_u} \lor \mathit{BlueObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \ \lor (\text{"the"}\!=\!\mathit\{x\} \land \mathit{perceived}\!=\![BlueObj] ))) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(BlueObj)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"red"}\!=\!\mathit\{x\} \lor (\text{"it"}\!=\!\mathit\{x\} \land (\mathit{RedObj}\!\in\!\mathit{a_u} \lor \mathit{RedObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \  \lor (\text{"the"}\!=\!\mathit\{x\} \land \mathit{perceived}\!=\![\mathit{RedObj}]))) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(RedObj)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(\cdot)}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{PickUp(Other)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"red"}\!=\!\mathit\{x\}) \ \textbf{then}$ \\
@@ -277,16 +276,16 @@ $r_{1}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{Confirm(\cdot)} \lan
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{false})\!=\!\theta_{\mathrm{changemind[0]}} \\
 P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!\theta_{\mathrm{changemind[1]}} \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $ \forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(X)}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{lastMove}\!=\!\mathit{x})\!=\!1 \end{cases}$ \\ \\[-1mm]
+$r_{2}$: \ \ & $ \forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(x)}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{lastMove}'\!=\!\mathit{x})\!=\!1 \end{cases}$ \\ \\[-1mm]
 \end{longtable}
 \end{footnotesize}
 
 \subsubsection*{User goal model}
 
-The user goal model encodes how the user intention $i_u$ is expected to evolve over time, given the current dialogue context.  The intention is only assumed to change when the current task is completed. Rule $r_2$ defines the likelihood of instructions related to spatial movements, while $r_3$ and $r_4$ define the likelihood of user questions related to the robot perception, $r_5$ the likelihood of greeting and closing actions, $r_6$ the likelihood of releasing actions, and $r7$ and $r_8$ the likelihood of grasping actions.
+The user goal model encodes how the user intention $i_u$ is expected to evolve over time, given the current dialogue context.  The intention is only assumed to change when the current task is completed. Rule $r_2$ defines the likelihood of instructions related to spatial movements, while $r_3$ and $r_4$ define the likelihood of user questions related to the robot perception, $r_5$ the likelihood of greeting and closing actions, $r_6$ the likelihood of releasing actions, and $r_7$ and $r_8$ the likelihood of grasping actions.
 
-Rule $r_3$ and $r_8$ are used to increase the probability of grasping instructions and questions about visual objects whenever an object is actually perceived by the robot.
+Rule $r_3$ and $r_7$ are used to increase the probability of grasping instructions and questions about visual objects whenever an object is actually perceived by the robot.
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
@@ -304,7 +303,7 @@ P(\mathit{i_u}'\!=\!\mathit{Move(Right,Short)})\!=\!\theta_{\mathrm{moveprior[7]
 P(\mathit{i_u}'\!=\!\mathit{Move(Turn)})\!=\!\theta_{\mathrm{moveprior[8]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{moveprior[9]}} \end{cases}$ \\ \\[-1mm]
 $r_{3}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{x}\!\in\!\mathit{perceived} \land \mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{DoYouSee(X)})\!=\!\theta_{\mathrm{perceive\_see\_prior[0]}} \\
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{DoYouSee(x)})\!=\!\theta_{\mathrm{perceive\_see\_prior[0]}} \\
 P(\mathit{i_u}'\!=\!\mathit{WhatDoYouSee})\!=\!\theta_{\mathrm{perceive\_see\_prior[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{perceive\_see\_prior[2]}} \end{cases}$ \\ \\[-1mm]
 $r_{4}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then} $ \\
@@ -321,7 +320,7 @@ $r_{6}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true}
  & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{Release})\!=\!\theta_{\mathrm{releaseprior[0]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{releaseprior[1]}} \end{cases}$ \\ \\[-1mm]
 $r_{7}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true} \land \mathit{carried}\!=\!\mathit{[]} \land \mathit{x}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{PickUp(X)})\!=\!\theta_{\mathrm{pickup\_see\_prior[0]}} \\
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{PickUp(x)})\!=\!\theta_{\mathrm{pickup\_see\_prior[0]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{pickup\_see\_prior[1]}} \end{cases}$ \\ \\[-1mm]
 $r_{8}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{PickUp(RedObj)})\!=\!\theta_{\mathrm{pickup\_nosee\_prior[0]}} \\
@@ -346,7 +345,7 @@ P(\mathit{a_u}'\!=\!\mathit{{i_u}})\!=\!\theta_{\mathrm{disconfirmpredict[1]}} \
 P(\cdot)\!=\!\theta_{\mathrm{disconfirmpredict[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{lastMove}\!=\!\mathit{{i_u}}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{RepeatLast})\!=\!\theta_{\mathrm{samemove[0]}} \\
 P(\mathit{a_u}'\!=\!\mathit{{i_u}})\!=\!\theta_{\mathrm{samemove[1]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{samemove[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskRepeat} \lor \mathit{completed-task}\!=\!\mathit{true}) \ \textbf{then}$ \\
+P(\cdot)\!=\!\theta_{\mathrm{samemove[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskRepeat} \lor \mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{i_u}})\!=\!\theta_{\mathrm{intent[0]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{intent[1]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{i_u}})\!=\!\theta_{\mathrm{othercase[0]}} \\
@@ -361,13 +360,13 @@ P(\cdot)\!=\!\theta_{\mathrm{aftermove[2]}} \end{cases}$ \\ \\[-1mm]
 
 \subsubsection*{Utility model}
 
-The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. 
+The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. Rule $r_7$ is used to reduce the utility of all actions and ensure that their initial utility in the absence of other information is lower than zero.
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
 $r_{1}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Move(\cdot)}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{move}} \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ ((\mathit{i_u}\!=\!\mathit{PickUp({x})} \lor \mathit{{x}}\!\in\!\mathit{perceived} \lor \mathit{carried}\!=\!\mathit{[]}) \ \lor$ \\ &  \;\;\;\;\; $ (\mathit{i_u}\!=\!\mathit{PickUp(AtFeet)} \lor \mathit{carried}\!=\!\mathit{[]})) \ \textbf{then} $ \\
+$r_{2}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ ((\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \lor$ \\ &  \;\;\;\;\; $ (\mathit{i_u}\!=\!\mathit{PickUp(AtFeet)} \land \mathit{carried}\!=\!\mathit{[]})) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{pickup}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(AlreadyCarryObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{x}\!=\!\mathit{Other}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(CannotResolve)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
@@ -375,8 +374,8 @@ $r_{2}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ ((\mathit{i_u}\!=\!\mathit{P
 $r_{3}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Release} \land \mathit{carried}\!\neq\!\mathit{None} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{release}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{Release} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(DoNotCarryObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \\ \\[-1mm]
-$r_{4}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({A})} \land \mathit{{A}}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Confirm)})\!=\!\theta_{\mathrm{confirmpercept}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({B})} \land \mathit{{B}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
+$r_{4}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Confirm)})\!=\!\theta_{\mathrm{confirmpercept}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Disconfirm)})\!=\!\theta_{\mathrm{confirmpercept}} \end{cases}$ \\ \\[-1mm]
 $r_{5}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{WhatDoYouSee}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe({perceived})})\!=\!\theta_{\mathrm{describe}} \end{cases}$ \\ \\[-1mm]

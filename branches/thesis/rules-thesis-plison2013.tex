@@ -707,7 +707,7 @@ We now describe each of these steps in detail.
 
 The first step in the update procedure is to add the chance nodes corresponding to the new observation(s) into the dialogue state. Since dialogue domains often include predictions on variables that will be observed in the next time steps, these observations must be connected to their corresponding predicted values. This is for instance the case for the user action model $P(a_u' \, | \, i_u', a_m)$, that estimates the relative probabilities for the next dialogue action from the user. The predictions provide a prior on the future observation of the user action. 
 
-In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote all predictive variables with a subscript $p$. A variable $X_p$ thus represents a random variable on the predicted values of the variable $X$ to be observed in the future. 
+In order to distinguish random variables that express a prediction on a future outcome from those that reflect an actual (although possibly uncertain) observation, we denote all predictive variables with a superscript $p$. A variable $X^p$ thus represents a random variable on the predicted values of the variable $X$ to be observed in the future. 
 
 
 \begin{wrapfigure}[12]{r}{48mm}
@@ -715,16 +715,16 @@ In order to distinguish random variables that express a prediction on a future o
 \centering
 \includegraphics[scale=0.25]{imgs/prediction.pdf} 
 \vspace{-2mm}
-\caption{Equivalence node $\mathit{eq}_{X}$ with parents $X$ and $X_p$. (the double circle denotes a deterministic distribution)}
+\caption{Equivalence node $\mathit{eq}_{X}$ with parents $X$ and $X^p$. (the double circle denotes a deterministic distribution)}
 \label{fig:prediction}
 \end{wrapfigure}
 
-Prediction and observation variables must be related with one another at runtime.  In the case where the observation is known with certainty, this relation can simply take the form of an assignment of evidence values.  However, dialogue domains often include observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}.  Several techniques are available to practically encode such kind of evidence \citep{Pan06beliefupdate}. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node}\index{equivalence node} $\mathit{eq}_{X}$, that is conditionally dependent on both $X$ and $X_p$, as shown in Figure \ref{fig:prediction}. The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X_p$ may have arbitrary incoming and outgoing edges with other variables. 
+Prediction and observation variables must be related with one another at runtime.  In the case where the observation is known with certainty, this relation can simply take the form of an assignment of evidence values.  However, dialogue domains often include observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}.  Several techniques are available to practically encode such kind of evidence \citep{Pan06beliefupdate}. The method adopted in this thesis is to add a new boolean-valued chance node, subsequently called the \textit{equivalence node}\index{equivalence node} $\mathit{eq}_{X}$, that is conditionally dependent on both $X$ and $X^p$, as shown in Figure \ref{fig:prediction}. The use of a distinct node to express the evidence is motivated by the fact that $X$ and $X^p$ may have arbitrary incoming and outgoing edges with other variables. 
 
-The conditional probability distribution for $\mathit{eq}_X$ given $X$ and $X_p$ is deterministic:
+The conditional probability distribution for $\mathit{eq}_X$ given $X$ and $X^p$ is deterministic:
 \begin{equation}
-P(\mathit{eq}_{X}\!=\!true \, | \, X\!=\!x, X_p\!=\!x_p) = \begin{cases}
-1 & \text{if } x = x_p \\
+P(\mathit{eq}_{X}\!=\!true \, | \, X\!=\!x, X^p\!=\!x^p) = \begin{cases}
+1 & \text{if } x = x^p \\
 0 & \text{otherwise}
 \end{cases} \label{eq:equivdistrib}
 \end{equation}
@@ -732,11 +732,11 @@ P(\mathit{eq}_{X}\!=\!true \, | \, X\!=\!x, X_p\!=\!x_p) = \begin{cases}
 The assignment $\mathit{eq}_{X} \!=\! true$ is added to the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
 \begin{align}
 &P(X = x \, | \, \mathit{eq}_{X}\!=\!true) \nonumber \\
-&=  \eta \ P(X\!=\!x)  \sum_{x_p \in \mathit{Val}(X_p)} P(\mathit{eq}_{X}\!=\!true\, |\, X\!=\!x, X_p \!=\!x_p ) P(X_p\!=\!x_p) \\
-&= \eta \ P(X\!=\!x) \ P(X_p\!=\!x) \label{eq:equivalence}
+&=  \eta \ P(X\!=\!x)  \sum_{x^p \in \mathit{Val}(X^p)} P(\mathit{eq}_{X}\!=\!true\, |\, X\!=\!x, X^p \!=\!x^p ) P(X^p\!=\!x^p) \\
+&= \eta \ P(X\!=\!x) \ P(X^p\!=\!x) \label{eq:equivalence}
 \end{align}
 
-%The inclusion of an equivalence node between $X$ and $X_p$ with evidence  $[\mathit{eq}_{X}\!=\!true]$ modifies the distribution of the variables $X$ and$X_p$ as well as their respective parents and children. 
+%The inclusion of an equivalence node between $X$ and $X^p$ with evidence  $[\mathit{eq}_{X}\!=\!true]$ modifies the distribution of the variables $X$ and$X^p$ as well as their respective parents and children. 
 
 Algorithm \ref{algo:AddToState} details how the insertion of new observation variables $\mathit{Vars}$ into the dialogue state is practically performed. 
 
@@ -747,9 +747,9 @@ Algorithm \ref{algo:AddToState} details how the insertion of new observation var
 \IF {$X \notin \mathcal{B}$}
 \STATE Insert $X$ in $\mathcal{B}$ 
 \ENDIF
-\IF {there is a corresponding prediction variable $X_p \in \mathcal{B}$}
+\IF {there is a corresponding prediction variable $X^p \in \mathcal{B}$}
 \STATE Create equivalence node $\mathit{eq}_{X}$ with distribution in Eq. \eqref{eq:equivdistrib}
-\STATE Insert $\mathit{eq}_{X}$ in $\mathcal{B}$ with parents $\mathit{X}$ and $\mathit{X}_p$
+\STATE Insert $\mathit{eq}_{X}$ in $\mathcal{B}$ with parents $\mathit{X}$ and $\mathit{X}^p$
 \STATE Add assignment $[\mathit{eq}_{X}\!=\!true]$ to evidence $\mathbf{e}$
 \ENDIF
 \ENDFOR
@@ -897,10 +897,10 @@ Rule $r_{9}$ specifies that the utility of executing the action corresponding to
 r_{11}: \ \ & \forall y, \\ 
 & \textbf{if} \ (a_m = \mathit{AskRepeat} \land a_u=y) \ \textbf{then} \\ 
 & \; \;  \begin{cases} 
-P(a_{u\mbox{-}p}' = y) = 0.9 \\ 
+P(a_{u}^{p\prime} = y) = 0.9 \\ 
 \end{cases}
 \end{align*}
-Rule $r_{11}$ specifies that the probability that the user will repeat the last utterance when asked by the system to do so is expected to be $0.9$. Note the subscript $p$ in the random variable $a_{u\mbox{-}p}$, which indicates that the effect expresses a prediction on a future dialogue act $a_u$.  
+Rule $r_{11}$ specifies that the probability that the user will repeat the last utterance when asked by the system to do so is expected to be $0.9$. Note the superscript $p$ in the random variable $a_{u}^{p\prime}$, which indicates that the effect expresses a prediction on a future dialogue act $a_u$.  
 \end{itemize}
 
 \subsubsection*{Processing workflow}
@@ -926,7 +926,7 @@ Figure \ref{fig:detailedexample} details the steps involved in the state update 
 \end{figure}
  
 Step 1 inserts the new dialogue act hypotheses in the dialogue state.  This insertion triggers 
-the utility model $m_1$. The instantiation results in Step 2 in the creation of two utility nodes and one decision node.  The optimal action to perform in this case is $\mathit{AskRepeat}$, which is selected by the system in Step 3. The action selection triggers model $m_2$ in Step 4, which creates a prediction node $a_{u\mbox{-}p}'$ expressing the expected probability distribution for the next user dialogue act. The state is finally pruned of the intermediary rule node in Step 5.  System components such as NLG can react on the updated state and generate the proper linguistic realisation of the system action. The system then waits for the user input, which is shown in Step 6.  The relation between the predicted and actual user response leads in Step 7 to the creation of an equivalence node, and the inclusion of the assignment $\mathit{eq}_{a_u} = true$ in the evidence. We notice that the combination of the prior distribution over predicted values and the actual distribution over dialogue act hypotheses increases the probability of $a_u' = \mathit{Request(Forward)}$. Step 8 triggers the model $m_1$ based on the new user input.  The best action at this processing stage is $\mathit{Move(Forward)}$, which is selected in Step 9.  This selection triggers model $m_2$, but rule $r_{11}$ is in this case irrelevant and is therefore directly deleted. Finally, the state is pruned of its intermediary nodes in Step 10, retaining only the last user and system actions $a_u$ and $a_m$. 
+the utility model $m_1$. The instantiation results in Step 2 in the creation of two utility nodes and one decision node.  The optimal action to perform in this case is $\mathit{AskRepeat}$, which is selected by the system in Step 3. The action selection triggers model $m_2$ in Step 4, which creates a prediction node $a_{u}^{p\prime}$ expressing the expected probability distribution for the next user dialogue act. The state is finally pruned of the intermediary rule node in Step 5.  System components such as NLG can react on the updated state and generate the proper linguistic realisation of the system action. The system then waits for the user input, which is shown in Step 6.  The relation between the predicted and actual user response leads in Step 7 to the creation of an equivalence node, and the inclusion of the assignment $\mathit{eq}_{a_u} = true$ in the evidence. We notice that the combination of the prior distribution over predicted values and the actual distribution over dialogue act hypotheses increases the probability of $a_u' = \mathit{Request(Forward)}$. Step 8 triggers the model $m_1$ based on the new user input.  The best action at this processing stage is $\mathit{Move(Forward)}$, which is selected in Step 9.  This selection triggers model $m_2$, but rule $r_{11}$ is in this case irrelevant and is therefore directly deleted. Finally, the state is pruned of its intermediary nodes in Step 10, retaining only the last user and system actions $a_u$ and $a_m$. 
 
 In comparison to the finite-state solution presented in Figure \ref{fig:fsa}, we observe that the rule-structured approach defined by models $m_1$ and $m_2$ allows the dialogue manager to accumulate evidence over time and prime the recognition hypotheses of the user dialogue act $a_u$ based on the previous dialogue act.  This accumulation of evidence is absent from the FSA, due to its rigid state representation and lack of memory. 
 
