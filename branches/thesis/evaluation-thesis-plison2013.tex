@@ -2,12 +2,12 @@
 \label{chap:user-evaluation}
 \index{user evaluation|textbf}
 
-This chapter presents the last (and most extensive) experiment carried out in this thesis. The empirical studies exposed so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the learning performance of rule-structured models compared to more classical representations. But albeit such experiments can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
+This chapter presents the last (and most extensive) experiment carried out in this thesis. The empirical studies described so far in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} essentially focused on the learning performance of rule-structured models compared to more classical representations. However, albeit such experiments can provide useful insights about the model adequacy for various dialogue domains, they are not by themselves sufficient to assess the suitability of a particular modelling approach and its practical effects on the quality of the produced interactions. 
 
-In order to corroborate our claims regarding the benefits of probabilistic rules in dialogue management and contrast them to traditional methods, we conducted an user evaluation experiment with a total of 37 users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in a human--robot interaction domain.  The three approaches respectively correspond to a purely hand-crafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. The empirical results collected via this experiment report that the  hybrid, rule-structured approach\index{dialogue management!hybrid approach to} is able to outperform the two baselines on most of the metrics defined for the domain.  The metrics include not only objective metrics extracted from the interaction logs but also subjective metrics of user satisfaction, based on a survey completed by the participants after each interaction. 
+In order to corroborate our claims regarding the benefits of probabilistic rules in dialogue management and contrast them to traditional methods, we conducted a user evaluation experiment with a total of 37 users. The aim of the experiment was to compare three alternative approaches to dialogue management (two baselines and our own approach) in a human--robot interaction domain.  The three approaches respectively correspond to a purely hand-crafted approach, a purely statistical approach, and a hybrid approach based on probabilistic rules. The empirical results collected via this experiment indicate that the  hybrid, rule-structured approach\index{dialogue management!hybrid approach to} is able to outperform the two baselines on most of the metrics defined for the domain.  The metrics include not only objective metrics extracted from the interaction logs but also subjective metrics of user satisfaction, based on a survey completed by the participants after each interaction. 
 
 
-The chapter is structured in three sections.  The first section describes the human--robot interaction scenario within which the experiment is carried out, and details both the state variables, system architecture, and training data made available for the domain. The second section then exposes the three alternative dialogue management approaches developed for the experiment, with a particular emphasis on the design choices that characterise each strategy.   Finally, the third section presents the user evaluation itself, and surveys the experimental setup, quality metrics, and of course the empirical results and their detailed analysis. 
+The chapter is structured into three sections.  The first section describes the human--robot interaction scenario within which the experiment is carried out, and details both the state variables, system architecture, and training data made available for the domain. The second section then exposes the three alternative dialogue management approaches developed for the experiment, with a particular emphasis on the design choices that characterise each strategy.   Finally, the third section presents the user evaluation itself, and surveys the experimental setup, quality metrics, and of course the empirical results and their detailed analysis. 
 
 \section{Interaction scenario}
 \index{human--robot interaction}
@@ -17,7 +17,7 @@ The interaction scenario employed for the user evaluation is similar in most res
 \vspace{3mm}
 \centering
 \includegraphics[scale=0.13]{imgs/scenario.jpg} \vspace{3mm}
-\caption{Interaction scenario for the experiment.  On the right side of the table stand two objects (one red and one blue).  Imaginary walls (in green) are also placed on the table, as well as a yellow landmark depicting the final destination of the robot. }
+\caption{Interaction scenario for the experiment.  Two graspable objects (one red and one blue) stand on the right side of the table.  Imaginary walls (in green) are also placed on the table, as well as a yellow landmark depicting the final destination of the robot. }
 \label{fig:scenario}
 \end{figure}
 
@@ -115,7 +115,7 @@ $\cdot$ $\mathrm{AskConfirm}(x) $\\ $ \ \ \ \text{ where } x=\{\mathrm{Move}(y,z
 \subsubsection*{Dialogue state}
 \index{dialogue state}
 
-The dialogue state $\mathcal{B}$ chosen for the dialogue domain is factored in eleven distinct state variables, encoding both the user intentions and actions, the external context, the recent interaction history, and the physical status of the robot. Table \ref{table:statevariables} details the name, purpose, range of possible values, observability and dependencies of each state variable. As illustrated in the table, the dialogue state contains both fully and partially observed variables. 
+The dialogue state $\mathcal{B}$ chosen for the dialogue domain is factored into eleven distinct state variables, encoding both the user intentions and actions, the external context, the recent interaction history, and the physical status of the robot. Table \ref{table:statevariables} details the name, purpose, range of possible values, observability and dependencies of each state variable. As illustrated in the table, the dialogue state contains both fully and partially observed variables. 
 
 
 %One can distinguish three distinct types of state variables in this factorisation:
@@ -148,7 +148,7 @@ $\mathit{completed\mbox{-}task}$ & Completion status of the user intention (deno
 \label{table:statevariables}
 \end{sidewaystable}
 
-Even when abstracting from the two variables $u_u$ and $u_m$ (which have a virtually infinite set of possible values, as they accept arbitrary strings) and assuming the presence of only two objects, the total size of the joint state space is non-trivial to tackle: 
+Even when ignoring the two variables $u_u$ and $u_m$ (which have a virtually infinite set of possible values, as they accept arbitrary strings) and assuming the presence of only two objects, the total size of the joint state space is non-trivial to tackle: 
 \begin{align}
 |\mathcal{S}| & = & 4 \ \ \ \ \ \ \ \ \ \ &&& \ \ \ \ \ \ \ \ \ \ [\text{size of } \mathit{Val}(\mathit{perceived})] \nonumber \\
  && \times 3 \ \ \ \ \ \ \ \ \ \ &&&  \ \ \ \ \ \ \ \ \ \ [\text{size of } \mathit{Val}(carried)] \nonumber \\
@@ -245,7 +245,7 @@ The interactions were once again encoded as a sequence of pairs $\langle \mathca
 
 Contrary to the Wizard-of-Oz study presented in Section \ref{sec:rllearning-experiments}, the interactions recorded in this data collection effort are not augmented with supplementary annotation.\footnote{As we shall see in the next section, the relations between the user actions and the underlying intentions they express are automatically estimated as part of the learning procedure.} As a consequence, the recorded dialogue state $\mathcal{B}_i$ includes only variables that are directly observed by the system during the Wizard-of-Oz study: the last and next-to-last user actions $a_u$ and $a_{u\mbox{-}prev}$ (as provided by the ASR and NLU modules), the last system action $a_m$, the set of objects currently perceived and carried by the robot, the last physical movement of the robot, and the $\mathit{motion}$ variable denoting whether the robot is currently in movement. 
 
-Here is an example of data point extracted from the collected data, corresponding to the user utterance \utt{yes} after a confirmation request, followed by the system action $\mathrm{Do(Move(Right))}$: 
+Here is an example of a data point extracted from the collected data, corresponding to the user utterance \utt{yes} after a confirmation request, followed by the system action $\mathrm{Do(Move(Right))}$: 
 
 \begin{align*}
 \mathcal{B} = \begin{cases} u_u = \langle (``\text{yes}", p\!=\!.95), (\mathit{None}, p\!=\!.05) \rangle \\
@@ -291,7 +291,7 @@ The automaton constructed for the domain operates on the basis of three specifie
 \item Finally, if no hypothesis reaches the minimal threshold $T_1$, the user action is assumed to correspond to a spurious recognition result, and is simply ignored.
 \end{enumerate}
 
-A graphical representation of the finite state automaton is provided in Figure \ref{fig:fsa-exp3}.  The automaton contains 16 distinct states.  Depending on the probability of the top hypothesis in the user dialogue act $a_u$, the automaton will either directly transit from the state $s_1$ to the states $s_4, \cdots, s_{15}$ or be redirected to state $s_2$ or $s_3$ for clarification. After each user action in the states $s_4, \cdots, s_{15}$, the current state is re-initialised to state $s_1$ via empty transitions. 
+A graphical representation of the finite state automaton is provided in Figure \ref{fig:fsa-exp3}.  The automaton contains 16 distinct states.  Depending on the probability of the top hypothesis in the user dialogue act $a_u$, the automaton will either directly transit from the state $s_1$ to the states $s_4, \dots, s_{15}$ or be redirected to state $s_2$ or $s_3$ for clarification. After each user action in the states $s_4, \dots, s_{15}$, the current state is re-initialised to state $s_1$ via empty transitions. 
 
 
 \begin{figure}[p]
@@ -304,12 +304,12 @@ A graphical representation of the finite state automaton is provided in Figure \
 
 \subsubsection*{Probability thresholds}
 
-The threshold values $T_1$, $T_2$ and $T_3$ are determined empirically on the basis of the actual probability values generated by the speech recogniser and NLU module during the Wizard-of-Oz study.  This estimation was achieved in two steps.  The first step consisted in  extracting all probability values associated with the most likely hypothesis of the user dialogue act $a_u$ in the recorded Wizard-of-Oz interactions and deriving a probability density from these values through kernel density estimation\index{kernel density estimation}. The resulting density function is shown in Figure \ref{fig:asrconfidence-exp3}. We then divided the distribution over probability values for the top user act hypothesis into four non-overlapping regions:
+The threshold values $T_1$, $T_2$ and $T_3$ are determined empirically on the basis of the actual probability values generated by the speech recogniser and NLU module during the Wizard-of-Oz study.  This estimation was achieved in two steps.  The first step is to extract all probability values associated with the most likely hypothesis of the user dialogue act $a_u$ in the recorded Wizard-of-Oz interactions and derive a probability density from these values through kernel density estimation\index{kernel density estimation}. The resulting density function is shown in Figure \ref{fig:asrconfidence-exp3}. As a second step, we divided the distribution over probability values for the top user act hypothesis into four non-overlapping regions:
 \begin{itemize}
 \item The first region corresponds to user actions that most likely arise from spurious recognition and should hence be ignored. Based on a detailed inspection of the wizard actions in such cases, we mapped this region to the lowest quintile of the distribution (that is, all values with a cumulative density between $0$ and $0.2$). 
 \item The second region corresponds to user actions that are more likely to reflect real user inputs, but do not have sufficient confidence to be directly executed.  This region was mapped to the second quintile of the distribution (values with a cumulative density between $0.2$ and $0.4$).
-\item The third region corresponds to user actions that are relatively confident, but should nevertheless be confirmed once before execution.  This region was constrained to the third quintile of the distribution (values with a cumulative density between $0.4$ and $0.6$).
-\item Finally, the fourth and final region corresponds to user actions that are sufficiently confident to be directly executed without user confirmation. This region defines the top 40 \% of the probability mass, with cumulative densities between $0.6$ and $1.0$.
+\item The third region corresponds to user actions that have relatively high confidence, but should nevertheless be confirmed once before execution.  This region was constrained to the third quintile of the distribution (values with a cumulative density between $0.4$ and $0.6$).
+\item Finally, the fourth and final region corresponds to user actions that have a sufficiently high confidence to be directly executed without user confirmation. This region defines the top 40 \% of the probability mass, with cumulative densities between $0.6$ and $1.0$.
 \end{itemize}
 
 The estimated thresholds for the density function shown in Figure \ref{fig:asrconfidence-exp3} were derived to be $T_1 = 0.49$, $T_2 = 0.61$ and $T_3 = 0.73$. These values reflect the three thresholds employed in the finite state automaton. 
@@ -329,7 +329,7 @@ The estimated thresholds for the density function shown in Figure \ref{fig:asrco
 
 The second approach developed for this experiment consists of a statistical model whose parameters are estimated from the Wizard-of-Oz data set collected for the experiment. We assume that both the transition model and utility model of the domain are initially unknown. 
 
-Both this approach and Approach 3 assume that the domain can be captured with a planning horizon limited to the present time step.  In other words, the approach does not rely on online forward planning (which is often practically difficult to reconcile with live interactions) and directly selects the action yielding the highest utility in the current dialogue state.\footnote{In other words, the utility model represents what is called a $Q$-value model in reinforcement learning.} The approach stands relatively close to the various POMDP-based systems described in Chapter \ref{chap:probmodelling}, with the notable difference that the estimation of model parameters is performed in this experiment on the basis of Wizard-of-Oz data rather than through a user simulator. 
+Both this approach and Approach 3 assume that the domain can be captured with a planning horizon limited to the present time step.  In other words, the approach does not rely on online forward planning (which is often practically difficult to reconcile with live interactions) and directly selects the action yielding the highest utility in the current dialogue state.\footnote{In other words, the utility model represents what is called a $Q$-value model in reinforcement learning.} The approach stands relatively close to the various POMDP-based systems described in Chapter \ref{chap:probmodelling}, with the notable difference that the estimation of model parameters in this experiment is performed on the sole basis of Wizard-of-Oz data rather than through a user simulator. 
 
 \subsubsection*{Domain modelling}
 \index{domain modelling}
@@ -354,7 +354,7 @@ Figure \ref{fig:unstructuredmodel-exp3} illustrates the factored model employed 
 
 % As shall be explained shortly, the probabilistic models developed in this approach do include a fair amount of internal structure and rely on a number of assumptions to limit the number of parameters, but without resorting to the more advanced modelling techniques that characterise rule-structured models (such as latent rule nodes and quantification). The purpose of this model is thus to evaluate the performance of a classical statistical approach when provided with the Wizard-of-Oz interaction data set at our disposal. 
 
-The four factored models described above remain unfortunately too large to be directly estimated from the limited amounts of data made available from the Wizard-of-Oz interactions.  We therefore introduced a range of additional constraints and simplifying assumptions to further reduce the number of parameters associated with the model.
+Alas, the four factored models listed above remain too large to be directly estimated from the limited amounts of data made available from the Wizard-of-Oz interactions.  We therefore introduced a range of additional constraints and simplifying assumptions to further reduce the number of parameters associated with the model.
 
 %\begin{align}
 %&&&P(\mathit{completed\mbox{-}task}\!=\!\mathit{true} \, | \, i_u, a_m) = \nonumber \\
@@ -384,7 +384,7 @@ The third and final heuristic is to reduce the number of relevant system actions
 \end{cases} \label{eq:utilunstruct-exp3}
 \end{align}
 
-The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} results in 296 parameters. In total, the numbers of parameters associated with all factored models in this approach (including both univariate and multivariate parameters) equals to 433.
+The factorisation of the utility model in Equation \eqref{eq:utilunstruct-exp3} results in 296 parameters. In total, the numbers of parameters associated with all factored models in this approach (including both univariate and multivariate parameters) equals 433.
 
 \subsubsection*{Parameter estimation}
 \index{parameter estimation}
@@ -409,7 +409,7 @@ The final dialogue management approach developed in this experiment is couched i
 
 The factorisation of the domain models remains identical to the one shown in Figure \ref{fig:unstructuredmodel-exp3}.  As in the second approach, the models are decomposed into a task completion model, a user goal model, a user action model, and a utility model.  Action selection is again formalised as a search for the highest-utility action in the current state (assuming a planning horizon limited to the current time step).  However, in contrast to Approach 2, the internal structure of the domain models is here encoded through probabilistic rules instead of standard categorical distributions:
 \begin{itemize}
-\item The task completion model\index{task completion model} $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is encoded by one single deterministic rule that define when the current intention $i_u$ is fulfilled by the system action $a_m$. 
+\item The task completion model\index{task completion model} $P(\mathit{completed\mbox{-}task}\, | \, i_u, a_m)$ is encoded by one single deterministic rule that defines when the current intention $i_u$ is fulfilled by the system action $a_m$. 
 \item The user goal model\index{user goal model} $P(i_u' \, | \, i_u, \mathit{completed\mbox{-}task}, \mathit{perceived'}, \mathit{carried'})$ consists of a collection of seven rules that define the probability of the new user intention $i_u'$ given the dialogue context. One rule defines the prior probability of the user intentions $\mathrm{Move(\mathit{x})}$, four rules specify the prior probability of $\mathrm{PickUp(\mathit{x})}$, $\mathrm{WhatDoYouSee}$ and $\mathrm{DoYouSee(\mathit{x})}$ depending on the value of the $\mathit{perceived}$ variable, one rule specify the prior probability of $\mathrm{Release}$ depending on the value of the $\mathit{carried}$ variable, and one final rule specifies the probability of the $\mathrm{Greeting}$ and $\mathrm{Closing}$ intentions depending on the last system move. 
 
 \item The user action model\index{user action model} $P(a_u'\, | \, i_u', a_m)$ is formalised with two rules that map user intentions to their potential verbal realisations in terms of user dialogue acts. The first rule expresses the likelihood of various user dialogue acts depending on the user intention and last system action (in particular, whether the system uttered a clarification or confirmation request).  The second rule expresses the likelihood of the $\mathrm{Ask(Stop)}$ and $\mathrm{Disconfirm}$ actions during the execution of a physical movement.
@@ -418,12 +418,12 @@ The factorisation of the domain models remains identical to the one shown in Fig
 
 \end{itemize}
 
-The probability and utility models described by these rules include a total of 28 parameters, amongst which 15 probability parameters and 13 utility parameters.  The complete specification of the domain is provided in Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-usereval}). 
+The probability and utility models described by these rules include a total of 28 parameters, amongst which 15 are probability parameters and 13 utility parameters.  The complete specification of the domain is provided in Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-usereval}). 
 
 \subsubsection*{Parameter estimation}
 \index{parameter estimation}
 
-The rule parameters were optimised on the basis of the collected Wizard-of-Oz data following the same procedure as the one followed for the second approach.  The parameters of probability rules are all encoded by Dirichlet distributions of varying dimensions (from 2 to 10) initialised with weakly informative priors, while the parameters of utility rules are encoded by uniform distributions on the support range $[-10, 30]$.  
+The rule parameters were optimised on the basis of the collected Wizard-of-Oz data following the same procedure as for the second approach.  The parameters of probability rules are all encoded by Dirichlet distributions of varying dimensions (from 2 to 10) initialised with weakly informative priors, while the parameters of utility rules are encoded by uniform distributions on the support range $[-10, 30]$.  
 
 
 \subsection{Learning curves}
@@ -434,7 +434,7 @@ Figure \ref{fig:curve-exp3} presents the learning curves for the three dialogue 
 
 \begin{figure}[ht]
 \vspace{3mm}\centering\includegraphics[scale=0.35]{imgs/curve-exp3.pdf}
-\caption{Learning curve for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a separate test set of 71 system turns.}
+\caption{Learning curves for the three dialogue management approaches on the Wizard-of-Oz data set.  The figure shows how the agreement between the best system action and the actual wizard action evolves as a function of the number of processed training samples.  The agreement is calculated on a separate test set of 71 system turns.}
 \label{fig:curve-exp3}
 \end{figure}
 
@@ -463,7 +463,7 @@ It should be stressed once more that system actions that do not correspond to th
 \section{User trials}
 \index{user trial|see{user evaluation}}
 
-In order to assess the relative performance of the three dialogue management approaches presented in the previous section, we conducted a total of $3 \times 37$ user trials, which we now describe in detail. We start by exposing the experimental setup employed in the user trials, and then present and discuss the empirical results. 
+In order to assess the relative performance of the three dialogue management approaches presented in the previous section, we conducted a total of $3 \times 37$ user trials, which we now describe in detail. We start by laying out the experimental setup employed in the user trials, and then present and discuss the empirical results. 
 
 \subsection{Experimental setup}
 
@@ -476,23 +476,25 @@ Before the start of each experiment, we briefed the participants about the inter
 \subsubsection*{User expectations}
 \index{user expectations}
 
-The participants were also asked to fill a short survey about their age, gender, and their expectations regarding the robot verbal behaviour. The user expectations were measured with a set of six multiple-answer questions as shown in Figure \ref{fig:expectations}. The questions cover multiple aspects that may affect the interaction quality in the domain, such as the comprehension abilities of the robot (Q1), its ability to find select appropriate reactions (Q2), its use of clarification requests (Q3), its ability to distinguish between noise and actual utterances (Q4 and Q5), and finally the naturalness of the interaction (Q6). One should note that the participants were told during the briefing phase to be aware of the technical limitations of the speech recogniser. The user responses must therefore be read in the light of this cautionary statement. 
+The participants were also asked to fill out a short survey about their age, gender, and their expectations regarding the robot verbal behaviour. The user expectations were surveyed with a set of six multiple-answer questions as shown in Figure \ref{fig:expectations}. The questions cover multiple aspects that may affect the interaction quality in the domain, such as the comprehension abilities of the robot (Q1), its ability to find and select appropriate reactions (Q2), its use of clarification requests (Q3), its ability to distinguish between noise and actual utterances (Q4 and Q5), and finally the overall naturalness of the interaction (Q6). One should note that the participants were told during the briefing phase to be aware of the technical limitations of the speech recogniser. The user responses must therefore be read in the light of this cautionary statement. 
 
 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[scale=0.5]{imgs/expectations.pdf}
 \end{center} 
-\caption{Prior user expectations about the robot conversational abilities.}
+\caption{Prior user expectations about the robot's conversational abilities.}
 \label{fig:expectations}
 \end{figure}
 
-The first and most evident purpose of this preliminary survey is to allow us to compare the prior expectations of the users with their actual experiences.  As shown by e.g.\ \cite{JokinenH06}, such comparison can yield interesting insights on the factors that empirically influence user satisfaction and their variability amongst different groups of users.  In addition, the survey also served as an indirect mean to direct the user attention towards the aspects of the robot behaviour that are of particular relevance for this study -- namely, the robot's choice of dialogue moves. 
+The first and most evident purpose of this preliminary survey is to allow us to compare the prior expectations of the users with their actual experiences during the interactions.  As shown by e.g.\ \cite{JokinenH06}, such contrastive analysis can yield interesting insights on the factors that empirically influence user satisfaction and their variability amongst different groups of users.  In addition, the survey also served as an indirect mean to direct the user attention towards the aspects of the robot behaviour that are of particular relevance for this study -- namely, the robot's choice of dialogue moves. 
 
 
 \subsubsection*{Trials}
 
-After filling the survey, each participant was requested to carry out three distinct dialogues (one for each dialogue management approach).  The order in which the three approaches were tested was shuffled before each trial to mitigate the effects of the ordering sequence on the results.\footnote{The interactions become indeed increasingly efficient as the user gets more accustomed to the robot and the task to perform.  The average duration of the first dialogue amounts to 6'31, while the average duration of the second dialogue is reduced to 5'08, and the duration of the last dialogue goes down even further to 4'40.}  The participants did not have a time limit to complete the task. Immediately after each dialogue, the participants were asked to fill a small survey to determine how they subjectively perceived the interaction.  The survey was once more divided into six multiple-answer questions (cf. below).  
+After completing the survey, each participant was requested to carry out three distinct dialogues (one for each dialogue management approach).  The order in which the three approaches were tested was shuffled before each trial to mitigate the effects of the ordering sequence on the results. The interactions indeed become increasingly efficient as the user gets more accustomed to the robot and the task to perform.  The average duration of the first dialogue amounts to 6'31, while the average duration of the second dialogue is reduced to 5'08, and the duration of the last dialogue goes down even further to 4'40.
+
+The participants did not have a time limit to complete the task. Immediately after each dialogue, the participants were asked to fill out a small survey to determine how they subjectively perceived the interaction.  The survey was once more divided into six multiple-answer questions (cf. below).  
 
 All interactions were captured on video, totalling about 12 hours of footage. In addition to the videos, the dialogue system also logged all user and system turns occurring in the interaction along with their associated dialogue state.
 
@@ -504,7 +506,7 @@ All interactions were captured on video, totalling about 12 hours of footage. In
 \index{interaction quality!objective metrics of}
 In line with previous work on the evaluation of spoken dialogue systems \citep[see e.g.][ch.~6 for an overview]{2009Jokinen}, we defined a set of objective metrics aimed at measuring the quality and efficiency of the recorded dialogues.  The defined metrics and their empirical values for three approaches are shown in Figure \ref{fig:objective}.
 
-Although many evaluation schemes also include explicit measures of task completion in their metrics, we found such measure to be difficult to incorporate in our experimental setup, as the participants did not really have the possibility to end a task before its conclusion. Some dialogues had to be terminated before the full completion of the task but these cases were due to external causes such as hardware failures (e.g.\ system crash or physical collapse of the robot).
+Although many evaluation schemes also include explicit measures of task completion in their metrics, we found such measures to be difficult to incorporate in our experimental setup, as the participants did not really have the possibility to end a task before its conclusion. Some dialogues had to be terminated before the full completion of the task but these cases were due to external causes such as hardware failures (e.g.\ system crash or physical collapse of the robot).
  
 The metrics were calculated on the basis of the interaction logs produced by the dialogue system during the course of the dialogue. As the interaction logs are generated automatically, the counts of user turns correspond to the number of speech recognition results and do not necessarily correspond one-to-one to the actual user turns in the dialogue (due to spurious results caused by ambient noise). We can observe from Figure \ref{fig:objective} that the rule-structured model produces on average shorter and more efficient dialogues than the two baselines.  In particular, on the basis on its parameter estimation on the Wizard-of-Oz training set, the rule-structured model systematically assigned higher utilities to confirmation requests (\utt{should I do X?}) in comparison to repetition requests (\utt{Sorry, could you repeat?}) and 
 consequently never asked the user to repeat the last utterance. The number of system turns is also notably shorter than for the finite-state and factored statistical model, reflecting the fact that the rule-structured model is better able to filter out spurious recognition results. 
@@ -521,7 +523,7 @@ consequently never asked the user to repeat the last utterance. The number of sy
 \subsubsection*{Subjective metrics}
 \index{interaction quality!subjective metrics of}
 
-The subjective metrics reflect the answers to the six multiple-answer questions specified in the user survey. Each question allows for five alternative answers scale ranked from worst to best.  The six questions and the responses they received from the participants are shown in Figure \ref{fig:subjective}. As one can observe, the responses to the survey do seem to indicate that the rule-structured model was perceived to result in more effective and natural conversational behaviours. 
+The subjective metrics reflect the answers to the six multiple-answer questions specified in the user survey. Each question allows for five alternative answers on a scale ranked from worst to best.  The six questions and the responses they received from the participants are shown in Figure \ref{fig:subjective}. As one can observe, the responses to the survey do seem to indicate that the rule-structured model was perceived to result in more effective and natural conversational behaviours. 
 
 
 %\begin{enumerate}
@@ -555,7 +557,7 @@ The subjective metrics reflect the answers to the six multiple-answer questions 
 
 \subsubsection*{Summary of results}
 
-Table \ref{table:results_exp3} summarises the results of both objective and subjective metrics and specifies the statistical significance of each observed difference between measures.  The results from the subjective metrics are calculated by mapping the qualitative answers to a scale from 1 to 5 (1 corresponding to the worst behaviour and 5 to the best) and averaging the results over all participants. 
+Table \ref{table:results_exp3} summarises the results of both the objective and subjective metrics and specifies the statistical significance of each observed difference between measures.  The results from the subjective metrics are calculated by mapping the qualitative answers to a scale from 1 to 5 (1 corresponding to the worst behaviour and 5 to the best) and averaging the results over all participants. 
 
 In order to analyse the statistical significance of the results obtained for each metric, the table indicates the $p$-values for two distinct test statistics:\footnote{A $p$-value corresponds to the probability of obtaining a test statistic at least as extreme as the one actually observed if we presuppose that the null hypothesis is true.  We can therefore reject the null hypothesis whenever the derived $p$-value is lower than a certain significance level $\alpha$ (often set 0.05 or 0.01).}
 \begin{itemize}
@@ -613,7 +615,7 @@ It is also useful to contrast the results obtained from the survey with the init
 \end{tabular} 
 \end{center}
 \label{table:compexpectation-exp3}
-\caption{Comparison between the initial expectations and the actual performance of the rule-structured approach . The $\mathbf{*}$ symbol indicates better-than-expected performance with $\alpha = 0.05$.\vspace{4mm} }
+\caption{Comparison between the initial expectations and the actual performance of the rule-structured approach. The $\mathbf{*}$ symbol indicates better-than-expected performance with $\alpha = 0.05$.\vspace{4mm} }
 \end{table}
 
 \subsection{Discussion}
@@ -626,19 +628,19 @@ Although the finite-state automaton functioned well in most trials, it often req
 
 Another interesting element we found in our analysis was that the factored statistical model operated well in the most common conversational situations, but was frequently led astray when encountering events that had not been observed in the Wizard-of-Oz training set. In particular, although the user action model $P(a_u'\, | \, i_u', a_m)$ offered reasonable estimates for the most prevalent user intentions and dialogue acts, this was not the case for less common instructions which had few or no occurrences in the training set.  This disparity in the estimated distributions often resulted in the dialogue system getting stuck in unseen dialogue states and selecting suboptimal actions.  Although it was trained on the exact same data, the rule-structured approach did not suffer from this data sparsity in the same extent due to its more powerful generalisation abilities. This difference can be clearly noticed in the metrics 3 (number of repeated instructions), 9 (average duration), 10 (quality of the robot's understanding) and 11 (appropriateness of the robot's behaviour). 
 
-The finite-state automaton and the factored statistical model also encountered difficulties in filtering out spurious speech recognition hypotheses, especially the ones produced by the robot's own noise when executing physical movements.  This often led the robot to request the user to repeat an instruction when no instruction was actually uttered.  The rule-structured model proved to be better at filtering out these undesired inputs.\footnote{The finite-state automaton employs a slightly higher threshold for moving from state $s_1$ to $s_3$ whenever the variable $\mathit{motion}$ is set to true. Although this mechanism did help in reducing the number of spurious results, it remained insufficient to fully distinguish between actual user utterances and erroneous recognitions.}  The metrics 8 (number of system turns) and 14 (ability of the robot to distinguish noise from speech) illustrate this discrepancy. 
+The finite-state automaton and the factored statistical model also encountered difficulties in filtering out spurious speech recognition hypotheses, especially the ones produced by the robot's own noise when executing physical movements.  This often led the robot to request the user to repeat an instruction when no instruction was actually uttered.  The rule-structured model proved to be better at filtering out these undesired inputs.\footnote{The finite-state automaton employs a higher threshold ($P(a_u) > T_2$ instead of $T_1$) for moving from state $s_1$ to $s_3$ whenever the variable $\mathit{motion}$ is set to true. Although this mechanism did help in reducing the number of spurious results, it remained insufficient to fully distinguish between actual user utterances and erroneous recognitions.}  The metrics 8 (number of system turns) and 14 (ability of the robot to distinguish noise from speech) illustrate this discrepancy. 
 
-Finally, it worth noting that the rule-structured model systematically assigned higher utilities to confirmation requests (\utt{should I do X?}) than repetition requests (\utt{sorry, could you repeat?}) when faced with unclear user instructions, as evidenced by the metric 1. While this characteristic of the learned rule-structured model initially came as a surprise (since the wizard did use some repetition requests in the Wizard-of-Oz interactions, although admittedly much less than confirmations), it proved to be an excellent conversational strategy for the domain, as participants perceived these confirmation requests to be much more natural and informative than repetitions. By contrast, the two baseline approaches relied much more heavily on repetition requests to elicit the user instructions, a strategy that many users found irritating. 
+Finally, it is worth noting that the rule-structured model systematically assigned higher utilities to confirmation requests (\utt{should I do X?}) than repetition requests (\utt{sorry, could you repeat?}) when faced with unclear user instructions, as evidenced by the metric 1. While this characteristic of the learned rule-structured model initially came as a surprise (since the wizard did use some repetition requests in the Wizard-of-Oz interactions, although admittedly much less than confirmations), it proved to be an excellent conversational strategy for the domain, as participants perceived these confirmation requests to be much more natural and informative than repetitions. By contrast, the two baseline approaches relied much more heavily on repetition requests to elicit the user instructions, a strategy that many users found irritating. 
 
 \subsubsection*{Interpretation of the results}
 
 The empirical results obtained from the user trials demonstrate that the hybrid modelling framework presented in this thesis is a viable and competitive alternative to classical dialogue management approaches.  Nevertheless, the results are subject to two cautionary remarks.  Most importantly, it must be stressed that the results obtained for the two baselines are contingent on the particular design choices described in Section \ref{sec:approach1} and \ref{sec:approach2}.  Although these design choices are in our view relatively uncontroversial and do follow standard practices in the field of dialogue modelling, there is no doubt that these approaches could be further improved through more elaborate optimisation methods and parameter tuning. The intended purpose of the user evaluation was, however, \textit{not} to compare probabilistic rules with the ``best possible'' hand-crafted and statistical techniques, as such characterisation would make little sense and remain impossible to prove in practice. Instead, the empirical results presented in the previous pages are best interpreted as a comparison between approaches featuring the same level of sophistication in their representation of the dialogue domain, but differing with one another along two dimensions:
 \begin{itemize}
-\item The finite-state automaton and the rule-structured model share the same domain knowledge and mappings between user instructions and corresponding system actions.  However, these two approaches diverge in their account of uncertainty: while the automaton relies on confidence thresholds, the rule-structured model employs probabilistic reasoning to infer the most likely instruction given the observed inputs, prior likelihoods and external context.
+\item The finite-state automaton and the rule-structured model share the same domain knowledge and mappings between user instructions and corresponding system actions.  However, these two approaches diverge in their account of uncertainty: While the automaton relies on confidence thresholds, the rule-structured model employs probabilistic reasoning to infer the most likely instruction given the observed inputs, prior likelihoods and external context.
 \item Analogously, the factored statistical model and the rule-structured model share the same conditional dependencies between variables, domain-specific constraints, and training data. However, they differ in the amount of internal domain structure introduced into the probabilistic model, and therefore in the numbers of corresponding parameters to estimate.
 \end{itemize}
 
-Furthermore, we must also highlight the fact that the results were obtained in a context of a dialogue domain that simultaneously exhibits (1) high levels of noise and uncertainty, (2) a relatively complex relational structure and (3) small amounts of available training data.  Although these three characteristics are common to many  dialogue domains, one should be wary of extrapolating these results to domains that do not share these properties.  For instance, dialogue domains in which most state variables are fully observed might be better addressed by purely symbolic techniques instead of adopting a hybrid approach. Similarly, dialogue domains that can draw on large amounts of training data (or can rely on a pre-existing user simulator) might not have a direct need for the kind of expert domain knowledge incorporated in probabilistic rules.   In our experience, such cases constitute nevertheless the exception rather than the rule: most dialogue domains \textit{do} have substantial levels of uncertainty to confront, a rich internal structure, and only limited in-domain dialogue data (if any at all).
+Furthermore, we must also highlight the fact that the results were obtained in a context of a dialogue domain that simultaneously exhibits (1) high levels of noise and uncertainty, (2) a non-trivial relational structure and (3) small amounts of available training data.  Although these characteristics are common to many  dialogue domains, one should be wary of extrapolating these results to domains that do not share these properties.  For instance, dialogue domains in which most state variables are fully observed might be better addressed by purely symbolic techniques instead of adopting a hybrid approach. Similarly, dialogue domains that can draw on large amounts of training data (or can rely on a pre-existing user simulator) might not have a direct need for the kind of expert domain knowledge incorporated in probabilistic rules.   In our experience, such cases constitute nevertheless the exception rather than the rule: Most dialogue domains \textit{do} have substantial levels of uncertainty to confront, a rich internal structure, and only limited in-domain dialogue data (if any at all).
 
 
 \section{Conclusion}
@@ -647,7 +649,7 @@ This chapter presented an extensive user evaluation of the hybrid dialogue model
 
 The experiment was again set up in a human--robot interaction domain.  The participants were asked to instruct the robot to locate a given object, pick it up and bring it back to the starting position.  Each of the 37 participants performed 3 dialogues (one for each dialogue management approach), thus amounting to $3 \times 37$ collected interactions.  After each interaction, the participants completed a survey with 6 questions inquiring about their perception of the dialogue.  
 
-The three approaches were compared on the basis of 15 metrics with the aim to measure the quality and efficiency of the dialogues. The 15 metrics included both the user answers to the survey questions as well as 9 objective metrics extracted from the interaction logs.   The empirical results indicate that the rule-structured approach outperforms the two baselines on both objective and subjective metrics, with statistically significant differences for 7 metrics. The outcome of this user evaluation provides further empirical support for the central argument developed in this thesis, namely that the formalism of probabilistic rules is well-suited to capture the structure of dialogue domains and can contribute to the development of more robust and conversationally competent dialogue systems through a combination of expert domain knowledge and probabilistic reasoning. 
+The three approaches were compared on the basis of 15 metrics with the aim to measure the quality and efficiency of the dialogues. The metrics comprised both the user answers to the survey as well as 9 objective metrics extracted from the interaction logs.   The empirical results indicate that the rule-structured approach outperforms the two baselines on both objective and subjective metrics, with statistically significant differences for 7 metrics. The outcome of this user evaluation provides further empirical support for the central argument developed in this thesis, namely that the formalism of probabilistic rules is well-suited to capture the structure of dialogue domains and can contribute to the development of more robust and conversationally competent dialogue systems through a combination of expert domain knowledge and probabilistic reasoning. 
 
 
 % note about our approach: generalisation enable a better account of the data sparsity problem.  plus, the state dynamics are not lost since we perform belief update.  Finally, the appraoch can be seen as an initial boostrapping that can then be further refined through online reinforcement learning (Bayesian prior), as in Williams etc. also, we learn utilities, not a direct classification. Also: a user simulator is difficult for situated and open-ended environments.  we learn a POMDP policy by simulation

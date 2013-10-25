@@ -137,7 +137,7 @@ Algorithm \ref{algo:planning} selects the action to execute through forward plan
 \begin{algorithm}[h!]
 \caption{: \textsc{PlanAction} ($\mathcal{B}, \mathbf{e}$, h) }
 \begin{algorithmic}[1] \vspace{1mm}
-\REQUIRE Dialogue state $\mathcal{B}$ as a decision network
+\REQUIRE Dialogue state $\mathcal{B}$
 \REQUIRE Evidence $\mathbf{e}$
 \REQUIRE Planning horizon $h$
 \ENSURE Selected action $\mathbf{a}^*$
@@ -275,7 +275,7 @@ The above section described how the parameter distributions are updated on the b
 \begin{algorithm}[h!]
 \caption{: \textsc{$\epsilon$-Greedy-Policy} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
-\REQUIRE Dialogue state $\mathcal{B}$ as a decision network
+\REQUIRE Dialogue state $\mathcal{B}$
 \REQUIRE Evidence $\mathbf{e}$
 \ENSURE Selected action $\mathbf{a}^*$
 \STATE Select value $\mathbf{a}^* = \begin{cases} \argmax_{\mathbf{a}} Q(\mathbf{a}, \mathbf{e}) & \text{with probability } (1- \epsilon) \\ \text{another action} & \text{with probability } \epsilon \end{cases}$

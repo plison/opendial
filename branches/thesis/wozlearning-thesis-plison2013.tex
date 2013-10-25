@@ -233,12 +233,13 @@ The parameters of utility rules are also instantiated as distinct chance nodes i
 \index{supervised learning}
 
 Once the rule parameters are instantiated as nodes in the dialogue state, one can calculate their posterior distribution $P(\boldsymbol\theta \, | \, \mathcal{D})$ after observing a particular data set $\mathcal{D}$ using standard algorithms for probabilistic inference. The estimation of rule parameters corresponds to a learning problem with partial data (cf. Section \ref{sec:learning}), since some of the nodes in the dialogue state  -- such as rule nodes -- are not directly observed. The posterior distribution $P(\boldsymbol\theta \, | \, \mathcal{D})$ is thus no longer guaranteed to remain in the same distribution family as their prior distributions.  The solution adopted here is to approximate the parameter distributions via sampling techniques.
-The estimation of rule parameters from data is practically achieved by cycling through the data sample one after the other and gradually refining the parameter distributions in the light of the observed values. We describe in the next pages the generic representation of the training data as well as the learning algorithm employed for the estimation of rule parameters given some reasonable assumptions about the wizard behaviour.  
+The estimation of rule parameters from data is practically achieved by cycling through the data sample one after the other and gradually refining the parameter distributions in the light of the observed values. We describe in the next pages the generic representation of the training data as well as the learning algorithm employed for the estimation of rule parameters.
+
 \subsection{Wizard-of-Oz training data}
 \label{sec:rule-supervised-oz}
 \index{Wizard-of-Oz interaction|textbf}
 
-The focus of this chapter is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which is remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system.\footnote{Developing spoken dialogue systems can indeed lead to a classical ``chicken-and-egg'' dilemma: In order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.}
+The focus of this chapter is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which is remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system. Developing spoken dialogue systems can indeed lead to a ``chicken-and-egg'' dilemma: In order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.
 
 %We describe below the representation format used to encode these interactions and how domain models can be optimised given some reasonable assumptions about the wizard behaviour. 
 
@@ -577,20 +578,20 @@ The central question investigated in this experiment is the following: Does the 
 
 The experiment relied on two distinct baselines that express the utility model of the domain based on traditional representations: \begin{enumerate}
 \item The first baseline is a plain utility table\index{utility table} that maps every combination of state values and actions to a particular utility.  For a given set of state variables $X_1, \dots, X_n$, 
-the utility for the system action $a_m$ is therefore defined by: 
+the utility for the system action $a_m'$ is therefore defined by: 
 \begin{equation}
-U(X_1=x_1, \dots, X_n=x_n, a_m) = \theta_{(x_1, \dots, x_n, a_m)}
+U(X_1=x_1, \dots, X_n=x_n, a_m') = \theta_{(x_1, \dots, x_n, a_m')}
 \end{equation}
-where the $\theta_{(x_1, \dots, x_n, a_m)}$ value corresponds to the utility encoded in the table for the state--action pair. The number of required parameters is thus $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m)|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
+where the $\theta_{(x_1, \dots, x_n, a_m')}$ value corresponds to the utility encoded in the table for the state--action pair. The number of required parameters is thus $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m')|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
 %\begin{align*}
-%&U(a_u,a_m,\mathit{lastMove},\mathit{moveSequence},\mathit{silence},a_{m}') \\ 
-%&= U(a_u, a_m,a_{m}') + U(a_u,\mathit{lastMove},a_{m}') + U(a_m,\mathit{silence},a_{m}') 
+%&U(a_u,a_m',\mathit{lastMove},\mathit{moveSequence},\mathit{silence},a_{m}') \\ 
+%&= U(a_u, a_m',a_{m}') + U(a_u,\mathit{lastMove},a_{m}') + U(a_m',\mathit{silence},a_{m}') 
 %\end{align*}
 \item The second baseline defines the utility of a given action as a linear combination\index{linear model} of values -- one for each state variable.  The total utility is thus determined as:
 \begin{equation}
-U(X_1=x_1, \dots, X_n=x_n, a_m) = \sum_{i=1}^{n} \theta_{(x_i, a_m)}
+U(X_1=x_1, \dots, X_n=x_n, a_m') = \sum_{i=1}^{n} \theta_{(x_i, a_m')}
 \end{equation}
-where $\theta_{(x_i, a_m)}$ corresponds to the utility weight of the variable value $x_i$ for the action $a_m$.  Note that the weights are specific to a given action value. The number of required parameters is here $|\mathit{Val}(a_m)| \times (|\mathit{Val}(X_1)| + \dots + |\mathit{Val}(X_n)|)$.  As a consequence, the size of the linear model is reduced to 581 independent parameters.  However, this baseline hinges on the assumption that the total utility of a given action can be decomposed as a linear combination of weights for each state variable value.
+where $\theta_{(x_i, a_m')}$ corresponds to the utility weight of the variable value $x_i$ for the action $a_m'$.  Note that the weights are specific to a given action value. The number of required parameters is here $|\mathit{Val}(a_m')| \times (|\mathit{Val}(X_1)| + \dots + |\mathit{Val}(X_n)|)$.  As a consequence, the size of the linear model is reduced to 581 independent parameters.  However, this baseline hinges on the assumption that the total utility of a given action can be decomposed as a linear combination of weights for each state variable value.
 \end{enumerate}
 
 \subsubsection*{Rule-structured model}
