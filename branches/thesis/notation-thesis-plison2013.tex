@@ -12,7 +12,7 @@ $P(X_1, \dots, X_n)$ && Joint probability distribution for $X_1, \dots, X_n$ \\
 $P(X_1, \dots, X_n \, | \, Y_1, \dots, Y_m)$ && Conditional distribution for $X_1, \dots, X_n$ given $Y_1, \dots, Y_m$  \\ 
 $E(X)$ && Expectation of the random variable $X$ \\
  $P(\mathbf{X}  \, | \,  \mathbf{e})$ && Posterior distribution of variables $\mathbf{X}$ given evidence $\mathbf{e}$ \\ 
- $U(\mathbf{X}  \, | \,  \mathbf{e})$ && Utility distribution of variables $\mathbf{X}$ given evidence $\mathbf{e}$ \\ 
+ $U(\mathbf{X} ,  \mathbf{e})$ && Utility distribution of variables $\mathbf{X}$ given evidence $\mathbf{e}$ \\ 
  $\boldsymbol\theta_{X}$ && Parameters associated with the random variable $X$ \\ 
  $P(X\,;\boldsymbol\theta_{X})$ && Probability of $X$ given the parameters $\boldsymbol\theta_{X}$ \\ 
  
@@ -26,26 +26,23 @@ $\mathit{parents}(X)$ && Parents of $X$ such that $Y \rightarrow X$ for all $Y\!
 
 &&  \vspace{0mm} \\
 \multicolumn{3}{l}{\textbf{Reinforcement learning:}} \vspace{2mm} \\
-$s$ && Current state \\
+$s$, $s_t$ && Current state \\
 $\mathcal{S}$ && Set of possible states \\
-$s_t$ && State at time $t$ \\
 $a$ && System action \\ 
 $\mathcal{A}$ && Set of possible actions \\
 $R(s,a)$ && Immediate reward of action $a$ in state $s$ \\
 $\gamma$ && Discount factor \\
 $h$ && Planning horizon \\
-$V(s)$ && Value function for state $s$ (= expected return) \\
+$V(s)$ && Value function for state $s$ \\
 $Q(s,a)$ && Action--value function for action $a$ in state $s$  \\
-$\pi(s)$ && MDP dialogue policy, defined as a function $\pi: \mathcal{S} \rightarrow \mathcal{A} $ \\
 $o$ && Observation \\
-$\mathcal{O}$ && Set of possible observations \\
+%$\mathcal{O}$ && Set of possible observations \\
 $b$ && Belief state $b(s) = P(s)$ \\
-$\mathcal{B}$ && Belief state space $\subset \Re^{|S|-1}$ \\
+%$\mathcal{B}$ && Belief state space $\subset \Re^{|S|-1}$ \\
 $V(b)$ && Value function for belief state $b$  \\
 $Q(b,a)$ && Action--value function for action $a$ in belief state $b$ \\
-$\pi(b)$ && POMDP dialogue policy as a function $\pi: \mathcal{B} \rightarrow \mathcal{A} $ \\
+$\pi$ && (PO)MDP dialogue policy \\
 
-&&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Dialogue-specific variables:}} \vspace{2mm} \\
 
 $u_u$ && Last user utterance \\
@@ -59,7 +56,8 @@ $u_m$ && System utterance \\
 
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Probabilistic rules:}} \vspace{2mm} \\
-$r$ && Probability or utility rule \\
+$\mathcal{B}$ && Dialogue state expressed as a Bayesian network \\
+$r$ && Probabilistic rule \\
 $c_i$ && $i$-th condition of a rule \\
 $e_{(i,j)}$ && $j$-th effect for condition $c_i$ \\
 $p_{(i,j)}$ && Probability of effect $e_{(i,j)}$ \\
@@ -68,12 +66,12 @@ $O_1', \dots, O_{l}'$ && Set of output variables of a probability rule \\
 $D_1', \dots, D_{l}'$ && Set of decision variables of a utility rule \\
 $\mathbf{e}$ && Conjunction of effects $e_1 \land \dots \land e_n$ \\
 $\mathbf{e}(X)$ && (Possibly empty) set of values for variable $X$ in $\mathbf{e}$ \\
-$\mathbf{y}$ && Universally quantified variables $y_1, \dots, y_p$ of a rule  \\
+$\mathbf{y}$ && Universally quantified variables of a rule  \\
 $\mathbf{g}$ && Possible grounding for the quantified variables $\mathbf{y}$ \\
 $X^p$ && Prediction on a future expected observation $X$ \\
 &&  \vspace{3mm} \\
 \multicolumn{3}{l}{\textbf{Miscellaneous:}} \vspace{2mm} \\
 $\mathbf{1}(\phi)$ && Indicator function: $\mathbf{1}(\phi)\!=\!1$ if $\phi$ is true and 0 otherwise \\
 $\phi[a / b]$ && Formula $\phi$ where occurrences of $a$ are replaced by $b$ \\
-$|\mathcal{S}|$ && Cardinality of the set $\mathcal{S}$ (i.e. number of elements) 
+%$|\mathcal{S}|$ && Cardinality of the set $\mathcal{S}$ (i.e. number of elements) 
 \end{longtable}
