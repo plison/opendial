@@ -22,7 +22,7 @@ As for other families of reinforcement learning methods, Bayesian reinforcement 
 
 Model-based methods estimate an explicit model of the domain in the form of transition, observation and reward models.  One advantage of model-based approaches is the relative simplicity of parameter estimation, as the model parameters can be directly updated upon the reception of each observation and reward using standard Bayesian inference. The policy is, however, complex to optimise, due to the combination of three types of uncertainty: state uncertainty, stochastic action effects, and model uncertainty. The result is an augmented POMDP where the state also includes random variables expressing the model parameters in addition to traditional state variables \citep{Duff:2002,Ross:2011}. 
 
-For domains of small to medium size, approximate dynamic programming\index{dynamic programming} methods can be applied to generate the $\boldsymbol\alpha$-vectors for this augmented POMDP.  Point-based solvers \citep{Porta:2006,shani2013} have notably demonstrated reasonable performance on a variety of problems. These solution methods are, however, difficult to scale to more complex models due to the computational intractability of the optimisation process.    
+For domains of small to medium size, approximate dynamic programming\index{dynamic programming} methods such as point-based solvers \citep{shani2013} can be applied to generate the $\boldsymbol\alpha$-vectors for this augmented POMDP.  These solution methods are, however, difficult to scale to more complex models due to the computational intractability of the optimisation process.    
 
 An alternative to offline approaches is online planning\index{online planning}.  Instead of compiling a policy for all possible states (as done in dynamic programming), online planning concentrates on selecting the best action for the current state at runtime. This selection is typically implemented through the construction of a lookahead search tree representing possible actions and their effects in terms of rewards and new observations. This tree is gradually expanded until a particular planning horizon is reached.  Several approximate methods have recently been developed, based on e.g.\ point-based value iterations \citep{ross2008} and Monte Carlo tree search \citep{NIPS2010_0740}. The action leading to the highest return on the search tree is then executed by the agent.  
 
@@ -116,14 +116,14 @@ P(\{\cdot\}) = \theta_{r_{11}(1,2)} \\
 
 Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1)}$ is automatically modified as part of the state update operation. To keep the example as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The initial prior distribution $P(\boldsymbol\theta_{r_{11}(1)})$ is arbitrarily set in this example to $\sim \mathrm{Dirichlet}(2,1)$.
 
-\begin{figure}[ht]
+\begin{figure}[h!]
 \centering
 \includegraphics[scale=0.30]{imgs/learningexample.pdf}
 \caption{Parameter update for $\boldsymbol\theta_{r_{11}(1)}$ after the reception of a new user input. }
 \label{fig:learningexample}
 \end{figure}
 
-Step 1 depicts the instantiation of the rule along with its parameter. After the rule instantiation, the dialogue state is pruned, leading in Step 2 to the deletion of the rule node $r_{11}$.  Step 3 shows the reception of the second user dialogue act $a_u'$ and its inclusion in the dialogue state, with the equivalence node $eq_{a_u}$ in charge of connecting the predicted and actual value for the dialogue act. Finally, Step 4 illustrates the results after pruning the dialogue state and integrating the (soft) evidence expressed by the last dialogue act. We notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1)})$ has shifted part of its probability mass further to the right. In other words, the probability of the users repeating their last utterance becomes somewhat more likely. The posterior distribution\index{posterior parameter distribution} $P(\boldsymbol\theta_{r_{11}(1)})$ after the update is constructed using kernel density estimation. 
+Step 1 depicts the instantiation of the rule. After the rule instantiation, the dialogue state is pruned, leading in Step 2 to the deletion of the rule node $r_{11}$.  Step 3 shows the reception of the second user dialogue act $a_u'$ and its inclusion in the dialogue state, with the equivalence node $eq_{a_u}$ in charge of connecting the predicted and actual value for the dialogue act. Finally, Step 4 illustrates the results after pruning the dialogue state and integrating the (soft) evidence expressed by the last dialogue act. We notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1)})$ has shifted part of its probability mass further to the right. In other words, the probability of the users repeating their last utterance becomes somewhat more likely. The posterior distribution\index{posterior parameter distribution} $P(\boldsymbol\theta_{r_{11}(1)})$ after the update is constructed using kernel density estimation. 
 
 \subsubsection*{Action selection}
 \index{action selection}
@@ -168,17 +168,16 @@ Step 1 depicts the instantiation of the rule along with its parameter. After the
 
 The $Q$ value of an action is the discounted sum of its immediate reward (line 3 in Algorithm \ref{algo:qval}) and the expected future reward following its execution (line 4-11).  Line 6 loops on possible observations.  For efficiency reasons, only a limited number of high-probability observations are selected. For each observation, the dialogue state is updated (line 7) and the $Q$ values for the resulting state $\mathcal{B}''$ are computed (line 8).  The maximum $Q$ value for this future state is then added to the $Q$ value for the current state, weighted by the discount factor $\gamma$ and the probability $P_{\mathcal{B}'} (\mathbf{o})$ of the observation.  The procedure stops when the planning horizon has been reached, or the algorithm has run out of time. The planner then simply selects the action with maximum expected cumulative utility, as shown in line 2 of Algorithm \ref{algo:planning}. 
 
-Algorithm \ref{algo:qval} contains two loops: one cycling over the set of possible actions, and one cycling over the set of possible observations following the system action. This process can be represented in an AND-OR search tree anchored in the current state.\index{AND-OR search tree} The OR branches denote the system actions along with their respective rewards, while the AND branches denote the observations weighted by their likelihood. An example of such an AND-OR search tree is provided in Figure \ref{fig:modelbasediagram}, which is modified from \cite{ross2008}.
+Algorithm \ref{algo:qval} contains two loops: one cycling over the possible actions, and one cycling over the possible observations following the system action. This process can be represented in an AND-OR search tree anchored in the current state.\index{AND-OR search tree} The OR branches denote the system actions along with their respective rewards, while the AND branches denote the observations weighted by their likelihood. An example of such an AND-OR search tree is provided in Figure \ref{fig:modelbasediagram}.
 
-
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.30]{imgs/andortree.pdf}
 \caption{AND-OR search tree constructed through forward planning for $h=2$.}
 \label{fig:andortree}
 \end{figure}
 
-Our implementation of Algorithms \ref{algo:planning} and \ref{algo:qval} operates in anytime mode\footnote{An anytime algorithm is able to return a solution even when interrupted before its completion.}\index{anytime algorithm} and expands the search tree by gradually adding new observations and actions in a breadth-first manner. At any point in time, the planning algorithm is thus able to deliver a solution. The quality of the solution will of course depend on the accuracy of the search tree, which itself depends on the number of sampled actions and observations -- more trajectories leading to a more accurate plan, but at a higher computational cost.  The anytime nature of the algorithm is important since the planner operates online.
+Our implementation of Algorithms \ref{algo:planning} and \ref{algo:qval}  expands the search tree by gradually adding new observations and actions in a breadth-first manner.  This gradual expansion allows the planner to return a solution at any point in time (such types of processes are called \textit{anytime} algorithms).\index{anytime algorithm} The quality of the solution will of course depend on the accuracy of the search tree, which itself depends on the number of sampled actions and observations -- more trajectories leading to a more accurate plan, but at a higher computational cost.  The anytime nature of the algorithm is important since the planner operates online.
 
 As argued in \cite{onlineplanning-iwsds2012}, the reliance on utility rules to encode the reward model can help in making the planning process more tractable.  In addition to assigning utilities to system actions, utility rules also implicitly define the set of action values that are relevant at a given time.\footnote{Recall that in Algorithm \ref{algo:instantiateUtilRule} from Section \ref{sec:ruleinstantiation}, the set of possible values of an action node is directly derived from the values listed in the utility nodes connected to it.} In other words, actions that are not deemed relevant in a particular state are automatically filtered out from the planning process.  Instead of searching through the whole space of possible actions, the planning algorithm is thus limited to a subset of actions that are locally relevant.\index{action selection!filtering of relevant actions}  One interesting aspect of this approach is that the filtering of relevant actions is done solely on the basis of the provided reward model and does not require the integration of additional constraints or ad-hoc mechanisms. This stands in contrast with most existing work in dialogue management, where constraints on possible actions are typically enforced through external filtering techniques defined on the basis of e.g.\ information-state update rules \citep{heeman2007}, finite-state automata \citep{williams2008}, or -- in our own previous work on this problem -- high-level constraints encoded in Markov Logic\index{Markov logic network} formulae \citep{srw-acl2010}. 
 
@@ -191,9 +190,8 @@ The model-based learning cycle is detailed in Algorithm \ref{algo:rlearning_mb}.
 \begin{algorithm}[ht]
 \caption{: \textsc{Model-based-RL} ($\mathcal{M}, \mathcal{B}_0, \boldsymbol\theta, N$)}
 \begin{algorithmic}[1]\vspace{1mm}
-\REQUIRE Rule-structured models $\mathcal{M}$ for the domain
 \REQUIRE Initial dialogue state $\mathcal{B}_0$
-\REQUIRE Model parameters $\boldsymbol\theta$ with prior distribution $P(\boldsymbol\theta)$
+\REQUIRE Rule-structured models $\mathcal{M}$ with parameters  $\boldsymbol\theta$
 \REQUIRE Number $N$ of interactions to collect
 \ENSURE Posterior distribution $P(\boldsymbol\theta)$ for the parameters  \vspace{1mm}
 \FOR {$i = 0 \to N$}
@@ -221,7 +219,7 @@ In parallel to the model-based learning strategy described above, we also develo
 
 In addition to this action--value model, the domain may also rely on transition and observation models. However, the transition and observation models are in model-free approaches only used for state updates (if the dialogue state contains hidden state variables that are indirectly inferred from observations, such as the user intentions) and are not exploited in the action selection.  This stands in contrast with model-based approaches to reinforcement learning where transition and observation  models are directly employed to plan the next action.
 
-\begin{wrapfigure}[13]{r}{60mm}
+\begin{wrapfigure}[14]{r}{60mm}
 \vspace{-2mm}
 \centering
 \includegraphics[scale=0.25]{imgs/modelfreediagram.pdf}
@@ -237,16 +235,16 @@ In the worst case, all models may include unknown parameters.  The transition mo
 \subsubsection*{Parameter estimation}
 \index{parameter estimation}
 
-The transition and observation models can be estimated in the same manner as in the model-based approach -- that is, by including the parameters in the dialogue state and refining their distributions as part of the state update process. 
+%The transition and observation models can be estimated in the same manner as in the model-based approach -- that is, by including the parameters in the dialogue state and refining their distributions as part of the state update process. 
 
-The approach developed in this thesis rests on a simple Bayesian extension of the SARSA algorithm presented in Section \ref{sec:mdp} \index{SARSA}.  The posterior distribution over the parameters is here computed on the basis of the evidence provided by the reward $r_{t+1}$ and next system action $a_{t+1}$.  Given a sequence $\langle \mathcal{B}_t, a_t, r_{t+1}, \mathcal{B}_{t+1}, a_{t+1} \rangle$, we define the likelihood distribution $P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta)$ as:
+The model-free approach developed in this thesis rests on a simple Bayesian extension of the SARSA algorithm already presented in Section \ref{sec:mdp} \index{SARSA}.  The posterior parameter distribution is here computed on the basis of the evidence provided by the reward $r_{t+1}$ and next system action $a_{t+1}$.  Given a sequence $\langle \mathcal{B}_t, a_t, r_{t+1}, \mathcal{B}_{t+1}, a_{t+1} \rangle$, the likelihood distribution $P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta)$ is defined as:
 \begin{equation}
 P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta) = \phi \left(\frac{r_{t+1} + \gamma \ Q_{\mathcal{B}_{t+1}} \left(a_{t+1} \,; \boldsymbol\theta\right) - Q_{\mathcal{B}_t}\left(a_t \,; \boldsymbol\theta\right)}{\sigma} \right) \label{eq:modelfreelikelihood}
 \end{equation}
 where $\phi(\cdot)$ is the density function for the standard normal distribution $\mathcal{N}(0, 1)$.\index{normal distribution} The standard normal distribution has its peak around the value 0 and decreases exponentially with the distance to this mean. The likelihood distribution will therefore  be proportional to the proximity between the initial estimate 
 $Q_{\mathcal{B}_t}(a_t \,; \boldsymbol\theta)$ calculated at time $t$ and the updated estimate $\left[r_{t+1} + \gamma \ Q_{\mathcal{B}_{t+1}} (a_{t+1} \,; \boldsymbol\theta) \right]$ calculated at time $t+1$. The variance $\sigma$ encodes the spread of the bell curve and controls as a consequence the learning rate.
 
-Based on the likelihood distribution in Equation \eqref{eq:modelfreelikelihood}, the posterior distribution on the parameters is calculated as: \index{posterior parameter distribution}
+Based on the likelihood distribution in Equation \eqref{eq:modelfreelikelihood}, the posterior distribution over the parameters is calculated as: \index{posterior parameter distribution}
 \begin{equation}
 P(\boldsymbol\theta \, | \, r_{t+1}, a_{t+1}) = \eta \ P(r_{t+1}, a_{t+1} \,; \boldsymbol\theta)  \ P(\boldsymbol\theta)  \label{eq:posteriormodelfree}
 \end{equation}
@@ -256,9 +254,7 @@ P(\boldsymbol\theta \, | \, r_{t+1}, a_{t+1}) = \eta \ P(r_{t+1}, a_{t+1} \,; \b
 \index{action selection}
 \index{$\epsilon$-greedy strategy}
 
-The above section described how the parameter distributions for the $Q$-model are updated on the basis of the received rewards and executed actions, but did not explain how the system actions were selected at runtime.  \cite{Dearden:1998} develop a principled, Bayesian approach to this task revolving around the notion of ``\textit{Value of Information}''\index{Value of Information} which represents the expected improvement in the value of future decisions arising from the information acquired through exploration. 
-
-For the practical purpose of our experiments, we have opted for a simpler action selection strategy that mixes the selection of high-utility actions with a small amount of exploration.  This approach is known as a $\epsilon$-greedy strategy \citep{citeulike:112017}.  In contrast with pure greedy strategies that directly selects the action yielding the maximum $Q$-value, $\epsilon$-greedy strategies allow the agent to explore other actions once in a while. The relative frequency of these exploration actions compared to the  ``greedy'' actions is expressed by the probability $\epsilon$, which is usually small. The strategy is illustrated in Algorithm \ref{algo:egreedy}.
+The above section described how the parameter distributions for the $Q$-model are updated on the basis of the received rewards and executed actions, but did not explain how the system actions were selected at runtime.  For the practical purpose of our experiments, we have opted for a simple action selection strategy that mixes the selection of high-utility actions with a small amount of exploration.\footnote{A more principled (but also more complex) Bayesian approach is described by \cite{Dearden:1998}, based on the notion of ``\textit{Value of Information}''\index{Value of Information} which represents the expected improvement in the value of future decisions arising from the information acquired through exploration. }  This approach is known as a $\epsilon$-greedy strategy \citep{citeulike:112017}.  In contrast with pure greedy strategies that directly select the action yielding the maximum $Q$-value, $\epsilon$-greedy strategies allow the agent to explore other actions once in a while. The relative frequency of these exploration actions compared to the  ``greedy'' actions is expressed by the probability $\epsilon$, which is usually small. The strategy is illustrated in Algorithm \ref{algo:egreedy}.
 
 \begin{algorithm}[h!]
 \caption{: \textsc{$\epsilon$-Greedy-Policy} ($\mathcal{B}, \mathbf{e}$)}
@@ -273,8 +269,7 @@ For the practical purpose of our experiments, we have opted for a simpler action
 \subsubsection*{Learning cycle}
 \index{parameter estimation}
 
-The model-free learning cycle is mostly similar to the one defined in the model-based setting.  As shown in Algorithm \ref{algo:rllearning_modelfree}, the agent estimates the values of its rule parameters by collecting a number of interactions.  Each interaction starts from the initial dialogue state $\mathcal{B}_0$ and unfolds as a sequence of observations and actions.  The dialogue state contains both traditional state variables and parameter variables.  After perceiving new observations, the dialogue state is updated and the next system action selected according to the $\epsilon$-greedy strategy shown in Algorithm \ref{algo:egreedy}. After the selection of the next action, the posterior distributions over the rule parameters are correspondingly updated through temporal-difference learning (line 7). The action is then executed and the resulting reward is retrieved (line 8).  The process is repeated for each interaction. 
-
+The model-free learning cycle is mostly similar to the one defined in the model-based setting.  As shown in Algorithm \ref{algo:rllearning_modelfree}, the agent optimise the rule parameters by collecting a number of interactions and gradually refining their estimates on the basis of the received feedback. 
 
 \begin{algorithm}[ht]
 \caption{\textsc{Model-free-RL} ($\mathcal{M}, \mathcal{B}_0, \boldsymbol\theta, N$)}
@@ -300,6 +295,7 @@ The model-free learning cycle is mostly similar to the one defined in the model-
 \label{algo:rllearning_modelfree}
 \end{algorithm}
 
+Each interaction starts from the initial dialogue state $\mathcal{B}_0$ and unfolds as a sequence of observations and actions.  The dialogue state contains both traditional state variables and parameters.  After perceiving new observations, the dialogue state is updated and the next system action selected according to the $\epsilon$-greedy strategy. The posterior distributions over the rule parameters are correspondingly updated via SARSA (line 7). The action is then executed and the resulting reward is retrieved (line 8).  The process is repeated for each interaction. 
 
 \section{Experiments}
 \label{sec:rllearning-experiments}
@@ -316,7 +312,7 @@ We first describe in this section the dialogue domain and user simulator used in
 \subsection{Dialogue domain}
 \label{sec:exp2_dd}
 \index{dialogue domain}
-As in the previous chapter, the dialogue domain chosen for the experiments is a human--robot interaction scenario with a Nao robot.\index{Nao robot}  The interactions collected for the experiments involved the Nao robot conversing with a human user in a shared visual scene including a few graspable visual objects, as illustrated in Figure \ref{fig:naochap6}.  
+As in the previous chapter, the dialogue domain chosen for the experiments is a human--robot interaction scenario with a Nao robot.\index{Nao robot} conversing with a human user in a shared visual scene, as illustrated in Figure \ref{fig:naochap6}.  
 
 \begin{figure}[ht]
 $\phantom{a}$ \\[2mm]
@@ -554,9 +550,7 @@ At runtime, the probabilities for the N-best list elements are drawn from the Di
 
 \subsubsection*{Simulation procedure}
 \index{user simulator}
-The simulation procedure takes the form of an interaction loop between the simulator and the dialogue system, as shown in Figure \ref{fig:exp2_architecture}.  Two separate dialogue systems are active: the simulator on the one hand and the control system for the robot on the other hand.  However, the two systems operate differently, as the simulator has a fully observable state while the system state is only partially observable.  Another obvious difference is the fact that the domain models of the system contain unknown parameters to optimise, while the simulator models are known and fixed.
-
-Contrary to the experiments presented in the previous chapter, the dialogue architecture used in this learning experiment is essentially reduced to the dialogue management module, since the simulator and the dialogue system directly exchange their dialogue actions without needing to express them in actual spoken utterances.   
+The simulation procedure takes the form of an interaction loop between the simulator and the dialogue system, as shown in Figure \ref{fig:exp2_architecture}.  Two separate dialogue systems are active: the simulator on the one hand and the robot's dialogue system on the other hand.  However, the two systems operate differently, as the simulator has a fully observable state while the system state is only partially observable and contains unknown parameters. Contrary to the experiments presented in the previous chapter, the dialogue architecture used in this learning experiment is essentially reduced to the dialogue management module, since the simulator and the dialogue system directly exchange their dialogue actions without needing to express them in actual spoken utterances.   
 
 \begin{figure}[ht]
 \begin{center}
@@ -686,9 +680,7 @@ The model-based approach is identical to the one presented in the previous exper
 \subsubsection*{Model-free approach}
 \index{rule parameters!model-free RL of}
 
-The model-free approach relied on a utility model structured with 12 probabilistic rules associated with 27 Gaussian parameters. As the model-free approach does not estimate an explicit transition model, the dialogue state is defined solely on the basis of the recent history of dialogue acts, namely the last user action $a_u$, last system action $a_m$ and preceding action $a_{u\mbox{-}prev}$. The dialogue state also included the list of objects currently perceived and carried by the robot.
-
-The resulting rule parameters were optimised using the SARSA-based method outlined in Section \ref{sec:modelfree}. 
+The model-free approach relied on a utility model structured with 12 probabilistic rules associated with 27 Gaussian parameters. As the model-free approach does not estimate an explicit transition model, the dialogue state is defined solely on the basis of the recent history of dialogue acts, namely the last user action $a_u$, last system action $a_m$ and preceding action $a_{u\mbox{-}prev}$. The dialogue state also included the list of objects currently perceived and carried by the robot. The resulting rule parameters were optimised using the SARSA-based method outlined in Section \ref{sec:modelfree}. 
 
 \subsubsection*{Empirical results}
 
