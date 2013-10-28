@@ -465,15 +465,57 @@ $\cdot$ $\mathrm{FollowUser}$
 
 An integrated dialogue system was developed to collect Wizard-of-Oz interactions for the human--robot interaction domain described above. The dialogue system used to collect the Wizard-of-Oz data is equipped with all standard processing modules for speech understanding, generation and robot control.  Figure \ref{fig:exp1_architecture} illustrates the general system architecture and its connection to the robotic platform. At the centre of the architecture lies a shared dialogue state to which multiple system components are attached. These components monitor the dialogue state for relevant changes and read/write to it as they process their data flow. The dialogue manager is replaced by the wizard during data collection. 
 
-\begin{figure}[ht]
+\begin{figure}[p]
 \begin{center}
-\includegraphics[scale=0.30]{imgs/exp1_architecture.pdf}
+\includegraphics[scale=0.29]{imgs/exp1_architecture.pdf}
 \end{center}
 \caption{System architecture used for the experiment.}
 \label{fig:exp1_architecture}
 \end{figure}
 
-The modules used for the experiments include in particular an off-the-shelf speech recogniser connected to four microphones placed on the robot head. The language model of the speech recogniser is encoded with a small hand-crafted recognition grammar. The corresponding user dialogue acts are then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model is in charge of the linguistic realisation of the verbal actions which is then sent to the speech synthesis engine.  Finally, the execution of physical actions is delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time.  Chapter \ref{chap:opendial} discusses the design choices involved in the development of the dialogue system.
+The modules used for the experiments include in particular an off-the-shelf speech recogniser connected to four microphones placed on the robot head. The language model of the speech recogniser is encoded with a small hand-crafted recognition grammar shown in Table \ref{table:asr_woz}. 
+
+The user dialogue acts are then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model is in charge of the linguistic realisation of the verbal actions which is then sent to the speech synthesis engine.  Finally, the execution of physical actions is delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time.  Chapter \ref{chap:opendial} discusses the design choices involved in the development of the dialogue system.
+
+
+\setlength{\grammarindent}{9em} 
+
+\begin{table}[p]
+\begin{grammar}
+
+<TopRule> ::= <Movement> <Timing>? | <Grounding> | <Engagement> | <Sequence> | stop
+
+<Movement> ::= <ArmMove> | <HeadMove> | <FootMove> |  <OtherMove>
+
+<ArmMove> ::= (lift | move | lower | raise | fold) <Arm> | (move | put) <Arm> <ArmDirection> | move <ArmDirection> <Arm>
+
+<Arm> ::= (the | your) (left | right) arm | both arms
+
+<ArmDirection> ::= up | down | forward | in front of you | to the side | laterally
+
+<HeadMove> ::= move (the | your) head (to the (left | right) | up | down)
+
+<FootMove> ::= (do one)? step <FootDirection> | move <Foot> <FootDirection>
+
+<FootDirection> ::= forward | forwards | backward | backwards
+
+<Foot> ::= (the | your) (left | right) foot
+
+<OtherMove> ::= go back to initial position | kneel | sit down | stand up | turn (left | right)  
+
+<Sequence> ::= repeat (all | everything | from the start) | forget everything
+
+<Timing> ::= in parallel | at the same time | in sequence | after that | at the end
+
+<Grounding> ::= yes | sure | ok | correct | exactly | no | wrong  | thanks | thank you | great
+
+<Engagement> ::= hello (Lenny)? | goodbye (Lenny)? 
+
+\end{grammar}
+\caption{Speech recognition grammar (in Bachus-Naur form) employed for the experiment.}
+\label{table:asr_woz}
+\end{table}
+
 
 \subsubsection*{Data collection procedure}
 \index{Wizard-of-Oz interaction!data collection}
