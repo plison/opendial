@@ -29,7 +29,7 @@ The number of parameters required to estimate the distributions of a graphical m
 \label{fig:latentvariables}
 \end{figure}
 
-Dialogue models can benefit from the inclusion of such latent variables. The transition function can for instance be modelled in terms of a limited number of latent variables, each responsible for capturing specific aspects of the interaction dynamics.  We shall see in the forthcoming sections that probabilistic rules precisely operate as latent variables when instantiated in the dialogue state. 
+Dialogue models can greatly benefit from the inclusion of such latent variables. Transition functions can for instance be modelled in terms of a limited number of latent variables, each responsible for capturing specific aspects of the interaction dynamics.  We shall see in the forthcoming sections that probabilistic rules precisely operate as latent variables when instantiated in the dialogue state. 
 
 \subsubsection*{Partitioning}
 \index{state space!partitioning of}
@@ -70,11 +70,11 @@ Many dialogue domains are composed of objects or entities related to one another
 \item Linguistic entities employed in the dialogue acts of a given interaction, linked with one another through multiple syntactic, semantic, referential or pragmatic relations. 
 \end{itemize}
 
-\textit{First-order logic}\index{first-order logic} provides an excellent basis for representing and manipulating such relational structures, as it offers a mathematically principled language for (1) referring to objects connected with one another through functions and relations and (2) describing their properties in a concise way through the use of universal and existential quantifiers.\footnote{We shall not cover in this thesis the mathematical foundations of first-order logic, but the reader is invited to refer to e.g.\ \cite{gamut1991logic} for a formal overview of the logical concepts mentioned throughout this thesis.}
+\textit{First-order logic}\index{first-order logic} provides an excellent basis for representing and manipulating such relational structures, as it offers a mathematically principled language for (1) referring to objects connected with one another through functions and relations and (2) describing their properties in a concise manner through the use of universal and existential quantifiers.\footnote{We shall not cover in this thesis the mathematical foundations of first-order logic, but the reader is invited to refer to e.g.\ \cite{gamut1991logic} for a formal overview of the logical concepts mentioned throughout this thesis.}
 
-Graphical models represent relational domains by instantiating one random variable for every possible grounding of the functions and predicates defined for the domain for a collection of objects.\footnote{Such an operation is akin to \textit{propositionalisation} in the terminology of first-order logic.}  A domain with two objects $o_1$ and $o_2$ and a relation $\mathit{leftOf}(x,y)$ will for instance generate the four groundings $\mathit{leftOf}(o_1,o_2)$, $\mathit{leftOf}(o_2,o_1)$, $\mathit{leftOf}(o_1,o_1)$ and $\mathit{leftOf}(o_2,o_2)$. The definition of probability and utility distributions that can capture the relational semantics of such a representation can, however, be problematic. In particular, universal properties and constraints such as $\forall x, \neg \mathit{leftOf}(x,x)$ and $\forall x, y, z, \mathit{leftOf}(x,y) \land \mathit{leftOf}(y,z) \Rightarrow \mathit{leftOf}(x,z)$ can be difficult to enforce at a global level, since classical probabilistic models are intrinsically limited to propositional logic and offer no direct support for quantifiers. 
+Graphical models encode relational domains by instantiating one random variable for every possible grounding of the functions and predicates defined for the domain for a collection of objects.\footnote{Such an operation is akin to \textit{propositionalisation} in the terminology of first-order logic.}  A domain with two objects $o_1$ and $o_2$ and a relation $\mathit{leftOf}(x,y)$ will for instance generate the four groundings $\mathit{leftOf}(o_1,o_2)$, $\mathit{leftOf}(o_2,o_1)$, $\mathit{leftOf}(o_1,o_1)$ and $\mathit{leftOf}(o_2,o_2)$. The definition of probability and utility distributions that can capture the relational semantics of such a representation can, however, be problematic. In particular, universal properties and constraints such as $\forall x, \neg \mathit{leftOf}(x,x)$ and $\forall x, y, z, \mathit{leftOf}(x,y) \land \mathit{leftOf}(y,z) \Rightarrow \mathit{leftOf}(x,z)$ can be difficult to enforce at a global level, since classical probabilistic models are intrinsically limited to propositional logic and offer no direct support for quantifiers. 
  
-The unification of first-order logic and probability theory has spanned a new research area called \textit{statistical relational learning}\index{statistical relational learning} \citep{getoor:srlbook07}. A common trait of most approaches to statistical relational learning is the definition of a logic-based description language which is employed as a template to generate classical probabilistic models given a set of constants. The introduction of quantifiers provides an abstraction mechanism to reduce the complexity of probability and utility models by describing constraints or relations that hold for all possible groundings of a given formula and can therefore apply to large sets of random variables. 
+The unification of first-order logic and probability theory has spanned a new research area called \textit{statistical relational learning}\index{statistical relational learning} \citep{getoor:srlbook07}. A common trait of most approaches to statistical relational learning is the definition of a logic-based description language which is employed as a template to generate classical probabilistic models given a set of constants. The introduction of quantifiers provides an abstraction mechanism to reduce the complexity of probabilistic models by describing constraints or relations that hold for all possible groundings of a given formula and can therefore apply to large sets of random variables. 
 
 \section{Formalisation}
 \label{sec:formalisation}
@@ -143,7 +143,7 @@ The two examples $(\mathit{Rain}\!=\mathit{true} \lor \mathit{Weather}\!\neq\mat
 
 Given that a rule is defined through an \textit{if...then...else} construction, the partitioning is guaranteed by construction to be exhaustive and mutually exclusive (only one branch will be followed).  When provided with an assignment of values on the input variables, the conditions are tested in sequential order until one is satisfied. When no terminating \textbf{else} block is explicitly specified at the end of a rule, the framework assumes a final \textbf{else} block associated with a void effect to ensure that the partitioning is exhaustive. The last condition $c_n$ is thus guaranteed to always be trivially satisfied irrespective of the input variable values. The partitioning automatically follows from the rule structure as an \textit{if...then...else} construction, and the conditions $c_1,\dots, c_n$ themselves need not be mutually exclusive. 
 
-The conditions on the input variables offer a compact partitioning of the state space to mitigate the dimensionality curse.  Without this partitioning in alternative conditions, a rule ranging over the input variables $I_1, \dots, I_{k}$ would need to enumerate $\mathit{Val}(I_1) \times \dots \times \mathit{Val}(I_k)$ possible assignments.  Partitioning this space reduces this number to $n$ partitions, where $n$ corresponds to the number of conditions for the rule and is usually small. 
+The \textit{if...then...else} conditions offer a compact partitioning of the state space to mitigate the dimensionality curse.  Without this partitioning in alternative conditions, a rule ranging over the input variables $I_1, \dots, I_{k}$ would need to enumerate $\mathit{Val}(I_1) \times \dots \times \mathit{Val}(I_k)$ possible assignments.  Partitioning this space reduces this number to $n$ partitions, where $n$ corresponds to the number of conditions for the rule and is usually small. 
 
 
 \setlength{\grammarindent}{12em} 
@@ -163,10 +163,6 @@ The conditions on the input variables offer a compact partitioning of the state 
 
 <BinaryOperator> ::= `=' | \lit{$\neq$} | `\textless' | `\textgreater'
 
-<InputVariable> ::= term of the domain
-
-<Value> ::= term  of the domain
-
 \end{grammar}
 \caption{Syntax (in Bachus--Naur form) of a rule condition.}
 \label{table:syntaxconditions}
@@ -177,7 +173,7 @@ The conditions on the input variables offer a compact partitioning of the state 
 
 Associated to each condition $c_i$ stands a collection of possible effects $e_{(i,1)}, \dots, e_{(i,m_i)}$. Each effect $e_{(i,j)}$ represents a specific assignment of values for a set of variables called the \textit{output variables} of the rule.  An effect is formally defined as an assignment of values $O_1'\!=\!o_1 \land \dots \land O_{l}'\!=\!o_{l}$ where $O_1', \dots, O_{l}'$ denote the output variables and $o_1, \dots, o_{l}$ the corresponding values assigned to these variables. Effects can be void -- that is, represent an empty assignment. We shall adopt throughout this thesis the convention of denoting output variables with a prime to distinguish them from other types of variables. 
 
-Table \ref{table:syntaxeffects} details the syntax of a rule effect. In the example from Figure \ref{fig:partitioning}, the output variable is a singleton and corresponds to $Fire$. We shall, however, encounter examples of rules with more than one output variable. As for the rule conditions, the output variables and values correspond to arbitrary terms of the domain, and can also include free variables. 
+Table \ref{table:syntaxeffects} details the syntax of a rule effect. In the example from Figure \ref{fig:partitioning}, the output variable is a singleton and corresponds to $Fire'$. We shall, however, encounter examples of rules with more than one output variable. As for the rule conditions, the output variables and values correspond to arbitrary terms of the domain, and can also include free variables. 
 
 
 \begin{table}[h]
@@ -189,10 +185,6 @@ Table \ref{table:syntaxeffects} details the syntax of a rule effect. In the exam
 <NonVoidEffect> ::= <AtomicEffect> | <NonVoidEffect> \lit{$\land$} <NonVoidEffect> 
 
 <AtomicEffect> ::= <OutputVariable> `=' <Value>
-
-<OutputVariable> ::= term of the domain
-
-<Value> ::= term  of the domain
 
 \end{grammar}
 \caption{Syntax (in Bachus--Naur form) of a rule effect.}
@@ -262,7 +254,7 @@ U_n(d_{(n,m_n)}) = u_{(n,m_n)}
 \end{aligned}
 \end{equation}
 
-A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1, \dots, I_k$.  The decisions $d_{(i,j)}$ are assignments $D_1'\!=\!D_1 \land \dots \land A_{l}'\!=\!a_{l}$ where the variables $D_1',..A_{l}'$ are decision variables and $d_1, \dots, a_{l}$ possible values for these variables. Similarly to the output variables of probability rules, we shall always denote decision variables with a prime. The utility values $u_{(i,j)}$ are real numbers (which may be positive or negative).  
+A utility rule assigns utility values to particular system decisions depending on conditions on the state variables.  As for probability rules, the conditions $c_i$ are defined as arbitrary logical formulae on input variables $I_1, \dots, I_k$.  The decisions $d_{(i,j)}$ are assignments $D_1'\!=\!D_1 \land \dots \land D_{l}'\!=\!d_{l}$ where the variables $D_1',..D_{l}'$ are decision variables and $d_1, \dots, d_{l}$ possible values for these variables. Similarly to the output variables of probability rules, we shall always denote decision variables with a prime. The utility values $u_{(i,j)}$ are real numbers (which may be positive or negative).  
 
 Although most utility rules only include one single decision variable, the possibility to integrate multiple decision variables is helpful in domains where the system can execute multiple actions in parallel. Such situations can arise in human--robot interaction and multi-modal applications, as the system can communicate through both verbal and non-verbal channels and is often able to perform physical actions in addition to communicative acts. 
  
@@ -289,7 +281,7 @@ Rule $r_2$ stipulates the respective utilities of the two possible utility value
 \index{probabilistic rule!quantifiers in}
 \index{first-order logic}
 
-Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Free variables can be included in the specification of both the conditions and effects of a given rule and are universally quantified on top of the rule.\footnote{These free variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the free variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
+Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Free variables can be included in the specification of both the conditions and effects of a given rule and are universally quantified on top of the rule.\footnote{These free variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
 \begin{aligned}
 \forall \ y_1, y_2, \dots, y_p, \\
@@ -316,7 +308,7 @@ P(E_n\!=\!e_{(n,m_n)}) = p_{(n,m_n)}
 \label{eq:rulewithquant}
 \end{equation}
 
-The formalisation allows specific elements $y_1, \dots, y_p$ inside the conditions and effects of a rule to be \textit{underspecified}.\index{probabilistic rule!quantified variables in}  The mapping between conditions and effects specified by the rule is therefore duplicated for every possible assignment of the free variables.  Section \ref{sec:applicationquantif} explains how this finite set of possible assignments (also called the \textit{groundings} of the free variables) is practically determined on the basis of the current state. 
+The formalisation allows specific elements $y_1, \dots, y_p$ inside the conditions and effects of a rule to be \textit{underspecified}.\index{probabilistic rule!quantified variables in}  The mapping between conditions and effects specified by the rule is therefore duplicated for every possible assignment of the quantified variables.  Section \ref{sec:applicationquantif} explains how this finite set of possible assignments (also called the \textit{groundings} of the variables) is practically determined on the basis of the current state. 
 
 Based on this quantification mechanism, probabilistic rules can cover large portions of the state space in a highly compact manner, based on a reduced number of parameters. One of the main advantages of this representation is that it allows for powerful forms of \textit{parameter sharing}\index{parameter sharing}, since the effect probabilities $p_{(i,j)}$ in the above rule are made independent of the various instantiations of the variables $y_1, \dots, y_p$.  The quantification mechanism adopted in this thesis is similar to the one used in Markov logic networks \citep{Richardson:2006}, with the constraint that universal quantifiers are in this framework only allowed at the top of the rule.  In line with most approaches to statistical relational learning \citep{getoor:srlbook07} and logic programming \citep{Poole:2008}, the formalisation relies on a ``database semantics'' that assumes domain closure (the domain does not contain more elements than those explicitly specified). \index{database semantics}
 
@@ -365,7 +357,7 @@ Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ whe
 \label{sec:ruleinstantiation}
 \index{probabilistic rule!instantiation of}
 
-We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. These rule nodes are essentially latent variables\index{latent variables} that serve as intermediaries between input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
+We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. The rule nodes are essentially latent variables\index{latent variables} that serve as intermediaries between the input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
 
 We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without universal quantification, and then demonstrate how quantification can be accounted for in the instantiation process. 
 
@@ -390,8 +382,8 @@ The random variable represented by the node $r_5$ has three possible values that
 
 We shall adopt the following terminology to denote the probability distributions created through the instantiation procedure: 
 \begin{itemize}
-\item The conditional probability distribution associated with rule nodes such as $r_5$ and $r_6$ given their inputs is a \textit{rule distribution}.
-\item The conditional probability distribution associated with output variables such $A'$ and $E'$ given the rule nodes that determine it is an \textit{output distribution}.
+\item The conditional probability distributions associated with rule nodes such as $r_5$ and $r_6$ given their inputs are \textit{rule distributions}.
+\item The conditional probability distributions associated with output variables such $A'$ and $E'$ given the rule nodes that influence them are \textit{output distributions}.
 \end{itemize}
 
 \subsubsection*{Rule distributions}
@@ -403,7 +395,7 @@ The rule distributions directly reflect the rule semantics.  Formally, the condi
  \\ 
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber 
 \end{align}
-Formally speaking, a condition $c_i$ is said to be satisfied iff the input assignment logically entails that the condition is true, that is: $(I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \vdash c_i$. The rule conditions are checked in sequential order until one condition is found to be satisfied. As the last condition $c_n$ corresponds to the final \textbf{else} block and is therefore always trivially true, there will always be at least one satisfied condition. Once the first satisfied condition $c_i$ is found, the rule distribution is determined as the effect distribution $P(E_i\!=\!e)$.
+Formally speaking, a condition $c_i$ is said to be satisfied iff the input assignment logically entails that the condition is true, that is: $(I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \vdash c_i$. The rule conditions are checked in sequential order until one condition is found to be satisfied. As the last condition $c_n$ corresponds to the final \textbf{else} block and is therefore always trivially true, there will always be at least one satisfied condition. Once a satisfied condition $c_i$ is found for the input assignment, the rule distribution is defined as the effect distribution $P(E_i\!=\!e)$.
 
 As an example, the rule distribution $P(r_5 \, | \, B\!=\!b_1, C\!=\!c_1)$ for the node $r_5$ in Figure \ref{fig:instantiationprob} is straightforwardly defined as:
 \begin{itemize}
@@ -417,9 +409,9 @@ Similarly, the distribution $P(r_6 \, | \, C\!=\!c_1, D\!=\!d_1)$ is a distribut
 \subsubsection*{Output distributions} 
 \index{output distribution}
 
-An output node $X'$ is conditionally dependent on all the rule nodes that refer to it in their effects.  In addition, output nodes that correspond to the updated version of existing nodes (such as $A'$ in the example of Figure \ref{fig:instantiationprob}) also include a conditional dependence on these existing nodes.
+An output node $X'$ is conditionally dependent on all the rule nodes that refer to it in their effects.  In addition, output nodes that correspond to the updated version of existing nodes (such as $A'$ in the example of Figure \ref{fig:instantiationprob}) also include a conditional dependency on these existing nodes.
 
-The output distribution is a reflection of the combination of effects specified in the parent rules. The conditional probability distribution $P(X'|r_1\!=\!e_1, \dots, r_n\!=\!e_n)$ for an output variable $X'$ with $n$ incoming rule nodes is defined in the following manner:
+The output distribution is a reflection of the combination of effects specified in the parent rules. The conditional probability distribution $P(X' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n)$ for an output variable $X'$ with $n$ incoming rule nodes is defined in the following manner:
 \begin{align}
 &P(X'\!=\!x' \, | \, r_1\!=\!e_1, \dots, r_n\!=\!e_n) = \begin{dcases}
 \frac{\mathbf{1}(x' \in {\mathbf{e}(X')})} { |\mathbf{e}(X')| } & \text{if } \mathbf{e}(X')\!\neq\!\emptyset \\
@@ -433,7 +425,7 @@ where the following notation is used: \begin{itemize}
 \item $\mathbf{1}(b)$ is the indicator function for a boolean $b$, with $\mathbf{1}(b)=1$ if $b$ is true and $0$ otherwise.
 \end{itemize}
 
-Equation \eqref{eq:outputdist1} stipulates that the distribution for $X'$ will follow the values assigned in the effect(s) provided that at least one effect specifies a value for it. If the effects include conflicting assignments, the distribution is spread uniformly over the alternative values. This uniform division of the probability mass reflects that, in the absence of further knowledge, all rules are assumed to have the same ``weight''. If two or more rules generate contradictory effects, there is therefore no way to tell which rule is to take precedence.\footnote{This assumption could, however, be refined in the future by e.g.\ associating numerical weights to particular rules or specifying a dominance hierarchy between the rules.} If no effects $e_1, \dots, e_n$ specifies a value for $X'$ , its value is set to a default $None$ value with probability 1. 
+Equation \eqref{eq:outputdist1} stipulates that the distribution for $X'$ will follow the values assigned in the effect(s) provided that at least one effect specifies a value for it. If the effects include conflicting assignments, the distribution is spread uniformly over the alternative values. This uniform division of the probability mass reflects that, in the absence of further knowledge, all rules are assumed to have the same ``weight''. If two or more rules generate contradictory effects, there is therefore no way to tell which rule is to take precedence.\footnote{This assumption could, however, be refined in the future by e.g.\ associating numerical weights to particular rules or specifying a dominance hierarchy between the rules.} If no effects $e_1, \dots, e_n$ specifies a value for $X'$ , its value is set to a default $\mathit{None}$ value with probability 1. 
 
 If the node $X'$ is an update of an existing node $X$, the procedure remains essentially the same as for Equation \eqref{eq:outputdist1}, except when all the effects specify empty assignments for the variable. In such a case, the distribution for $X'$ will fall back to the value defined for the existing node $X$ instead of being assigned a $\mathit{None}$ value:
 \begin{align}
@@ -443,7 +435,7 @@ If the node $X'$ is an update of an existing node $X$, the procedure remains ess
 \end{dcases}\label{eq:outputdist2}
 \end{align}
 
-As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A') = \{a_2\}$. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values.   The output distribution $P(A' \, | \, r_5\!=\!\{A'\!=\!a_1\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A'$, since $\mathbf{e}(A')$ equates to $\{a_1,a_2\}$. The output distribution is thus in this case equivalent to a discrete uniform distribution with two values: $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are void, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
+As an example, the output distribution $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ in Figure \ref{fig:instantiationprob} results in a deterministic distribution with a unique value $a_2$ with probability 1, since $\mathbf{e}(A') = \{a_2\}$ in this situation. If the two rules generate conflicting assignments, the probability mass is divided equally over the alternative values.   The output distribution $P(A' \, | \, r_5\!=\!\{A'\!=\!a_1\},r_6\!=\!\{A'\!=\!a_2 \land E'\!=\!e_2\}, A\!=\!a_3)$ provides two alternative values for $A'$, since $\mathbf{e}(A')$ equates here to $\{a_1,a_2\}$. The output distribution is thus in this case equivalent to a uniform distribution with two values $a_1$ and $a_2$, each with probability 0.5. Finally, if all effects are void, the output distribution is a simple copy of the distribution for the existing variable: $P(A' \, | \, r_5\!=\!\{\cdot\},r_6\!=\!\{\cdot\}, A\!=\!a_3)$ has a unique value $a_3$ with probability 1. 
 
 %Output distributions are directly derived from the definition of effects in the rule nodes and are thus entirely parameter-free.  The ordering of the parent rules in the conditional probability distribution is arbitrary. %The resulting distribution bears resemblance to the probabilistic Independence of Causal Influence (pICI) described by \cite{diez06}. 
 
@@ -497,7 +489,7 @@ The result of the instantiation process is a decision network that incorporates 
 \label{fig:instantitionutil}
 \end{figure}
 
-The utility distribution associated with each rule is a direct translation of the  \textit{if...then...else} rule.  Formally, the utility distribution generated by a rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$ is defined as:
+The utility distribution associated with each rule is a direct translation of the  \textit{if...then...else} rule structure.  Formally, the utility distribution generated by a rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$ is defined as:
 \begin{align}
 & U_r(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!d_l) \label{eq:utildistrib}\\
 &  \; \; \; \; \; \; \; \;  \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
@@ -581,22 +573,22 @@ In practice, this extraction of input variables is simply achieved by looping ov
 
 Once the input variables are retrieved, the next step is to establish the set of relevant groundings for the universally quantified variables in the rule.  The groundings are always determined relative to a particular assignment of values for the (grounded) input variables $I_1, \dots, I_k$. 
 
-Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$, the set of groundings is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables. At the end of the extraction procedure, the universally quantified variables of the rule will therefore be associated with a set of possible groundings $G = \{\mathbf{g}_1, \dots, \mathbf{g}_{|G|}\}$.  For instance, the rule $r_3$ and the input assignment $ \mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_2)\!=\!\mathit{cone}$ yields the groundings $G= \{[o_1], [o_2]\}$ for the variable $y$. 
+Given a particular input assignment $I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k$, the set of groundings is derived by extracting the ground terms (constants and functions of constants) from the input assignment that can function as proper substitutions for the universally quantified variables. At the end of the extraction procedure, the universally quantified variables of the rule will therefore be associated with a set of possible groundings $G = \{\mathbf{g}_1, \dots, \mathbf{g}_{|G|}\}$.  For instance, the rule $r_3$ and the input assignment $ \mathit{shape}(o_1)\!=\!\mathit{sphere} \land \mathit{shape}(o_2)\!=\!\mathit{cone}$ produce the groundings $G= \{[o_1], [o_2]\}$ for the variable $y$. 
 
 % These ground terms define the domain of discourse for these variables. 
 
 \subsubsection*{Quantified probability rules}
 \index{probability rule!quantifiers in}
 
-As we have seen, probability rules are instantiated as chance nodes associated with a rule distribution.  For rules including universal quantifiers, each grounding in $G$ gives rise to a particular distribution over effects.   We can define a grounding-specific rule distribution where the universally quantified variables $\mathbf{y} = y_1,..., y_p$ are replaced by a specific grounding $\mathbf{g}_j$:
+As we have seen, probability rules are instantiated as chance nodes associated with a rule distribution.  For rules including universal quantifiers, each grounding $\mathbf{g}$ in $G$ gives rise to a particular distribution over effects.   We can define a grounding-specific rule distribution $r_{\mathbf{g}}$ where the universally quantified variables $\mathbf{y} = y_1,..., y_p$ are replaced by the specific grounding $\mathbf{g}$:
 \begin{align}
-& P(r_{\mathbf{g}_j}\!=\!e [\mathbf{y} / \mathbf{g}_j] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = P(E_i = e) \label{eq:quantifruledistrib}
+& P(r_{\mathbf{g}}\!=\!e [\mathbf{y} / \mathbf{g}] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = P(E_i = e) \label{eq:quantifruledistrib}
  \\
-& \; \; \; \; \; \; \; \; \text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \end{align}
+& \; \; \; \; \; \; \; \; \text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber \end{align}
 
-The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$. The rule distribution in Equation \eqref{eq:quantifruledistrib} is thus identical to Equation \eqref{eq:ruledistrib} where all occurrences of the universally quantified variables in the conditions and effects are replaced by their grounded value in $\mathbf{g}_j$.
+The expression $\phi[a/b]$ denotes (as in formal logic) the formula $\phi$ where all instances of $a$ are substituted by $b$. The rule distribution in Equation \eqref{eq:quantifruledistrib} is thus identical to Equation \eqref{eq:ruledistrib} where all occurrences of the universally quantified variables in the conditions and effects are replaced by their grounded value in $\mathbf{g}$.
 
-The procedure results in a set of grounding-specific rule distributions $ \{ P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_{|G|}}) \}$. Empty and redundant effect distributions are discarded. The final probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
+The procedure results in a set of grounding-specific rule distributions $ \{ P(r_{\mathbf{g}_1}), \dots, P(r_{\mathbf{g}_{|G|}}) \}$. Empty and redundant effect distributions can be discarded. The final probability distribution for the rule node is then defined as the joint distribution over these grounding-specific distributions: 
 \begin{align}
 & P(r\!=\![e_1 \land \dots \land e_{|G|}] \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k) = \prod_{j=1}^{|G|} P(r_{\mathbf{g}_j}\!=\!e_j) \label{eq:quantifruledistrib2}
 \end{align}
@@ -611,11 +603,11 @@ Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$
 \label{fig:quantinstantitionprob}
 \end{figure}
 
-To illustrate the application of Equations \eqref{eq:quantifruledistrib} and \eqref{eq:quantifruledistrib2}, the probability distribution $P(r_3 \, | \, \mathit{shape}(o_1)\!=\!\mathit{sphere}, \mathit{shape}(o_2)\!=\!\mathit{cone})$ has two relevant groundings $y\!=\!o_1$ and $y\!=\!o_2$, from which we derive four effects:
+To illustrate the application of Equations \eqref{eq:quantifruledistrib} and \eqref{eq:quantifruledistrib2}, the distribution $P(r_3 \, | \, \mathit{shape}(o_1)\!=\!\mathit{sphere}, \mathit{shape}(o_2)\!=\!\mathit{cone})$ has two relevant groundings $y\!=\!o_1$ and $y\!=\!o_2$, from which we derive a total of four effects:\vspace{-2mm}
 \begin{itemize}
-\item $\{\mathit{graspable}(o_1)'\!=\!true \land \mathit{graspable}(o_2)'\!=\!true \} $ with probability $0.9\times0.2\!=\!0.18$
-\item $\{\mathit{graspable}(o_1)'\!=\!true \ \land \  \mathit{graspable}(o_2)'\!=\!false\}$ with probability $0.9\times0.8\!=\!0.72$ 
-\item $\{ \mathit{graspable}(o_1)'\!=\!false \land \mathit{graspable}(o_2)'\!=\!true \}$ with probability $0.1\times0.2\!=\!0.02$
+\item $\{\mathit{graspable}(o_1)'\!=\!true \land \mathit{graspable}(o_2)'\!=\!true \} $ with probability $0.9\times0.2\!=\!0.18$ \vspace{-2mm}
+\item $\{\mathit{graspable}(o_1)'\!=\!true \ \land \  \mathit{graspable}(o_2)'\!=\!false\}$ with probability $0.9\times0.8\!=\!0.72$ \vspace{-2mm}
+\item $\{ \mathit{graspable}(o_1)'\!=\!false \land \mathit{graspable}(o_2)'\!=\!true \}$ with probability $0.1\times0.2\!=\!0.02$ \vspace{-2mm}
 \item $\{\mathit{graspable}(o_1)'\!=\!false \land \mathit{graspable}(o_2)'\!=\!false\}$ with probability $0.1\times0.8\!=\!0.08$
 \end{itemize}
 
@@ -623,17 +615,18 @@ To illustrate the application of Equations \eqref{eq:quantifruledistrib} and \eq
 \subsubsection*{Quantified utility rules}
 \index{utility rule!quantifiers in}
 
-Utility rules are similarly extended to accommodate universally quantified variables. As for probability rules, the instantiation of utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. 
-For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$, the rule utility for the grounding $\mathbf{g}_j$ is defined as:
+Utility rules with universally quantified variables are instantiated in a similar manner. As for probability rules, the instantiation of utility rules proceeds by determining a set of groundings and generating a particular utility distribution for each. The total utility specified by the rule is then defined as the sum of all grounding-specific utilities.
+
+For a utility rule $r$ with input variables $I_1, \dots, I_k$ and decision variables $D_1', \dots, D_l'$, the rule utility for the grounding $\mathbf{g}$ is defined as:
  \begin{align}
-& U_{\mathbf{g}_j}(D_1'\!=\!d_1[\mathbf{y} / \mathbf{g}_j], \dots, D_l'\!=\!d_l[\mathbf{y} / \mathbf{g}_j], I_1\!=\!i_1, \dots, I_k\!=\!i_k) \label{eq:quantifuruledistrib} \\ 
+& U_{\mathbf{g}}(D_1'\!=\!d_1[\mathbf{y} / \mathbf{g}], \dots, D_l'\!=\!d_l[\mathbf{y} / \mathbf{g}], I_1\!=\!i_1, \dots, I_k\!=\!i_k) \label{eq:quantifuruledistrib} \\ 
 & \; \; \; \; \; \; \; \;   \; \; = U_i(D_1'\!=\!d_1 \land \dots \land D_l'\!=\!d_l) \nonumber \\
-& \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}_j]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
+& \; \; \; \; \; \; \; \;   \; \; \;\text{where } i = \min_i (c_i[\mathbf{y} / \mathbf{g}]\text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
 After discarding empty and redundant distributions, the result is a set of utility distributions $ \{ U_{\mathbf{g}_1}, \dots, U_{\mathbf{g}_{|G|}} \}$. The total utility distribution for the rule $r$ is finally constructed by adding up the grounding-specific utility distributions:   
 \begin{align}
-& U_{r}(I_1, \dots, I_k, D_1'\, \dots, D_l') = \sum_{j=1}^{|G|} U_{\mathbf{g}_j}(I_1, \dots, I_k, D_1', \dots, D_l') \label{eq:quantifuruledistrib2}
+& U_{r}(D_1'\, \dots, D_l', I_1, \dots, I_k) = \sum_{j=1}^{|G|} U_{\mathbf{g}_j}(D_1', \dots, D_l', I_1, \dots, I_k) \label{eq:quantifuruledistrib2}
 \end{align}
 
 
@@ -668,7 +661,7 @@ The following section first describes how dialogue domains are organised in coll
 
 \subsection{Domain representation}
 
-The specification of dialogue domains\index{dialogue domain} can comprise multiple probability and utility rules. These rules are internally grouped in collections of rules called \textit{models}\index{rule-structured model}. A model is simply a set of rules that is associated with one or more ``trigger'' variables that specify when the rules should be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When at least one trigger variable is modified at runtime by another module, they lead to the instantiation of all rules included in the model. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules in the model.  There is no restriction on the trigger variables $\mathcal{T}_m$ associated with each rule-structured model.  In particular, several models can share the same trigger variable(s) and be therefore triggered in parallel upon a given change in the dialogue state. 
+The specification of dialogue domains\index{dialogue domain} can comprise numerous probability and utility rules. These rules are internally grouped in collections of rules called \textit{models}\index{rule-structured model}. A model is simply a set of rules that is associated with one or more ``trigger'' variables that specify when the rules should be instantiated. Each model is attached to the dialogue state and monitors it to detect changes affecting its trigger variables. When at least one trigger variable is modified at runtime by another module, they lead to the instantiation of all rules included in the model. Formally, a model $m$ is defined as a pair $\langle \mathcal{T}_m, \mathcal{R}_m \rangle$ where $\mathcal{T}_m$ corresponds to the trigger variables and $\mathcal{R}_m$ to the rules in the model.  There is no restriction on the trigger variables $\mathcal{T}_m$ associated with each rule-structured model.  In particular, several models can share the same trigger variable(s) and be triggered in parallel upon a relevant change in the dialogue state. 
 
 A dialogue domain is represented as a pair $\langle \mathcal{B}_0, \mathcal{M} \rangle$, where $\mathcal{B}_0$ is the initial dialogue state  and $\mathcal{M}$ the set of models attached to it. The organisation of rules into models allows the system designer to structure the application pipeline in a modular manner. Each model can be intuitively viewed as a distinct component responsible for a particular inference or decision step. 
 
@@ -729,7 +722,7 @@ P(\mathit{eq}_{X}\!=\!true \, | \, X\!=\!x, X^p\!=\!x^p) = \begin{cases}
 \end{cases} \label{eq:equivdistrib}
 \end{equation}
 
-The assignment $\mathit{eq}_{X} \!=\! true$ is added to the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
+The assignment $[\mathit{eq}_{X} \!=\! true]$ is included in the evidence. The posterior distribution given the evidence allows the prediction to act as a prior for the observed distribution:
 \begin{align}
 &P(X = x \, | \, \mathit{eq}_{X}\!=\!true) \nonumber \\
 &=  \eta \ P(X\!=\!x)  \sum_{x^p \in \mathit{Val}(X^p)} P(\mathit{eq}_{X}\!=\!true\, |\, X\!=\!x, X^p \!=\!x^p ) P(X^p\!=\!x^p)  \nonumber\\
@@ -763,7 +756,7 @@ Algorithm \ref{algo:AddToState} details how the insertion of new observation var
 \subsubsection*{Model instantiation}
 \index{rule-structured model!instantiation of}
 
-After inserting the new variables in the dialogue state and connecting them to their predicted values, the next step in the processing workflow is to trigger the relevant rule-structured models. 
+After adding the new observations in the dialogue state and connecting them to their predicted values, the next step in the processing workflow is to trigger the relevant rule-structured models. 
 
 Algorithm \ref{algo:triggerModels} summarises the steps involved in the instantiation of the models. The algorithm takes three arguments: a dialogue state $\mathcal{B}$ represented as a Bayesian network, an assignment of evidence values and a list of random variables that have been recently updated in the dialogue state. The algorithm loops on all domain models and instantiates the ones that are triggered by the updated variables. The rules are instantiated one by one, following the procedure we have outlined in the previous section. Once all models are traversed, the output variables of the instantiated rules become updated variables themselves, and the procedure is repeated until no more models can be applied.  To avoid the occurrence of infinite triggering cycles, models are limited to one single instantiation per update. The algorithm returns both the dialogue state expanded with new variables, and the evidence assignments attached to the equivalence nodes. 
 
@@ -798,7 +791,7 @@ Algorithm \ref{algo:triggerModels} summarises the steps involved in the instanti
 \subsubsection*{Action selection}
 \index{action selection}
 
-Whenever the new dialogue state contains utility and decision nodes, the system must decide on the action to perform.  Algorithm \ref{algo:actionselection} illustrates how actions can be selected on the basis of the current dialogue state augmented with the decision and utility nodes created by the utility rules. The algorithm searches for the assignment of action values that maximise the current utility given the dialogue state and the evidence and returns it. This utility maximisation is based on standard inference algorithms for decision networks such as likelihood weighting (cf. Section \ref{sec:inference}). 
+Whenever the new dialogue state contains utility and decision nodes, the system must decide on the action to perform.  Algorithm \ref{algo:actionselection} illustrates how actions can be selected on the basis of the current dialogue state augmented with the decision and utility nodes created by the utility rules. The algorithm searches for the assignment of action values that maximises the current utility given the current dialogue state and the evidence. This utility maximisation is based on standard inference algorithms for decision networks such as likelihood weighting (cf. Section \ref{sec:inference}). 
 
 The utility nodes are removed from the state once the decision is made. The action selection procedure described in Algorithm \ref{algo:actionselection} only takes into account the current (immediate) utility and does not rely on forward planning.  Chapter \ref{chap:rllearning} demonstrates how this procedure can be extended to perform online planning on a limited horizon. 
 
@@ -817,7 +810,7 @@ The utility nodes are removed from the state once the decision is made. The acti
 \subsubsection*{State pruning}
 \index{dialogue state!pruning of}
 
-The instantiation of the domain models results in the inclusion of numerous new nodes in the dialogue state. However, many nodes in this expanded Bayesian network  only serve as intermediaries and do not directly express meaningful information about the current state of the dialogue. The last step is therefore to reduce the dialogue state to its minimal size, by removing all intermediary nodes -- including rule nodes, outdated versions of state variables, equivalence nodes and predictive nodes that are attached to them -- in order to only retain current state variables. The accumulated evidence is also integrated in the posterior distribution of the state variables.
+The instantiation of the domain models results in the creation of numerous new nodes in the dialogue state. However, many nodes in this expanded Bayesian network  only serve as intermediaries and do not directly express meaningful information about the current state of the dialogue. The last step is therefore to reduce the dialogue state to its minimal size, by removing all intermediary nodes -- including rule nodes, outdated versions of state variables, equivalence nodes and predictive nodes that are attached to them -- in order to only retain current state variables. The accumulated evidence is also integrated in the posterior distribution of the state variables.
 
 The procedure is outlined in Algorithm \ref{algo:pruneState}. The first step is to determine which nodes to keep (lines 1-6).  Only the most recent versions of state variables are retained. 
 The nodes are then added one by one in a new dialogue state $\mathcal{B}'$.  The parents of the retained variables are determined, and their conditional probability distributions are calculated given the evidence.  The parents of a state variable are the closest ancestors of the variable within the subset of nodes in $\mathit{NodesToKeep}$, and its conditional probability distribution is determined as $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$.  This posterior distribution is calculated via sampling techniques. This is done by sampling all nodes in $\mathcal{B}$, then deriving the distributions $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$ on the basis of the collected samples.  
@@ -928,7 +921,7 @@ Figure \ref{fig:detailedexample} details the steps involved in the state update 
 \end{figure}
  
 Step 1 inserts the new dialogue act hypotheses in the dialogue state.  This insertion triggers 
-the utility model $m_1$. The instantiation results in Step 2 in the creation of two utility nodes and one decision node.  The optimal action to perform in this case is $\mathit{AskRepeat}$, which is selected by the system in Step 3. The action selection triggers model $m_2$ in Step 4, which creates a prediction node $a_{u}^{p\prime}$ expressing the expected probability distribution for the next user dialogue act. The state is finally pruned of the intermediary rule node in Step 5.  System components such as NLG can react on the updated state and generate the proper linguistic realisation of the system action. The system then waits for the user input, which is shown in Step 6.  The relation between the predicted and actual user response leads in Step 7 to the creation of an equivalence node, and the inclusion of the assignment $\mathit{eq}_{a_u} = true$ in the evidence. We notice that the combination of the prior distribution over predicted values and the actual distribution over dialogue act hypotheses increases the probability of $a_u' = \mathit{Request(Forward)}$. Step 8 triggers the model $m_1$ based on the new user input.  The best action at this processing stage is $\mathit{Move(Forward)}$, which is selected in Step 9.  This selection triggers model $m_2$, but rule $r_{11}$ is in this case irrelevant and is therefore directly deleted. Finally, the state is pruned of its intermediary nodes in Step 10, retaining only the last user and system actions $a_u$ and $a_m$. 
+the utility model $m_1$. The instantiation results in Step 2 in the creation of two utility nodes and one decision node.  The optimal action to perform in this case is $\mathit{AskRepeat}$, which is selected by the system in Step 3. The action selection triggers model $m_2$ in Step 4, which creates a prediction node $a_{u}^{p\prime}$ expressing the expected probability distribution for the next user dialogue act. The state is finally pruned of the intermediary rule node in Step 5.  System components such as NLG can react on the updated state and generate the proper linguistic realisation of the system action. The system then waits for the user input, which is shown in Step 6.  The relation between the predicted and actual user response leads in Step 7 to the creation of an equivalence node, and the inclusion of the assignment $[\mathit{eq}_{a_u}\!=\!true]$ to the evidence. We notice that the combination of the prior distribution over predicted values and the actual distribution over dialogue act hypotheses increases the probability of $a_u' = \mathit{Request(Forward)}$. Step 8 triggers the model $m_1$ based on the new user input.  The best action at this processing stage is $\mathit{Move(Forward)}$, which is selected in Step 9.  This selection triggers model $m_2$, but rule $r_{11}$ is in this case irrelevant and is thus directly deleted. Finally, the state is pruned of its intermediary nodes in Step 10, retaining only the last user and system actions $a_u$ and $a_m$. 
 
 In comparison to the finite-state solution presented in Figure \ref{fig:fsa}, we observe that the rule-structured approach defined by models $m_1$ and $m_2$ allows the dialogue manager to accumulate evidence over time and prime the recognition hypotheses of the user dialogue act $a_u$ based on the previous dialogue act.  This accumulation of evidence is absent from the FSA, due to its rigid state representation and lack of extended memory. 
 
@@ -956,7 +949,7 @@ Figure \ref{fig:seteffects} illustrates two rules that apply these new effects t
 \label{fig:seteffects}
 \end{figure}
 
-These new effects can be incorporated to the framework through a simple modification of the output distribution. Let $\mathbf{e}$ denote as before the conjunction of all effects $e_1 \land \dots \land e_n$. In addition to the previously defined set of values $\mathbf{e}(X)$ assigned for the variable $X$, we construct two new sets of values $\mathbf{e}_{add}(X)$ and $\mathbf{e}_{del}(X)$ that represent the values that are respectively added and deleted for the variable $X$ through the new effects we just described. The set $\mathbf{e}_{del}(X)$ includes all values for $X$ if the clear effect is applied. 
+These new effects can be incorporated to the framework through a simple modification of the output distribution. Let $\mathbf{e}$ denote as before the conjunction of all effects $e_1 \land \dots \land e_n$. In addition to the previously defined set of values $\mathbf{e}(X')$ assigned for the variable $X'$, we construct two new sets of values $\mathbf{e}_{add}(X')$ and $\mathbf{e}_{del}(X')$ that represent the values that are respectively added and deleted for the variable $X'$ through the new effects we just described. The set $\mathbf{e}_{del}(X')$ includes all values for $X'$ if the clear effect is applied. 
 
 The output distribution in Equation \eqref{eq:outputdist2} is then rewritten as:
 \begin{align}
@@ -976,7 +969,7 @@ The output distribution associated for a new variable (cf. Equation \eqref{eq:ou
 
 \subsection{Operations on strings}
 
-Many of the data structures present in the dialogue state are strings -- the most prominent ones being the last user utterance $u_u$ and the last system utterance $u_m$. The integration of special-purpose functions for manipulating strings within the conditions and effects of probabilistic rules is therefore desirable. In particular, rules can be extended to perform template-based string matching operations.  The idea is to include a new type of conditions that checks whether a string matches a given template. Templates can include slots to fill, which are conceptually similar to the quantified variables discussed in Sections \ref{sec:quantification}. A successful match will thus generate values for the filled slots, which will be included as part of the groundings for the rule.  Both full and partial matching can be employed.
+Many of the data structures present in the dialogue state are strings -- the most prominent ones being the last user utterance $u_u$ and the last system utterance $u_m$. The integration of special-purpose functions for manipulating strings within the conditions and effects of probabilistic rules is therefore desirable. In particular, rules can be extended to perform template-based string matching operations.  The idea is to include a new type of conditions that checks whether a string matches a given template. Templates can include slots to fill, which are conceptually similar to the quantified variables discussed in Sections \ref{sec:quantification}. A successful match will thus generate values for the filled slots, which will be included as part of the groundings for the rule.  Both full and partial matching can be employed in the condition.
 
 Figure \ref{fig:stringmanip} illustrates how such templates are applied in practice.  $\{\mathit{OBJ}\}$ denotes a slot that is to be filled through matching the template with the value specified in $u_u$. 
 \begin{figure}[ht]
@@ -993,7 +986,7 @@ The idea of using structural knowledge in probabilistic models has been explored
 
 \begin{itemize}
 
-\item Probabilistic rules are primarily tailored for dialogue management tasks and seek to capture dialogue domains by striking a balance between propositional and first-order logic.\index{first-order logic} The formalism deliberately eschews the complexity of full-scale first-order probabilistic inference to ensure that the domains models can be applied under real-time constraints. This design choice sets it apart from other frameworks such as Markov logic networks\index{Markov logic network} which can express arbitrary first-order formulae but are often tedious to instantiate due to the size and complexity of the resulting models.\footnote{Although see \cite{Kennington:2012} for an approach that applies Markov logic networks to incremental natural language understanding for dialogue.} 
+\item Probabilistic rules are primarily tailored for dialogue management tasks and seek to capture dialogue domains by striking a balance between propositional and first-order logic.\index{first-order logic} The formalism deliberately eschews the complexity of full-scale first-order probabilistic inference to ensure that the domains models can be applied under real-time constraints. This design choice sets it apart from other frameworks such as Markov logic networks\index{Markov logic network} which can express arbitrary first-order formulae but are often tedious to instantiate due to the size and complexity of the resulting models.\footnote{Although see \cite{Kennington:2012} for an approach that applies Markov logic networks to incremental natural language understanding in dialogue domains.} 
 
 \item Probabilistic rules are also designed to operate under partially observable settings\index{partial observability}, as state uncertainty is a pervasive and unavoidable aspect of verbal interactions.  By contrast, most previous work on relational probabilistic models are limited to fully observable environments, with the exception of some limited theoretical studies by \cite{Wang:2010} and \cite{SannerK10}. 
 
@@ -1015,4 +1008,4 @@ This chapter has presented the formalism of probabilistic rules, which forms the
 
 At runtime, these rules are instantiated in the Bayesian network representing the current dialogue state. The instantiation procedure creates a latent node for each rule, which is conditionally dependent on the input variables of the rule.  For probability rules, this node is a chance node that expresses a probability distribution over the possible effects of the rule. Utility rules are similarly instantiated with a utility node expressing the utility distribution for specific decision variables.  Universally quantified variables can be included in the conditions and effects of the rules, allowing particular aspects of the rule to be underspecified. The rules are grouped into models that are attached to the dialogue state and are triggered upon relevant state updates. 
 
-Probability and utility rules effectively function as high-level templates for the definition of a dynamic decision network (such as the ones used in MDPs and POMDPs). The expressive power of these rules allows them to efficiently encode complex relations between variables, and thereby reduce the number of parameters to estimate.  We have, however, not yet detailed how this parameter estimation is practically performed. The next two chapters provide answers to this important question. 
+Probability and utility rules effectively function as high-level templates for the definition of a dynamic decision network (such as the ones used to represent MDP and POMDP problems). The expressive power of these rules allows them to efficiently encode complex relations between variables, and thereby reduce the number of parameters to estimate.  We have, however, not yet detailed how this parameter estimation is practically performed. The next two chapters provide answers to this important question. 
