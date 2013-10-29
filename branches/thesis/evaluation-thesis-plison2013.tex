@@ -314,7 +314,7 @@ The threshold values $T_1$, $T_2$ and $T_3$ are determined empirically on the ba
 \item Finally, Region 4 corresponds to user actions that have a sufficiently high confidence to be directly executed without user confirmation. This region defines the top 40 \% of the probability mass, with cumulative densities between $0.6$ and $1.0$.
 \end{itemize}
 
-The estimated thresholds for the density function shown in Figure \ref{fig:asrconfidence-exp3} were derived to be $T_1 = 0.49$, $T_2 = 0.61$ and $T_3 = 0.73$. These values reflect the three thresholds employed in the finite-state automaton. 
+The mapping between the four regions and their associated system responses is substantiated by a manual analysis of the Wizard-of-Oz data set. The estimated thresholds for the density function shown in Figure \ref{fig:asrconfidence-exp3} were derived to be $T_1 = 0.49$, $T_2 = 0.61$ and $T_3 = 0.73$. These values reflect the three thresholds employed in the finite-state automaton. 
 
 \begin{figure}[h!]
 \centering
@@ -432,7 +432,7 @@ The rule parameters are optimised on the basis of the collected Wizard-of-Oz dat
 \label{sec:learningcurve-exp3}
 \index{learning curve}
 
-Figure \ref{fig:curve-exp3} presents the learning curves for the three dialogue management approaches presented on the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard in the test set. This measurement is repeated at regular intervals during the parameter estimation process.  As the finite-state approach is entirely hand-crafted and does not include any parameters to optimise, its agreement with the wizard actions remains constant at all time steps. 
+Figure \ref{fig:curve-exp3} presents the learning curves for the three dialogue management approaches presented on the previous pages. The Wizard-of-Oz data set described in Section \ref{sec:wozcollection-exp3} was first divided into a training set of 9 interactions (summing to 770 system turns) and a test set with one single interaction containing a total of 71 system turns. Based on this division, we measured the degree of agreement between the action selected by the system (on the basis of its model parameters) and the one selected by the wizard in the test set. This measurement is repeated at regular intervals during the parameter estimation process.  As the finite-state approach is entirely hand-crafted and does not include any parameters to optimise, its agreement with the wizard actions remains constant.
 
 \begin{figure}[ht]
 \vspace{3mm}\centering\includegraphics[scale=0.35]{imgs/curve-exp3.pdf}
@@ -618,13 +618,13 @@ It is also useful to contrast the results obtained from the survey with the init
 & Survey questions: $\phantom{00000000}$ {\small\textit{``Did you feel that ...}} && \multicolumn{1}{p{17mm}|}{\footnotesize\centering Initial user expectations} & \multicolumn{1}{p{15mm}:}{\footnotesize\centering Finite-state automaton} & \multicolumn{1}{p{15mm}:}{\footnotesize\centering Factored statistical model} & \multicolumn{1}{p{15mm}|}{\footnotesize\centering Rule-structured model} & \\ \cline{1-7} 
 \rule{0pt}{4ex}Q1.& {\small\textit{... the robot correctly understood what you said?''}}  &&  3.22 &  3.32 & 2.92  & \textbf{3.68}$^{\mathbf{*}}$ &   \\ %(0.025)
 Q2.& {\small\textit{... the robot reacted appropriately to your instructions?''}}   && 3.35 &   3.70 & 3.32 & \textbf{3.86}$^{\mathbf{*}}$  & \\ %(0.004)
-Q3.& {\small\textit{... the robot asked you to repeat or confirm your instruction?''}}   && 2.68 &2.16$\mathbf{\dagger}$  & 2.19$\mathbf{\dagger}$ & \textbf{3.30}$^{\mathbf{*}}$  & \\ %($4.6 \times 10^{-4}$)
+Q3.& {\small\textit{... the robot asked you to repeat or confirm your instruction?''}}   && 2.68 &2.16$^{\mathbf{\dagger}}$  & 2.19$^{\mathbf{\dagger}}$ & \textbf{3.30}$^{\mathbf{*}}$  & \\ %($4.6 \times 10^{-4}$)
 Q4.& {\small\textit{... the robot sometimes ignored when you were speaking?''}}  && 2.89 &  3.24 & 2.76 & \textbf{3.43}$^{\mathbf{*}}$ &  \\ % (0.015)
-Q5.& {\small\textit{... the robot sometimes thought you were talking when you were not?''}}  && 3.81 & 3.43 & 3.14$\mathbf{\dagger}$ & \textbf{4.41}$^{\mathbf{*}}$  & \\ %(0.001)
-Q6.& {\small\textit{... the interaction flowed in a pleasant and natural manner?''}} \vspace{1mm}  && 2.92 &2.97 & 2.46$\mathbf{\dagger}$ &  \textbf{3.32}$^{\mathbf{*}}$  & \\ \cline{1-7} % (0.041)
+Q5.& {\small\textit{... the robot sometimes thought you were talking when you were not?''}}  && 3.81 & 3.43 & 3.14$^{\mathbf{\dagger}}$ & \textbf{4.41}$^{\mathbf{*}}$  & \\ %(0.001)
+Q6.& {\small\textit{... the interaction flowed in a pleasant and natural manner?''}} \vspace{1mm}  && 2.92 &2.97 & 2.46$^{\mathbf{\dagger}}$ &  \textbf{3.32}$^{\mathbf{*}}$  & \\ \cline{1-7} % (0.041)
 \end{tabular} 
 \end{center}
-\caption{Comparison between the initial expectations and the actual performance of the rule-structured approach. The $\mathbf{*}$ symbol indicates better-than-expected performance with $\alpha = 0.05$, and the $\mathbf{\dagger}$ symbol worse-than-expected performance (also with $\alpha = 0.05$). \vspace{4mm} }
+\caption{Comparison between the initial expectations and the actual performance of the rule-structured approach. The $\mathbf{*}$ symbol indicates better-than-expected performance with $\alpha = 0.05$, and the ${\mathbf{\dagger}}$ symbol worse-than-expected performance (also with $\alpha = 0.05$). \vspace{4mm} }
 \label{table:compexpectation-exp3}
 \end{table}
 
