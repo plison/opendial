@@ -800,7 +800,7 @@ The utility nodes are removed from the state once the decision is made. The acti
 \caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \STATE Let $\mathbf{A}'$ be the set of all decision variables in $\mathcal{B}$
-\STATE Find highest-utility value $\mathbf{a}^* = \argmax_{\mathbf{a}} U(\mathbf{A}' = \mathbf{a}, \mathbf{e})$
+\STATE Find highest-utility value $\mathbf{a}^* = \argmax_{\mathbf{a}} U(\mathbf{A}' = \mathbf{a} \, | \, \mathbf{e})$
 \STATE Remove utility nodes from the state $\mathcal{B}$
 \RETURN $\mathbf{a}^*$
 \end{algorithmic}

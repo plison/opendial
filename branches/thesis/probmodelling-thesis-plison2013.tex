@@ -143,7 +143,7 @@ Decision networks combined with temporal dependencies are called \textit{dynamic
 \index{probabilistic inference|textbf}
 
 \subsubsection*{Exact and approximate algorithms}
-The main purpose of probabilistic graphical models is to evaluate \textit{queries} -- that is, calculate a posterior distribution\index{posterior distribution} over a subset of variables, usually given some evidence. Assuming a graphical model defining the joint probability distribution of a set of variables $\mathbf{X}$, a probability query is a posterior distribution of the form $P(\mathbf{Q}  \, | \, \mathbf{e})$, where $\mathbf{Q} \subset \mathbf{X}$ denotes the query variables and $\mathbf{e}$ a specific assignment of values for the evidence variables.  If the evidence does not contain any assignment, the query is reduced to the calculation of a marginal distribution.  Decision networks can also be used to answer utility queries of the form $U(\mathbf{Q}, \mathbf{e})$.  In this case, the query variables often correspond to decision nodes whose utility is to be determined.
+The main purpose of probabilistic graphical models is to evaluate \textit{queries} -- that is, calculate a posterior distribution\index{posterior distribution} over a subset of variables, usually given some evidence. Assuming a graphical model defining the joint probability distribution of a set of variables $\mathbf{X}$, a probability query is a posterior distribution of the form $P(\mathbf{Q}  \, | \, \mathbf{e})$, where $\mathbf{Q} \subset \mathbf{X}$ denotes the query variables and $\mathbf{e}$ a specific assignment of values for the evidence variables.  If the evidence does not contain any assignment, the query is reduced to the calculation of a marginal distribution.  Decision networks can also be used to answer utility queries of the form $U(\mathbf{Q} \, | \, \mathbf{e})$.  In this case, the query variables often correspond to decision nodes whose utility is to be determined.
 
 A wide range of inference algorithms has been developed to efficiently evaluate these probability and utility queries. These algorithms can be either exact or approximate.  
 
@@ -216,7 +216,7 @@ A large number of samples can be accumulated in this manner. Once enough samples
 \caption{: \textsc{Likelihood-Weighting-Utility} $(\mathcal{B},\mathbf{Q}, \mathbf{e}, N)$}
 \begin{algorithmic} \vspace{2mm} 
 \REQUIRE (see above)
-\ENSURE Approximate utility distribution $U(\mathbf{Q}, \mathbf{e})$ \\[2mm]
+\ENSURE Approximate utility distribution $U(\mathbf{Q} \, | \, \mathbf{e})$ \\[2mm]
 \STATE Let $\mathbf{W}, \mathbf{U}$ be vectors of weighted counts for each possible value of $\mathbf{Q}$, initialised with zeros
 \FOR {$i = 1 \to N$}
 \STATE $\mathbf{x}, w, u \leftarrow $ \textsc{Get-Sample}$(\mathcal{B}, \mathbf{e})$ 

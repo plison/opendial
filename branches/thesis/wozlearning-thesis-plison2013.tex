@@ -626,7 +626,7 @@ The experiment relied on two distinct baselines that express the utility model o
 \item The first baseline is a plain utility table\index{utility table} that maps every combination of state values and actions to a particular utility.  For a given set of state variables $X_1, \dots, X_n$, 
 the utility for the system action $a_m'$ is therefore defined by: 
 \begin{equation}
-U(X_1=x_1, \dots, X_n=x_n, a_m') = \theta_{(x_1, \dots, x_n, a_m')}
+U(a_m' \, | \, X_1\!=\!x_1, \dots, X_n\!=\!x_n) = \theta_{(x_1, \dots, x_n, a_m')}
 \end{equation}
 where the $\theta_{(x_1, \dots, x_n, a_m')}$ value corresponds to the utility encoded in the table for the state--action pair. The number of required parameters is thus $|\mathit{Val}(X_1)| \times \dots \times |\mathit{Val}(X_n)| \times |\mathit{Val}(a_m')|$. In order to keep the model tractable, the utility table was factored in the experiments in three parts, each responsible for a subset of the possible system actions. These utility tables comprised a total of 8962 independent parameters. 
 %\begin{align*}
@@ -635,7 +635,7 @@ where the $\theta_{(x_1, \dots, x_n, a_m')}$ value corresponds to the utility en
 %\end{align*}
 \item The second baseline defines the utility of a given action as a linear combination\index{linear model} of values -- one for each state variable.  The total utility is thus determined as:
 \begin{equation}
-U(X_1=x_1, \dots, X_n=x_n, a_m') = \sum_{i=1}^{n} \theta_{(x_i, a_m')}
+U(a_m' \, | \, X_1\!=\!x_1, \dots, X_n\!=\!x_n) = \sum_{i=1}^{n} \theta_{(x_i, a_m')}
 \end{equation}
 where $\theta_{(x_i, a_m')}$ corresponds to the utility weight of the variable value $x_i$ for the action $a_m'$.  Note that the weights are specific to a given action value. The number of required parameters is here $|\mathit{Val}(a_m')| \times (|\mathit{Val}(X_1)| + \dots + |\mathit{Val}(X_n)|)$.  As a consequence, the size of the linear model is reduced to 581 independent parameters.  However, this baseline hinges on the assumption that the total utility of a given action can be decomposed as a linear combination of weights for each state variable value.
 \end{enumerate}
