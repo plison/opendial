@@ -674,7 +674,7 @@ Section \ref{sec:domain-specification} explains how dialogue domains (and the mo
 
 The dialogue state is represented in our approach as a Bayesian network and is denoted $\mathcal{B}$. Each node in this Bayesian network represents a distinct state variable and can be connected to other variables through various conditional dependencies. As in information-state approaches to dialogue management, the dialogue state stands at the centre of the architecture and serves as a shared information repository for the whole dialogue system. 
 
-The general procedure for updating this dialogue state upon the reception of new observations is shown in Algorithm \ref{algo:stateupdate}. The observations may for instance correspond to new user inputs processed by the ASR/NLU components or to new elements perceived in the external context. The first step is to insert the variables in the dialogue state (line 2). The algorithm then triggers the instantiation of the relevant domain models (line 3), leading to a chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithm searches for the optimal action, selects it, and activates the models that are triggered as a result (lines 5-7). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 9). 
+The general procedure for updating this dialogue state upon the reception of new observations is shown in Algorithm \ref{algo:stateupdate}. The observations may for instance correspond to new user inputs processed by the ASR/NLU components or to new elements perceived in the external context. The first step is to insert the variables in the dialogue state (line 2). The algorithm then triggers the instantiation of the relevant domain models (line 3), leading to a chain of updates.  If the expanded dialogue state contains decision and utility variables, the algorithm searches for the highest-utility action, selects it, and activates the models that are triggered as a result (lines 5-7). Finally, the updated state is reduced by pruning away unnecessary nodes and incorporating the evidence (line 9). 
 
 \begin{algorithm}[ht]
 \caption{: \textsc{UpdateState} ($\mathcal{B}, \mathbf{O}$)}
@@ -800,7 +800,7 @@ The utility nodes are removed from the state once the decision is made. The acti
 \caption{: \textsc{SelectAction} ($\mathcal{B}, \mathbf{e}$)}
 \begin{algorithmic}[1] \vspace{1mm}
 \STATE Let $\mathbf{A}'$ be the set of all decision variables in $\mathcal{B}$
-\STATE Find optimal value $\mathbf{a}^* = \argmax_{\mathbf{a}} U(\mathbf{A}' = \mathbf{a}, \mathbf{e})$
+\STATE Find highest-utility value $\mathbf{a}^* = \argmax_{\mathbf{a}} U(\mathbf{A}' = \mathbf{a}, \mathbf{e})$
 \STATE Remove utility nodes from the state $\mathcal{B}$
 \RETURN $\mathbf{a}^*$
 \end{algorithmic}
