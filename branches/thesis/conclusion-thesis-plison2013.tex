@@ -1,7 +1,7 @@
 \chapter{Concluding remarks}
 \label{chap:conclusions}
 
-We summarise in this final chapter the main contributions of this thesis.  We briefly review the theoretical underpinnings of our work, its practical implementation in the \opendial{} software toolkit and its empirical validation in three consecutive experimental studies.  In addition, we also enumerate a number of research themes that have not been directly addressed in this dissertation but constitute interesting and important topics for future work. 
+We summarise in this final chapter the main contributions of this thesis.  We briefly review the theoretical underpinnings of our work, its practical implementation in the \opendial{} software toolkit and its empirical validation in three consecutive experimental studies.  In addition, we also enumerate a number of research themes that have not been directly addressed in this dissertation but constitute interesting and important topics for possible follow-up work. 
 
 \section{Summary of contributions}
 
@@ -12,7 +12,9 @@ The introductory chapter listed three research questions at the core of this the
 \item What is the empirical effect of such modelling techniques on the quality and efficiency of verbal interactions?
 \end{enumerate}
 
-The first question was addressed in Chapter \ref{chap:rules}, which presented the formalism of probabilistic rules and its application to dialogue management.  We also showed in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} how to optimise the parameters of these rules through a process of Bayesian inference.  Chapter \ref{chap:opendial} discussed the design of the \opendial{} toolkit and its integration in a full-fledged spoken dialogue system. Finally, Chapter \ref{chap:user-evaluation} described an empirical evaluation of our modelling approach based on user trials in a human--robot interaction domain.
+The first question was addressed in Chapter \ref{chap:rules}, which presented the formalism of probabilistic rules and its application to dialogue management.  We also showed in Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} how to optimise the parameters of these rules through a process of Bayesian inference.  Finally, Chapter \ref{chap:user-evaluation} described an empirical evaluation of our modelling approach based on user trials in a human--robot interaction domain.
+
+%Chapter \ref{chap:opendial} discussed the design of the \opendial{} toolkit and its integration in a full-fledged spoken dialogue system.
 
 \subsubsection*{A new, hybrid approach to dialogue management}
 \index{dialogue management!hybrid approach to}
@@ -26,7 +28,7 @@ In addition, probabilistic rules are also well-suited to capture the particular 
 
 \subsubsection*{Estimation of rule parameters}
 \index{rule parameters!estimation of}
-Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} elaborated a number of new learning algorithms employed to automatically estimate the parameter of probabilistic rules from data. We argued that the general skeleton of the rules -- that is, the mapping between the conditions and their associated effects -- is best structured by the system designer, while the numeric probabilities or utilities mentioned in the rules are best estimated empirically on the basis of observed dialogue data. 
+Chapters \ref{chap:wozlearning} and \ref{chap:rllearning} elaborated a number of specialised learning algorithms employed to automatically estimate the parameter of probabilistic rules from data. We argued that the general skeleton of the rules -- that is, the mapping between the conditions and their associated effects -- is best structured by the system designer, while the numeric probabilities or utilities mentioned in the rules are best estimated empirically on the basis of observed dialogue data. 
 
 We developed and discussed two complementary approaches to the statistical estimation of these rule parameters:
 \begin{enumerate}
@@ -42,11 +44,11 @@ where $\eta$ is a normalisation factor. Depending on the rule type and availabil
 
 \subsubsection*{Experimental studies}
 
-We conducted a series of practical experiments to evaluate the practical viability of our modelling framework. All experiments took place in the context of a human--robot interaction domain and employed the Nao robot as development and testing platform. 
+We conducted a series of practical experiments to evaluate the practical viability of our modelling framework. All experiments took place in the context of a human--robot interaction domain and employed the Nao robot as our development and testing platform. 
 
 We carried out three distinct experimental studies.  The first experiment, described in Section \ref{sec:wozlearning-experiments}, sought to empirically analyse the learning performance of a rule-structured utility model\index{rule-structured model!learning performance of} compared to less structured representations based on either plain utility tables or linear models.  Using a small set of Wizard-of-Oz interactions\index{Wizard-of-Oz interaction} as training data, the empirical results attested to the ability of the rule-structured model to quickly converge towards a high-quality policy and imitate the dialogue behaviour of the wizard.
 
-The second experiment, outlined in Section \ref{sec:rllearning-experiments}, demonstrated how to transfer this learning method into a reinforcement learning context.  The aim of the experiment was to automatically estimate the transition model of a human--robot interaction domain\index{human--robot interaction} from repeated interactions with a user simulator bootstrapped from Wizard-of-Oz data. The experiment contrasted the learning performance of a rule-structured model against an unstructured baseline.  An online forward planning algorithm was used in both cases to select the next action to perform given all sources of uncertainty (i.e.\ state uncertainty, uncertain action effects, and model uncertainty). As in the first experiment, the results indicated that the rule-structured model could learn the interaction dynamics (and thus achieve higher rewards) much faster than its unstructured counterpart.
+The second experiment, outlined in Section \ref{sec:rllearning-experiments}, demonstrated how to transfer this learning method into a reinforcement learning context.  The aim of the experiment was to automatically estimate the transition model of a human--robot interaction domain\index{human--robot interaction} from repeated interactions with a user simulator bootstrapped from Wizard-of-Oz data. The experiment contrasted the learning performance of a rule-structured model with an classical factored baseline.  An online forward planning algorithm was used in both cases to select the next action to perform given all sources of uncertainty (i.e.\ state uncertainty, uncertain action effects, and model uncertainty). As in the first experiment, the results indicated that the rule-structured model could learn the interaction dynamics (and thus achieve higher rewards) much faster than its unstructured counterpart.
 
 The third and final experiment, which we detailed in the previous chapter, evaluated the modelling framework through a full-scale user study.\index{user evaluation}   Instead of focusing on the learning performance, the objective of the experiment was to analyse the practical effects of the framework on measures of dialogue quality and efficiency. The interaction scenario consisted of a simple task in which the participants instructed the robot to pick up a designated object and bring it to another location. Three dialogue management approaches were developed: one hand-crafted finite-state automaton, one statistical dialogue manager with factored models, and one hybrid dialogue manager based on probabilistic rules.  Each participant carried out three separate dialogues (one for each approach).  The results obtained from this user evaluation showed that the rule-structured model outperformed the two baselines on a large range of objective and subjective metrics.
 
@@ -67,7 +69,7 @@ The approach presented in this thesis can be extended in several important direc
 
 As demonstrated in Chapter \ref{chap:rllearning}, the parameters of probabilistic rules can be optimised from relatively small amounts of interactions.  This characteristic opens up the possibility of directly estimating rule-structured domain models from live interactions with human users, without relying on a user simulator.  However, although theoretically appealing, this possibility has not yet been validated experimentally and would certainly constitute an important direction for future work.
 
-In practice, the conduct of such an experiment will require algorithmic improvements to the online planning algorithm in order to enhance its real-time performance. One possible solution, already suggested in Section \ref{rrlearning-exp22}, would be to blend model-based and model-free approaches and employ the model-free policy as a heuristic function to guide the forward search of the online planner.  Such mixture of offline and online planning has notably been investigated by \cite{RossC07}, and has shown promising results.
+In practice, the conduct of such an experiment will require algorithmic improvements to the online planning algorithm in order to enhance its real-time performance. One possible solution, already suggested in Section \ref{rrlearning-exp22}, would be to blend model-based and model-free approaches and employ the model-free policy as a heuristic function to guide the forward search of the online planner.  Such a mixture of offline and online planning has notably been investigated by \cite{RossC07}, and has shown promising results.
 
 
 \subsubsection*{Combination of supervised and reinforcement learning}
@@ -79,7 +81,7 @@ As already shown by \cite{williams2003}, \cite{rieser2006} and \cite{Henderson:2
 \subsubsection*{Joint optimisation of dialogue models}
 \index{joint optimisation}
 
-As noted in Chapter \ref{chap:opendial}, probabilistic rules can be employed to structure many reasoning tasks and are not necessarily restricted to dialogue management. The dialogue system developed for our experiments indeed already relied on probability and utility rules for natural language understanding and generation tasks, although the parameters of these rules were hand-crafted. However, nothing prevents these parameters to also be estimated in parallel with the dialogue management models in order to jointly optimise the end-to-end behaviour of the dialogue agent.  As argued by e.g.\ \cite{Lemon:2011}, such joint optimisation of dialogue models brings several theoretical and practical advantages over isolated, component-by-component optimisations.
+As noted in Chapter \ref{chap:opendial}, probabilistic rules can be employed to structure many reasoning tasks and are not necessarily restricted to dialogue management. The dialogue system developed for our experiments indeed already relied on probability and utility rules for natural language understanding and generation tasks, although the parameters of these rules were hand-crafted. However, nothing prevents these parameters from also being estimated in parallel with the dialogue management models in order to jointly optimise the end-to-end behaviour of the dialogue agent.  As argued by e.g.\ \cite{Lemon:2011}, such joint optimisation of dialogue models brings several theoretical and practical advantages over isolated, component-by-component optimisations.
 
 \subsubsection*{Incrementality and turn-taking}
 \index{incremental processing}
