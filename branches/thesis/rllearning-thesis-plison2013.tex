@@ -688,9 +688,7 @@ The model-based approach is identical to the one presented in the previous exper
 \subsubsection*{Model-free approach}
 \index{rule parameters!model-free RL of}
 
-The model-free approach relied on a utility model structured with 11 probabilistic rules associated with 26 Gaussian parameters. As the model-free approach does not estimate an explicit transition model, the user intention is derived in a deterministic manner on the basis of the recent history of dialogue acts.  The utility rules define the action utilities based on this user intention and on the general dialogue context, as listed in Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-rrlearning}). 
-
-The resulting rule parameters are optimised using the SARSA-based learning method outlined in Section \ref{sec:modelfree}. 
+The model-free approach relied on a utility model structured with 11 probabilistic rules associated with 26 Gaussian parameters. As the model-free approach does not estimate an explicit transition model of the domain, the user intention is derived via a deterministic rule on the basis of the recent history of dialogue acts.  The utility rules stipulate the $Q$-values of all possible system actions on the basis of this user intention and the general dialogue context. Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-rrlearning}) details the content of these rules.  The utility parameters are optimised using the SARSA-based reinforcement learning method outlined in this chapter. 
 
 \subsubsection*{Empirical results}
 
