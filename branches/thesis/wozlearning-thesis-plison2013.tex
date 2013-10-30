@@ -16,7 +16,7 @@ The chapter is divided in three sections.  Section \ref{sec:rule-params} describ
 
 The examples of probabilistic rules seen so far all relied on fixed probability and utility values. These values can, however, be replaced by parameters that reflect unknown values that are to be estimated empirically, on the basis of training data. 
  
-The overall structure of parametrised rules remains essentially identical to the one outlined in the previous chapter.  Probability rules are once more defined in terms of conditions $c_i$ associated to probability distributions $P(E_i)$ over effects.  The probability of each effect $e_{(i,j)}$ is, however, no longer fixed but is instead represented by a parameter $\theta_{(i,j)}$, giving rise to the following skeleton: 
+The overall structure of such parametrised rules remains essentially identical to the one outlined in the previous chapter.  Probability rules are once more defined in terms of conditions $c_i$ associated to probability distributions $P(E_i)$ over effects.  The probability of each effect is, however, no longer fixed but is instead represented by a parameter $\theta_{(i,j)}$, giving rise to the following skeleton: 
 \begin{equation}
 \begin{aligned}
 & \textbf{if} \ \ (c_{1}) \ \ \textbf{then} \\ 
@@ -68,7 +68,7 @@ U_n(d_{(n,m_n)}) = \theta_{(n,m_n)}
 
 We focus in this work on the problem of parameter estimation given a known and fixed rule structure.  The methodological standpoint adopted in this thesis rests on the idea that the structure of probabilistic rules is best determined by the system designer, while the rule parameters are best derived by statistical optimisation techniques. Based on our own practical experience with various dialogue systems, we believe that such a division of labour between the human designer and the learning algorithm is a sensible one, as system designers generally have a good grasp of the domain structure and relations between variables but are often unable to quantify the precise probability of an effect or utility of an action.\footnote{Humans are indeed notoriously poor at estimating probabilities and are prone to multiple cognitive biases when doing so, as evidenced by numerous studies in behavioural psychology.  \cite{ohagan2006} provides more details on the human perception of uncertainty and the difficult problem of probability elicitation from experts.}\index{probability distribution!elicitation of}
 
-Although our work concentrates on parameter estimation \index{parameter estimation} with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}.\index{statistical relational learning}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the dialogue domains investigated in this thesis work.  
+Although our work concentrates on parameter estimation \index{parameter estimation} with a known rule structure, it should be noted that recent developments in statistical relational learning have shown that the structure of stochastic rules can also be extracted from data \citep{PasulaZK07,Kok:2009}.\index{statistical relational learning}  These methods are, however, generally confined to domains of limited size and full observability and are therefore difficult to apply to the dialogue domains investigated in this thesis.  
 
 %Domain models can be composed of both fixed and parametrised rules and can therefore accommodate a wide spectrum of learning tasks from fully statistical models with virtually no prior knowledge to manually designed models with only a handful of parameters. 
 
@@ -131,9 +131,7 @@ As Dirichlet distributions are conjugate priors of categorical distributions, th
 & = \eta' \ \theta_{r_{1}(1,1)} \ [ \theta_{r_{1}(1,1)}^{\alpha_1 - 1} \times \theta_{r_{1}(1,2)}^{\alpha_2 - 1} ]   = \eta' \ \textrm{Dirichlet}(\alpha_1+1,\alpha_2) \nonumber 
 \end{align}
 
-where $\eta$ and $\eta'$ are normalisation factors.  Given a prior probability distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}'\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  This updated Dirichlet distribution results in a slightly higher probability for the occurrence of fire, reflecting the evidence provided by the observation. 
-
-%As explained in Section \ref{sec:learning}, this property is, however, contingent on the full observability of the domain variables. 
+where $\eta$ and $\eta'$ are normalisation factors.  Given a prior probability distribution $P(\boldsymbol\theta_{r_{1}(1)}) \sim \mathrm{Dirichlet}(\alpha_1, \alpha_2)$, the posterior distribution for $\boldsymbol\theta_{r_{1}(1)}$ after the observation  $\mathit{Fire}'\!=\!\mathit{true}$ is thus another Dirichlet distribution $\sim \mathrm{Dirichlet}(\alpha_1+1,\alpha_2)$.  This updated Dirichlet distribution results in a slightly higher probability for the occurrence of fire, reflecting the evidence provided by the observation.  %As already explained in Section \ref{sec:learning}, this property is, however, contingent on the full observability of the state variables. 
 
 %$For instance, we can encode the fact that the user is unlikely to change his intention after a clarification request by assigning a higher $\alpha$ value to the intention $i_u'$ corresponding to the current value $i_u$ when $a_m$ is a clarification request. 
 
@@ -177,7 +175,7 @@ The range of possible values can be further constrained by truncating the densit
 
 Normal distributions are well suited to represent utility values for which rough initial estimates are available. If a particular utility value is expected to lie in the vicinity of a particular value, its probability distribution can be expressed via a normal distribution with a mean centred on this value and a variance reflecting the confidence in the provided estimate. 
 
-Figure \ref{fig:uniformn} illustrates three instances of probability density functions for a parameter $\theta$.  The first distribution corresponds to a uniform distribution on the interval $[-2,4]$, while the second and third distributions are truncated normal distributions with mean $\mu=2$ and variances respectively assigned to $\sigma^2=4$ and $\sigma^2=1$ . The two normal distributions illustrate how prior knowledge about the utility value can be incorporated in the prior -- in this case, the distributions rest on the assumption that the true utility value is likely to revolve around the value 2. 
+Figure \ref{fig:uniformn} illustrates three instances of probability density functions for a parameter $\theta$.  The first distribution corresponds to a uniform distribution on the interval $[-2,4]$, while the second and third distributions are truncated normal distributions with mean $\mu=2$ and variances respectively assigned to $\sigma^2=4$ and $\sigma^2=1$. The two normal distributions illustrate how prior knowledge about the utility value can be incorporated in the prior -- in this case, the distributions rest on the assumption that the true utility value is likely to revolve around the value 2. 
 
 \begin{figure}[ht]
 \centering
@@ -197,7 +195,7 @@ A parametrised probability rule $r$ structured with $n$ conditions is associated
 
 The conditional probability distribution of a rule node $r$ given its input variables $I_1, \dots, I_k$ and parameters $\boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}$ is a straightforward adaptation of Equation \eqref{eq:ruledistrib}:
 \begin{align}
-& P(r\!=\!e \, | \, I_1\!=\!i_1, \dots,  I_k\!=\!i_k\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)})  = P(E_i = e\,; \boldsymbol\theta_{r(i)}) \\
+& P(r\!=\!e \, | \, I_1\!=\!i_1, \dots,  I_k\!=\!i_k \, \, ; \, \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)})  = P(E_i = e\, \, ; \, \boldsymbol\theta_{r(i)}) \\
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
@@ -207,8 +205,8 @@ The rule distribution in the presence of universally quantified variables define
 
 The parameters of utility rules are also instantiated as distinct chance nodes in the dialogue state, as shown in Figure \ref{fig:ruleinstantiation_params2}. The corresponding utility distribution is adapted from Equation \eqref{eq:utildistrib} as follows:
 \begin{align}
-& U_r(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l, I_1\!=\!i_1, \dots, I_k\!=\!i_k\,; \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
-& = U_i(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l\,; \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
+& U_r(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l \, | \, I_1\!=\!i_1, \dots, I_k\!=\!i_k \, \, ; \, \boldsymbol\theta_{r(1)}, \dots, \boldsymbol\theta_{r(n)}) \nonumber \\ 
+& = U_i(D_1'\!=\!d_1, \dots, D_l'\!=\!d_l \, \, ; \, \boldsymbol\theta_{r(i)})  \label{eq:utildistrib_params}\\
 & \; \; \; \; \; \; \; \; \text{ where } i = \min_i (c_i \text{ is satisfied with } I_1\!=\!i_1 \land \dots \land I_k\!=\!i_k) \nonumber
 \end{align}
 
@@ -239,7 +237,7 @@ The estimation of rule parameters from data is practically achieved by cycling t
 \label{sec:rule-supervised-oz}
 \index{Wizard-of-Oz interaction|textbf}
 
-The focus of this section is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which is remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system. Developing spoken dialogue systems can indeed lead to a ``chicken-and-egg'' dilemma: In order to build up a particular system, system designers often need to know what types of user utterances and behaviours are expected -- but in order to collect such data, one must first have an integrated dialogue system with which the users can interact.  Wizard-of-Oz interactions are a way to circumvent this dilemma.
+The focus of this section is on the estimation of rule parameters from a specific type of training data, namely Wizard-of-Oz interactions. Wizard-of-Oz interactions are interactions between human users and a dialogue system which is remotely controlled by a human expert ``behind the curtains''.  They constitute a simple and efficient method to collect realistic conversational behaviour for a particular domain in the absence of a fully implemented or optimised system. 
 
 %We describe below the representation format used to encode these interactions and how domain models can be optimised given some reasonable assumptions about the wizard behaviour. 
 
@@ -247,18 +245,22 @@ The focus of this section is on the estimation of rule parameters from a specifi
 
 For the specific purpose of estimating the parameters of dialogue management models, we can represent Wizard-of-Oz interactions as a sequence of state--action pairs $\mathcal{D} = \{\langle \mathcal{B}_i, a_i \rangle : 1 \leq i \leq n\}$, where $\mathcal{B}_i$ corresponds to the dialogue state at time $i$, and $a_i$ is the associated action performed by the wizard.  The number $n$ corresponds to the total number of recorded actions. 
 \index{dialogue state}
-The dialogue state $\mathcal{B}_i$ represents the current conversational situation at time $i$ as it was perceived by the wizard.  The dialogue state usually includes the recent dialogue history as well as important contextual features.  As explained in the previous chapter, the dialogue state can be encoded as a Bayesian network to reflect state uncertainty and dependencies amongst state variables. Associated to each dialogue state is the corresponding action $a_i$ selected by the wizard at that state. This action can be void if the wizard decides to take no action at that specific step in the dialogue. 
+The dialogue state $\mathcal{B}_i$ represents the current conversational situation at time $i$ as it was perceived by the wizard.  The dialogue state usually includes the recent dialogue history as well as important contextual features, and is expressed as a Bayesian network. Associated to each dialogue state is the corresponding action $a_i$ selected by the wizard at that state. This action can be void if the wizard decides to take no action at that specific step in the dialogue. 
+
+% As explained in the previous chapter, the dialogue state can be encoded as a Bayesian network to reflect state uncertainty and dependencies amongst state variables. 
 
 %The sequence of state-action pairs $\mathcal{D}$ is in our approach automatically extracted from the collected interactions, without any manual annotation.  
 
-Many conversational situations allow for multiple, equally ``correct'' system responses.  This characteristic of verbal interactions carries over to the state--action pairs of Wizard-of-Oz data sets, as one can occasionally observe similar states mapped to different wizard actions. The wizard actions should therefore be viewed as an indication of good conversational behaviour, but do not constitute absolute gold standards in the traditional sense of being the uniquely appropriate output for the given dialogue state. The existence of multiple responses also entails that the accuracy of the learned models remains contingent on the degree of internal consistency of the wizard actions. 
+Many conversational situations allow for multiple, equally ``correct'' system responses.  This characteristic of verbal interactions carries over to the state--action pairs of Wizard-of-Oz data sets, as one can occasionally observe similar states mapped to different wizard actions. The wizard actions should therefore be viewed as an indication of good conversational behaviour, but do not constitute absolute gold standards in the traditional sense of being the uniquely appropriate output for the given dialogue state. 
+
+%The occurence of multiple responses also entails that the accuracy of the learned models remains contingent on the degree of internal consistency of the wizard actions. 
 
 \subsubsection*{Assumptions about the wizard behaviour}
 \index{Wizard-of-Oz interaction!assumptions about}
 
 The utilities of the system actions are never directly observed -- the only data points available to the learning agent are are the examples of wizard decisions in various situations.  In order to infer the underlying utilities from these examples of decisions, one needs to make a few assumptions about the relation between the action utilities and the decisions made by the wizard. 
 
-Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is an (approximately) rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. The agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs (including e.g.\ speech recognition errors) and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should therefore be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  Furthermore, in order to account for the occasional errors and inconsistencies in the Wizard-of-Oz data set, the rationality of the wizard decisions is only assumed up to a certain level of confidence (as explained below). 
+Parameter estimation on Wizard-of-Oz data rests on the assumption that the wizard is an (approximately) rational agent and will tend to select actions that are deemed most useful in their respective dialogue state. The agent is only assumed to act rationally \textit{given} the perceived (uncertain) dialogue state. The wizard must indeed act on the basis of ``noisy'' inputs -- including e.g.\ speech recognition errors -- and may as a consequence select suboptimal actions if the provided inputs contain erroneous hypotheses. It should therefore be stressed that the assumption of rationality does not equate to an assumption of omniscience on the part of the wizard.  Furthermore, in order to account for the occasional errors and inconsistencies in the Wizard-of-Oz data set, the rationality of the wizard decisions is only assumed up to a certain level of confidence (as explained below). 
 
 In practice, the posited rationality of the wizard implies that the likelihood $P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta)$ of a wizard action $a_i$ in a dialogue state $\mathcal{B}_i$ under the parameters $\boldsymbol\theta$ will depend on the utility of action $a_i$ in $\mathcal{B}_i$ relative to other possible actions.  We now formalise this definition of the likelihood.
 
@@ -277,11 +279,11 @@ P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) & = \begin{cases} \eta \, p & \text{
 \eta (1-p)^2 p & \text{ if } a_i \ \text{is the third-highest action} \\ 
 \dots
 \end{cases} \nonumber \\[1mm]
-& = \ \ \eta (1-p)^x p \ \ \ \ \ \ \ \text{ where } x \text{ is the position of action } a_i \label{eq:likelihood1} \\[-2mm]
+& = \ \ \eta (1-p)^x p \ \ \ \ \ \ \ \text{ where } x \text{ is the position of action } a_i \label{eq:likelihood1} \\
 &  \phantom{= (1-p)^x p} \ \ \ \ \ \ \ \ \ \ \ \text{ in the ranked list of actions}  \nonumber
 \end{align}
 
-The $\eta$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalisation factor, while the probability $p$  represents the learner confidence in the rationality  of the wizard.  A value $p = 0.7$ will hence indicate that the wizard is assumed to act rationally -- and thus select the highest-utility action -- with probability $0.7$. The probability $p$ indirectly defines the learning rate of the estimation process: the higher the probability, the faster the learner will converge to a policy that imitates the wizard actions.  However, a high value for $p$ renders the learner more vulnerable to the occasional errors and inconsistencies on the part of the wizard. 
+The $\eta$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalisation factor, while the probability $p$  represents the learner confidence in the rationality  of the wizard.  A value $p = 0.7$ will hence indicate that the wizard is assumed to act rationally -- and thus select the highest-utility action -- with probability $0.7$. The probability $p$ indirectly defines the learning rate of the estimation process: The higher the probability, the faster the learner will converge to a policy that imitates the wizard actions.  However, a high value for $p$ also renders the learner more vulnerable to the occasional errors and inconsistencies on the part of the wizard. 
 
 
 \begin{wrapfigure}[17]{r}{65mm}
@@ -293,9 +295,9 @@ The $\eta$ factor in Eq. \eqref{eq:likelihood1} represents as usual the normalis
 \label{fig:geometric}
 \end{wrapfigure}
 \index{geometric distribution}
-The probability distribution represented by Equation \eqref{eq:likelihood1} is a particular instance of a \textit{geometric} distribution.\footnote{Technically speaking, the definition in Equation \eqref{eq:likelihood1} corresponds to a truncated version of the geometric distribution, as the support of the distribution is finite (the number of possible actions is bounded). The reduction of the distribution to a finite support is achieved via the normalisation factor $\eta$.} Given a repetition of Bernoulli trials with a probability of success $p$, the geometric distribution $\mathrm{Geometric}(p)$  describes the probability that the first success will be observed at the $k$-th trial. 
+The probability distribution represented by Equation \eqref{eq:likelihood1} is a particular instance of a \textit{geometric} distribution.\footnote{Technically speaking, the definition in Equation \eqref{eq:likelihood1} corresponds to a truncated version of the geometric distribution, as the support of the distribution is finite (the number of possible actions is bounded). The reduction of the distribution to a finite support is achieved via the normalisation factor $\eta$.} Given a repetition of Bernoulli trials with a probability of success $p$, the geometric distribution describes the probability $P(n)$ that the first success will be observed at the $n$-th trial. 
 
-The reliance on geometric distributions to formalise the likelihood of the observed actions is motivated by the posited rationality of the wizard decisions.  In other words, the formalisation is grounded in the assumption that the wizard will select the highest utility action with probability $p$, the second-highest action with probability $(1-p)p$, and so forth. The geometric distribution is monotonically decreasing, which ensures that the probability of a high-utility action will always be higher than its lower-utility alternatives.   
+The reliance on geometric distributions to formalise the likelihood is motivated by the posited rationality of the wizard decisions.  In other words, the formalisation is grounded in the assumption that the wizard will select the highest utility action with probability $p$, the second-highest action with probability $(1-p)p$, and so forth. The geometric distribution is monotonically decreasing, which ensures that the probability of a high-utility action will always be higher than its lower-utility alternatives.   
 
 Figure \ref{fig:geometric} shows an example of geometric distribution over four action values $[a_1, a_2, a_3, a_4]$, where $U_{\mathcal{B}_i}(a_1\,; \boldsymbol\theta) > U_{\mathcal{B}_i}(a_2\,; \boldsymbol\theta) > U_{\mathcal{B}_i}(a_3\,; \boldsymbol\theta) > U_{\mathcal{B}_i}(a_4\,; \boldsymbol\theta)$.
 
@@ -307,7 +309,7 @@ Given the aforementioned likelihood distribution, the posterior distribution ove
 P_{\mathcal{B}_i}(\boldsymbol\theta \, | \, a_i) = \eta \, P_{\mathcal{B}_i}(a_i\,; \boldsymbol\theta) \, P(\boldsymbol\theta ) \label{eq:paramposterior}
 \end{equation}
 
-The factor $\eta$ is used for normalisation. The calculation of this posterior distribution is a non-trivial inference problem as the probabilistic model contains both continuous and discrete random variables.  Two types of solutions can be distinguished. \begin{itemize}
+The factor $\eta$ is used for normalisation. The calculation of this posterior distribution is a non-trivial inference problem as the probabilistic model contains both continuous and discrete random variables.  This inference problem can be solved in two separate manners: \begin{itemize}
 \item The first strategy is to discretise the range of parameter values into distinct, mutually exclusive buckets, and thereby transform continuous variables into discrete variables, with a number of values equivalent to the number of buckets employed for the discretisation.
 \item The second strategy is to retain the continuous nature of the parameters, but approximate the inference process through the use of sampling techniques.  
 \end{itemize}
@@ -324,7 +326,7 @@ After sampling, the full joint distribution $P_{\mathcal{B}_i}(\boldsymbol\theta
 The result of the posterior calculation in Equation \eqref{eq:paramposterior} is a collection of sampled values. In order to derive a full probability density function from these samples, one can either follow a so-called parametric approach and seek to reconstruct the underlying parametric distributions (such as Gaussian or Dirichlet distributions) that best fit the data, or adopt a non-parametric strategy and directly represent the posterior as a function of the collected samples. Parametric approaches, albeit interesting, are difficult to apply in this setting, for two main reasons:
 \begin{enumerate}\index{non-parametric distribution}
 \item The distribution family of the posterior is hard to determine, as the posterior is no longer ensured to remain in the same family as the prior when learning from partial data.  
-\item Additionally, fitting multivariate distributions such as Dirichlets based on sampled values is a laborious computational process with no closed-form solutions.\footnote{Numerical methods based on fixed-point and Newton-Raphson iterations do exist, however \citep{minka2003}.}
+\item Additionally, fitting multivariate distributions such as Dirichlets based on sampled values is a laborious computational problem with no closed-form solutions.\footnote{Numerical methods based on fixed-point and Newton-Raphson iterations do exist, however \citep{minka2003}.}
 \end{enumerate}
 
 We have consequently adopted a non-parametric representation of the posterior distributions, based on \textit{kernel density estimation}\index{kernel density estimation} (KDE).  The kernel density estimator for a continuous variable $X$ for which a set of samples $x_1, \dots, x_n$ is available is given by:
@@ -345,7 +347,7 @@ Multivariate distributions are encoded with a multivariate extension of KDE base
 
 \subsubsection*{Learning algorithm}
 
-Algorithm \ref{algo:wozlearning} presents the general procedure for estimating model parameters from Wizard-of-Oz data.  The algorithm loops on each instance pair in the training data.   The posterior parameter distribution is estimated via sampling, based on the likelihood of the wizard action (line 2).  The individual posterior distributions for each parameter are then reconstructed via kernel density estimation on the sampled values (line 3-5), and the process is repeated. 
+Algorithm \ref{algo:wozlearning} presents the general procedure for estimating model parameters from Wizard-of-Oz data.  The algorithm loops on each instance pair in the training data.   The posterior parameter distribution is estimated via sampling, based on the likelihood of the wizard action (line 4).  The individual posterior distributions for each parameter are then reconstructed via kernel density estimation on the sampled values (line 5-7), and the process is repeated. 
 
 %For each pair, the algorithm starts by including the parameters in the dialogue state and triggering the domain models (line 2 and 3).
 
@@ -380,7 +382,7 @@ We evaluated the learning approach outlined in this chapter in the context of a 
 
 %The empirical results showed that the model encoded with utility rules were able to reproduce the wizard policy  than the more weakly structured baseline models. 
 
-It should be stressed that the purpose of the experiment is limited to the evaluation of the \textit{learning performance}\index{learning performance} of the model. The evaluation of the model in terms of e.g.\ qualitative and quantitative metrics of interaction success (and user satisfaction) constitutes an important but separate question, which will be addressed in Chapter \ref{chap:user-evaluation}. 
+It should be stressed that the purpose of the experiment is limited to the evaluation of the \textit{learning performance}\index{learning performance} of the model. The evaluation of the approach in terms of e.g.\ qualitative and quantitative metrics of interaction success (and user satisfaction) constitutes an important but separate question, which will be addressed in Chapter \ref{chap:user-evaluation}. 
 
 We first describe in this section the dialogue domain employed for the experiment, after which we detail the data collection procedure and experimental setup, and finally present and analyse the empirical results. 
 
@@ -475,8 +477,6 @@ An integrated dialogue system was developed to collect Wizard-of-Oz interactions
 
 The modules used for the experiments include in particular an off-the-shelf speech recogniser connected to four microphones placed on the robot head. The language model of the speech recogniser is encoded with a small hand-crafted recognition grammar shown in Table \ref{table:asr_woz}. 
 
-The user dialogue acts are then derived from the ASR hypotheses via a template-based recognition model. On the generation side, a shallow generation model is in charge of the linguistic realisation of the verbal actions which is then sent to the speech synthesis engine.  Finally, the execution of physical actions is delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time.  Chapter \ref{chap:opendial} discusses the design choices involved in the development of the dialogue system.
-
 
 \setlength{\grammarindent}{9em} 
 
@@ -515,6 +515,9 @@ The user dialogue acts are then derived from the ASR hypotheses via a template-b
 \caption{Speech recognition grammar (in Bachus-Naur form) employed for the experiment.}
 \label{table:asr_woz}
 \end{table}
+
+
+The user dialogue acts are then derived from the ASR hypotheses via a template-based model. On the generation side, a shallow generation model is in charge of the linguistic realisation of the verbal actions which is then sent to the speech synthesis engine.  Finally, the execution of physical actions is delegated to a separate component, responsible for planning the robot movements and controlling its motors in real-time.  Chapter \ref{chap:opendial} discusses in more detail the architectural design of the dialogue system as well as the configuration of each component. 
 
 
 \subsubsection*{Data collection procedure}
@@ -606,7 +609,7 @@ Each selected action $a_m$ was recorded along with the complete dialogue state $
 \item Finally, a periodically updated variable expressing the number of seconds elapsed since the last user or system action.  This variable is used to determine when the system should ask for an explicit confirmation from the user.
 \end{enumerate}
 
-The state variables are represented with their full probability distributions. The dialogue state recorded right before the wizard registers the first movement in Transcript 1 corresponds for instance to the following specification: 
+The state variables are represented with their full probability distributions. The dialogue state recorded right before the registration of the first movement t in Transcript 1 corresponds for instance to the following specification: 
 \begin{align*}
 \mathcal{B} = \begin{cases} a_u = [ (\mathrm{Confirm}, p\!=\!0.88), (\mathrm{Say(ThankYou)}, p\!=\!0.10), (\mathit{None}, p\!=\!0.02) \rangle \\
 a_m = \langle (\mathrm{AskConfirmation}, p\!=\!1) ] \\
@@ -622,8 +625,8 @@ The central question investigated in this experiment is the following: Does the 
 
 \subsubsection*{Baseline models}
 
-The experiment relied on two distinct baselines that express the utility model of the domain based on traditional representations: \begin{enumerate}
-\item The first baseline is a plain utility table\index{utility table} that maps every combination of state values and actions to a particular utility.  For a given set of state variables $X_1, \dots, X_n$, 
+The experiment relied on two distinct baselines that express the utility model of the domain via traditional representations: \begin{enumerate}
+\item The first baseline is a plain utility table\index{utility table} that maps every combination of state values and actions to a particular utility.  For a set of state variables $X_1, \dots, X_n$, 
 the utility for the system action $a_m'$ is therefore defined by: 
 \begin{equation}
 U(a_m' \, | \, X_1\!=\!x_1, \dots, X_n\!=\!x_n) = \theta_{(x_1, \dots, x_n, a_m')}
@@ -657,7 +660,7 @@ Figure \ref{fig:exp1_baselines} offers a graphical comparison of the utility mod
 \end{figure}
 
 
-The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}.  The prior distributions on the utility values were initialised with uniform priors on the interval $[-1,6]$ in all three models. 
+The parameter estimation procedure followed the Bayesian learning approach detailed in Section \ref{sec:rule-supervised-learning}.  The prior distributions on the utility values were initialised with uniform priors on the interval $[-1,6]$ in all three utility models. 
 
 %For the baseline models, the function \textsc{triggerModels}(...) resulted in the creation of one single utility node connected to the system action, as illustrated in Figure \ref{fig:exp1_baselines}.
 
@@ -665,7 +668,7 @@ The parameter estimation procedure followed the Bayesian learning approach detai
 \index{learning performance}
 Given the utility models defined above, the selected action simply corresponds to the action associated with the maximum utility in the current state. In this particular experiment, utility maximisation only considered the current (immediate) utility and did not perform forward planning.
 
-The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state--action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their agreement with the wizard actions in the held-out test set. This agreement is determined to be the proportion of system-selected actions that are identical to the action chosen by the wizard. The agreement results for the three models were evaluated at various stages of the estimation process in order to analyse and compare their learning performance. The results were practically calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
+The data collected from the Wizard-of-Oz interactions was split into a training set composed of 765 state--action pairs (75 \% of the gathered data) and a held-out test set with 255 actions (remaining 25 \%). The same training set was used to estimate the utility parameters for the three models.  The resulting utility models were then evaluated on the basis of their agreement with the wizard actions in the held-out test set. This agreement is determined to be the proportion of system-selected actions that are identical to the action chosen by the wizard. The agreement results for the three models were evaluated at regular intervals in the course of the estimation process. The results were practically calculated by sampling over the parameters, performing inference over the resulting models, and finally averaging over the inference results.  
 
 \subsection{Empirical results and analysis}
 \label{sec:wozlearning-experiments-results}
@@ -726,4 +729,4 @@ As shown in the experiments, Wizard-of-Oz interaction data can be a useful and i
 \item The technical setup of a Wizard-of-Oz environment from which the wizard can perceive the user inputs, monitor contextual features, select possible actions to execute, and get all relevant information recorded and stored in a generic format. 
 \end{enumerate}
 
-A natural alternative to supervised learning from Wizard-of-Oz data is to let the dialogue system learn the best conversational behaviour via trial and error from its own interaction experience (that is, through reinforcement learning), without relying on the provision of external examples.\index{reinforcement learning}  The next chapter demonstrates how such a strategy can be practically implemented, based once again on the formalism of probabilistic rules to structure the domain models. 
+A natural alternative to supervised learning from Wizard-of-Oz data is to let the dialogue system learn the best conversational behaviour via trial and error from its own interaction experience (that is, through reinforcement learning), without relying on the provision of external examples.\index{reinforcement learning}  The next chapter demonstrates how such a strategy can be practically implemented, based once again on the formalism of probabilistic rules.

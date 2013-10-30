@@ -2,7 +2,7 @@
 \label{chap:rllearning}
 This chapter extends the parameter estimation approach developed in the previous chapter to a reinforcement learning context.  As explained in the first part of this thesis, a reinforcement learning agent learns how to act through a process of trial and error in a given environment.  In our case, the environment is represented by verbal interactions with human users, and the system behaviour to learn corresponds to dialogue policies mapping dialogue states to relevant system responses. 
 
-The optimisation process is in many respects similar to the one already outlined. Bayesian inference remains the basic instrument for updating distributions over the model parameters on account of the collected evidence.  However, the evidence is no longer represented by examples of expert behaviour as in supervised learning. The learning agent instead actively gathers experience through repeated interactions with (real or simulated) users, and receives feedback on its actions in the form of new observations and rewards. The parameter distributions are gradually refined on the basis of this feedback and subsequently employed to select the next actions to execute. As we shall see in this chapter, the use of probabilistic rules\index{probabilistic rule} helps the learning agent to escape the ``curse of dimensionality''\index{curse of dimensionality} that often characterises dialogue domains. As a consequence, the number of interactions required to reach dialogue policies of high quality can be greatly reduced. 
+The optimisation process is in many respects similar to the one already outlined in the previous chapter. Bayesian inference remains the basic instrument for updating distributions over the model parameters on account of the collected evidence.  However, the evidence is no longer represented by examples of expert behaviour as in supervised learning. The learning agent instead actively gathers experience through repeated interactions with (real or simulated) users, and receives feedback on its actions in the form of new observations and rewards. The parameter distributions are gradually refined on the basis of this feedback and subsequently employed to select the next actions to execute. As we shall see in this chapter, the use of probabilistic rules\index{probabilistic rule} helps the learning agent to escape the ``curse of dimensionality''\index{curse of dimensionality} that often characterises dialogue domains. As a consequence, the number of interactions required for the optimisation can be greatly reduced. 
 
 The chapter is divided in three sections.  After a survey of the core concepts of Bayesian reinforcement learning in Section \ref{sec:brl}, we define in Section \ref{sec:rl-ruleparams} our own reinforcement learning approach to the estimation of rule parameters.  More specifically, we present how the parameters of probabilistic rules can be automatically optimised from interactions using either model-based or model-free strategies. Finally, Section \ref{sec:rllearning-experiments} reports on a learning experiment carried out in a human--robot interaction domain. The purpose of the experiment was to analyse the performance of rule-structured models compared to standard factored distributions. Empirical results on a simulator indicate that rule-structured models can converge to near-optimal parameters -- and hence achieve higher returns -- in a much shorter time than unstructured representations. 
 
@@ -35,9 +35,9 @@ Model-based Bayesian reinforcement learning has been applied to dialogue managem
 \subsubsection*{Model-free methods}
 \index{Bayesian reinforcement learning!model-free methods for}
 
-Model-free methods adopt a different learning strategy and directly optimise a dialogue policy from experience, without attempting to construct explicit internal models of the domain. One simple method, first formalised by \ \cite{Dearden:1998}, is to assign prior distributions to the $Q$ value estimates associated with state--action pairs, and iteratively refine these distributions upon the completion of each action. This update generally relies on Bellman's equation\index{Bellman's equation}, since the $Q$ values are never directly observed (only the observations and rewards are available to the agent). The best action is then simply defined as the one that maximises the $Q$ values for the current state, modulo an ``exploration bonus'' added at learning time to favour exploratory strategies.  
+Model-free methods adopt a different learning strategy and directly optimise a dialogue policy from experience, without attempting to construct explicit internal models of the domain. One simple method, first formalised by \cite{Dearden:1998}, is to assign prior distributions to the $Q$ value estimates associated with state--action pairs, and iteratively refine these distributions upon the completion of each action. This update generally relies on Bellman's equation\index{Bellman's equation}, since the $Q$ values are never directly observed (only the observations and rewards are available to the agent). The best action is then simply defined as the one that maximises the $Q$ values for the current state, modulo an ``exploration bonus'' added at learning time to favour exploratory strategies.  
 
-Gaussian processes\index{Gaussian processes} can be used to extend model-free approaches to problems with continuous state and action spaces \citep{Engel:2005}. \cite{milica2013} present a framework for model-free dialogue policy optimisation based on such processes. Their optimisation strategy relies on a extension of the SARSA algorithm for Gaussian Processes \citep{Engel:2005}. One of the main benefits of their approach is the tremendous acceleration of the optimisation procedure.  As a result, the dialogue policy can be optimised via live interactions with human users instead of being confined to simulation. \cite{Supelec808} present a related line of work based on Kalman Temporal Differences\index{Kalman Temporal Differences}.  Their approach is grounded in Kalman filtering instead of full Bayesian filtering, it only estimates the first and second moment of the parameter distributions -- i.e.\ its mean and variance -- instead of the full posterior distributions.  Finally, \cite{DBLP:conf/slt/ThomsonJGKMYY10} show how to apply Bayesian learning to the (model-based) estimation of the transition model while simultaneously optimising the dialogue policy in a model-free manner. 
+Gaussian processes\index{Gaussian processes} can be used to extend model-free approaches to problems with continuous state and action spaces \citep{Engel:2005}. \cite{milica2013} present a framework for model-free dialogue policy optimisation based on such processes. Their optimisation strategy relies on a extension of the SARSA algorithm for Gaussian Processes \citep{Engel:2005}. One of the main benefits of their approach is the tremendous acceleration of the optimisation procedure.  As a result, the dialogue policy can be optimised via live interactions with human users instead of being confined to simulation. \cite{Supelec808} present a related line of work based on Kalman Temporal Differences\index{Kalman Temporal Differences}.  Their approach being grounded in Kalman filtering rather than full Bayesian filtering, only the first and second moments (mean and variance) of the parameter distributions  are estimated instead of the full posterior distributions.  Finally, \cite{DBLP:conf/slt/ThomsonJGKMYY10} show how to apply Bayesian learning to the model-based estimation of the transition model while simultaneously optimising the dialogue policy in a model-free manner. 
 
 %Policy gradient methods that optimise a parametrised policy by gradient ascent have also been also developed \citep{GhavamzadehE06}.
 
@@ -49,7 +49,7 @@ Gaussian processes\index{Gaussian processes} can be used to extend model-free ap
 
 \subsubsection*{Scalability}
 
-Bayesian reinforcement learning has been the subject of much recent research in the last decade, based on both model-based and model-free paradigms. This research focus led to the development of powerful optimisation methods \cite[see e.g.][for a detailed survey]{brl2012}. Nevertheless, scalability remains an important concern when porting these methods to real applications, as the sizes of the parameter and action spaces can  constitute major bottlenecks for many learning methods.  This problem is especially acute in partially observable domains, as the dialogue policies are in such a case defined on a continuous and high-dimensional belief space (as explained in Chapter \ref{chap:probmodelling}, the belief space is a simplex in $\Re^{|\mathcal{S}|-1}$, where $|\mathcal{S}|$ is the size of the state space).  
+Bayesian reinforcement learning has been the subject of much recent research in the last decade, based on both model-based and model-free paradigms. This research focus led to the development of powerful optimisation methods \cite[see e.g.][for a detailed survey]{brl2012}. Nevertheless, scalability remains an important concern when porting these methods to real applications, as the sizes of the parameter and action spaces can  constitute major bottlenecks for many learning methods.  This problem is especially acute in partially observable domains, as the dialogue policies are in such cases defined on a continuous and high-dimensional belief space (as explained in Chapter \ref{chap:probmodelling}, the belief space is a simplex in $\Re^{|\mathcal{S}|-1}$, where $|\mathcal{S}|$ is the size of the state space).  
 
 As shall be argued in the next section, probabilistic rules\index{probabilistic rule} can contribute to addressing this scalability problem by reducing the dimensionality of the parameter space and filtering out irrelevant actions from the planning process.
 
@@ -57,12 +57,12 @@ As shall be argued in the next section, probabilistic rules\index{probabilistic 
 \label{sec:rl-ruleparams}
 \index{rule parameters!reinforcement learning of}
 
-This thesis develops two distinct approaches to the optimisation of rule parameters from unannotated interactions. Both employ Bayesian reinforcement learning as theoretical framework and probabilistic rules as representation formalism, but rely on distinct optimisation strategies:
+This thesis develops two distinct approaches to the optimisation of rule parameters from direct interactions. Both employ Bayesian reinforcement learning as theoretical framework and probabilistic rules as representation formalism, but rely on distinct optimisation strategies:
 
 \begin{itemize}
 \item The first approach follows a model-based strategy.  In this approach, the rule-structured models $\mathcal{M}$ of the domain correspond to transition, observation and reward models. The models are associated with a collection of parameters $\boldsymbol\theta$ with prior distribution $P(\boldsymbol\theta)$.  These parameter distributions are updated on the basis of the observations and rewards received by the system during the interactions. Forward planning is employed at runtime to calculate the expected cumulative utilities of possible actions and select the one yielding the maximum utility given the current dialogue state and rule parameters. 
 
-\item The second approach is a model-free strategy with parametrised utility rules representing the estimated $Q$ value for the system actions. In contrast to the model-based strategy, the utility parameters are here updated via a temporal-difference learning method.  The actions to execute are determined through an $\epsilon$-greedy policy that seeks to strike a balance between the selection of known high-utility actions and the exploration of new actions.
+\item The second approach is a model-free strategy with parametrised utility rules representing the estimated $Q$-value for the system actions. In contrast to the model-based strategy, the utility parameters are here updated via a temporal-difference learning method.  The actions to execute are determined through an $\epsilon$-greedy policy that seeks to strike a balance between the selection of known high-utility actions and the exploration of new actions.
 
 \end{itemize}
 
@@ -97,14 +97,14 @@ Two types of information sources are available to the agent to refine its parame
 
 \subsubsection*{Example of parameter update}
 
-Let us illustrate this process on the dialogue from Section \ref{sec:detailedexample}, reproduced here for convenience: \vspace{-2mm}
+Let us illustrate this process on the dialogue example already discussed in Section \ref{sec:detailedexample}, reproduced here for convenience: \vspace{-2mm}
 \begin{dialogue} 
 \speak{User } Now move forward \\  $\phantom{b}$ \textit{Hypotheses for} $\tilde{a}_u = [ (\mathit{Request(Forward)}, 0.6), (\mathit{Request(Backward)}), 0.4)]$  \\[-3mm]
 \speak{System } Could you please repeat? \\[-3mm]
 \speak{User } Please move forward! \\  $\phantom{b}$ \textit{Hypotheses for} $\tilde{a}_u = [ (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.3) ]$ \\[-4mm]
 \end{dialogue} 
 
-We now assume the effect distribution associated with the predictive rule $r_{11}$ to be initially unknown and replaced by parameters, leading to the following rule:
+We now assume the effect distribution associated with the predictive rule $r_{11}$ to be initially unknown and replaced by parameters, leading to the following rule: \vspace{-2mm}
 \begin{align*}
 r_{11}: \ \ & \forall y, \\ 
 & \textbf{if} \ (a_m = \mathit{AskRepeat} \land a_u=y) \ \textbf{then} \\ 
@@ -118,17 +118,17 @@ Figure \ref{fig:learningexample} illustrates how the distribution over the param
 
 \begin{figure}[h!] \vspace{0mm}
 \centering
-\includegraphics[scale=0.29]{imgs/learningexample.pdf}
+\includegraphics[scale=0.30]{imgs/learningexample.pdf}
 \caption{Parameter update for $\boldsymbol\theta_{r_{11}(1)}$ after the reception of a new user input. }
 \label{fig:learningexample}
 \end{figure}
 
-Step 1 depicts the instantiation of the rule. After the rule instantiation, the dialogue state is pruned, leading in Step 2 to the deletion of the rule node $r_{11}$.  Step 3 shows the reception of the second user dialogue act $a_u'$ and its inclusion in the dialogue state, with the equivalence node $eq_{a_u}$ in charge of connecting the predicted and actual value for the dialogue act. Finally, Step 4 illustrates the results after pruning the dialogue state and integrating the (soft) evidence expressed by the last dialogue act. We notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1)})$ has shifted part of its probability mass further to the right. In other words, the probability of the users repeating their last utterance becomes somewhat more likely. The posterior distribution\index{posterior parameter distribution} $P(\boldsymbol\theta_{r_{11}(1)})$ after the update is constructed using kernel density estimation. 
+Step 1 corresponds to the instantiation of the rule. After the instantiation, the dialogue state is pruned, leading in Step 2 to the deletion of the rule node $r_{11}$.  Step 3 shows the reception of the second user dialogue act $a_u'$ and its inclusion in the dialogue state, with the equivalence node $eq_{a_u}$ in charge of connecting the predicted and actual value for the dialogue act. Finally, Step 4 illustrates the results after pruning the dialogue state and integrating the (soft) evidence expressed by the last dialogue act. We notice that the parameter distribution $P(\boldsymbol\theta_{r_{11}(1)})$ has shifted part of its probability mass further to the right. In other words, the probability of the user repeating their last utterance becomes somewhat more likely. The posterior distribution\index{posterior parameter distribution} $P(\boldsymbol\theta_{r_{11}(1)})$ after the update is constructed using kernel density estimation. 
 
 \subsubsection*{Action selection}
 \index{action selection}
 
- As the $Q$ values are not directly accessible in model-based approaches, action selection must resort to either dynamic programming or forward planning to calculate the expected future rewards of each action.  Action selection is the computational bottleneck in model-based Bayesian reinforcement learning, since the agent needs to reason not only over all the current and future states, but also over all possible models (parametrised by the $\boldsymbol\theta$ variables).  The high dimensionality of the task often prevents the use of offline solution techniques. We apply in our implementation a simple forward planning algorithm coupled with importance sampling, as shown in Algorithm \ref{algo:planning} \index{online planning}\index{planning horizon}. The selection procedure relies on the recursive function \textsc{Calculate-Q-Values}($\mathcal{B}, \mathbf{e}, h$) to compute the Q-values of possible actions given a current state $\mathcal{B}$, evidence $\mathbf{e}$ and planning horizon $h$.  
+ As the $Q$-values are not directly accessible in model-based approaches, action selection must resort to either dynamic programming or forward planning to calculate the expected future rewards of each action.  Action selection is the computational bottleneck in model-based Bayesian reinforcement learning, since the agent needs to reason not only over all the current and future states, but also over all possible models (parametrised by the $\boldsymbol\theta$ variables).  The high dimensionality of the task often prevents the use of offline solution techniques. We apply in our implementation a simple forward planning algorithm coupled with importance sampling, as shown in Algorithm \ref{algo:planning} \index{online planning}\index{planning horizon}. The selection procedure relies on the recursive function \textsc{Calculate-Q-Values}($\mathcal{B}, \mathbf{e}, h$) to compute the Q-values of possible actions given a current state $\mathcal{B}$, evidence $\mathbf{e}$ and planning horizon $h$.  
 
 \begin{algorithm}[h!]
 \caption{: \textsc{PlanAction} ($\mathcal{B}, \mathbf{e}$, h) }
@@ -166,7 +166,7 @@ Step 1 depicts the instantiation of the rule. After the rule instantiation, the 
 \label{algo:qval}
 \end{algorithm}
 
-The $Q$ value of an action is the discounted sum of its immediate reward (line 3 in Algorithm \ref{algo:qval}) and the expected future reward following its execution (line 4-11).  Line 6 loops on possible observations.  For efficiency reasons, only a limited number of high-probability observations are selected. For each observation, the dialogue state is updated (line 7) and the $Q$ values for the resulting state $\mathcal{B}''$ are computed (line 8).  The maximum $Q$ value for this future state is then added to the $Q$ value for the current state, weighted by the discount factor $\gamma$ and the probability $P_{\mathcal{B}'} (\mathbf{o})$ of the observation.  The procedure stops when the planning horizon has been reached, or the algorithm has run out of time. The planner then simply selects the action with maximum expected cumulative utility, as shown in line 2 of Algorithm \ref{algo:planning}. 
+The $Q$-value of an action is the discounted sum of its immediate reward (line 3 in Algorithm \ref{algo:qval}) and the expected future reward following its execution (line 4-11).  Line 6 loops on possible observations.  For efficiency reasons, only a limited number of high-probability observations are selected. For each observation, the dialogue state is updated (line 7) and the $Q$-values for the resulting state $\mathcal{B}''$ are computed (line 8).  The maximum $Q$-value for this future state is then added to the $Q$-value for the current state, weighted by the discount factor $\gamma$ and the probability $P_{\mathcal{B}'} (\mathbf{o})$ of the observation.  The procedure stops when the planning horizon has been reached, or the algorithm has run out of time. The planner then simply selects the action with maximum expected cumulative utility, as shown in line 2 of Algorithm \ref{algo:planning}. 
 
 Algorithm \ref{algo:qval} contains two loops: one cycling over the possible actions, and one cycling over the possible observations following the system action. This process can be represented in an AND-OR search tree anchored in the current state.\index{AND-OR search tree} The OR branches denote the system actions along with their respective rewards, while the AND branches denote the observations weighted by their likelihood. An example of such an AND-OR search tree is provided in Figure \ref{fig:modelbasediagram}.
 
@@ -230,7 +230,7 @@ In addition to this action--value model, the domain may also rely on transition 
 
 Figure \ref{fig:modelfreediagram} illustrates how these distributions combine to form a dynamic decision network\index{dynamic decision network}. As for the model-based approach, all domain models are specified with probabilistic rules\index{probabilistic rule} (which are again abstracted away from the simplified diagram in the figure). The transition and observation models are encoded by probability rules and the action--value model by utility rules. 
 
-In the worst case, all models may include unknown parameters.  The transition model is thus defined as a probability distribution $P(s_t \, | \, s_{t\mbox{-}1}, a_{t\mbox{-}1} \,; \boldsymbol\theta_T)$, the observation model by a distribution $P(o_t \, | \, s_t\,; \boldsymbol\theta_O)$ and the $Q$ value model by a distribution $Q(s_t,a_t\,; \boldsymbol\theta_Q)$.  
+In the worst case, all models may include unknown parameters.  The transition model is thus defined as a probability distribution $P(s_t \, | \, s_{t\mbox{-}1}, a_{t\mbox{-}1} \,; \boldsymbol\theta_T)$, the observation model by a distribution $P(o_t \, | \, s_t\,; \boldsymbol\theta_O)$ and the $Q$-value model by a distribution $Q(s_t,a_t\,; \boldsymbol\theta_Q)$.  
 
 \subsubsection*{Parameter estimation}
 \index{parameter estimation}
@@ -254,7 +254,9 @@ P(\boldsymbol\theta \, | \, r_{t+1}, a_{t+1}) = \eta \ P(r_{t+1}, a_{t+1} \,; \b
 \index{action selection}
 \index{$\epsilon$-greedy strategy}
 
-The above section described how the parameter distributions for the $Q$-model are updated on the basis of the received rewards and executed actions, but did not explain how the system actions were selected at runtime.  For the practical purpose of our experiments, we have opted for a simple action selection strategy that mixes the selection of high-utility actions with a small amount of exploration.\footnote{A more principled, end-to-end Bayesian approach is described by \cite{Dearden:1998}, based on the notion of ``\textit{Value of Information}''\index{Value of Information} which represents the expected improvement in the value of future decisions arising from the information acquired through exploration. }  This approach is known as a $\epsilon$-greedy strategy \citep{citeulike:112017}.  In contrast with pure greedy strategies that directly select the action yielding the maximum $Q$-value, $\epsilon$-greedy strategies allow the agent to explore other actions once in a while. The relative frequency of these exploration actions compared to the  ``greedy'' actions is expressed by the probability $\epsilon$, which is usually small. The strategy is illustrated in Algorithm \ref{algo:egreedy}.
+The above section described how the parameter distributions for the $Q$-model are updated on the basis of the received rewards and executed actions, but did not explain how the system actions were selected at runtime.  For the practical purpose of our experiments, we have opted for a simple action selection strategy that mixes the selection of high-utility actions with a small amount of exploration.  This approach is known as a $\epsilon$-greedy strategy \citep{citeulike:112017}.  In contrast with pure greedy strategies that directly select the action yielding the maximum $Q$-value, $\epsilon$-greedy strategies allow the agent to explore other actions once in a while. The relative frequency of these exploration actions compared to the  ``greedy'' actions is expressed by the probability $\epsilon$, which is usually small. The strategy is illustrated in Algorithm \ref{algo:egreedy}.
+
+%\footnote{A more principled, end-to-end Bayesian approach is described by \cite{Dearden:1998}, based on the notion of ``\textit{Value of Information}''\index{Value of Information} which represents the expected improvement in the value of future decisions arising from the information acquired through exploration. }
 
 \begin{algorithm}[h!]
 \caption{: \textsc{$\epsilon$-Greedy-Policy} ($\mathcal{B}, \mathbf{e}$)}
@@ -269,7 +271,7 @@ The above section described how the parameter distributions for the $Q$-model ar
 \subsubsection*{Learning cycle}
 \index{parameter estimation}
 
-The model-free learning cycle is mostly similar to the one defined in the model-based setting.  As shown in Algorithm \ref{algo:rllearning_modelfree}, the agent optimise the rule parameters by collecting a number of interactions and gradually refining their estimates on the basis of the received feedback. 
+The model-free learning cycle is mostly similar to the one defined in the model-based setting.  As shown in Algorithm \ref{algo:rllearning_modelfree}, the agent optimises its rule parameters by collecting a number of interactions and gradually refining their estimates on the basis of the received feedback. 
 
 \begin{algorithm}[ht]
 \caption{\textsc{Model-free-RL} ($\mathcal{M}, \mathcal{B}_0, \boldsymbol\theta, N$)}
@@ -359,12 +361,12 @@ The users were instructed to command the robot to carry the objects from one pla
 \direct{\refer{Robot} stops} \vspace{2mm}
 \end{dialogue}
 \vspace{-4mm} \hspace{1cm}\direct{...} \vspace{3mm}
-\caption{User interaction with wizard-controlled robot}
+\caption{User interaction (with wizard-controlled robot)}
 \end{Transcript}
 
 Each (physical or information-gathering) sub-task is represented as a distinct user intention. As the human users could only instruct the robot to perform one sub-task at a time, the user intention is represented by a single variable denoting the current sub-task that the user wishes to see fulfilled.  The user intentions for the domain are listed in Table \ref{table:userintents_exp2}. 
 
-In addition to following the user commands related to spatial navigation and object manipulation, the robot could also perform grounding-related actions such as clarification requests and acknowledgements. In total, the domain included 9 user dialogue templates\index{dialogue acts}.  The robot has a repertoire of 8 possible action templates that can be executed.  For a dialogue domain with two objects, the user actions $a_u$ and system actions $a_m$ will thus expand into respectively 15 and 37 actions.  Tables \ref{table:userdas_exp2} and \ref{table:systemdas_exp2} list the possible user and system actions.
+In addition to following the user commands related to spatial navigation and object manipulation, the robot could also perform grounding actions such as clarification requests and acknowledgements. In total, the domain included 9 user dialogue templates\index{dialogue acts}.  The robot has a repertoire of 8 possible action templates that can be executed.  For a dialogue domain with two objects, the user actions $a_u$ and system actions $a_m$ will thus expand into respectively 15 and 37 actions.  Tables \ref{table:userdas_exp2} and \ref{table:systemdas_exp2} list the possible user and system actions.
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -480,7 +482,7 @@ The technical setup employed for the Wizard-of-Oz data collection was mostly sim
 
 A total of eight interactions was recorded, each with a different speaker (5 males and 3 females), totalling about 50 minutes divided in 486 turns.  The interactions were performed in English. The users were again recruited amongst the local group of students and employees in the Department of Informatics at the University of Oslo and were (with one exception) non-native English speakers. The author of the present thesis served as the wizard. 
 
-After the recording, the dialogues were segmented and annotated by hand (with one single annotator). The first layer of annotation encodes the user dialogue acts $a_u$ and system actions $a_m$ listed in Table \ref{table:userdas_exp2} and \ref{table:systemdas_exp2}. The user intentions $i_u$ underlying the user commands are annotated on top of this sequence of turns.\footnote{Although the user intentions are in principle hidden ``mentalistic'' entities, they can in our domain be easily determined by a human annotator from the dialogue transcript.} The annotation also includes two contextual variables respectively expressing the lists of objects perceived and carried by the robot at a given time. Transcript 4 provides a concrete example of annotation for the first part of the interaction in Transcript 3. 
+After the recording, the dialogues were segmented and annotated by hand (with one single annotator). The first layer of annotation encodes the user dialogue acts $a_u$ and system actions $a_m$ listed in Tables \ref{table:userdas_exp2} and \ref{table:systemdas_exp2}. The user intentions underlying the user commands are annotated on top of this sequence of turns.\footnote{Although the user intentions are in principle hidden ``mentalistic'' entities, they can in our domain be easily determined by a human annotator from the dialogue transcript.} The annotation also includes two contextual variables expressing the objects perceived and carried by the robot at a given time. Transcript 4 provides a concrete example of annotation for the first part of the interaction in Transcript 3. 
 
 \begin{Transcript}[p]
 \begin{dialogue} \vspace{5mm}
@@ -517,10 +519,10 @@ After collecting and annotating the Wizard-of-Oz interactions, the next step in 
 
 The transition model\index{transition model} is factored into four components:
 \begin{enumerate}
-\item a user goal model\index{user goal model} $P(i_u' \, | \, i_u, a_m, \mathit{perceived}', \mathit{carried}')$ describing the probability of the next user intention $i_u'$ as a function of the current intention $i_u$, the last system action $a_m$ and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$.  The dependence on the contextual variables can for instance express that the user is more likely to ask the robot to grasp an object if it sees it, and less likely to ask the same request if the robot already carries an object.
-\item a user action model\index{user action model} $P(a_u' \, | \, i_u', a_m)$ describing the probability of the new user action $a_u'$ as a function of the new user intention and last system action.
-\item a contextual model $P(\mathit{perceived}' \, | \, \mathit{perceived}, a_m)$ describing how the set of objects perceived by the robot evolves as a function of the system action (since a movement may result in the detection of new objects or make other objects fall from view).
-\item a contextual model $P(\mathit{carried}' \, | \, \mathit{carried}, a_m)$ describing how the set of objects carried by the robot can change due to grasping and releasing actions. 
+\item A user goal model\index{user goal model} $P(i_u' \, | \, i_u, a_m, \mathit{perceived}', \mathit{carried}')$ describing the probability of the next user intention $i_u'$ as a function of the current intention $i_u$, the last system action $a_m$ and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$.  The dependence on the contextual variables can for instance express that the user is more likely to ask the robot to grasp an object if it sees it, and less likely to ask the same request if the robot already carries an object.
+\item A user action model\index{user action model} $P(a_u' \, | \, i_u', a_m)$ describing the probability of the new user action $a_u'$ as a function of the new user intention and last system action.
+\item A contextual model $P(\mathit{perceived}' \, | \, \mathit{perceived}, a_m)$ describing how the set of objects perceived by the robot evolves as a function of the system action (since a movement may result in the detection of new objects or make other objects fall from view).
+\item A contextual model $P(\mathit{carried}' \, | \, \mathit{carried}, a_m)$ describing how the set of objects carried by the robot can change due to grasping and releasing actions. 
 \end{enumerate}
 
 \begin{wrapfigure}[16]{r}{60mm}
@@ -533,24 +535,26 @@ The transition model\index{transition model} is factored into four components:
 
 The resulting probabilistic model that combines these four distributions is depicted in Figure \ref{fig:simulatormodels}. The current state variables at time $t$ are greyed out, signifying that their values are observed.  It should be stressed that the knowledge of these values is limited to the simulator (since the user is aware of its own intentions and dialogue acts, and the environment ``knows'' its own state). The robot has, however, no access to the internal state of the simulator. 
 
-The transition model was practically designed with a set of probability rules expressing the four distributions based on a small number of structural assumptions about the user behaviour.  The probabilities associated with the rule effects were then estimated by maximum likelihood on the basis of the annotated dialogues. 
+The transition model was practically designed with a set of probability rules expressing the four distributions based on a small number of common sense assumptions about the user behaviour.  The probabilities associated with the rule effects were then estimated by maximum likelihood on the basis of the annotated dialogues. 
 
 \subsubsection*{Error modelling}
 \index{error modelling}
 
-In real interactions, user inputs are not directly observed by the dialogue manager but must first be processed by the speech recognition and understanding modules.  These modules are prone to various failures and frequently distort or misinterpret the actual user utterance. The user simulator should account for this fact by explicitly modelling errors and uncertainties arising from speech recognition and natural language understanding. 
+In real interactions, user inputs are not directly observed by the dialogue manager but must first be processed by the speech recognition and understanding modules.  These modules are prone to various failures and frequently distort or misinterpret the actual user utterance. The user simulator should account for this fact by explicitly modelling errors and uncertainties arising from speech recognition and natural language understanding \citep{SchatzmannTY07}. 
 
 In order to reproduce the imperfect nature of the communication channel, the simulator wraps every user input in an N-best list of the following form: 
 \begin{equation}
 \tilde{a}_u = \begin{cases} P(\text{correct } a_u) = p_1 \\ P(\text{another randomly selected value for } a_u) = p_2 \\ P(\text{spurious recognition}) = p_3 \end{cases} \nonumber
 \end{equation}
-where $\langle p_1, p_2, p_3 \rangle$ are probability values sampled at runtime from a three-dimensional Dirichlet distribution\index{Dirichlet distribution}.  The distribution $P(p_1, p_2, p_3)$ is estimated in an empirical manner based on actual speech recognition results for the domain. We first applied the off-the-shelf speech recogniser installed on the robot (Nuance Vocon 3200) to the audio segments corresponding to the user utterances collected in the Wizard-of-Oz study.  The recognition results were then processed in order to extract from each audio segment the three probabilities $\langle p_1, p_2, p_3 \rangle$, where $p_1$ stands for the probability of the correct utterance (which can be zero if the utterance does not appear in the N-Best list), $p_2$ to the total probability of incorrect utterances, and $p_3$ to the probability of no recognition. We finally derived a Dirichlet distribution based on these observed probabilities using the estimation method developed in \cite{minka2003}.  The particular Dirichlet distribution resulting from the recognition results was $\sim\mathsf{Dirichlet}(5.4, 0.52, 1.6)$
+where $\langle p_1, p_2, p_3 \rangle$ are probability values sampled at runtime from a three-dimensional Dirichlet distribution\index{Dirichlet distribution}.  The distribution $P(p_1, p_2, p_3)$ is estimated in an empirical manner based on actual speech recognition results for the domain. We first applied the off-the-shelf speech recogniser installed on the robot to the audio segments corresponding to the user utterances collected in the Wizard-of-Oz study.  The recognition results were then processed in order to extract from each audio segment the three probabilities $\langle p_1, p_2, p_3 \rangle$, where $p_1$ stands for the probability of the correct utterance (which can be zero if the utterance does not appear in the N-Best list), $p_2$ to the total probability of incorrect utterances, and $p_3$ to the probability of no recognition. We finally derived a Dirichlet distribution based on these observed probabilities using the estimation method developed in \cite{minka2003}.  The particular Dirichlet distribution resulting from the recognition results was $\sim\mathsf{Dirichlet}(5.4, 0.52, 1.6)$
 
 At runtime, the probabilities for the N-best list elements are drawn from the Dirichlet distribution. Probability values falling below a minimum threshold are automatically pruned from the N-Best list. The method has been found to match reasonably well the actual recognition results produced by the speech recogniser, although one could naturally refine the approach by e.g.\ explicitly modelling confusion probabilities between individual inputs. 
 
 \subsubsection*{Simulation procedure}
 \index{user simulator}
-The simulation procedure takes the form of an interaction loop between the simulator and the dialogue system, as shown in Figure \ref{fig:exp2_architecture}.  Two separate dialogue systems are active: the simulator on the one hand and the robot's dialogue system on the other hand.  However, the two systems operate differently, as the simulator has a fully observable state while the system state is only partially observable and contains unknown parameters. Contrary to the experiments presented in the previous chapter, the dialogue architecture used in this learning experiment is essentially reduced to the dialogue management module, since the simulator and the dialogue system directly exchange their dialogue actions without needing to express them in actual spoken utterances.   
+The simulation procedure takes the form of an interaction loop between the simulator and the dialogue system, as shown in Figure \ref{fig:exp2_architecture}.  Two separate dialogue systems are active: the simulator on the one hand and the robot's dialogue system on the other hand.  However, the two systems operate differently, as the simulator has a fully observable state while the system state is only partially observable and contains unknown parameters. 
+
+Contrary to the experiments presented in the previous chapter, the dialogue architecture used in this learning experiment is essentially reduced to the dialogue management module, since the simulator and the dialogue system directly exchange their dialogue actions without needing to express them in actual spoken utterances.   
 
 \begin{figure}[ht]
 \begin{center}
@@ -595,7 +599,7 @@ $\phantom{a}$\hspace{13mm}\direct{...} \vspace{3mm}
 
 \subsection{First experiment}
 
-The goal of the first experiment is to determine whether the use of probabilistic rules has a beneficial influence on the learning performance\index{learning performance} of the agent. The motivation is  similar to the one put forward in the experiment of the previous chapter, except that the estimation procedure is here based on model-based Bayesian reinforcement learning techniques instead of supervised learning. 
+The goal of the first experiment is to determine whether the use of probabilistic rules has a beneficial influence on the learning performance\index{learning performance} of the agent. The motivation is  similar to the one put forward in the experiment of the previous chapter, with the notable difference that the estimation procedure is here based on model-based Bayesian reinforcement learning techniques instead of supervised learning. 
 
 The experiment focuses more specifically on the statistical estimation of the transition model\index{transition model} for the human--robot interaction domain described in Section \ref{sec:exp2_dd}. Based on the simulator presented in the previous pages, the experiment compares two alternative representations of the transition model: one baseline model encoded via standard categorical distributions, and one equivalent model encoded via probability rules.  The relative performance of these two representations is measured by the average return -- i.e.\ the sum of rewards -- per interaction. 
 
@@ -608,7 +612,7 @@ The reward model\index{reward model} was held fixed and identical in both cases 
 \subsubsection*{Baseline model}
 \index{factored probabilistic model}
 
-The transition model $P(s'\, | \, s, a_m)$ is represented in the baseline approach through traditional factored categorical distributions. More precisely, the transition model is divided into a user goal model $P(i_u'\, | \, i_u, a_m)$ and a user action model $P(a_u' \, | \, i_u',a_m)$.\footnote{The two contextual variables $\mathrm{perceived}$ and $\mathrm{carried}$ are not included in the transition model since their values do not need to be predicted in advance in this scenario.} The user goal model is defined in the following manner:
+The transition model is represented in the baseline approach through traditional factored categorical distributions. More precisely, the transition model is divided into a user goal model $P(i_u'\, | \, i_u, a_m)$ and a user action model $P(a_u' \, | \, i_u',a_m)$.\footnote{The two contextual variables $\mathrm{perceived}$ and $\mathrm{carried}$ are not included in the transition model since their values do not need to be predicted in advance in this scenario.} The user goal model is defined in the following manner:
 \begin{equation}
 P(i_u' \, | \, i_u, a_m) = \begin{cases}
 P(i_u') & \text{if } a_m \text{ fullfils the intention } i_u \\
@@ -617,7 +621,7 @@ P(i_u') & \text{if } a_m \text{ fullfils the intention } i_u \\
 \end{equation}
 where $P(i_u')$ is a categorical distribution that expresses the prior probability of a new user intention $i_u'$. The user action model $P(a_u' \, | \, i_u',a_m)$ is for its part constructed as a plain probability table where each possible assignment of values for the parent variables $i_u'$ and $a_m$ is assigned a distinct categorical distribution on the values of $a_u'$. 
 
-The resulting parameters for these categorical distributions are encoded with Dirichlet priors.  The baseline model used for this experiment contains a total of 229 Dirichlet parameters, composed of one Dirichlet with 12 dimensions and 228 with 16 dimensions.  Weakly informative priors are used to initialise the prior distributions.\index{parameter priors}
+The resulting parameters for these categorical distributions are encoded with Dirichlet priors.  The baseline model employed for this experiment contains a total of 229 Dirichlet parameters, composed of one Dirichlet with 12 dimensions and 228 with 16 dimensions.  Weakly informative priors are used to initialise the prior distributions.\index{parameter priors}
 
 A linear model\index{linear model} has also been constructed for this experiment but is not shown in the results as its parameter estimation systematically diverged and fared much worse that the classical factored distributions, most likely due to the non-linearity of the underlying domain models. 
 
@@ -629,7 +633,11 @@ The rule-structured model is encoded with parametrised probability rules. A tota
 
 \subsubsection*{Empirical results}
 
-The performance was first measured in terms of average return\index{average return} per simulated interaction, shown in Figure \ref{fig:return_exp21}.  To analyse the accuracy of the transition model, we also derived the Kullback--Leibler divergence\index{Kullback--Leibler divergence} \citep{KLDIVERGE} between the next user act distribution $P(a_u')$ predicted by the learned model and the actual distribution followed by the simulator at a given time, as shown in Figure \ref{fig:divergence}.  The Kullback--Leibler divergence is measure of the difference between two probability distributions -- this case, the two distributions $P(a_u')$.  Some residual discrepancy is to be expected between these two distributions, the latter being based on the actual user intention (known to the simulator) while the former must infer the intention from the current belief state. The results in both figures are averaged on 100 simulations.
+The performance was first measured in terms of average return\index{average return} per simulated interaction, shown in Figure \ref{fig:return_exp21}.  
+
+To analyse the accuracy of the transition model, we also derived the Kullback--Leibler divergence\index{Kullback--Leibler divergence} \citep{KLDIVERGE} between the next user act distribution $P(a_u')$ predicted by the learned model and the actual distribution followed by the simulator at a given time, as shown in Figure \ref{fig:divergence}.  The Kullback--Leibler divergence is measure of the difference between two probability distributions.  Some residual discrepancy is to be expected between these two distributions, the latter being based on the actual user intention (known to the simulator) while the former must infer the intention from the current belief state. 
+
+The results in both figures are averaged on 100 simulations.
 
 \begin{figure}[p]
 \centering
@@ -716,7 +724,7 @@ The model-free approach presented in this experiment only focused on the estimat
 
 This chapter has introduced two alternative Bayesian reinforcement learning techniques to the optimisation of parameters associated with probabilistic rules.
 
-The first technique is a model-based approach that explicitly constructs statistical models of the domain in the form of transition, observation and reward models.  The range of possible values for the domain parameters are represented as prior probability distributions that are incrementally updated based on the observations and rewards perceived during the interactions. Action selection is achieved through forward planning on the basis of the current dialogue state and domain parameters. Probabilistic rules are employed to structure the domain models and thereby reduce the number of parameters to optimise. 
+The first technique is a model-based approach that explicitly estimates statistical models of the domain in the form of transition, observation and reward models.  The range of possible values for the domain parameters are represented as prior probability distributions that are incrementally updated based on the observations and rewards perceived during the interactions. Action selection is achieved through forward planning on the basis of the current dialogue state and domain parameters. Probabilistic rules are employed to structure the domain models and thereby reduce the number of parameters to optimise. 
 
 The second technique is a model-free approach that skips the estimation of the domain models in order to directly construct an action--value model expressing the $Q$-values of state--action pairs.  We described how the action--value model could also be structured with utility rules and optimised through a Bayesian variant of the SARSA learning algorithm combined with $\epsilon$-greedy action selection. 
 
