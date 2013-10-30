@@ -397,7 +397,7 @@ $\cdot$ $\mathrm{Ask(Release(x))} $ \\ $\ \ \ \ \  \text{ where } x \text{ is an
 \end{tabular}
 \hspace{2cm}
 \begin{tabular}{p{60mm}} 
-$\cdot$ $\mathrm{RepeatLastMove}$ \\
+$\cdot$ $\mathrm{RepeatLast}$ \\
 $\cdot$ $\mathrm{Ask(WhatDoYouSee)}$ \\
 $\cdot$ $\mathrm{Ask(DoYouSee(x))} $ \\ $\ \ \ \ \  \text{ where } x \text{ is an object identifier}$ \\
 $\cdot$ $\mathrm{Confirm}$ \\
@@ -688,7 +688,9 @@ The model-based approach is identical to the one presented in the previous exper
 \subsubsection*{Model-free approach}
 \index{rule parameters!model-free RL of}
 
-The model-free approach relied on a utility model structured with 12 probabilistic rules associated with 27 Gaussian parameters. As the model-free approach does not estimate an explicit transition model, the dialogue state is defined solely on the basis of the recent history of dialogue acts, namely the last user action $a_u$, last system action $a_m$ and preceding action $a_{u\mbox{-}prev}$. The dialogue state also included the list of objects currently perceived and carried by the robot. The resulting rule parameters were optimised using the SARSA-based method outlined in Section \ref{sec:modelfree}. 
+The model-free approach relied on a utility model structured with 11 probabilistic rules associated with 26 Gaussian parameters. As the model-free approach does not estimate an explicit transition model, the user intention is derived in a deterministic manner on the basis of the recent history of dialogue acts.  The utility rules define the action utilities based on this user intention and on the general dialogue context, as listed in Appendix \ref{chap:domainspecs} (Section \ref{sec:domainspecs-rrlearning}). 
+
+The resulting rule parameters are optimised using the SARSA-based learning method outlined in Section \ref{sec:modelfree}. 
 
 \subsubsection*{Empirical results}
 

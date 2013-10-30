@@ -14,19 +14,19 @@ The variable $a_u$ is encoded as a list of (one or more) dialogue acts.  This en
 \begin{footnotesize}
 \begin{longtable}{p{1cm}l} 
 $r_{1}: \ \ $ &  $\forall \ x, $ \\ & $\textbf{if} \ (\mathit{silence}\!>\!\mathit{3} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirm1}}\end{cases}$ \\ 
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm})\!=\!\theta_{\mathrm{confirm1}}\end{cases}$ \\ 
 & $\textbf{else if} \ (\mathit{silence}\!>\!\mathit{2} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirm2}}\end{cases}$ \\ 
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm})\!=\!\theta_{\mathrm{confirm2}}\end{cases}$ \\ 
 & $\textbf{else if} \ (\mathit{silence}\!>\!\mathit{1} \land \mathit{a_m}\!=\!\mathit{Demonstrate}(x)) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirmation})\!=\!\theta_{\mathrm{confirm3}}\end{cases}$ \\ \\[-1mm]
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm})\!=\!\theta_{\mathrm{confirm3}}\end{cases}$ \\ \\[-1mm]
 $r_{2}: \ \ $ & $\textbf{if} \ (\mathit{Confirm}\!\in\!\mathit{a_u} \land \mathit{lastMove}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{RegisterMove})\!=\!\theta_{\mathrm{registerExplicit}}\end{cases}$\\ 
 & $\textbf{else}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{RegisterMove})\!=\!\theta_{\mathrm{registerExplicit2}}\end{cases}$ \\ \\[-1mm] 
 $r_{3}: \ \ $& $\textbf{if} \ (\mathit{Disconfirm}\!\in\!\mathit{a_u} \land \mathit{lastMove}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Undo})\!=\!\theta_{\mathrm{undo}}\end{cases}$ \\ 
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{UndoMove})\!=\!\theta_{\mathrm{undoMove}}\end{cases}$ \\ 
 & $\textbf{else}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Undo})\!=\!\theta_{\mathrm{undo2}}\end{cases}$ \\ \\[-1mm]
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{UndoMove})\!=\!\theta_{\mathrm{undoMove2}}\end{cases}$ \\ \\[-1mm]
 $r_{4}: \ \ $& $\textbf{if} \ (\mathit{a_u}\!\neq\!\mathit{None} \land \mathit{lastMove}\!\notin\!\mathit{a_u} \land \mathit{Confirm}\!\notin\!\mathit{a_u} $ \\ & $ \ \ \ \ \   \land \mathit{Disconfirm}\!\notin\!\mathit{a_u} \land \mathit{lastMove}\!\neq\mathit{None}) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{RegisterMove})\!=\!\theta_{\mathrm{registerImplicit}}\end{cases}$ \\ 
 & $\textbf{else}$ \\
@@ -40,9 +40,9 @@ $r_{6}: $\ \ & $\textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskRepeat}) \ \textbf
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeatFirst}}\end{cases}$ \\ & \textbf{else} \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeatSecond}}\end{cases}$ \\ \\[-1mm]
 $r_{7}: \ \ $& $\textbf{if} \ (\mathit{Confirm}\!\in\!\mathit{a_u} \land \mathit{|a_u|}\!=\!\mathit{1}) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Ack})\!=\!\theta_{\mathrm{ack}}\end{cases}$ \\ 
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Acknowledgement})\!=\!\theta_{\mathrm{acknowledgement}}\end{cases}$ \\ 
 & $\textbf{else}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Ack})\!=\!\theta_{\mathrm{ack2}}\end{cases}$ \\ \\[-1mm]
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Acknowledgement})\!=\!\theta_{\mathrm{acknowledgement2}}\end{cases}$ \\ \\[-1mm]
 $r_{8}: \ \ $& $\textbf{if} \ (\mathit{Disconfirm}\!\in\!\mathit{a_u} \land \mathit{|a_u|}\!=\!\mathit{1}) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskIntention})\!=\!\theta_{\mathrm{askIntention}}\end{cases}$ \\ 
 & $\textbf{else}$ \\
@@ -51,10 +51,10 @@ $r_{9}: \ \ $& $\textbf{if} \ (\mathit{RepeatAll}\!\in\!\mathit{a_u} \land \math
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{DemonstrateAll})\!=\!\theta_{\mathrm{demonstrateAll}}\end{cases}$\\ \\[-1mm]
 $r_{10}: \ \ $& $\textbf{if} \ (\mathit{ForgetAll}\!\in\!\mathit{a_u} \land \mathit{sequence}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{ForgetAll})\!=\!\theta_{\mathrm{forgetAll}}\end{cases}$ \\ \\[-1mm]
-$r_{11}: \ \ $& $\textbf{if} \ (\mathit{Compliment}\!\in\!\mathit{a_u} \land \mathit{a_m}\!=\!\mathit{DemonstrateAll}) \ \textbf{then}$ \\
+$r_{11}: \ \ $& $\textbf{if} \ (\mathit{Say(Compliment)}\!\in\!\mathit{a_u} \land \mathit{a_m}\!=\!\mathit{DemonstrateAll}) \ \textbf{then}$ \\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(ThankYou)})\!=\!\theta_{\mathrm{sayThankYou}}\end{cases}$ \\ \\[-1mm]
-$r_{12}: \ \ $& $\textbf{if} \ (\mathit{FollowMe}\!\in\!\mathit{a_u}) \ \textbf{then}$ \\
-& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{FollowMe})\!=\!\theta_{\mathrm{followMe}}\end{cases}$  \vspace{1mm} \\  \\[-2mm]
+$r_{12}: \ \ $& $\textbf{if} \ (\mathit{GoToInitPose}\!\in\!\mathit{a_u}) \ \textbf{then}$ \\
+& $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{GoToInitPose})\!=\!\theta_{\mathrm{goToInitPose}}\end{cases}$  \vspace{1mm} \\  \\[-2mm]
 $r_{13}: \ \ $& $\textbf{if} \ (\mathit{Stop}\!\in\!\mathit{a_u}) \ \textbf{then} $\\
 & $\;\;\;\;\; \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Stop})\!=\!\theta_{\mathrm{stop}}\end{cases} $ \vspace{1mm} \\  \\[-2mm]
 $r_{14}: \ \ $&$ \textbf{if} \ (\mathit{Say(Hello)}\!\in\!\mathit{a_u}) \ \textbf{then} $\\
@@ -74,26 +74,27 @@ The six rules below specify the transition model used in the first experiment of
 \begin{footnotesize}
 \begin{longtable}{p{1cm}p{14cm}}
 $r_{1}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Excuse(\cdot)}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{ConfirmDetection} \land \mathit{i_u}\!=\!\mathit{DoYouSee(\cdot)}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{DisconfirmDetection} \land \mathit{i_u}\!=\!\mathit{DoYouSee(\cdot)}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Describe(\cdot)} \land \mathit{i_u}\!=\!\mathit{WhatDoYouSee}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do(\cdot)} \lor \mathit{a_m}\!=\!\mathit{Excuse(\cdot)} \lor \mathit{a_m}\!=\!\mathit{Describe(\cdot)} $ \\ & \ \ \ \ \ \ \ \ \ \ \ $\lor \mathit{a_m}\!=\!\mathit{DisconfirmDetection} \lor \mathit{a_m}\!=\!\mathit{ConfirmDetection}) \ \textbf{then}$ \\
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Excuse(x)}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{ConfirmDetection} \land \mathit{i_u}\!=\!\mathit{DoYouSee(x)}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{DisconfirmDetection} \land \mathit{i_u}\!=\!\mathit{DoYouSee(x)}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Describe(x)} \land \mathit{i_u}\!=\!\mathit{WhatDoYouSee}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do(x)} \lor \mathit{a_m}\!=\!\mathit{Excuse(x)} \lor \mathit{a_m}\!=\!\mathit{Describe(x)} $ \\ & \ \ \ \ \ \ \ \ \ \ \ $\lor \mathit{a_m}\!=\!\mathit{DisconfirmDetection} \lor \mathit{a_m}\!=\!\mathit{ConfirmDetection}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!\theta_{\mathrm{changemind[0]}} \\
 P(\mathit{completed\mbox{-}task}'\!=\!\mathit{false})\!=\!\theta_{\mathrm{changemind[1]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{false})\!=\!1.0 \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{false}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{{i_u}})\!=\!1 \end{cases}$ \\ \\[-1mm]
+$r_{2}$: \ \ & $\forall \ x, $ \\
+&$ \textbf{if} \ (\mathit{i_u}\!=\!x \ \land \ \mathit{completed\mbox{-}task}\!=\!\mathit{false}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{{x}})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{3}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{Move(Left)})\!=\!\theta_{\mathrm{moveprior[0]}} \\
-P(\mathit{i_u}'\!=\!\mathit{Move(Forward)})\!=\!\theta_{\mathrm{moveprior[1]}} \\
-P(\mathit{i_u}'\!=\!\mathit{Move(Backward)})\!=\!\theta_{\mathrm{moveprior[2]}} \\
-P(\mathit{i_u}'\!=\!\mathit{Move(Right)})\!=\!\theta_{\mathrm{moveprior[3]}} \\
-P(\mathit{i_u}'\!=\!\mathit{DoYouSee(object_1)})\!=\!\theta_{\mathrm{moveprior[4]}} \\
-P(\mathit{i_u}'\!=\!\mathit{DoYouSee(object_2)})\!=\!\theta_{\mathrm{moveprior[5]}} \\
-P(\mathit{i_u}'\!=\!\mathit{WhatDoYouSee})\!=\!\theta_{\mathrm{moveprior[6]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{moveprior[7]}} \end{cases}$ \\ \\[-1mm]
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{Move(Left)})\!=\!\theta_{\mathrm{baseprior[0]}} \\
+P(\mathit{i_u}'\!=\!\mathit{Move(Forward)})\!=\!\theta_{\mathrm{baseprior[1]}} \\
+P(\mathit{i_u}'\!=\!\mathit{Move(Backward)})\!=\!\theta_{\mathrm{baseprior[2]}} \\
+P(\mathit{i_u}'\!=\!\mathit{Move(Right)})\!=\!\theta_{\mathrm{baseprior[3]}} \\
+P(\mathit{i_u}'\!=\!\mathit{DoYouSee(object_1)})\!=\!\theta_{\mathrm{baseprior[4]}} \\
+P(\mathit{i_u}'\!=\!\mathit{DoYouSee(object_2)})\!=\!\theta_{\mathrm{baseprior[5]}} \\
+P(\mathit{i_u}'\!=\!\mathit{WhatDoYouSee})\!=\!\theta_{\mathrm{baseprior[6]}} \\
+P(\cdot)\!=\!\theta_{\mathrm{baseprior[7]}} \end{cases}$ \\ \\[-1mm]
 $r_{4}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true} \land \mathit{x}\!\in\!\mathit{carried}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{Release(x)})\!=\!\theta_{\mathrm{releaseprior[0]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{releaseprior[1]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then}$ \\
@@ -106,29 +107,29 @@ P(\cdot)\!=\!\theta_{\mathrm{pickupprior[1]}} \end{cases}$\vspace{1mm} \\ & $ \t
 P(\cdot)\!=\!\theta_{\mathrm{pickupprior2[1]}} \end{cases}$ \\ \\[-1mm]
 $r_{6}$: \ \ & $\forall \ x, $ \\ & $\textbf{if} \ (\mathit{a_m}\!=\!\mathit{Ground({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{groundpredict[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{groundpredict[1]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{groundpredict[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{groundpredict[2]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground({x})} \land \mathit{i_u}\!\neq\!\mathit{{x}} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{groundpredict2[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Ask({i_u})})\!=\!\theta_{\mathrm{groundpredict2[1]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{groundpredict2[2]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Ask({x})})\!=\!\theta_{\mathrm{groundpredict2[1]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{groundpredict2[2]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{groundpredict2[3]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{confirmpredict[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Ask({i_u})})\!=\!\theta_{\mathrm{confirmpredict[1]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{confirmpredict[2]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Ask({x})})\!=\!\theta_{\mathrm{confirmpredict[1]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{confirmpredict[2]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{confirmpredict[3]}} \end{cases}$\vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({x})} \land \mathit{i_u}\!\neq\!\mathit{{x}} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{disconfirmpredict[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{disconfirmpredict[1]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{disconfirmpredict[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{disconfirmpredict[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{RepeatLast})\!=\!\theta_{\mathrm{samemove[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Ask({i_u})})\!=\!\theta_{\mathrm{samemove[1]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{samemove[2]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Ask({x})})\!=\!\theta_{\mathrm{samemove[1]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{samemove[2]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{samemove[3]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskRepeat} \lor \mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Ask({i_u})})\!=\!\theta_{\mathrm{intent[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{intent[1]}} \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Ask({x})})\!=\!\theta_{\mathrm{intent[0]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{intent[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{intent[2]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{None}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Ask({i_u})})\!=\!\theta_{\mathrm{othercase[0]}} \\
-P(\mathit{a_u^p}'\!=\!\mathit{Nothing})\!=\!\theta_{\mathrm{othercase[1]}} \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!1.0 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{Ask({x})})\!=\!\theta_{\mathrm{othercase[0]}} \\
+P(\mathit{a_u^p}'\!=\!\mathit{Other})\!=\!\theta_{\mathrm{othercase[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{othercase[2]}} \end{cases}$ 
 %$r_{7}$: \ \ & $ \textbf{if} \ (\mathit{a_u^p}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
 % & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^p}'\!=\!\mathit{a_u^p})\!=\!%\theta_{\mathrm{14[0]}} \\ 
@@ -138,71 +139,60 @@ P(\cdot)\!=\!\theta_{\mathrm{othercase[2]}} \end{cases}$
 
 \subsubsection*{Second experiment}
 
-The second experiment focuses on the comparison of two rule-structured models: a transition model for the model-based approach, and an action--value model for the model-free approach. The transition model is identical to the one listed above and will hence not be repeated.  The action-value model is specified with a set of eleven rules.  The input variables of these rules are the last user dialogue act $a_u$, the next-to-last user dialogue act $a_{u\mbox{-}prev}$, the last system act $a_m$, and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$. 
+The second experiment focuses on the comparison of two rule-structured models: a transition model for the model-based approach, and an action--value model for the model-free approach. The transition model is identical to the one described above and will hence not be repeated.  The model-free approach is specified with a set of 11 rules.  The rule $r_0$ first derives a simple representation of the user intention based on the last user dialogue act $a_u$, the next-to-last user dialogue act $a_{u\mbox{-}prev}$, last system act $a_m$ and last system action $\mathit{lastMove}$.  The 10 following rules $r_1, \dots , r_10$ encode the action utilities based on this user intention and on the general context. 
 
 \begin{footnotesize}
 \begin{longtable}{p{1cm}p{14cm}}
-$r_{1}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Ask(Move(\cdot))}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{movements1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_u})})\!=\!\theta_{\mathrm{movements2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{Move(\cdot)}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{movements1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{movements2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(Move({x}))} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(Move({x}))})\!=\!\theta_{\mathrm{movements1}} \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $\forall \ x, $ \\ &  $\textbf{if} \ (\mathit{a_u}\!=\!\mathit{Ask(PickUp({x}))} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{pickup1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_u})})\!=\!\theta_{\mathrm{pickup2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Ask(PickUp({x}))} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(AlreadyCarryObject)})\!=\!\theta_{\mathrm{pickup3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Ask(PickUp({x}))} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotSeeObject)})\!=\!\theta_{\mathrm{pickup4}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{pickup1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{pickup2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(AlreadyCarryObject)})\!=\!\theta_{\mathrm{pickup3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotSeeObject)})\!=\!\theta_{\mathrm{pickup4}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(PickUp{x})} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(PickUp({x}))})\!=\!\theta_{\mathrm{pickup1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(PickUp({x}))} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(AlreadyCarryObject)})\!=\!\theta_{\mathrm{pickup3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(PickUp({x}))} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotSeeObject)})\!=\!\theta_{\mathrm{pickup4}} \end{cases}$ \\ \\[-1mm]
-$r_{3}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Ask(Release({x}))} \land \mathit{{x}}\!\in\!\mathit{carried}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{release1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_u})})\!=\!\theta_{\mathrm{release2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Ask(Release({x}))} \land \mathit{{x}}\!\notin\!\mathit{carried}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotCarryObject)})\!=\!\theta_{\mathrm{release3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{Release({x})} \land \mathit{{x}}\!\in\!\mathit{carried}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{release1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{release2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{Release({x})} \land \mathit{{x}}\!\notin\!\mathit{carried}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotCarryObject)})\!=\!\theta_{\mathrm{release3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(Release({x}))} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{{x}}\!\in\!\mathit{carried}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{release1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground({a_u})})\!=\!\theta_{\mathrm{release2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground(Release({x}))} \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{{x}}\!\notin\!\mathit{carried}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotCarryObject)})\!=\!\theta_{\mathrm{release3}} \end{cases}$ \\ \\[-1mm]
-$r_{4}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
+$r_0$ : \ \ & $\forall \ x, $ \\ &  $ \ \ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \ \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{Ask}(x)) \ \textbf{then} $ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!x)\!=\!1\end{cases}$  \vspace{1mm}  \\
+&  $ \ \ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Ground}(x) \ \land \mathit{a_{u}}\!\neq\!\mathit{Disconfirm}) \ \textbf{then} $ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!x)\!=\!1\end{cases}$  \vspace{1mm}  \\
+ &$ \ \ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{RepeatLast} \ \land \ \mathit{lastMove}\!=\!x) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!x)\!=\!1\end{cases}$  \vspace{1mm}  \\
+& $ \ \ \textbf{else if } (\mathit{a_u}\!=\!\mathit{Ask}(x)) \ \textbf{then} $ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!x)\!=\!1\end{cases}$ \\ \\[-1mm]
+$r_{1}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Move(x)}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(Move({x}))})\!=\!\theta_{\mathrm{movements1}} \\
+U(\mathit{a_m}'\!=\!\mathit{Ground(Move({x}))})\!=\!\theta_{\mathrm{movements2}} \end{cases}$  \\ \\[-1mm]
+$r_{2}$: \ \ & $\forall \ x,$ \\ &  $\textbf{if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(PickUp(x))})\!=\!\theta_{\mathrm{pickup1}} \\
+U(\mathit{a_m}'\!=\!\mathit{Ground(PickUp(x))})\!=\!\theta_{\mathrm{pickup2}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!=\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(AlreadyCarryObject)})\!=\!\theta_{\mathrm{pickup3}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!=\mathit{PickUp({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotSeeObject)})\!=\!\theta_{\mathrm{pickup4}} \end{cases}$   \\ \\[-1mm]
+$r_{3}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Release({x})} \land \mathit{{x}}\!\in\!\mathit{carried}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({Release(x)})})\!=\!\theta_{\mathrm{release1}} \\
+U(\mathit{a_m}'\!=\!\mathit{Ground(Release(x))})\!=\!\theta_{\mathrm{release2}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{Release({x})} \land \mathit{{x}}\!\notin\!\mathit{carried}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Excuse(DoNotCarryObject)})\!=\!\theta_{\mathrm{release3}} \end{cases}$  \\ \\[-1mm]
+$r_{4}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{None})\!=\!\theta_{\mathrm{none}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{None})\!=\!\theta_{\mathrm{none2}} \end{cases}$ \\ \\[-1mm]
-$r_{5}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!\neq\!\mathit{Confirm} \land \mathit{a_u}\!\neq\!\mathit{RepeatLast} \land \mathit{a_m}\!\neq\!\mathit{Ground(\cdot)}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{Do({a_u})})\!=\!\theta_{\mathrm{wrong1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{Ground({a_u})})\!=\!\theta_{\mathrm{wrong2}} \\
-U(\mathit{a_m}'\!=\!\mathit{Excuse(\cdot)})\!=\!\theta_{\mathrm{wrong3}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{Do({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{wrong1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Ground(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{Ground({a_{u\mbox{-}prev}})})\!=\!\theta_{\mathrm{wrong2}} \\
-U(\mathit{a_m}'\!=\!\mathit{Excuse(\cdot)})\!=\!\theta_{\mathrm{wrong3}} \end{cases}$ \\ \\[-1mm]
+$r_{5}$: \ \ & $\forall \ x,y,$ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!x) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(y)} \land \mathit{a_m}'\!\neq\!\mathit{Do({x})})\!=\!\theta_{\mathrm{wrong1}} \\
+U(\mathit{a_m}'\!=\!\mathit{Ground(y)} \land \mathit{a_m}'\!\neq\!\mathit{Ground({x})})\!=\!\theta_{\mathrm{wrong2}} \\
+U(\mathit{a_m}'\!=\!\mathit{Excuse(y)})\!=\!\theta_{\mathrm{wrong3}} \end{cases}$ \vspace{1mm} \\ &  \\ \\[-1mm]
 $r_{6}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskRepeat}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeat}} \end{cases}$ \\ \\[-1mm]
-$r_{7}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Disconfirm}) \ \textbf{then} $ \\
+$r_{7}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Disconfirm}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeat2}} \end{cases}$ \\ \\[-1mm]
-$r_{8}$: \ \ & $ \textbf{if} \ (\mathit{true}) \ \textbf{then}$ \\ & \;\;\;\;\; $\begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm({a_u})})\!=\!\theta_{\mathrm{confirm1}} \\
-U(\mathit{a_m}'\!=\!\mathit{AskConfirm(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{AskConfirm({a_u})})\!=\!\theta_{\mathrm{confirm2}} \end{cases}$ \\ \\[-1mm]
-$r_{9}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Ask(DoYouSee({x}))} \land \mathit{{x}}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
+$r_{8}$: \ \ & $\forall \ x,y, $ \\
+& $ \textbf{if} \ (\mathit{i_u}\!=\!x) \ \textbf{then}$ \\ & \;\;\;\;\; $\begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm(x)})\!=\!\theta_{\mathrm{confirm1}} \\
+U(\mathit{a_m}'\!=\!\mathit{AskConfirm(y)} \land \mathit{a_m}'\!\neq\!\mathit{AskConfirm({x})})\!=\!\theta_{\mathrm{confirm2}} \end{cases}$ \\ \\[-1mm]
+$r_{9}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Ask(DoYouSee({x}))} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
+U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee3}} \\
-U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee4}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\in\!\mathit{perceived}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee1}} \\
-U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee2}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee3}} \\
-U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee4}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
+U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee4}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{doyousee5}} \\
 U(\mathit{a_m}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{doyousee6}} \end{cases}$ \\ \\[-1mm]
-$r_{10}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{Ask(WhatDoYouSee)}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe({perceived})})\!=\!\theta_{\mathrm{whatdoyousee1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u}\!=\!\mathit{Confirm} \land \mathit{a_{u\mbox{-}prev}}\!=\!\mathit{WhatDoYouSee}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe({perceived})})\!=\!\theta_{\mathrm{whatdoyousee1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe(\cdot)})\!=\!\theta_{\mathrm{whatdoyousee2}} \end{cases}$ \\ \\[-1mm]
-$r_{11}$: \ \ & $ \textbf{if} \ (\mathit{a_u}\!=\!\mathit{RepeatLast}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{{a_m}})\!=\!\theta_{\mathrm{repeatLast}} \end{cases}$ \\ \\[-1mm]
+$r_{10}$: \ \ & $\forall \ x,$ \\
+& $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{WhatDoYouSee} \ \land \ x\!=\!\mathit{perceived}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe({x})})\!=\!\theta_{\mathrm{whatdoyousee1}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe(x)})\!=\!\theta_{\mathrm{whatdoyousee2}} \end{cases}$ \\ \\[-1mm]
 \end{longtable}
 \end{footnotesize}
 
@@ -239,7 +229,7 @@ $r_{9}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\text{"you see \{x\}"}\!\in
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Ask(DoYouSee({x}))})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{10}$: \ \ & $ \textbf{if} \ (\text{"yes"}\!\in\!\mathit{u_u} \lor \text{"exactly"}\!\in\!\mathit{u_u} \lor \text{"correct"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Confirm})\!=\!1 \end{cases}$ \\ \\[-1mm]
-$r_{11}$: \ \ & $ \textbf{if} \ (\text{"thanks"}\!\in\!\mathit{u_u} \lor \text{"thank"}\!\in\!\mathit{u_u} \lor \text{"correct"}\!\in\!\mathit{u_u} \lor \text{"perfect"}\!\in\!\mathit{u_u} \lor \text{"great"}\!\in\!\mathit{u_u} \lor \text{"good"}\!\in\!\mathit{u_u}$  \\ &  $\ \ \ \ \  \lor (\text{"right"}\!\in\!\mathit{u_u} \land \text{"turn"}\!\notin\!\mathit{u_u} \land \text{"rotate"}\!\notin\!\mathit{u_u} \land \text{"move"}\!\notin\!\mathit{u_u} \land \text{"go"}\!\notin\!\mathit{u_u}) \lor \text{"ok"}\!\in\!\mathit{u_u} ) \ \textbf{then} $ \\
+$r_{11}$: \ \ & $ \textbf{if} \ (\text{"thanks"}\!\in\!\mathit{u_u} \lor \text{"thank"}\!\in\!\mathit{u_u} \lor \text{"correct"}\!\in\!\mathit{u_u} \lor \text{"perfect"}\!\in\!\mathit{u_u} \lor \text{"great"}\!\in\!\mathit{u_u} \lor \text{"good"}\!\in\!\mathit{u_u}$  \\ &  $\ \ \ \ \  \lor \text{"right"}\!=\!\mathit{u_u} \lor \text{"that's right"}\!=\!\mathit{u_u}\!=\!\text{"ok"}\!\in\!\mathit{u_u} ) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Grounding})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{12}$: \ \ & $ \textbf{if} \ (\text{"no"}\!\in\!\mathit{u_u} \lor \text{"wrong"}\!\in\!\mathit{u_u} \lor \text{"incorrect"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Disconfirm})\!=\!1 \end{cases}$ \\ \\[-1mm]
@@ -252,16 +242,16 @@ $r_{15}$: \ \ & $ \textbf{if} \ (\text{"bye"}\!\in\!\mathit{u_u} \lor \text{"goo
 $r_{16}$: \ \ & $ \textbf{if} \ (\text{"stop"}\!\in\!\mathit{u_u}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u^{\text{temp}}}'\!=\!\mathit{Ask(Stop)})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{17}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\text{"bit"}\!\in\!\mathit{u_u} \land \mathit{a_u^{\text{temp}}}\!=\!\mathit{Move({x})}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(Move({x},Short))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{Move({x})} \land (\mathit\{x\}\!=\!\mathit{Left} \lor \mathit\{x\}\!=\!\mathit{Right}) \land \text{"thirty degrees"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(Move({x},Short))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(\cdot)} \land \text{"feet"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(AtFeet))})\!=\!1 \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"blue"}\!=\!\mathit\{x\} \lor (\text{"it"}\!=\!\mathit\{x\} \land (\mathit{BlueObj}\!\in\!\mathit{a_u} \lor \mathit{BlueObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \ \lor (\text{"the"}\!=\!\mathit\{x\} \land \mathit{perceived}\!=\![BlueObj] ))) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(BlueObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"red"}\!=\!\mathit\{x\} \lor (\text{"it"}\!=\!\mathit\{x\} \land (\mathit{RedObj}\!\in\!\mathit{a_u} \lor \mathit{RedObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \  \lor (\text{"the"}\!=\!\mathit\{x\} \land \mathit{perceived}\!=\![\mathit{RedObj}]))) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(RedObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(\cdot)}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(Other))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"red"}\!=\!\mathit\{x\}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(DoYouSee(RedObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"blue"}\!=\!\mathit\{x\}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(DoYouSee(BlueObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"it"}\!\notin\!\mathit\{x\}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(WhatDoYouSee)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{a_u^{\text{temp}}}})\!=\!1 \end{cases}$ \\ \\[-1mm]
+ & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(Move({x},Short))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{Move({x})} \land (\text{"left"}\!\in\!x \lor \text{"right"}\!\in\!x ) \land \text{"thirty degrees"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(Move({x},Short))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(x)} \land \text{"feet"}\!\in\!\mathit{u_u}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(AtFeet))})\!=\!1 \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"blue"}\!\in\!\mathit{x} \lor (\text{"it"}\!=\!\mathit{x} \land (\mathit{BlueObj}\!\in\!\mathit{a_u} \lor \mathit{BlueObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \ \lor (\text{"the"}\!\in\!\mathit{x} \land \mathit{perceived}\!=\![BlueObj] ))) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(BlueObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp({x})} \land (\text{"red"}\!\in\!\mathit{x} \lor (\text{"it"}\!=\!\mathit{x} \land (\mathit{RedObj}\!\in\!\mathit{a_u} \lor \mathit{RedObj}\!\in\!\mathit{a_m})) $ \\ & $\ \ \ \ \  \lor (\text{"the"}\!\in\!\mathit{x} \land \mathit{perceived}\!=\![\mathit{RedObj}]))) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(RedObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{PickUp(x)}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(PickUp(Other))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"red"}\!\in\!\mathit{x}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(DoYouSee(RedObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"blue"}\!\in\!\mathit{x}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(DoYouSee(BlueObj))})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_u^{\text{temp}}}\!=\!\mathit{DoYouSee({x})} \land \text{"it"}\!\notin\!\mathit{x}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Ask(WhatDoYouSee)})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} (\mathit{a_u^{\text{temp}}}\!=\!x)$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!x)\!=\!1 \end{cases}$ \\ \\[-1mm]
 \end{longtable}
 \end{footnotesize}
 
@@ -271,7 +261,8 @@ The task completion model considers a task to be completed whenever the system p
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
-$r_{1}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskConfirm(\cdot)} \land \mathit{a_m}\!\neq\!\mathit{AskRepeat} \land \mathit{a_m}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
+$r_{1}$: \ \ & $\forall \ x, $ \\
+& $ \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskConfirm(x)} \land \mathit{a_m}\!\neq\!\mathit{AskRepeat} \land \mathit{a_m}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{true})\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{completed\mbox{-}task}'\!=\!\mathit{false})\!=\!\theta_{\mathrm{changemind[0]}} \\
@@ -289,8 +280,9 @@ Rule $r_3$ and $r_7$ are used to increase the probability of grasping instructio
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
-$r_{1}$: \ \ &  $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{false}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{{i_u}})\!=\!1 \end{cases}$ \\ \\[-1mm]
+$r_{1}$: \ \ & $\forall \ x, $ \\ 
+& $ \textbf{if} \ (i_u\!=\!x \ \land \ \mathit{completed\mbox{-}task}\!=\!\mathit{false}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{{x}})\!=\!1 \end{cases}$ \\ \\[-1mm]
 $r_{2}$: \ \ & $ \textbf{if} \ (\mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{i_u}'\!=\!\mathit{Move(Left)})\!=\!\theta_{\mathrm{moveprior[0]}} \\
 P(\mathit{i_u}'\!=\!\mathit{Move(Forward)})\!=\!\theta_{\mathrm{moveprior[1]}} \\
@@ -336,21 +328,26 @@ The user action model derives the possible user actions $a_u$ depending on the c
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
-$r_{1}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then} $ \\
+$r_{1}$: \ \ & $\forall \ x,y,$ \\ 
+& $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({x})} \land \mathit{i_u}\!=\!\mathit{{x}}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Confirm})\!=\!\theta_{\mathrm{confirmpredict[0]}} \\
-P(\mathit{a_u}'\!=\!\mathit{{Ask(i_u)}})\!=\!\theta_{\mathrm{confirmpredict[1]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{confirmpredict[2]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({x})} \land \mathit{i_u}\!\neq\!\mathit{{x}} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
+P(\mathit{a_u}'\!=\!\mathit{{Ask(x)}})\!=\!\theta_{\mathrm{confirmpredict[1]}} \\
+P(\cdot)\!=\!\theta_{\mathrm{confirmpredict[2]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskConfirm({y})} \land \mathit{i_u}\!=\!x \ \land \ x\!\neq\!\mathit{{y}} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{disconfirmpredict[0]}} \\
-P(\mathit{a_u}'\!=\!\mathit{{Ask(i_u)}})\!=\!\theta_{\mathrm{disconfirmpredict[1]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{disconfirmpredict[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{lastMove}\!=\!\mathit{{i_u}}) \ \textbf{then}$ \\
+P(\mathit{a_u}'\!=\!\mathit{{Ask(x)}})\!=\!\theta_{\mathrm{disconfirmpredict[1]}} \\
+P(\cdot)\!=\!\theta_{\mathrm{disconfirmpredict[2]}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{lastMove}\!=\!\mathit{{i_u}} \ \land \ \mathit{i_u}\!=\!x) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{RepeatLast})\!=\!\theta_{\mathrm{samemove[0]}} \\
-P(\mathit{a_u}'\!=\!\mathit{{Ask(i_u)}})\!=\!\theta_{\mathrm{samemove[1]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{samemove[2]}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{AskRepeat} \lor \mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{Ask(i_u)}})\!=\!\theta_{\mathrm{intent[0]}} \\
-P(\cdot)\!=\!\theta_{\mathrm{intent[1]}} \end{cases}$  \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{Ask(i_u)}})\!=\!\theta_{\mathrm{othercase[0]}} \\
+P(\mathit{a_u}'\!=\!\mathit{{Ask(x)}})\!=\!\theta_{\mathrm{samemove[1]}} \\
+P(\cdot)\!=\!\theta_{\mathrm{samemove[2]}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ ((\mathit{a_m}\!=\!\mathit{AskRepeat} \lor \mathit{completed\mbox{-}task}\!=\!\mathit{true}) \ \land \ \mathit{i_u}\!=\!x) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{Ask(x)}})\!=\!\theta_{\mathrm{intent[0]}} \\
+P(\cdot)\!=\!\theta_{\mathrm{intent[1]}} \end{cases}$  \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!\neq\!\mathit{None} \ \land \ \mathit{i_u}\!=\!x) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{{Ask(x)}})\!=\!\theta_{\mathrm{othercase[0]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{othercase[1]}} \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(\cdot)}) \ \textbf{then} $ \\
+$r_{2}$: \ \ & $\forall \ x,$ \\
+& $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(x)}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}P(\mathit{a_u}'\!=\!\mathit{Stop})\!=\!\theta_{\mathrm{aftermove[0]}} \\
 P(\mathit{a_u}'\!=\!\mathit{Disconfirm})\!=\!\theta_{\mathrm{aftermove[1]}} \\
 P(\cdot)\!=\!\theta_{\mathrm{aftermove[2]}} \end{cases}$ \\ \\[-1mm]
@@ -360,37 +357,47 @@ P(\cdot)\!=\!\theta_{\mathrm{aftermove[2]}} \end{cases}$ \\ \\[-1mm]
 
 \subsubsection*{Utility model}
 
-The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. Rule $r_7$ is used to reduce the utility of all actions and ensure that their initial utility in the absence of other information is lower than zero.
+The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. Rule $r_7$ is used to set a initial negative value to all actions (to ensure that their utility in the absence of other information is lower than zero). 
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
-$r_{1}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Move(\cdot)}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{move}} \end{cases}$ \\ \\[-1mm]
-$r_{2}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ ((\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \lor$ \\ &  \;\;\;\;\; $ (\mathit{i_u}\!=\!\mathit{PickUp(AtFeet)} \land \mathit{carried}\!=\!\mathit{[]})) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{pickup}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(AlreadyCarryObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{x}\!=\!\mathit{Other}) \ \textbf{then}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(CannotResolve)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
+$r_{1}$: \ \ & $\forall \ x, $ \\
+& $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Move(x)}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(Move(x))})\!=\!\theta_{\mathrm{move}} \end{cases}$ \\ \\[-1mm]
+$r_{2}$: \ \ & $\forall \ x, $ \\ 
+& $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{x}}\!\in\!\mathit{perceived} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({PickUp(x)})})\!=\!\theta_{\mathrm{pickup}} \end{cases}$ \vspace{1mm} \\ 
+&  $ \textbf{else if}  (\mathit{i_u}\!=\!\mathit{PickUp(AtFeet)} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({PickUp(AtFeet)})})\!=\!\theta_{\mathrm{pickup}} \end{cases}$ \vspace{1mm} \\ 
+ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{y}}\!\in\!\mathit{perceived} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(AlreadyCarryObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{y}\!=\!\mathit{Other}) \ \textbf{then}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(CannotResolve)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \vspace{1mm} \\ 
+& $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{PickUp({x})} \land \mathit{{y}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(DoNotSeeObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \\ \\[-1mm]
 $r_{3}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Release} \land \mathit{carried}\!\neq\!\mathit{None} \land \mathit{carried}\!\neq\!\mathit{[]}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({i_u})})\!=\!\theta_{\mathrm{release}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{Release} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then}$ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do({Release})})\!=\!\theta_{\mathrm{release}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{Release} \land \mathit{carried}\!=\!\mathit{[]}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(DoNotCarryObject)})\!=\!\theta_{\mathrm{excuse}} \end{cases}$ \\ \\[-1mm]
 $r_{4}$: \ \ & $\forall \ x, $ \\ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\in\!\mathit{perceived}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Confirm)})\!=\!\theta_{\mathrm{confirmpercept}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{DoYouSee({x})} \land \mathit{{x}}\!\notin\!\mathit{perceived}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Disconfirm)})\!=\!\theta_{\mathrm{confirmpercept}} \end{cases}$ \\ \\[-1mm]
-$r_{5}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{WhatDoYouSee}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe({perceived})})\!=\!\theta_{\mathrm{describe}} \end{cases}$ \\ \\[-1mm]
+$r_{5}$: \ \ & $\forall \ x, $ \\
+& $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{WhatDoYouSee} \ \land \ x\!=\!\mathit{perceived}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Describe(x)})\!=\!\theta_{\mathrm{describe}} \end{cases}$ \\ \\[-1mm]
 $r_{6}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!=\!\mathit{Greeting}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Greet)})\!=\!\theta_{\mathrm{chitchat}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{i_u}\!=\!\mathit{Closing}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Say(Goodbye)})\!=\!\theta_{\mathrm{chitchat}} \end{cases}$ \\ \\[-1mm]
-$r_{7}$: \ \ & $ \textbf{if} \  (\mathit{true}) \  \textbf{then}$ \\ & \;\;\;\;\; $\begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(\cdot)})\!=\!-10 \\
-U(\mathit{a_m}'\!=\!\mathit{Say(\cdot)})\!=\!-10 \\
-U(\mathit{a_m}'\!=\!\mathit{Describe(\cdot)})\!=\!-10 \end{cases}$ \\ \\[-1mm]
+$r_{7}$: \ \ & $\forall \ x,$ \\
+& $ \textbf{if} \  (\mathit{true}) \  \textbf{then}$ \\ & \;\;\;\;\; $\begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(x)})\!=\!-10 \\
+U(\mathit{a_m}'\!=\!\mathit{Say(x)})\!=\!-10 \\
+U(\mathit{a_m}'\!=\!\mathit{Describe(x)})\!=\!-10 \end{cases}$ \\ \\[-1mm]
 $r_{8}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!\neq\!\mathit{AskRepeat} \land \mathit{a_u}\!\neq\!\mathit{None} \land \mathit{a_u}\!\neq\!\mathit{Confirm} $ \\ & $\ \ \ \ \  \land \mathit{a_u}\!\neq\!\mathit{Disconfirm} \land \mathit{a_u}\!\neq\!\mathit{Grounding}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeat1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskRepeat})\!=\!\theta_{\mathrm{repeat2}} \end{cases}$ \\ \\[-1mm]
-$r_{9}$: \ \ & $ \textbf{if} \ (\mathit{i_u}\!\neq\!\mathit{DoYouSee(\cdot)} \land \mathit{i_u}\!\neq\!\mathit{WhatDoYouSee} \land \mathit{i_u}\!\neq\!\mathit{Greeting} $ \\ & $\ \ \ \ \ \land \mathit{i_u}\!\neq\!\mathit{Closing} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
- & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm({i_u})})\!=\!\theta_{\mathrm{confirm1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
-& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm(\cdot)})\!=\!\theta_{\mathrm{confirm2}} \end{cases}$ \\ \\[-1mm]
+$r_{9}$: \ \ & $\forall \ x,y,$ \\
+& $ \textbf{if} \ (\mathit{i_u}\!=\!x \ \land \ \mathit{i_u}\!\neq\!\mathit{DoYouSee(y)} \land \mathit{i_u}\!\neq\!\mathit{WhatDoYouSee} \land \mathit{i_u}\!\neq\!\mathit{Greeting} $ \\ & $\ \ \ \ \ \land \mathit{i_u}\!\neq\!\mathit{Closing} \land \mathit{i_u}\!\neq\!\mathit{None}) \ \textbf{then} $ \\
+ & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm({x})})\!=\!\theta_{\mathrm{confirm1}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else}$ \\
+& \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{AskConfirm(x)})\!=\!\theta_{\mathrm{confirm2}} \end{cases}$ \\ \\[-1mm]
 $r_{10}$: \ \ & $ \textbf{if} \ (\mathit{motion}\!=\!\mathit{true} \land \mathit{a_u}\!=\!\mathit{Ask(Stop)}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(Stop)})\!=\!\theta_{\mathrm{stop}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{motion}\!=\!\mathit{true} \land \mathit{a_u}\!=\!\mathit{Disconfirm}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{a_m}'\!=\!\mathit{Do(Stop)})\!=\!\theta_{\mathrm{stop}} \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{motion}\!=\!\mathit{true}) \ \textbf{then}$ \\
@@ -404,7 +411,8 @@ The generation model maps each selected system action $a_m$ to its corresponding
  
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
-$r_{1}$: \ \ & $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(Move(Turn))}) \ \textbf{then} $ \\
+$r_{1}$: \ \ & $\forall \ x, $ \\
+& $ \textbf{if} \ (\mathit{a_m}\!=\!\mathit{Do(Move(Turn))}) \ \textbf{then} $ \\
  & \;\;\;\;\; $ \begin{cases}U(\mathit{u_m}'\!=\!\text{"OK, now turning back}")\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do(Move({x},Short))}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{u_m}'\!=\!\text{"OK, moving \{x\} a little bit}")\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do(Move({x}))}) \ \textbf{then}$ \\
 & \;\;\;\;\; $ \begin{cases}U(\mathit{u_m}'\!=\!\text{"OK, moving \{x\}}")\!=\!1 \end{cases}$ \vspace{1mm} \\ & $ \textbf{else if} \ (\mathit{a_m}\!=\!\mathit{Do(PickUp(RedObj))}) \ \textbf{then}$ \\

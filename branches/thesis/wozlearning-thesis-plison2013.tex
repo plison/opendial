@@ -402,7 +402,7 @@ The scenario for the Wizard-of-Oz experiment involved a human user and a Nao rob
 
 The users were instructed to teach the robot a sequence of body movements such as lifting arms, stepping forward, backward, kneeling down, etc.  The movements could be performed either in consecutive order or in parallel (provided the movements were not in conflict).  The users were free to decide on the movements to perform, and communicated their intention using spoken commands (no gesture recognition was involved).  The robot was programmed to memorise the instructed sequence and could ``replay'' it at any time.
 
-The list of possible dialogue acts\index{dialogue acts} for the user is shown in Table \ref{table:userdas}, and includes a total of 16 dialogue act templates (expanding into 41 dialogue acts when counting all possible argument instantiations). The set of user dialogue acts contains both task-specific dialogue moves to convey user commands as well as conversational actions for feedbacks, acknowledgements, corrections and engagement.  To respond to these user inputs, the robot/wizard had at its disposal a repository of 12 possible actions (expanding into 41 alternative actions when counting all possible instantiations of the action arguments).  The actions included both physical and verbal actions. The verbal actions available to the system comprised various types of clarification requests and grounding acts. The list of system actions is given in Table \ref{table:systemdas}. 
+The list of possible dialogue acts\index{dialogue acts} for the user is shown in Table \ref{table:userdas}, and includes a total of 15 dialogue act templates (expanding into 40 dialogue acts when counting all possible  instantiations of the arguments). The set of user dialogue acts contains both task-specific dialogue moves to convey user commands as well as conversational actions for feedbacks, acknowledgements, corrections and engagement.  To respond to these user inputs, the robot/wizard had at its disposal a repository of 11 possible actions (expanding into 40 alternative actions when counting all possible instantiations).  The actions included both physical and verbal actions. The verbal actions available to the system comprised various types of clarification requests and grounding acts. The list of system actions is given in Table \ref{table:systemdas}. 
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -426,7 +426,6 @@ $\cdot$ $\mathrm{Confirm}$ \\
 $\cdot$ $\mathrm{Disconfirm}$ \\
 $\cdot$ $\mathrm{Say}(x)$ \\  $ \ \ \ \ \  \text{ where } x = \{\mathrm{Hello, Compliment,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{ThankYou, Goodbye}\}$\\
 $\cdot$ $\mathrm{GoToInitPose}$ \\ 
-$\cdot$ $\mathrm{FollowMe}$ \\
 $\cdot$ $\mathrm{Stop}$ 
 \end{tabular}
 \end{footnotesize}
@@ -442,7 +441,7 @@ $\cdot$ $\mathrm{Say}(x)$ \\  $ \ \ \ \ \  \text{ where } x = \{\mathrm{Hello, T
 \end{tabular}
 \hspace{2cm}
 \begin{tabular}{p{60mm}} 
-$\cdot$ $\mathrm{AskConfirmation}$ \\
+$\cdot$ $\mathrm{AskConfirm}$ \\
 $\cdot$ $\mathrm{RegisterMove}$ \\
 $\cdot$ $\mathrm{UndoMove}$ \\
 $\cdot$ $\mathrm{AskRepeat}$ \\
@@ -450,9 +449,7 @@ $\cdot$ $\mathrm{Acknowledgement}$ \\
 $\cdot$ $\mathrm{AskIntention}$ \\
 $\cdot$ $\mathrm{DemonstrateAll}$ \\
 $\cdot$ $\mathrm{ForgetAll}$ \\
-$\cdot$ $\mathrm{StopMove}$ \\
-$\cdot$ $\mathrm{FollowUser}$ 
-
+$\cdot$ $\mathrm{StopMove}$
 \end{tabular}
 \end{footnotesize}
 \caption{List of system actions $a_m$.} 
@@ -612,7 +609,7 @@ Each selected action $a_m$ was recorded along with the complete dialogue state $
 The state variables are represented with their full probability distributions. The dialogue state recorded right before the registration of the first movement t in Transcript 1 corresponds for instance to the following specification: 
 \begin{align*}
 \mathcal{B} = \begin{cases} a_u = [ (\mathrm{Confirm}, p\!=\!0.88), (\mathrm{Say(ThankYou)}, p\!=\!0.10), (\mathit{None}, p\!=\!0.02) \rangle \\
-a_m = \langle (\mathrm{AskConfirmation}, p\!=\!1) ] \\
+a_m = \langle (\mathrm{AskConfirm}, p\!=\!1) ] \\
 \mathit{moveSequence} = [ ( \emptyset, p\!=\!1) ] \\
 \mathit{lastMove} = [ (\mathrm{MoveArm(Left,Up)}, p\!=\!1) ] \\
 \mathit{silence} = [ (2 \textrm{ seconds}, p\!=\!1) ] \end{cases}
