@@ -28,7 +28,7 @@ An alternative to offline approaches is online planning\index{online planning}. 
 
 One important benefit of online approaches is the possibility to dynamically adapt the domain models at runtime. This characteristic is useful for dialogue domains where the domain models can vary in the course of the interaction -- for instance, in order to adapt to shifting user preferences. Offline approaches must in comparison recalculate their policies after every modification or extension of the internal models for the domain.   However, this advantage comes at a price, namely the fact that planning must be performed at execution time, while the interaction is taking place.  Planning must therefore meet real-time constraints. 
 
-Interestingly, offline and online approaches are not mutually exclusive, but can be combined together to take full advantage of both strategies.  The idea is to perform offline planning to precompute an initial rough policy, and use this policy as a heuristic approximation to guide the search of an online planner \citep{RossC07}. These heuristic approximations can for instance be used to provide lower and upper bounds on the values associated with the dialogue states of the search tree.  Based on these bounds, the planning algorithm can concentrate its computational efforts in the most fruitful regions of the search space and quickly discard irrelevant actions. 
+Interestingly, offline and online approaches are not mutually exclusive, but can be combined together to take full advantage of both strategies.  The idea is to perform offline planning to precompute a rough initial policy, and use this policy as a heuristic approximation to guide the search of an online planner \citep{RossC07}. These approximations can for instance provide lower and upper bounds on the values associated with the dialogue states of the search tree.  Based on these bounds, the planning algorithm can concentrate its computational efforts in the most fruitful regions of the search space and quickly discard irrelevant actions. 
 
 Model-based Bayesian reinforcement learning has been applied to dialogue management in several recent papers.  \cite{DBLP:journals/jstsp/PngPC12} describe a Bayes-Adaptive POMDP\index{Bayes-Adaptive POMDP} framework and illustrate its use in simulated interactions. \cite{DoshiR08} present a related POMDP framework with model uncertainty combined with active learning.  Action selection is formalised in their paper by sampling possible POMDP models and extracting a solution for each sample. A similar strategy is employed by \cite{DBLP:conf/iui/AtrashP09}.  Finally, \cite{ChinaeiC12} and \cite{chinaei2012} demonstrate the estimation of observation and reward models for dialogue POMDPs in a healthcare application.  One interesting aspect of their work is the use of inverse reinforcement learning to automatically derive a reward model from expert policies.
 
@@ -104,7 +104,7 @@ Let us illustrate this process on the dialogue example already discussed in Sect
 \speak{User } Please move forward! \\  $\phantom{b}$ \textit{Hypotheses for} $\tilde{a}_u = [ (\mathit{Request(Forward)}, 0.7), (\mathit{Other}, 0.3) ]$ \\[-4mm]
 \end{dialogue} 
 
-We now assume the effect distribution associated with the predictive rule $r_{11}$ to be initially unknown and replaced by parameters, leading to the following rule: \vspace{-2mm}
+However, contrary to the example in Chapter \ref{chap:rules}, we now assume that the effect distribution associated with the predictive rule $r_{11}$ is initially unknown and is therefore replaced by parameters, leading to the following rule: \vspace{-2mm}
 \begin{align*}
 r_{11}: \ \ & \forall y, \\ 
 & \textbf{if} \ (a_m = \mathit{AskRepeat} \land a_u=y) \ \textbf{then} \\ 
@@ -116,9 +116,9 @@ P(\{\cdot\}) = \theta_{r_{11}(1,2)} \\
 
 Figure \ref{fig:learningexample} illustrates how the distribution over the parameter values for $\boldsymbol\theta_{r_{11}(1)}$ is automatically modified as part of the state update operation. To keep the example as simple as possible, the figure ignores the steps related to action selection and concentrates on the application of rule $r_{11}$.  The initial prior distribution $P(\boldsymbol\theta_{r_{11}(1)})$ is arbitrarily set in this example to $\sim \mathrm{Dirichlet}(2,1)$.
 
-\begin{figure}[h!] \vspace{0mm}
+\begin{figure}[h!] \vspace{4mm}
 \centering
-\includegraphics[scale=0.30]{imgs/learningexample.pdf}
+\includegraphics[scale=0.28]{imgs/learningexample.pdf} \vspace{5mm}
 \caption{Parameter update for $\boldsymbol\theta_{r_{11}(1)}$ after the reception of a new user input. }
 \label{fig:learningexample}
 \end{figure}
@@ -128,7 +128,7 @@ Step 1 corresponds to the instantiation of the rule. After the instantiation, th
 \subsubsection*{Action selection}
 \index{action selection}
 
- As the $Q$-values are not directly accessible in model-based approaches, action selection must resort to either dynamic programming or forward planning to calculate the expected future rewards of each action.  Action selection is the computational bottleneck in model-based Bayesian reinforcement learning, since the agent needs to reason not only over all the current and future states, but also over all possible models (parametrised by the $\boldsymbol\theta$ variables).  The high dimensionality of the task often prevents the use of offline solution techniques. We apply in our implementation a simple forward planning algorithm coupled with importance sampling, as shown in Algorithm \ref{algo:planning} \index{online planning}\index{planning horizon}. The selection procedure relies on the recursive function \textsc{Calculate-Q-Values}($\mathcal{B}, \mathbf{e}, h$) to compute the Q-values of possible actions given a current state $\mathcal{B}$, evidence $\mathbf{e}$ and planning horizon $h$.  
+ As the $Q$-values are not directly accessible in model-based approaches, action selection must resort to either dynamic programming or forward planning to calculate the expected future rewards of each action.  Action selection is the computational bottleneck in model-based Bayesian reinforcement learning, since the agent needs to reason not only over all the current and future states, but also over all possible models (parametrised by the $\boldsymbol\theta$ variables).  The high dimensionality of the task often prevents the use of offline solution techniques. We apply in our implementation a simple forward planning algorithm shown in Algorithm \ref{algo:planning} \index{online planning}\index{planning horizon}. The selection procedure relies on the recursive function \textsc{Calculate-Q-Values}($\mathcal{B}, \mathbf{e}, h$) to compute the Q-values of possible actions given a current state $\mathcal{B}$, evidence $\mathbf{e}$ and planning horizon $h$.  
 
 \begin{algorithm}[h!]
 \caption{: \textsc{PlanAction} ($\mathcal{B}, \mathbf{e}$, h) }
@@ -151,7 +151,7 @@ Step 1 corresponds to the instantiation of the rule. After the instantiation, th
 \REQUIRE (see above)
 \STATE Let $\mathbf{A}$ be the set of all decision variables in $\mathcal{B}$
 \FORALL {actions $\mathbf{a} \in \mathit{Val}(\mathbf{A})$}
-\STATE $Q_{\mathcal{B}}(\mathbf{a}) \leftarrow U_{\mathcal{B}}(\mathbf{a}, \mathbf{e})$
+\STATE $Q_{\mathcal{B}}(\mathbf{a}) \leftarrow U_{\mathcal{B}}(\mathbf{a} \, | \, \mathbf{e})$
 \IF {$h > 1$}
 \STATE $\mathcal{B}' \leftarrow $ dialogue state updated from $\mathcal{B}$ after action $\mathbf{a}$
 \FORALL {observations $\mathbf{o}$}
@@ -215,9 +215,9 @@ The model-based learning cycle is detailed in Algorithm \ref{algo:rlearning_mb}.
 \label{sec:modelfree}
 \index{rule parameters!model-free RL of}
 
-In parallel to the model-based learning strategy described above, we also developed an alternative Bayesian model-free approach to the estimation of rule parameters.  In this approach, the core model that is to be estimated is the \textit{action--value model}\index{action--value model} which specifies the expected cumulative reward $Q$ of the system actions depending on the current state. 
+In addition to the model-based learning strategy described above, we also developed an alternative Bayesian model-free approach to the estimation of rule parameters.  In this approach, the core model that is to be estimated is the \textit{action--value model}\index{action--value model} which specifies the expected cumulative reward $Q$ of the system actions depending on the current state. 
 
-In addition to this action--value model, the domain may also rely on transition and observation models. However, the transition and observation models are in model-free approaches only used for state updates (if the dialogue state contains hidden state variables that are indirectly inferred from observations, such as the user intentions) and are not exploited in the action selection.  This stands in contrast with model-based approaches to reinforcement learning where transition and observation  models are directly employed to plan the next action.
+Besides this action--value model, the domain may also rely on transition and observation models. However, the transition and observation models are in model-free approaches only used for state updates (if the dialogue state contains hidden state variables that are indirectly inferred from observations, such as the user intentions) and are not exploited in the action selection.  This stands in contrast with model-based approaches to reinforcement learning where transition and observation  models are directly employed to plan the next action.
 
 \begin{wrapfigure}[14]{r}{60mm}
 \vspace{-2mm}
@@ -263,7 +263,7 @@ The above section described how the parameter distributions for the $Q$-model ar
 \begin{algorithmic}[1] \vspace{1mm}
 \REQUIRE Dialogue state $\mathcal{B}$ and evidence $\mathbf{e}$
 \ENSURE Selected action $\mathbf{a}^*$
-\RETURN $\mathbf{a}^* = \begin{cases} \argmax_{\mathbf{a}} Q(\mathbf{a}, \mathbf{e}) & \text{with probability } (1- \epsilon) \\ \text{another action} & \text{with probability } \epsilon \end{cases}$
+\RETURN $\mathbf{a}^* = \begin{cases} \argmax_{\mathbf{a}} Q_{\mathcal{B}}(\mathbf{a} \, | \, \mathbf{e}) & \text{with probability } (1- \epsilon) \\ \text{another action} & \text{with probability } \epsilon \end{cases}$
 \end{algorithmic}
 \label{algo:egreedy}
 \end{algorithm}
@@ -366,7 +366,7 @@ The users were instructed to command the robot to carry the objects from one pla
 
 Each (physical or information-gathering) sub-task is represented as a distinct user intention. As the human users could only instruct the robot to perform one sub-task at a time, the user intention is represented by a single variable denoting the current sub-task that the user wishes to see fulfilled.  The user intentions for the domain are listed in Table \ref{table:userintents_exp2}. 
 
-In addition to following the user commands related to spatial navigation and object manipulation, the robot could also perform grounding actions such as clarification requests and acknowledgements. In total, the domain included 9 user dialogue templates\index{dialogue acts}.  The robot has a repertoire of 8 possible action templates that can be executed.  For a dialogue domain with two objects, the user actions $a_u$ and system actions $a_m$ will thus expand into respectively 15 and 37 actions.  Tables \ref{table:userdas_exp2} and \ref{table:systemdas_exp2} list the possible user and system actions.
+Besides following the user commands related to spatial navigation and object manipulation, the robot could also perform grounding actions such as clarification requests and acknowledgements. In total, the domain included 9 user dialogue templates\index{dialogue acts}.  The robot has a repertoire of 8 possible action templates that can be executed.  For a dialogue domain with two objects, the user actions $a_u$ and system actions $a_m$ will thus expand into respectively 15 and 37 actions.  Tables \ref{table:userdas_exp2} and \ref{table:systemdas_exp2} list the possible user and system actions.
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -421,7 +421,7 @@ $\cdot$ $\mathrm{DisconfirmDetection}$
 \hspace{2cm}
 \begin{tabular}{p{60mm}} 
 $\cdot$ $\mathrm{Ground}(x) $ \\ $ \ \ \ \text{ where } x=\{\mathrm{Move}(y),\mathrm{PickUp}(z),$  \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{Release}(z)\} $ \\ $\ \ \ \ \ \  \text{ and } y = \{\mathrm{Left,Right,Forward,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{Backward}\} $ \\ $\ \  \ \ \ \ \text{ and } z = \ \text{an object identifier}$ \\
-$\cdot$ $\mathrm{AskClarify}$ \\
+$\cdot$ $\mathrm{AskRepeat}$ \\
 $\cdot$ $\mathrm{AskConfirm}(x) $ \\ $\ \ \ \text{ where } x=\{\mathrm{Move}(y),\mathrm{PickUp}(z),$  \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{Release}(z), \mathrm{DoYouSee}(z),$ \\ $ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mathrm{WhatDoYouSee} \} $ \\ $\ \ \ \ \ \  \text{ and } y = \{\mathrm{Left,Right,Forward,}$ \\ $\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \mathrm{Backward}\} $ \\ $\ \ \ \ \ \  \text{ and } z = \ \text{an object identifier}$ \
 \end{tabular}
 \end{footnotesize}
@@ -452,7 +452,7 @@ Grounding of correct intention $a_m\!=\!\mathrm{Ground}(i_u)$ & +2 \\
 Grounding of wrong intention  $a_m\!=\!\mathrm{Ground}(x)$ with $x\!\neq\!i_u$ & -6  \\ 
 Request to confirm correct intention $a_m\!=\!\mathrm{AskConfirm}(i_u)$ & -0.5 \\
 Request to confirm wrong intention  $a_m\!=\!\mathrm{AskConfirm}(x)$ with $x\!\neq\!i_u$ & -1.5  \\ 
-Request to clarify $a_m\!=\!\mathrm{AskClarify}$ & -1 \\
+Request to clarify $a_m\!=\!\mathrm{AskRepeat}$ & -1 \\
 Ignore user act $a_m\!=\!\mathrm{None}$ when $a_u\!\neq\!\mathrm{None}$ & -1.5 
 \end{tabular}
 \end{footnotesize}
@@ -469,7 +469,7 @@ Ignore user act $a_m\!=\!\mathrm{None}$ when $a_u\!\neq\!\mathrm{None}$ & -1.5
 
 In order to draw meaningful and reliable comparisons between reinforcement learning approaches, the user behaviours must be made fully consistent across interactions.  This consistency must be enforced on both the conversational choices of the user and the average amount of noise and errors that characterise them. Needless to say, this criteria is hard to satisfy when working with human participants. The comparative evaluation of learning approaches was thus conducted with the help of a simulator. However, it should be emphasised that the reliance on user simulators to conduct the comparative evaluation of our learning approaches does not in any way imply that simulators are a necessary component of the learning approach presented in this chapter.\footnote{In fact, probabilistic rules are expected to be well suited for optimisation from live interactions, as they require substantially less training data than traditional approaches (as evidenced by the empirical results in this section).}
 
-The purpose of the simulator is to emulate the typical dialogue behaviour of a human user, and generate relevant user responses to the system actions.  In addition, the simulator also maintains a virtual representation of the environment during the interaction (represented in our case by the physical objects) and updates this representation as a function of the system actions.
+The purpose of the simulator is to emulate the typical dialogue behaviour of a human user, and generate relevant user responses to the system actions.  The simulator also maintains a virtual representation of the environment during the interaction (represented in our case by the physical objects) and updates this representation as a function of the system actions.
 
 
 \subsubsection*{Wizard-of-Oz study}
@@ -501,7 +501,7 @@ After the recording, the dialogues were segmented and annotated by hand (with on
 \speak{Human} Do you see any object? \\[1mm] 
 \begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)},$\\ $\phantom{1}$ \hspace{16mm}$ i_u\!=\!\mathrm{WhatDoYouSee},\mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$ \end{footnotesize} \vspace{3mm}
 \speak{Robot} Sorry I do not understand \\[1mm]
-\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskClarify}$ \end{footnotesize}\vspace{3mm}
+\begin{footnotesize}\textbf{Annotation}: $a_m\!=\!\mathrm{AskRepeat}$ \end{footnotesize}\vspace{3mm}
 \speak{Human} Do you see any object? \\[1mm]
 \begin{footnotesize}\textbf{Annotation}: $a_u\!=\!\mathrm{Ask(WhatDoYouSee)}, $ \\ $\phantom{1}$ \hspace{16mm}$i_u\!=\! \mathrm{WhatDoYouSee}, \mathit{carried}\!=\![],\mathit{perceived}\!=\![\mathit{object}_1]$\end{footnotesize} \vspace{3mm}
 \speak{Robot} I see a blue cylinder \\[1mm]
@@ -517,7 +517,7 @@ After the recording, the dialogues were segmented and annotated by hand (with on
 
 After collecting and annotating the Wizard-of-Oz interactions, the next step in the development of the simulator is to design the transition model that determines how the user and the environment are to respond to the system actions. This statistical model is used at runtime to sample possible responses and feed them back to the dialogue system. 
 
-The transition model\index{transition model} is factored into four components:
+The transition model\index{transition model} employed for the simulator is factored into four components:
 \begin{enumerate}
 \item A user goal model\index{user goal model} $P(i_u' \, | \, i_u, a_m, \mathit{perceived}', \mathit{carried}')$ describing the probability of the next user intention $i_u'$ as a function of the current intention $i_u$, the last system action $a_m$ and the two contextual variables $\mathit{perceived}$ and $\mathit{carried}$.  The dependence on the contextual variables can for instance express that the user is more likely to ask the robot to grasp an object if it sees it, and less likely to ask the same request if the robot already carries an object.
 \item A user action model\index{user action model} $P(a_u' \, | \, i_u', a_m)$ describing the probability of the new user action $a_u'$ as a function of the new user intention and last system action.
@@ -564,7 +564,7 @@ Contrary to the experiments presented in the previous chapter, the dialogue arch
 \label{fig:exp2_architecture}
 \end{figure}
 
-An example of interaction generated when coupling the simulator to the dialogue system is provided in Transcript 5. The excerpt is taken at the onset of the learning cycle, when the system's knowledge of the domain models is still rudimentary, which explains the prevalence of information-gathering actions. 
+An example of interaction generated when coupling the simulator to the dialogue system is provided in Transcript 5. The excerpt is taken at the onset of the learning cycle, when the system's estimation of the model parameters is still rudimentary, which explains the prevalence of information-gathering actions. 
 
 \begin{Transcript}[p!] 
 \vspace{3mm}
@@ -621,7 +621,7 @@ P(i_u') & \text{if } a_m \text{ fullfils the intention } i_u \\
 \end{equation}
 where $P(i_u')$ is a categorical distribution that expresses the prior probability of a new user intention $i_u'$. The user action model $P(a_u' \, | \, i_u',a_m)$ is for its part constructed as a plain probability table where each possible assignment of values for the parent variables $i_u'$ and $a_m$ is assigned a distinct categorical distribution on the values of $a_u'$. 
 
-The resulting parameters for these categorical distributions are encoded with Dirichlet priors.  The baseline model employed for this experiment contains a total of 229 Dirichlet parameters, composed of one Dirichlet with 12 dimensions and 228 with 16 dimensions.  Weakly informative priors are used to initialise the prior distributions.\index{parameter priors}
+The resulting parameters for these categorical distributions are encoded with Dirichlet priors.  The baseline model employed for this experiment contains a total of 229 Dirichlet parameters, divided into 228 Dirichlets with 16 dimensions (for the user action model) and one Dirichlet with 12 dimensions (for the user goal model).  Weakly informative priors are used to initialise the prior distributions.\index{parameter priors}
 
 A linear model\index{linear model} has also been constructed for this experiment but is not shown in the results as its parameter estimation systematically diverged and fared much worse that the classical factored distributions, most likely due to the non-linearity of the underlying domain models. 
 
@@ -633,9 +633,9 @@ The rule-structured model is encoded with parametrised probability rules. A tota
 
 \subsubsection*{Empirical results}
 
-The performance was first measured in terms of average return\index{average return} per simulated interaction, shown in Figure \ref{fig:return_exp21}.  
+The performance of the two competing approaches was first measured in terms of average return\index{average return} per simulated interaction, as shown in Figure \ref{fig:return_exp21}.  
 
-To analyse the accuracy of the transition model, we also derived the Kullback--Leibler divergence\index{Kullback--Leibler divergence} \citep{KLDIVERGE} between the next user act distribution $P(a_u')$ predicted by the learned model and the actual distribution followed by the simulator at a given time, as shown in Figure \ref{fig:divergence}.  The Kullback--Leibler divergence is measure of the difference between two probability distributions.  Some residual discrepancy is to be expected between these two distributions, the latter being based on the actual user intention (known to the simulator) while the former must infer the intention from the current belief state. 
+To analyse the accuracy of the transition model, we also derived the Kullback--Leibler divergence\index{Kullback--Leibler divergence} between the next user act distribution $P(a_u')$ predicted by the learned model and the actual distribution followed by the simulator at a given time, as shown in Figure \ref{fig:divergence}.  The Kullback--Leibler divergence \citep{KLDIVERGE} is a measure of the difference between two probability distributions.  Some residual discrepancy is to be expected between these two distributions, the latter being based on the actual user intention (known to the simulator) while the former must infer the intention from the current belief state. 
 
 The results in both figures are averaged on 100 simulations.
 
@@ -716,7 +716,8 @@ The results suggest that the model-based approach outperforms the model-free var
 
 % Second, the model-free learning algorithm presented here remains relatively simple -- as it is based on a Bayesian variant of the well-known SARSA algorithm -- and more recent frameworks such as Gaussian processes\index{Gaussian processes} \citep{milica2013} might improve the model-free results.
 
-The model-free approach presented in this experiment only focused on the estimation of the action--value model and did not include a transition model.  An interesting idea for future work would be to blend the two optimisation methods and simultaneously estimate a transition model together with the action--value model.  Such a hybrid approach would combine the advantages of model-free and model-based strategies, since it would allow the action--value model to be grounded in high-level representations such as the user intentions instead of remaining confined to observation variables. In this hybrid framework, action selection could be performed via a mixture of offline and online planning as in \cite{RossC07}. 
+The model-free approach presented in this experiment only focused on the estimation of the action--value model and did not include a transition model.  An interesting idea for future work would be to blend the two optimisation methods and simultaneously estimate a transition model together with the action--value model.  Such a hybrid approach would combine the advantages of model-free and model-based strategies. A mixture of offline and online planning  \citep[as demonstrated by e.g.][]{RossC07} could be used for the action selection. 
+% , since it would allow the action--value model to be grounded in high-level representations such as the user intentions instead of remaining confined to observation variables.
 
 \section{Conclusion}
 
@@ -734,4 +735,4 @@ On the basis of this simulator, the first experiment compared the performance of
 
 The second experiment examined the relative performance of model-based and model-free approaches.  The two models compared in this experiment were structured with probabilistic rules. The results showed that the model-based approach fared slightly better than its model-free counterpart in terms of average return per interaction.  However, we noted that this difference was contingent on particular aspects of the experimental setup such as the length of the planning horizon and the prior availability of a reward model. 
 
-The previous and present chapter demonstrated how probabilistic rules can facilitate the optimisation of dialogue policies both in the supervised and reinforcement learning cases. Our experiments have nevertheless so far concentrated on the \textit{learning performance} of rule-structured approaches, and have not yet evaluated the effects of probabilistic rules on practical measures of interaction quality and user satisfaction. Chapter \ref{chap:user-evaluation} will address this important question. But before doing so, we first discuss the technical implementation of the data structures and algorithms exposed in this thesis. This is the subject of the next chapter.
+The previous and present chapter demonstrated how probabilistic rules can facilitate the optimisation of dialogue policies both in supervised learning and in reinforcement learning. Our experiments have nevertheless so far concentrated on the \textit{learning performance} of rule-structured approaches, and have not yet evaluated the effects of probabilistic rules on practical measures of interaction quality and user satisfaction. Chapter \ref{chap:user-evaluation} will address this important question. But before doing so, we first discuss the technical implementation of the data structures and algorithms exposed in this thesis. This is the subject of the next chapter.

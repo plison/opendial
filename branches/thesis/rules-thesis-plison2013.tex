@@ -143,7 +143,7 @@ The two examples $(\mathit{Rain}\!=\mathit{true} \lor \mathit{Weather}\!\neq\mat
 
 Given that a rule is defined through an \textit{if...then...else} construction, the partitioning is guaranteed by construction to be exhaustive and mutually exclusive (only one branch will be followed, as in programming languages).  When provided with an assignment of values on the input variables, the conditions are tested in sequential order until one is satisfied. When no terminating \textbf{else} block is explicitly specified at the end of a rule, the framework assumes a final \textbf{else} block associated with a void effect to ensure that the partitioning is exhaustive. The last condition $c_n$ is thus guaranteed to always be trivially satisfied irrespective of the input variable values. 
 
-It is important to note that the conditions $c_1,\dots, c_n$ themselves need not be mutually exclusive, as the partitioning automatically follows from the rule structure as an \textit{if...then...else} construction. The construction offers a compact partitioning of the state space to mitigate the dimensionality curse.  Without such a partitioning, a rule ranging over the input variables $I_1, \dots, I_{k}$ would need to enumerate $\mathit{Val}(I_1) \times \dots \times \mathit{Val}(I_k)$ possible assignments.  The reliance on the \textit{if...then...else}  structure reduces this number to $n$ partitions, where $n$ corresponds to the number of conditions for the rule and is usually small. 
+It is important to note that the conditions $c_1,\dots, c_n$ themselves need not be mutually exclusive, as the partitioning automatically follows from the  \textit{if...then...else} structure. The rule construction offers a compact partitioning of the state space to mitigate the dimensionality curse.  Without such a partitioning, a rule ranging over the input variables $I_1, \dots, I_{k}$ would need to enumerate $\mathit{Val}(I_1) \times \dots \times \mathit{Val}(I_k)$ possible assignments.  The reliance on the \textit{if...then...else}  structure reduces this number to $n$ partitions, where $n$ corresponds to the number of conditions for the rule and is usually small. 
 
 
 \setlength{\grammarindent}{12em} 
@@ -279,7 +279,7 @@ Rule $r_2$ stipulates the respective utilities for the two possible decisions as
 \subsection{Quantification}
 \label{sec:quantification}
 \index{probabilistic rule!quantifiers in}
-\index{first-order logic}
+\index{first-order logic}\index{quantification}
 
 Quantification is a powerful mechanism to abstract over particular relational aspects of the domain structure.  Free variables can be included in the specification of both the conditions and effects of a given rule and are universally quantified on top of the rule.\footnote{These free variables are variables in the sense of first-order logic, and are not to be confused with the random variables of the probabilistic model.}  A rule containing the variables $y_1 \dots, y_p$ in its conditions and/or effects is therefore formalised as:
 \begin{equation}
@@ -357,7 +357,7 @@ Rule $r_4$ associates a utility of 2 to the action of grasping an object $y$ whe
 \label{sec:ruleinstantiation}
 \index{probabilistic rule!instantiation of}
 
-We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. The rule nodes are essentially latent variables\index{latent variables} that serve as intermediaries between the input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
+We represent the dialogue state\index{dialogue state} as a Bayesian network\index{Bayesian network} over state variables, in line with other dialogue management approaches such as \cite{Thomson:2010:BUD:1772996.1773040} and \cite{bui2009}. Rules are then applied at runtime on this dialogue state.  The instantiation is performed by creating a distinct node for every rule to apply. The rule nodes are essentially latent variables\index{latent variables} serving as intermediaries between the input and output variables.  Although the presence of these rules is never directly observed, they contribute to structuring the relations between variables and enable the system designer to decompose complex probability and utility models into smaller parts.   % The instantiated rules are equivalent to a dynamic decision network (cf. previous chapter). 
 
 We describe below the instantiation procedure for each type of rule. For the sake of clarity, we shall first limit our discussion to rules without universal quantification, and then demonstrate how quantification can be accounted for in the instantiation process. 
 
@@ -596,7 +596,7 @@ The procedure results in a set of grounding-specific rule distributions $ \{ P(r
 \end{align}
 
 
-Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$ in a state with two objects $o_1$ and $o_2$, each associated with a random variable describing its shape. The effects specified for $r_3$ have two output variables: $\mathit{graspable}'(o_1)$ and $\mathit{graspable}'(o_2)$ which are thus placed as children of the node $r_3$.  
+Figure \ref{fig:quantinstantitionprob} shows the instantiation of the rule $r_3$ in a state with two objects $o_1$ and $o_2$, each associated with a random variable describing its shape. The effects specified for $r_3$ have two output variables: $\mathit{graspable}(o_1)'$ and $\mathit{graspable}(o_2)'$ which are thus placed as children of the node $r_3$.  
 
 \begin{figure}[ht]
 \centering
@@ -637,7 +637,7 @@ The instantiation of rule $r_4$ given the input variables $\mathit{task}$, $\mat
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.25]{imgs/quantutilruleinstantiation.pdf}
-\caption{Instantiation of the quantified utility rule $r_9$ on a state with two objects $o_1$ and $o_2$.}
+\caption{Instantiation of the quantified utility rule $r_4$ on a state with two objects $o_1$ and $o_2$.}
 \label{fig:quantinstantitionutil}
 \end{figure}
 
@@ -700,7 +700,7 @@ We now describe each of these steps in detail.
 
 \subsubsection*{Adding new observations to the state}
 
-The first step in the update procedure is to insert the new observation(s) into the dialogue state.  In the case where the observation is known with certainty, this insertion can simply take the form of an assignment of evidence values.  However, dialogue systems must frequently integrate observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}, such as the ASR/NLU hypotheses of the user dialogue act.
+The first step in the update procedure is to insert the new observation(s) into the dialogue state.  In the case where the observations are known with certainty, this insertion can simply take the form of an assignment of evidence values.  However, dialogue systems must frequently integrate observations that are themselves uncertain and represent ``soft'' or virtual evidence\index{soft evidence}, such as the ASR/NLU hypotheses of the user dialogue act.
 
 Furthermore, dialogue domains often include priors on variables that will be observed in the next time steps.  An example of such a prior is the user action model $P(a_u' \, | \, i_u', a_m)$, that predicts the relative likelihoods of the next user dialogue act.  To distinguish these predictions from actual observed values, we shall denote such priors  with a superscript $p$. A variable $X^p$ thus represents a prior on the variable $X$ to be observed in the future.
 
@@ -814,7 +814,7 @@ The utility nodes are removed from the state once the decision is made. The acti
 The instantiation of the domain models results in the creation of numerous new nodes in the dialogue state. However, many nodes in this expanded Bayesian network  only serve as intermediaries and do not directly express meaningful information about the current state of the dialogue. The last step is therefore to reduce the dialogue state to its minimal size, by removing all intermediary nodes -- including rule nodes, outdated versions of state variables, equivalence nodes and predictive nodes that are attached to them -- in order to only retain current state variables. The accumulated evidence is also integrated in the posterior distribution of the state variables.
 
 The procedure is outlined in Algorithm \ref{algo:pruneState}. The first step is to determine which nodes to keep (lines 1-6).  Only the most recent versions of state variables are retained. 
-The nodes are then added one by one in a new dialogue state $\mathcal{B}'$.  The parents of the retained variables are determined, and their conditional probability distributions are calculated given the evidence.  The parents of a state variable are the closest ancestors of the variable within the subset of nodes in $\mathit{NodesToKeep}$, and its conditional probability distribution is determined as $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$.  This posterior distribution is calculated via sampling techniques. This is done by sampling all nodes in $\mathcal{B}$, then deriving the distributions $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$ on the basis of the collected samples.  
+The nodes are then added one by one in a new dialogue state $\mathcal{B}'$.  The parents of the retained variables are determined, and their conditional probability distributions are calculated given the evidence.  The parents of a state variable are the closest ancestors of the variable within the subset of nodes in $\mathit{NodesToKeep}$, and its conditional probability distribution is determined as $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$.  This posterior distribution is calculated by sampling all nodes in $\mathcal{B}$, then deriving the distributions $P_{\mathcal{B}}(N \, | \, \mathit{Parents}, \mathbf{e})$ on the basis of the collected samples.  
 
 Figure \ref{fig:pruning} illustrates the input and output of the pruning process. Note that the primes attached to the labels of output variables are deleted from the random variable names.
 
@@ -1006,7 +1006,7 @@ The literature on dialogue policy optimisation with reinforcement learning also 
 
 \section{Conclusion}
 
-This chapter has presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by introducing latent variables, partitioning value assignments for the parent variables, and making use of quantification. We then explained how these structural insights can be transferred into a new computational framework -- to which we gave the name of probabilistic rules -- that combines concepts borrowed from both first-order logic\index{first-order logic} and probability theory in order to get ``the best of both worlds'', i.e.\ a representation formalism that is both richly expressive and capable of capturing uncertain knowledge.  These rules are practically defined as \textit{if...then...else} constructions that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g.\ encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists of elements and strings.
+This chapter has presented the formalism of probabilistic rules, which forms the core of the modelling approach developed in this thesis. We started by arguing that dialogue models are often highly structured, and that this structure can be leveraged by introducing latent variables, partitioning value assignments, and making use of quantification. We then explained how these structural insights can be transferred into a new computational framework -- to which we gave the name of probabilistic rules -- that combines concepts borrowed from both first-order logic\index{first-order logic} and probability theory in order to get ``the best of both worlds'', i.e.\ a representation formalism that is both richly expressive and capable of capturing uncertain knowledge.  These rules are practically defined as \textit{if...then...else} constructions that associate high-level conditions on input variables to probabilistic effects on output variables.  Multiple extensions of the formalism have been developed to e.g.\ encode utility distributions, enclose universal quantifiers, and efficiently manipulate data structures such as lists of elements and strings.
 
 At runtime, these rules are instantiated in the Bayesian network representing the current dialogue state. The instantiation procedure creates a latent node for each rule, which is conditionally dependent on the input variables of the rule.  For probability rules, this node is a chance node that expresses a probability distribution over the possible effects of the rule. Utility rules are similarly instantiated with a utility node expressing the utility distribution for specific decision variables.  Universally quantified variables can be included in the conditions and effects of the rules, allowing particular aspects of the rule to be underspecified. The rules are grouped into models that are attached to the dialogue state and are triggered upon relevant state updates. 
 

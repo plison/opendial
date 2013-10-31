@@ -205,7 +205,7 @@ We list below the collection of rule-structured models employed for the user eva
 
 The natural language understanding model is composed of a set of simple, deterministic template-matching rules.  The rules map the presence of particular words or phrases in the user utterance $u_u$ to specific user dialogue acts $a_u$. 
 
-The model is divided in two phases.  Rules $r_1$ to $r_{16}$ are responsible for defining the general structure of the dialogue acts.  The last rule $r_{17}$ builds on the results from the previous rules and refines their dialogue act classification through the resolution of references to visual objects and the distinction between short and long movements. 
+The model is divided in two phases.  Rules $r_1$ to $r_{16}$ are responsible for defining the general structure of the dialogue acts.  The last rule $r_{17}$ builds on the results from the previous rules and refines the dialogue act representation through the resolution of references to visual objects and the distinction between short and long movements. 
 
 \begin{footnotesize}
 \begin{longtable}{p{1cm}l} 
@@ -357,7 +357,7 @@ P(\cdot)\!=\!\theta_{\mathrm{aftermove[2]}} \end{cases}$ \\ \\[-1mm]
 
 \subsubsection*{Utility model}
 
-The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. Rule $r_7$ is used to set a initial negative value to all actions (to ensure that their utility in the absence of other information is lower than zero). 
+The utility model captures the relative utility of various system actions depending on the current hypotheses about the user intention $i_u$, last user action $a_u$, and general dialogue context. Rule $r_7$ sets an initial negative value to all actions in order ensure that their base utility (in the absence of other information) remains lower than zero.
 
 \begin{footnotesize}
 \begin{longtable}{p{2cm}l}
