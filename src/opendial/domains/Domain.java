@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,21 +19,19 @@
 
 package opendial.domains;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.domains.rules.CaseBasedRule;
-import opendial.domains.rules.parameters.SingleParameter;
+import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
 
 /**
- * 
+ * Representation of a dialogue domain, composed of (1) an initial dialogue state and
+ * (2) a list of probability and utility models employed to update the dialogue state
+ * upon relevant changes.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -44,57 +42,99 @@ public class Domain {
 	static Logger log = new Logger("Domain", Logger.Level.NORMAL);
 	
 	// domain name
-	String domainName;
-
-	// and the configuration settings?
-	
-	BNetwork parameters;
+	String domainName;	
 	
 	// initial dialogue state
 	DialogueState initState;
 	
-	List<Model<? extends CaseBasedRule>> models;
+	BNetwork parameters;
+	
+	// list of models
+	List<Model> models;
+	
+	// settings
+	Settings settings;
 
-	
-	public Domain() {
-		models = new LinkedList<Model<? extends CaseBasedRule>>();
-		parameters = new BNetwork();
-		initState = new DialogueState();
-	}
-	
 
 	/**
+	 * Creates a new domain with an empty dialogue state and list of models.
+	 */
+	public Domain() {
+		settings = new Settings();
+		models = new LinkedList<Model>();
+		initState = new DialogueState();
+		parameters = new BNetwork();
+	}
+
+	/**
+	 * Sets the domain name 
 	 * 
-	 * @param nodeValue
+	 * @param domainName the domain name
 	 */
 	public void setName(String domainName) {
 		this.domainName = domainName;
 	}
 
-		
-	
-	public void addModel(Model<? extends CaseBasedRule> model) {
-		models.add(model);
-	}
-	
-	public List<Model<? extends CaseBasedRule>> getModels() {
-		return models;
-	}
-	
-
-
 	/**
+	 * Sets the initial dialogue state
 	 * 
-	 * @param network
+	 * @param network the initial state
 	 */
 	public void setInitialState(DialogueState initState) {
 		this.initState = initState;
 	}
+		
+	/**
+	 * Adds a model to the domain
+	 * 
+	 * @param model the model to add
+	 */
+	public void addModel(Model model) {
+		models.add(model);
+	}
 	
-	
+	/**
+	 * Returns the initial dialogue state
+	 * 
+	 * @return the initial state
+	 */
 	public DialogueState getInitialState() {
 		return initState;
 	}
 
+	/**
+	 * Returns the models for the domain
+	 * 
+	 * @return the models
+	 */
+	public List<Model> getModels() {
+		return models;
+	}
+	
+	
+	public void setSettings(Settings settings) {
+		this.settings = settings;
+	}
+	
+	public Settings getSettings() {
+		return settings;
+	}
+	
+	public String toString() {
+		return domainName;
+	}
+
+	public void setParameters(BNetwork parameters) {
+		this.parameters = parameters;
+	}
+
+	public BNetwork getParameters() {
+		return parameters;
+	}
+
+	public String getName() {
+		return domainName;
+	}
+	
 	
 }

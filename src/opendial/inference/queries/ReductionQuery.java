@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,180 +19,108 @@
 package opendial.inference.queries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.discrete.EqualityDistribution;
-import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.ProbabilityRuleNode;
-import opendial.bn.nodes.UtilityNode;
+import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 
-public class ReductionQuery extends Query {
+/**
+ * Representation of a reduction query corresponding to the estimation of the 
+ * probability distributions for a reduced version of the Bayesian network.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
+public class ReductionQuery extends ProbQuery {
 
-	BNetwork reduced;
-	
-	Set<String> identicalNodes;
-
-	
-	public ReductionQuery (BNetwork network, String... queryVars) throws DialException {
-		this(network, getCollection(queryVars));
+	/**
+	 * Creates a new reduction query with the given network and the variables to retain
+	 * in the reduced network.
+	 * 
+	 * @param network the full Bayesian network
+	 * @param varsToRetain the subset of variables to retain in the network
+	 */
+	public ReductionQuery (BNetwork network, String... varsToRetain) {
+		this(network, Arrays.asList(varsToRetain), new Assignment());
 	}
 	
-	public ReductionQuery (DialogueState state, String... queryVars) throws DialException {
-		this(state, getCollection(queryVars));
+	/**
+	 * Creates a new reduction query with the given network and the variables to retain
+	 * in the reduced network.
+	 * 
+	 * @param network the full Bayesian network
+	 * @param varsToRetain the subset of variables to retain in the network
+	 */
+	public ReductionQuery (BNetwork network, Collection<String> varsToRetain) {
+		this(network, varsToRetain, new Assignment());
 	}
-	
-	
-	public ReductionQuery (DialogueState state, Collection<String> queryVars) throws DialException {
-		this(state.getNetwork(), queryVars, state.getEvidence());
-	}
-	
-	public ReductionQuery (BNetwork network, Collection<String> queryVars) throws DialException {
-		this(network, queryVars, new Assignment());
-	}
-	
-	public ReductionQuery (BNetwork network, Collection<String> queryVars, 
-			Assignment evidence) throws DialException {
-		super(network, queryVars, evidence, new ArrayList<String>());
-		createReducedNetwork();
-	}
-	
-	
 
-	private void createReducedNetwork() throws DialException {
 
-		reduced = new BNetwork();
+	/**
+	 * Creates a new reduction query with the given network and the variables to retain
+	 * in the reduced network.
+	 * 
+	 * @param network the full Bayesian network
+	 * @param varsToRetain the subset of variables to retain in the network
+	 * @param the additional evidence
+	 */
+	public ReductionQuery (BNetwork network, Collection<String> varsToRetain, Assignment evidence) {
+		super(network, varsToRetain, evidence);
+	}
 
-		for (String var : queryVars) {
-			if (!reduced.hasNode(var)) {
-				if (network.getNode(var) instanceof ProbabilityRuleNode) {
-					reduced.addNode(new ProbabilityRuleNode(((ProbabilityRuleNode)network.getNode(var)).getRule()));
-				}
-				else if (network.getNode(var) instanceof ChanceNode) {
-					reduced.addNode(new ChanceNode(var));
-				}
-				else if (network.getNode(var) instanceof UtilityNode 
-						|| network.getNode(var) instanceof ActionNode) {
-					throw new DialException("retained variables can only be chance nodes");
-				}
+	/**
+	 * Creates a new reduction query with the given network and the variables to retain
+	 * in the reduced network.
+	 * 
+	 * @param network the structured network
+	 * @param varsToRetain the subset of variables to retain in the network
+	 */
+	public ReductionQuery (DialogueState sn, Collection<String> varsToRetain) {
+		this(sn, varsToRetain, sn.getEvidence());
+	}
+	
+	
+	
+	/**
+	 * Returns the query variables in sorted order (from the base to the leaves)
+	 * 
+	 * @return the ordered query variables
+	 */
+	public List<String> getSortedQueryVars() {
+		List<String> sorted = new ArrayList<String>();
+		for (BNode n : network.getSortedNodes()) {
+			if (queryVars.contains(n.getId())) {
+				sorted.add(n.getId());
 			}
 		}
-		
-		for (String var : queryVars) {
-			for (String ancestor : getRelevantAncestors(var)) {
-				reduced.getNode(var).addInputNode(reduced.getNode(ancestor));
-			}
-		}
-		identicalNodes = network.getIdenticalNodes(reduced, evidence);
-		for (String nodeId : identicalNodes) {
-			ChanceNode originalNode = network.getChanceNode(nodeId);
-			Collection<BNode> inputNodesInReduced = reduced.getNode(nodeId).getInputNodes();
-			Collection<BNode> outputNodesInReduced = reduced.getNode(nodeId).getOutputNodes();
-			reduced.replaceNode(originalNode.copy());
-			reduced.getNode(nodeId).addInputNodes(inputNodesInReduced);
-			reduced.getNode(nodeId).addOutputNodes(outputNodesInReduced);
-		}  
-	}
-	
-	
-	private Set<String> getRelevantAncestors(String queryVar) {
-		Set<String> relevantAncestors = new HashSet<String>();
-
-		Set<String> ancestorIds = network.getNode(queryVar).getAncestorsIds(queryVars);
-		for (String inputDepId : ancestorIds) {
-			if (reduced.hasNode(inputDepId)) {
-				
-				BNode inputDepNode = network.getNode(inputDepId);
-			if (inputDepNode.getInputNodeIds().isEmpty() && inputDepNode instanceof ChanceNode
-						&& ((ChanceNode)inputDepNode).getNbValues() == 1) {
-					continue;
-				} 
-				relevantAncestors.add(inputDepId);
-			}
-		}
-		
-		// caused problems when doing reduction via VE
-		/**
-		for (BNode output : network.getNode(queryVar).getOutputNodes()) {
-			if (output instanceof ChanceNode && ((ChanceNode)output).getDistrib() instanceof EqualityDistribution) {
-	
-				Set<String> relevantAncestorsFromEq = getRelevantAncestors(output.getId());
-				relevantAncestorsFromEq.remove(queryVar);
-				relevantAncestors.addAll(relevantAncestorsFromEq);
-			}
-		} */
-
-		return relevantAncestors;
+		Collections.reverse(sorted);
+		return sorted;
 	}
 
 	
 	/**
-	 * Returns the nodes that are irrelevant for answering the given query
-	 *
-	 * @return the identifiers for the irrelevant nodes
+	 * Returns the input nodes of the variable in the reduced network
+	 * 
+	 * @param var the variable
+	 * @return the input nodes of the variable in the reduced network
 	 */
-	public Set<String> getIrrelevantNodes() {
-
-			Set<String> irrelevantNodesIds = new HashSet<String>();
-
-			boolean includeActionAndUtils = false;
-			for (String var : queryVars) {
-				if (network.hasActionNode(var) || network.hasUtilityNode(var)) {
-					includeActionAndUtils = true;
-				}
-			}
-			
-			boolean continueLoop = true;
-			while (continueLoop) {
-				continueLoop = false;
-				for (String nodeId : new ArrayList<String>(network.getNodeIds())) {
-					BNode node = network.getNode(nodeId);
-					if (!irrelevantNodesIds.contains(nodeId) && 
-							irrelevantNodesIds.containsAll(node.getOutputNodesIds()) && 
-							!queryVars.contains(nodeId) && 
-							!evidence.containsVar(nodeId)) {
-						if (!includeActionAndUtils ||
-							!(node instanceof UtilityNode)) {
-							irrelevantNodesIds.add(nodeId);
-							continueLoop = true;
-						}
-					}
-				}
-			}
-		return irrelevantNodesIds;
+	public Set<String> getInputNodes(String var) {
+		Set<String> ancestors = network.getNode(var).getAncestorsIds(queryVars);
+		return ancestors;
 	}
-
 	
-	public void removeRelation(String inputNodeId, String outputNodeId) {
-		if (reduced.hasNode(inputNodeId) && reduced.hasNode(outputNodeId)) {
-			reduced.getNode(inputNodeId).removeOutputNode(outputNodeId);
-		}
-		else {
-			log.debug("cannot remove " + inputNodeId + " --> " + outputNodeId);
-		}
-	}
 	
 	public String toString() {
-		return "Reduction("+super.toString() +")";
+		String prob = super.toString();
+		return "Reduce"+prob.substring(1, prob.length());
 	}
-
-	public BNetwork getReducedCopy() throws DialException {
-		return reduced.copy();
-	}
-
-	public void filterIdenticalNodes() {
-		for (String identicalNode: identicalNodes) {
-			removeQueryVar(identicalNode);
-		}
-	}
+		
 	
 }

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,17 +19,38 @@
 
 package opendial.bn.distribs.discrete.functions;
 
-import opendial.bn.Assignment;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 
+/**
+ * Represents a deterministic function of its input.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public interface DeterministicFunction {
 
-	public Value getFunctionValue(Assignment input);
-
-	public String prettyPrint();
+	/**
+	 * Returns the unique value corresponding to the input assignment
+	 * 
+	 * @param input the input assignment
+	 * @return the corresponding output
+	 */
+	public Value getValue(Assignment input);
 	
+	/**
+	 * Returns a copy of the function
+	 * @return
+	 */
 	public DeterministicFunction copy();
 
+	/**
+	 * Modify all occurrences of the old variable identifier oldId 
+	 * by newId
+	 * 
+	 * @param oldId the old identifier
+	 * @param newId the new identifier
+	 */
 	public void modifyVarId(String oldId, String newId);
 }
 

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Template;
-import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
 
 
 /**
@@ -66,7 +66,7 @@ public class ComplexCondition implements Condition {
 	public ComplexCondition() {
 		subconditions = new LinkedList<Condition>();
 	}
-	
+
 	/**
 	 * Creates a new complex condition with a list of subconditions
 	 * 
@@ -94,7 +94,7 @@ public class ComplexCondition implements Condition {
 		this.operator = operator;
 	}
 
-	
+
 	/**
 	 * Adds a new subcondition to the complex condition
 	 * 
@@ -115,7 +115,7 @@ public class ComplexCondition implements Condition {
 		subconditions.remove(condition);
 	}
 
-	
+
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -145,22 +145,8 @@ public class ComplexCondition implements Condition {
 	}
 
 
-	/**
-	 * Returns the set of unbound predicates for the basic condition, which could
-	 * be either associated with the variable label or its content.
-	 * 
-	 * @return the set of unbound predicates
-	 */
-	@Override
-	public Set<UnboundPredicate> getUnboundPredicates() {
-		Set<UnboundPredicate> predicates = new HashSet<UnboundPredicate>();
-		for (Condition cond: subconditions) {
-			predicates.addAll(cond.getUnboundPredicates());
-		}	
-		return predicates;
-	}
 
-	
+
 	/**
 	 * Returns true if the complex condition is satisfied by the input assignment,
 	 * and false otherwise. 
@@ -173,37 +159,29 @@ public class ComplexCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-		Assignment input2 = new Assignment(input);
 
 		for (Condition cond : subconditions) {
-			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input2)) {
+			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input)) {
 				return false;
 			}
-			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input2)) {
+			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input)) {
 				return true;
 			}
-			input2.addAssignment(cond.getLocalOutput(input2));
-
 		}
 		return (operator == BinaryOperator.AND);
 	}
 
-	/**
-	 * Returns the (optional) local output produced by the fulfillment of the conditions
-	 * on the input assignment -- for instance, slots filled by string matching.
-	 *
-	 * @param input the input assignment
-	 * @return the local output assignment
-	 */
+
 	@Override
-	public Assignment getLocalOutput(Assignment input) {
-		Assignment output = new Assignment();
+	public ValueRange getGroundings(Assignment input) {
+
+
+		ValueRange groundings = new ValueRange();
 		for (Condition cond : subconditions) {
-			if (cond.isSatisfiedBy(input)) {
-				output.addAssignment(cond.getLocalOutput(input));
-			}
+			groundings.addRange(cond.getGroundings(input));
 		}
-		return output;
+		return groundings;
+
 	}
 
 
@@ -215,8 +193,6 @@ public class ComplexCondition implements Condition {
 
 	/**
 	 * Returns a string representation of the complex condition
-	 * 
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -242,7 +218,7 @@ public class ComplexCondition implements Condition {
 		return subconditions.hashCode() - operator.hashCode();
 	}
 
-	
+
 	/**
 	 * Returns true if the complex conditions are equal, false otherwise
 	 *

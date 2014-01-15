@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -21,9 +21,9 @@ package opendial.domains.rules.conditions;
 
 import java.util.Set;
 
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Template;
-import opendial.domains.rules.quantification.UnboundPredicate;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
 
 /**
  * Generic interface for a condition used in a probability or utility rule. 
@@ -39,13 +39,31 @@ import opendial.domains.rules.quantification.UnboundPredicate;
  */
 public interface Condition {
 	
+	/**
+	 * Returns the input variables of the condition (as templates).
+	 * 
+	 * @return the input variable templates
+	 */
 	public Set<Template> getInputVariables();
 		
+	
+	/**
+	 * Returns true if the condition is satisfied for the given assignment,
+	 * and false otherwise 
+	 * 
+	 * @param input the input assignment
+	 * @return true if the condition is satisfied, false otherwise
+	 */
 	public boolean isSatisfiedBy(Assignment input);
 	
-	public Assignment getLocalOutput(Assignment input);
-
-	public Set<UnboundPredicate> getUnboundPredicates();
+	/**
+	 * Returns the set of possible groundings derived from the condition,
+	 * based on the given assignment.
+	 * 
+	 * @param input the assignment from which to calculate the groundings
+	 * @return the groundings (as a value range).
+	 */
+	public ValueRange getGroundings(Assignment input); 
 	
 }
 

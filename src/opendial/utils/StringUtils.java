@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,7 +19,9 @@
 
 package opendial.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
+import opendial.arch.Settings;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.values.NoneVal;
+import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 
 
 /**
@@ -45,168 +51,127 @@ public class StringUtils {
 	
 
 	/**
-	 * Extracts slots in a content.  Slots must be written as ${variable},
-	 * where "variable" can be anything
+	 * Returns the string version of the double up to a certain decimal point.
 	 * 
-	 * @param content the content to extract
-	 * @return the list of slots
-	 */
-	public static List<String> extractSlots(String content) {
-		
-		List<String> slots = new LinkedList<String>();
-		
-		StringTokenizer tokenizer = new StringTokenizer(content);
-		while (tokenizer.hasMoreTokens()) {
-			String token = tokenizer.nextToken();
-	//		log.debug("token: " + token);
-			if (token.contains("${") && token.contains("}")) {
-				String strippedToken = token.replace("${", "").replace("}", "")
-				.trim().replace(",", "").replace(".", "").replace("!", "");
-				slots.add(strippedToken);
-			}
-		}
-		
-		return slots;
-	}
-	
-	
-/**
-	public static List<String> splitContent (String content, List<String> slots) {
-		if (slots.isEmpty()) {
-			return Arrays.asList(content);
-		}
-		else {
-			List<String> splits = new LinkedList<String>();
-			splits.add(content);
-			for (String slot : slots) {
-				List<String> splits_copy = new LinkedList<String>();
-				for (String split : splits) {
-					String[] onesplit = split.split("\\$\\{"+slot+"\\}");
-					splits_copy.addAll(Arrays.asList(onesplit));
-				}
-				splits = splits_copy;
-			}	
-			return splits;
-		}
-	}
-
-	
-	public static String getProbabilityString(Set<String> queryVariables, Assignment evidence) {
-		String str = "P(";
-		if (!queryVariables.isEmpty()) {
-		for (String queryVar : queryVariables) {
-			str += queryVar+",";
-		}
-		str = str.substring(0,str.length()-1);
-		if (!evidence.isEmpty()) {
-			str += "|" + evidence;
-		}
-		}
-		
-		return str + ")";
-	} */
-	
-	
-	
-	/**
-	 * Returns an string indent of a given length
-	 * 
-	 * @param length the length of the string
+	 * @param value the double
 	 * @return the string
 	 */
-	public static String makeIndent(int length) {
-		String str = "";
-		for (int i = 0 ; i < length ; i++) {
-			str += " ";
-		}
-		return str;
+	public static String getShortForm(double value) {
+		return "" + Math.round(value*10000.0)/10000.0;
 	}
+
+
 	/**
 	 * Returns a HTML-compatible rendering of the raw string provided as argument
 	 * 
-	 * @param rawString the raw string
+	 * @param str the raw string
 	 * @return the formatted string
 	 */
-	public static String getHtmlRendering(String rawString) {
-		rawString = rawString.replace("phi", "&phi;");
-		rawString = rawString.replace("theta", "&theta;");
-		rawString = rawString.replace("psi", "&psi;");
-		Matcher matcher = Pattern.compile("_\\{(.*?)\\}").matcher(rawString);
+	public static String getHtmlRendering(String str) {
+		str = str.replace("phi", "&phi;");
+		str = str.replace("theta", "&theta;");
+		str = str.replace("psi", "&psi;");
+		Matcher matcher = Pattern.compile("_\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher.find()) {
 			String subscript = matcher.group(1);
-			rawString = rawString.replace("_{"+subscript+"}", "<sub>"+subscript+"</sub>");
+			str = str.replace("_{"+subscript+"}", "<sub>"+subscript+"</sub>");
 		}
-		Matcher matcher2 = Pattern.compile("_(.)").matcher(rawString);
+		Matcher matcher2 = Pattern.compile("_(\\p{Alnum}*)").matcher(str);
 		while (matcher2.find()) {
 			String subscript = matcher2.group(1);
-			rawString = rawString.replace("_"+subscript, "<sub>"+subscript+"</sub>");
+			str = str.replace("_"+subscript, "<sub>"+subscript+"</sub>");
 		}
-		Matcher matcher3 = Pattern.compile("\\^\\{(.*?)\\}").matcher(rawString);
+		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher3.find()) {
 			String subscript = matcher3.group(1);
-			rawString = rawString.replace("^{"+subscript+"}", "<sup>"+subscript+"</sup>");
+			str = str.replace("^{"+subscript+"}", "<sup>"+subscript+"</sup>");
 		}
-		Matcher matcher4 = Pattern.compile("\\^(\\S)").matcher(rawString);
+		Matcher matcher4 = Pattern.compile("\\^(\\S)").matcher(str);
 		while (matcher4.find()) {
 			String subscript = matcher4.group(1);
-			rawString = rawString.replace("^"+subscript, "<sup>"+subscript+"</sup>");
+			str = str.replace("^"+subscript, "<sup>"+subscript+"</sup>");
 		}
-		return rawString;
-	}
-
-
-	/**
-	 * Returns a reduced version of the label, where all optional specifiers
-	 * are removed
-	 * 
-	 * @param label the original variable label
-	 * @return the corrected label
-	 */
-	public static String removePrimes(String label) {
-		return label.replace("'", "");
+		return str;
 	}
 	
 
+
 	/**
-	 * Create a string with a specific number of primes
+	 * Checks the form of the string to ensure that all parentheses, braces and brackets
+	 * are balanced.  Logs warning messages if problems are detected.
 	 * 
-	 * @param nbPrimes the number of primes
-	 * @return the generated string
+	 * @param str the string
 	 */
-	public static String createNbPrimes(int nbPrimes) {
-		String s = "";
-		for (int i = 0 ; i < nbPrimes ; i++) {
-			s+= "'";
-		}
-		return s;
-	}
+	public static void checkForm(String str) {
 
-
-	
-	public static void checkForm(String rawString) {
-
-		int nbParenthesisLeft = (rawString+" ").split("\\(").length - 1;
-		int nbParenthesisRight = (rawString+" ").split("\\)").length - 1;
+		int nbParenthesisLeft = (str+" ").split("\\(").length - 1;
+		int nbParenthesisRight = (str+" ").split("\\)").length - 1;
 		if (nbParenthesisLeft != nbParenthesisRight) {
-			log.warning("Unequal number of parenthesis in string: " + rawString 
+			log.warning("Unequal number of parenthesis in string: " + str 
 					+ "(" + nbParenthesisLeft + " vs. " + nbParenthesisRight + ") Problems ahead!");
 		}
-		int nbBracesLeft = (rawString+" ").split("\\{").length - 1;
-		int nbBracesRight = (rawString+" ").split("\\}").length - 1;
+		int nbBracesLeft = (str+" ").split("\\{").length - 1;
+		int nbBracesRight = (str+" ").split("\\}").length - 1;
 		if (nbBracesLeft != nbBracesRight) {
-			log.warning("Unequal number of braces in string: " + rawString + 
+			log.warning("Unequal number of braces in string: " + str + 
 					"(" + nbBracesLeft + " vs. " + nbBracesRight + "). Problems ahead!");
 			Thread.dumpStack();
 		}
 		
-		int nbBracketsLeft = (rawString+" ").split("\\{").length - 1;
-		int nbBracketsRight = (rawString+" ").split("\\}").length - 1;
+		int nbBracketsLeft = (str+" ").split("\\{").length - 1;
+		int nbBracketsRight = (str+" ").split("\\}").length - 1;
 		if (nbBracketsLeft != nbBracketsRight) {
-			log.warning("Unequal number of brackets in string: " + rawString + 
+			log.warning("Unequal number of brackets in string: " + str + 
 					"(" + nbBracketsLeft + " vs. " + nbBracketsRight + "). Problems ahead!");
 		}
 		
 	}
 
+
+	/**
+	 * Performs a lexicographic comparison of the two identifiers.  If there is a difference
+	 * between the number of primes in the two identifiers, returns it.  Else, returns +1
+	 * if id1.compareTo(id2) is higher than 0, and -1 otherwise.
+	 * 
+	 * @param id1 the first identifier
+	 * @param id2 the second identifier
+	 * @return the result of the comparison
+	 */
+	public static int compare(String id1, String id2) {
+		if (id1.contains("'") || id2.contains("'")) {
+			int count1 = id1.length() - id1.replace("'", "").length();
+			int count2 = id2.length() - id2.replace("'", "").length();
+			if (count1 != count2) {
+				return count2 - count1;
+			}
+		}
+		return (id1.compareTo(id2) < 0) ? +1 : -1;
+	}
+
+	
+	public static List<String> addPrimes (List<String> original) {
+		List<String> newSet = new ArrayList<String>();
+		for (String var : original) {
+			newSet.add(var+"'");
+		}
+		return newSet;
+	}
+
+
+	public static int countOccurrences(String fullString, String pattern) {
+		int lastIndex = 0;
+		int count =0;
+
+		while(lastIndex != -1){
+
+		       lastIndex = fullString.indexOf(pattern,lastIndex);
+
+		       if( lastIndex != -1){
+		             count ++;
+		             lastIndex+=pattern.length();
+		      }
+		}
+		return count;
+	}
 	
 }

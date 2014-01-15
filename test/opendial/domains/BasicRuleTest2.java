@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -32,32 +32,28 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import opendial.DialogueSystem;
 import opendial.arch.Logger.Level;
 import opendial.arch.Settings;
 import opendial.arch.DialException;
-import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.discrete.EqualityDistribution;
-import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
-import opendial.gui.GUIFrame;
-import opendial.inference.ImportanceSampling;
+import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
-import opendial.inference.NaiveInference;
+import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.inference.VariableElimination;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.DialogueState;
-import opendial.state.rules.AnchoredRuleCache;
+import opendial.state.StatePruner;
+import opendial.state.distribs.EquivalenceDistribution;
 
 /**
  * 
@@ -71,14 +67,13 @@ public class BasicRuleTest2 {
 	// logger
 	public static Logger log = new Logger("BasicRuleTest2", Logger.Level.DEBUG);
 
-	public static final String domainFile = "domains//testing//domain2.xml";
-	public static final String domainFile2 = "domains//testing//domain3.xml";
-	public static final String domainFile3 = "domains//testing//domain4.xml";
+	public static final String domainFile = "test//domains//domain2.xml";
+	public static final String domainFile2 = "test//domains//domain3.xml";
+	public static final String domainFile3 = "test//domains//domain4.xml";
 
 	static Domain domain;
 
 	static InferenceChecks inference;
-	static DialogueSystem system;
 
 	static {
 		try { 
@@ -92,54 +87,62 @@ public class BasicRuleTest2 {
 
 	@Test
 	public void test() throws DialException, InterruptedException {
-				
 		
-		start();	
-		system = new DialogueSystem(domain);
+		DialogueSystem system = new DialogueSystem(domain);
+		double eqFactor = EquivalenceDistribution.NONE_PROB;
+		EquivalenceDistribution.NONE_PROB = 0.1;
+		double oldPruneThreshold = StatePruner.VALUE_PRUNING_THRESHOLD;
+		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
+		
+		system.getSettings().showGUI = false;
+		system.getSettings().enablePlan = false;
 		system.startSystem(); 
 		
-		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
-	 	ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
+		ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
 	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
 	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
 	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
 	 			
-		SimpleTable table = new SimpleTable();
+		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
-		 
-		system.getState().addContent(table, "test");;
+
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		query = new ProbQuery(system.getState(),"a_u^p");
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.0516);
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.907);
-	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.0409);
+		system.addContent(table);
 
-	 	ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
+		ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
 	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.090);
-	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.9097);
+	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.91);
 
-	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query3, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	inference.checkProb(query3, new Assignment("a_u'", "None"), 0.081);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.91*0.9);
+	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.09*0.9);
+	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
 
-	 	ProbQuery query4 = new ProbQuery(system.getState(),"a_u'");
-	 	inference.checkProb(query4, new Assignment("a_u'", "Ask(B)"), 0.918);
-	 	inference.checkProb(query4, new Assignment("a_u'", "None"), 0.081);	
+	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u");
+	 	inference.checkProb(query3, new Assignment("a_u", "Ask(B)"), 0.918);
+	 	inference.checkProb(query3, new Assignment("a_u", "None"), 0.081);
+	 	
+	 	EquivalenceDistribution.NONE_PROB = eqFactor;
+		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
 
-		finish();
 }
 	
 	
 	@Test
 	public void test2() throws DialException, InterruptedException {
 		 			
-		start();	
-		system = new DialogueSystem(domain);
+		DialogueSystem system = new DialogueSystem(domain);
+		system.getSettings().showGUI = false;
+		system.getSettings().enablePlan = false;
+		double eqFactor = EquivalenceDistribution.NONE_PROB;
+		EquivalenceDistribution.NONE_PROB = 0.1;
+		double oldPruneThreshold = StatePruner.VALUE_PRUNING_THRESHOLD;
+		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
 		system.startSystem(); 
-		
-		system.getState().getNetwork().getNode("u_u2^p'").setId("u_u2^p");
-	 	ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
+
+		ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
 	 	inference.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
 	 	inference.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
 	 	inference.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
@@ -147,48 +150,54 @@ public class BasicRuleTest2 {
 	 	inference.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
 	 			
 	
-		SimpleTable table = new SimpleTable();
+		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("u_u2", "Please do B"), 0.4);
 		table.addRow(new Assignment("u_u2", "Do B"), 0.4); 
 		 
-		system.getState().addContent(table, "test2");
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(table);
 		
 		query = new ProbQuery(system.getState(),"i_u2");
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.654);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
 	 	inference.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
 	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
-
-	 	finish();
+	 	
+	 	EquivalenceDistribution.NONE_PROB = eqFactor;
+		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
 	}
 	
 	
 	@Test
 	public void test3() throws DialException, InterruptedException {
 
-		start();	
-		system = new DialogueSystem(domain);
+		DialogueSystem system = new DialogueSystem(domain);
+		system.getSettings().showGUI = false;
+		system.getSettings().enablePlan = false;
+		double eqFactor = EquivalenceDistribution.NONE_PROB;
+		EquivalenceDistribution.NONE_PROB = 0.1;
+		double oldPruneThreshold = StatePruner.VALUE_PRUNING_THRESHOLD;
+		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
 		system.startSystem(); 
-		
-		
-	 	UtilQuery query = new UtilQuery(system.getState(),"a_m'");
+
+		UtilQuery query = new UtilQuery(system.getState(),"a_m'");
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
 	 
-		SimpleTable table = new SimpleTable();
+		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
 		table.addRow(new Assignment("a_u", "None"), 0.2); 
-		 		
-		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getUtilityNodeIds());
-		system.getState().getNetwork().removeNodes(system.getState().getNetwork().getActionNodeIds());
-		system.getState().getNetwork().getNode("a_u^p'").setId("a_u^p");
-		system.getState().addContent(table, "test");
-
-	 	query = new UtilQuery(system.getState(),"a_m'");
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.addContent(table);
+		
+		query = new UtilQuery(system.getState(),"a_m'");
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.35);
 	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.357);	
 
-		finish();
+	 	EquivalenceDistribution.NONE_PROB = eqFactor;
+		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
 }
 	
 	
@@ -196,9 +205,10 @@ public class BasicRuleTest2 {
 	@Test
 	public void test4() throws DialException, InterruptedException {
 		
-		start();	
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
+		system2.getSettings().showGUI = false;
+		system2.getSettings().enablePlan = false;
 		system2.startSystem(); 
 
 		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
@@ -209,10 +219,9 @@ public class BasicRuleTest2 {
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
 	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
-	// 	assertEquals(5, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
-	 	assertEquals(6, (new ImportanceSampling()).queryUtil(query).getTable().size()); 
+	// 	assertEquals(5, (new LikelihoodWeighting()).queryUtil(query).getTable().size()); 
+	 //	assertEquals(6, (new LikelihoodWeighting()).queryUtil(query).getTable().size()); 
 
-		finish();
 }
 	
 
@@ -220,9 +229,10 @@ public class BasicRuleTest2 {
 	@Test
 	public void test5() throws DialException, InterruptedException {
 		
-		start();	
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile3); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
+		system2.getSettings().showGUI = false;
+		system2.getSettings().enablePlan = false;
 		system2.startSystem(); 
 
 		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"));
@@ -236,28 +246,6 @@ public class BasicRuleTest2 {
 		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")), 1.6);
 	 	
-		finish();
-	}
-	
-	double oldThreshold;
-	double eqFactor;
-	
-	public void start() {
-		Settings.getInstance().activatePlanner = false;
-		Settings.getInstance().activatePruning = false;
-		oldThreshold = ChanceNode.LIKELIHOOD_THRESHOLD;
-		ChanceNode.LIKELIHOOD_THRESHOLD= 0.05;
-		eqFactor = EqualityDistribution.PROB_WITH_SINGLE_NONE;
-		EqualityDistribution.PROB_WITH_SINGLE_NONE = 0.1;
-		EqualityDistribution.PROB_WITH_DOUBLE_NONE = 0.1;
-		
-	}
-
-	public void finish() {
-		Settings.getInstance().activatePlanner = true;
-		Settings.getInstance().activatePruning = true;
-		ChanceNode.LIKELIHOOD_THRESHOLD = oldThreshold;
-		EqualityDistribution.PROB_WITH_SINGLE_NONE = eqFactor;
 	}
 	
 	

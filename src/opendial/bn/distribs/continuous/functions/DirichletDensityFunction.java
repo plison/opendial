@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,27 +20,45 @@
 package opendial.bn.distribs.continuous.functions;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.VectorVal;
+import opendial.arch.Settings;
+import opendial.bn.values.ArrayVal;
+import opendial.utils.MathUtils;
 
-public class DirichletDensityFunction implements MultivariateDensityFunction {
+/**
+ * Density function for a Dirichlet distribution.  The distribution is defined through an array
+ * of alpha hyper-parameters. 
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $ *
+ */
+public class DirichletDensityFunction implements DensityFunction {
 
 	// logger
 	public static Logger log = new Logger("DirichletDensityFunction",
 			Logger.Level.DEBUG);
 
+	// hyper-parameters
 	Double[] alphas;
 
+	// normalisation factor
 	double C;
+	
+	// random number generator
+	Random rng = new Random(Calendar.getInstance().getTimeInMillis() + Thread.currentThread().getId());
 
-
+	/**
+	 * Create a new Dirichlet density function with the provided alpha parameters
+	 * 
+	 * @param alphas the hyper-parameters for the density function
+	 */
 	public DirichletDensityFunction(Double[] alphas) {
 		this.alphas = alphas;
 		if (alphas.length < 2) {
@@ -54,19 +72,26 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		C = calculateC();
 	}
 
+	/**
+	 * Returns the density for a given point x.  The dimensionality of x must correspond to
+	 * the dimensionality of the density function.
+	 * 
+	 * @param x a given point
+	 * @return the density for the point
+	 */
 	@Override
-	public double getDensity(Double[] x) {
+	public double getDensity(Double... x) {
 		if (x.length == alphas.length) {
 
 			double sum = 0;
 			for (int i = 0; i < x.length ; i++) {
 				if (x[i] <0 || x[i] > 1) {
-					log.warning(new VectorVal(x) + " does not satisfy the constraints >= 0 and <= 1");
+					log.warning(new ArrayVal(x) + " does not satisfy the constraints >= 0 and <= 1");
 				}
 				sum += x[i];
 			}
 			if (sum < 0.98 || sum > 1.02) {
-				log.warning(new VectorVal(x) + " does not sum to 1.0");
+				log.warning(new ArrayVal(x) + " does not sum to 1.0");
 			}
 
 			double result = C;
@@ -80,10 +105,21 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 	}
 
 
+	/**
+	 * Returns the dimensionality of the density function
+	 * 
+	 * @return the dimensionality
+	 */
 	public int getDimensionality() {
 		return alphas.length;
 	}
 
+	
+	/**
+	 * Returns a sampled value for the density function.
+	 * 
+	 * @return the sampled point.
+	 */
 	@Override
 	public Double[] sample() {
 
@@ -99,34 +135,40 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		return sample;		
 	}
 
+	
+	/**
+	 * Copies the density function (keeping the same alpha-values).
+	 * 
+	 * @return the copied function
+	 */
 	@Override
-	public List<Double[]> getDiscreteValueArrays(int nbBuckets) {
-		List<Double[]> values = new ArrayList<Double[]>();
-		for (int i = 0 ; i < nbBuckets ; i++) {
-			values.add(sample());
-		}
-		return values;
-	}
-
-	@Override
-	public MultivariateDensityFunction copy() {
+	public DirichletDensityFunction copy() {
 		return new DirichletDensityFunction(alphas);
 	}
 
+	/**
+	 * Returns the name and hyper-parameters of the distribution
+	 * 
+	 * @return the string for the density function
+	 */
 	@Override
-	public String prettyPrint() {
+	public String toString() {
 		return "Dirichlet(" + Arrays.asList(alphas) + ")";
 	}
 
-
-	public double calculateC() {
+	/**
+	 * Returns the normalisation factor for the distribution.
+	 * 
+	 * @return the normalisation factor.
+	 */
+	private double calculateC() {
 		double alphaSum = 0;
 		double denominator = 1;
 		for (int i = 0 ; i < alphas.length ;i++) {
 			alphaSum += alphas[i];
-			denominator *= gamma(alphas[i]);
+			denominator *= MathUtils.gamma(alphas[i]);
 		}
-		double numerator = gamma(alphaSum);
+		double numerator = MathUtils.gamma(alphaSum);
 		if (denominator != 0.0) {
 		return numerator / denominator;
 		}
@@ -135,27 +177,17 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		}
 	}
 	
-
-	// Lanczos approximation formula
-	  static double logGamma(double x) {
-	      double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
-	      double ser = 1.0 + 76.18009173    / (x + 0)   - 86.50532033    / (x + 1)
-	                       + 24.01409822    / (x + 2)   -  1.231739516   / (x + 3)
-	                       +  0.00120858003 / (x + 4)   -  0.00000536382 / (x + 5);
-	      return tmp + Math.log(ser * Math.sqrt(2 * Math.PI));
-	   }
-	  
-	   static double gamma(double x) { 
-		   return Math.exp(logGamma(x)); 
-		 }
-
-
-	   private static Random rng = new Random(
-			      Calendar.getInstance().getTimeInMillis() +
-			      Thread.currentThread().getId());
 	   
-
-	public synchronized double sampleFromGamma(double k, double theta) {
+	/**
+	 * Samples a value from a gamma distribution with parameters k and theta. Reference: 
+	 * Non-Uniform Random Variate Generation, Devroye.
+	 * (URL: http://cgm.cs.mcgill.ca/~luc/rnbookindex.html).
+	 * 
+	 * @param k the parameter k
+	 * @param theta the parameter theta
+	 * @return the sample distribution
+	 */
+	private double sampleFromGamma(double k, double theta) {
 		 boolean accept = false;
 		    if (k < 1) {
 		 // Weibull algorithm
@@ -196,6 +228,28 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		    }
 		  }
 
+	
+	/**
+	 * Returns a discretised version of the Dirichlet.  The discretised table
+	 * is simply a list of X sampled values from the Dirichlet, each value having
+	 * a probability 1/X. 
+	 * 
+	 * @return the discretised version of the density function.
+	 */
+	@Override
+	public Map<Double[], Double> discretise(int nbBuckets) {
+		Map<Double[], Double> table = new HashMap<Double[], Double>();
+		for (int i = 0 ; i < nbBuckets ; i++) {
+			table.put(sample(), 1.0/nbBuckets);
+		}
+		return table;
+	}
+	
+	/**
+	 * Returns the mean of the Dirichlet.
+	 * 
+	 * @return the mean value.
+	 */
 	@Override
 	public Double[] getMean() {
 		Double[] mean = new Double[alphas.length];
@@ -203,6 +257,47 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 			mean[i] = alphas[i] / getAlphaSum();
 		}
 		return mean;
+	}
+	
+	
+	/**
+	 * Returns the variance of the Dirichlet. 
+	 * 
+	 * @return the variance.
+	 */
+	@Override
+	public Double[] getVariance() {
+		Double[] variance = new Double[alphas.length];
+		double denominator = Math.pow(getAlphaSum(), 2) * (getAlphaSum() + 1);
+		for (int j = 0 ; j < alphas.length ; j++) {
+			double numerator = alphas[j]*(getAlphaSum() - alphas[j]);
+			variance[j] = numerator / denominator;
+		}
+		return variance;
+	}
+	
+	
+	/**
+	 * Throws an exception (calculating the CDF of a Dirichlet is quite hard and not
+	 * currently implemented).
+	 * 
+	 */
+	@Override
+	public Double getCDF(Double... x) throws DialException {
+		throw new DialException("currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
+	}
+
+
+
+	
+	/**
+	 * Returns the hashcode for the distribution.
+	 * 
+	 * @return the hashcode
+	 */
+	@Override
+	public int hashCode() {
+		return -32 + alphas.hashCode();
 	}
 	
 	
@@ -214,15 +309,7 @@ public class DirichletDensityFunction implements MultivariateDensityFunction {
 		return sum;
 	}
 
-	@Override
-	public Double[] getVariance() {
-		Double[] variance = new Double[alphas.length];
-		double denominator = Math.pow(getAlphaSum(), 2) * (getAlphaSum() + 1);
-		for (int j = 0 ; j < alphas.length ; j++) {
-			double numerator = alphas[j]*(getAlphaSum() - alphas[j]);
-			variance[j] = numerator / denominator;
-		}
-		return variance;
-	}
+	
+	
 }
 

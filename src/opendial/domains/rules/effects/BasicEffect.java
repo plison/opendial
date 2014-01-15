@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,14 +20,14 @@
 package opendial.domains.rules.effects;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.datastructs.Output;
-import opendial.domains.datastructs.Template;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 
 /**
  * Representation of a basic effect of a rule.  A basic effect is formally
@@ -41,7 +41,7 @@ import opendial.domains.datastructs.Template;
  * @version $Date::                      $
  *
  */
-public class BasicEffect implements Effect {
+public class BasicEffect {
 
 	static Logger log = new Logger("BasicEffect", Logger.Level.DEBUG);
 	
@@ -56,13 +56,11 @@ public class BasicEffect implements Effect {
 		SET, 		// for variable := value
 		DISCARD, 	// for variable != value
 		ADD, 		// for variable += value (add the value to the set)
+		CLEAR,  	// clearing the variable (NB: variableValue is then ignored)
 	}
 	
 	// effect type for the basic effect
 	EffectType type;
-	
-	// input variables for the effect (from slots in the variable label and/or value)
-	Set<String> additionalInputVariables;
 	
 
 	// ===================================
@@ -77,17 +75,26 @@ public class BasicEffect implements Effect {
 	 * @param value variable value (raw string, possibly with slots)
 	 * @param type type of effect
 	 */
-	public BasicEffect(String variable, String value, EffectType type){
-		this.variableLabel = new Template(variable);
-		this.variableValue = new Template(value);
-		additionalInputVariables = new HashSet<String>();
-		additionalInputVariables.addAll(this.variableLabel.getSlots());
-		additionalInputVariables.addAll(this.variableValue.getSlots());
+	public BasicEffect(Template variable, Template value, EffectType type){
+		this.variableLabel = variable;
+		this.variableValue = (value != null)? value : new Template("");
 		this.type = type;
 	}
 
 
-
+	/**
+	 * Ground the slots in the effect variable and value (given the assignment)
+	 * and returns the resulting effect.
+	 * 
+	 * @param grounding the grounding
+	 * @return the grounded effect
+	 */
+	public BasicEffect ground(Assignment grounding) {
+		Template newT = variableLabel.fillSlots(grounding);
+		Template newV = variableValue.fillSlots(grounding);
+		return new BasicEffect(newT, newV, type);
+	}
+	
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -99,57 +106,13 @@ public class BasicEffect implements Effect {
 	 *
 	 * @return sets of input variables
 	 */
-	@Override
 	public Set<String> getAdditionalInputVariables() {
-		return new HashSet<String>(additionalInputVariables);
-	}
-
-
-	/**
-	 * Return the set of output variables for the effect (here, the variable label)
-	 * 
-	 * @return a singleton set with the variable label
-	 */
-	@Override
-	public Set<Template> getOutputVariables() {
-		Set<Template> variables = new HashSet<Template>();
-		variables.add(variableLabel);
-		return variables;
-	}
-
-
-	/**
-	 * Returns the output of the effect, given the additional input as argument.
-	 * 
-	 * @param additionalInput the additional input to fill slots 
-	 *        in the variable or value
-	 * @return the output created by the effect
-	 */
-	@Override
-	public Output createOutput(Assignment additionalInput) {
-		
-		Output output = new Output();
-		
-		Template filledVariable = variableLabel.fillSlotsPartial(additionalInput);
-		Template filledValue = variableValue.fillSlotsPartial(additionalInput);
-		
-		// check if all the slots are filled
-		if (filledVariable.getSlots().isEmpty() && filledValue.getSlots().isEmpty()) {
-			
-			String variable = filledVariable.getRawString();
-			Value value = ValueFactory.create(filledValue.getRawString());
-			switch (type) {
-			case SET: output.setValueForVariable(variable,value); break;
-			case DISCARD: output.discardValueForVariable(variable,value); break;
-			case ADD: output.addValueForVariable(variable,value); break;
-			}
+		Set<String> additionalInputVariables = new HashSet<String>();
+		additionalInputVariables.addAll(this.variableLabel.getSlots());
+		additionalInputVariables.addAll(this.variableValue.getSlots());
+		return additionalInputVariables;
 		}
-		else {
-			output.setAsBroken(true);
-		}
-		return output;
-	}
-	
+
 
 	/**
 	 * Returns the variable label for the basic effect
@@ -162,11 +125,23 @@ public class BasicEffect implements Effect {
 	
 	
 	/**
-	 * Returns the variable value for the basic effect
+	 * Returns the variable value for the basic effect.  If the variable value is 
+	 * underspecified, returns the value None.
 	 * 
 	 * @return the variable value
 	 */
-	public Template getValue() {
+	public Value getValue() {
+		return (!variableValue.isUnderspecified())? 
+				ValueFactory.create(variableValue.getRawString()) : ValueFactory.none();
+	}
+	
+	
+	/**
+	 * Returns the variable value as a template.
+	 * 
+	 * @return the variable value (as a template).
+	 */
+	public Template getTemplateValue() {
 		return variableValue;
 	}
 	
@@ -180,6 +155,18 @@ public class BasicEffect implements Effect {
 		return type;
 	}
 	
+
+	/**
+	 * Returns true if the effect is fully grounded (i.e. does not include any
+	 * underspecified slots in the variable or value), and false otherwise.
+	 * 
+	 * @return true if the effect is fully grounded, and false otherwise.
+	 */
+	public boolean isFullyGrounded() {
+		return (variableLabel.getSlots().isEmpty() && variableValue.getSlots().isEmpty());
+	}
+
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -187,8 +174,6 @@ public class BasicEffect implements Effect {
 	
 	/**
 	 * Returns the string representation of the basic effect
-	 * 
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -197,6 +182,7 @@ public class BasicEffect implements Effect {
 		case SET: str += ":="; break;
 		case DISCARD: str += "!="; break;
 		case ADD: str += "+="; break;
+		case CLEAR : return "clear " + variableLabel.toString();
 		}
 		str += variableValue.toString();
 		return str;
@@ -227,7 +213,7 @@ public class BasicEffect implements Effect {
 			if (!((BasicEffect)o).getVariable().equals(variableLabel)) {
 				return false;
 			}
-			else if (!((BasicEffect)o).getValue().equals(variableValue)) {
+			else if (!((BasicEffect)o).getTemplateValue().equals(getTemplateValue())) {
 				return false;
 			}
 			else if (!((BasicEffect)o).getType().equals(type)) {
@@ -236,6 +222,15 @@ public class BasicEffect implements Effect {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Returns a copy of the effect.
+	 * 
+	 * @return the copy.
+	 */
+	public BasicEffect copy() {
+		return new BasicEffect(variableLabel, variableValue, type);
 	}
 
 	

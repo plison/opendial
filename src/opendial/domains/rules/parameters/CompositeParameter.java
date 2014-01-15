@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,22 +19,21 @@
 
 package opendial.domains.rules.parameters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 
 /**
- * Parameter represented as a linear combination of several continuous
- * parameters.
+ * Parameter represented as a combination of several continuous parameters.  
+ * The combination may either take the form of a linear combination
+ * or a multiplication.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -44,111 +43,181 @@ public class CompositeParameter implements Parameter {
 
 	// logger
 	public static Logger log = new Logger("CompositionParameter", Logger.Level.NORMAL);
-	
-	
-	// distributions for the composite parameter, indexed by their variable name
-	Set<String> distribs;
-	
 
+	// distributions for the composite parameter, indexed by their variable name
+	Set<Parameter> parameters;
+
+	// operator used to combine the sub-parameters
+	public static enum Operator { ADD, MULTIPLY }
+
+	Operator operator = Operator.ADD;
+
+	// ===================================
+	//  PARAMETER CONSTRUCTION
+	// ===================================
+
+	
+	
 	/**
 	 * Creates a new composite parameter 
 	 */
-	public CompositeParameter() {
-		this.distribs = new HashSet<String>();
+	public CompositeParameter(Operator operator) {
+		this.parameters = new HashSet<Parameter>();
+		this.operator = operator;
 	}
 
-	
+
 	/**
 	 * Creates a new composite parameter with the given parameter distributions
 	 * 
-	 * @param distribs the collection of distributions
+	 * @param paramIds the collection of distributions
 	 */
-	public CompositeParameter(Collection<String> distribs) {
-		this();
-		this.distribs.addAll(distribs);
+	public CompositeParameter(Collection<Parameter> paramIds, Operator operator) {
+		this(operator);
+		this.parameters.addAll(paramIds);
 	}
-	
-	
+
+
 	/**
 	 * Adds a new parameter in the composite distribution
 	 * 
 	 * @param param the parameter to add
 	 */
-	public void addParameter(String param) {
-		distribs.add(param);
-	}
-	
-	
-	
-	public double getParameterValue(Assignment input) throws DialException {
-		return getUnnormalisedParameterValue(input);
-	}
-	
-	
-	/**
-	 * Returns the parameter value for the composition, by extracting the values
-	 * for each individual parameter in the input assignment, and then adding
-	 * them in a linear combination. All parameters must have a specified value
-	 * in the assignment, else an exception is thrown.
-	 *
-	 * @param input the input combination.
-	 * @return the combined value for the parameters
-	 * @throws DialException if the parameters are not all specified
-	 */
-	public double getUnnormalisedParameterValue(Assignment input) throws DialException {
-		double totalValue = 0.0;
-		if (input.containsVars(distribs)) {
-			for (String paramVar : distribs) {
-				Value paramVal = input.getValue(paramVar);
-				if (paramVal instanceof DoubleVal) {
-					totalValue += ((DoubleVal)paramVal).getDouble();
-				}
-				else {
-					throw new DialException ("value for parameter " + paramVar +
-							" should be double, but is " + paramVal);
-				}
-			}
-			return totalValue;
+	public void addParameter(Parameter param) {
+		if (param instanceof CompositeParameter && ((CompositeParameter)param).getOperator() == operator) {
+			parameters.addAll(((CompositeParameter)param).getParameters());
 		}
 		else {
-			throw new DialException(" input " + input + " does not contain all " +
-					"parameter variables " + distribs);
+			parameters.add(param);
+		}
+	}
+
+
+	/**
+	 * Sums the parameter with the other parameter and returns the result.
+	 * 
+	 * @param the other parameter 
+	 * @return the parameter resulting from the addition of the two parameters
+	 */
+	@Override
+	public Parameter sumParameter(Parameter otherParam) {
+		if (operator == Operator.ADD && otherParam instanceof CompositeParameter) {
+			List<Parameter> paramList = new ArrayList<Parameter>();
+			paramList.addAll(parameters);
+			paramList.addAll(((CompositeParameter)otherParam).getParameters());
+			return new CompositeParameter(paramList, Operator.ADD);
+		}
+		else {
+			return new CompositeParameter(Arrays.asList(this, otherParam), Operator.ADD);			
+		}
+	}
+
+	
+	/**
+	 * Multiplies the parameter with the other parameter and returns the result.
+	 * 
+	 * @param the other parameter 
+	 * @return the parameter resulting from the multiplication of the two parameters
+	 */
+	@Override
+	public Parameter multiplyParameter(Parameter otherParam) {
+		if (operator == Operator.MULTIPLY && otherParam instanceof CompositeParameter) {
+			List<Parameter> paramList = new ArrayList<Parameter>();
+			paramList.addAll(parameters);
+			paramList.addAll(((CompositeParameter)otherParam).getParameters());
+			return new CompositeParameter(paramList, Operator.MULTIPLY);
+		}
+		else {
+			return new CompositeParameter(Arrays.asList(this, otherParam), Operator.MULTIPLY);			
 		}
 	}
 	
+	
+
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+	
+	
 	/**
-	 * Returns the collection of elementary distributions for the composite
+	 * Returns the operator for the parameter.
+	 * 
+	 * @return the operator
+	 */
+	private Operator getOperator() {
+		return operator;
+	}
+
+
+	/**
+	 * Returns the set of parameters included in this composite parameter
+	 * 
+	 * @return the set of included parameters
+	 */
+	public Set<Parameter> getParameters() {
+		return parameters;
+	}
+
+
+	/**
+	 * Returns the actual parameter value (as a double) given the particular
+	 * value assignment.  The assignment should contain the actual values for 
+	 * the sub-parameters.
+	 * 
+	 * @param input the input assignment
+	 * @return the parameter value
+	 * @throws DialException if the value could not be retrieved from the assignment
+	 */
+	public double getParameterValue(Assignment input) throws DialException {
+		double totalValue = (operator == Operator.ADD)? 0.0 : 1.0;
+		for (Parameter paramVar : parameters) {
+			double paramVal = paramVar.getParameterValue(input);
+			switch (operator) {
+			case ADD: totalValue += paramVal; break;
+			case MULTIPLY: totalValue *= paramVal; break;
+			}
+		}
+		return totalValue;
+	}
+
+
+	/**
+	 * Returns the collection of elementary parameter identifiers for the composite
 	 * parameter
 	 *
-	 * @return the collection of distributions
+	 * @return the collection of parameter identifiers
 	 */
 	public Collection<String> getParameterIds() {
-		return distribs;
+		Set<String> ids = new HashSet<String>();
+		for (Parameter param : parameters) {
+			ids.addAll(param.getParameterIds());
+		}
+		return ids;
 	}
+
+
+	// ===================================
+	//  UTILITY METHODS
+	// ===================================
+
+	
 	
 	/**
 	 * Returns a string representation of the composite parameter
-	 *
-	 * @return the string representation
 	 */
 	public String toString() {
 		String str = "";
-		for (String distrib : distribs) {
-			str += distrib + "+";
+		for (Parameter param : parameters) {
+			switch (operator) {
+			case ADD: str += param.toString() + "+"; break;
+			case MULTIPLY : str += param.toString() + "*"; break;
+			}
 		}
 		return str.substring(0, str.length()-1);		
 	}
-	
-	
-	/**
-	 * Returns a copy of the composite parameter
-	 *
-	 * @return the copy
-	 */
-	public CompositeParameter copy() {
-		return new CompositeParameter(distribs);
-	}
-	
+
+
 	/**
 	 * Returns true if the composite parameter is identical to the given
 	 * object, and false otherwise
@@ -158,20 +227,21 @@ public class CompositeParameter implements Parameter {
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof CompositeParameter) {
-			return distribs.equals(((CompositeParameter)o).getParameterIds());
+			return parameters.equals(((CompositeParameter)o).getParameterIds());
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Returns the hashcode for the parameter
 	 *
 	 * @return the hashcode
 	 */
 	public int hashCode() {
-		return distribs.hashCode();
+		return parameters.hashCode() - operator.hashCode();
 	}
-	
-	
+
+
+
 }

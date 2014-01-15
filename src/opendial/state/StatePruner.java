@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,233 +20,173 @@
 package opendial.state;
 
 
-
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.discrete.DiscreteProbDistribution;
-import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.bn.nodes.UtilityRuleNode;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.rules.PredictionRule;
-import opendial.inference.ImportanceSampling;
+import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
+import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.queries.ReductionQuery;
-import opendial.state.rules.AnchoredRule;
-import opendial.utils.StringUtils;
+import opendial.state.distribs.EquivalenceDistribution;
+import opendial.state.nodes.ProbabilityRuleNode;
+import opendial.state.nodes.UtilityRuleNode;
 
-// PRUNING might create problems if e.g. floor=start --> floor=active, but a decision rule
-// depends on floor=start
-// in addition to the already noticed problems with chance / action nodes
-public class StatePruner implements Runnable {
+
+/**
+ * Prunes the dialogue state by removing all intermediary nodes (that is, rule nodes, 
+ * utility and action nodes, equivalence nodes, and outdated versions of updated variables).
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
+public class StatePruner {
 
 	// logger
 	public static Logger log = new Logger("StatePruner", Logger.Level.DEBUG);
 
-	DialogueState state;
-
-	public StatePruner(DialogueState state) {
-		this.state = state;
-	}
-
-	@Override
-	public void run() {
-
-	//	log.debug("start pruning for state " + state.getNetwork().getNodeIds());
-
-		Set<String> nodesToKeep = getNodesToKeep();
-
-
-	//	Set<String> nodesToIsolate = getNodesToIsolate(nodesToKeep);
+	public static double VALUE_PRUNING_THRESHOLD = 0.03;
+			
+	
+	/**
+	 * Prunes the state of all the non-necessary nodes.  If fullPruning is set to true,
+	 * the operation selects a subset of relevant nodes to keep, prunes the irrelevant ones,
+	 * remove the primes from the variable labels, and delete all empty nodes.
+	 * 
+	 * <p>If fullPruning is set to false, a simplified operation is performed which only 
+	 * removes the primes from the variable labels, without pruning away any nodes from 
+	 * the dialogue state.
+	 * 
+	 * @param state the state to prune
+	 * @param fullPruning whether to perform full pruning or only 
+	 */
+	public static void prune(DialogueState state, boolean fullPruning) {
+	
+		if (!fullPruning && state.getEvidence().isEmpty()) {
+			 pruneSimplified(state);
+			 return;
+		}
+		
 		try {
-
-			BNetwork reduced = reduceNetwork(nodesToKeep);
+			// step 1 : selection of nodes to keep
+			Set<String> nodesToKeep = getNodesToKeep(state);
+			// step 2: reduction
+			ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
+			BNetwork reduced = new SwitchingAlgorithm().reduce(reductionQuery);
+			
+			// step 3: reinsert action and utility nodes (if necessary)
+			reinsertActionAndUtilityNodes(reduced, state);
+			
+			// step 4: remove the primes from the identifiers
 			removePrimes(reduced);
-			reinsertActionAndUtilityNodes(reduced);
-			removeEmptyNodes(reduced);
-			state.reset(reduced, new Assignment());
-
+			
+			// step 5: filter the distribution and remove and empty nodes
+			removeSpuriousNodes(reduced);
+			// step 6: and final reset the state to the reduced form		
+			state.reset(reduced);
+		
 		}
-		catch (Exception e) {
-			log.debug("nodes to keep: " + nodesToKeep); // + " nodes to isolate " + nodesToIsolate);
-			e.printStackTrace();
-			log.warning("Reduction failed: " + e);
+		catch (DialException e) {
+			log.warning("cannot prune state: " + e);
 		}
 
-		//	log.debug("finished pruning");
-		//	state.getController().setAsCompleted(this);
 	}
 
 
-	public boolean isPruningNeeded() {
-		boolean pruningNeeded = false;
-		for (String nodeId: state.getNetwork().getNodeIds()) {
-			if (nodeId.contains("'") && !state.getNetwork().hasActionNode(nodeId)) {
-				pruningNeeded = true;
+	/**
+	 * Perform a simplified pruning operation that only modifies the primes in 
+	 * the node identifiers, and keep the rest of the state.
+	 * 
+	 * @param state the state to prune
+	 */
+	private static void pruneSimplified(DialogueState state) {
+
+		Set<String> toKeep = getNodesToKeep(state);
+		Set<String> nodeIds = new HashSet<String>(state.getChanceNodeIds());
+		for (String id : nodeIds) {
+			if (!toKeep.contains(id)) {
+				state.getNode(id).setId(id + "_" +  Math.abs((new Random().nextInt())/10000) + "");
 			}
 		}
-		return (Settings.getInstance().activatePruning && pruningNeeded);
-	}
-
-
-
-	private Set<String> getNodesToIsolate(Set<String> nodesToKeep) {
-		Set<String> nodesToIsolate = new HashSet<String>();
-		for (BNode node : state.getNetwork().getNodes()) {
-
-			if (nodesToKeep.contains(node.getId()) && node.getInputNodeIds().isEmpty()) {
-				boolean canBeIsolated = true;
-				for (BNode oNode: node.getOutputNodes()) {
-					if (nodesToKeep.contains(oNode.getId())) {
-						canBeIsolated = false;
-					}
-				}
-				if (canBeIsolated) {
-					//				log.debug("isolating " + node.getId() + " oNodes were " + node.getOutputNodes());
-					nodesToIsolate.add(node.getId());
-				}
-
+		for (String id : nodeIds) {
+			if (id.contains("'")) {
+				state.getNode(id).setId(id.replace("'", ""));
 			}
 		}
-		return nodesToIsolate;
+
 	}
 
 
-	private Set<String> getNodesToKeep() {
+	
+	/**
+	 * Selects the set of variables to retain in the dialogue state.
+	 * 
+	 * @param state the dialogue state
+	 * @return the set of variable labels to keep
+	 */
+	public static Set<String> getNodesToKeep(DialogueState state) {
 
 		Set<String> nodesToKeep = new HashSet<String>();
 		Set<String> nodesToRemove = new HashSet<String>();
 
-		for (BNode node : state.getNetwork().getNodes()) {
+		for (BNode node : state.getNodes()) {
 
-			if (node instanceof ActionNode || node instanceof UtilityNode  || 
-					state.getEvidence().containsVar(node.getId())) {
+			if (node instanceof ActionNode || node instanceof UtilityNode  || (node instanceof ChanceNode 
+					&& ((ChanceNode)node).getDistrib() instanceof EquivalenceDistribution)) {
 				nodesToRemove.add(node.getId());
 			}
-	/**		else if (node instanceof ProbabilityRuleNode && !state.isFictive 
-					&& ((ProbabilityRuleNode)node).hasDescendant(Pattern.compile("(?:.*)\\^p'")) 
-					&& !node.getOutputNodes().isEmpty() && node.getOutputNodesIds().iterator().next().contains("'")
-					&& !((ProbabilityRuleNode)node).getRule().getParameterNodes().isEmpty() 
-					&& !node.hasDescendant(state.getEvidence().getVariables())) {
-				nodesToKeep.add(node.getId());
-			} */
 
 			// removing the prediction nodes once they have been used
 			else if (node.getId().contains("^p") && 
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToRemove.add(node.getId());
 			} 
-			else if (node.getId().contains("^temp")) {
+			else if (node.getId().endsWith("^t")) {
 				nodesToRemove.add(node.getId());
 			}
 
 			// keeping the newest nodes
-			else if (!(state.getNetwork().hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {
+			else if (!(state.hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {
 				nodesToKeep.add(node.getId());
 			}
 			else {
-				//		log.debug("removing node " + node.getId() + " instance? " + node.getClass().getCanonicalName() + " updated? " + state.getNetwork().hasChanceNode(node.getId()+"'"));
 				nodesToRemove.add(node.getId());
 			}
-
 		}
 
-
 		//	log.debug("keeping : " + nodesToKeep);
-		//	log.debug("removing : " + nodesToRemove);
 
 		return nodesToKeep;
 	}
 
 
-	private BNetwork reduceNetwork(Set<String> nodesToKeep) 
-			throws DialException, InstantiationException, IllegalAccessException {
 
-		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
-		/** BNetwork reducedCopy = reductionQuery.getReducedCopy();
-		 for (BNode reducedNode : reducedCopy.getNodes()) {
-			if (state.isParameter(reducedNode.getId())) {
-				for (BNode outputNode : reducedNode.getOutputNodes()) {
-					if (!(outputNode instanceof ProbabilityRuleNode)) {
-						reductionQuery.removeRelation(reducedNode.getId(), outputNode.getId());
-					}					
-				}
-			}
-		} */
-		
-		InferenceAlgorithm inference = Settings.getInstance().inferenceAlgorithm.newInstance();
+	/**
+	 * Removes the prime characters from the variable labels in the dialogue state.
+	 * 
+	 * @param reduced the reduced state
+	 */
+	private static void removePrimes(BNetwork reduced) {
 
-		if (state.isFictive()) {
-			reductionQuery.setAsLightweight(true);
-		}
-		BNetwork reduced = inference.reduceNetwork(reductionQuery);
-
-		return reduced;
-
-	}
-	
-	
-
-	private void reinsertActionAndUtilityNodes(BNetwork reduced) throws DialException {
-		for (ActionNode an : state.getNetwork().getActionNodes()) {
-			an.clearListeners();
-			reduced.addNode(an.copy());
-		}
-	/**	for (BNode cn : state.getNetwork().getSortedNodes()) {
-			if (!reduced.hasChanceNode(cn.getId()) && cn.getId().contains("^p") && 
-				cn.hasDescendant(state.getEvidence().getVariables())) {
-				reintegrateNode(cn, reduced);
-			}
-		} */
-		for (UtilityNode un : state.getNetwork().getUtilityNodes()) {
-			reintegrateNode(un, reduced);
-		}
-	}
-	
-	private void reintegrateNode (BNode node, BNetwork reduced) throws DialException {
-		Set<String> inputNodeIds = new HashSet<String>(node.getInputNodeIds());
-		node.removeAllRelations();
-		node.clearListeners();
-		for (String inputNodeId: inputNodeIds) {
-			String formattedId = StringUtils.removePrimes(inputNodeId);	
-			if (reduced.hasActionNode(inputNodeId)) {
-				node.addInputNode(reduced.getNode(inputNodeId));
-			}
-			else if (reduced.hasChanceNode(formattedId)) {
-				node.addInputNode(reduced.getNode(formattedId));
-			}
-
-			else {
-			//	reintegrateNode(state.getNetwork().getNode(inputNodeId), reduced);
-			//	node.addInputNode(reduced.getNode(formattedId));
-	//			log.debug("node " + inputNodeId + " is not in the reduced network: " + reduced.getNodeIds()
-	//					+ " (when trying to add node " + node.getId()+")");
-			}
-		}
-		reduced.addNode(node);
-	}
-
-
-	private void removePrimes(BNetwork reduced) {
 		for (String nodeId: new HashSet<String>(reduced.getChanceNodeIds())) {
 			if (nodeId.contains("'")) {
-				if (!reduced.hasChanceNode(nodeId.replace("'", ""))) {
-					reduced.getNode(nodeId).setId(nodeId.replace("'", ""));
+				String newId = nodeId.replace("'", "");
+				if (!reduced.hasChanceNode(newId)) {
+					reduced.getChanceNode(nodeId).setId(newId);
 				}
 				else {
-					log.warning("reduced network still contains duplicates: " + reduced.getNodeIds());
-					log.debug("original network nodes: " + state.getNetwork().getNodeIds());
+					log.warning("reduced state still contains duplicates: " + reduced.getNodeIds());
 				}
 			}
 		}
@@ -254,12 +194,65 @@ public class StatePruner implements Runnable {
 
 
 
-	private void removeEmptyNodes(BNetwork reduced) {
+	
+	/**
+	 * Removes all non-necessary nodes from the dialogue state.
+	 * 
+	 * @param reduced the reduced dialogue state
+	 * @throws DialException if the removal fails
+	 */
+	private static void removeSpuriousNodes(BNetwork reduced) throws DialException {
+
+		// looping on every chance node
 		for (ChanceNode node: new HashSet<ChanceNode>(reduced.getChanceNodes())) {
+			
+			// if the node only contain a None value, prunes it
 			if (node.getInputNodes().isEmpty() && node.getOutputNodes().isEmpty() 
-					&& node.getDistrib() instanceof DiscreteProbDistribution) {
-				if (node.getProb(ValueFactory.none())> 0.99) {
+					&& node.getDistrib() instanceof CategoricalTable 
+					&& node.getProb(ValueFactory.none())> 0.99) {
 					reduced.removeNode(node.getId());
+					continue;
+			}
+			// prune values with a probability below the threshold
+			node.getDistrib().pruneValues(VALUE_PRUNING_THRESHOLD);
+		
+			// if the node only contains a single (non-none) value, remove outgoing dependency
+			// edges (as the dependency relation is in this case superfluous)
+			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
+					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty()) {
+				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
+				node.setDistrib(new CategoricalTable(onlyAssign));
+				for (BNode outputNode : node.getOutputNodes()) {
+					outputNode.removeInputNode(node.getId());
+					((ChanceNode)outputNode).setDistrib(((ChanceNode)
+							outputNode).getDistrib().getPartialPosterior(onlyAssign));
+				}
+			} 
+		}
+	}
+	
+	
+	/**
+	 * Reinserts the action and utility nodes in the reduced dialogue state.
+	 * 
+	 * @param reduced the reduced state
+	 * @param original the original state
+	 * @throws DialException
+	 */
+	private static void reinsertActionAndUtilityNodes(BNetwork reduced, BNetwork original) 
+			throws DialException {
+		
+		// action nodes
+		for (ActionNode n : original.getActionNodes()) {
+			reduced.addNode(n.copy());
+		}
+		
+		// utility nodes
+		for (UtilityNode n : original.getUtilityNodes()) {
+			reduced.addNode(n.copy());
+			for (String input : n.getInputNodeIds()) {
+				if (reduced.hasNode(input)) {
+					reduced.getUtilityNode(n.getId()).addInputNode(reduced.getNode(input));
 				}
 			}
 		}

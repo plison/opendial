@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -24,12 +24,12 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import opendial.DialogueSystem;
 import opendial.arch.DialException;
-import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.Assignment;
 import opendial.common.InferenceChecks;
+import opendial.datastructs.Assignment;
 import opendial.readers.XMLDomainReader;
 
 public class PredictionTest {
@@ -37,7 +37,7 @@ public class PredictionTest {
 	// logger
 	public static Logger log = new Logger("PredictionTest", Logger.Level.DEBUG);
 
-	public static final String domainFile = "domains//testing//prediction.xml";
+	public static final String domainFile = "test//domains//prediction.xml";
 
 	static InferenceChecks inference;
 	static Domain domain;
@@ -55,10 +55,15 @@ public class PredictionTest {
 	@Test
 	public void test() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(domain);
+		system.getSettings().showGUI = false;
+
 		system.startSystem();
-		system.getState().addContent(new Assignment("a_u", "None"), "test");
-		assertEquals(2, system.getState().getNetwork().getNodeIds().size());
-		
+		system.addContent(new Assignment("a_u", "None"));
+		assertEquals(0, system.getState().getNodeIds().size());
+
+		system.addContent(new Assignment("a_u", "bloblo"));
+
+		assertEquals(2, system.getState().getNodeIds().size());
 	}
 }
 

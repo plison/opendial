@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,22 +19,23 @@
 
 package opendial.inference;
 
-import java.util.Collection;
 
 import opendial.arch.DialException;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
 
 /**
- * Generic interface for probabilistic inference algorithms.  Queries can be 
- * expressed as P(X1...Xn|Y1=y1,...Yn=yn), where X1...Xn are the query variables,
- * and Y1=y1..Yn=yn are the evidences.
+ * Generic interface for probabilistic inference algorithms. Three distinct types of queries
+ * are possible: <ul>
+ * <li> probability queries of the form P(X1,...,Xn)
+ * <li> utility queries of the form U(X1,...,Xn)
+ * <li> reduction queries where a Bayesian network is reduced to a subet of variables X1,...,Xn
+ * </ul>
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -48,25 +49,28 @@ public interface InferenceAlgorithm {
 	 * provided evidence, all specified in the query
 	 * 
 	 * @param query the full query
+	 * @return the resulting probability distribution
 	 */
-	public ProbDistribution queryProb (ProbQuery query) throws DialException;
+	public IndependentProbDistribution queryProb (ProbQuery query) throws DialException;
 	
-		
+	
 	/**
 	 * Computes the utility distribution for the action variables, given the provided
 	 * evidence.
 	 * 
 	 * @param query the full query
+	 * @return the resulting utility table
 	 */
 	public UtilityTable queryUtil (UtilQuery query) throws DialException;
 
+	
 	/**
-	 * Reduces the Bayesian network to a subset of its variables
+	 * Estimates the probability distribution on a reduced subset of variables
 	 * 
 	 * @param reductionQuery the reduction query
-	 * @return the reduced query
+	 * @return the reduced network
 	 */
-	public BNetwork reduceNetwork(ReductionQuery reductionQuery) throws DialException;
+	public BNetwork reduce(ReductionQuery reductionQuery) throws DialException;
 	
 	
 }

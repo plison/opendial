@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -27,9 +27,9 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 
 /**
  * Representation of an action node (sometimes also called decision node).
@@ -74,10 +74,8 @@ public class ActionNode extends BNode {
 	 * @param actionValues the values for the action
 	 */
 	public ActionNode(String nodeId, Set<Value> actionValues) {
-		super(nodeId);
+		this(nodeId);
 		this.actionValues = new HashSet<Value>(actionValues);
-		actionValues.add(ValueFactory.none());
-		sampler = new Random();
 	}
 	
 	public void addInputNode(BNode inputNode) {
@@ -101,7 +99,9 @@ public class ActionNode extends BNode {
 	 * @param values the values to add
 	 */
 	public void addValues(Set<Value> values) {
-		actionValues.addAll(values);
+		for (Value v : values) {
+			addValue(v);
+		}
 	} 
 	
 	/**
@@ -203,28 +203,13 @@ public class ActionNode extends BNode {
 	 */
 	@Override
 	public ActionNode copy() {
-		ActionNode nodeCopy = new ActionNode(nodeId, actionValues);
-		return nodeCopy;
+		return new ActionNode(nodeId, actionValues);
 	}
 
 	
 	/**
-	 * Returns a pretty print representation of the node, which enumerates
-	 * the action values
-	 * 
-	 * @return the pretty print representation
-	 */
-	@Override
-	public String prettyPrint() {
-		return actionValues.toString() + "\n";
-	}
-	
-	
-	/**
 	 * Returns a string representation of the node, which states the node identifier
 	 * followed by the action values
-	 *
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {

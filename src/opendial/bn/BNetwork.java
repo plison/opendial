@@ -20,27 +20,24 @@
 package opendial.bn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.ProbDistribution.DistribType;
+import opendial.bn.distribs.other.EmpiricalDistribution;
+import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.ActionNode;
-import opendial.bn.nodes.DerivedActionNode;
-import opendial.bn.nodes.IdChangeListener;
-import opendial.bn.nodes.ProbabilityRuleNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.inference.queries.Query;
+import opendial.datastructs.Assignment;
 
 
 /**
@@ -51,7 +48,7 @@ import opendial.inference.queries.Query;
  * @version $Date:: 2012-06-11 18:13:11 #$
  *
  */
-public class BNetwork implements IdChangeListener {
+public class BNetwork {
 
 	// logger
 	public static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
@@ -61,11 +58,12 @@ public class BNetwork implements IdChangeListener {
 
 	// the chance nodes 
 	Map<String,ChanceNode> chanceNodes;
+	
 	// the utility nodes
 	Map<String, UtilityNode> utilityNodes;	
+	
 	// the action nodes
 	Map<String, ActionNode> actionNodes;
-
 
 	// ===================================
 	//  NETWORK CONSTRUCTION
@@ -88,13 +86,12 @@ public class BNetwork implements IdChangeListener {
 	 * 
 	 * @param node the node to add
 	 */
-	public synchronized void addNode(BNode node) {
+	public void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			Thread.dumpStack();
 		}
 		nodes.put(node.getId(), node);
-		node.addIdChangeListener(this);
+		node.setNetwork(this);
 
 		// adding the node in the type-specific collections
 		if (node instanceof ChanceNode) {
@@ -118,6 +115,33 @@ public class BNetwork implements IdChangeListener {
 			addNode(newNode);
 		}
 	}
+	
+
+	/**
+	 * Adds all the nodes in the network provided as argument to the current network
+	 * 
+	 * @param network the network to include
+	 * 
+	 * @throws DialException if the inclusion fails
+	 */
+	public void addNetwork(BNetwork network) throws DialException {
+		for (BNode node : new ArrayList<BNode>(network.getNodes())) {
+			if (hasNode(node.getId())) {
+				removeNode(node.getId());
+			}
+		}
+		for (BNode node : network.getNodes()) {
+			addNode(node.copy());
+		}
+		for (BNode oldNode : network.getNodes()) {
+			BNode newNode = getNode(oldNode.getId());
+			for (String inputNodeId : oldNode.getInputNodeIds()) {
+				BNode newInputNode = getNode(inputNodeId);
+				newNode.addInputNode(newInputNode);
+			}
+		}
+	}
+	
 
 	/**
 	 * Replaces an existing node with a new one (with same identifier)
@@ -142,13 +166,12 @@ public class BNetwork implements IdChangeListener {
 	 * @param nodeId the node identifier
 	 * @return the value for the node, if it exists
 	 */
-	public synchronized BNode removeNode(String nodeId) {
+	public BNode removeNode(String nodeId) {
 		if (!nodes.containsKey(nodeId)) {
 		//	log.warning("network does not contain a node with identifier " + nodeId);
 		}
 		else {
 			BNode node = nodes.get(nodeId);
-			node.removeIdChangeListener(this);
 
 			for (BNode inputNode : node.getInputNodes()) {
 				node.removeInputNode(inputNode.getId());
@@ -178,10 +201,13 @@ public class BNetwork implements IdChangeListener {
 	 * 
 	 * @param valueNodeIds the nodes to remove
 	 */
-	public void removeNodes(Collection<String> valueNodeIds) {
+	public List<BNode> removeNodes(Collection<String> valueNodeIds) {
+		List<BNode> removed = new ArrayList<BNode>();
 		for (String id: new ArrayList<String>(valueNodeIds)) {
-			removeNode(id);
+			BNode n = removeNode(id);
+			removed.add(n);
 		}
+		return removed;
 	}
 
 
@@ -192,8 +218,7 @@ public class BNetwork implements IdChangeListener {
 	 * @param oldNodeId the old node identifier
 	 * @param newNodeId the new node identifier
 	 */
-	@Override
-	public synchronized void modifyNodeId(String oldNodeId, String newNodeId) {
+	public void modifyVariableId(String oldNodeId, String newNodeId) {
 		BNode node = nodes.remove(oldNodeId);
 		chanceNodes.remove(oldNodeId);
 		utilityNodes.remove(oldNodeId);
@@ -205,36 +230,29 @@ public class BNetwork implements IdChangeListener {
 			log.warning("node " + oldNodeId + " did not exist, cannot change its identifier");
 		}
 	}
-	
-	
+
+
 	/**
-	 * Merges all the utility nodes into a single one,combining all their dependency 
-	 * relations.  This method is used when reducing the network.
+	 * Resets the Bayesian network to only contain the nodes contained in the argument.
+	 * Everything else is erased.
 	 * 
-	 * @throws DialException if the merge operation failed
+	 * @param network the network that contains the nodes to include after the reset.
 	 */
-	/**
-	private void mergeUtilityNodes() throws DialException {
-
-		// we need to merge the utility nodes together
-		if (!getUtilityNodeIds().isEmpty()) {
-			UtilityNode totalNode = new UtilityNode("");		
-			for (UtilityNode utilNode : new HashSet<UtilityNode>(getUtilityNodes())){
-				totalNode.setId(totalNode.getId()+utilNode.getId()+"+");
-				for (BNode input : utilNode.getInputNodes()) {
-					if (!totalNode.hasInputNode(input.getId())) {
-						totalNode.addInputNode(input);
-					}
-				}
-				removeNode(utilNode.getId());
+	public void reset(BNetwork network) {
+		if (System.identityHashCode(this) != System.identityHashCode(network)) {
+		nodes.clear();
+		chanceNodes.clear();
+		utilityNodes.clear();
+		actionNodes.clear();
+			for (BNode node : network.getNodes()) {
+				addNode(node);
 			}
-			totalNode.setId(totalNode.getId().substring(0, totalNode.getId().length()-1));
-			addNode(totalNode);
 		}
-	} */
 
-
-
+	}
+	
+	
+	
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -439,27 +457,6 @@ public class BNetwork implements IdChangeListener {
 
 
 	/**
-	 * Returns a unique node identifier, with the given base identifier
-	 * complemented with a counter
-	 * 
-	 * @param baseId the base identifier
-	 * @return the unique node identifier, with baseVar+counter
-	 */
-	public synchronized String getUniqueNodeId(String baseId) {
-		if (!nodes.containsKey(baseId)) {
-			return baseId;
-		}
-		else {
-			int counter = 2;
-			while (nodes.containsKey(baseId +"^" + counter)) {
-				counter++;
-			}
-			return baseId +"^" +counter;
-		}
-
-	}
-
-	/**
 	 * Returns an ordered list of nodes, where the ordering is defined in the 
 	 * compareTo method implemented in BNode.  The ordering will place end nodes 
 	 * (i.e. nodes with no outward edges) at the beginning of the list, and start 
@@ -476,63 +473,104 @@ public class BNetwork implements IdChangeListener {
 		return nodesList;
 	}
 	
-
+	
 	/**
-	 * Returns the identifiers for the node that remain identical in this network and the one
-	 * given as argument, taking into account the evidence.
+	 * Returns the set of maximal cliques that compose this network.  The cliques are collections
+	 * of nodes such that each node in the clique is connect to all the other nodes in the clique 
+	 * but to no nodes outside the clique.
 	 * 
-	 * @param reducedNetwork the other network
-	 * @param evidence the evidence to consider as well
-	 * @return the set of node identifiers that remain identical
+	 * @return the collection of cliques for the network.
 	 */
-	public Set<String> getIdenticalNodes(BNetwork reducedNetwork, Assignment evidence) {
-		Set<String> identicalNodes = new HashSet<String>();
-		for (ChanceNode node : reducedNetwork.getChanceNodes()) {
-			ChanceNode initNode = getChanceNode(node.getId());
-				if (node.getClusterIds().equals(initNode.getClusterIds()) 
-						&& !initNode.hasDescendant(evidence.getVariables())
-				//		&& !initNode.hasDescendant(Pattern.compile(".*(\\^p)"))
-						) {
-					identicalNodes.add(node.getId());
-				//	log.debug("identical node: " + node.getId() + " since descendants " 
-				//	+ initNode.getDescendantIds() + " and evidence " + evidence);
-			}	
-		}	
-		return identicalNodes;
-	}
-	
-	
-	public List<Set<String>> getClusters() {
-		List<Set<String>> clusters = new ArrayList<Set<String>>();
+	public List<Set<String>> getCliques() {
 		
-		for (String var : nodes.keySet()) {
-			
-			boolean inCluster = false;
-			for (Set<String> cluster : clusters) {
-				if (cluster.contains(var)) {
-					inCluster = true;
-				}
-			}
-			if (!inCluster) {
-				Set<String> newCluster = new HashSet<String>();
-				newCluster.addAll(nodes.get(var).getClusterIds());
-				clusters.add(newCluster);
-			}
+		List<Set<String>> cliques = new ArrayList<Set<String>>();
+		
+		Stack<String> nodesToProcess = new Stack<String>();
+		nodesToProcess.addAll(nodes.keySet());
+		while (!nodesToProcess.isEmpty()) {
+			String node = nodesToProcess.pop();
+			Set<String> newClique = nodes.get(node).getClique();
+			cliques.add(newClique);
+			nodesToProcess.removeAll(newClique);
 		}
 		
-		for (Set<String> cluster1 : clusters) {
-			for (Set<String> cluster2 : clusters) {
+		
+		// sanity check
+		for (Set<String> cluster1 : cliques) {
+			for (Set<String> cluster2 : cliques) {
 				if (!cluster1.equals(cluster2)) {
 					for (String elInCluster1 : cluster1) {
 						if (cluster2.contains(elInCluster1)) {
 							log.warning("cluster 1 = " + cluster1 + " and cluster 2 = " + cluster2);
+							log.warning("network to cluster: " + getNodeIds());
+							log.warning("network to cluster2: " + nodes.keySet());
+							Thread.dumpStack();
+							System.exit(0);
 						}
 					}
 				}
 			}
 		}
-		return clusters;
+		return cliques;
 	}
+	
+	
+	
+	/**
+	 * Returns the subset of nodes that are referred to by the list of identifiers
+	 * 
+	 * @param ids the list of identifiers
+	 * @return the corresponding nodes
+	 */
+	protected List<BNode> getNodes(Set<String> ids) {
+		List<BNode> subset = new ArrayList<BNode>();
+		for (String id : ids) {
+			if (nodes.containsKey(id)) {
+				subset.add(nodes.get(id));
+			}
+		}
+		return subset;
+	}
+	
+	/**
+	 * Creates subnetworks corresponding to the cliques of the network
+	 * 
+	 * @return the subnetworks corresponding to the cliques.
+	 * @throws DialException 
+	 */
+	public List<BNetwork> createCliques() throws DialException {
+
+		List<BNetwork> result = new ArrayList<BNetwork>();
+		
+		for (Set<String> clique  : getCliques()) {
+			BNetwork subnetwork = new BNetwork();
+			List<BNode> sorted = getSortedNodes();
+			Collections.reverse(sorted);
+			for (BNode n : sorted) {
+				if (clique.contains(n.getId())) {
+					BNode copy = n.copy();
+					if (n instanceof ChanceNode 
+							&& ((ChanceNode)n).getDistrib() instanceof MarginalEmpiricalDistribution
+							&& !clique.containsAll(((MarginalEmpiricalDistribution)((ChanceNode)n).
+									getDistrib()).getFullSample().getVariables())) {
+						((ChanceNode)n).setDistrib(((MarginalEmpiricalDistribution)
+								((ChanceNode)n).getDistrib()).trim(clique));
+					}
+					for (String input : n.getInputNodeIds()) {
+						if (!subnetwork.hasNode(input)) {
+							log.warning("problem in the topological ordering of the nodes");
+						}
+						copy.addInputNode(subnetwork.getNode(input));
+					}
+					subnetwork.addNode(copy);
+				}
+			}
+			result.add(subnetwork);
+		}
+		return result;
+	}
+	
+	
 
 	// ===================================
 	//  UTILITIES
@@ -567,7 +605,8 @@ public class BNetwork implements IdChangeListener {
 			for (BNode inputNode : node.getInputNodes()) {
 				if (!copyNetwork.hasNode(inputNode.getId())) {
 					throw new DialException("cannot copy the network: structure " +
-							"is corrupt (" + inputNode.getId() + " is not present)");
+							"is corrupt (" + inputNode.getId() + " is not present, but "
+									+ "should be input node to " + node.getId()+  ")");
 				}
 				nodeCopy.addInputNode(copyNetwork.getNode(inputNode.getId()));
 			}
@@ -579,8 +618,6 @@ public class BNetwork implements IdChangeListener {
 	/**
 	 * Returns a basic string representation for the network, defined as the set
 	 * of node identifiers in the network.
-	 *
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -620,36 +657,6 @@ public class BNetwork implements IdChangeListener {
 	}
 
 
-	/**
-	 * Returns the set of node IDs that are the leaves of the provided node (as
-	 * identified by its ID)
-	 * 
-	 * @return the set of leave node IDs
-	 */
-	public Set<String> getLeafNodesIds(String topNodeId) {
-		Set<String> leaves = new HashSet<String>();
-		if (hasNode(topNodeId)) {
-			BNode topNode = nodes.get(topNodeId);
-			for (String ancestorId : topNode.getAncestorIds()) {
-				if (nodes.get(ancestorId).getAncestorIds().isEmpty()) {
-					leaves.add(ancestorId);
-				}
-			}
-		}
-		return leaves;
-	}
-
-	public void addNetwork(BNetwork network) throws DialException {
-		for (BNode node : network.getNodes()) {
-			addNode(node.copy());
-		}
-		for (BNode oldNode : network.getNodes()) {
-			BNode newNode = getNode(oldNode.getId());
-			for (String inputNodeId : oldNode.getInputNodeIds()) {
-				BNode newInputNode = getNode(inputNodeId);
-				newNode.addInputNode(newInputNode);
-			}
-		}
-	}
+	
 
 }

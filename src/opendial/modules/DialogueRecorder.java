@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,152 +20,121 @@
 package opendial.modules;
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import opendial.DialogueSystem;
 import opendial.arch.DialException;
-import opendial.arch.DialogueSystem;
 import opendial.arch.Logger;
-import opendial.arch.StateListener;
-import opendial.bn.Assignment;
-import opendial.state.DialogueState;
+import opendial.datastructs.Assignment;
 import opendial.utils.XMLUtils;
 
-public class DialogueRecorder {
+public class DialogueRecorder implements Module {
 
 	// logger
 	public static Logger log = new Logger("DialogueRecorder", Logger.Level.DEBUG);
 
-	String recordFile;			
-	
 	Node rootNode;
-	Document doc;	
+	Document doc;
+	DialogueSystem system;
+
+	public void start(DialogueSystem system) {
+		this.system = system;		
+		try {
+			doc = XMLUtils.newXMLDocument();
+			doc.appendChild(doc.createElement("interaction"));
+			rootNode = XMLUtils.getMainNode(doc);
+		}
+		catch (DialException e) {
+			log.warning("could not create dialogue recorder");
+		}
+	}
 	
-	
-	public DialogueRecorder(String basePath, String baseName) {
-		
-		this.recordFile = basePath + baseName.replace(".xml", "") + 
-				(new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss")).format(new Date()) + ".xml";
+	@Override
+	public void pause(boolean shouldBePaused) { 	}
+
+
+	@Override
+	public void trigger() {
+		if (system.getSettings().enableRecording) {
+		if (!rootNode.getNodeName().equals("interaction")) {
+			log.warning("root node is ill-formatted: " 
+					+ rootNode.getNodeName() + " or first value is null");
+			return;
+		}
 
 		try {
-		if (new File(recordFile).exists()) {
-			doc = XMLUtils.getXMLDocument(recordFile);
+			if (system.getState().hasChanceNode(system.getSettings().userInput+"'")) {
+				Set<String> varsToRecord = new HashSet<String>();
+				varsToRecord.add(system.getSettings().userInput);
+				varsToRecord.addAll(system.getSettings().varsToMonitor);
+				Element el = system.getState().generateXML(doc, varsToRecord);
+				doc.renameNode(el, null, "userTurn");
+				rootNode.appendChild(el);
+			}
+			if (system.getState().hasChanceNode(system.getSettings().systemOutput+"'")) {
+				Set<String> varsToRecord = new HashSet<String>();
+				varsToRecord.add(system.getSettings().systemOutput);
+				varsToRecord.addAll(system.getSettings().varsToMonitor);
+				Element el = system.getState().generateXML(doc, varsToRecord);
+				doc.renameNode(el, null, "systemTurn");
+				rootNode.appendChild(el);
+			}
 		}
-		else {
-			doc = XMLUtils.newXMLDocument();
-			log.debug("creating new xml file " + recordFile);
-			Node rootNode = doc.createElement("samples");
-			doc.appendChild(rootNode);
+		catch (DialException e) {
+			log.warning("cannot record dialogue turn " + e);
 		}
-		rootNode = XMLUtils.getMainNode(doc);
+		}
+	}
+	
+	
+	public void addWizardAction (Assignment action) {
+		if (system.getSettings().enableRecording) {
+			Node wizardNode =doc.createElement("wizard");
+			wizardNode.setTextContent(action.toString());
+			rootNode.appendChild(wizardNode);
+		}
+	}
+
+	public void addComment(String comment) {
+		try {
+			if (rootNode.getNodeName().equals("interaction") && system.getSettings().enableRecording) {
+				Comment com = doc.createComment(comment);
+				rootNode.appendChild(com);
+			}
+			else {
+				log.warning("could not add comment");
+			}
+		}
+		catch (Exception e) {
+			log.warning("could not record preamble or comment");
+		}
+	}
+	
+
+	public void writeToFile(String recordFile) {
+		log.debug("recording interaction in file " + recordFile);
+		try {
+			XMLUtils.writeXMLDocument(doc, recordFile);
 		}
 		catch (DialException e) {
 			log.warning("could not create file " + recordFile);
 		}
 	}
 
-	
+	public String getRecord() {
+		return XMLUtils.serialise(rootNode);
+	}
 
-	public void removeLastSample() {
-			if (rootNode.getNodeName().equals("samples") && rootNode.getChildNodes().getLength() > 1) {
-				Node lastNode = rootNode.getChildNodes().item(rootNode.getChildNodes().getLength()-2);
-				rootNode.removeChild(lastNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() 
-						+ "(with " + rootNode.getChildNodes().getLength() + " children)");
-			}
-	}
-	
-	
-	public void recordTrainingData(DialogueState state, Assignment action) {
-		try {
-			if (rootNode.getNodeName().equals("samples")) {
-				Element dataNode = doc.createElement("data");
-				Element dataEl = state.generateXML(doc, false);
-				dataNode.appendChild(dataEl);
-				Element outputNode = action.generateXML(doc);
-				dataNode.appendChild(outputNode);
-				doc.renameNode(outputNode, null, "output") ;
-		/**		doc.renameNode(dataNode, null, "a_m");
-				doc.renameNode(dataNode, null, "u_m");
-				doc.renameNode(dataNode, null, "u_u"); 
-				doc.renameNode(dataNode, null, "floor"); */
-				rootNode.appendChild(dataNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
-			}
-			XMLUtils.writeXMLDocument(doc, recordFile);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
-	}
-	
-	
-	public void recordTurn(DialogueState state) {
-		try {
-			if (rootNode.getNodeName().equals("samples")) {
-				Element dataNode = doc.createElement("userTurn");
-				Element dataEl = state.generateXML(doc, false);
-				dataNode.appendChild(dataEl);
-				rootNode.appendChild(dataNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
-			}
-
-			XMLUtils.writeXMLDocument(doc, recordFile);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
-	}
-	
 
 	
-	public void recordTurn(Assignment assign) {
 
-		try {
-			if (rootNode.getNodeName().equals("samples")) {
-				Element dataNode = doc.createElement("systemTurn");
-				Element dataEl = assign.generateXML(doc);
-				dataNode.appendChild(dataEl);
-				rootNode.appendChild(dataNode);
-			}
-			else {
-				log.warning("root node is ill-formatted: " + rootNode.getNodeName() + " or first value is null");
-			}
-			XMLUtils.writeXMLDocument(doc, recordFile);
-		} catch (DialException e) {
-			log.warning("cannot record training data : " + e.toString());
-		}
-	}
-	
-	
-
-	public void addComment(String comment) {
-		try {
-			if (rootNode.getNodeName().equals("samples")) {
-			Comment com = doc.createComment(comment);
-			rootNode.appendChild(com);
-			}
-			else {
-				log.warning("could not add comment");
-			}
-			XMLUtils.writeXMLDocument(doc, recordFile);
-		}
-		catch (Exception e) {
-			log.warning("could not add preamble to file " + recordFile);
-		}
-	}
 
 
 }

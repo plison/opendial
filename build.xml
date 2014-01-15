@@ -70,11 +70,11 @@
 		</junitreport>
 	</target>
 	
-	<target name="run_java" description="Runs the Main class to start the dialogue system" depends="compile">
-				<java classname="opendial.arch.DialogueSystem" fork="yes">
+	<target name="run" description="Runs the Main class to start the dialogue system" depends="compile">
+				<java classname="opendial.DialogueSystem" fork="yes">
 					<classpath refid="compile.classpath"/>
 				</java>
-		</target>
+	</target>
 	
 	  	
 	<!-- JAVADOC GENERATION -->

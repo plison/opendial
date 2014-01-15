@@ -7,14 +7,17 @@
 <value>true</value>
 </variable>
 
-<variable id="perceived"><value>[RedObj,BlueObj]</value></variable>
+<variable id="perceived"><value>[]</value></variable>
 <variable id="carried"><value>[]</value></variable>
 
 </initialstate>
 
- <import href="../common/tabletop_nlu.xml"/>
- <import href="../common/tabletop_nlu2.xml"/>
- <import href="../common/tabletop_nlg.xml"/>
+<settings>
+</settings>
+
+ <import href="tabletop_nlu.xml"/>
+ <import href="tabletop_nlu2.xml"/>
+ <import href="tabletop_nlg.xml"/>
 
  <import href="domain_effects.xml"/>
 
@@ -24,20 +27,5 @@
 
 <import href="domain_user.xml"/>
 
-
-<!-- <model type="decision" trigger="floor">
- 
-<rule>
-	<case>
-			<condition>
-				<if var="a_m" value="None"/>
-				<if var="floor" value="start" />
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="What can I do for you?" />
-			</effect>
-		</case>
-</rule>
-</model>  -->
 
 </domain>
