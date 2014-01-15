@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="a_m" type="update">
+
+	<rule>
+		<case>
+		<condition operator="or">
+			<if var="a_m" value="Ground(*)"/>
+			<if var="a_m" value="Confirm(*)"/>
+		</condition>
+		<effect>
+			<add var="history" value="{a_m}"/>
+		</effect>
+		</case>
+	</rule>
+	
+
+	<rule id="nextintention">
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Do({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Excuse(*)" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Confirm" />
+				<if var="i_u" value="DoYouSee(*)" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Disconfirm" />
+				<if var="i_u" value="DoYouSee(*)" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="a_m" value="Describe(*)" />
+				<if var="i_u" value="WhatDoYouSee" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition operator="or">
+				<if var="a_m" value="Do(*)" />
+				<if var="a_m" value="Excuse(*)" />
+				<if var="a_m" value="Describe(*)" />
+				<if var="a_m" value="Disconfirm" />
+				<if var="a_m" value="Confirm" />
+			</condition>
+			<effect prob="0.4">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+			<effect prob="0.6">
+				<set var="floor" value="continue" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="i_u" value="None" />
+			</condition>
+			<effect prob="1.0">
+				<set var="floor" value="start" />
+				<clear var="history"/>			
+			</effect>
+		</case>
+		<case>
+			<effect prob="1.0">
+				<set var="floor" value="continue" />
+			</effect>
+		</case>
+	</rule>
+
+</model>
