@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,9 +19,10 @@
 
 package opendial.readers;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -30,145 +31,59 @@ import org.w3c.dom.NodeList;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.arch.Settings.PlanSettings;
-import opendial.bn.BNetwork;
-import opendial.domains.Domain;
-import opendial.domains.Model;
-import opendial.state.DialogueState;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.exact.VariableElimination;
 import opendial.utils.XMLUtils;
 
 /**
  * 
- *
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- *
+ * 
+ * @author Pierre Lison (plison@ifi.uio.no)
+ * @version $Date:: $
+ * 
  */
 public class XMLSettingsReader {
 
-	public static Logger log = new Logger("XMLSettingsReader", Logger.Level.DEBUG);
+	public static Logger log = new Logger("XMLSettingsReader",
+			Logger.Level.DEBUG);
 
-	
 	// ===================================
 	// TOP DOMAIN
 	// ===================================
 
-	/**
-	 * Extract the settings from the XML specification
-	 * 
-	 * @param settingsFile the filename of the XML file
-	 * @return the extracted settings
-	 * @throws IOException if the file cannot be found/opened
-	 * @throws DialException if a format error occurs
-	 */
-	public static Settings extractSettings(String settingsFile) throws DialException {
-		
-		// create a new, empty settings
-		Settings settings = new Settings();
-		
-		// extract the XML document
-		Document doc = XMLUtils.getXMLDocument(settingsFile);
+	
+	public static Map<String,String> extractMapping(String settingsFile) {
+		try {
+			Document doc = XMLUtils.getXMLDocument(settingsFile);
+			Map<String,String> mapping = extractMapping(XMLUtils.getMainNode(doc));
+			return mapping;
+		}
+		catch (DialException e) {
+			log.warning("error extracting the settings: " + e);
+			return new HashMap<String,String>();
+		}
+	}
 
-		Node mainNode = XMLUtils.getMainNode(doc);
-
+	
+	static Map<String,String> extractMapping(Node mainNode) {
+		
+		Map<String,String> settings = new HashMap<String,String>();
 
 		NodeList firstElements = mainNode.getChildNodes();
-		for (int j = 0 ; j < firstElements.getLength() ; j++) {
-			
-			Node node = firstElements.item(j);	
-			
-			// extracting initial state
-			if (node.getNodeName().equals("planning")) {
-				
-				String variable= null;
-				int horizon = 0;
-				double discountFactor = 0.0;
-				boolean sarsa = false;
-				String woz = "";
-				String woztest = "";
-				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
-					
-					Node subnode = node.getChildNodes().item(k);
-					if (subnode.getNodeName().equalsIgnoreCase("variable")) {
-						variable = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("horizon")) {
-						horizon = Integer.parseInt(subnode.getTextContent());
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("discount")) {
-						discountFactor = Double.parseDouble(subnode.getTextContent());
-					}	
-					if (subnode.getNodeName().equalsIgnoreCase("sarsa")) {
-						sarsa = Boolean.parseBoolean(subnode.getTextContent());
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("woz")) {
-						woz = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("woztest")) {
-						woztest = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("timeout")) {
-						settings.planning.maximumSamplingTime = Integer.parseInt(subnode.getTextContent().trim());
-						log.debug("Timeout for sampling (fast version) : " + settings.planning.maximumSamplingTime);
-					}
-				}
-				if (variable != null && horizon > 0 || discountFactor > 0.0) {
-				settings.planning.addSpecific(variable, settings.new PlanSettings(horizon, discountFactor));
-				}
-				settings.planning.setAsSarsa(sarsa);
-				settings.planning.setAsWoZ(woz);
-				settings.planning.wozTestFile = woztest;
-				
+		for (int j = 0; j < firstElements.getLength(); j++) {
+
+			Node node = firstElements.item(j);
+
+			if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
+				settings.put(node.getNodeName().trim(), node.getTextContent());
 			}
-			
-			if (node.getNodeName().equals("gui")) {
-				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
-					
-					Node subnode = node.getChildNodes().item(k);
-					if (subnode.getNodeName().equalsIgnoreCase("showgui")) {
-						settings.gui.showGUI = Boolean.parseBoolean(subnode.getTextContent().trim());
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("userUtterance")) {
-						settings.gui.userUtteranceVar = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("systemUtterance")) {
-						settings.gui.systemUtteranceVar = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("toMonitor")) {
-						settings.gui.varsToMonitor.add(subnode.getTextContent().trim());
-					}
-				}
-			}
-			if (node.getNodeName().equals("nao")) {
-				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {
-					
-					Node subnode = node.getChildNodes().item(k);
-					if (subnode.getNodeName().equalsIgnoreCase("ip")) {
-						settings.nao.ip = subnode.getTextContent().trim();
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("asr")) {
-						settings.nao.asr = subnode.getTextContent().trim();
-					}
-				}
-			}
-			if (node.getNodeName().equals("inference")) {
-				for (int k = 0 ; k < node.getChildNodes().getLength() ; k++) {			
-					Node subnode = node.getChildNodes().item(k);
-					if (subnode.getNodeName().equalsIgnoreCase("nbsamples")) {
-						settings.nbSamples = Integer.parseInt(subnode.getTextContent().trim());
-						log.debug("Number of samples to use : " + settings.nbSamples);
-					}
-					if (subnode.getNodeName().equalsIgnoreCase("timeout")) {
-						settings.maximumSamplingTime = Integer.parseInt(subnode.getTextContent().trim());
-						log.debug("Timeout for sampling : " + settings.maximumSamplingTime);
-					}
-				}
-			}
-			
 		}
-		log.info("Settings from " + settingsFile + " successfully extracted");
+
 		return settings;
 	}
 	
-		
+	
+	
+
 }

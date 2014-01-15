@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -21,27 +21,22 @@ package opendial.bn.nodes;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.Assignment;
+import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.discrete.DiscreteProbDistribution;
-import opendial.bn.distribs.discrete.DiscreteProbabilityTable;
-import opendial.bn.distribs.discrete.OutputDistribution;
-import opendial.bn.distribs.discrete.RuleDistribution;
-import opendial.bn.distribs.discrete.SimpleTable;
-import opendial.bn.distribs.empirical.ComplexEmpiricalDistribution;
-import opendial.bn.distribs.empirical.EmpiricalDistribution;
-import opendial.bn.values.AssignmentVal;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
+import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.datastructs.Output;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.ValueRange;
 
 
 /**
@@ -58,15 +53,13 @@ public class ChanceNode extends BNode {
 	// logger
 	public static Logger log = new Logger("ChanceNode", Logger.Level.DEBUG);
 
-	public static double LIKELIHOOD_THRESHOLD = 0.2;
-
 	// the probability distribution for the node
 	protected ProbDistribution distrib;
 
 	// the set of cached values for the node
 	// NB: if the node has a continuous range, these values are based on 
 	// a discretisation procedure defined by the distribution
-	Set<Value> cachedValues;
+	protected Set<Value> cachedValues;
 
 
 	// ===================================
@@ -82,7 +75,7 @@ public class ChanceNode extends BNode {
 	 * @throws DialException if the distribution is not well-formed
 	 */
 	public ChanceNode(String nodeId)  {
-		this(nodeId, new DiscreteProbabilityTable());
+		this(nodeId, new ConditionalCategoricalTable());
 	}
 
 	/**
@@ -107,10 +100,10 @@ public class ChanceNode extends BNode {
 	 */
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
-		if (distrib.getHeadVariables().size() != 1 && !(distrib instanceof ComplexEmpiricalDistribution)) {
+		if (distrib.getHeadVariables().size() != 1) {
 
 			log.debug("Distribution for " + nodeId + 
-					"should have only one head variable, but is has: " + distrib.getHeadVariables() +
+					"should have only one head variable, but it has: " + distrib.getHeadVariables() +
 					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
 		}
 		if (!distrib.isWellFormed()) {
@@ -156,8 +149,8 @@ public class ChanceNode extends BNode {
 	 * @param prob the associated probability
 	 */
 	public void addProb(Assignment condition, Value nodeValue, double prob) {
-		if (distrib instanceof DiscreteProbabilityTable) {
-			((DiscreteProbabilityTable)distrib).addRow(condition, new Assignment(nodeId, nodeValue), prob);
+		if (distrib instanceof ConditionalCategoricalTable) {
+			((ConditionalCategoricalTable)distrib).addRow(condition, new Assignment(nodeId, nodeValue), prob);
 		}
 		else {
 			log.warning("distribution is not defined as a dependent table table, " +
@@ -184,8 +177,8 @@ public class ChanceNode extends BNode {
 	 * @param nodeValue the value for the node variable
 	 */
 	public void removeProb(Assignment condition, Value nodeValue) {
-		if (distrib instanceof DiscreteProbabilityTable) {
-			((DiscreteProbabilityTable)distrib).removeRow(condition, new Assignment(nodeId, nodeValue));
+		if (distrib instanceof ConditionalCategoricalTable) {
+			((ConditionalCategoricalTable)distrib).removeRow(condition, new Assignment(nodeId, nodeValue));
 		}
 		else {
 			log.warning("distribution is not defined as a table, impossible " +
@@ -205,7 +198,7 @@ public class ChanceNode extends BNode {
 		//	log.debug("changing id from " + this.nodeId + " to " + nodeId);
 		String oldId = nodeId;
 		super.setId(newId);
-		distrib.modifyVarId(oldId, newId);
+		distrib.modifyVariableId(oldId, newId);
 	}
 
 
@@ -223,13 +216,14 @@ public class ChanceNode extends BNode {
 	 * node.  If it isn't, one should use the getProb(condition, nodeValue) method 
 	 * instead.
 	 * 
-	 * NB: the method should *not* be used to perform sophisticated inference, as it is
-	 * not optimised and might lead to the distorted results for very dependent networks
+	 * <p>NB: the method should *not* be used to perform sophisticated inference, as it is
+	 * not optimised and might lead to distorted results for very dependent networks
 	 * 
 	 * @param nodeValue the value for the node
 	 * @return its probability
+	 * @throws DialException 
 	 */
-	public double getProb(Value nodeValue) {
+	public double getProb(Value nodeValue) throws DialException {
 		Set<Assignment> combinations = getPossibleConditions();
 		double totalProb = 0.0;
 		if (combinations.size() > 1) {
@@ -257,25 +251,17 @@ public class ChanceNode extends BNode {
 	 * @param condition the condition
 	 * @param nodeValue the value
 	 * @return the associated probability
+	 * @throws DialException 
 	 */
 	public double getProb(Assignment condition, Value nodeValue) {
-		return distrib.toDiscrete().getProb(condition, new Assignment(nodeId, nodeValue));			
+		try {
+		return distrib.toDiscrete().getProb(condition, new Assignment(nodeId, nodeValue));
+		}
+		catch (DialException e) {
+			log.warning("exception: " + e);
+			return 0.0;
+		}
 	}
-
-
-	/**
-	 * Returns true if the node has a defined probability value associated with the given input
-	 * condition and the node value.
-	 * 
-	 * @param condition the value assignment for the input nodes
-	 * @param nodeValue the node value
-	 * @return true if the node has assigned a probability to the value, false otherwise
-	 */
-	public boolean hasProb(Assignment condition, Value nodeValue) {
-		return ((ProbDistribution)distrib).toDiscrete().hasProb
-				(condition, new Assignment(nodeId, nodeValue));				
-	}
-
 
 	/**
 	 * Returns a sample value for the node, according to the probability distribution
@@ -288,7 +274,6 @@ public class ChanceNode extends BNode {
 	 * @throws DialException if no sample can be selected
 	 */
 	public Value sample() throws DialException {
-
 		Assignment inputSample = new Assignment();
 		for (BNode inputNode : inputNodes.values()) {
 			if (inputNode instanceof ChanceNode) {
@@ -313,8 +298,10 @@ public class ChanceNode extends BNode {
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 		if (!result.containsVar(nodeId)) {
-			//		log.warning("result of sampling does not contain " + nodeId +": " + 
-			//				result + " distrib is " + distrib.getClass().getSimpleName());
+					log.warning("result of sampling does not contain " + nodeId +": " + 
+							result + " distrib is " + distrib.getClass().getSimpleName());
+					log.debug("nodeId is " + nodeId);
+					log.debug("distrib is " + distrib);
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);
@@ -330,9 +317,25 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public Set<Value> getValues() {
-
+		
 		if (cachedValues == null) {
-			fillCachedValues();
+			cachedValues = new HashSet<Value>();
+			ValueRange inputValues = new ValueRange();
+			for (BNode inputNode: inputNodes.values()) {
+				inputValues.addValues(inputNode.getId(), inputNode.getValues());
+			}
+			try {
+			Set<Assignment> outputs = distrib.getValues(inputValues);
+			for (Assignment output : outputs) {
+				if (output.containsVar(nodeId)) {
+					cachedValues.add(output.getValue(nodeId));
+				}
+			}
+			}
+			catch (DialException e) {
+				log.warning("could not extract values for " + nodeId);
+				cachedValues = new HashSet<Value>();
+			}
 		}
 
 		return new HashSet<Value>(cachedValues);
@@ -345,8 +348,8 @@ public class ChanceNode extends BNode {
 	 * @return the number of values
 	 */
 	public int getNbValues() {
-		if (distrib instanceof ContinuousProbDistribution) {
-			return Settings.getInstance().nbDiscretisationBuckets;
+		if (distrib instanceof ContinuousDistribution) {
+			return Settings.discretisationBuckets;
 		}
 		else {
 			return getValues().size();
@@ -373,27 +376,29 @@ public class ChanceNode extends BNode {
 	public Map<Assignment,Double> getFactor() {
 
 		Map<Assignment,Double> factor = new HashMap<Assignment,Double>();
-
+		
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-			try {
-				SimpleTable condTable = distrib.toDiscrete().getProbTable(combination);
+				CategoricalTable condTable;
+				try {
+				if (distrib instanceof IndependentProbDistribution) {
+					condTable = ((IndependentProbDistribution)distrib).toDiscrete();
+				}
+				else {
+					condTable = distrib.toDiscrete().getPosterior(combination);
+				}
 				for (Assignment head : condTable.getRows()) {
 					factor.put(new Assignment(combination, head), condTable.getProb(head));
 				}
-			}
-			catch (DialException e) {
-				log.warning("excpeption thrown to compute factor: " + e.toString());
-			}
+				}
+				catch (DialException e) {
+					log.warning("calculation of factor failed: " + e.toString());
+				}
 		}
-
 		return factor;
 	}
-
-
-
-
-
+	
+	
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -424,32 +429,9 @@ public class ChanceNode extends BNode {
 	 * @return the pretty print representation
 	 */
 	@Override
-	public String prettyPrint() {
-		return distrib.prettyPrint();
+	public String toString() {
+		return distrib.toString();
 	}
-
-
-
-	/**
-	 * Returns a sample assignment for the conditional values of the node, given
-	 * the set of possible values for each node
-	 * 
-	 * @param possiblePairs the set of possible values for each input node
-	 * @return a sampled assignment
-	 */
-	/**
-	private Assignment sampleConditionalAssignment(Map<String,List<Value>> possiblePairs) {
-		Random generator = new Random();
-		Assignment a = new Assignment();
-		for (String variable : possiblePairs.keySet()) {
-			List<Value> possibleValues = possiblePairs.get(variable);
-			int index = generator.nextInt(possibleValues.size());
-			a.addPair(variable, possibleValues.get(index));
-		}
-		return a;
-	}
-	 */
-
 
 
 	// ===================================
@@ -457,103 +439,10 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 
-
-	protected void modifyNodeId(String oldId, String newId) {
-		super.modifyNodeId(oldId, newId);
-		distrib.modifyVarId(oldId, newId);
+	protected void modifyVariableId(String oldId, String newId) {
+		super.modifyVariableId(oldId, newId);
+		distrib.modifyVariableId(oldId, newId);
 	}
 
-
-
-	/**
-	 * Computes the cached list of values for the node
-	 */
-	protected synchronized void fillCachedValues() {
-
-
-		if (distrib instanceof EmpiricalDistribution) {
-			Set<Value> cachedValuesTemp = new HashSet<Value>();
-			for (Assignment s : ((EmpiricalDistribution)distrib).getSamples()) {
-				if (s.containsVar(nodeId)) {
-					cachedValuesTemp.add(s.getValue(nodeId));
-				}
-			}
-			cachedValues = cachedValuesTemp;
-		}
-
-		else if (distrib instanceof OutputDistribution) {
-
-			Set<Value> cachedValuesTemp = new HashSet<Value>();
-			for (BNode node : inputNodes.values()) {
-				for (Value v : node.getValues()) {
-					if (v instanceof Output) {
-
-						if (((Output)v).hasValuesToAdd(nodeId.replace("'", ""))
-								|| ((Output)v).hasValuesToDiscard(nodeId.replace("'", ""))) {
-							cachedValues = extractCacheValues_raw();
-							return;
-						}
-						
-						if (((Output)v).mustBeCleared(nodeId.replace("'", ""))) {
-							cachedValuesTemp.add(ValueFactory.none());
-						}
-						cachedValuesTemp.add(((Output)v).getSetValue(nodeId.replace("'", "")));
-					}
-					else {
-						cachedValuesTemp.add(v);
-					}
-				}
-			}
-
-			cachedValues = cachedValuesTemp;
-		}
-
-		else {
-			cachedValues = extractCacheValues_raw();
-		}
-	}
-
-
-	private Set<Value> extractCacheValues_raw () {
-
-		Set<Value> cachedValuesTemp = new HashSet<Value>();
-
-		Set<Assignment> possibleConditions = getPossibleConditions();
-
-		for (Assignment condition : possibleConditions) {
-			try {
-				SimpleTable table = distrib.toDiscrete().getProbTable(condition);
-				for (Assignment head : table.getRows()) {
-					if (!head.containsVar(nodeId)) {
-						log.debug("input nodes are " + getInputNodeIds());
-						log.warning("head assignment " + head + " should contain " + nodeId);
-						log.debug("condition was " + condition);
-						log.debug("distrib is " + distrib.getClass().getName() + " " + distrib);
-					}
-					else {
-						Value value = head.getValue(nodeId);
-						cachedValuesTemp.add(value);
-					}
-				}
-			}
-			catch (DialException e) {
-				log.warning("exception thrown: "+ e.toString());
-			}
-		}
-		return cachedValuesTemp;
-	}
-
-	public void clearCache() {
-		fillCachedValues();
-	}
-
-	public void filterLowProbabilityValues() {
-		if (distrib instanceof EmpiricalDistribution) {
-			((EmpiricalDistribution)distrib).filterValuesBelowThreshold(nodeId, LIKELIHOOD_THRESHOLD);
-		}
-		if (distrib instanceof DiscreteProbDistribution) {
-			((DiscreteProbDistribution)distrib).filterValuesBelowThreshold(nodeId, LIKELIHOOD_THRESHOLD);
-		}
-	}
 
 }

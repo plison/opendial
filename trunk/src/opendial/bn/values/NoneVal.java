@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -83,6 +83,12 @@ public final class NoneVal implements Value {
 	@Override
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
+	}
+
+	
+	@Override
+	public boolean contains(Value subvalue) {
+		return false;
 	}
 	
 }

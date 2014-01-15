@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,34 +19,26 @@
 
 package opendial.readers;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.continuous.ContinuousProbDistribution;
-import opendial.bn.distribs.continuous.MultivariateDistribution;
-import opendial.bn.distribs.continuous.UnivariateDistribution;
-
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
-import opendial.bn.distribs.continuous.functions.UnivariateDensityFunction;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.ArrayVal;
 import opendial.bn.values.ValueFactory;
-import opendial.bn.values.VectorVal;
-import opendial.domains.Domain;
 import opendial.utils.XMLUtils;
 
 /**
- * XML reader for the initial state specification
+ * XML reader for the initial state specification (and for parameters):
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2012-01-03 16:02:01 #$
@@ -62,7 +54,7 @@ public class XMLStateReader {
 	//  INITIAL STATE
 	// ===================================
 
-	
+
 
 	/**
 	 * Returns the initial state or parameters from the XML document, for the given domain (where the
@@ -77,12 +69,11 @@ public class XMLStateReader {
 		Document doc = XMLUtils.getXMLDocument(file);
 
 		Node mainNode = XMLUtils.getMainNode(doc);
-				
+
 		return getBayesianNetwork(mainNode);
 	}
 
-	
-	
+
 
 	/**
 	 * Returns the initial state or parameters from the XML document, for the given domain (where the
@@ -96,114 +87,112 @@ public class XMLStateReader {
 
 		BNetwork state = new BNetwork();
 
-		// getting the VarNodes explicitly declared
-		List<ChanceNode> initVarNodes = getInitialVarNodes(mainNode);
-		for (ChanceNode varNode : initVarNodes) {
-			state.addNode(varNode);
+		for (int i = 0; i < mainNode.getChildNodes().getLength(); i++) {
+			Node node = mainNode.getChildNodes().item(i);
+			if (node.getNodeName().equals("variable") && node.hasAttributes()) {
+				ChanceNode chanceNode = createChanceNode(node);
+				state.addNode(chanceNode);
+			}
 		}
+
 		return state;
 	}
 
-
-
 	/**
-	 * Returns the list of VarNodes explicitly defined in the XML node
-	 *  
-	 * @param mainNode the XML node
-	 * @return the list of declared VarNodes
-	 * @throws DialException if XML document is ill-formatted
-	 */
-	public static List<ChanceNode> getInitialVarNodes(Node mainNode) throws DialException {
-
-		List<ChanceNode> initVarNodes = new LinkedList<ChanceNode>();
-		NodeList mainNodeList = mainNode.getChildNodes();
-
-		for (int i = 0; i < mainNodeList.getLength(); i++) {
-			Node node = mainNodeList.item(i);
-			if (node.getNodeName().equals("variable") && node.hasAttributes()) {
-				Set<ChanceNode> varNode = createVariableNodes(node);
-				initVarNodes.addAll(varNode);
-			}
-		}
-		return initVarNodes;
-	}
-
-
-	// ===================================
-	//  INDIVIDUAL VarNodeS
-	// ===================================
-
-	/**
+	 * Creates a new chance node corresponding to the XML specification
 	 * 
-	 * 
-	 * @param <T>
-	 * @param node
-	 * @param type
-	 * @return
-	 * @throws DialException
+	 * @param node the XML node
+	 * @return the resulting chance node
+	 * @throws DialException if the distribution is not properly encoded
 	 */
-	public static Set<ChanceNode> createVariableNodes (Node node) throws DialException {
+	public static ChanceNode createChanceNode (Node node) throws DialException {
 
-		Set<ChanceNode> nodes = new HashSet<ChanceNode>();
-		
-		if (node.hasAttributes() && node.getAttributes().getNamedItem("id")!=null) {
-			String label = node.getAttributes().getNamedItem("id").getNodeValue();
-			ChanceNode variable = new ChanceNode(label);
-			nodes.add(variable);
-			
-			for (int i = 0 ; i < node.getChildNodes().getLength() ; i++) {
-
-				Node subnode = node.getChildNodes().item(i);
-
-				if (subnode.getNodeName().equals("value")) {
-					
-					// extracting the value
-					String value = subnode.getFirstChild().getNodeValue().trim();
-					
-					// extracting the probability
-					float prob = XMLUtils.getProbability (subnode);
-		
-					variable.addProb(ValueFactory.create(value),prob);
-
-				}
-				
-				else if (subnode.getNodeName().equals("distrib")) {
-					
-					if (subnode.getAttributes().getNamedItem("type")!=null) {
-						String distribType = subnode.getAttributes().getNamedItem("type").getNodeValue().trim();
-						
-						if (distribType.equalsIgnoreCase("gaussian")) {
-							UnivariateDistribution distrib = new UnivariateDistribution(label, getGaussian(subnode));
-							variable.setDistrib(distrib);
-						}
-						
-						else if (distribType.equalsIgnoreCase("uniform")) {
-							UnivariateDistribution distrib = new UnivariateDistribution(label, getUniform(subnode));
-							variable.setDistrib(distrib);
-						}
-						else if (distribType.equalsIgnoreCase("dirichlet")) {
-							MultivariateDistribution distrib = new MultivariateDistribution(label, getDirichlet(subnode));
-							variable.setDistrib(distrib);
-						}
-						else {
-							throw new DialException("distribution is not recognised: " + distribType);
-						}
-
-					}
-				}
-				
-			}
-			
-			nodes.addAll(addFullFeatures(node, label + "."));
-			return nodes;
-		}
-		else {
+		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id")==null) {
 			throw new DialException("variable id is mandatory");
 		}
-		
+
+		String label = node.getAttributes().getNamedItem("id").getNodeValue();
+		ChanceNode variable = new ChanceNode(label);
+
+		for (int i = 0 ; i < node.getChildNodes().getLength() ; i++) {
+
+			Node subnode = node.getChildNodes().item(i);
+
+			// first case: the chance node is described as a categorical table
+			if (subnode.getNodeName().equals("value")) {
+
+				// extracting the value
+				String value = subnode.getFirstChild().getNodeValue().trim();
+
+				// extracting the probability
+				float prob = getProbability (subnode);
+
+				variable.addProb(ValueFactory.create(value),prob);
+			}
+
+			// second case: the chance node is described by a parametric continuous distribution
+			else if (subnode.getNodeName().equals("distrib")) {
+
+				if (subnode.getAttributes().getNamedItem("type")!=null) {
+					String distribType = subnode.getAttributes().getNamedItem("type").getNodeValue().trim();
+
+					if (distribType.equalsIgnoreCase("gaussian")) {
+						ContinuousDistribution distrib = new ContinuousDistribution(label, getGaussian(subnode));
+						variable.setDistrib(distrib);
+					}
+
+					else if (distribType.equalsIgnoreCase("uniform")) {
+						ContinuousDistribution distrib = new ContinuousDistribution(label, getUniform(subnode));
+						variable.setDistrib(distrib);
+					}
+					else if (distribType.equalsIgnoreCase("dirichlet")) {
+						ContinuousDistribution distrib = new ContinuousDistribution(label, getDirichlet(subnode));
+						variable.setDistrib(distrib);
+					}
+					else {
+						throw new DialException("distribution is not recognised: " + distribType);
+					}
+
+				}
+			}
+		}
+		return variable;
 	}
+
+
+
+	/**
+	 * Returns the probability of the value defined in the XML node
+	 * (default to 1.0f is none is declared)
+	 * 
+	 * @param node the XML node
+	 * @return the value probability
+	 * @throws DialException if probability is ill-formatted
+	 */
+	private static float getProbability (Node node) {
+
+		float prob = 1.0f;
+
+		if (node.hasAttributes() && 
+				node.getAttributes().getNamedItem("prob") != null) {
+			String probStr = node.getAttributes().getNamedItem("prob").getNodeValue();
+
+			try { prob = Float.parseFloat(probStr);	}
+			catch (NumberFormatException e) {
+				XMLDomainReader.log.warning("probability " + probStr +  " not valid, assuming 1.0f");
+			}
+		}
+		return prob;
+	}
+
 	
-	
+	/**
+	 * Extracts the gaussian density function described by the XML specification
+	 * 
+	 * @param node the XML node
+	 * @return the corresponding Gaussian PDF
+	 * @throws DialException if the density function is not properly encoded
+	 */
 	private static GaussianDensityFunction getGaussian(Node node) throws DialException {
 		double mean = Double.MAX_VALUE;
 		double variance = Double.MAX_VALUE;
@@ -223,6 +212,13 @@ public class XMLStateReader {
 	}
 
 
+	/**
+	 * Extracts the uniform density function described by the XML specification
+	 * 
+	 * @param node the XML node
+	 * @return the corresponding uniform PDF
+	 * @throws DialException if the density function is not properly encoded
+	 */
 	private static UniformDensityFunction getUniform(Node node) throws DialException {
 		double min = Double.MAX_VALUE;
 		double max = Double.MAX_VALUE;
@@ -240,9 +236,15 @@ public class XMLStateReader {
 		}
 		throw new DialException("uniform must specify both min and max");
 	}
-	
-	
-	
+
+
+	/**
+	 * Extracts the Dirichlet density function described by the XML specification
+	 * 
+	 * @param node the XML node
+	 * @return the corresponding Dirichlet PDF
+	 * @throws DialException if the density function is not properly encoded
+	 */
 	private static DirichletDensityFunction getDirichlet(Node node) throws DialException {
 		List<Double> alphas = new LinkedList<Double>();
 		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
@@ -253,68 +255,10 @@ public class XMLStateReader {
 			}
 		}
 		if (!alphas.isEmpty()) {
-			return new DirichletDensityFunction((new VectorVal(alphas)).getArray());
+			return new DirichletDensityFunction((new ArrayVal(alphas)).getArray());
 		}
 		throw new DialException("Dirichlet must have at least one alpha count");
 	}
-	
-	// ===================================
-	//  FULL AND PARTIAL FEATURES
-	// ===================================
 
-
-	
-
-
-	/**
-	 * Adds the full features declared in the XML node to the VarNode (if any is defined)
-	 * 
-	 * @param <T> parameter type
-	 * @param node XML node
-	 * @param VarNode VarNode in which to add the features
-	 * @throws DialException if the features are not valid
-	 */
-	private static Set<ChanceNode> addFullFeatures (Node node, String baseNodeVar) throws DialException {
-
-		Set<ChanceNode> nodes = new HashSet<ChanceNode>();
-		
-		for (int i = 0 ; i < node.getChildNodes().getLength() ; i++) {
-
-			Node subnode = node.getChildNodes().item(i);
-
-			/** if (subnode.getNodeName().equals("feature") && subnode.hasAttributes()) {		
-				nodes.addAll(createVariableNodes(subnode, baseNodeVar));			
-			} */
-		}
-		return nodes;
-	}
-
-
-	/**
-	 * Adds the partial features declared in the XML node to the VarNode, with the given
-	 * base value
-	 * 
-	 * @param <T> parameter type
-	 * @param node XML node
-	 * @param VarNode VarNode in which to add the partial features
-	 * @param value base value for the partial features
-	 * @throws DialException if the features are not valid according to the VarNode type
-	 */
-	/** private static <T> void addPartialFeatures (Node node, ChanceNode baseVarNode, String value) throws DialException {
-
-		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
-
-			Node subnode = node.getChildNodes().item(j);
-
-			if (subnode.getNodeName().equals("feature") && subnode.hasAttributes()) {	
-				FeatureVarNode<?,T> featVarNode = FeatureVarNode.createFeatureVarNode(createVarNode(subnode,featType),baseVarNode);
-				baseVarNode.addFeature(featVarNode);
-
-			}
-		}
-	} */
-
-
-	
 
 }

@@ -1,0 +1,97 @@
+// =================================================================                                                                   
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+//                                                                                                                                     
+// This library is free software; you can redistribute it and/or                                                                       
+// modify it under the terms of the GNU Lesser General Public License                                                                  
+// as published by the Free Software Foundation; either version 2.1 of                                                                 
+// the License, or (at your option) any later version.                                                                                 
+//                                                                                                                                     
+// This library is distributed in the hope that it will be useful, but                                                                 
+// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
+// Lesser General Public License for more details.                                                                                     
+//                                                                                                                                     
+// You should have received a copy of the GNU Lesser General Public                                                                    
+// License along with this program; if not, write to the Free Software                                                                 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
+// 02111-1307, USA.                                                                                                                    
+// =================================================================                                                                   
+
+package opendial.inference;
+
+
+import org.junit.Test;
+
+import opendial.arch.DialException;
+import opendial.arch.DialogueSystem;
+import opendial.arch.Logger;
+import opendial.arch.Settings;
+import opendial.bn.Assignment;
+import opendial.bn.BNetwork;
+import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.domains.Domain;
+import opendial.learning.SARSALearner;
+import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLSettingsReader;
+import opendial.readers.XMLStateReader;
+
+public class SARSATest {
+
+
+	public static final String domainFile = "domains//acl2013/sarsa/domain.xml";
+	public static final String parametersFile = "domains//acl2013/sarsa/params_qvalues.xml";
+	public static final String settingsFile = "domains//acl2013/settings_test.xml";
+	
+	// logger
+	public static Logger log = new Logger("SARSATest", Logger.Level.DEBUG);
+
+	@Test
+	public void SarsaTest() throws DialException {
+		Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
+		Domain domain = XMLDomainReader.extractDomain(domainFile);
+		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
+	DialogueSystem system = new DialogueSystem(settings, domain);
+	system.addParameters(params);
+	system.startSystem(); 
+	
+//	log.debug("before user act: "  + system.getState().getContent("theta_(movements1)", true));
+	SimpleTable au1 = new SimpleTable();
+	au1.addRow(new Assignment("a_u", "Move(Forward)"), 0.7);
+	system.getState().addContent(au1, "test");
+	
+//	log.debug("theta value in lastDS: " + SARSALearner.lastDS.getContent("theta_(movements1)", true));
+//	log.debug("Q value in lastDS: " + SARSALearner.lastDS.getContent("q", true));
+	
+	SARSALearner.lastDS.addEvidence(new Assignment("q", 6.0));
+//	log.debug("Q value in lastDS after change: " + SARSALearner.lastDS.getContent("q", true));
+//	log.debug("theta after change: " + SARSALearner.lastDS.getContent("theta_(movements1)", true));
+
+	system.getState().addContent(new Assignment("r", 6), "test");
+	
+	SimpleTable au2 = new SimpleTable();
+	au2.addRow(new Assignment("a_u", "DoYouSee(o1)"), 0.4);
+	system.getState().addContent(au2, "test");
+	
+//	log.debug("after user acts: "  + system.getState().getContent("theta_(movements1)", true));
+	
+	settings.planning.isSarsa = false;
+	}
+	
+	@Test
+	public void SarsaTest2() throws DialException {
+		Settings settings = XMLSettingsReader.extractSettings(settingsFile); 
+		Domain domain = XMLDomainReader.extractDomain(domainFile);
+		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
+	DialogueSystem system = new DialogueSystem(settings, domain);
+	system.addParameters(params);
+	system.startSystem(); 
+	SimpleTable au1 = new SimpleTable();
+	au1.addRow(new Assignment("a_u", "DoYouSee(o2)"), 0.46);
+	au1.addRow(new Assignment("a_u", "Move(Forward)"), 0.04);
+	system.getState().addContent(au1, "test");
+
+	settings.planning.isSarsa = false;
+
+	}
+}
+

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -23,15 +23,14 @@ package opendial.bn.distribs.utility;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.bn.Assignment;
 import opendial.bn.values.Value;
-import opendial.domains.rules.parameters.Parameter;
+import opendial.datastructs.Assignment;
 
 /**
  * Generic interface for an utility distribution (also called value distribution),
- * mapping every assignment X1...Xn to a utility Q(X1....Xn).  Typically, at least
- * one of these X1...Xn variables consist of a decision variable.
+ * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).  
+ * 
+ * <p>Typically, at least one of these X1, ..., Xn variables consist of a decision variable.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -47,7 +46,6 @@ public interface UtilityDistribution {
 	 * @return the associated utility
 	 */
 	public double getUtil(Assignment input);
-	
 	
 	/**
 	 * Checks that the utility distribution is well-formed (all assignments are covered)
@@ -65,15 +63,6 @@ public interface UtilityDistribution {
 	public UtilityDistribution copy();
 
 
-
-	/**
-	 * Returns a pretty print representation of the distribution
-	 * 
-	 * @return the pretty print for the distribution
-	 */
-	public String prettyPrint();
-
-
 	/**
 	 * Changes the variable label
 	 * 
@@ -81,15 +70,6 @@ public interface UtilityDistribution {
 	 * @param newId the new variable label
 	 */
 	public void modifyVarId(String oldId, String newId);
-	
-	
-	/**
-	 * Returns the set of possible actions for the given input assignment
-	 * 
-	 * @param input the input assignment
-	 * @return the set of possible action values
-	 */
-	public Map<Assignment,Parameter> getRelevantActions(Assignment input);
 	
 	
 	

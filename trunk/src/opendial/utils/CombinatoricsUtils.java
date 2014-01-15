@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -29,8 +29,8 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 
 /**
  * Utility functions connected to combinatorial computations.
@@ -98,16 +98,16 @@ public class CombinatoricsUtils {
 	 * @param allAssignments list of alternative assignments
 	 * @return the generated combination of assignments
 	 */
-	public static List<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
+	public static Set<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
 				
 		// start with a single, empty assignment
-		List<Assignment> assignments = new LinkedList<Assignment>();
+		Set<Assignment> assignments = new HashSet<Assignment>();
 		assignments.add(new Assignment());
 		
 		// incrementally combines and expands the assignments
 		for (Set<Assignment> list1: allAssignments) {
 
-			List<Assignment> assignments2 = new LinkedList<Assignment>();
+			Set<Assignment> assignments2 = new HashSet<Assignment>();
 
 			for (Assignment a : list1) {
 				

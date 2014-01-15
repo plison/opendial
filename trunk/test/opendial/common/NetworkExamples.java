@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -23,18 +23,16 @@ import java.util.Arrays;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
 import opendial.bn.BNetwork;
-
-import opendial.bn.distribs.continuous.UnivariateDistribution;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.DerivedActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 
 /**
  * 
@@ -133,7 +131,7 @@ public class NetworkExamples {
 	public static BNetwork constructBasicNetwork3() throws DialException {
 		BNetwork network = constructBasicNetwork();
 		network.removeNode("Action");
-		DerivedActionNode ddn = new DerivedActionNode("Action");
+		ActionNode ddn = new ActionNode("Action");
 		network.getUtilityNode("Util1").addInputNode(ddn);
 		network.getUtilityNode("Util1").removeUtility(new Assignment(new Assignment("Burglary", false), new Assignment("Action", "DoNothing")));
 		network.getUtilityNode("Util2").addInputNode(ddn);
@@ -145,7 +143,7 @@ public class NetworkExamples {
 	public static BNetwork constructBasicNetwork4() throws DialException {
 		BNetwork network = constructBasicNetwork();
 		ChanceNode node = new ChanceNode("gaussian");
-		node.setDistrib(new UnivariateDistribution("gaussian", new UniformDensityFunction(-2,3)));
+		node.setDistrib(new ContinuousDistribution("gaussian", new UniformDensityFunction(-2,3)));
 		network.addNode(node);
 		return network;
 	}

@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,19 +20,23 @@
 package opendial.bn.distribs.continuous.functions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 
 /**
- * Uniform density function, with a minimum and maximum
+ * (Univariate) uniform density function, with a minimum and maximum.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class UniformDensityFunction implements UnivariateDensityFunction {
+public class UniformDensityFunction implements DensityFunction {
 
 	// logger
 	public static Logger log = new Logger("UniformDensityFunction", Logger.Level.NORMAL);
@@ -66,8 +70,8 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	 * @param x the point
 	 * @return the density at the point
 	 */
-	public double getDensity(double x) {
-		if (x >= minimum && x <= maximum) {
+	public double getDensity(Double... x) {
+		if (x[0] >= minimum && x[0] <= maximum) {
 			return 1.0f/(maximum-minimum);
 		}
 		else {
@@ -82,25 +86,23 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	 * @return the sampled point
 	 */
 	@Override
-	public double sample() {
+	public Double[] sample() {
 		double length = maximum - minimum;
-		return sampler.nextFloat()*length + minimum;
+		return new Double[]{sampler.nextFloat()*length + minimum};
 	}
 
 	
 	/**
 	 * Returns a set of discrete values for the distribution
 	 * 
-	 * @param nbBuckets the number of values to extract
-	 * @return the discretised values
+	 * @return the discretised values and their probability mass.
 	 */
-	@Override
-	public List<Double> getDiscreteValues(int nbBuckets) {
-		List<Double> values = new ArrayList<Double>(nbBuckets);
+	public Map<Double[],Double> discretise(int nbBuckets) {
+		Map<Double[], Double> values = new HashMap<Double[],Double>(nbBuckets);
 		double step = (maximum-minimum)/nbBuckets;
 		for (int i = 0 ; i < nbBuckets ; i++) {
 			double value = minimum  + i*step + step/2.0f;
-			values.add(value);
+			values.put(new Double[]{value}, 1.0/nbBuckets);
 		}
 		return values;
 	}
@@ -111,16 +113,22 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative probability 
+	 * @throws DialException 
 	 */
-	public double getCDF(double x) {
-		if (x < minimum) {
-			return 0.0f;
+	@Override
+	public Double getCDF(Double... x) throws DialException {
+		if (x.length != 1) {
+			throw new DialException("Uniform distribution currently only accepts a dimensionality == 1");
 		}
-		else if (x > maximum) {
-			return 1.0f;
+		
+		if (x[0] < minimum) {
+			return 0.0;
+		}
+		else if (x[0] > maximum) {
+			return 1.0;
 		}
 		else {
-			return (x-minimum) / (maximum-minimum);
+			return (x[0]-minimum) / (maximum-minimum);
 		}
 	}
 
@@ -131,7 +139,7 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	 * @return the copy
 	 */
 	@Override
-	public UnivariateDensityFunction copy() {
+	public UniformDensityFunction copy() {
 		return new UniformDensityFunction(minimum,maximum);
 	}
 
@@ -142,8 +150,8 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	 * @return
 	 */
 	@Override
-	public String prettyPrint() {
-		return "U(+" + minimum + "," + maximum + ")";
+	public String toString() {
+		return "Uniform(+" + minimum + "," + maximum + ")";
 	}
 
 	
@@ -157,15 +165,36 @@ public class UniformDensityFunction implements UnivariateDensityFunction {
 	}
 
 
+	/**
+	 * Returns the mean of the distribution
+	 * 
+	 * @return the mean
+	 */
 	@Override
-	public double getMean() {
-		return (minimum + maximum)/2.0;
+	public Double[] getMean() {
+		return new Double[]{(minimum + maximum)/2.0};
+	}
+
+	/**
+	 * Returns the variance of the distribution
+	 * 
+	 * @return the variance
+	 */
+	@Override
+	public Double[] getVariance() {
+		return new Double[]{Math.pow(maximum - minimum, 2) / 12.0};
 	}
 
 
+
+	/**
+	 * Returns the dimensionality (constrained here to 1).
+	 * 
+	 * @return 1.
+	 */
 	@Override
-	public double getVariance() {
-		return Math.pow(maximum - minimum, 2) / 12.0;
+	public int getDimensionality() {
+		return 1;
 	}
 	
 }

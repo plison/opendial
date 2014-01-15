@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -28,9 +28,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +53,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -60,17 +64,18 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import net.java.balloontip.BalloonTip;
+import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.arch.StateListener;
-import opendial.bn.Assignment;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.discrete.SimpleTable;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
-import opendial.modules.asr.ASRLock;
+import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -80,37 +85,34 @@ import opendial.state.DialogueState;
  * @version $Date::                      $
  *
  */
-public class ChatWindowTab extends JComponent implements ActionListener, StateListener {
+public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public static final String TAB_TITLE = " Chat Window ";
 	public static final String TAB_TIP = "Chat window listing the user and system utterances";
-
-	public static Logger log = new Logger("ChatWindow", Logger.Level.DEBUG); 
+	
+	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
 	// main chat window
-	JTextPane lines;
 	HTMLEditorKit kit;
     HTMLDocument doc;
 
 	// input field
 	JTextField inputField;
-	JComboBox agentBox;	
+	JTextPane lines;
+		
+	DialogueSystem system;
 	
-	JList listBox;
-
-	DialogueState state;
-	
-	Map<String,String> variablesToMonitor;
-	
-	Map<String,Long> updateStamps;
+	int nBestView = 20;
 		
 	/**
 	 * Start up the window
 	 * 
 	 * @param tester reference to the live-testing environment
 	 */
-	public ChatWindowTab (DialogueState state) 
+	public ChatWindowTab (DialogueSystem system) 
 	{
+		this.system = system;
+		
 		setLayout(new BorderLayout());
 		// Create the area where the utterances appear
 		lines = new JTextPane();
@@ -124,170 +126,50 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 		Container inputContainer = new Container();
 		inputContainer.setLayout(new BorderLayout());
 
-		String[] agents = {"user", "system"};
-		agentBox = new JComboBox(agents);
-		agentBox.setSelectedIndex(0);
-		inputField = new JTextField(60);
-		Container agentContainer = new Container();
-		agentContainer.setLayout(new BorderLayout());
-		agentContainer.add(new JLabel(" as "), BorderLayout.WEST);
-		agentContainer.add(agentBox, BorderLayout.EAST);
-		inputContainer.add(agentContainer, BorderLayout.EAST);
+		inputField = new JTextField(60);		
+		inputContainer.add(new JLabel("User input: "), BorderLayout.WEST);
 		inputContainer.add(inputField, BorderLayout.CENTER);
+		final JButton helpButton = new JButton( "" );
+		helpButton.putClientProperty( "JButton.buttonType", "help" );
+		
+		final BalloonTip tip = new BalloonTip(helpButton, "<html><br>- To directly enter a user utterance, simply type it in the text field "
+				+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
+				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move to the left</i><br><br>"
+				+ "- To associate the utterance a recognition probability, simply enter the<br>"
+				+ "&nbsp;&nbsp;&nbsp;probability value in parenthesis after the utterance:<br>"
+				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55)</i><br><br>"
+				+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
+				+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
+				+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
+				+ "- Finally, to enter an N-best list of user utterances, separate each<br>"
+				+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
+				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
+				+ "do not move left (0.15)<br><br></html>");
+		tip.setVisible(false);
+		 
+		helpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tip.setVisible(!tip.isVisible());
+			}
+		});
+		helpButton.setFocusable(false);
+		
+		inputContainer.add(helpButton, BorderLayout.EAST);
 		// Add the text field and the utterances
 		add (inputContainer, BorderLayout.SOUTH);
 		add (utterancesScrollPane, BorderLayout.CENTER);
 		//	setPreferredSize(new Dimension(380,380));
 
 		inputField.addActionListener(this);	
-		
-		this.state = state;
-
-		variablesToMonitor = new LinkedHashMap<String,String>();
-		variablesToMonitor.put(Settings.getInstance().gui.userUtteranceVar, "user");
-		for (String var : Settings.getInstance().gui.varsToMonitor) {
-			variablesToMonitor.put(var, var);
-		}
-		variablesToMonitor.put(Settings.getInstance().gui.systemUtteranceVar, "system");
-		
-		updateStamps = new HashMap<String,Long>();
-		for (String var : variablesToMonitor.keySet()) {
-			updateStamps.put(var, 0l);
-		}
-		
+				
 		kit = new HTMLEditorKit();
 	    doc = new HTMLDocument();
 	    lines.setEditorKit(kit);
 	    lines.setDocument(doc);
+	    lines.setFocusable(false);
+	    updateActivation();
 	} 
 
-
-	/**
-	 * Returns the text in the input field
-	 * @return
-	 */
-	public String getInputText() {
-		return inputField.getText();
-	}
-
-
-	public void addVariableToMonitor(String variable, String guiLabel) {
-		variablesToMonitor.put(variable, guiLabel);
-	}
-
-
-	/**
-	 * Sets the text in the input field to a particular value
-	 * @param text
-	 */
-	public synchronized void setInputText(String text) {
-		inputField.setText(text);
-	}
-
-
-	public String getCurrentAgent() {
-		return agentBox.getSelectedItem().toString();
-	}
-
-
-	private synchronized void insertLine(SimpleTable table) throws DialException {
-
-		if (table.getHeadVariables().size() != 1) {
-			throw new DialException("table fed into GUI is incorrectly formatted, " +
-					"variables are: " + table.getHeadVariables());
-		}
-
-		String variable = table.getHeadVariables().iterator().next();
-		if (variablesToMonitor.containsKey(variable)) {
-			String formattedTable = "";
-			if (!table.isEmpty()) {
-				int incr = 0;
-				for (Assignment a : table.getRows()) {
-					Value value = a.getValue(variable);
-					if (!(value instanceof NoneVal)) {
-						if (incr > 0) {
-							formattedTable += "</font></td></tr><tr><td></td><td><font size=4>";
-						}
-						formattedTable += value;
-						double prob = table.getProb(a);
-						if (prob < 0.98) {
-							prob = Math.round(table.getProb(a)*1000.0)/1000.0;
-							formattedTable += " (" + prob + ")";
-						}
-						incr++;
-					}
-				}
-				formattedTable += "\n";
-			}
-			if (formattedTable.trim().length() < 1) {
-				return;
-			}
-			String guiLabel = "<b>[" + variablesToMonitor.get(variable) + "]</b>";
-			String newText =  "<p style=\"font-size: 2px;\"><table><tr><td width=100><font size=4>" + guiLabel +
-					"</font></td><td><font size=4>" + formattedTable + "</font></td></tr></table></p>";
-			
-			if (!variable.equals(Settings.getInstance().gui.userUtteranceVar) && 
-					!variable.equals(Settings.getInstance().gui.systemUtteranceVar)) {
-				newText = newText.replace("<font", "<i><font").replace("<b>", "")
-						.replace("</b>", "").replace("</font>", "</font></i>");
-			}
-			
-			try {
-		    kit.insertHTML(doc, doc.getLength(),newText, 0, 0, null);
-			}
-			catch (Exception e) {
-				log.warning("text area exception: " + e);
-			}
-		    
-		}
-		lines.repaint();		
-	}
-	
-	
-	
-	
-	/**
-	 * 
-	 * @param string
-	 */
-	public void addActionSelection(List<String> actions, ActionListener listener) {
-
-		DefaultListModel model = new DefaultListModel();
-		for (String s : actions) {
-			model.addElement(s);
-		}
-		listBox = new JList(model);
-		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scrollPane = new JScrollPane(listBox);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());		
-		scrollPane.setPreferredSize(new Dimension(200, 600));
-		scrollPane.setBorder(BorderFactory.createTitledBorder("Actions to select:"));
-
-		Container container = new Container();
-		container.setLayout(new BorderLayout());
-		container.add(scrollPane);
-		JButton button = new JButton("Select");
-		button.addActionListener(listener);
-
-		InputMap inputMap = button.getInputMap(JButton.WHEN_IN_FOCUSED_WINDOW);
-		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-		inputMap.put(enter, "ENTER");
-		button.getActionMap().put("ENTER", new ClickAction(button));
-
-
-		container.add(button, BorderLayout.SOUTH);
-		add(container, BorderLayout.EAST);
-		repaint();
-	}
-
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String getSelectedAction() {
-		return listBox.getModel().getElementAt(listBox.getMinSelectionIndex()).toString();
-	}
 
 
 
@@ -300,33 +182,46 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 			addSelectedAction();
 		} */
 	}
+	
+	
+	public void setNBest(int nBestView) {
+		this.nBestView = nBestView;
+	}
+	
+	public int getNBest() {
+		return nBestView;
+	}
 
 
 
 	private void addUtteranceToState()  {
-		String rawText= getInputText();
+		String rawText= inputField.getText();
 		if (!rawText.equals("")) {
 			String[] splitText = rawText.split(";");
-			String var  ="";
-			if (getCurrentAgent().equals("user")) {
-				var = Settings.getInstance().gui.userUtteranceVar;
-			}
-			else if (getCurrentAgent().equals("system")) {
-				var = Settings.getInstance().gui.systemUtteranceVar;
-			}
 
-			SimpleTable table = new SimpleTable();
+			CategoricalTable table = new CategoricalTable();
 			
 			for (String split : Arrays.asList(splitText)) {				
 				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
-				table.addRow(new Assignment(var, split2.getKey()), split2.getValue());
+				table.addRow(new Assignment(system.getSettings().userInput, split2.getKey()), split2.getValue());
 			}
 
-			setInputText("");
-			(new StateUpdater(state, table)).start();
+			inputField.setText("");
+			(new StateUpdater(system, table)).start();
 			
 		}
 	}
+	
+
+	public void addComment(String comment) {
+		try {
+		    kit.insertHTML(doc, doc.getLength(),"[" +comment + "]\n", 0, 0, null);
+			}
+			catch (Exception e) {
+				log.warning("text area exception: " + e);
+			}
+	}
+
 
 
 	/**                                                                                                                                                                
@@ -353,91 +248,111 @@ public class ChatWindowTab extends JComponent implements ActionListener, StateLi
 			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
 		}
 	}
+	
+	
 
+	private String getHtmlRendering(CategoricalTable table) {
 
-
-	@Override
-	public void update(DialogueState state) {
-		if (state.getName().equals(this.state.getName())) {
-		
-		for (String varToMonitor : variablesToMonitor.keySet()) {
-			if (state.getNetwork().hasChanceNode(varToMonitor) && 
-					state.isUpdated(varToMonitor, updateStamps.get(varToMonitor))) {
-				updateStamps.put(varToMonitor, System.currentTimeMillis());
-				try {
-				ProbDistribution distrib = state.getContent(varToMonitor, false);
-				if (distrib.toDiscrete() instanceof SimpleTable) {
-					insertLine((SimpleTable)distrib.toDiscrete());
-				}
-				}
-				catch (DialException e) {
-					log.warning("cannot update GUI: " + e);
+		String htmlTable = "";
+		for (String var : table.getHeadVariables()) {
+			String baseVar = var.replace("'", "");
+			htmlTable += "<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
+			
+			if (baseVar.equals(system.getSettings().userInput)) {
+				htmlTable += "<b>[user]</b>";
+			}
+			else if (baseVar.equals(system.getSettings().systemOutput)) {
+				htmlTable += "<b>[system]</b>";
+			}
+			else {
+				htmlTable += "[" + baseVar + "]";
+			}
+			htmlTable += "</font></td>";
+			CategoricalTable marginalTable = table.getMarginalTable(var);
+			for (Assignment a : marginalTable.getRows()) {
+				Value value = a.getValue(var);
+				if (!(value instanceof NoneVal)) {
+					htmlTable += "<td><font size=4>";
+					String content = value.toString();
+					if (marginalTable.getProb(a) < 0.98) {
+						content += " (" + StringUtils.getShortForm(marginalTable.getProb(a)) + ")";
+					}
+					if (system.getSettings().varsToMonitor.contains(baseVar)) {
+						content = "<i>" + content + "</i>";
+					}
+					htmlTable += content + "</font></td></tr><tr><td></td>";
 				}
 			}
+			htmlTable = htmlTable.substring(0, htmlTable.length() - 13) + "</table></p>\n";		
 		}
+		return htmlTable;		
+	}
+
+	
+	void updateActivation() {
+		if (system.getDomain().getModels().size() == 0 && system.getDomain().getInitialState().getChanceNodes().size() == 0
+				&& system.getModules().size() <= 3) {
+			inputField.setEnabled(false);
+			lines.setEnabled(false);
+			if (lines.getText().length() <= 100) {
+				addComment("No domain currently selected");
+			}
+		}
+		else {
+			if (inputField.isEnabled() == system.isPaused()) {
+			inputField.setEnabled(!system.isPaused());
+			lines.setEnabled(!system.isPaused());
+			}
 		}
 	}
 
 
-	/** 
-	private void addSelectedAction() {
-		String action = getSelectedAction();
-
-		String instantiatedAction = action.toString();
-		List<String> slots = SurfaceTemplate.getSlots(action);
-		for (String slot : slots) {
-			if (state.hasVarNode(slot)) {
-				instantiatedAction = instantiatedAction.replace("{"+slot+"}", 
-						state.getVarNode(slot).getValueWithHighestProb(false).toString());
+	public void trigger(DialogueState state) {
+		updateActivation();
+		if (state.hasChanceNode(system.getSettings().userInput+"'")) {
+			showVariable(state.queryProb(system.getSettings().userInput+"'").toDiscrete());
+		}
+		if (state.hasChanceNode(system.getSettings().systemOutput+"'")) {
+			showVariable(state.queryProb(system.getSettings().systemOutput+"'").toDiscrete());
+		}
+		for (String monitorVar : system.getSettings().varsToMonitor) {
+			if (state.hasChanceNode(monitorVar+"'")) {
+				showVariable(state.queryProb(monitorVar+"'").toDiscrete());
 			}
-		}		
-		String varLabel = (actions.contains(action)) ? getParameter("systemActionVariable") : getParameter("systemCognitionVariable") ;
-		Assignment selectedAction =  new Assignment(varLabel, action);
-		if (varLabel.equals(getParameter("systemActionVariable")) && 
-				lastSelectedAction.keySet().iterator().next().equals(getParameter("systemActionVariable")) && !action.equals("AskConfirmation")) {
-			String implicitVarLabel = getParameter("systemCognitionVariable");
-			Assignment implicitAction = new Assignment(implicitVarLabel, "None");
-			recorder.recordTrainingData(new TrainingData(state, implicitAction));
 		}
+	} 
 
-		recorder.recordTrainingData(new TrainingData(state,selectedAction));
-
-
-		VarNode<String> node = new VarNode<String>(varLabel, String.class);
-		node.addProb(instantiatedAction, 1.0f);
-
-
-
-		lastSelectedAction = selectedAction;
-		state.updateNode(node, Change.NEW, null);
-	} */
-
-	final class ClickAction extends AbstractAction {
-		private JButton button;
-
-		public ClickAction(JButton button) {
-			this.button = button;
+	private void showVariable(CategoricalTable distrib) {
+		distrib = (distrib.getBest().isDefault())? distrib.getNBest(nBestView+1) : distrib.getNBest(nBestView);
+		String text = getHtmlRendering(distrib);
+		try {
+	    kit.insertHTML(doc, doc.getLength(),text, 0, 0, null);
 		}
-
-		public void actionPerformed(ActionEvent e) {
-			button.doClick();
+		catch (Exception e) {
+			log.warning("text area exception: " + e);
 		}
+	}
+
+	
+
+	public String getChat() {
+		return lines.getText();
 	}
 
 
 	final class StateUpdater extends Thread {
 		
-		DialogueState state;
-		SimpleTable table;
+		DialogueSystem system;
+		CategoricalTable table;
 		
-		public StateUpdater(DialogueState state, SimpleTable table) {
-			this.state = state;
+		public StateUpdater(DialogueSystem system, CategoricalTable table) {
+			this.system = system;
 			this.table = table;
 		}
 		
 		public void run() {
 			try {
-			state.addContent(table, "GUI");
+			system.addContent(table);
 			}
 			catch (DialException e) {
 				log.warning("cannot update state with user utterance");

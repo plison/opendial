@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,18 +19,19 @@
 
 package opendial.domains.rules.conditions;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.Assignment;
-import opendial.domains.datastructs.Template;
-import opendial.domains.rules.conditions.checks.AbstractCheck;
-import opendial.domains.rules.conditions.checks.CheckFactory;
-import opendial.domains.rules.quantification.LabelPredicate;
-import opendial.domains.rules.quantification.UnboundPredicate;
-import opendial.domains.rules.quantification.ValuePredicate;
+import opendial.bn.values.SetVal;
+import opendial.bn.values.StringVal;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
+import opendial.datastructs.Template.MatchResult;
+
 
 /**
  * Basic condition between a variable and a value
@@ -46,27 +47,22 @@ public class BasicCondition implements Condition {
 	// possible relations used in a basic condition
 	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
 		GREATER_THAN, LOWER_THAN}
-	
+
 	// variable label (can include slots to fill)
 	Template variable;
 
 	// expected variable value (can include slots to fill)
 	Template expectedValue;
 
-	// set of input and local output variables
-	Set<Template> inputVariables;
-	
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
 	Relation relation = Relation.EQUAL;
-	
-	AbstractCheck check;
-	
+
 	// ===================================
 	//  CONDITION CONSTRUCTION
 	// ===================================
 
-	
+
 	/**
 	 * Creates a new basic condition, given a variable label, an expected value,
 	 * and a relation to hold between the variable and its value
@@ -75,19 +71,12 @@ public class BasicCondition implements Condition {
 	 * @param value the value
 	 * @param relation the relation to hold
 	 */
-	public BasicCondition(String variable, String value, Relation relation) {
-		this.variable = new Template(variable);
-		this.expectedValue = new Template(value);
+	public BasicCondition(Template variable, Template value, Relation relation) {
+		this.variable = variable;
+		this.expectedValue = value;
 		this.relation = relation;
-		
-		// fill the input and local output variables
-		inputVariables = new HashSet<Template>(Arrays.asList(this.variable));
-		for (String slot : expectedValue.getSlots()) {
-			inputVariables.add(new Template(slot));
-		}
-		check = CheckFactory.createCheck(this.variable, this.expectedValue, relation);
 	}
-	
+
 
 	// ===================================
 	//  GETTERS
@@ -112,8 +101,8 @@ public class BasicCondition implements Condition {
 	public Template getVariable() {
 		return variable;
 	}
-	
-	
+
+
 	/**
 	 * Returns the expected variable value for the basic condition
 	 * 
@@ -122,26 +111,9 @@ public class BasicCondition implements Condition {
 	public Template getValue() {
 		return expectedValue;
 	}
-	
 
-	/**
-	 * Returns the set of unbound predicates for the basic condition, which could
-	 * be either associated with the variable label or its content.
-	 * 
-	 * @return the set of unbound predicates
-	 */
-	@Override
-	public Set<UnboundPredicate> getUnboundPredicates() {
-		Set<UnboundPredicate> predicates = new HashSet<UnboundPredicate>();
-		if (!variable.getSlots().isEmpty()) {
-			predicates.add(new LabelPredicate(variable));
-		}
-		if (!expectedValue.getSlots().isEmpty()) {
-			predicates.add(new ValuePredicate(variable.toString(), expectedValue));
-		}
-		return predicates;
-	}
-	
+
+
 	/**
 	 * Returns the input variables for the condition (the main variable
 	 * itself, plus optional slots in the value to fill)
@@ -150,12 +122,14 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public Set<Template> getInputVariables() {
+		Set<Template> inputVariables = new HashSet<Template>();
+		inputVariables.add(variable);
 		return inputVariables;
 	}
 
 
 
-	
+
 	/**
 	 * Returns true if the condition is satisfied by the value assignment
 	 * provided as argument, and false otherwise
@@ -168,25 +142,87 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-		return check.isSatisfied(input);		
+		
+		if (!input.getVariables().containsAll(variable.getSlots())
+				|| !input.getVariables().containsAll(expectedValue.getSlots())) {
+			return false;
+		}
+
+		String filledVar = variable.fillSlots(input).getRawString();
+		Value filledValue = ValueFactory.create(expectedValue.fillSlots(input).getRawString());
+
+
+		Value actualValue = input.getValue(filledVar);
+		switch (relation) {	
+		case EQUAL: return actualValue.equals(filledValue);
+		case UNEQUAL: return !actualValue.equals(filledValue); 
+		case GREATER_THAN: return (actualValue.compareTo(filledValue) > 0); 
+		case LOWER_THAN: return (actualValue.compareTo(filledValue) < 0);
+		case CONTAINS: return actualValue.contains(filledValue); 
+		case NOT_CONTAINS: return !actualValue.contains(filledValue); 
+		}
+		return false;
 	}
 
-	
+
 	/**
-	 * Return the local output produced by the condition, if any
+	 * Returns the set of possible groundings for the given input assignment
 	 * 
-	 * @param input the actual assignment of values
-	 * @return a value assignment (that can be empty)
+	 * @param input the input assignment
+	 * @return the set of possible (alternative) groundings for the condition
 	 */
 	@Override
-	public Assignment getLocalOutput(Assignment input) {	
-	
-		return check.getLocalOutput(input);
+	public ValueRange getGroundings(Assignment input) {	
+
+		ValueRange groundings = new ValueRange();
+
+		if (variable.fillSlots(input).isUnderspecified()) {
+			for (String inputVar : input.getVariables()) {
+				MatchResult m = variable.match(inputVar, false);
+				if (m.isMatching()) {
+					groundings.addAssign(m.getFilledSlots());
+					Assignment newInput = new Assignment(input, m.getFilledSlots());
+					groundings.addRange(getGroundings(newInput));
+				}
+			}
+			return groundings;
+		}
+
+		Template expectedValue2 = expectedValue.fillSlots(input);
+		if (expectedValue2.isUnderspecified()) {
+
+				String filledVar = variable.fillSlots(input).getRawString();
+				Value actualValue = input.getValue(filledVar);
+
+				if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
+					MatchResult m = expectedValue2.match(actualValue.toString(), true);
+					if (m.isMatching()) {
+						Assignment possGrounding = m.getFilledSlots().removeValues
+								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+						groundings.addAssign(possGrounding);
+					}
+				}
+				else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
+					for (Value subval : ((SetVal)actualValue).getSet()) {
+						MatchResult m2 = expectedValue2.match(subval.toString(), true);
+						Assignment possGrounding = m2.getFilledSlots().removeValues
+								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+						groundings.addAssign(possGrounding);
+					}
+				}
+				else if (relation == Relation.CONTAINS && actualValue instanceof StringVal) {
+					MatchResult m2 = expectedValue2.match(actualValue.toString(), false);
+					Assignment possGrounding = m2.getFilledSlots().removeValues
+							(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+					groundings.addAssign(possGrounding);
+				}
+		}
+		return groundings;
 	}
 
 
 
-	
+
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -194,8 +230,6 @@ public class BasicCondition implements Condition {
 
 	/**
 	 * Returns a string representation of the condition
-	 * 
-	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -232,10 +266,11 @@ public class BasicCondition implements Condition {
 	public boolean equals (Object o) {
 		if (o instanceof BasicCondition) {
 			return (((BasicCondition)o).getVariable().equals(variable) && 
-					((BasicCondition)o).getValue().equals(expectedValue));
+					((BasicCondition)o).getValue().equals(expectedValue) && 
+					relation == ((BasicCondition)o).getRelation());
 		}
 		return false;
 	}
-	
+
 
 }

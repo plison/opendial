@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -19,20 +19,22 @@
 
 package opendial.bn.distribs.continuous.functions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 
 /**
- * Density function represented by a Gaussian
+ * Density function represented by a univariate Gaussian.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class GaussianDensityFunction implements UnivariateDensityFunction {
+public class GaussianDensityFunction implements DensityFunction {
 
 	// logger
 	public static Logger log = new Logger("GaussianDensityFunction", Logger.Level.DEBUG);
@@ -77,25 +79,27 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 	 *
 	 * @param x the point
 	 * @return the density at the point
+	 * @throws DialException 
 	 */
-	public double getDensity(double x) {
+	@Override
+	public double getDensity(Double... x)  {
 		double spread = 1.0/( stdDev * Math.sqrt(2*Math.PI));
-		double exp = Math.exp(-Math.pow(x-mean,2) / (2*variance));
+		double exp = Math.exp(-Math.pow(x[0]-mean,2) / (2*variance));
 		double result = spread*exp;
 		return result;
 	}
 
 
 	/**
-	 * Samples values from the Gaussian
+	 * Samples values from the Gaussian using Box-Muller's method.
 	 *
 	 * @return a sample value
 	 */
 	@Override
-	public double sample() {
+	public Double[] sample() {
 		if (spareready) {
 			spareready = false;
-			return spare * stdDev + mean;
+			return new Double[]{spare * stdDev + mean};
 		}
 		else {
 			double u, v, s;
@@ -106,30 +110,39 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 			} while (s >= 1 || s == 0);
 			spare = v * Math.sqrt(-2.0 * Math.log(s) / s);
 			spareready = true;
-			return mean + stdDev * u * Math.sqrt(-2.0 * Math.log(s) / s);
+			return new Double[]{mean + stdDev * u * Math.sqrt(-2.0 * Math.log(s) / s)};
 		}
 	}
 
 
 	/**
 	 * Returns a set of discrete values (of a size of nbBuckets) extracted
-	 * from the Gaussian
+	 * from the Gaussian.  The number of values is derived from 
+	 * Settings.NB_DISCRETISATION_BUCKETS
 	 *
-	 * @param nbBuckets the number of values to extract
 	 * @return the set of extracted values
 	 */
 	@Override
-	public List<Double> getDiscreteValues(int nbBuckets) {
-
-		List<Double> values = new ArrayList<Double>(nbBuckets);
+	public Map<Double[], Double> discretise(int nbBuckets) {
+		
+		Map<Double[], Double> values = new HashMap<Double[], Double>(nbBuckets);
 
 		double minimum = mean - 4*stdDev;
 		double maximum = mean + 4*stdDev;
 
 		double step = (maximum-minimum)/nbBuckets;
+		double cdf = 0.0;
 		for (int i = 0 ; i < nbBuckets ; i++) {
 			double value = minimum  + i*step + step/2.0f;
-			values.add(value);
+			try {
+				double curCdf = getCDF(new Double[]{value});
+				double prob = curCdf - cdf;
+				values.put(new Double[]{value}, prob);
+				cdf = curCdf;
+			}
+			catch (DialException e) {
+				log.warning(e.toString());
+			}
 		}
 		return values;
 	}
@@ -140,9 +153,14 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative density function up to the point
+	 * @throws DialException 
 	 */
-	public double getCDF (double x) {
-		double z = (x-mean) /stdDev;
+	@Override
+	public Double getCDF (Double... x) throws DialException {
+		if (x.length != 1) {
+			throw new DialException("Gaussian distribution only accepts a dimensionality == 1");
+		}
+		double z = (x[0]-mean) /stdDev;
 		if (z < -8.0) return 0.0;
 		if (z >  8.0) return 1.0;
 		double sum = 0.0, term = z;
@@ -150,18 +168,7 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 			sum  = sum + term;
 			term = term * z * z / i;
 		}
-		return 0.5 + sum * density_normalised(z);
-	}
-
-
-	/**
-	 * Normalise the density function
-	 * 
-	 * @param x the initial point
-	 * @return its normalised equivalent
-	 */
-	private static double density_normalised(double x) {
-		return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
+		return 0.5 + sum * Math.exp(-z*z / 2) / Math.sqrt(2 * Math.PI);
 	}
 
 
@@ -182,18 +189,8 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 	 * @return the pretty print
 	 */
 	@Override
-	public String prettyPrint() {
-		return "N("+mean+"," + variance+")";
-	}
-
-
-	/**
-	 * Returns a pretty print representation of the function
-	 * 
-	 * @return the pretty print
-	 */
 	public String toString() {
-		return prettyPrint();
+		return "N("+mean+"," + variance+")";
 	}
 
 
@@ -207,11 +204,32 @@ public class GaussianDensityFunction implements UnivariateDensityFunction {
 	}
 	
 	
-	public double getMean() {
-		return mean;
+	/**
+	 * Returns the mean of the Gaussian.
+	 * 
+	 */
+	public Double[] getMean() {
+		return new Double[]{mean};
 	}
 	
-	public double getVariance() {
-		return variance;
+	
+	/**
+	 * Returns the variance of the Gaussian.
+	 * 
+	 */
+	public Double[] getVariance() {
+		return new Double[]{variance};
 	}
+
+
+	/**
+	 * Returns 1.
+	 * 
+	 */
+	@Override
+	public int getDimensionality() {
+		return 1;
+	}
+	
+
 }

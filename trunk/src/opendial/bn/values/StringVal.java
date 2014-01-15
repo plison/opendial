@@ -1,5 +1,5 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
 //                                                                                                                                     
 // This library is free software; you can redistribute it and/or                                                                       
 // modify it under the terms of the GNU Lesser General Public License                                                                  
@@ -20,11 +20,11 @@
 package opendial.bn.values;
 
 import opendial.arch.Logger;
-import opendial.domains.datastructs.Template;
+import opendial.datastructs.Template;
 import opendial.utils.StringUtils;
 
 /**
- * String value
+ * String value.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -44,7 +44,10 @@ public final class StringVal implements Value {
 	 * 
 	 * @param str the string
 	 */
-	protected StringVal(String str) { this.str = str.trim(); StringUtils.checkForm(str); };
+	protected StringVal(String str) { 
+		this.str = str.trim(); 
+	//	StringUtils.checkForm(str); 
+	};
 	
 	
 	/**
@@ -68,14 +71,12 @@ public final class StringVal implements Value {
 			if (((StringVal)o).getString().equalsIgnoreCase(getString())) {
 				return true;
 			}
-	/**		else if (str.contains("*")) {
-				TemplateString ts = new TemplateString(str);
-				return ts.isMatching(o.toString(), false);
+			else if (((StringVal)o).getString().contains("*")) {
+				return new Template(((StringVal)o).getString()).match(str, true).isMatching();
 			}
-			else if (o.toString().contains("*")) {
-				TemplateString ts = new TemplateString(o.toString());
-				return ts.isMatching(str, false);
-			} */
+			else if (str.contains("*")) {
+				return new Template(str).match(((StringVal)o).getString(), true).isMatching();
+			}
 		}
 		return false;
 	}
@@ -117,6 +118,21 @@ public final class StringVal implements Value {
 		else {
 			return hashCode() - o.hashCode();
 		}
+	}
+
+
+	/**
+	 * Returns true if subvalue is a substring of the current StringVal, and
+	 * false otherwise
+	 * 
+	 * @return true is subvalue is a substring of the object, false otherwise
+	 */
+	@Override
+	public boolean contains(Value subvalue) {
+		if (subvalue instanceof StringVal) {
+			return (new Template(((StringVal)subvalue).getString()).match(str,false)).isMatching();
+		}
+		return false;
 	}
 	
 }
