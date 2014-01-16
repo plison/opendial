@@ -1,4 +1,4 @@
-#summary !OpenDial user manual
+#summary OpenDial user manual
 
 = !OpenDial user manual =
 
