@@ -31,7 +31,7 @@ import java.util.TimerTask;
  * @version $Date::                      $
  */
 public abstract class AnytimeProcess extends Thread {
-
+ 
 	public Logger log = new Logger("AnytimeProcess", Logger.Level.DEBUG);
 
 	/**
