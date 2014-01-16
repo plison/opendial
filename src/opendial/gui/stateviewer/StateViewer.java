@@ -79,6 +79,7 @@ import opendial.gui.StateViewerTab;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 import opendial.state.DialogueState;
+import opendial.state.nodes.ProbabilityRuleNode;
 import opendial.utils.StringUtils;
 
 
@@ -214,7 +215,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 */
 	private BNode getBNode(String verticeID) {
 		String nodeId = verticeID.replace("util---", "").replace("action---", "");
-		if (currentState.hasNode(nodeId)) {
+		if (currentState != null && currentState.hasNode(nodeId)) {
 			return currentState.getNode(nodeId);
 		}
 		//		log.warning("node corresponding to " + verticeID + " not found");
@@ -410,7 +411,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 
 		public Shape transform(String arg0) {
 			BNode node = getBNode(arg0);
-			if (node instanceof ChanceNode) {
+			if (node instanceof ProbabilityRuleNode) {
+				return (Shape) new Ellipse2D.Double(-5.0,-5.0,20.0,20.0);
+			}
+			else if (node instanceof ChanceNode) {
 				return (Shape) new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 			else if (node instanceof UtilityNode) {

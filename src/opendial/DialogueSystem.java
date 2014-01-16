@@ -166,13 +166,13 @@ public class DialogueSystem {
 	 * @param beforePlanner whether the module should be triggered before
 	 *        or after the planner
 	 */
-	public void attachModule(Module module, boolean beforePlanner) {
+	public void attachModule(Module module) {
 		if (modules.contains(module)) {
 			log.info("Module " + module.getClass().getCanonicalName() + " is already attached");
 			return;
 		}
 		int plannerPos = modules.indexOf(getModule(ForwardPlanner.class));
-		modules.add((beforePlanner)? plannerPos : modules.size(), module);
+		modules.add(plannerPos, module);
 		if (!paused) {
 			try {
 				module.start(this);
@@ -254,12 +254,14 @@ public class DialogueSystem {
 	 * @param settings the new settings
 	 */
 	public void changeSettings(Settings settings) {
-		if (this.domain != null) {
-			modules.removeAll(this.domain.getSettings().modules);
+		if (this.settings != null) {
+		modules.removeAll(this.settings.modules);
 		}
+		
 		this.settings = settings.copy();
 		for (Module m : settings.modules) {
-			attachModule(m, false);
+			log.info("Attaching module: " + m.getClass().getCanonicalName());
+			attachModule(m);
 		}
 	}
 
@@ -310,7 +312,7 @@ public class DialogueSystem {
 	public void addContent(DialogueState newState) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
-				curState.updateState(newState);
+				curState.addToState(newState);
 				update();
 			}
 		}
@@ -329,19 +331,16 @@ public class DialogueSystem {
 	protected void update() {
 		
 		while (!curState.getNewVariables().isEmpty()) {
-			for (Module module : modules) {
-				module.trigger();
-			}
 			
 			Set<String> toProcess = curState.getNewVariables();
-			curState.reduce(settings.enablePruning);	
+			curState.reduce();	
 			
 			for (Model model : domain.getModels()) {
 					model.trigger(curState, toProcess);
 			}
 			
 			for (Module module : modules) {
-				module.trigger();
+				module.trigger(curState, toProcess);
 			}
 		}
 	}

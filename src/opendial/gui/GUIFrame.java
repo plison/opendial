@@ -62,8 +62,9 @@ public class GUIFrame implements Module {
 	// tab for the chat window
 	ChatWindowTab chatTab;
 	
-	DialogueSystem system;			
-
+	DialogueSystem system;		
+	
+	GUIMenuBar menu;
 	
 	public void start(DialogueSystem system) {
 
@@ -87,7 +88,8 @@ public class GUIFrame implements Module {
 		}
 		); 
 		
-		frame.setJMenuBar(new ToolkitMenu(this));
+		menu = new GUIMenuBar(this);
+		frame.setJMenuBar(menu);
 		
 		chatTab = new ChatWindowTab(system);
 		tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
@@ -117,10 +119,11 @@ public class GUIFrame implements Module {
 	 * dialogue state is name "current" in the selection list.
 	 * 
 	 */
-	public void trigger() {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (frame != null && frame.isVisible()) {
-		chatTab.trigger(system.getState());
-		stateMonitorTab.update(system.getState());
+		chatTab.trigger(state, updatedVars);
+		stateMonitorTab.trigger(state, updatedVars);
+		menu.trigger();
 			if (!frame.getTitle().equals(system.getDomain().getName())) {
 				frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
 			}

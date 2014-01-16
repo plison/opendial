@@ -22,19 +22,36 @@ package opendial.modules;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import javax.swing.JMenuBar;
+
 import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
+import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
+import opendial.gui.GUIMenuBar;
 import opendial.readers.XMLDomainReader;
+import opendial.readers.XMLInteractionReader;
+import opendial.utils.StringUtils;
 
 public class RecordingTest {
 
 	public static final String domainFile = "test//domains//domain-demo.xml";
+	public static final String importState = "test//domains//domain-demo-importstate.xml";
+	public static final String importParams = "test//domains//params-is.xml";
+	public static final String exportState = "test//domains//domain-demo-exportstate.xml";
+	public static final String exportParams = "test//domains//domain-demo-exportparams.xml";
+	public static String dialogueFile = "test/domains/woz-dialogue.xml";
 
 	// logger
 	public static Logger log = new Logger("GUITest", Logger.Level.DEBUG);
@@ -58,7 +75,7 @@ public class RecordingTest {
 		table.addRow(new Assignment("u_u", "now you should not hear anything"), 0.8);
 		system.pause(false);
 		table = new CategoricalTable();
-		table.addRow(new Assignment("u_u", "move left"), 0.3);
+		table.addRow(new Assignment("u_u", "move left"), 0.2);
 		table.addRow(new Assignment("u_u", "move a bit to the left"), 0.65);	
 		system.addContent(table);
 		
@@ -67,17 +84,58 @@ public class RecordingTest {
 				("<font size=\"4\">move a bit to the left (0.05)</font>"));
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
 				("<font size=\"4\">OK, moving Left a little bit</font>"));
-		assertEquals(1566, system.getModule(GUIFrame.class).getChatTab().getChat().length());
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n<interaction><userTurn><variable id=\"u_u\">"
-				+ "<value prob=\"0.65\">None</value><value prob=\"0.3\">move left</value><value prob=\"0.05\">"
-				+ "move a bit to the left</value></variable></userTurn><systemTurn><variable id=\"u_m\"><value "
-				+ "prob=\"1.0\">OK, moving Left</value></variable></systemTurn><userTurn><variable id=\"u_u\">"
-				+ "<value prob=\"0.5\">None</value><value prob=\"0.5\">no</value></variable></userTurn><userTurn>"
-				+ "<variable id=\"u_u\"><value prob=\"0.05\">None</value><value prob=\"0.3\">move left</value>"
-				+ "<value prob=\"0.65\">move a bit to the left</value></variable></userTurn><systemTurn>"
-				+ "<variable id=\"u_m\"><value prob=\"1.0\">OK, moving Left a little bit</value></variable>"
-				+ "</systemTurn></interaction>", system.getModule(DialogueRecorder.class).getRecord());
+		assertEquals(6, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
+		assertEquals(4, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
+		assertEquals(10, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "variable"));
+	
 		system.getModule(GUIFrame.class).getFrame().dispose();
+	}
+	
+	@Test
+	public void xmlTest() throws DialException, InterruptedException, IOException {
+		
+		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+		system.getSettings().showGUI = false;
+		system.startSystem();
+		
+		GUIMenuBar.importAction(system, importState, "state");
+		assertEquals(7, system.getState().getChanceNodeIds().size());
+		assertEquals(0.7, system.getContent("aha").toDiscrete().getProb(new Assignment("aha", "ohoho")), 0.01);
+		
+		GUIMenuBar.importAction(system, importParams, "parameters");
+		assertEquals(21, system.getState().getChanceNodeIds().size());
+		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof DirichletDensityFunction);
+		
+		Settings.nbSamples = Settings.nbSamples / 100;
+		DialogueImporter importer = new DialogueImporter(system, 
+				XMLInteractionReader.extractInteraction(dialogueFile));
+		system.startSystem();
+		importer.start();
+		while (importer.isAlive()) {
+			Thread.sleep(50);
+		}
+		Settings.nbSamples = Settings.nbSamples * 100;
+
+		GUIMenuBar.exportAction(system, exportState, "state");
+		String str = "";
+		BufferedReader br = new BufferedReader(new FileReader(exportState));
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			str += line;
+		}
+		br.close();
+		assertEquals(26, StringUtils.countOccurrences(str, "variable"));
+		GUIMenuBar.exportAction(system, exportParams, "parameters");
+		str = "";
+		br = new BufferedReader(new FileReader(exportParams));
+		line = "";
+		while ((line = br.readLine()) != null) {
+			str += line;
+		}
+		br.close();
+		assertEquals(28, StringUtils.countOccurrences(str, "variable"));
+		assertEquals(14, StringUtils.countOccurrences(str, "gaussian"));
+		
 	}
 		
 

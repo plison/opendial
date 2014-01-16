@@ -47,7 +47,9 @@ import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
+import opendial.state.StatePruner;
 
 /**
  * 
@@ -81,8 +83,8 @@ public class BasicRuleTest {
 	
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 	
@@ -90,6 +92,7 @@ public class BasicRuleTest {
 		inference.checkProb(query, new Assignment("a_u", "Greeting"), 0.8);
 		inference.checkProb(query, new Assignment("a_u", "None"), 0.2);
 	
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 
@@ -97,14 +100,16 @@ public class BasicRuleTest {
 	public void test2() throws DialException {
 				
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		
 		ProbQuery query = new ProbQuery(system.getState(),"i_u");
 		inference.checkProb(query, new Assignment("i_u", "Inform"), 0.7*0.8);
 		inference.checkProb(query, new Assignment("i_u", "None"), 1-0.7*0.8);
+		
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 	@Test
@@ -113,14 +118,16 @@ public class BasicRuleTest {
 		inference.EXACT_THRESHOLD = 0.06;
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		ProbQuery query = new ProbQuery(system.getState(),"direction");
 		inference.checkProb(query, new Assignment("direction", "straight"), 0.79);
 		inference.checkProb(query, new Assignment("direction", "left"), 0.20);
 		inference.checkProb(query, new Assignment("direction", "right"), 0.01);
+		
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 
@@ -128,8 +135,8 @@ public class BasicRuleTest {
 	public void test4() throws DialException {
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		
@@ -138,6 +145,8 @@ public class BasicRuleTest {
 		inference.checkProb(query, new Assignment("o", "and we have var1=value2"), 0.3);
 		inference.checkProb(query, new Assignment("o", "and we have localvar=value1"), 0.35);
 		inference.checkProb(query, new Assignment("o", "and we have localvar=value3"), 0.31);
+
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 
@@ -145,8 +154,8 @@ public class BasicRuleTest {
 	public void test5() throws DialException {
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		
@@ -155,6 +164,9 @@ public class BasicRuleTest {
 		inference.checkProb(query, new Assignment("o2", "here is value1"), 0.35);
 		inference.checkProb(query, new Assignment("o2", "and value2 is over there"), 0.07);
 		inference.checkProb(query, new Assignment("o2", "value3, finally"), 0.28);
+		
+		StatePruner.ENABLE_PRUNING = true;
+
 	}
 
 	@Test
@@ -163,7 +175,7 @@ public class BasicRuleTest {
 		inference.EXACT_THRESHOLD = 0.06;
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		CategoricalTable table = new CategoricalTable();
@@ -176,6 +188,7 @@ public class BasicRuleTest {
 		inference.checkProb(query, new Assignment("o", "and we have localvar=value1"), 0.05);
 		inference.checkProb(query, new Assignment("o", "and we have localvar=value3"), 0.04);
 		
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 
@@ -183,8 +196,8 @@ public class BasicRuleTest {
 	public void test7() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		
@@ -192,6 +205,8 @@ public class BasicRuleTest {
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
 		inference.checkProb(query, new Assignment("a_u2", "none"), 0.1);
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
+		
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 	
@@ -200,8 +215,8 @@ public class BasicRuleTest {
 	public void test8() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		ProbQuery query = new ProbQuery(system.getState(),"a_u3");
@@ -245,7 +260,8 @@ public class BasicRuleTest {
 		inference.checkProb(query5, new Assignment(howareyouNode+".end", 22), 0.2);
 		inference.checkProb(query6,  new Assignment(greetNode+"", "Greet"), 0.7);
 		inference.checkProb(query7,  new Assignment(howareyouNode+"", "HowAreYou"), 0.9); 
-				
+			
+		StatePruner.ENABLE_PRUNING = true;
 	}
 	
 	

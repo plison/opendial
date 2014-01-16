@@ -61,7 +61,7 @@ public class WizardTest {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 
-		system.attachModule(new WizardLearner(), true);
+		system.attachModule(new WizardLearner());
 		system.startSystem();
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
@@ -81,7 +81,7 @@ public class WizardTest {
 	public void wizardControlTest() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
-		system.attachModule(new WizardControl(), true);
+		system.attachModule(new WizardControl());
 		system.startSystem();
 
 		assertEquals(2, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
