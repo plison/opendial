@@ -96,7 +96,8 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-
+		
+		
 		// extract and redraw the samples according to their weight.
 		Stack<WeightedSample> samples = isquery.getSamples();
 		samples = redrawSamples(samples);
@@ -122,7 +123,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	public static Assignment extractSample(ProbQuery query) throws DialException {
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, 1, Settings.maxSamplingTime);
-
+		
 		// extract and redraw the samples according to their weight.
 		Stack<WeightedSample> samples = isquery.getSamples();
 		if (samples.isEmpty()) {
@@ -146,7 +147,8 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-
+		
+		
 		// extract and redraw the samples
 		Stack<WeightedSample> samples = isquery.getSamples();
 		samples = redrawSamples(samples);
@@ -176,7 +178,8 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(new UtilQuery(
 				network, network.getChanceNodeIds()), nbSamples, maxSamplingTime);
-
+		
+		
 		// extract and redraw the samples
 		Stack<WeightedSample> samples = isquery.getSamples();
 
@@ -205,7 +208,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-
+		
 		// extract and redraw the samples
 		Stack<WeightedSample> samples = isquery.getSamples();
 		samples = redrawSamples(samples);
@@ -249,7 +252,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-
+				
 		// extract and redraw the samples according to their weight.
 		Stack<WeightedSample> samples = isquery.getSamples();
 		reweightSamples(samples, wizardAction);
