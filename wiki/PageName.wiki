@@ -1,0 +1,7 @@
+#summary OpenDial user manual
+
+= OpenDial user manual =
+
+* QuickStart
+* WritingProbabilisticRules
+* EstimatingParameters
