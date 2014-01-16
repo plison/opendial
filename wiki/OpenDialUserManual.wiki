@@ -1,4 +1,3 @@
-#labels Featured
 = !OpenDial user manual =
 
 This user manual will show you how to practically employ the !OpenDial toolkit to develop dialogue systems based on probabilistic rules.
