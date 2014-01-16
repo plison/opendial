@@ -2,4 +2,8 @@
 
 This user manual describes how to employ the OpenDial toolkit to develop dialogue systems based on probabilistic rules.
 
-<wiki:toc max_depth="1" />
+* [GettingStarting Getting started]
+
+* [WritingProbabilisticRules Writing probabilistic rules]
+
+* [ParameterEstimation Estimating rule parameters from data]
