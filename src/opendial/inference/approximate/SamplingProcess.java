@@ -6,6 +6,7 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -21,14 +22,13 @@ import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.Query;
-import opendial.utils.TimingUtils;
 
 /**
  * Sampling process for a particular query
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class SamplingProcess implements AnytimeProcess {
+public class SamplingProcess extends AnytimeProcess {
 
 	// logger
 	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
@@ -64,10 +64,10 @@ public class SamplingProcess implements AnytimeProcess {
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
 	public SamplingProcess(Query query,int nbSamples, long maxSamplingTime) {
+		super(maxSamplingTime);
 		this.query = query;
 		samples = new Stack<WeightedSample>();
 		this.nbSamples = nbSamples;
-		TimingUtils.setTimeout(this, maxSamplingTime);
 	}
 	
 
@@ -98,11 +98,11 @@ public class SamplingProcess implements AnytimeProcess {
 	/**
 	 * Runs the sample collection procedure until termination (either due to a time-out 
 	 * or the collection of a number of samples = nbSamples).  The method loops until
-	 * terminate() is called.  Returns the collected samples at the end.
+	 * terminate() is called, or enough samples have been collected. 
 	 * 
 	 * @return the collected samples
 	 */
-	public Stack<WeightedSample> getSamples() {
+	public void run() {
 
 		List<BNode> sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
@@ -152,6 +152,19 @@ public class SamplingProcess implements AnytimeProcess {
 				log.info("exception caught: " + e);
 			}
 		}
+	}
+	
+	
+	
+	/**
+	 * Returns the collected samples
+	 * 
+	 * @return the collected samples
+	 */
+	public Stack<WeightedSample> getSamples() {
+		start();
+		try {	join(); } 
+		catch (InterruptedException e) { e.printStackTrace(); }
 		return samples;
 	}
 
