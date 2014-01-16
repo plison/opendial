@@ -19,6 +19,9 @@
 
 package opendial.arch;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * Interface for an "anytime" process -- that is, a process that can be interrupted
@@ -27,13 +30,38 @@ package opendial.arch;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public interface AnytimeProcess {
+public abstract class AnytimeProcess extends Thread {
 
 	public Logger log = new Logger("AnytimeProcess", Logger.Level.DEBUG);
+
+	/**
+	 * Creates a new anytime process with the given timeout (in milliseconds)
+	 * 
+	 * @param timeout the maximum duration of the process
+	 */
+	public AnytimeProcess(final long timeout) {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run() {
+				if (!isTerminated()) {
+			log.debug("time (" + timeout + " ms.) has run out for sampling " + toString());
+			terminate();
+				}
+			}
+		}, timeout);
+	}
+	
+	/**
+	 * Terminates the process
+	 */
+	public abstract void terminate() ;
+	
+	/**
+	 * Returns true if the process is terminated, and false otherwise
+	 * 
+	 * @return true if terminated, false otherwise
+	 */
+	public abstract boolean isTerminated();
 		
-	public void terminate() ;
-	
-	public boolean isTerminated();
-	
 }
 
