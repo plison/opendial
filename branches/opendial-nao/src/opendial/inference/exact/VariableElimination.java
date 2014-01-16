@@ -58,7 +58,7 @@ import opendial.utils.CombinatoricsUtils;
  * also see Koller's book to compare the algorithm
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 public class VariableElimination implements InferenceAlgorithm {

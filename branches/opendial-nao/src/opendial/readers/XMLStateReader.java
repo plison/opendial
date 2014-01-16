@@ -41,7 +41,7 @@ import opendial.utils.XMLUtils;
  * XML reader for the initial state specification (and for parameters):
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 public class XMLStateReader {

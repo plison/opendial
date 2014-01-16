@@ -45,7 +45,7 @@ import opendial.datastructs.ValueRange;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class ChanceNode extends BNode {
