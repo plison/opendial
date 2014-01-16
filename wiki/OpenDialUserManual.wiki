@@ -1,3 +1,5 @@
 = !OpenDial user manual =
 
-Version 0.9.
+This user manual describes how to employ the OpenDial toolkit to develop dialogue systems based on probabilistic rules.
+
+<wiki:toc max_depth="1" />
