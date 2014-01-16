@@ -45,7 +45,7 @@ import opendial.datastructs.Assignment;
  * The network is simply defined as a set of nodes connected with each other.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class BNetwork {

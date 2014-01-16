@@ -30,7 +30,7 @@ import opendial.datastructs.Assignment;
  * all double values in the input assignment.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$ *
+ * @version $Date::                      $ *
  */
 public class AdditionFunction implements DeterministicFunction {
 

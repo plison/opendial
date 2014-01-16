@@ -44,7 +44,7 @@ import opendial.datastructs.Assignment;
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * 
- * @version $Date:: 2012-06-11 18:14:37 #$
+ * @version $Date::                      $
  *
  */
 public class BNetworkStructureTest {

@@ -52,7 +52,7 @@ import opendial.utils.StringUtils;
  * variables, and can therefore be expressed as P(X1,..., Xn).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class CategoricalTable implements DiscreteDistribution, IndependentProbDistribution {
