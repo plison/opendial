@@ -64,7 +64,7 @@ import opendial.readers.XMLDomainReader;
  * Utility functions for manipulating XML content
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 public class XMLUtils {
@@ -339,7 +339,7 @@ public class XMLUtils {
  * Small error handler for XML syntax errors.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-01-03 16:02:01 #$
+ * @version $Date::                      $
  *
  */
 final class XMLErrorHandler extends DefaultHandler {

@@ -36,7 +36,7 @@ import opendial.datastructs.Assignment;
  * An action node is defined as a set of mutually exclusive action values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public class ActionNode extends BNode {

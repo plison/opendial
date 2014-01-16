@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
  * Utility for logging on the standard output (console).  
  *
  * @author  Pierre Lison plison@ifi.uio.no 
- * @version $Date:: 2012-11-06 11:25:30 #$
+ * @version $Date::                      $
  *  
  */
 public class Logger {

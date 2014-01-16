@@ -50,7 +50,7 @@ import opendial.utils.StringUtils;
  * such as ChanceNode, ActionNode or UtilityNode.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2012-06-11 18:13:11 #$
+ * @version $Date::                      $
  *
  */
 public abstract class BNode implements Comparable<BNode> {
