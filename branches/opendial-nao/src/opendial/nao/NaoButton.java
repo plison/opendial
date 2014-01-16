@@ -19,36 +19,15 @@
 
 package opendial.nao;
 
-
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.aldebaran.qimessaging.CallError;
-
 import opendial.DialogueSystem;
+import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.arch.AnytimeProcess;
 import opendial.datastructs.Assignment;
-import opendial.domains.Domain;
-import opendial.domains.Model;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.Condition;
 import opendial.modules.Module;
-import opendial.nao.NaoASR.ASRLoop;
-import opendial.state.DialogueState;
 import opendial.utils.TimingUtils;
+
+
 
 /**
  * 

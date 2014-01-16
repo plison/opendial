@@ -27,14 +27,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import opendial.DialogueSystem;
+import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.AnytimeProcess;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 import opendial.utils.TimingUtils;
+
 
 /**
  * 
@@ -51,12 +51,12 @@ public class NaoASR  extends Thread implements Module {
 
 	DialogueSystem system;
 	boolean paused = true;
-
+ 
 
 	/**
 	 * @throws DialException 
 	 *
-	 */
+	 */ 
 	@Override
 	public void start(DialogueSystem system) throws DialException {
 		this.system = system;
