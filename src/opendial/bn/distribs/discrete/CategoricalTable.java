@@ -27,6 +27,11 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
@@ -695,6 +700,29 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			}
 		}
 		return DistribType.DISCRETE;
+	}
+
+	@Override
+	public Node generateXML(Document doc) throws DialException {
+		if (headVars.size() != 1) {
+			throw new DialException("XML representation can only be "
+					+ "generated for table with one single head variable");
+		}
+		Element var = doc.createElement("variable");
+
+		Attr id = doc.createAttribute("id");
+		id.setValue(headVars.iterator().next().replace("'", ""));
+		var.setAttributeNode(id);
+
+		for (Assignment a : table.keySet()) {
+			Element valueNode = doc.createElement("value");
+			Attr prob = doc.createAttribute("prob");
+			prob.setValue(""+StringUtils.getShortForm(table.get(a)));
+			valueNode.setAttributeNode(prob);
+			valueNode.setTextContent(""+a.getValue(headVars.iterator().next()));
+			var.appendChild(valueNode);	
+		}
+		return var;
 	}
 
 }

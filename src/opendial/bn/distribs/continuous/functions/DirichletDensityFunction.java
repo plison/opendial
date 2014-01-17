@@ -23,8 +23,14 @@ package opendial.bn.distribs.continuous.functions;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -307,6 +313,24 @@ public class DirichletDensityFunction implements DensityFunction {
 			sum += alphas[j];
 		}
 		return sum;
+	}
+
+	
+	
+	@Override
+	public List<Element> generateXML(Document doc) {
+		Element distribElement = doc.createElement("distrib");
+
+		Attr id = doc.createAttribute("type");
+		id.setValue("dirichlet");
+		distribElement.setAttributeNode(id);
+		for (int i = 0 ; i < alphas.length ; i++) {
+			Element alphaElement = doc.createElement("alpha");
+			alphaElement.setTextContent(""+alphas[i]);
+			distribElement.appendChild(alphaElement);
+		}
+		
+		return Arrays.asList(distribElement);
 	}
 
 	

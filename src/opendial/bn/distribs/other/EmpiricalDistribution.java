@@ -21,12 +21,16 @@ package opendial.bn.distribs.other;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -230,6 +234,23 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		return sample();
 	}
 
+	
+	
+	public Assignment consistentSample(Assignment evidence) throws DialException {
+		for (int i = 0 ; i < 10 ; i++) {
+			Assignment sampled = sample();
+			if (sampled.consistentWith(evidence)) {
+				return sampled;
+			}
+		}
+		Collections.shuffle(samples);
+		for (Assignment sample : samples) {
+			if (sample.consistentWith(evidence)) {
+				return sample;
+			}
+		}
+		throw new DialException("no sample consistent with " + evidence + " for " + toString());
+	}
 
 	/**
 	 * Returns true is the collection of samples is not empty
@@ -487,6 +508,20 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 
 		return DistribType.DISCRETE;
+	}
+
+	
+	@Override
+	public Node generateXML(Document document) throws DialException {
+		if (getPreferredType() == DistribType.CONTINUOUS) {
+			try {
+				return toContinuous().generateXML(document);
+			}
+			catch (DialException e) {
+				log.debug("could not convert distribution to a continuous format: " + e);
+			}
+		}
+		return toDiscrete().generateXML(document); 
 	}
 
 

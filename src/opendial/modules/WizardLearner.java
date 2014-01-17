@@ -32,6 +32,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.queries.UtilQuery;
+import opendial.state.DialogueState;
 
 
 public class WizardLearner implements Module {
@@ -49,36 +50,36 @@ public class WizardLearner implements Module {
 	public void pause(boolean shouldBePaused) {	}
 
 
-	public void trigger() {
-		if (!system.getState().getActionNodeIds().isEmpty()) {
-			if (system.getState().getEvidence().getVariables().containsAll(system.getState().getActionNodeIds())) {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
+		if (!state.getActionNodeIds().isEmpty()) {
+			if (state.getEvidence().getVariables().containsAll(state.getActionNodeIds())) {
 			try {
-				Assignment wizardAction = system.getState().getEvidence().getTrimmed(system.getState().getActionNodeIds());
-				system.getState().clearEvidence(wizardAction.getVariables());
-				learnFromWizardAction(wizardAction);
-				system.getState().addToState(wizardAction.removePrimes());
+				Assignment wizardAction = state.getEvidence().getTrimmed(state.getActionNodeIds());
+				state.clearEvidence(wizardAction.getVariables());
+				learnFromWizardAction(state, wizardAction);
+				state.addToState(wizardAction.removePrimes());
 			}
 			catch (DialException e) {
 				log.warning("could not learn from wizard actions: " + e);
 			}
 			}
 			else {
-				system.getState().removeNodes(system.getState().getActionNodeIds());
-				system.getState().removeNodes(system.getState().getUtilityNodeIds());
+				state.removeNodes(state.getActionNodeIds());
+				state.removeNodes(state.getUtilityNodeIds());
 			}
 		}
 	}
 
 
 
-	private void learnFromWizardAction(Assignment wizardAction) {
+	private void learnFromWizardAction(DialogueState state, Assignment wizardAction) {
 		try {
-			if (!system.getState().getParameterIds().isEmpty()) {
+			if (!state.getParameterIds().isEmpty()) {
 				LikelihoodWeighting lw = new LikelihoodWeighting();
-				UtilQuery query = new UtilQuery(system.getState(), system.getState().getParameterIds());
+				UtilQuery query = new UtilQuery(state, state.getParameterIds());
 				EmpiricalDistribution empirical = lw.queryWizard(query, wizardAction);
-				for (String param : system.getState().getParameterIds()) {
-					ChanceNode paramNode = system.getState().getChanceNode(param);
+				for (String param : state.getParameterIds()) {
+					ChanceNode paramNode = state.getChanceNode(param);
 					MarginalEmpiricalDistribution newDistrib = new MarginalEmpiricalDistribution
 							(Arrays.asList(param), paramNode.getInputNodeIds(), empirical);
 					paramNode.setDistrib(newDistrib);

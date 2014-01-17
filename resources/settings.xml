@@ -2,14 +2,12 @@
 <settings>
 <gui>true</gui>
 <horizon>1</horizon>
-<samples>2000</samples>
+<samples>1500</samples>
 <discount>1.0</discount>
-<record>true</record>
 <gui>true</gui>
 <system>u_m</system>
 <discretisation>50</discretisation>
-<plan>true</plan>
-<pruning>true</pruning>
+<recording>last</recording>
 <user>u_u</user>
-<timeout>300</timeout>
+<timeout>250</timeout>
 </settings>

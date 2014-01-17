@@ -34,6 +34,7 @@ import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
+import opendial.state.StatePruner;
 
 public class QuantificationTest {
 
@@ -56,8 +57,8 @@ public class QuantificationTest {
 			inference.EXACT_THRESHOLD = 0.06;
 			system = new DialogueSystem(domain);
 			system.getSettings().showGUI = false;
-			system.getSettings().enablePlan = false;
-			system.getSettings().enablePruning = false;
+			system.detachModule(system.getModule(ForwardPlanner.class));
+			StatePruner.ENABLE_PRUNING = false;
 			system.startSystem(); 
 		
 
@@ -67,7 +68,8 @@ public class QuantificationTest {
 		query = new ProbQuery(system.getState(),"found2");
 		inference.checkProb(query, new Assignment("found2", "D"), 0.3);
 		inference.checkProb(query, new Assignment("found2", "C"), 0.5);
-
+		
+		StatePruner.ENABLE_PRUNING = true;
 }
 	
 
@@ -79,8 +81,8 @@ public class QuantificationTest {
 		system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
 		system.startSystem(); 
 		ProbQuery query = new ProbQuery(system.getState(),"graspable(obj1)");
 		inference.checkProb(query, new Assignment("graspable(obj1)", "true"), 0.81);
@@ -91,6 +93,8 @@ public class QuantificationTest {
 		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj1)"), 0.592);
 		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj2)"), -2.0);
 		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj3)"), -2.0);
+		
+		StatePruner.ENABLE_PRUNING = true;
 		
 	}	
 

@@ -31,6 +31,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
 
@@ -46,13 +47,12 @@ public class LearningTest {
 	@Test
 	public void is2013Test() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile);
+		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile, "parameters");
 		domain.setParameters(params);
 	//	Settings.guiSettings.showGUI = true;
 	DialogueSystem system = new DialogueSystem(domain);
 	system.getSettings().showGUI = false;
-	system.getSettings().enablePlan = false;
-	Settings.nbSamples = Settings.nbSamples*2;
+	system.detachModule(system.getModule(ForwardPlanner.class));
 	Settings.maxSamplingTime = Settings.maxSamplingTime*3;
 	system.startSystem(); 
 	
@@ -63,6 +63,8 @@ public class LearningTest {
 	table.addRow(new Assignment("a_u", "Move(Right)"), 0.0);
 	table.addRow(new Assignment("a_u", "None"), 0.0);
 	system.addContent(table);
+	system.getState().removeNodes(system.getState().getUtilityNodeIds());
+	system.getState().removeNodes(system.getState().getActionNodeIds());
 	
 	Double[] afterMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
 
@@ -75,7 +77,6 @@ public class LearningTest {
 	assertTrue(afterMean[6] - initMean[6] < 0.04);
 	assertTrue(afterMean[7] - initMean[7] < 0.04);
 	
-	Settings.nbSamples = Settings.nbSamples/2;
 	Settings.maxSamplingTime = Settings.maxSamplingTime/3;
 	
 	}

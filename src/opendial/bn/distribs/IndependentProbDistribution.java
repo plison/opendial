@@ -23,6 +23,9 @@ package opendial.bn.distribs;
 import java.util.Map;
 import java.util.Set;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import opendial.arch.DialException;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
@@ -79,5 +82,13 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 */
 	public abstract Set<Assignment> getPossibleValues();
 
+	/**
+	 * Generates a XML node that represents the distribution.
+	 * 
+	 * @param document the XML node to which the node will be attached
+	 * @return the corresponding XML node
+	 * @throws DialException 
+	 */
+	public abstract Node generateXML(Document document) throws DialException;
 }
 

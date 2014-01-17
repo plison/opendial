@@ -49,7 +49,7 @@ public class SimulatorTest {
 		int nbSamples = Settings.nbSamples;
 		Settings.nbSamples = nbSamples / 10;
 		sim.getSettings().showGUI = false;
-		system.attachModule(sim, false);
+		system.attachModule(sim);
 		system.startSystem();
 		
 		String str = "";

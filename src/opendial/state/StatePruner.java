@@ -20,14 +20,12 @@
 package opendial.state;
 
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.ActionNode;
@@ -36,12 +34,10 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.inference.InferenceAlgorithm;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.queries.ReductionQuery;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
-import opendial.state.nodes.UtilityRuleNode;
 
 
 /**
@@ -58,22 +54,19 @@ public class StatePruner {
 
 	public static double VALUE_PRUNING_THRESHOLD = 0.03;
 			
+	public static boolean ENABLE_PRUNING = true;
 	
 	/**
-	 * Prunes the state of all the non-necessary nodes.  If fullPruning is set to true,
-	 * the operation selects a subset of relevant nodes to keep, prunes the irrelevant ones,
+	 * Prunes the state of all the non-necessary nodes.  the operation selects a subset 
+	 * of relevant nodes to keep, prunes the irrelevant ones,
 	 * remove the primes from the variable labels, and delete all empty nodes.
 	 * 
-	 * <p>If fullPruning is set to false, a simplified operation is performed which only 
-	 * removes the primes from the variable labels, without pruning away any nodes from 
-	 * the dialogue state.
 	 * 
 	 * @param state the state to prune
-	 * @param fullPruning whether to perform full pruning or only 
 	 */
-	public static void prune(DialogueState state, boolean fullPruning) {
+	public static void prune(DialogueState state) {
 	
-		if (!fullPruning && state.getEvidence().isEmpty()) {
+		if (!ENABLE_PRUNING) {
 			 pruneSimplified(state);
 			 return;
 		}
@@ -115,8 +108,8 @@ public class StatePruner {
 		Set<String> toKeep = getNodesToKeep(state);
 		Set<String> nodeIds = new HashSet<String>(state.getChanceNodeIds());
 		for (String id : nodeIds) {
-			if (!toKeep.contains(id)) {
-				state.getNode(id).setId(id + "_" +  Math.abs((new Random().nextInt())/10000) + "");
+			if (!toKeep.contains(id) && !id.contains("^t")) {
+				state.getNode(id).setId(state.getUniqueId(id)+"^t");
 			}
 		}
 		for (String id : nodeIds) {

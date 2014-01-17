@@ -31,8 +31,10 @@ import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.rules.effects.Effect;
 import opendial.inference.queries.ProbQuery;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.state.StatePruner;
 
 public class DialogueStateTest {
 
@@ -59,8 +61,9 @@ public class DialogueStateTest {
 	public void stateCopyTest() throws DialException, InterruptedException {
 	
 		DialogueSystem	system = new DialogueSystem(domain);
-		system.getSettings().enablePlan = false;
-		system.getSettings().enablePruning = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
+		StatePruner.ENABLE_PRUNING = false;
+		
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 
@@ -81,6 +84,8 @@ public class DialogueStateTest {
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
 		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 	
+		
+		StatePruner.ENABLE_PRUNING = true;
 	}
 
 
@@ -91,7 +96,7 @@ public class DialogueStateTest {
 
 		DialogueSystem	system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.startSystem(); 
 
 		DialogueState initialState = system.getState().copy();
@@ -100,7 +105,8 @@ public class DialogueStateTest {
 
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
 		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
-		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 	
+		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 
+		
 		
 	}
 

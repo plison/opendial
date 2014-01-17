@@ -32,8 +32,10 @@ import java.util.Stack;
 import org.apache.commons.collections15.ListUtils;
 
 import opendial.DialogueSystem;
+import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
@@ -41,6 +43,7 @@ import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
+import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 public class Simulator extends DialogueSystem implements Module {
@@ -79,15 +82,19 @@ public class Simulator extends DialogueSystem implements Module {
 		paused = false;
 		this.mainSystem = system;
 		system.changeSettings(settings);
-		(new TurnTakingThread(new Assignment(settings.systemOutput, ValueFactory.none()))).start();
+		TurnTakingProcess process = new TurnTakingProcess(new Assignment(settings.systemOutput, ValueFactory.none()));
+		process.start();
 	}
 
 	@Override
-	public void trigger() {
-		String actionVar = domain.getSettings().systemOutput +"'";
-		if (mainSystem.getState().getChanceNodeIds().contains(actionVar) && !paused) {
-			Assignment systemAction = mainSystem.getContent(actionVar).toDiscrete().getBest().removePrimes();
-			(new TurnTakingThread(systemAction)).start();
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
+		String actionVar = domain.getSettings().systemOutput;
+		if (updatedVars.contains(actionVar) && !paused) {
+			Assignment systemAction = (state.hasChanceNode(actionVar))? 
+					state.queryProb(actionVar).toDiscrete().getBest().removePrimes()
+					: new Assignment(settings.systemOutput, ValueFactory.none());
+			TurnTakingProcess process = new TurnTakingProcess(systemAction);
+			process.start();
 		}
 	}
 
@@ -103,7 +110,7 @@ public class Simulator extends DialogueSystem implements Module {
 		while (!curState.getNewVariables().isEmpty()) {
 			
 			Set<String> toProcess = curState.getNewVariables();
-			curState.reduce(settings.enablePruning);	
+			curState.reduce();	
 			
 			for (Model model : domain.getModels()) {
 					model.trigger(curState, toProcess);
@@ -127,11 +134,11 @@ public class Simulator extends DialogueSystem implements Module {
 	}
 
 	
-	public class TurnTakingThread extends Thread {
+	public class TurnTakingProcess extends Thread {
 
 		Assignment systemAction;
 
-		public TurnTakingThread(Assignment systemAction) {
+		public TurnTakingProcess(Assignment systemAction) {
 			this.systemAction = systemAction;
 		}
 
@@ -140,7 +147,6 @@ public class Simulator extends DialogueSystem implements Module {
 			try {
 				synchronized (curState) {
 					// step 1 : integrate the system action in the simulator state
-					log.debug("system action : " + systemAction);
 					curState.setParameters(domain.getParameters());
 					addContent(systemAction);
 
@@ -150,7 +156,9 @@ public class Simulator extends DialogueSystem implements Module {
 					}
 
 					// wait for the main system to be ready
-					while (mainSystem.isPaused() || !mainSystem.getState().getNewVariables().isEmpty()) {
+					while (mainSystem.isPaused() 
+							|| !mainSystem.getState().getNewVariables().isEmpty() 
+							|| !mainSystem.getState().getActionNodeIds().isEmpty()) {
 						try { Thread.sleep(50); } catch (InterruptedException e) { }
 					}
 
@@ -164,7 +172,7 @@ public class Simulator extends DialogueSystem implements Module {
 
 					// step 3: generate the next user input
 					CategoricalTable newInput = getContent(settings.userInput).toDiscrete();
-					log.debug("input " + newInput);
+					log.debug("Generated user input: " + newInput);
 					mainSystem.addContent(newInput.copy());	
 					}
 			}
@@ -172,6 +180,7 @@ public class Simulator extends DialogueSystem implements Module {
 				log.debug("cannot update simulator: " + e);
 			}
 		}
+		
 
 	}
 
