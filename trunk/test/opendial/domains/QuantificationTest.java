@@ -57,7 +57,7 @@ public class QuantificationTest {
 			inference.EXACT_THRESHOLD = 0.06;
 			system = new DialogueSystem(domain);
 			system.getSettings().showGUI = false;
-			system.detachModule(system.getModule(ForwardPlanner.class));
+			system.detachModule(ForwardPlanner.class);
 			StatePruner.ENABLE_PRUNING = false;
 			system.startSystem(); 
 		
@@ -81,7 +81,7 @@ public class QuantificationTest {
 		system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.startSystem(); 
 		ProbQuery query = new ProbQuery(system.getState(),"graspable(obj1)");

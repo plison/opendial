@@ -57,7 +57,7 @@ public class WizardControl implements Module {
 	GUIFrame gui;
 	
 	
-	public void start(DialogueSystem system) throws DialException {
+	public WizardControl(DialogueSystem system) throws DialException {
 		this.system = system;
 		
 		if (system.getModule(GUIFrame.class) == null) {
@@ -67,11 +67,13 @@ public class WizardControl implements Module {
 			gui = system.getModule(GUIFrame.class);
 		}
 	}
+	
+	public void start()  {	}
 
 
-	@Override
 	public void pause(boolean shouldBePaused) { 	}
 
+	public boolean isRunning() {  return true;	}
 	
 	
 	@Override

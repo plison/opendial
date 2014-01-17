@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import opendial.arch.Logger;
 
@@ -40,7 +42,7 @@ public class ReflectionUtils {
 	// logger
 	public static Logger log = new Logger("ReflectionUtils", Logger.Level.NORMAL);
 
-	    public static <T> List<Class<T>> findImplementingClasses
+	    public static <T> Map<String,Class<T>> findImplementingClasses
 	    (final Class<T> interfaceClass, final Package fromPackage) {
 
 	        if (interfaceClass == null) {
@@ -53,7 +55,7 @@ public class ReflectionUtils {
 	            return null;
 	        }
 
-	        final List<Class<T>> rVal = new ArrayList<Class<T>>();
+	        final Map<String,Class<T>> rVal = new HashMap<String,Class<T>>();
 	        try {
 	            final Class<?>[] targets = getAllClassesFromPackage(fromPackage.getName());
 	            if (targets != null) {
@@ -68,7 +70,7 @@ public class ReflectionUtils {
 	                        continue;
 	                    }
 	                    else {
-	                        rVal.add((Class<T>)aTarget);
+	                        rVal.put(aTarget.getSimpleName(),(Class<T>)aTarget);
 	                    }
 	                }
 	            }

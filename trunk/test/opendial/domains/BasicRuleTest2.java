@@ -95,7 +95,7 @@ public class BasicRuleTest2 {
 		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
 		
 		system.getSettings().showGUI = false;
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		system.startSystem(); 
 		
 		ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
@@ -135,7 +135,7 @@ public class BasicRuleTest2 {
 		 			
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		double eqFactor = EquivalenceDistribution.NONE_PROB;
 		EquivalenceDistribution.NONE_PROB = 0.1;
 		double oldPruneThreshold = StatePruner.VALUE_PRUNING_THRESHOLD;
@@ -174,7 +174,7 @@ public class BasicRuleTest2 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		double eqFactor = EquivalenceDistribution.NONE_PROB;
 		EquivalenceDistribution.NONE_PROB = 0.1;
 		double oldPruneThreshold = StatePruner.VALUE_PRUNING_THRESHOLD;
@@ -208,7 +208,7 @@ public class BasicRuleTest2 {
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
 		system2.getSettings().showGUI = false;
-		system2.detachModule(system2.getModule(ForwardPlanner.class));
+		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
 
 		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
@@ -232,7 +232,7 @@ public class BasicRuleTest2 {
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile3); 
 		DialogueSystem system2 = new DialogueSystem(domain2);
 		system2.getSettings().showGUI = false;
-		system2.detachModule(system2.getModule(ForwardPlanner.class));
+		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
 
 		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"));

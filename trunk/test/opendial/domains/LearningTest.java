@@ -52,7 +52,7 @@ public class LearningTest {
 	//	Settings.guiSettings.showGUI = true;
 	DialogueSystem system = new DialogueSystem(domain);
 	system.getSettings().showGUI = false;
-	system.detachModule(system.getModule(ForwardPlanner.class));
+	system.detachModule(ForwardPlanner.class);
 	Settings.maxSamplingTime = Settings.maxSamplingTime*3;
 	system.startSystem(); 
 	

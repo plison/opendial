@@ -54,6 +54,7 @@ import org.w3c.dom.Node;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
@@ -263,7 +264,11 @@ public class GUIMenuBar extends JMenuBar {
 		group2.add(none);
 		group2.add(last);
 		group2.add(all);
-		none.setSelected(true);
+		switch (frame.getSystem().getSettings().recording) {
+		case NONE : none.setSelected(true); break;
+		case LAST_INPUT : last.setSelected(true); break;
+		case ALL : all.setSelected(true); break;
+		}
 		recording.add(none);
 		recording.add(last);
 		recording.add(all);
@@ -326,11 +331,12 @@ public class GUIMenuBar extends JMenuBar {
 
 	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
-				frame.getSystem().attachModule(new WizardControl());
+				frame.getSystem().attachModule(WizardControl.class);
 				frame.addComment("Switching interaction to Wizard-of-Oz mode");
+
 		}
 		else {
-			frame.getSystem().detachModule(frame.getSystem().getModule(WizardControl.class));
+			frame.getSystem().detachModule(WizardControl.class);
 			frame.addComment("Switching interaction to normal mode");
 		}
 	}

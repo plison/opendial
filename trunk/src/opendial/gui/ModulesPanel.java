@@ -33,6 +33,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +63,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import opendial.DialogueSystem;
 import opendial.arch.Settings;
 import opendial.arch.Logger;
 import opendial.modules.DialogueRecorder;
@@ -80,21 +83,24 @@ import opendial.utils.ReflectionUtils;
  */
 public class ModulesPanel extends JDialog {
 
-	DefaultTableModel dataModel;
-	JTable table;
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	// logger
 	public static Logger log = new Logger("ModulesPanel", Logger.Level.DEBUG);
-			
+
+	GUIFrame frame;
+
+	CheckBoxList listBox;
+	JTable table;	
+	JButton okButton;
+
+	protected Map<String,Class<Module>> classes;
+	Map<String,String> shownParams = new HashMap<String,String>();
 	
 	public ModulesPanel(final GUIFrame frame) {
 		super(frame.getFrame(),Dialog.ModalityType.DOCUMENT_MODAL);
+		this.frame = frame;
+				
 		final Settings settings = frame.getSystem().getSettings();
 		setTitle("Module Settings");
+		shownParams.putAll(settings.params);
 		
 		Container contentPane = getContentPane();
 		
@@ -102,127 +108,60 @@ public class ModulesPanel extends JDialog {
 
 		Container moduleOptions = new Container();
 		moduleOptions.setLayout(new BoxLayout(moduleOptions, BoxLayout.PAGE_AXIS));
-
-		final CheckBoxList listBox = new CheckBoxList();
 		
+		listBox = new CheckBoxList();
 		listBox.setLayoutOrientation(JList.VERTICAL_WRAP);
 		listBox.setVisibleRowCount(4);
-		final List<Class<Module>> classes = ReflectionUtils.findImplementingClasses(Module.class, Package.getPackage("opendial"));
-		
-		JCheckBox[] newList = new JCheckBox[classes.size()];
-	       
-		for (int i = 0 ; i < classes.size() ; i++) {
-			Class<Module> cls = classes.get(i);
-			newList[i] = new JCheckBox(cls.getSimpleName());
-			newList[i].setSelected(frame.getSystem().getModule(cls) != null);
-			newList[i].setEnabled(false);
-			for (int j = 0 ; j < cls.getConstructors().length ; j++) {
-				if (cls.getConstructors()[j].getParameterTypes().length == 0 
-						&& !cls.equals(GUIFrame.class) && !cls.equals(DialogueRecorder.class) 
-						&& !cls.equals(ForwardPlanner.class) && !cls.equals(WizardLearner.class) 
-						&& !cls.equals(WizardControl.class)) {
-					newList[i].setEnabled(true);
-				}
-			}
-		}
-		listBox.setListData(newList);
-
 		JScrollPane scrollPane = new JScrollPane(listBox);
 		scrollPane.setPreferredSize(new Dimension(450, 180));
 		scrollPane.setBorder(BorderFactory.createTitledBorder("Loaded modules: " ));		
-	
 		moduleOptions.add(scrollPane);
 
-	    String[] columnNames = {"Parameter", "Value"};
-	    Object[][] data = new Object[settings.params.size() + 3][2];
-	    int i = 0;
-	    for (String param : settings.params.keySet()) {
-	    	data[i][0] = param;
-	    	data[i][1] = settings.params.get(param);
-	    	i++;
-	    }
-
-	    dataModel = new DefaultTableModel();
-	    for (int col = 0; col < columnNames.length; col++) {
-	        dataModel.addColumn(columnNames[col]);
-	    }
-	    for (int row = 0; row < settings.params.size() + 3; row++) {
-	        dataModel.addRow(data[row]);
-	    }
-
-	    table = new JTable(dataModel);
+	    table = new JTable();
 	    table.setPreferredScrollableViewportSize(new Dimension(500, 120));
 	    table.setFillsViewportHeight(true);
-
-
-	    //Create the scroll pane and add the table to it.
 	    JScrollPane scrollPane2 = new JScrollPane(table);
 	    scrollPane2.setBorder(BorderFactory.createTitledBorder("Module-specific parameters"));
-	    //Add the scroll pane to this panel.
 	    moduleOptions.add(scrollPane2);
 
-		contentPane.add(moduleOptions);
-		
 		Container okcancelBox1 = new Container();
 		okcancelBox1.setLayout(new BorderLayout());
 		okcancelBox1.add(new JLabel("  "), BorderLayout.NORTH);
 		Container okcancelBox = new Container();
 		okcancelBox.setLayout(new BorderLayout());
 		JButton cancelButton = new JButton("  Cancel  ");
-		cancelButton.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) { setVisible(false); } });
+		okButton = new JButton("     OK     ");
 		okcancelBox.add(cancelButton, BorderLayout.WEST);
-		final JButton okButton = new JButton("     OK     ");
+		okcancelBox.add(okButton, BorderLayout.CENTER);
+		okcancelBox.add(new JLabel("  "), BorderLayout.EAST);
+		okcancelBox1.add(okcancelBox, BorderLayout.EAST);
+		okcancelBox1.add(new JLabel("  "), BorderLayout.SOUTH);
+		contentPane.add(okcancelBox1, BorderLayout.SOUTH);
+		getRootPane().setDefaultButton(okButton);
+		contentPane.add(moduleOptions);
+
+		fillListBox();
+	    updateParamModel();
+	    updateButtonStatus();
+	    
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { setVisible(false); } });
+		
+		
 		table.addPropertyChangeListener(new PropertyChangeListener() {
 	        public void propertyChange(PropertyChangeEvent evt) {
 	            if ("tableCellEditor".equals(evt.getPropertyName())) {
-	            	okButton.setEnabled(!table.isEditing());    
+	            	updateButtonStatus(); 
 	            }
 	        }
 	    });
 		
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
-
-				Settings settings = frame.getSystem().getSettings().copy();
-				settings.modules.clear();
-				for (int i = 0 ; i < listBox.getModel().getSize() ; i++) {
-					JCheckBox checkbox = (JCheckBox)listBox.getModel().getElementAt(i);
-					if (checkbox.isSelected() && checkbox.isEnabled()) {
-						for (Class<Module> cls : classes) {
-							if (cls.getSimpleName().equals(checkbox.getText())) {
-								try {
-									settings.modules.add(cls.newInstance());
-								} catch (Exception e1) {
-									e1.printStackTrace();
-								}
-							}
-						}
-					}					
-				}
-				settings.params.clear();
-				for (int i = 0 ; i < table.getModel().getRowCount() ; i++) {
-					if (table.getModel().getValueAt(i, 0) == null 
-							|| table.getModel().getValueAt(i, 1) == null) {
-						continue;
-					}
-					String param = table.getModel().getValueAt(i, 0).toString().trim();
-					String value = table.getModel().getValueAt(i, 1).toString().trim();
-					if (param.length() > 0 && value.length() > 0) {
-						settings.params.put(param, value);
-					}
-				}
-				
-				frame.getSystem().changeSettings(settings);
-				setVisible(false);
+				updateSettings();
 				 } 
 			});
-		okcancelBox.add(okButton, BorderLayout.CENTER);
-		okcancelBox.add(new JLabel("  "), BorderLayout.EAST);
-		okcancelBox1.add(okcancelBox, BorderLayout.EAST);
-		okcancelBox1.add(new JLabel("  "), BorderLayout.SOUTH);
-		contentPane.add(okcancelBox1, BorderLayout.SOUTH);
 		
-		getRootPane().setDefaultButton(okButton);
 		
 		setLocation(new Point(250, 250));
 		setMinimumSize(new Dimension(500,350));
@@ -231,9 +170,98 @@ public class ModulesPanel extends JDialog {
 		setVisible(true);
 	}
 	
-	
 
-}
+
+	private void updateButtonStatus() {
+		if (table.isEditing()) {
+			okButton.setEnabled(false);
+			return;
+		}
+			for (int r = 0; r < table.getRowCount(); r++) {
+		        if (table.getValueAt(r, 0) == null || table.getValueAt(r, 1) == null
+		        		|| table.getValueAt(r, 0).toString().trim().equals("")
+		        		|| table.getValueAt(r, 1).toString().trim().equals("")) {
+		        	okButton.setEnabled(false);
+		        	return;
+		        }
+		    }
+			okButton.setEnabled(true);
+	}
+
+
+
+	private void fillListBox() {
+		classes = ReflectionUtils.findImplementingClasses(Module.class, Package.getPackage("opendial"));
+		
+		JCheckBox[] newList = new JCheckBox[classes.size()];
+		int i = 0;
+	    for (String className : classes.keySet()) {  
+	    	Class<Module> cls = classes.get(className);
+	    	newList[i] = new JCheckBox(cls.getSimpleName());
+			newList[i].setSelected(frame.getSystem().getModule(cls) != null);
+			newList[i].setEnabled(true);
+			if (cls.equals(GUIFrame.class) || cls.equals(DialogueRecorder.class) 
+					|| cls.equals(ForwardPlanner.class) || cls.equals(WizardLearner.class) 
+					|| cls.equals(WizardControl.class)) {
+						newList[i].setEnabled(false);
+			}
+			i++;
+	    }
+
+		listBox.setListData(newList);
+	}
+
+
+	private void updateParamModel() {
+		String[] columnNames = {"Parameter", "Value"};
+	    Object[][] data = new Object[shownParams.size()][2];
+	   int  i = 0;
+	    for (String param : shownParams.keySet()) {
+	    	data[i][0] = param;
+	    	data[i][1] = shownParams.get(param);
+	    	i++;
+	    }
+
+	    DefaultTableModel dataModel = new DefaultTableModel();
+	    for (int col = 0; col < columnNames.length; col++) {
+	        dataModel.addColumn(columnNames[col]);
+	    }
+	    for (int row = 0; row < shownParams.size(); row++) {
+	        dataModel.addRow(data[row]);
+	    }
+	    table.setModel(dataModel);
+	    updateButtonStatus();
+	}
+
+
+	protected void updateSettings() {
+
+		Settings settings = frame.getSystem().getSettings().copy();
+		settings.modules.clear();
+		for (int i = 0 ; i < listBox.getModel().getSize() ; i++) {
+			JCheckBox checkbox = (JCheckBox)listBox.getModel().getElementAt(i);
+			if (checkbox.isSelected() && checkbox.isEnabled()) {
+				settings.modules.add(classes.get(checkbox.getText()));
+				log.debug("added " + checkbox.getText() + " to the settings");
+			}					
+		}
+		settings.params.clear();
+		for (int i = 0 ; i < table.getModel().getRowCount() ; i++) {
+			if (table.getModel().getValueAt(i, 0) == null 
+					|| table.getModel().getValueAt(i, 1) == null) {
+				continue;
+			}
+			String param = table.getModel().getValueAt(i, 0).toString().trim();
+			String value = table.getModel().getValueAt(i, 1).toString().trim();
+			if (param.length() > 0 && value.length() > 0) {
+				settings.params.put(param, value);
+				log.debug("setting " + param + " = " + value);
+			}
+		}
+		
+		frame.getSystem().changeSettings(settings);
+		setVisible(false);
+	}
 
 
 class CheckBoxList extends JList {
@@ -247,13 +275,35 @@ class CheckBoxList extends JList {
                   JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
                   if (checkbox != null && checkbox.isEnabled()) {
                   checkbox.setSelected(!checkbox.isSelected());
+                  
+                  try {
+      				Constructor<Module> constructor = classes.get(checkbox.getText()).getConstructor(DialogueSystem.class);
+      				constructor.newInstance(frame.getSystem());
+      			}
+      			catch (InvocationTargetException f) {
+      				if (f.getTargetException() instanceof Module.MissingParameterException) {
+      					for (String param : ((Module.MissingParameterException)f.getTargetException()).getMissingParameters()) {
+      						if (checkbox.isSelected()) {
+      							shownParams.put(param, "");
+      						}
+      						else {
+      							shownParams.remove(param);
+      						}
+      					}
+      					updateParamModel();
+      				}
+      			}
+      			catch (Exception f) {
+      				log.warning("no valid constructor for class " + checkbox.getText() + ": " + f);
+      				checkbox.setEnabled(false);
+      			}
                   repaint();
                   }
                }
+               
             }
          }
       );
-
       setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
    }
 
@@ -262,18 +312,19 @@ class CheckBoxList extends JList {
                     JList list, Object value, int index,
                     boolean isSelected, boolean cellHasFocus) {
          JCheckBox checkbox = (JCheckBox) value;
-         checkbox.setBackground(isSelected && checkbox.isEnabled() ?
-                 getSelectionBackground() : getBackground());
-         checkbox.setForeground(isSelected && checkbox.isEnabled() ?
-                 getSelectionForeground() : getForeground());
+         checkbox.setBackground(getBackground());
+         checkbox.setForeground(getForeground());
      //    checkbox.setEnabled(isEnabled());
          checkbox.setFont(getFont());
          checkbox.setFocusPainted(false);
-         checkbox.setBorderPainted(true);
          checkbox.setBorder(isSelected ?
           UIManager.getBorder( "List.focusCellHighlightBorder") : new EmptyBorder(1, 1, 1, 1));
          return checkbox;
       }
    }
+
+}
+
+
 }
 

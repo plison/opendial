@@ -422,17 +422,6 @@ public class ChanceNode extends BNode {
 	}
 
 
-	/**
-	 * Returns a pretty print representation of the node, showing its
-	 * distribution.
-	 * 
-	 * @return the pretty print representation
-	 */
-	@Override
-	public String toString() {
-		return distrib.toString();
-	}
-
 
 	// ===================================
 	//  PRIVATE AND PROTECTED METHODS

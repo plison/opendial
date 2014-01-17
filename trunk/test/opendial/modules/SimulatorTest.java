@@ -43,13 +43,16 @@ public class SimulatorTest {
 	public void simulatorTest() throws DialException, InterruptedException {
 		
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
-		system.getSettings().showGUI = false;
+		system.getDomain().getModels().remove(0);
+		system.getDomain().getModels().remove(0);
+		system.getDomain().getModels().remove(0);
 		Domain simDomain2 = XMLDomainReader.extractDomain(simDomain);
-		Simulator sim = new Simulator(simDomain2);
+		Simulator sim = new Simulator(system, simDomain2);
 		int nbSamples = Settings.nbSamples;
 		Settings.nbSamples = nbSamples / 10;
-		sim.getSettings().showGUI = false;
 		system.attachModule(sim);
+		system.getSettings().showGUI = false;
+		
 		system.startSystem();
 		
 		String str = "";
@@ -57,6 +60,7 @@ public class SimulatorTest {
 			Thread.sleep(1000);
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			if (checkCondition(str)) {
+				log.debug("final interaction: " + str);
 				return;
 			}
 		}
