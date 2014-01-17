@@ -63,14 +63,23 @@ public class XMLStateReader {
 	 * @param file the file to process
 	 * @throws DialException if XML document is ill-formatted
 	 */
-	public static BNetwork extractBayesianNetwork(String file) throws DialException {
+	public static BNetwork extractBayesianNetwork(String file, String tag) throws DialException {
 
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(file);
 
 		Node mainNode = XMLUtils.getMainNode(doc);
 
+		if (mainNode.getNodeName().equals(tag)) {
 		return getBayesianNetwork(mainNode);
+		}
+		for (int i = 0 ; i < mainNode.getChildNodes().getLength() ; i++) {
+			Node childNode = mainNode.getChildNodes().item(i);
+			if (childNode.getNodeName().equals(tag)) {
+				return getBayesianNetwork(childNode);
+			}
+		}
+		throw new DialException("No tag " + tag  + " found in file " + file);
 	}
 
 
@@ -194,18 +203,30 @@ public class XMLStateReader {
 	 * @throws DialException if the density function is not properly encoded
 	 */
 	private static GaussianDensityFunction getGaussian(Node node) throws DialException {
-		double mean = Double.MAX_VALUE;
-		double variance = Double.MAX_VALUE;
+		Double[] mean = null;
+		Double[] variance = null;
 		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
 			Node subsubnode = node.getChildNodes().item(j);
 			if (subsubnode.getNodeName().equals("mean")) {
-				mean = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+				String meanStr = subsubnode.getFirstChild().getNodeValue();
+				if (meanStr.contains("[")) {
+					mean = ((ArrayVal)ValueFactory.create(meanStr)).getArray();
+				}
+				else {
+					mean = new Double[]{Double.parseDouble(meanStr)};
+				}
 			}
 			if (subsubnode.getNodeName().equals("variance")) {
-				variance = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+				String varianceStr = subsubnode.getFirstChild().getNodeValue();
+				if (varianceStr.contains("[")) {
+					variance = ((ArrayVal)ValueFactory.create(varianceStr)).getArray();
+				}
+				else {
+					variance = new Double[]{Double.parseDouble(varianceStr)};
+				}	
 			}
 		}
-		if (mean!= Double.MAX_VALUE && variance != Double.MAX_VALUE) {
+		if (mean != null && variance != null && mean.length == variance.length) {
 			return new GaussianDensityFunction(mean, variance);
 		}
 		throw new DialException("gaussian must specify both mean and variance");

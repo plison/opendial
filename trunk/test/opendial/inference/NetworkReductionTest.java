@@ -39,6 +39,7 @@ import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
+import opendial.state.StatePruner;
 
 /**
  * 
@@ -71,7 +72,6 @@ public class NetworkReductionTest {
 
 	@Test
 	public void test1() throws DialException, InterruptedException {
-		
 		ReductionQuery redQuery = new ReductionQuery(network, "Burglary", "Earthquake", "MaryCalls");
 		
 		BNetwork reducedNet = ve.reduce(redQuery);

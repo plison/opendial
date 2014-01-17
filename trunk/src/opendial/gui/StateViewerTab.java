@@ -20,12 +20,16 @@
 package opendial.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,13 +47,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings.Recording;
 import opendial.gui.stateviewer.StateViewer;
 import opendial.state.DialogueState;
 
@@ -86,7 +94,7 @@ public class StateViewerTab extends JComponent {
 	public static enum TranslationDirection {NORTH, SOUTH, EAST, WEST}
 
 	// the frame including the tab
-	JFrame mainFrame;
+	GUIFrame mainFrame;
 	
 	// list model for the recorded networks
 	DefaultListModel listModel;
@@ -101,6 +109,8 @@ public class StateViewerTab extends JComponent {
 	// the logging area at the bottom
 	JEditorPane logArea;
 	
+	public static String CURRENT_NAME = "<html><b>Current state</b></html>";
+	
 	
 	boolean showParameters = true;
 	
@@ -113,7 +123,7 @@ public class StateViewerTab extends JComponent {
 	public StateViewerTab(GUIFrame mainFrame) {
 		setLayout(new BorderLayout());
 		
-		this.mainFrame = mainFrame.getFrame();
+		this.mainFrame = mainFrame;
 
 		states = new HashMap<String,DialogueState>();
 		
@@ -131,7 +141,7 @@ public class StateViewerTab extends JComponent {
 
 		// arrange the global layout
 		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,visualisation.wrapWithScrollPane());
-		topPanel.setDividerLocation(200);
+		topPanel.setDividerLocation(250);
 		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
 		fullPanel.setDividerLocation(600);
 		add(fullPanel);
@@ -143,8 +153,8 @@ public class StateViewerTab extends JComponent {
 
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
-		if (states.containsKey("current")) {
-			update(states.get("current"));
+		if (states.containsKey(CURRENT_NAME)) {
+			trigger(mainFrame.getSystem().getState(), mainFrame.getSystem().getState().getParameterIds());
 		}
 	}
 	
@@ -155,14 +165,38 @@ public class StateViewerTab extends JComponent {
 	
 	/**
 	 * Updates the current dialogue state displayed in the component.  The current
-	 * dialogue state is name "current" in the selection list.
+	 * dialogue state is named "Current state" in the selection list.
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public void update(DialogueState state) {
-		recordState(state, "current");
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
+		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
+			if (mainFrame.getSystem().getSettings().recording == Recording.LAST_INPUT) {
+				listModel.clear();
+				states.clear();
+			}
+			else if (mainFrame.getSystem().getSettings().recording == Recording.ALL) {
+				listModel.add(1, "separator-utterances");
+			}
+		}
+		if (mainFrame.getSystem().getSettings().recording != Recording.NONE && !updatedVars.isEmpty()) {
+			String title = "After update of " + updatedVars.iterator().next();
+			if (updatedVars.size() > 1) title += "(...)";	
+			title += "[" + System.currentTimeMillis() + "]";
+			try {
+				recordState(state.copy(), title);
+			}
+			catch (DialException e) {
+				log.warning("cannot copy state : " + e);
+			}
+		}
+		if (listModel.contains("separator-current")) {
+			listModel.remove(listModel.indexOf("separator-current"));
+		}
+		recordState(state, CURRENT_NAME);
+		listModel.add(1, "separator-current");
 		listBox.setSelectedIndex(0);
-		visualisation.showBayesianNetwork(state);
+		visualisation.showBayesianNetwork(mainFrame.getSystem().getState());
 	}
 	
 
@@ -179,7 +213,7 @@ public class StateViewerTab extends JComponent {
 	public void recordState(DialogueState state, String name) {
 		states.put(name, state);
 		if (!listModel.contains(name)) {
-			int position = name.equals("current") ? 0 : Math.min(1, listModel.size()) ; 
+			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(1, listModel.size()) ; 
 			listModel.add(position,name);
 		}
 		listBox.validate();
@@ -196,7 +230,7 @@ public class StateViewerTab extends JComponent {
 	}
 	
 	public JFrame getMainFrame() {
-		return mainFrame;
+		return mainFrame.getFrame();
 	}
 
 	
@@ -217,6 +251,7 @@ public class StateViewerTab extends JComponent {
 		listModel = new DefaultListModel();
 		leftPanel.setLayout(new BorderLayout());
 		listBox = new JList(listModel);
+		listBox.setCellRenderer(new JlistRenderer());
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listBox.addListSelectionListener(new CustomListSelectionListener());
 		JScrollPane scrollPane = new JScrollPane(listBox);
@@ -341,8 +376,12 @@ public class StateViewerTab extends JComponent {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			JList jl = (JList)e.getSource();
+			if (jl.getMinSelectionIndex() >= 0) {
 			String selection = (String) listModel.getElementAt(jl.getMinSelectionIndex());
-			visualisation.showBayesianNetwork(states.get(selection));
+			if (!selection.contains("separator")) {
+				visualisation.showBayesianNetwork(states.get(selection));
+			}
+			}
 		}
 	}
 	
@@ -443,5 +482,35 @@ public class StateViewerTab extends JComponent {
 		}
 	}
 	
+	
+public class JlistRenderer extends JLabel implements ListCellRenderer {
+    JSeparator separator;
+    public JlistRenderer() {
+      setOpaque(true);
+      setBorder(new EmptyBorder(1, 1, 1, 1));
+      separator = new JSeparator(JSeparator.HORIZONTAL);
+    }
+    
+    public Component getListCellRendererComponent(JList list, Object value,
+        int index, boolean isSelected, boolean cellHasFocus) {
+      String str = (value == null) ? "" : value.toString();
+      if (str.contains("separator")) {
+        return separator;
+      }
+      if (str.contains("[")) {
+    	  str = str.substring(0, str.indexOf("["));
+      }
+      if (isSelected) {
+        setBackground(list.getSelectionBackground());
+        setForeground(list.getSelectionForeground());
+      } else {
+        setBackground(list.getBackground());
+        setForeground(list.getForeground());
+      }
+      setFont(list.getFont());
+      setText(str);
+      return this;
+    }
+}
 
 }

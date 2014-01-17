@@ -49,15 +49,6 @@ public class Settings {
 	/** Default settings */
 	public static final String SETTINGS_FILE = "resources//settings.xml";
 
-	/** Whether the dialogue state should be pruned after every update */
-	public boolean enablePruning;
-	
-	/** Whether to record interaction turns */
-	public boolean enableRecording;
-
-	/** Whether to enable action selection */
-	public boolean enablePlan;
-
 	/** maximum number of samples to use for likelihood weighting */
 	public static int nbSamples = 1000;
 	
@@ -75,7 +66,7 @@ public class Settings {
 	
 	/** Variable label for the system output */
 	public String systemOutput;
-	
+		
 	/** Other variables to monitor in the chat window */
 	public List<String> varsToMonitor = new ArrayList<String>();
 
@@ -84,6 +75,12 @@ public class Settings {
 
 	/** Discount factor for forward planning */
 	public double discountFactor;
+	
+	/** Recording types */
+	public static enum Recording {NONE, LAST_INPUT, ALL}
+	
+	/** Whether to record intermediate dialogue state */
+	public Recording recording;
 	
 	/** Other parameters */
 	public Map<String,String> params = new HashMap<String, String>();
@@ -121,16 +118,7 @@ public class Settings {
 	public void fillSettings(Map<String,String> mapping) {
 
 		for (String key : mapping.keySet()) {
-			if (key.equalsIgnoreCase("plan")) {
-				enablePlan = Boolean.parseBoolean(mapping.get(key));
-			}
-			else if (key.equalsIgnoreCase("pruning")) {
-				enablePruning = Boolean.parseBoolean(mapping.get(key));
-			}
-			else if (key.equalsIgnoreCase("record")) {
-				enableRecording = Boolean.parseBoolean(mapping.get(key));
-			}
-			else if (key.equalsIgnoreCase("horizon")) {
+			if (key.equalsIgnoreCase("horizon")) {
 				horizon = Integer.parseInt(mapping.get(key));
 			}
 			else if (key.equalsIgnoreCase("discount")) {
@@ -162,6 +150,17 @@ public class Settings {
 			}
 			else if (key.equalsIgnoreCase("discretisation")) {
 				discretisationBuckets = Integer.parseInt(mapping.get(key));
+			}
+			else if (key.equalsIgnoreCase("recording")) {
+				if (mapping.get(key).trim().equalsIgnoreCase("last") ) {
+					recording = Recording.LAST_INPUT;
+				}
+				if (mapping.get(key).trim().equalsIgnoreCase("all")) {
+					recording = Recording.ALL;
+				}
+				else {
+					recording = Recording.NONE;
+				}
 			}
 			else if (key.equalsIgnoreCase("modules")) {
 				String[] split = mapping.get(key).split(",");
@@ -197,9 +196,6 @@ public class Settings {
 	public Map<String,String> getFullMapping() {
 		Map<String,String> mapping = new HashMap<String,String>();
 		mapping.putAll(params);
-		mapping.put("plan", ""+enablePlan);
-		mapping.put("pruning", ""+enablePruning);
-		mapping.put("record", ""+enableRecording);
 		mapping.put("horizon", ""+horizon);
 		mapping.put("discount", ""+discountFactor);
 		mapping.put("gui", ""+showGUI);

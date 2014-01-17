@@ -19,12 +19,22 @@
 
 package opendial.bn.distribs.continuous.functions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 import opendial.utils.DistanceUtils;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
@@ -238,6 +248,22 @@ public class DiscreteDensityFunction implements DensityFunction {
 			}
 		}
 		return cdf;
+	}
+
+
+	@Override
+	public List<Element> generateXML(Document doc) {
+		List<Element> elList = new ArrayList<Element>();
+		
+		for (Double[] a : points.keySet()) {
+			Element valueNode = doc.createElement("value");
+			Attr prob = doc.createAttribute("prob");
+			prob.setValue(""+StringUtils.getShortForm(points.get(a)));
+			valueNode.setAttributeNode(prob);
+			valueNode.setTextContent(""+ ValueFactory.create(a));
+			elList.add(valueNode);	
+		}
+		return elList;
 	}
 
 }

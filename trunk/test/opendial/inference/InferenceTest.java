@@ -296,7 +296,7 @@ public class InferenceTest {
 		n1 = new ChanceNode("n1");
 		n1.setDistrib(new ContinuousDistribution("n1", new UniformDensityFunction(-2, 2)));
 		n2 = new ChanceNode("n2");
-		n2.setDistrib(new ContinuousDistribution("n2", new GaussianDensityFunction(-1, 3)));
+		n2.setDistrib(new ContinuousDistribution("n2", new GaussianDensityFunction(-1.0, 3.0)));
 		network.addNode(n1);
 		network.addNode(n2);
 		network.getNode("Earthquake").addInputNode(n1);

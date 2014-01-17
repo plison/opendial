@@ -20,14 +20,20 @@
 package opendial.bn.distribs.continuous.functions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.values.ValueFactory;
 
 /**
  * (Univariate) uniform density function, with a minimum and maximum.
@@ -195,6 +201,24 @@ public class UniformDensityFunction implements DensityFunction {
 	@Override
 	public int getDimensionality() {
 		return 1;
+	}
+
+
+	@Override
+	public List<Element> generateXML(Document doc) {
+		Element distribElement = doc.createElement("distrib");
+
+		Attr id = doc.createAttribute("type");
+		id.setValue("uniform");
+		distribElement.setAttributeNode(id);
+		Element minEl = doc.createElement("min");
+		minEl.setTextContent(""+ValueFactory.create(minimum));
+		distribElement.appendChild(minEl);
+		Element maxEl = doc.createElement("max");
+		maxEl.setTextContent(""+ValueFactory.create(maximum));
+		distribElement.appendChild(maxEl);
+		
+		return Arrays.asList(distribElement);
 	}
 	
 }

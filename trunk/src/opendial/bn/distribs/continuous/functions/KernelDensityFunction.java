@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -336,6 +339,21 @@ public class KernelDensityFunction implements DensityFunction {
 				bandwidths[i] = 0.05;
 			}
 		}
+	}
+
+
+
+	/**
+	 * Converts the distribution to a Gaussian distribution and returns its XML
+	 * representation.
+	 * 
+	 * @throws DialException 
+	 * 
+	 */
+	@Override
+	public List<Element> generateXML(Document doc) throws DialException {
+		GaussianDensityFunction gaussian = new GaussianDensityFunction(points);
+		return gaussian.generateXML(doc);
 	}
 	
 

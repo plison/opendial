@@ -71,7 +71,7 @@ public class ParametersTest {
 
 	static {
 		try { 
-			params = XMLStateReader.extractBayesianNetwork(paramFile);
+			params = XMLStateReader.extractBayesianNetwork(paramFile, "parameters");
 
 			domain1 = XMLDomainReader.extractDomain(domainFile); 
 			domain1.setParameters(params);
@@ -95,7 +95,7 @@ public class ParametersTest {
 		//	Settings.gui.showGUI = true;
 
 		DialogueSystem system = new DialogueSystem(domain1);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		
 		assertTrue(system.getState().hasChanceNode("theta_1"));
@@ -126,7 +126,7 @@ public class ParametersTest {
 		inference.EXACT_THRESHOLD = 0.1;
 		
 		DialogueSystem system = new DialogueSystem(domain1);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		
 		assertTrue(system.getState().hasChanceNode("theta_3"));
@@ -148,7 +148,7 @@ public class ParametersTest {
 	public void paramTest3() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		
@@ -176,7 +176,7 @@ public class ParametersTest {
 	public void paramTest4() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 	
@@ -214,7 +214,7 @@ public class ParametersTest {
 	public void paramTest5() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
-		system.getSettings().enablePlan = false;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 

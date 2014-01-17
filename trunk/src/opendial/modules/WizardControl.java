@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Collection;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -44,6 +45,7 @@ import opendial.bn.nodes.ActionNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
+import opendial.state.DialogueState;
 import opendial.state.nodes.UtilityRuleNode;
 
 public class WizardControl implements Module {
@@ -73,25 +75,24 @@ public class WizardControl implements Module {
 	
 	
 	@Override
-	public void trigger() {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
+		
 		// if the action selection is straightforward and parameter-less, directly select the action
-		if (system.getState().getUtilityNodeIds().size() == 1 
-				&& system.getState().getUtilityNodes().iterator().next() instanceof UtilityRuleNode) {
-			if (((UtilityRuleNode)system.getState().getUtilityNodes().iterator().next()).getInputConditions().size() == 1) {
-				system.getSettings().enablePlan = true;
-				system.getModule(ForwardPlanner.class).trigger();
-				system.getSettings().enablePlan = false;
+		if (state.getUtilityNodeIds().size() == 1 
+				&& state.getUtilityNodes().iterator().next() instanceof UtilityRuleNode) {
+			if (((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getInputConditions().size() == 1) {
+				system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
 			}
 		}
 		
 		try {
 				
-		for (ActionNode action : system.getState().getActionNodes()) {
+		for (ActionNode action : state.getActionNodes()) {
 			addActionSelection(action);
 		}
-		system.getState().addToState(Assignment.createDefault(system.getState().getActionNodeIds()).removePrimes());
-		system.getState().removeNodes(system.getState().getActionNodeIds());
-		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
+		state.removeNodes(state.getActionNodeIds());
+		state.removeNodes(state.getUtilityNodeIds());
 		}
 		catch (DialException e) {
 			log.warning("could not apply wizard control: " + e);

@@ -25,6 +25,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -37,6 +43,7 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -341,6 +348,28 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 		if (discreteCache != null) {
 			discreteCache.modifyVariableId(oldId, newId);
 		}
+	}
+	
+	
+	/**
+	 * Returns the XML representation of the distribution
+	 * 
+	 * @param doc the document to which the XML node belongs
+	 * @return the corresponding node
+	 * @throws DialException 
+	 */
+	public Node generateXML(Document doc) throws DialException {
+		
+		Element var = doc.createElement("variable");
+
+		Attr id = doc.createAttribute("id");
+		id.setValue(variable);
+		var.setAttributeNode(id);
+		for (Node node : function.generateXML(doc)) {
+			var.appendChild(node);
+		}
+				
+		return var;
 	}
 
 

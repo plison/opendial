@@ -21,7 +21,9 @@ package opendial.bn;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -156,6 +158,15 @@ public class DistributionsTest {
 		assertEquals(1.0, totalProb, 0.05);
 		assertEquals(distrib.getFunction().getMean()[0], 1.0, 0.01);
 		assertEquals(distrib.getFunction().getVariance()[0], 3.0, 0.01);
+		
+		List<Double[]> samples = new ArrayList<Double[]>();
+		for (int i = 0 ; i < 20000 ; i++) {
+			Double[] val = new Double[]{((DoubleVal)distrib.sample().getValue("X")).getDouble()};
+			samples.add(val);
+		}
+		GaussianDensityFunction estimated = new GaussianDensityFunction(samples);
+		assertEquals(estimated.getMean()[0], distrib.getFunction().getMean()[0], 0.05);
+		assertEquals(estimated.getVariance()[0], distrib.getFunction().getVariance()[0], 0.08);
 	}
 	
 	
@@ -208,7 +219,7 @@ public class DistributionsTest {
 	
 	@Test
 	public void gaussianDistrib() {
-		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new GaussianDensityFunction(2, 3.0));
+		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new GaussianDensityFunction(2.0, 3.0));
 		assertEquals(continuous2.getProbDensity(new Assignment("var2", 1.2)), 0.2070, 0.001);
 		assertEquals(continuous2.getProbDensity(new Assignment("var2", 2.0)), 0.23033, 0.001);
 		assertEquals(continuous2.getCumulativeProb(new Assignment("var2", 2)), 0.5, 0.001);
@@ -333,7 +344,7 @@ public class DistributionsTest {
 		bn.addNode(var1);
 		
 		ContinuousDistribution continuous = new ContinuousDistribution("var2", new UniformDensityFunction(-1,3));
-		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new GaussianDensityFunction(3,10));
+		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new GaussianDensityFunction(3.0,10.0));
 		ConditionalDistribution<ContinuousDistribution> table = new ConditionalDistribution<ContinuousDistribution>();
 		table.addDistrib(new Assignment("var1", "one"), continuous);
 		table.addDistrib(new Assignment("var1", "two"), continuous2);
