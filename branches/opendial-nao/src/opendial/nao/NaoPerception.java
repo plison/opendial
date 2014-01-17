@@ -51,12 +51,14 @@ public class NaoPerception implements Module {
 	
 	Map<String,Long> currentPerception;
 	
-	
-	public void start(DialogueSystem system) {
+	public NaoPerception(DialogueSystem system) throws DialException {
 		this.system = system;
+		session = NaoSession.grabSession(system.getSettings());
+	}
+	
+	public void start() {
 		try {
 			paused = false;
-			session = NaoSession.grabSession(system.getSettings());
 			session.call("ALLandmarkDetection", "unsubscribe", "naoPerception");
 			session.call("AlLandmarkDetection", "subscribe", "naoPerception", 200, 0);
 			currentPerception = new HashMap<String,Long>();
@@ -78,6 +80,10 @@ public class NaoPerception implements Module {
 	
 	public void pause(boolean toPause) {
 		paused = toPause;
+	}
+	
+	public boolean isRunning() {
+		return !paused;
 	}
 	
 

@@ -55,14 +55,18 @@ public class NaoBehaviour implements Module {
 	public static final String ACTION_VAR = "a_m";
 	
 	DialogueSystem system;
-	NaoSession manager;
+	NaoSession session;
 	boolean paused = true;
 	
+	
+	public NaoBehaviour(DialogueSystem system) throws DialException {
+		this.system = system;
+		session = NaoSession.grabSession(system.getSettings());
+}
 
 	@Override
-	public void start(DialogueSystem system) throws DialException {
-		this.system = system;
-		manager = NaoSession.grabSession(system.getSettings());
+	public void start() throws DialException {
+
 		paused = false;
 		executeBehaviour(Arrays.asList("standup"));
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -71,17 +75,21 @@ public class NaoBehaviour implements Module {
 				  System.out.println("Shutting down Nao Behaviour");
 				  try {  
 					executeBehaviour(Arrays.asList("kneel"));
-					  manager.call("ALBehaviorManager", "stopAllBehaviors");;
+					  session.call("ALBehaviorManager", "stopAllBehaviors");;
 				}	catch (Exception e) {}
 			   }
 			 });
-		NaoCarryDetection.initialise(manager.getIP());
+		NaoCarryDetection.initialise(session.getIP());
 	}
 
 
 	@Override
 	public void pause(boolean toPause) {
 		paused = toPause;
+	}
+	
+	public boolean isRunning() {
+		return !paused;
 	}
 
 
@@ -91,8 +99,9 @@ public class NaoBehaviour implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {		 
-		if  (manager != null && system.getState().getChanceNodeIds().contains(ACTION_VAR + "'") && !paused && 
-				system.getState().hasChanceNode(ACTION_VAR  + "'") && !getActionValue().equals("")) {
+		if  (session != null && updatedVars.contains(ACTION_VAR) 
+				&& state.hasChanceNode(ACTION_VAR) 
+				&& !paused && !getActionValue().equals("")) {
 		String actionValue = getActionValue();
 		if (!actionValue.equals("")) {
 			log.debug("executing behaviour " + actionValue);
@@ -107,8 +116,8 @@ public class NaoBehaviour implements Module {
 
 
 	private String getActionValue() {
-			CategoricalTable actionTable = system.getContent(ACTION_VAR  + "'").toDiscrete();
-			String fullVal = actionTable.getBest().getValue(ACTION_VAR  + "'").toString();
+			CategoricalTable actionTable = system.getContent(ACTION_VAR).toDiscrete();
+			String fullVal = actionTable.getBest().getValue(ACTION_VAR).toString();
 			Matcher m = Pattern.compile("Do\\((.*)\\)").matcher(fullVal);
 			if (m.find()) {
 				return m.group(1);
@@ -127,14 +136,14 @@ public class NaoBehaviour implements Module {
 			for (String behaviourName : parallelBehaviours) {	
 				behaviourName = behaviourName.toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
 			
-				if (manager.<Boolean>call("isBehaviorInstalled", behaviourName)) {
+				if (session.<Boolean>call("isBehaviorInstalled", behaviourName)) {
 					BehaviourControl control = new BehaviourControl(behaviourName);
 					control.start();
 				}
 				
 				else if (behaviourName.equals("stop")) {
 					log.info("stopping all behaviours!");
-					manager.call("ALBehaviorManager", "stopAllBehaviors");
+					session.call("ALBehaviorManager", "stopAllBehaviors");
 				}
 				
 				else {
@@ -167,16 +176,16 @@ public class NaoBehaviour implements Module {
 	
 				behaviour = behaviour.toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
 				
-				manager.call("ALBehaviorManager","runBehavior", behaviour);
+				session.call("ALBehaviorManager","runBehavior", behaviour);
 	
-				while (!manager.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
+				while (!session.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
 					Thread.sleep(50);
 				}
 				if (!system.getState().hasChanceNode("motion")) {
 					system.addContent(new CategoricalTable(new Assignment("motion", true)));
 				}
 				
-				while (manager.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
+				while (session.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
 					Thread.sleep(50);
 				}
 				system.getState().removeNode("motion");
@@ -208,11 +217,11 @@ public class NaoBehaviour implements Module {
 		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("carried", ValueFactory.create("["+obj+"]")), carriedProb);
 		if (!obj.equals("")) {
-			manager.call("ALMemory", "insertData", "carryObj", true); 
+			session.call("ALMemory", "insertData", "carryObj", true); 
 			table.addRow(new Assignment("carried", ValueFactory.create("[]")), 1- carriedProb);
 		}
 		else {
-			manager.call("ALMemory", "carryObj", false); 
+			session.call("ALMemory", "carryObj", false); 
 		}
 		system.addContent(table);
 		}

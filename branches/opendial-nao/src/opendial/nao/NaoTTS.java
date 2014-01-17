@@ -57,11 +57,13 @@ public class NaoTTS implements Module {
 	NaoSession session;
 	boolean paused = true;
 
-	
-	public void start(DialogueSystem system) {
+	public NaoTTS(DialogueSystem system) throws DialException {
 		this.system = system;
+		session = NaoSession.grabSession(system.getSettings());
+	}
+	
+	public void start() {
 		try {
-			session = NaoSession.grabSession(system.getSettings());
 			paused = false;
 			say("OK, ready to start!");
 		}
@@ -72,6 +74,10 @@ public class NaoTTS implements Module {
 	public void pause(boolean toPause) {
 		paused = toPause;
 	}
+	
+	public boolean isRunning() {
+		return !paused;
+	}
 
 	/**
 	 *
@@ -80,11 +86,11 @@ public class NaoTTS implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {		 
 
-		String output = system.getSettings().systemOutput + "'";
-		if  (!paused && system.getState().getChanceNodeIds().contains(output)) {
+		if  (!paused && updatedVars.contains(system.getSettings().systemOutput) 
+				&& state.hasChanceNode(system.getSettings().systemOutput)) {
 
-			CategoricalTable actionTable = system.getContent(output).toDiscrete();
-			Value value = actionTable.getBest().getValue(output);
+			CategoricalTable actionTable = state.queryProb(system.getSettings().systemOutput).toDiscrete();
+			Value value = actionTable.getBest().getValue(system.getSettings().systemOutput);
 			
 		if (!value.equals(ValueFactory.none())) {
 			NaoASR asr = system.getModule(NaoASR.class);

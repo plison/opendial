@@ -20,8 +20,10 @@
 package opendial.nao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,7 +45,7 @@ import opendial.state.DialogueState;
  * @version $Date::                      $
  *
  */
-public class NaoASR  extends Thread implements Module {
+public class NaoASR  implements Module, Runnable {
 
 	static Logger log = new Logger("NaoASR", Logger.Level.DEBUG);
 
@@ -53,26 +55,33 @@ public class NaoASR  extends Thread implements Module {
 	boolean paused = true;
  
 
+	public NaoASR(DialogueSystem system) throws DialException {
+		this.system = system;
+
+		List<String> params = new ArrayList<String>(Arrays.asList("grammar", "nao_ip"));
+		params.removeAll(system.getSettings().params.keySet());
+		if (!params.isEmpty()) {
+			throw new MissingParameterException(params);
+		}
+		session = NaoSession.grabSession(system.getSettings());
+		log.debug("connecting to Nao with address " + system.getSettings().params.get("ip"));
+
+	}
+	
 	/**
 	 * @throws DialException 
 	 *
 	 */ 
 	@Override
-	public void start(DialogueSystem system) throws DialException {
-		this.system = system;
+	public void start() throws DialException {
 		log.info("starting up NAO ASR....");
 		paused = false;
 
-		session = NaoSession.grabSession(system.getSettings());
-		log.debug("connecting to Nao with address " + system.getSettings().params.get("ip"));
 		session.call("ALSpeechRecognition", "pause", false);
 		session.call("ALSpeechRecognition", "setAudioExpression", false);
 		session.call("ALSpeechRecognition", "setParameter", "NBFirstPassHypotheses", 3);
 		session.call("ALSpeechRecognition", "setParameter", "NBSecondPassHypotheses", 5);
 
-		if (!system.getSettings().params.containsKey("asr")) {
-			throw new DialException("recognition grammar must be provided");
-		}
 
 		if (session.<ArrayList>call("ALSpeechRecognition", "getSubscribersInfo").size() > 0) {
 			session.call("ALSpeechRecognition", "unsubscribe", "naoASR");
@@ -103,7 +112,7 @@ public class NaoASR  extends Thread implements Module {
 			}
 		});
 
-		start();
+		(new Thread(this)).start();
 	}
 
 
@@ -144,6 +153,10 @@ public class NaoASR  extends Thread implements Module {
 			e.printStackTrace();
 		}
 		paused = toPause;
+	}
+	
+	public boolean isRunning() {
+		return !paused;
 	}
 
 

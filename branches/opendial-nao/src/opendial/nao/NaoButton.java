@@ -38,7 +38,7 @@ import opendial.state.DialogueState;
  * @version $Date::                      $
  *
  */
-public class NaoButton extends Thread implements Module {
+public class NaoButton implements Module, Runnable {
 
 	static Logger log = new Logger("NaoASR", Logger.Level.DEBUG);
 
@@ -46,24 +46,31 @@ public class NaoButton extends Thread implements Module {
 	DialogueSystem system;
 
 
+	public NaoButton(DialogueSystem system) throws DialException {
+		this.system = system;
+		session = NaoSession.grabSession(system.getSettings());
+	}
+	 
 	/**
 	 * @throws DialException 
 	 *
 	 */
 	@Override
-	public void start(DialogueSystem system) throws DialException {
+	public void start() throws DialException {
 
-		this.system = system;
 		log.info("starting up Nao Buttons....");
 
-		session = NaoSession.grabSession(system.getSettings());
 		session.call("ALSensors", "subscribe", "NaoButton");
 
-		start();
+		(new Thread(this)).start();
+	}
+	
+	 
+	public boolean isRunning() {
+		return true;
 	}
 
 	
-	@Override
 	public void run() {
 		while (true) {
 			try {	

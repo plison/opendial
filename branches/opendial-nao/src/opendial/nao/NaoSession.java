@@ -19,6 +19,8 @@
 
 package opendial.nao;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.aldebaran.qimessaging.*;
@@ -26,6 +28,7 @@ import com.aldebaran.qimessaging.*;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.modules.Module;
 
 public class NaoSession extends QimessagingService {
 
@@ -49,6 +52,7 @@ public class NaoSession extends QimessagingService {
 		synchronized(fut) {
 		    fut.wait(1000);
 		}
+		services = new HashMap<String, com.aldebaran.qimessaging.Object>();
 		services.put("ALMemory", sess.service("ALMemory"));
 		}
 		catch (Exception e) {
@@ -58,11 +62,11 @@ public class NaoSession extends QimessagingService {
 	
 	
 	public static NaoSession grabSession(Settings settings) throws DialException {
-		if (!settings.params.containsKey("ip")) {
-			throw new DialException("settings must specify IP address for the Nao");
+		if (!settings.params.containsKey("nao_ip")) {
+			throw new Module.MissingParameterException(Arrays.asList("nao_ip"));
 		}
 		if (nao == null) {
-			nao = new NaoSession(settings.params.get("ip"));
+			nao = new NaoSession(settings.params.get("nao_ip"));
 		}
 		return nao;
 	}

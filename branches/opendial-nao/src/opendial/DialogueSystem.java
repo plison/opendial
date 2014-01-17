@@ -71,7 +71,7 @@ public class DialogueSystem {
 
 	// the dialogue state
 	protected DialogueState curState;
-
+ 
 	// the dialogue domain
 	protected Domain domain;
 
