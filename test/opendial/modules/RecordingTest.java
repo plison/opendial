@@ -54,7 +54,7 @@ public class RecordingTest {
 	public static String dialogueFile = "test/domains/woz-dialogue.xml";
 
 	// logger
-	public static Logger log = new Logger("GUITest", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RecordingTest", Logger.Level.DEBUG);
 	
 	@Test
 	public void recordTest() throws DialException, InterruptedException {
@@ -79,7 +79,6 @@ public class RecordingTest {
 		table.addRow(new Assignment("u_u", "move a bit to the left"), 0.65);	
 		system.addContent(table);
 		
-		log.debug("size " + system.getModule(GUIFrame.class).getChatTab().getChat().length());
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
 				("<font size=\"4\">move a bit to the left (0.05)</font>"));
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains

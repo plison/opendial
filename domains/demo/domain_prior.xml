@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model trigger="completed-task,perceived,carried" type="update">
+<model trigger="completed-task,perceived,carried">
 
 	<rule id="clearorcontinue">
 		<case>

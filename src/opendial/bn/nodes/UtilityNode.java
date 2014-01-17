@@ -191,11 +191,11 @@ public class UtilityNode extends BNode {
 
 	/**
 	 * Returns a string representation of the node, consisting of 
-	 * the node identifier and its distribution
+	 * the node utility distribution
 	 */
 	@Override
 	public String toString() {
-		return nodeId ;
+		return distrib.toString() ;
 	}
 
 

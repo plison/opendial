@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model type="update" trigger="u_u">
+<model trigger="u_u">
 
 	<rule>
 		<case>
