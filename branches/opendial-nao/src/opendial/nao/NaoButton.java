@@ -19,13 +19,15 @@
 
 package opendial.nao;
 
+import java.util.Collection;
+
 import opendial.DialogueSystem;
 import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;
-import opendial.utils.TimingUtils;
+import opendial.state.DialogueState;
 
 
 
@@ -66,9 +68,8 @@ public class NaoButton extends Thread implements Module {
 		while (true) {
 			try {	
 				Thread.sleep(80);  
-				ButtonLoop thread = new ButtonLoop();
+				ButtonLoop thread = new ButtonLoop(NaoSession.MAX_RESPONSE_DELAY);
 				thread.start();
-				TimingUtils.setTimeout(thread, NaoSession.MAX_RESPONSE_DELAY);
 
 				while (thread.isAlive()) {
 					thread.wait();
@@ -82,10 +83,16 @@ public class NaoButton extends Thread implements Module {
 
 	public void pause(boolean toPause) { }
 
-	public void trigger() {		 }
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		 }
 
 
-	public class ButtonLoop extends Thread implements AnytimeProcess {
+	public class ButtonLoop extends AnytimeProcess {
+
+		public ButtonLoop(long timeout) {
+			super(timeout);
+		}
+
+
 
 		public void run() {
 			NaoASR asr = system.getModule(NaoASR.class);

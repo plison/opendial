@@ -127,7 +127,7 @@ public class DialogueSystem {
 				module.start(this);
 			}
 			catch (DialException e) {
-				log.warning("could not start module " + module.getClass().getCanonicalName());
+				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
 			}
 		}
@@ -178,7 +178,7 @@ public class DialogueSystem {
 				module.start(this);
 			}
 			catch (DialException e) {
-				log.warning("could not start module " + module.getClass().getCanonicalName());
+				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
 			}
 		}

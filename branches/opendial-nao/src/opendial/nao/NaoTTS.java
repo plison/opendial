@@ -40,6 +40,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.modules.Module;
+import opendial.state.DialogueState;
 
 /**
  * 
@@ -77,7 +78,7 @@ public class NaoTTS implements Module {
 	 * @param state
 	 */
 	@Override
-	public void trigger() {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		 
 
 		String output = system.getSettings().systemOutput + "'";
 		if  (!paused && system.getState().getChanceNodeIds().contains(output)) {

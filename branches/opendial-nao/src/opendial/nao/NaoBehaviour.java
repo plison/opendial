@@ -39,6 +39,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;
+import opendial.state.DialogueState;
 
 /**
  * 
@@ -89,7 +90,7 @@ public class NaoBehaviour implements Module {
 	 * @param state
 	 */
 	@Override
-	public void trigger() {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		 
 		if  (manager != null && system.getState().getChanceNodeIds().contains(ACTION_VAR + "'") && !paused && 
 				system.getState().hasChanceNode(ACTION_VAR  + "'") && !getActionValue().equals("")) {
 		String actionValue = getActionValue();

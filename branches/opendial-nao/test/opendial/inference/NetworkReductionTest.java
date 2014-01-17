@@ -47,12 +47,12 @@ import opendial.state.StatePruner;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
- */
+ */  
 public class NetworkReductionTest {
 
 	// logger
 	public static Logger log = new Logger("PruningTest", Logger.Level.DEBUG);
-
+  
 	BNetwork network;
 
 	VariableElimination ve;
@@ -64,7 +64,7 @@ public class NetworkReductionTest {
 		network = NetworkExamples.constructBasicNetwork2();
 
 		ve = new VariableElimination();
-		is = new LikelihoodWeighting(5000, 200);
+		is = new LikelihoodWeighting(2000, 500);
 		naive = new NaiveInference();
 		sw = new SwitchingAlgorithm();
 	}

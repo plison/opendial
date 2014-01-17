@@ -33,9 +33,9 @@ import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;
-import opendial.utils.TimingUtils;
+import opendial.state.DialogueState;
 
-
+ 
 /**
  * 
  *
@@ -112,9 +112,8 @@ public class NaoASR  extends Thread implements Module {
 		while (true) {
 			try {	
 				Thread.sleep(80);  
-				ASRLoop thread = new ASRLoop();
+				ASRLoop thread = new ASRLoop(NaoSession.MAX_RESPONSE_DELAY);
 				thread.start();
-				TimingUtils.setTimeout(thread, NaoSession.MAX_RESPONSE_DELAY);
 
 				while (thread.isAlive()) {
 					thread.wait();
@@ -128,7 +127,7 @@ public class NaoASR  extends Thread implements Module {
 
 
 	@Override
-	public void trigger() {	}
+	public void trigger(DialogueState state, Collection<String> updatedVars) {	}
 
 
 	public void pause(boolean toPause) {
@@ -166,7 +165,11 @@ public class NaoASR  extends Thread implements Module {
 	}
 
 
-	public class ASRLoop extends Thread implements AnytimeProcess {
+	public class ASRLoop extends AnytimeProcess {
+
+		public ASRLoop(long timeout) {
+			super(timeout);
+		}
 
 		public void run() {
 

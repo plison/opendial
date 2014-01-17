@@ -153,7 +153,7 @@ public class NaoPerception implements Module {
 	}
 
 	@Override
-	public void trigger() {	}
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		 }
 
 
 
