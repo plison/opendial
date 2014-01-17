@@ -61,7 +61,7 @@ public class DialogueStateTest {
 	public void stateCopyTest() throws DialException, InterruptedException {
 	
 		DialogueSystem	system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		
 		system.getSettings().showGUI = false;
@@ -96,7 +96,7 @@ public class DialogueStateTest {
 
 		DialogueSystem	system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		system.startSystem(); 
 
 		DialogueState initialState = system.getState().copy();

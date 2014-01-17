@@ -81,9 +81,8 @@ public class BasicRuleTest {
 	@Test
 	public void test() throws DialException, InterruptedException {
 	
-		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -100,7 +99,7 @@ public class BasicRuleTest {
 	public void test2() throws DialException {
 				
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -118,7 +117,7 @@ public class BasicRuleTest {
 		inference.EXACT_THRESHOLD = 0.06;
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -135,7 +134,7 @@ public class BasicRuleTest {
 	public void test4() throws DialException {
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -154,7 +153,7 @@ public class BasicRuleTest {
 	public void test5() throws DialException {
 		
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -175,7 +174,7 @@ public class BasicRuleTest {
 		inference.EXACT_THRESHOLD = 0.06;
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		CategoricalTable table = new CategoricalTable();
@@ -196,7 +195,7 @@ public class BasicRuleTest {
 	public void test7() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
@@ -215,7 +214,7 @@ public class BasicRuleTest {
 	public void test8() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 

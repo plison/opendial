@@ -2,86 +2,86 @@
 <parameters>
 <variable id="theta_10">
 <distrib type="gaussian">
-<mean>[0.1458,0.8542]</mean>
-<variance>[0.0011,0.0011]</variance>
+<mean>[0.6256,0.3744]</mean>
+<variance>[0.0031,0.0031]</variance>
 </distrib>
 </variable>
 <variable id="theta_11">
 <distrib type="gaussian">
-<mean>[0.1885,0.1347,0.6768]</mean>
-<variance>[0.0945,0.0033,0.0625]</variance>
+<mean>[0.7823,0.1083,0.1094]</mean>
+<variance>[0.029,0.0128,0.0033]</variance>
 </distrib>
 </variable>
 <variable id="theta_12">
 <distrib type="gaussian">
-<mean>[0.1461,0.8539]</mean>
-<variance>[0.001,0.001]</variance>
+<mean>[0.6259,0.3741]</mean>
+<variance>[0.0031,0.0031]</variance>
 </distrib>
 </variable>
 <variable id="theta_13">
 <distrib type="gaussian">
-<mean>[0.1441,0.8559]</mean>
-<variance>[0.0011,0.0011]</variance>
+<mean>[0.6237,0.3763]</mean>
+<variance>[0.0028,0.0028]</variance>
 </distrib>
 </variable>
 <variable id="theta_14">
 <distrib type="gaussian">
-<mean>[0.144,0.856]</mean>
-<variance>[0.0012,0.0012]</variance>
+<mean>[0.6264,0.3736]</mean>
+<variance>[0.0032,0.0032]</variance>
 </distrib>
 </variable>
 <variable id="theta_9">
 <distrib type="gaussian">
-<mean>[0.5725,0.2095,0.218]</mean>
-<variance>[0.0564,0.0736,0.0011]</variance>
+<mean>[0.4441,0.434,0.1219]</mean>
+<variance>[5.0E-4,0.0027,9.0E-4]</variance>
 </distrib>
 </variable>
 <variable id="theta_5">
 <distrib type="gaussian">
-<mean>[0.2976,0.1344,0.5679]</mean>
-<variance>[0.0453,0.004,0.0225]</variance>
+<mean>[0.0377,0.0628,0.8996]</mean>
+<variance>[1.0E-4,0.004,0.0053]</variance>
 </distrib>
 </variable>
 <variable id="theta_6">
 <distrib type="gaussian">
-<mean>[0.1544,0.8456]</mean>
-<variance>[0.0659,0.0659]</variance>
+<mean>[0.2196,0.7804]</mean>
+<variance>[0.0648,0.0648]</variance>
 </distrib>
 </variable>
 <variable id="theta_7">
 <distrib type="gaussian">
-<mean>[0.1492,0.8508]</mean>
-<variance>[0.0638,0.0638]</variance>
+<mean>[0.2453,0.7547]</mean>
+<variance>[0.0784,0.0784]</variance>
 </distrib>
 </variable>
 <variable id="theta_8">
 <distrib type="gaussian">
-<mean>[0.6442,0.1424,0.2135]</mean>
-<variance>[0.0742,3.0E-4,0.0645]</variance>
+<mean>[0.0839,0.1429,0.7731]</mean>
+<variance>[3.0E-4,0.0177,0.0228]</variance>
 </distrib>
 </variable>
 <variable id="theta_1">
 <distrib type="gaussian">
-<mean>[0.1525,0.0799,0.0408,0.0505,0.1009,0.1123,0.4277,0.0355]</mean>
-<variance>[0.0125,0.0185,1.0E-4,0.0,6.0E-4,0.002,0.0328,1.0E-4]</variance>
+<mean>[0.315,0.055,0.0924,0.0948,0.0771,0.1487,0.0203,0.1967]</mean>
+<variance>[0.0033,1.0E-4,2.0E-4,0.0,6.0E-4,3.0E-4,5.0E-4,0.0]</variance>
 </distrib>
 </variable>
 <variable id="theta_2">
 <distrib type="gaussian">
-<mean>[0.0745,0.9255]</mean>
-<variance>[0.0122,0.0122]</variance>
+<mean>[0.1582,0.8418]</mean>
+<variance>[0.0389,0.0389]</variance>
 </distrib>
 </variable>
 <variable id="theta_3">
 <distrib type="gaussian">
-<mean>[0.0707,0.9293]</mean>
-<variance>[0.0116,0.0116]</variance>
+<mean>[0.2066,0.7934]</mean>
+<variance>[0.0027,0.0027]</variance>
 </distrib>
 </variable>
 <variable id="theta_4">
 <distrib type="gaussian">
-<mean>[0.196,0.2768,0.5272]</mean>
-<variance>[0.0084,0.0126,0.0415]</variance>
+<mean>[0.1162,0.2675,0.6163]</mean>
+<variance>[5.0E-4,0.0452,0.0361]</variance>
 </distrib>
 </variable>
 </parameters>

@@ -504,8 +504,6 @@ public class BNetwork {
 							log.warning("cluster 1 = " + cluster1 + " and cluster 2 = " + cluster2);
 							log.warning("network to cluster: " + getNodeIds());
 							log.warning("network to cluster2: " + nodes.keySet());
-							Thread.dumpStack();
-							System.exit(0);
 						}
 					}
 				}

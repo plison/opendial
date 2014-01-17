@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
@@ -43,10 +44,15 @@ public class DialogueRecorder implements Module {
 
 	Node rootNode;
 	Document doc;
-	DialogueSystem system;
+	Settings settings;
 
-	public void start(DialogueSystem system) {
-		this.system = system;		
+	
+	public DialogueRecorder(DialogueSystem system) {
+		this.settings = system.getSettings();				
+	}
+	
+	
+	public void start() {
 		try {
 			doc = XMLUtils.newXMLDocument();
 			doc.appendChild(doc.createElement("interaction"));
@@ -70,21 +76,21 @@ public class DialogueRecorder implements Module {
 		}
 
 		try {
-			if (updatedVars.contains(system.getSettings().userInput)) {
+			if (updatedVars.contains(settings.userInput)) {
 				Set<String> varsToRecord = new HashSet<String>();
-				varsToRecord.add(system.getSettings().userInput);
-				varsToRecord.addAll(system.getSettings().varsToMonitor);
-				Element el = system.getState().generateXML(doc, varsToRecord);
+				varsToRecord.add(settings.userInput);
+				varsToRecord.addAll(settings.varsToMonitor);
+				Element el = state.generateXML(doc, varsToRecord);
 				if (el.getChildNodes().getLength() > 0) {
 				doc.renameNode(el, null, "userTurn");
 				rootNode.appendChild(el);
 				}
 			}
-			if (updatedVars.contains(system.getSettings().systemOutput)) {
+			if (updatedVars.contains(settings.systemOutput)) {
 				Set<String> varsToRecord = new HashSet<String>();
-				varsToRecord.add(system.getSettings().systemOutput);
-				varsToRecord.addAll(system.getSettings().varsToMonitor);
-				Element el = system.getState().generateXML(doc, varsToRecord);
+				varsToRecord.add(settings.systemOutput);
+				varsToRecord.addAll(settings.varsToMonitor);
+				Element el = state.generateXML(doc, varsToRecord);
 				if (el.getChildNodes().getLength() > 0) {
 				doc.renameNode(el, null, "systemTurn");
 				rootNode.appendChild(el);
@@ -114,7 +120,8 @@ public class DialogueRecorder implements Module {
 			}
 		}
 		catch (Exception e) {
-			log.warning("could not record preamble or comment");
+			e.printStackTrace();
+			log.warning("could not record preamble or comment: " + e);
 		}
 	}
 	
@@ -131,6 +138,11 @@ public class DialogueRecorder implements Module {
 
 	public String getRecord() {
 		return XMLUtils.serialise(rootNode);
+	}
+
+
+	public boolean isRunning() {
+		return doc != null;
 	}
 
 

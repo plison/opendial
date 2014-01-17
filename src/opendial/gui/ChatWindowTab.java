@@ -309,10 +309,12 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		updateActivation();
-		if (updatedVars.contains(system.getSettings().userInput)) {
+		if (updatedVars.contains(system.getSettings().userInput)
+				&& state.hasChanceNode(system.getSettings().userInput)) {
 			showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
 		}
-		if (updatedVars.contains(system.getSettings().systemOutput)) {
+		if (updatedVars.contains(system.getSettings().systemOutput)
+				&& state.hasChanceNode(system.getSettings().systemOutput)) {
 			showVariable(state.queryProb(system.getSettings().systemOutput).toDiscrete());
 		}
 		for (String monitorVar : system.getSettings().varsToMonitor) {

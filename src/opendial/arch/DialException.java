@@ -19,6 +19,8 @@
 
 package opendial.arch;
 
+import java.util.List;
+
 
 /**
  * Generic exception thrown in openDial
@@ -41,4 +43,5 @@ public class DialException extends Exception {
 	public DialException (String msg) {
 		super(msg);
 	}
+
 }
