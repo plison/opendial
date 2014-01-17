@@ -61,7 +61,7 @@ public class WizardTest {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 
-		system.attachModule(new WizardLearner());
+		system.attachModule(WizardLearner.class);
 		system.startSystem();
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
@@ -81,7 +81,7 @@ public class WizardTest {
 	public void wizardControlTest() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
-		system.attachModule(new WizardControl());
+		system.attachModule(WizardControl.class);
 		system.startSystem();
 
 		assertEquals(2, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
@@ -95,9 +95,9 @@ public class WizardTest {
 		assertEquals(4, ((JList)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
 				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
-				+ "<interaction><userTurn><variable id=\"u_u\"><value prob=\"1.0\">hi</value></variable></userTurn>"
-				+ "<systemTurn><variable id=\"u_m\"><value prob=\"1.0\">Hi there</value></variable></systemTurn><userTurn>"
-				+ "<variable id=\"u_u\"><value prob=\"1.0\">move left</value></variable></userTurn></interaction>", 
+				+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
+				+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable></systemTurn><userTurn>"
+				+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>", 
 				system.getModule(DialogueRecorder.class).getRecord());
 		system.getModule(GUIFrame.class).getFrame().dispose();
 	}

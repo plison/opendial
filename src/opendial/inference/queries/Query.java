@@ -68,7 +68,6 @@ public abstract class Query {
 		else if (!network.getNodeIds().containsAll(queryVars)) {
 			log.warning("mismatch between query variables and network nodes: " 
 					+ queryVars + " not included in " + network.getNodeIds());
-
 		}
 	/**	else if (!network.getNodeIds().containsAll(evidence.getVariables())) {
 			log.warning("mismatch between evidence variables and network nodes: " 

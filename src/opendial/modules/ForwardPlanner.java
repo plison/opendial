@@ -22,6 +22,7 @@ package opendial.modules;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import opendial.DialogueSystem;
@@ -46,28 +47,37 @@ public class ForwardPlanner implements Module {
 	public static int NB_BEST_OBSERVATIONS = 3;
 	public static double MIN_OBSERVATION_PROB = 0.1;
 
-	DialogueSystem system;
+	Settings settings;
+	List<Model> models;
 	boolean paused = false;
 
+	public ForwardPlanner(DialogueSystem system) {
+		this.settings = system.getSettings();
+		this.models = system.getDomain().getModels();		
+	}
+	
 	public void pause(boolean shouldBePaused) {	
 		paused = shouldBePaused;
 	}
 
-	public void start(DialogueSystem system) throws DialException {
-		this.system = system;
-	}
+	public void start()  {	}
 
+
+	@Override
+	public boolean isRunning() {
+		return !paused;
+	}
 
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
 			try {
-				PlannerProcess process = new PlannerProcess();
+				PlannerProcess process = new PlannerProcess(state);
 				process.start();
 				process.join();
 			} 
 			catch (InterruptedException e) { e.printStackTrace(); }
 		}
-	}
+	} 
 
 
 	/**
@@ -77,12 +87,14 @@ public class ForwardPlanner implements Module {
 	 */
 	public class PlannerProcess extends AnytimeProcess {
 
+		DialogueState initState;
 		
 		/**
 		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
 		 */
-		public PlannerProcess() {
+		public PlannerProcess(DialogueState initState) {
 			super(Settings.maxSamplingTime * 2);
+			this.initState = initState;
 		}
 		
 		boolean isTerminated = false;
@@ -93,14 +105,14 @@ public class ForwardPlanner implements Module {
 		 */
 		public void run() {
 			try {
-				UtilityTable evalActions =getQValues(system);
-				log.debug("Q-values: " + evalActions);
+				UtilityTable evalActions =getQValues(initState, settings.horizon);
+				ForwardPlanner.log.debug("Q-values: " + evalActions);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 
 				if (evalActions.getUtil(bestAction) < 0.001) {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
-				system.getState().addToState(new CategoricalTable(bestAction.removePrimes()));
+				initState.addToState(new CategoricalTable(bestAction.removePrimes()));
 				isTerminated = true;
 			}
 			catch (Exception e) {
@@ -111,15 +123,15 @@ public class ForwardPlanner implements Module {
 
 
 
-		private UtilityTable getQValues (DialogueSystem future) throws DialException {
+		private UtilityTable getQValues (DialogueState state, int horizon) throws DialException {
 
-			Set<String> actionNodes = future.getState().getActionNodeIds();
+			Set<String> actionNodes = state.getActionNodeIds();
 			if (actionNodes.isEmpty()) {
 				return new UtilityTable();
 			}
-			UtilityTable rewards = future.getState().queryUtil(actionNodes);
+			UtilityTable rewards = state.queryUtil(actionNodes);
 
-			if (future.getSettings().horizon ==1) {
+			if (horizon ==1) {
 				return rewards;
 			}
 
@@ -129,15 +141,13 @@ public class ForwardPlanner implements Module {
 				double reward = rewards.getUtil(action);
 				qValues.setUtil(action, reward);
 
-				if (future.getSettings().horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
+				if (horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
 					
-					DialogueSystem copy = future.replicate();
-					copy.getSettings().horizon = future.getSettings().horizon - 1;				
-					//		copy.getState().reduce(future.getSettings().enablePruning);
-					copy.addContent(action.removePrimes());
+					DialogueState copy = state.copy();
+					addContent(copy, new CategoricalTable(action.removePrimes()));
 
 					if (!action.isDefault()) {
-						double expected = future.getSettings().discountFactor * getExpectedValue(copy);
+						double expected = settings.discountFactor * getExpectedValue(copy, horizon - 1);
 						qValues.setUtil(action, qValues.getUtil(action) + expected);
 					}	
 				}
@@ -145,9 +155,24 @@ public class ForwardPlanner implements Module {
 			return qValues;
 		}
 
+		
+		private void addContent(DialogueState state, CategoricalTable newContent) 
+				throws DialException {
+			
+			state.addToState(newContent);
+			
+			while (!state.getNewVariables().isEmpty()) {
+				Set<String> toProcess = state.getNewVariables();
+				state.reduce();	
+				for (Model model : models) {
+						model.trigger(state, toProcess);
+				}
+			}
+		}
+		
 
 		private boolean hasTransition(Assignment action) {
-			for (Model m : system.getDomain().getModels()) {
+			for (Model m : models) {
 				if (m.isTriggered(action.removePrimes().getVariables())) {
 					return true;
 				}
@@ -156,18 +181,18 @@ public class ForwardPlanner implements Module {
 		}
 
 
-		private double getExpectedValue(DialogueSystem future) throws DialException {
+		private double getExpectedValue(DialogueState state, int horizon) throws DialException {
 
-			CategoricalTable observations = getObservations(future.getState());
+			CategoricalTable observations = getObservations(state);
 			CategoricalTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
 			double expectedValue = 0.0;
 			for (Assignment obs : nbestObs.getRows()) {
 				double obsProb = nbestObs.getProb(obs);
 				if (obsProb > MIN_OBSERVATION_PROB) {
-					DialogueSystem copy = future.replicate();
-					copy.addContent(new CategoricalTable(obs));
+					DialogueState copy = state.copy();
+					addContent(copy, new CategoricalTable(obs));
 
-					UtilityTable qValues = getQValues(copy);
+					UtilityTable qValues = getQValues(copy, horizon);
 					if (!qValues.getRows().isEmpty()) {
 						Assignment bestAction = qValues.getBest().getKey();
 						double afterObs = qValues.getUtil(bestAction);
@@ -222,5 +247,7 @@ public class ForwardPlanner implements Module {
 		}
 
 	}
+
+
 }
 
