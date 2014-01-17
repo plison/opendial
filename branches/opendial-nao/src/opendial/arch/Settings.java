@@ -86,7 +86,7 @@ public class Settings {
 	public Map<String,String> params = new HashMap<String, String>();
 
 	/** Domain-specific modules to run */
-	public Collection<Module> modules = new ArrayList<Module>();
+	public Collection<Class<Module>> modules = new ArrayList<Class<Module>>();
 	
 	
 	/**
@@ -155,7 +155,7 @@ public class Settings {
 				if (mapping.get(key).trim().equalsIgnoreCase("last") ) {
 					recording = Recording.LAST_INPUT;
 				}
-				if (mapping.get(key).trim().equalsIgnoreCase("all")) {
+				else if (mapping.get(key).trim().equalsIgnoreCase("all")) {
 					recording = Recording.ALL;
 				}
 				else {
@@ -166,16 +166,16 @@ public class Settings {
 				String[] split = mapping.get(key).split(",");
 				for (int i = 0 ; i < split.length ; i++) {
 					if (split[i].trim().length() > 0) {
+						Class<?> clazz;
 						try {
-						Class<?> clazz = Class.forName(split[i].trim());
-						Constructor<?> ctor = clazz.getConstructor();
-						Object m = ctor.newInstance(new Object[] { });
-						if (m instanceof Module) {
-							modules.add((Module)m);
-						}
-						}
-						catch (Exception e) {
-							log.warning("cannot load " + split[i].trim() +  ": " + e);
+							clazz = Class.forName(split[i].trim());
+							for (int j = 0 ; j < clazz.getInterfaces().length ; j++) {
+								if (clazz.getInterfaces()[i].equals(Module.class)) {
+									modules.add((Class<Module>)clazz);
+								}
+							}
+						} catch (ClassNotFoundException e) {
+							log.warning("class not found: " + split[i].trim());
 						}
 					}
 				}
@@ -206,7 +206,7 @@ public class Settings {
 		mapping.put("timeout", ""+maxSamplingTime);
 		mapping.put("discretisation", ""+discretisationBuckets);
 		List<String> moduleNames = new ArrayList<String>();
-		for (Module m : modules) { moduleNames.add(m.getClass().getCanonicalName()); }
+		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
 		mapping.put("modules", ""+moduleNames.toString().replace("[", "").replace("]", ""));
 		return mapping;
 	}

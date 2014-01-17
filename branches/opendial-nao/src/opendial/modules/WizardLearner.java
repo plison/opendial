@@ -43,12 +43,15 @@ public class WizardLearner implements Module {
 	DialogueSystem system;
 
 
-	public void start(DialogueSystem system) {
+	public WizardLearner(DialogueSystem system) {
 		this.system = system;
 	}
+	
+	public void start() {	}
 
 	public void pause(boolean shouldBePaused) {	}
 
+	public boolean isRunning() {  return true;	}
 
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!state.getActionNodeIds().isEmpty()) {

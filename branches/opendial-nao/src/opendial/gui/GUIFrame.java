@@ -65,10 +65,15 @@ public class GUIFrame implements Module {
 	DialogueSystem system;		
 	
 	GUIMenuBar menu;
-	
-	public void start(DialogueSystem system) {
 
+	
+	public GUIFrame(DialogueSystem system) {
 		this.system = system;
+	}
+	
+	
+	public void start() {
+
 
 		if (system.getSettings().showGUI) {
 		frame = new JFrame();
@@ -163,6 +168,12 @@ public class GUIFrame implements Module {
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+
+	@Override
+	public boolean isRunning() {
+		return (frame != null && frame.isVisible());
 	}
 
 }

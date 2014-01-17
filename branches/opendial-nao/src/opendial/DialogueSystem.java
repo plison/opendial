@@ -19,6 +19,8 @@
 
 package opendial;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -106,14 +108,14 @@ public class DialogueSystem {
 	 * @throws DialException if the system could not be created
 	 */
 	public DialogueSystem(Domain domain) throws DialException {
+		settings = new Settings();
 		modules = new ArrayList<Module>();
-		curState = new DialogueState();
 		changeDomain(domain);
 		
 		// inserting standard modules
-		modules.add(new GUIFrame());
-		modules.add(new DialogueRecorder());
-		modules.add(new ForwardPlanner());
+		modules.add(new GUIFrame(this));
+		modules.add(new DialogueRecorder(this));
+		modules.add(new ForwardPlanner(this));
 	}
 	
 	
@@ -124,7 +126,7 @@ public class DialogueSystem {
 	public void startSystem() {
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
-				module.start(this);
+				module.start();
 			}
 			catch (DialException e) {
 				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
@@ -163,24 +165,44 @@ public class DialogueSystem {
 	 * Attaches the module to the dialogue system.
 	 * 
 	 * @param module the module to add
-	 * @param beforePlanner whether the module should be triggered before
-	 *        or after the planner
 	 */
 	public void attachModule(Module module) {
-		if (modules.contains(module)) {
+		if (modules.contains(module) || getModule(module.getClass()) != null) {
 			log.info("Module " + module.getClass().getCanonicalName() + " is already attached");
 			return;
 		}
-		int plannerPos = modules.indexOf(getModule(ForwardPlanner.class));
-		modules.add(plannerPos, module);
+		int pos = modules.indexOf(getModule(ForwardPlanner.class));
+		modules.add(pos, module);
 		if (!paused) {
 			try {
-				module.start(this);
+				module.start();
 			}
 			catch (DialException e) {
 				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
 			}
+		}
+	}
+	
+	
+
+	/**
+	 * Attaches the module to the dialogue system.
+	 * 
+	 * @param module the module class to instantiate
+	 */
+	public <T extends Module> void attachModule(Class<T> module) {
+		try {
+			Constructor<T> constructor = module.getConstructor(DialogueSystem.class);
+			attachModule(constructor.newInstance(this));
+			recordComment("Module " + module.getSimpleName() + " successfully attached");
+		} 
+		 catch (InvocationTargetException e) {
+			 log.warning("cannot attach module: " + e.getTargetException());
+			 recordComment("cannot attach module: " + e.getTargetException());
+			}
+		catch (Exception e) {
+			log.warning("cannot attach module of class " + module.getCanonicalName() + ": " + e);
 		}
 	}
 
@@ -191,9 +213,13 @@ public class DialogueSystem {
 	 * 
 	 * @param module the module to detach
 	 */
-	public void detachModule(Module module) {
-		modules.remove(module);
+	public void detachModule(Class<? extends Module> moduleClass) {
+		Module module = getModule(moduleClass);
+		if (module != null) {
+			modules.remove(module);
+		}
 	}
+
 
 
 	/**
@@ -206,30 +232,11 @@ public class DialogueSystem {
 		for (Module module : modules) {
 			module.pause(shouldBePaused);
 		}
-		if (!curState.getNewVariables().isEmpty()) {
+		if (!shouldBePaused && !curState.getNewVariables().isEmpty()) {
 			 synchronized (curState) {
 						update();
 				}
 			}
-	}
-
-	
-	/**
-	 * Creates a replicate of the current dialogue system, with the same domain, a copy 
-	 * of the current dialogue state, and a copy of the current settings.
-	 * 
-	 * <p>This method is used when performing forward planning.
-	 * 
-	 * @return the replicate of the dialogue system
-	 * @throws DialException
-	 */
-	public DialogueSystem replicate() throws DialException {
-		DialogueSystem system = new DialogueSystem(domain);
-		system.modules = new ArrayList<Module>();
-		system.curState = curState.copy();
-		system.settings = settings.copy();
-		system.paused = paused;
-		return system;
 	}
 
 
@@ -239,10 +246,10 @@ public class DialogueSystem {
 	 * @param comment the comment to record
 	 */
 	public void recordComment(String comment) {
-		if (getModule(GUIFrame.class)!= null) {
+		if (getModule(GUIFrame.class)!= null && getModule(GUIFrame.class).isRunning()) {
 			getModule(GUIFrame.class).addComment(comment);
 		}
-		if (getModule(DialogueRecorder.class)!= null) {
+		if (getModule(DialogueRecorder.class)!= null && getModule(DialogueRecorder.class).isRunning()) {
 			getModule(DialogueRecorder.class).addComment(comment);
 		}
 	}
@@ -254,13 +261,11 @@ public class DialogueSystem {
 	 * @param settings the new settings
 	 */
 	public void changeSettings(Settings settings) {
-		if (this.settings != null) {
 		modules.removeAll(this.settings.modules);
-		}
+		this.settings.fillSettings(settings.getFullMapping());
 		
-		this.settings = settings.copy();
-		for (Module m : settings.modules) {
-			log.info("Attaching module: " + m.getClass().getCanonicalName());
+		for (Class<Module> m : settings.modules) {
+			log.info("Attaching module: " + m.getCanonicalName());
 			attachModule(m);
 		}
 	}
@@ -286,7 +291,7 @@ public class DialogueSystem {
 			}
 		}
 		else {
-			log.info("system is currently paused -- ignoring content " + table + " nb mods ");
+			log.info("system is currently paused -- ignoring content " + table );
 		}
 	}
 

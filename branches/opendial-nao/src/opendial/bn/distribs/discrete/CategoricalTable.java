@@ -716,9 +716,11 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 
 		for (Assignment a : table.keySet()) {
 			Element valueNode = doc.createElement("value");
+			if (table.get(a) < 0.99) {
 			Attr prob = doc.createAttribute("prob");
 			prob.setValue(""+StringUtils.getShortForm(table.get(a)));
 			valueNode.setAttributeNode(prob);
+			}
 			valueNode.setTextContent(""+a.getValue(headVars.iterator().next()));
 			var.appendChild(valueNode);	
 		}

@@ -41,7 +41,7 @@ public class DialogueImporter extends Thread {
 	}
 	
 	public void run() {
-		system.attachModule(new WizardLearner());
+		system.attachModule(WizardLearner.class);
 		for (final DialogueState state : dialogue) {
 			try {
 				while (system.isPaused()) {
@@ -53,7 +53,7 @@ public class DialogueImporter extends Thread {
 				log.warning("could not add content: " + e);	
 			}
 		}
-		system.detachModule(system.getModule(WizardLearner.class));
+		system.detachModule(WizardLearner.class);
 	}
 
 

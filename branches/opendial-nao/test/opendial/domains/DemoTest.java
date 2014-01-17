@@ -88,7 +88,7 @@ public class DemoTest {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 
-		system.detachModule(system.getModule(ForwardPlanner.class));
+		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		
 		system.startSystem();
