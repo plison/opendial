@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <state>
 <variable id="u_u">
-<value prob="0.8712">what do you see</value>
-<value prob="0.1089">do you see it</value>
+<value prob="0.7015">what do you see</value>
+<value prob="0.0877">do you see it</value>
+<value prob="0.2108">None</value>
 </variable>
 <variable id="u_m">
 <value prob="1.0">I do not see anything</value>
@@ -11,12 +12,14 @@
 <value prob="1.0">[]</value>
 </variable>
 <variable id="i_u">
-<value prob="0.4">Move(Backward,Short)</value>
-<value prob="0.0667">Move(Left)</value>
-<value prob="0.1333">DoYouSee(RedObj)</value>
-<value prob="0.2">WhatDoYouSee</value>
-<value prob="0.1333">None</value>
-<value prob="0.0667">Move(Left,Short)</value>
+<value prob="0.1333">DoYouSee(BlueObj)</value>
+<value prob="0.1333">Move(Left)</value>
+<value prob="0.0667">DoYouSee(RedObj)</value>
+<value prob="0.0667">WhatDoYouSee</value>
+<value prob="0.2">None</value>
+<value prob="0.1333">Move(Backward)</value>
+<value prob="0.1333">Move(Right)</value>
+<value prob="0.1333">Move(Right,Short)</value>
 </variable>
 <variable id="perceived">
 <value prob="1.0">[]</value>
@@ -34,12 +37,14 @@
 <value prob="1.0">Describe([])</value>
 </variable>
 <variable id="a_u^p">
-<value prob="0.18">WhatDoYouSee</value>
-<value prob="0.22">None</value>
-<value prob="0.12">DoYouSee(RedObj)</value>
-<value prob="0.36">Move(Backward,Short)</value>
-<value prob="0.06">Move(Left,Short)</value>
-<value prob="0.06">Move(Left)</value>
+<value prob="0.06">WhatDoYouSee</value>
+<value prob="0.28">None</value>
+<value prob="0.06">DoYouSee(RedObj)</value>
+<value prob="0.12">DoYouSee(BlueObj)</value>
+<value prob="0.12">Move(Left)</value>
+<value prob="0.12">Move(Right)</value>
+<value prob="0.12">Move(Right,Short)</value>
+<value prob="0.12">Move(Backward)</value>
 </variable>
 <variable id="last(a_m)">
 <value prob="1.0">Describe([])</value>
@@ -49,7 +54,8 @@
 <value prob="0.7">ohoho</value>
 </variable>
 <variable id="a_u">
-<value prob="1.0">WhatDoYouSee</value>
+<value prob="0.7892">WhatDoYouSee</value>
+<value prob="0.2108">None</value>
 </variable>
 <variable id="lastMove">
 <value prob="1.0">Move(Forward)</value>
