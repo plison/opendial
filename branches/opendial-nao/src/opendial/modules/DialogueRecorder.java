@@ -33,6 +33,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
+import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 public class DialogueRecorder implements Module {
@@ -61,8 +62,7 @@ public class DialogueRecorder implements Module {
 
 
 	@Override
-	public void trigger() {
-		if (system.getSettings().enableRecording) {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!rootNode.getNodeName().equals("interaction")) {
 			log.warning("root node is ill-formatted: " 
 					+ rootNode.getNodeName() + " or first value is null");
@@ -70,41 +70,42 @@ public class DialogueRecorder implements Module {
 		}
 
 		try {
-			if (system.getState().hasChanceNode(system.getSettings().userInput+"'")) {
+			if (updatedVars.contains(system.getSettings().userInput)) {
 				Set<String> varsToRecord = new HashSet<String>();
 				varsToRecord.add(system.getSettings().userInput);
 				varsToRecord.addAll(system.getSettings().varsToMonitor);
 				Element el = system.getState().generateXML(doc, varsToRecord);
+				if (el.getChildNodes().getLength() > 0) {
 				doc.renameNode(el, null, "userTurn");
 				rootNode.appendChild(el);
+				}
 			}
-			if (system.getState().hasChanceNode(system.getSettings().systemOutput+"'")) {
+			if (updatedVars.contains(system.getSettings().systemOutput)) {
 				Set<String> varsToRecord = new HashSet<String>();
 				varsToRecord.add(system.getSettings().systemOutput);
 				varsToRecord.addAll(system.getSettings().varsToMonitor);
 				Element el = system.getState().generateXML(doc, varsToRecord);
+				if (el.getChildNodes().getLength() > 0) {
 				doc.renameNode(el, null, "systemTurn");
 				rootNode.appendChild(el);
+				}
 			}
 		}
 		catch (DialException e) {
 			log.warning("cannot record dialogue turn " + e);
 		}
-		}
 	}
 	
 	
 	public void addWizardAction (Assignment action) {
-		if (system.getSettings().enableRecording) {
 			Node wizardNode =doc.createElement("wizard");
 			wizardNode.setTextContent(action.toString());
 			rootNode.appendChild(wizardNode);
-		}
 	}
 
 	public void addComment(String comment) {
 		try {
-			if (rootNode.getNodeName().equals("interaction") && system.getSettings().enableRecording) {
+			if (rootNode.getNodeName().equals("interaction")) {
 				Comment com = doc.createComment(comment);
 				rootNode.appendChild(com);
 			}

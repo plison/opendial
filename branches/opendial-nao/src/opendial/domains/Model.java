@@ -179,7 +179,7 @@ public class Model {
 		}
 			for (Template trigger : triggers) {
 				for (String updatedVar : updatedVars) {
-					if (trigger.match(updatedVar.replace("'", ""), true).isMatching()) {
+					if (trigger.match(updatedVar, true).isMatching()) {
 						return true;
 					}
 				}

@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -225,13 +226,25 @@ public class DialogueState extends BNetwork {
 	 * @param newState the state to merge into the current state
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
-	public void updateState(DialogueState newState) throws DialException {
+	public void addToState(DialogueState newState) throws DialException {
+		addToState((BNetwork)newState);
+		evidence.addAssignment(newState.getEvidence().addPrimes());
+	}
+	
+
+
+	/**
+	 * Merges the dialogue state included as argument into the current one.
+	 * 
+	 * @param newState the state to merge into the current state
+	 * @throws DialException if the new dialogue state could not be merged
+	 */
+	public void addToState(BNetwork newState) throws DialException {
 		for (ChanceNode cn : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 			cn.setId(cn.getId()+ "'");		
 			addNode(cn);
 			connectToPredictions(cn);
 		}
-		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
 
 
@@ -256,7 +269,7 @@ public class DialogueState extends BNetwork {
 	public void applyRule(Rule r) throws DialException {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
-
+		
 		// first case: probability rule
 		if (r.getRuleType() == RuleType.PROB && arule.isRelevant()) {
 			ProbabilityRuleNode ruleNode = new ProbabilityRuleNode(arule);
@@ -285,6 +298,17 @@ public class DialogueState extends BNetwork {
 		}
 	}
 
+	
+
+	/**
+	 * Sets the dialogue state to consist of all new variables (to trigger right after
+	 * the system initialisation.
+	 */
+	public void setAsNew() {
+		for (ChanceNode var : new ArrayList<ChanceNode>(getChanceNodes())) {
+			var.setId(var.getId()+"'");
+		}
+	}
 
 
 	// ===================================
@@ -431,6 +455,22 @@ public class DialogueState extends BNetwork {
 	}
 
 
+	/**
+	 * Returns the set of updated variables in the dialogue state (that is, the
+	 * one that have a prime ' in their label.
+	 * 
+	 * @return the list of updated variables
+	 */
+	public Set<String> getNewVariables() {
+		Set<String> newVars = new HashSet<String>();
+		for (String var : getChanceNodeIds()) {
+			if (var.contains("'")) {
+				newVars.add(var.replace("'", ""));
+			}
+		}
+		return newVars;
+	}
+	
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
@@ -440,11 +480,11 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Prunes the dialogue state (see Section 4.4 of Pierre Lison's PhD thesis).
 	 * 
-	 * @param fullPruning whether to perform full pruning or not
+	 * @param settings the system settings (used to determine how to perform the pruning)
 	 */
-	public void reduce(boolean fullPruning) {
+	public void reduce() {
 		if (!getNewVariables().isEmpty() || !evidence.isEmpty()) {
-			StatePruner.prune(this, fullPruning);
+			StatePruner.prune(this);
 		}
 	}
 
@@ -497,23 +537,10 @@ public class DialogueState extends BNetwork {
 	public Element generateXML(Document doc, Collection<String> varsToRecord) throws DialException {
 
 		Element root = doc.createElement("state");
-		for (String nodeId : getChanceNodeIds()) {
-			if (varsToRecord.contains(nodeId.replace("'", "")) && !hasNode(nodeId+"'")) {
-				Element var = doc.createElement("variable");
-
-				Attr id = doc.createAttribute("id");
-				id.setValue(nodeId.replace("'", ""));
-				var.setAttributeNode(id);
-
-				CategoricalTable table = queryProb(nodeId).toDiscrete();
-				for (Assignment a : table.getRows()) {
-					Element valueNode = doc.createElement("value");
-					Attr prob = doc.createAttribute("prob");
-					prob.setValue(""+StringUtils.getShortForm(table.getProb(a)));
-					valueNode.setAttributeNode(prob);
-					valueNode.setTextContent(""+a.getValue(nodeId));
-					var.appendChild(valueNode);	
-				}
+		for (String nodeId : varsToRecord) {
+			if (getChanceNodeIds().contains(nodeId)) {
+				IndependentProbDistribution distrib = queryProb(nodeId);
+				Node var = distrib.generateXML(doc);
 				root.appendChild(var);
 			}
 		}
@@ -649,22 +676,8 @@ public class DialogueState extends BNetwork {
 		}
 		return variables2;
 	}
-	
-	public Set<String> getNewVariables() {
-		Set<String> newVars = new HashSet<String>();
-		for (String var : getChanceNodeIds()) {
-			if (var.contains("'")) {
-				newVars.add(var.replace("'", ""));
-			}
-		}
-		return newVars;
-	}
 
-	public void setAsNew() {
-		for (ChanceNode var : new ArrayList<ChanceNode>(getChanceNodes())) {
-			var.setId(var.getId()+"'");
-		}
-	}
+
 
 
 

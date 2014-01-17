@@ -19,7 +19,12 @@
 
 package opendial.bn.distribs.continuous.functions;
 
+import java.util.List;
 import java.util.Map;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import opendial.arch.DialException;
 
@@ -107,5 +112,15 @@ public interface DensityFunction {
 	 * @throws DialException if the CDF could not be extracted
 	 */
 	public Double getCDF(Double...x) throws DialException;
+
+
+	
+	/**
+	 * Returns the XML representation (as a list of XML elements) of the density function
+	 * 
+	 * @param doc the XML document for the node
+	 * @return the corresponding XML elements
+	 */
+	public List<Element> generateXML(Document doc) throws DialException;
 	
 }

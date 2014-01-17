@@ -20,6 +20,7 @@
 package opendial.modules;
 
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import opendial.DialogueSystem;
 import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.datastructs.Assignment;
@@ -39,7 +41,6 @@ public class ForwardPlanner implements Module {
 	// logger
 	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
 
-	public static long MAX_DELAY = 2000;
 
 	public static int NB_BEST_ACTIONS = 100;
 	public static int NB_BEST_OBSERVATIONS = 3;
@@ -57,9 +58,8 @@ public class ForwardPlanner implements Module {
 	}
 
 
-	public void trigger() {
-		if (!paused & system.getSettings().enablePlan 
-				&& !system.getState().getActionNodeIds().isEmpty()) {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
+		if (!paused && !state.getActionNodeIds().isEmpty()) {
 			try {
 				PlannerProcess process = new PlannerProcess();
 				process.start();
@@ -78,8 +78,11 @@ public class ForwardPlanner implements Module {
 	public class PlannerProcess extends AnytimeProcess {
 
 		
+		/**
+		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
+		 */
 		public PlannerProcess() {
-			super(MAX_DELAY);
+			super(Settings.maxSamplingTime * 2);
 		}
 		
 		boolean isTerminated = false;
@@ -98,6 +101,7 @@ public class ForwardPlanner implements Module {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
 				system.getState().addToState(new CategoricalTable(bestAction.removePrimes()));
+				isTerminated = true;
 			}
 			catch (Exception e) {
 				log.warning("could not perform planning, aborting action selection: " + e);
@@ -126,6 +130,7 @@ public class ForwardPlanner implements Module {
 				qValues.setUtil(action, reward);
 
 				if (future.getSettings().horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
+					
 					DialogueSystem copy = future.replicate();
 					copy.getSettings().horizon = future.getSettings().horizon - 1;				
 					//		copy.getState().reduce(future.getSettings().enablePruning);
@@ -143,7 +148,7 @@ public class ForwardPlanner implements Module {
 
 		private boolean hasTransition(Assignment action) {
 			for (Model m : system.getDomain().getModels()) {
-				if (m.isTriggered(action.getVariables())) {
+				if (m.isTriggered(action.removePrimes().getVariables())) {
 					return true;
 				}
 			}
@@ -163,7 +168,6 @@ public class ForwardPlanner implements Module {
 					copy.addContent(new CategoricalTable(obs));
 
 					UtilityTable qValues = getQValues(copy);
-
 					if (!qValues.getRows().isEmpty()) {
 						Assignment bestAction = qValues.getBest().getKey();
 						double afterObs = qValues.getUtil(bestAction);

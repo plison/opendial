@@ -47,17 +47,18 @@ import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
 
-public class ThesisTest {
+public class DemoTest {
 
 	// logger
 	public static Logger log = new Logger("ParametersTest", Logger.Level.DEBUG);
 	
 	public static final String domainFile = "test//domains//thesistest.xml";
 	public static final String paramFile = "test//domains//thesisparams.xml";
-	public static final String domainFile2 = "domains//demo//domain.xml";
+	public static final String domainFile2 = "test//domains//domain-demo.xml";
 
 	
 	public void paramTest0() throws DialException, InterruptedException {
@@ -76,23 +77,19 @@ public class ThesisTest {
 	 			nb2++;
 	 		}
 		}
-	 	log.info("NB1 " + nb1);
-	 	log.info("NB2: " + nb2);
 	}
 	
 	
 	// @Test
 	public void paramTest1() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile);
+		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile, "parameters");
 		domain.setParameters(params);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 
-		system.getSettings().enablePlan = false;
-		Settings.nbSamples = 3000;
+		system.detachModule(system.getModule(ForwardPlanner.class));
 		system.getSettings().showGUI = false;
-		Settings.maxSamplingTime = 800;
 		
 		system.startSystem();
 	 	system.addContent(new Assignment("a_m", "AskRepeat"));

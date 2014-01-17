@@ -79,9 +79,11 @@ public class SamplingProcess extends AnytimeProcess {
 	public void terminate() {
 		if (!isTerminated) {
 			if (samples.size() == 0) {
-				log.debug("query: " + query + " with network " + query.getNetwork());
+				log.debug("no samples for query: " + query);
 			}
-			isTerminated = true;
+			else {
+				isTerminated = true;
+			}
 		}
 	}
 
@@ -112,9 +114,7 @@ public class SamplingProcess extends AnytimeProcess {
 			try {
 				WeightedSample sample = new WeightedSample();
 				addReadySample(sample);
-				if (!query.getEvidence().consistentWith(sample)) {
-					continue;
-				}
+
 				for (BNode n : sortedNodes) {
 
 					// if the value is already part of the sample, skip to next one
@@ -202,7 +202,8 @@ public class SamplingProcess extends AnytimeProcess {
 	private void addReadySample(WeightedSample sample) throws DialException {
 		for (ChanceNode cn : query.getNetwork().getChanceNodes()) {
 			if (cn.getDistrib() instanceof MarginalEmpiricalDistribution) {
-				Assignment fullSample = ((MarginalEmpiricalDistribution)cn.getDistrib()).getFullSample();
+				Assignment fullSample = ((MarginalEmpiricalDistribution)cn.getDistrib()).
+						getFullDistrib().consistentSample(query.getEvidence());
 				sample.addAssignment(fullSample);
 			}
 		}

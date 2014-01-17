@@ -26,7 +26,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
@@ -47,9 +49,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings.Recording;
+import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ArrayVal;
@@ -60,6 +66,7 @@ import opendial.modules.DialogueImporter;
 import opendial.modules.WizardControl;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
+import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
@@ -68,10 +75,10 @@ import opendial.utils.XMLUtils;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-01-16 02:21:14 #$
  *
  */
-public class ToolkitMenu extends JMenuBar {
+public class GUIMenuBar extends JMenuBar {
 
 	public static final String ICON_PATH = "resources/opendial-icon.png";
 	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/w/list";
@@ -79,24 +86,71 @@ public class ToolkitMenu extends JMenuBar {
 	// logger
 	public static Logger log = new Logger("ToolkitMenu", Logger.Level.DEBUG);
 
-	public ToolkitMenu(final GUIFrame frame) {
+	GUIFrame frame;
+	JMenuItem exportState;
+	JMenuItem exportParams;
+	JMenuItem stateDisplayMenu;
+	
+	public GUIMenuBar(final GUIFrame frame) {
+		this.frame = frame;
 		JMenu domainMenu = new JMenu("Domain");
 		JMenuItem openDomain = new JMenuItem("Open Domain");
-		final JMenuItem saveParamsAs = new JMenuItem("Save Parameter Estimates As...");
 		openDomain.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				openDomain(frame);
-				saveParamsAs.setEnabled(!frame.getSystem().getState().getParameterIds().isEmpty());
+				openDomain();
 			}
 		});
-		saveParamsAs.setEnabled(!frame.getSystem().getState().getParameterIds().isEmpty());
-		saveParamsAs.addActionListener(new ActionListener() {
-			public void actionPerformed (ActionEvent e) {
-				saveParameters(frame);
-			}});
 		domainMenu.add(openDomain);
-		domainMenu.add(saveParamsAs);
+		
+		domainMenu.add(new JSeparator());
+
+		JMenu importMenu = new JMenu("Import");
+		domainMenu.add(importMenu);
+		final JMenuItem importState = new JMenuItem("Dialogue State");
+		importState.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				importAction("state");
+			}
+		});
+		importMenu.add(importState);
+		
+		final JMenuItem importParams = new JMenuItem("Parameters");
+		importParams.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				importAction("parameters");				
+			}
+		});
+		importMenu.add(importParams);
+		
+		JMenu exportMenu = new JMenu("Export");
+		domainMenu.add(exportMenu);
+		exportState = new JMenuItem("Dialogue State");
+		exportState.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				exportAction("state");
+			}
+		});
+		exportMenu.add(exportState);
+		
+		exportParams = new JMenuItem("Parameters");
+		exportParams.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				exportAction("parameters");
+			}
+		});
+		exportMenu.add(exportParams);
+				
+		domainMenu.add(new JSeparator());
+		final JMenuItem exit = new JMenuItem("Close OpenDial");
+		exit.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
+		domainMenu.add(exit);
 		add(domainMenu);
+
 
 
 		JMenu traceMenu = new JMenu("Interaction");
@@ -115,13 +169,13 @@ public class ToolkitMenu extends JMenuBar {
 		JRadioButtonMenuItem normalMode = new JRadioButtonMenuItem("Normal mode");
 		normalMode.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				switchMode(frame, false);
+				switchMode(false);
 			}
 		});
 		JRadioButtonMenuItem wozMode = new JRadioButtonMenuItem("Wizard-of-Oz mode");
 		wozMode.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				switchMode(frame, true);
+				switchMode(true);
 			}
 		});
 		modeGroup.add(normalMode);
@@ -137,7 +191,7 @@ public class ToolkitMenu extends JMenuBar {
 
 		runThrough.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				importInteraction(frame);
+				importInteraction();
 			}});
 		traceMenu.add(runThrough);
 		
@@ -145,13 +199,13 @@ public class ToolkitMenu extends JMenuBar {
 		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
 		saveInteraction.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
-				saveInteraction(frame);
+				saveInteraction();
 			}});
 		traceMenu.add(saveInteraction);
 	
 		add(traceMenu);
 		JMenu optionMenu = new JMenu("Options"); 
-		JMenu interactionMenu = new JMenu("User Utterances");
+		JMenu interactionMenu = new JMenu("View Utterances");
 		ButtonGroup group = new ButtonGroup();
 		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem("Single-best");
 		singleBest.addActionListener(new ActionListener() {
@@ -182,7 +236,40 @@ public class ToolkitMenu extends JMenuBar {
 		interactionMenu.add(threeBest);
 		interactionMenu.add(allBest);
 		optionMenu.add(interactionMenu);
-		JMenuItem stateDisplayMenu = new JMenuItem("Show/Hide parameters");
+		
+		JMenu recording = new JMenu("Record Intermediate States");
+		ButtonGroup group2 = new ButtonGroup();
+		JRadioButtonMenuItem none = new JRadioButtonMenuItem("None");
+		none.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				frame.getSystem().getSettings().recording = Recording.NONE;
+				frame.addComment("Stop recording intermediate dialogue states");
+			}
+		});
+		JRadioButtonMenuItem last = new JRadioButtonMenuItem("Last input");
+		last.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				frame.getSystem().getSettings().recording = Recording.LAST_INPUT;
+				frame.addComment("Recording intermediate dialogue states for the last user input");
+			}
+		});
+		JRadioButtonMenuItem all = new JRadioButtonMenuItem("Full history");
+		all.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				frame.getSystem().getSettings().recording = Recording.ALL;
+				frame.addComment("Recording all intermediate dialogue states (warning: can slow down processing)");
+			}
+		});
+		group2.add(none);
+		group2.add(last);
+		group2.add(all);
+		none.setSelected(true);
+		recording.add(none);
+		recording.add(last);
+		recording.add(all);
+		optionMenu.add(recording);
+		
+		stateDisplayMenu = new JMenuItem("Show/Hide parameters");
 		stateDisplayMenu.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
 				frame.getStateViewerTab().showParameters(!frame.getStateViewerTab().showParameters());
@@ -190,15 +277,30 @@ public class ToolkitMenu extends JMenuBar {
 			}
 		});
 		optionMenu.add(stateDisplayMenu);
+		optionMenu.add(new JSeparator());
 
+		
+		JMenuItem modules = new JMenuItem("Load Modules");
+		modules.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				new ModulesPanel(frame);
+			}
+		});
+		optionMenu.add(modules);
+
+		optionMenu.add(new JSeparator());
+		
 		JMenuItem config = new JMenuItem("Settings");
 		config.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
 				new SettingsPanel(frame);
 			}
 		});
-		optionMenu.add(new JSeparator());
 		optionMenu.add(config);
+		
+
+	
+		
 		add(optionMenu);
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About");
@@ -222,9 +324,9 @@ public class ToolkitMenu extends JMenuBar {
 
 	
 
-	protected void switchMode(GUIFrame frame, boolean isWozMode) {
+	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
-				frame.getSystem().attachModule(new WizardControl(), true);
+				frame.getSystem().attachModule(new WizardControl());
 				frame.addComment("Switching interaction to Wizard-of-Oz mode");
 		}
 		else {
@@ -234,7 +336,7 @@ public class ToolkitMenu extends JMenuBar {
 	}
 
 
-	protected void importInteraction(GUIFrame frame) {
+	protected void importInteraction() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showOpenDialog(frame.getFrame());
@@ -313,7 +415,7 @@ public class ToolkitMenu extends JMenuBar {
 		}
 	}
 
-	protected void saveInteraction(GUIFrame frame) {
+	protected void saveInteraction() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showSaveDialog(frame.getFrame());
@@ -323,46 +425,67 @@ public class ToolkitMenu extends JMenuBar {
 			frame.addComment("Interaction saved to " + recordFile);
 		}
 	}
+	
+	protected void importAction (String tag) {
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
+		int returnVal = fc.showOpenDialog(frame.getFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			String stateFile = fc.getSelectedFile().getAbsolutePath();
+			frame.addComment("Importing " + tag + " from "  + stateFile);
+			try {
+				importAction(frame.getSystem(), stateFile, tag);
+			}
+			catch (Exception f) {
+				log.warning("could not extract interaction: " + f);
+				frame.addComment(f.toString());
+			}
+		}
+	}
+	
+	public static void importAction(DialogueSystem system, String file, String tag) throws DialException {
+		if (tag.equals("parameters")) {
+			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
+			system.getState().setParameters(parameters);
+		}
+		else {
+			BNetwork state = XMLStateReader.extractBayesianNetwork(file, tag);
+			system.addContent(new DialogueState(state));
+		}
+	}
 
-	protected void saveParameters(GUIFrame frame) {
+	protected void exportAction(String tag) {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showSaveDialog(frame.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			try {
 				String recordFile = fc.getSelectedFile().getAbsolutePath();
-				Document doc = XMLUtils.newXMLDocument();
-				DialogueState curState = frame.getSystem().getState();
-				Element root = doc.createElement("parameters");
-				for (String param : curState.getParameterIds()) {
-					ChanceNode cn = curState.getChanceNode(param);
-					try {
-					ContinuousDistribution distrib = cn.getDistrib().getPosterior(new Assignment()).toContinuous();
-					Double[] mean = distrib.getFunction().getMean();
-					Element var = doc.createElement("variable");
-					Attr id = doc.createAttribute("id");
-					id.setValue(param);
-					var.setAttributeNode(id);
-					Element valueNode = doc.createElement("value");
-					valueNode.setTextContent(new ArrayVal(mean).toString());
-					var.appendChild(valueNode);
-					root.appendChild(var);
-					}
-					catch (DialException f) {
-						log.warning("cannot write parameter estimate: " + f);
-					}
-				}
-				doc.appendChild(root);
-				XMLUtils.writeXMLDocument(doc, recordFile);
-				frame.addComment("Parameter estimates saved to " + recordFile);
+				exportAction(frame.getSystem(), recordFile, tag);
+				frame.addComment(tag.substring(0,1).toUpperCase() + tag.substring(1) + " saved to " + recordFile);
 			}
 			catch (DialException j) {
 				log.warning("could not save parameter distribution: " + j);
 			}
 		}
 	}
+	
+	public static void exportAction(DialogueSystem system, String file, String tag) throws DialException {
+		Document doc = XMLUtils.newXMLDocument();
+		
+		Set<String> parameterIds = new HashSet<String>(system.getState().getParameterIds());
+		Set<String> otherVarsIds = new HashSet<String>(system.getState().getChanceNodeIds());
+		otherVarsIds.removeAll(parameterIds);
+		Set<String> variables = (tag.equals("parameters"))? parameterIds : otherVarsIds;
+		Node paramXML = system.getState().generateXML(doc, variables);
+		doc.renameNode(paramXML, null, tag);
+		doc.appendChild(paramXML);
+		XMLUtils.writeXMLDocument(doc, file);
+	}
 
-	protected void openDomain(GUIFrame frame) {
+
+
+	protected void openDomain() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showOpenDialog(frame.getFrame());
@@ -377,6 +500,17 @@ public class ToolkitMenu extends JMenuBar {
 				frame.addComment("Cannot use domain: " + j);
 			}	            
 		} 
+	}
+
+
+
+	public void trigger() {
+		Set<String> parameterIds = new HashSet<String>(frame.getSystem().getState().getParameterIds());
+		Set<String> otherVarsIds = new HashSet<String>(frame.getSystem().getState().getChanceNodeIds());
+		otherVarsIds.removeAll(parameterIds);
+		exportState.setEnabled(!otherVarsIds.isEmpty());		
+		exportParams.setEnabled(!parameterIds.isEmpty());
+		stateDisplayMenu.setEnabled(!parameterIds.isEmpty());
 	}
 
 

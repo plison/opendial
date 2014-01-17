@@ -31,8 +31,8 @@ import java.util.TimerTask;
  * @version $Date::                      $
  */
 public abstract class AnytimeProcess extends Thread {
-   
-	
+
+
 	public Logger log = new Logger("AnytimeProcess", Logger.Level.DEBUG);
 
 	/**
@@ -41,28 +41,29 @@ public abstract class AnytimeProcess extends Thread {
 	 * @param timeout the maximum duration of the process
 	 */
 	public AnytimeProcess(final long timeout) {
+		final Class cls = this.getClass();
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			public void run() {
 				if (!isTerminated()) {
-			log.debug("time (" + timeout + " ms.) has run out for sampling " + toString());
-			terminate();
+					log.debug("time (" + timeout + " ms.) has run out for " + cls.getSimpleName());
+					terminate();
 				}
 			}
 		}, timeout);
 	}
-	
+
 	/**
 	 * Terminates the process
 	 */
 	public abstract void terminate() ;
-	
+
 	/**
 	 * Returns true if the process is terminated, and false otherwise
 	 * 
 	 * @return true if terminated, false otherwise
 	 */
 	public abstract boolean isTerminated();
-		
+
 }
 

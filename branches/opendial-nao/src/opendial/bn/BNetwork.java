@@ -571,6 +571,24 @@ public class BNetwork {
 	}
 	
 	
+	/**
+	 * Creates a unique identifier that is guaranteed not to exist in the current network.
+	 * 
+	 * @param base the base of the identifier
+	 * @return
+	 */
+	public String getUniqueId(String base) {
+		if (!hasNode(base)) {
+			return base;
+		}
+		int incr = 1;
+		while(hasNode(base+incr)) {
+			incr++;
+		}
+		return base+incr;
+	}
+	
+	
 
 	// ===================================
 	//  UTILITIES

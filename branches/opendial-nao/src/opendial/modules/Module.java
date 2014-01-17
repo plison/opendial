@@ -20,8 +20,11 @@
 package opendial.modules;
 
 
+import java.util.Collection;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
+import opendial.state.DialogueState;
 
 
 /**
@@ -46,8 +49,11 @@ public interface Module {
 
 	/**
 	 * Triggers the module after a state update
+	 * 
+	 * @param state the dialogue state
+	 * @param updatedVars the set of updated variables
 	 */
-	public void trigger();
+	public void trigger(DialogueState state, Collection<String> updatedVars);
 	
 	/**
 	 * Pauses the current module

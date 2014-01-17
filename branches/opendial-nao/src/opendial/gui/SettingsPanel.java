@@ -72,29 +72,6 @@ public class SettingsPanel extends JDialog {
 
 		Container allOptions = new Container();
 		allOptions.setLayout(new BoxLayout(allOptions, BoxLayout.PAGE_AXIS));
-		JPanel general = new JPanel();
-		general.setLayout(new GridLayout(4,2));
-		general.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createEmptyBorder(10, 10, 10, 10),
-				BorderFactory.createTitledBorder("General")));
-		final JCheckBox pruning = new JCheckBox(" Enable pruning ");
-		pruning.setSelected(settings.enablePruning);
-		general.add(pruning);
-		general.add(new JLabel(""));
-		final JCheckBox recording = new JCheckBox(" Enable recording ");
-		recording.setSelected(settings.enableRecording);
-		general.add(recording);
-		general.add(new JLabel(""));
-		general.add(new JLabel(" External modules to run:     "));
-		final JFormattedTextField modules = new JFormattedTextField();
-		modules.setText(""+settings.getFullMapping().get("modules").toString().replace("[", "").replace("]", ""));
-		general.add(modules);	
-		general.add(new JLabel(" Other parameters:    "));
-		final JFormattedTextField others = new JFormattedTextField();
-		others.setText(""+settings.params.toString().replace("{", "").replace("}", ""));
-		general.add(others);
-
-		allOptions.add(general);
 
 		JPanel inference = new JPanel();
 		inference.setLayout(new GridLayout(3,2));
@@ -143,37 +120,22 @@ public class SettingsPanel extends JDialog {
 		allOptions.add(gui);
 		
 		JPanel planningBox = new JPanel();
-		planningBox.setLayout(new GridLayout(3,2));
+		planningBox.setLayout(new GridLayout(2,2));
 		planningBox.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createEmptyBorder(10, 10, 10, 10),
 				BorderFactory.createCompoundBorder(
 						BorderFactory.createTitledBorder(" Planning "), 
 						BorderFactory.createEmptyBorder(10, 0, 10, 0))));
-		
-		final JCheckBox planning = new JCheckBox(" Enable planning ");
-		planning.setSelected(settings.enablePlan);
-			 
-		planningBox.add(planning);
-		planningBox.add(new JLabel(""));
-		
+			 		
 		planningBox.add(new JLabel(" Planning horizon:     "));
 		final JFormattedTextField horizon = new JFormattedTextField();
 		horizon.setText(""+ settings.horizon);
-		horizon.setEditable(settings.enablePlan);
 		planningBox.add(horizon);		
 		
 		planningBox.add(new JLabel(" Discount factor:     "));
 		final JFormattedTextField discount = new JFormattedTextField();
 		discount.setText(""+settings.discountFactor);
-		discount.setEditable(settings.enablePlan);
 		planningBox.add(discount);
-		
-		planning.addActionListener(new ActionListener() {			 
-			   public void actionPerformed(ActionEvent event) {
-			    JCheckBox checkBox = (JCheckBox) event.getSource();
-					horizon.setEditable(checkBox.isSelected());
-					discount.setEditable(checkBox.isSelected());
-			  }});
 				
 		allOptions.add(planningBox);
 		
@@ -192,9 +154,6 @@ public class SettingsPanel extends JDialog {
 		JButton okButton = new JButton("     OK     ");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
-						settings.enablePruning = pruning.isSelected();
-						settings.enableRecording = recording.isSelected();
-						settings.enablePlan = planning.isSelected();
 						try {
 						Settings.nbSamples = Integer.parseInt(sampleNumber.getText());
 						Settings.maxSamplingTime = Integer.parseInt(sampleTime.getText());
@@ -208,22 +167,10 @@ public class SettingsPanel extends JDialog {
 						settings.userInput = userVar.getText();
 						settings.systemOutput = systemVar.getText();
 						settings.varsToMonitor.clear();
-						settings.modules.clear();
-						settings.params.clear();
-
+						
 						Map<String,String> otherStuff = new HashMap<String,String>();
 						otherStuff.put("monitor", toMonitor.getText().trim());
-						otherStuff.put("modules", modules.getText().trim());
-						String[] paramsSplit = others.getText().split(",");
-						for (int i = 0 ; i < paramsSplit.length ; i++) {
-							String pair = paramsSplit[i].trim();
-							if (pair.length() > 0 && pair.split("=").length == 2) {
-								otherStuff.put(pair.split("=")[0].trim(), pair.split("=")[1].trim());
-							}
-							else if (pair.length() > 0 ){
-								log.warning("ill-formatted parameters: " + pair);
-							}
-						}
+						
 						settings.fillSettings(otherStuff);
 						
 					/**	log.debug("recording settings in file " + Settings.SETTINGS_FILE);
@@ -249,8 +196,8 @@ public class SettingsPanel extends JDialog {
 		getRootPane().setDefaultButton(okButton);
 		
 		setLocation(new Point(250, 250));
-		setMinimumSize(new Dimension(650,650));
-		setPreferredSize(new Dimension(650,650));
+		setMinimumSize(new Dimension(650,500));
+		setPreferredSize(new Dimension(650,500));
 		pack();
 		setVisible(true);
 	}
