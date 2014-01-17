@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<parameters>
+<variable id="theta_10">
+<distrib type="gaussian">
+<mean>[0.4114,0.5886]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_11">
+<distrib type="gaussian">
+<mean>[0.0644,0.812,0.1236]</mean>
+<variance>[0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_12">
+<distrib type="gaussian">
+<mean>[0.4114,0.5886]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_13">
+<distrib type="gaussian">
+<mean>[0.4114,0.5886]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_14">
+<distrib type="gaussian">
+<mean>[0.4114,0.5886]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_9">
+<distrib type="gaussian">
+<mean>[0.0644,0.812,0.1236]</mean>
+<variance>[0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_5">
+<distrib type="gaussian">
+<mean>[0.1921,0.4828,0.3251]</mean>
+<variance>[0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_6">
+<distrib type="gaussian">
+<mean>[0.4711,0.5289]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_7">
+<distrib type="gaussian">
+<mean>[0.4711,0.5289]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_8">
+<distrib type="gaussian">
+<mean>[0.2362,0.5936,0.1701]</mean>
+<variance>[0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_1">
+<distrib type="gaussian">
+<mean>[0.0033,0.1555,0.0322,0.2291,0.2993,0.0338,0.078,0.1688]</mean>
+<variance>[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_2">
+<distrib type="gaussian">
+<mean>[0.2314,0.7686]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_3">
+<distrib type="gaussian">
+<mean>[0.2314,0.7686]</mean>
+<variance>[0.0,0.0]</variance>
+</distrib>
+</variable>
+<variable id="theta_4">
+<distrib type="gaussian">
+<mean>[0.1921,0.4828,0.3251]</mean>
+<variance>[0.0,0.0,0.0]</variance>
+</distrib>
+</variable>
+</parameters>
