@@ -169,7 +169,7 @@ public class StateViewerTab extends JComponent {
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public void trigger(DialogueState state, Collection<String> updatedVars) {
+	public synchronized void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
 			if (mainFrame.getSystem().getSettings().recording == Recording.LAST_INPUT) {
 				listModel.clear();

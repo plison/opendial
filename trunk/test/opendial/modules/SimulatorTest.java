@@ -56,34 +56,32 @@ public class SimulatorTest {
 		system.startSystem();
 		
 		String str = "";
-		for (int i = 0 ; i < 100 ; i++) {
+		for (int i = 0 ; i < 100 && ! system.isPaused(); i++) {
 			Thread.sleep(1000);
 			str = system.getModule(DialogueRecorder.class).getRecord();
-			if (checkCondition(str)) {
-				log.debug("final interaction: " + str);
+			try {
+				checkCondition(str);
 				system.pause(true);
-				return;
 			}
+			catch (AssertionError e) {		}
 		}
-		assertTrue(str.contains("AskRepeat"));
-		assertTrue(str.contains("Do(Move"));
-		assertTrue(str.contains("YouSee"));
-		assertTrue(str.contains("Reward: 10.0"));
-	//	assertTrue(str.contains("Reward: -1.0"));
-	//	assertTrue(str.contains("Describe"));
-	//	assertTrue(str.contains("Do(Pick"));
+		
+		checkCondition(str);
+		log.debug("full interaction: " + str);
+		system.pause(true);
 		
 		Settings.nbSamples = nbSamples * 10 ;
 
 	}
 	
-	private static boolean checkCondition(String str) {
-		return str.contains("AskRepeat") && str.contains("Do(Move") 
-				&& str.contains("YouSee") 
-				&& str.contains("Reward: 10.0")
-		//		&& str.contains("Reward: -1.0")
-		//		&& str.contains("Describe") && str.contains("Do(Pick"
-			;
+	private static void checkCondition(String str) {
+		assertTrue(str.contains("AskRepeat"));
+		assertTrue(str.contains("Do(Move"));
+				assertTrue(str.contains("YouSee")); 
+						assertTrue(str.contains("Reward: 10.0"));
+								assertTrue(str.contains("Do(Pick"));
+								
+			
 	}
 	
 	

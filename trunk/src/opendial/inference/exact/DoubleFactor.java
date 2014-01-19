@@ -159,6 +159,14 @@ public class DoubleFactor {
 			matrix.put(a, new Double[]{probMatrix.get(a), utilityMatrix.get(a)});
 		}
 	}
+	
+	public void trim(Collection<String> headVars) {
+		Map<Assignment,Double[]> newMatrix = new HashMap<Assignment,Double[]>(matrix.size());		
+		for (Assignment a : matrix.keySet()) {
+			newMatrix.put(a.getTrimmed(headVars), matrix.get(a));
+		}
+		matrix = newMatrix;
+	}
 
 
 	// ===================================
