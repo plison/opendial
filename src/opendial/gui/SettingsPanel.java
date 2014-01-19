@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -168,20 +169,10 @@ public class SettingsPanel extends JDialog {
 						settings.systemOutput = systemVar.getText();
 						settings.varsToMonitor.clear();
 						
-						Map<String,String> otherStuff = new HashMap<String,String>();
-						otherStuff.put("monitor", toMonitor.getText().trim());
+						Properties otherStuff = new Properties();
+						otherStuff.setProperty("monitor", toMonitor.getText().trim());
 						
 						settings.fillSettings(otherStuff);
-						
-					/**	log.debug("recording settings in file " + Settings.SETTINGS_FILE);
-						try {
-							Document doc = XMLUtils.newXMLDocument();
-							doc.appendChild(settings.generateXML(doc));
-							XMLUtils.writeXMLDocument(doc, Settings.SETTINGS_FILE);
-						}
-						catch (DialException f) {
-							log.warning("could not create file " + Settings.SETTINGS_FILE + ": " + f);
-						} */
 						
 						frame.getSystem().changeSettings(settings);
 						setVisible(false);
@@ -196,8 +187,8 @@ public class SettingsPanel extends JDialog {
 		getRootPane().setDefaultButton(okButton);
 		
 		setLocation(new Point(250, 250));
-		setMinimumSize(new Dimension(650,500));
-		setPreferredSize(new Dimension(650,500));
+		setMinimumSize(new Dimension(650,480));
+		setPreferredSize(new Dimension(650,480));
 		pack();
 		setVisible(true);
 	}
