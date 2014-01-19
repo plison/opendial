@@ -299,7 +299,12 @@ public class AnchoredRule {
 	 * @return the string representation
 	 */
 	public String toString() {
-		return rule + " (groundings:"+groundings+")";
+		if (groundings.isEmpty() || groundings.iterator().next().isEmpty()) {
+			return rule.toString();
+		}
+		else {
+			return rule + " (groundings:"+groundings+")";
+		}
 	}
 
 }

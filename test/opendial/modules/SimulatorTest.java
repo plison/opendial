@@ -36,7 +36,7 @@ public class SimulatorTest {
 	// logger
 	public static Logger log = new Logger("SimulatorTest", Logger.Level.DEBUG);
 
-	public static String mainDomain = "domains//demo/domain.xml";
+	public static String mainDomain = "test//domains//domain-demo.xml";
 	public static String simDomain = "test//domains//domain-simulator.xml";
 	
 	@Test
@@ -61,6 +61,7 @@ public class SimulatorTest {
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			if (checkCondition(str)) {
 				log.debug("final interaction: " + str);
+				system.pause(true);
 				return;
 			}
 		}

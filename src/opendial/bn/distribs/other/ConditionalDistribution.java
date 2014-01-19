@@ -188,8 +188,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 			return table.get(trimmed).toDiscrete().getProb(head);
 		}
 		else {
-			throw new DialException("could not find the corresponding condition for " + condition + 
+			log.warning("could not find the corresponding condition for " + condition + 
 					" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+			return 0.0;
 		}
 	}
 

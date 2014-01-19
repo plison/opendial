@@ -158,6 +158,9 @@ public class XMLDomainReader {
 			String[] triggerArray = topNode.getAttributes().getNamedItem("trigger").getNodeValue().split(",");
 			model.addTriggers(Arrays.asList(triggerArray));			
 		}
+		else {
+			throw new DialException("each model must specify a variable trigger:" + XMLUtils.serialise(topNode));
+		}
 		
 		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("id")!= null) {
 			String id = topNode.getAttributes().getNamedItem("id").getNodeValue();

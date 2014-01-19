@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model trigger="a_m" type="decision">
+<model trigger="a_m">
 
 	<rule id="move-decision-sim">
 		<case>

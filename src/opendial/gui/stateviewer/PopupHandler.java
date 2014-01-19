@@ -83,6 +83,7 @@ implements MouseListener, ActionListener {
 	protected void handlePopup(MouseEvent e) {
 		super.mouseClicked(e);			
 		List<String> pickedVertices = new ArrayList<String>(viewer.getPickedVertexState().getPicked());
+		
 		JPopupMenu popup = new JPopupMenu();
 		if (!pickedVertices.isEmpty() && viewer.getState().hasChanceNodes(pickedVertices)) {
 			JMenuItem marginalItem = new JMenuItem(MARGINAL);
@@ -123,13 +124,17 @@ implements MouseListener, ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		DialogueState state = viewer.getState();
-		Set<String> pickedVertices = viewer.getPickedVertexState().getPicked();
+		Set<String> pickedVertices = new HashSet<String>();
+		for (String vertice : viewer.getPickedVertexState().getPicked()) {
+			pickedVertices.add(viewer.getBNode(vertice).getId());
+		}
+		pickedVertices.removeAll(state.getUtilityNodeIds());
 
 		if (e.getSource() instanceof JMenuItem) {
 
 			if (((JMenuItem)e.getSource()).getText().equals(MARGINAL)) {
 				ProbDistribution distrib = state.queryProb(pickedVertices);
-				String str = StringUtils.getHtmlRendering(distrib.toString().replace(", ", "\n").replace("\n", "\n<br>"));
+				String str = StringUtils.getHtmlRendering(distrib.toString().replace("\n", "\n<br>"));
 				viewer.getStateMonitorTab().writeToLogArea(
 						"<html><font face=\"helvetica\">"+ str + "</font></html>");
 			}
@@ -149,8 +154,12 @@ implements MouseListener, ActionListener {
 				new NodeEditPanel(frame);
 			} */
 			else if (((JMenuItem)e.getSource()).getText().equals(UTILITY)) {
-				UtilityTable distrib = state.queryUtil(pickedVertices);
-				String str = StringUtils.getHtmlRendering(distrib.toString().replace(", ", "\n").replace("\n", "\n<br>"));
+				if (pickedVertices.isEmpty()) {
+					pickedVertices = state.getActionNodeIds();
+				}
+				String result = (pickedVertices.isEmpty())? ""+state.queryUtil() 
+						: state.queryUtil(pickedVertices).toString();
+				String str = StringUtils.getHtmlRendering(result.replace("\n", "\n<br>"));
 				viewer.getStateMonitorTab().writeToLogArea(
 						"<html><font face=\"helvetica\">"+ str + "</font></html>");
 			}

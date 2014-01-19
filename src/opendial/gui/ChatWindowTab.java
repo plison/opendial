@@ -294,7 +294,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 				&& system.getModules().size() <= 3) {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
-			if (lines.getText().length() <= 100) {
+			if (lines.getText().length() <= 100 && ! lines.getText().contains("No domain currently selected")) {
 				addComment("No domain currently selected");
 			}
 		}

@@ -422,6 +422,13 @@ public class ChanceNode extends BNode {
 	}
 
 
+	/**
+	 * Returns the string representation of the distribution.
+	 * 
+	 */
+	public String toString() {
+		return distrib.toString();
+	}
 
 	// ===================================
 	//  PRIVATE AND PROTECTED METHODS

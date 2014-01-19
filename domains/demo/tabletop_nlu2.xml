@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model type="update" trigger="a_u^t">
+<model trigger="a_u^t">
 
 
 	<rule id="nlu-pickup">
