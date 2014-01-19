@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,8 +79,6 @@ public class GUIFrame implements Module {
 		if (system.getSettings().showGUI) {
 		frame = new JFrame();
 
-		// TODO: add " - domain name " when a domain is loaded
-		frame.setTitle("OpenDial toolkit");
 		
 		JTabbedPane tabbedPane = new JTabbedPane();
 		frame.getContentPane().add(tabbedPane);
@@ -106,12 +105,15 @@ public class GUIFrame implements Module {
 		frame.pack();
 		frame.setVisible(true);
 		}
+		trigger(system.getState(), new ArrayList<String>());
 	}
 	
 	
 	public void pause(boolean pause) {
+		if (frame != null && frame.isVisible()) {
 		addComment((pause)? "system paused" : "system resumed");
 		chatTab.updateActivation();
+		}
 	}
 	
 
@@ -129,9 +131,12 @@ public class GUIFrame implements Module {
 		chatTab.trigger(state, updatedVars);
 		stateMonitorTab.trigger(state, updatedVars);
 		menu.trigger();
-			if (!frame.getTitle().equals(system.getDomain().getName())) {
-				frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
-			}
+		if (system.getDomain().getName() == null) {
+			frame.setTitle("OpenDial toolkit");
+		}
+		else if (!frame.getTitle().contains(system.getDomain().getName())){
+			frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
+		}
 		}
 	}
 	

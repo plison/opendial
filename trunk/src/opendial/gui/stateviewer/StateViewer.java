@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,11 +49,13 @@ import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.DAGLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
+import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
@@ -80,6 +83,7 @@ import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 import opendial.state.DialogueState;
 import opendial.state.nodes.ProbabilityRuleNode;
+import opendial.state.nodes.UtilityRuleNode;
 import opendial.utils.StringUtils;
 
 
@@ -109,7 +113,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	
 	// shown distribution charts
 	Map<Collection<String>, DistributionViewer> shownDistribs;
-	
+		
 
 	/**
 	 * Creates a new graph viewer, connected to the component given as
@@ -118,7 +122,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * @param tab the state viewer component
 	 */
 	public StateViewer(StateViewerTab tab) {
-		super(getGraphLayout(new DialogueState(), tab.showParameters())); 
+		super(new StaticLayout<String,Integer>(new DelegateForest<String,Integer>())); 
 		this.tab = tab;
 
 		// scaling it by 60%
@@ -142,7 +146,6 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		setGraphMouse(graphMouse);
 		
 		shownDistribs = new HashMap<Collection<String>,DistributionViewer>();
-
 	}
 
 
@@ -153,7 +156,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * @param bn the Bayesian network
 	 * @return the generated layout
 	 */
-	private static Layout<String,Integer> getGraphLayout(DialogueState ds, boolean showParameters) {
+	private Layout<String,Integer> getGraphLayout(DialogueState ds, boolean showParameters) {
 		Forest<String, Integer> f = new DelegateForest<String,Integer>();
 
 		// adding the nodes and edges
@@ -178,9 +181,8 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 			return getGraphLayout(ds, showParameters);
 		}
 		
-		KKLayout<String,Integer> layout  = new KKLayout<String,Integer>(f); 
-		layout.setLengthFactor(1.5);
-		layout.setMaxIterations(100);
+		CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
+		StaticLayout<String,Integer> layout  = new StaticLayout<String,Integer>(f, transformer); 
 
 		layout.setSize(new Dimension(600,600));
 
@@ -213,7 +215,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * @param verticeID the vertice identifier
 	 * @return the node in the Bayesian Network, if any
 	 */
-	private BNode getBNode(String verticeID) {
+	protected BNode getBNode(String verticeID) {
 		String nodeId = verticeID.replace("util---", "").replace("action---", "");
 		if (currentState != null && currentState.hasNode(nodeId)) {
 			return currentState.getNode(nodeId);
@@ -346,10 +348,14 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		public String transform(String nodeGraphId) {
 			String nodeId2 = getBNode(nodeGraphId).getId();
 			String prettyPrintNode = getBNode(nodeId2).toString();
-			String htmlDistrib = "<html><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + 
-					prettyPrintNode.replace("\n", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-							+ "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + "<br></html>";
-			htmlDistrib = htmlDistrib.replace("if", "<b>if</b>").replace("then", "<b>then</b>");
+			String htmlDistrib = "<html>&nbsp;&nbsp;" + 
+					prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
+							+ "<br>&nbsp;&nbsp;") + "<br></html>";
+			htmlDistrib = htmlDistrib
+					.replace("if", "<b>if</b>")
+					.replace("then", "<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+					.replace("else", "<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+					.replace("<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>", "<b>else if</b>");
 			return StringUtils.getHtmlRendering(htmlDistrib);
 		}
 
@@ -368,7 +374,11 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 			if (arg4 instanceof String) {
 				BNode node = getBNode((String)arg4);
 				if (node!=null) {
-					JLabel jlabel = new JLabel("<html>"+StringUtils.getHtmlRendering(node.getId())+"</html>");
+					String str = StringUtils.getHtmlRendering(node.getId());
+					if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
+						str = "<font size=\"6\" color=\"gray\">" + str + "</font>";
+					}
+					JLabel jlabel = new JLabel("<html>" +str + "</html>");
 					jlabel.setFont(new Font("Arial bold", Font.PLAIN, 24));
 					return jlabel;
 				}
@@ -419,10 +429,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 			}
 			else if (node instanceof UtilityNode) {
 				GeneralPath p0 = new GeneralPath();
-				p0.moveTo(0.0f, -20);
-				p0.lineTo(20, 0.0f);
-				p0.lineTo(0.0f, 20);
-				p0.lineTo(-20, 0.0f);
+				p0.moveTo(0.0f, -15);
+				p0.lineTo(15, 0.0f);
+				p0.lineTo(0.0f, 15);
+				p0.lineTo(-15, 0.0f);
 				p0.closePath();
 				return (Shape) p0;
 			}
@@ -436,5 +446,51 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	}
 
 
+	final class CustomLayoutTransformer implements Transformer<String,Point2D> {
+
+		Map<BNode,Point2D> positions;
+		
+		public CustomLayoutTransformer(BNetwork network) {
+			positions = new HashMap<BNode, Point2D>();
+			Point current = new Point(0, 0);
+			for (BNode node : network.getChanceNodes()) {
+				if (!node.getId().contains("'") && !node.getId().contains("=") 
+						&& !(node instanceof ProbabilityRuleNode)) {
+					positions.put(node, current);
+					current = incrementPoint(current);
+				}
+			}
+			current = new Point(current.x + 200, 0);
+			for (BNode node : network.getNodes()) {
+				if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
+					positions.put(node, current);
+					current = incrementPoint(current);
+				}
+			}
+			
+			current = new Point(current.x + 200, 0);
+			for (BNode node : network.getNodes()) {
+				if (!positions.containsKey(node)) {
+					positions.put(node, current);
+					current = incrementPoint(current);
+				}
+			}
+		}
+		
+		private Point incrementPoint(Point curPoint) {
+			if (curPoint.y < 500) {
+				return new Point(curPoint.x, curPoint.y + 150);
+			}
+			else {
+				return new Point(curPoint.x + 150, 0);
+			}
+		}
+		
+		@Override
+		public Point2D transform(String id) {
+			return positions.get(getBNode(id));
+		}
+		
+	}
 
 }
