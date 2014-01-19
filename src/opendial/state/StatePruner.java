@@ -73,7 +73,7 @@ public class StatePruner {
 		
 		try {
 			// step 1 : selection of nodes to keep
-			Set<String> nodesToKeep = getNodesToKeep(state);
+			Set<String> nodesToKeep = getNodesToKeep(state);			
 			// step 2: reduction
 			ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
 			BNetwork reduced = new SwitchingAlgorithm().reduce(reductionQuery);
@@ -87,6 +87,7 @@ public class StatePruner {
 			// step 5: filter the distribution and remove and empty nodes
 			removeSpuriousNodes(reduced);
 			// step 6: and final reset the state to the reduced form		
+			
 			state.reset(reduced);
 		
 		}
@@ -145,7 +146,7 @@ public class StatePruner {
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				nodesToRemove.add(node.getId());
 			} 
-			else if (node.getId().endsWith("^t")) {
+			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o")) {
 				nodesToRemove.add(node.getId());
 			}
 

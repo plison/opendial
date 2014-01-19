@@ -300,8 +300,6 @@ public class ChanceNode extends BNode {
 		if (!result.containsVar(nodeId)) {
 					log.warning("result of sampling does not contain " + nodeId +": " + 
 							result + " distrib is " + distrib.getClass().getSimpleName());
-					log.debug("nodeId is " + nodeId);
-					log.debug("distrib is " + distrib);
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);

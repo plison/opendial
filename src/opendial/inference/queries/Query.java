@@ -89,7 +89,7 @@ public abstract class Query {
 	 * Returns the query variables for the query
 	 * @return
 	 */
-	public Collection<String> getQueryVars() {
+	public Set<String> getQueryVars() {
 		return new HashSet<String>(queryVars);
 	}
 	

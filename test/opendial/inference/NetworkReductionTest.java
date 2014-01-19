@@ -282,15 +282,15 @@ public class NetworkReductionTest {
 		assertEquals(ve.queryProb(query6).toDiscrete().getProb(new Assignment(), 
 				new Assignment("Earthquake")), 
 				is.queryProb(query7).toDiscrete().getProb(new Assignment(), 
-						new Assignment("Earthquake")), 0.05);
+						new Assignment("Earthquake")), 0.07);
 		assertEquals(ve.queryProb(query5).toDiscrete().getProb(new Assignment(), 
 				new Assignment("Earthquake")), 
 				naive.queryProb(query8).toDiscrete().getProb(new Assignment(), 
-						new Assignment("Earthquake")), 0.05);
+						new Assignment("Earthquake")), 0.07);
 		assertEquals(ve.queryProb(query6).toDiscrete().getProb(new Assignment(), 
 				new Assignment("Earthquake")), 
 				naive.queryProb(query8b).toDiscrete().getProb(new Assignment(), 
-						new Assignment("Earthquake")), 0.05);
+						new Assignment("Earthquake")), 0.07);
 
 	}
 

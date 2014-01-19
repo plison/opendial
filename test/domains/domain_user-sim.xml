@@ -9,10 +9,10 @@
 				<if var="i_u" value="{X}" />
 			</condition>
 			<effect prob="0.7">
-				<set var="a_uinit" value="Confirm" />
+				<set var="a_u" value="Confirm" />
 			</effect>
 			<effect prob="0.2">
-				<set var="a_uinit" value="{i_u}" />
+				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
 		<case>
@@ -22,10 +22,10 @@
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
 			<effect prob="0.7">
-				<set var="a_uinit" value="Disconfirm" />
+				<set var="a_u" value="Disconfirm" />
 			</effect>
 			<effect prob="0.2">
-				<set var="a_uinit" value="{i_u}" />
+				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
 		<case>
@@ -33,10 +33,10 @@
 				<if var="lastMove" value="{i_u}" />
 			</condition>
 			<effect prob="0.3">
-				<set var="a_uinit" value="RepeatLast" />
+				<set var="a_u" value="RepeatLast" />
 			</effect>
 			<effect prob="0.6">
-				<set var="a_uinit" value="{i_u}" />
+				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
 	 <case>
@@ -45,7 +45,7 @@
 				<if var="completed-task" value="true" />
 			</condition>
 			<effect prob="0.9">
-				<set var="a_uinit" value="{i_u}" />
+				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>  	
 		<case>
@@ -53,7 +53,7 @@
 				<if var="i_u" value="None" relation="!=" />
 			</condition>
 			<effect prob="0.9">
-				<set var="a_uinit" value="{i_u}" />
+				<set var="a_u" value="{i_u}" />
 			</effect>
 		</case>
 	</rule>
@@ -65,10 +65,10 @@
 				<if var="last(a_m)" value="Do(*)" />
 			</condition>
 			<effect prob="0.1">
-				<set var="a_uinit" value="Stop" />
+				<set var="a_u" value="Stop" />
 			</effect>
 			<effect prob="0.1">
-				<set var="a_uinit" value="Disconfirm" />
+				<set var="a_u" value="Disconfirm" />
 			</effect>
 		</case>
 	</rule>
