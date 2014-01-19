@@ -467,6 +467,14 @@ public class Assignment {
 		}
 	}
 	
+	public void removePairs(Template template) {
+		for (String var : new ArrayList<String>(map.keySet())) {
+			if (template.match(var, false).isMatching) {
+				removePair(var);
+			}
+		}
+	}
+	
 
 	public Assignment removeValues(Value toRemove) {
 		Assignment a = new Assignment();

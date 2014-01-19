@@ -33,12 +33,15 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.state.StatePruner;
 import opendial.utils.StringUtils;
 
 /**
@@ -59,13 +62,6 @@ public class Simulator implements Module {
 
 	// the main system (to which the simulator is attached)
 	DialogueSystem system;
-
-	// the internal state variables for the simulator
-	List<String> stateVars;
-
-	// observation variables (e.g. external context)
-	List<String> obsVars;
-
 
 
 	/**
@@ -94,13 +90,6 @@ public class Simulator implements Module {
 		simulatorState.setParameters(domain.getParameters());
 		this.system.changeSettings(domain.getSettings());
 
-		List<String> requiredParams = new ArrayList<String>(Arrays.asList("state", "observations"));
-		requiredParams.removeAll(system.getSettings().params.keySet());
-		if (!requiredParams.isEmpty()) {
-			throw new MissingParameterException(requiredParams);
-		}
-		stateVars = Arrays.asList(system.getSettings().params.get("state").split(","));
-		obsVars = Arrays.asList(system.getSettings().params.get("observations").split(","));
 	}
 
 
@@ -133,15 +122,15 @@ public class Simulator implements Module {
 			system.addContent(emptyAction);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Returns true if the system is not paused, and false otherwise
 	 */
 	public boolean isRunning() {
 		return !system.isPaused();
 	}
-	
+
 	public void pause(boolean toPause) {	}
 
 
@@ -162,10 +151,11 @@ public class Simulator implements Module {
 						synchronized (systemState) {
 
 							Assignment systemAction = (systemState.hasChanceNode(outputVar))? 
-								systemState.queryProb(outputVar).toDiscrete().getBest()
-								: Assignment.createDefault(outputVar);
+									systemState.queryProb(outputVar).toDiscrete().getBest()
+									: Assignment.createDefault(outputVar);
 
-							performTurn(systemAction);
+									log.debug("Simulator input: " + systemAction);
+									performTurn(systemAction);
 						}
 					}
 					catch (DialException e) {
@@ -175,7 +165,7 @@ public class Simulator implements Module {
 			}).start();
 		}
 	}
-	
+
 
 	/**
 	 * Performs the dialogue turn in the simulator.
@@ -184,8 +174,9 @@ public class Simulator implements Module {
 	 * @throws DialException
 	 */
 	private synchronized void performTurn(Assignment systemAction) throws DialException {
-		
-		simulatorState.setParameters(domain.getParameters());									
+
+		boolean turnPerformed = false;
+		simulatorState.setParameters(domain.getParameters());
 		simulatorState.addToState(systemAction);
 
 		while (!simulatorState.getNewVariables().isEmpty()) {
@@ -200,36 +191,52 @@ public class Simulator implements Module {
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
 				double reward = simulatorState.queryUtil();
 				system.recordComment("Reward: " + reward);
+				log.debug("Reward: " + reward);
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 
-			Assignment fullSample = simulatorState.getSample();
-			fullSample.trim(ListUtils.union(stateVars, StringUtils.addPrimes(stateVars)));
-			simulatorState.addEvidence(fullSample);
+			 if (addNewObservations()) {
+				 turnPerformed = true;
+			 }
 
-			// adding environment observations
-			List<String> newObsVars = ListUtils.intersection(obsVars, new ArrayList<String>(toProcess));
-			if (!newObsVars.isEmpty() && simulatorState.hasChanceNodes(newObsVars)) {
-				CategoricalTable newObs = simulatorState.queryProb(newObsVars).toDiscrete();
-				system.addContent(newObs.copy());
-			}
-			// adding user input
-			if (toProcess.contains(system.getSettings().userInput) 
-					&& simulatorState.hasChanceNode(system.getSettings().userInput)) {
-
-				CategoricalTable newInput = simulatorState.queryProb(system.getSettings().userInput).toDiscrete();
-				log.debug("Generated user input: " + newInput);
-
-				while (system.isPaused()) {
-					try { Thread.sleep(50); } catch (InterruptedException e) { }
-				}
-				system.addContent(newInput.copy());	
-				return;
-			}	
+			simulatorState.addEvidence(simulatorState.getSample());
 		}
-		
+
 		// if no user action is generated, repeat the process
+		if (!turnPerformed){
+		log.debug("repeating...");
 		performTurn(systemAction);
+		}
+	}
+
+
+	private boolean addNewObservations() throws DialException {
+		List<String> newObsVars = new ArrayList<String>();
+		for (String var : simulatorState.getChanceNodeIds()) {
+			if (var.contains("^o'")){
+				newObsVars.add(var);
+			}
+		}
+		if (!newObsVars.isEmpty()) {
+		CategoricalTable newObs = simulatorState.queryProb(newObsVars).toDiscrete().copy();
+		for (String newObsVar : newObsVars) {
+			newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
+		}
+		while (system.isPaused()) {
+			try { Thread.sleep(50); } catch (InterruptedException e) { }
+		}
+		if (!newObs.isEmpty()) {
+			system.addContent(newObs.copy());
+			if (newObs.getHeadVariables().contains(system.getSettings().userInput)) {
+				log.debug("Simulator output: " + newObs + "\n --------------");
+				return true;
+			}
+			else {
+				log.debug("Contextual variables: " + newObs);
+			}
+		}
+		}
+		return false;
 	}
 
 

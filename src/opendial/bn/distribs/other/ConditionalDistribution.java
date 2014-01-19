@@ -19,10 +19,13 @@
 
 package opendial.bn.distribs.other;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +58,7 @@ import opendial.utils.CombinatoricsUtils;
 public class ConditionalDistribution<T extends IndependentProbDistribution> implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("ProbabilityTable", Logger.Level.DEBUG);
+	public static Logger log = new Logger("ConditionalDistribution", Logger.Level.DEBUG);
 
 	// conditional variables
 	protected Set<String> conditionalVars;
@@ -188,8 +191,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 			return table.get(trimmed).toDiscrete().getProb(head);
 		}
 		else {
-			log.warning("could not find the corresponding condition for " + condition + 
-					" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+			log.warning("could not find the corresponding condition for " + condition + ")");
 			return 0.0;
 		}
 	}
@@ -207,8 +209,11 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 			return table.get(trimmed);
 		}
 		else {
-			throw new DialException("could not find the corresponding condition for " + condition + 
-					" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+			log.warning("could not find the corresponding condition for " + condition);
+			if (this instanceof ConditionalCategoricalTable) {
+				return (T) new CategoricalTable(Assignment.createDefault(getHeadVariables()));
+			}
+			return table.get(table.keySet().iterator().next());
 		}
 	}
 	

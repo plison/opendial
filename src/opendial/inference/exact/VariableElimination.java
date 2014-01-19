@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.collections15.ListUtils;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -85,10 +87,10 @@ public class VariableElimination implements InferenceAlgorithm {
 		DoubleFactor queryFactor = createQueryFactor(query);
 
 		queryFactor.normalise();
-				
+
 		return new CategoricalTable(queryFactor.getProbMatrix());
 	}
-	
+
 
 	/**
 	 * Queries for the utility of a particular set of (action) variables, given the
@@ -105,10 +107,10 @@ public class VariableElimination implements InferenceAlgorithm {
 		DoubleFactor queryFactor = createQueryFactor(query);
 
 		queryFactor.normalise();
-		
+
 		return new UtilityTable(queryFactor.getUtilityMatrix());
 	}
-	
+
 
 
 	// ===================================
@@ -138,13 +140,14 @@ public class VariableElimination implements InferenceAlgorithm {
 				if (!queryVars.contains(n.getId())) {
 					// && !evidence.containsVar(n.getId() ??
 					factors = sumOut(n.getId(), factors);
-					
+
 				}
 			}
 		}
 		// compute the final product, and normalise
 		DoubleFactor finalProduct = pointwiseProduct(factors);
 		finalProduct = addEvidencePairs(finalProduct, query);
+		finalProduct.trim(query.getQueryVars());
 		return finalProduct;
 	}
 
@@ -228,7 +231,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @return the pointwise product of the factors
 	 */
 	private DoubleFactor pointwiseProduct (List<DoubleFactor> factors) {
-		
+
 		if (factors.size() == 1) {
 			return factors.get(0);
 		}
@@ -306,37 +309,20 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @param distribution the computed distribution
 	 */
 	private DoubleFactor addEvidencePairs(DoubleFactor factor, Query query) {
-
-		DoubleFactor newFactor = new DoubleFactor();
-		//	table.addRows(probDistrib);
-
-		// first, check if there is an overlap between the query variables and
-		// the evidence variables
-		TreeMap<String,Set<Value>> valuesToAdd = new TreeMap<String,Set<Value>>();
-		for (String queryVar : query.getQueryVars()) {
-			if (query.getEvidence().getPairs().containsKey(queryVar)) {
-				valuesToAdd.put(queryVar, query.getNetwork().getNode(queryVar).getValues());
+		List<String> inter = ListUtils.intersection(
+				new ArrayList<String>(query.getQueryVars()), 
+				new ArrayList<String>(query.getEvidence().getVariables()));
+		if (!inter.isEmpty()) {
+			DoubleFactor newFactor = new DoubleFactor();
+			for (Assignment a : factor.getMatrix().keySet()) {
+				Assignment assign = new Assignment(a, query.getEvidence().getTrimmed(inter));
+				newFactor.addEntry(assign, factor.getProbEntry(a), factor.getUtilityEntry(a));
 			}
+			return newFactor;
 		}
-
-		Set<Assignment> possibleExtensions = CombinatoricsUtils.getAllCombinations(valuesToAdd);
-		for (Assignment a : factor.getMatrix().keySet()) {
-			for (Assignment b: possibleExtensions) {
-
-				// if the assignment b agrees with the evidence, reuse the probability value
-				if (query.getEvidence().contains(b)) {
-					Double[] val = factor.getMatrix().get(a);
-					newFactor.addEntry(new Assignment(a, b), val[0], val[1]);
-				}
-
-				// else, set the probability value to 0.0f
-				else {
-					newFactor.addEntry(new Assignment(a, b), 0, 0);	
-				}
-			}
+		else {
+			return factor;
 		}
-
-		return newFactor;
 	}
 
 
@@ -355,17 +341,17 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @throws DialException if the reduction operation failed
 	 */
 	public BNetwork reduce(ReductionQuery query) throws DialException {
-		
+
 		// create the query factor
 		DoubleFactor queryFactor = createQueryFactor(query);
 		BNetwork network = new BNetwork();
 		for (String var : query.getSortedQueryVars()) {	
-			
+
 			Set<String> directAncestors = query.getInputNodes(var);
 			// create the factor and distribution for the variable
 			DoubleFactor factor = getRelevantFactor(queryFactor, var, directAncestors);
 			DiscreteDistribution distrib = createProbDistribution(factor, var);	
-			
+
 			// create the new node
 			ChanceNode cn = new ChanceNode(var);
 			cn.setDistrib(distrib);
@@ -377,8 +363,8 @@ public class VariableElimination implements InferenceAlgorithm {
 
 		return network;
 	}
-	
-	
+
+
 
 
 	/**
