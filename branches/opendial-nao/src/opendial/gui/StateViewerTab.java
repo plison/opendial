@@ -169,7 +169,7 @@ public class StateViewerTab extends JComponent {
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public void trigger(DialogueState state, Collection<String> updatedVars) {
+	public synchronized void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
 			if (mainFrame.getSystem().getSettings().recording == Recording.LAST_INPUT) {
 				listModel.clear();
@@ -180,8 +180,7 @@ public class StateViewerTab extends JComponent {
 			}
 		}
 		if (mainFrame.getSystem().getSettings().recording != Recording.NONE && !updatedVars.isEmpty()) {
-			String title = "After update of " + updatedVars.iterator().next();
-			if (updatedVars.size() > 1) title += "(...)";	
+			String title = "After update of " + updatedVars.toString().replace("[", "").replace("]", "");
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);

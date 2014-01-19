@@ -20,6 +20,7 @@
 package opendial.datastructs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -310,6 +311,19 @@ public class Assignment {
 		}
 		return a;
 	}
+	
+	
+
+	/**
+	 * Creates an assignment with only none values for the variable labels
+	 * given as argument.
+	 * 
+	 * @param variables the collection of variable labels
+	 * @return the resulting default assignment
+	 */
+	public static Assignment createDefault (String... variables) {
+		return createDefault(Arrays.asList(variables));
+	}
 
 	
 
@@ -450,6 +464,14 @@ public class Assignment {
 	public void removePairs(Collection<String> vars) {
 		for (String var: vars) {
 			removePair(var);
+		}
+	}
+	
+	public void removePairs(Template template) {
+		for (String var : new ArrayList<String>(map.keySet())) {
+			if (template.match(var, false).isMatching) {
+				removePair(var);
+			}
 		}
 	}
 	

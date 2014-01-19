@@ -124,6 +124,7 @@ public class DialogueSystem {
 	 * Starts the dialogue system and its modules.
 	 */
 	public void startSystem() {
+		paused=false;
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
 				module.start();
@@ -133,7 +134,6 @@ public class DialogueSystem {
 				modules.remove(module);
 			}
 		}
-		paused=false;
 		synchronized (curState) {
 			curState.setAsNew();
 			update();
@@ -154,7 +154,7 @@ public class DialogueSystem {
 		curState.setParameters(domain.getParameters());
 		if (!paused) {
 			synchronized (curState) {
-				curState.setAsNew();
+			curState.setAsNew();
 			update();
 			}
 		}

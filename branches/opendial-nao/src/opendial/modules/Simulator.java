@@ -23,54 +23,52 @@ package opendial.modules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import org.apache.commons.collections15.ListUtils;
 
 import opendial.DialogueSystem;
-import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.UtilityNode;
+import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 import opendial.domains.Domain;
 import opendial.domains.Model;
-import opendial.gui.GUIFrame;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.state.StatePruner;
 import opendial.utils.StringUtils;
 
+/**
+ * Simulator for the user/environment.  The simulator generated new environment observations
+ * and user utterances based on a dialogue domain.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class Simulator implements Module {
 
 	// logger
 	public static Logger log = new Logger("Simulator", Logger.Level.DEBUG);
 
-	DialogueState curState;
+	DialogueState simulatorState;
 
 	Domain domain;
 
 	// the main system (to which the simulator is attached)
 	DialogueSystem system;
 
-	// the internal state variables for the simulator
-	List<String> stateVars;
-
-	// observation variables (e.g. external context)
-	List<String> obsVars;
-
-
 
 	/**
-	 * Creates a new simulator 
-	 * @param simDomain
-	 * @throws DialException
+	 * Creates a new user/environment simulator.
+	 * 
+	 * @param system the main dialogue system to which the simulator should connect
+	 * @throws DialException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system) throws DialException  {
 		this(system, extractDomain(system.getSettings()));
@@ -78,29 +76,31 @@ public class Simulator implements Module {
 
 
 	/**
-	 * Creates a new simulator 
-	 * @param simDomain
-	 * @throws DialException
+	 * Creates a new user/environment simulator.
+	 * 
+	 * @param system the main dialogue system to which the simulator should connect
+	 * @param simDomain the dialogue domain for the simulator
+	 * @throws DialException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system, Domain domain) throws DialException {
 
 		this.system = system;
 		this.domain = domain;
-		curState = domain.getInitialState().copy();
-		curState.setParameters(domain.getParameters());
+		simulatorState = domain.getInitialState().copy();
+		simulatorState.setParameters(domain.getParameters());
 		this.system.changeSettings(domain.getSettings());
 
-		List<String> requiredParams = new ArrayList<String>(Arrays.asList("state", "observations"));
-		requiredParams.removeAll(system.getSettings().params.keySet());
-		if (!requiredParams.isEmpty()) {
-			throw new MissingParameterException(requiredParams);
-		}
-		stateVars = Arrays.asList(system.getSettings().params.get("state").split(","));
-		obsVars = Arrays.asList(system.getSettings().params.get("observations").split(","));
 	}
 
 
-
+	/**
+	 * Extracts the simulator domain from the parameter "simulator-domain" in the
+	 * settings, if it is mentioned.  Else, throw an exception.
+	 * 
+	 * @param settings the system settings
+	 * @return the dialogue domain for the simulator
+	 * @throws DialException if the simulator domain is not specified or ill-formatted.
+	 */
 	private static Domain extractDomain(Settings settings) throws DialException {
 		if (!settings.params.containsKey("simulator-domain")) {
 			throw new MissingParameterException("simulator-domain");
@@ -109,112 +109,136 @@ public class Simulator implements Module {
 	}
 
 
+	/**
+	 * Adds an empty action to the dialogue system to start the interaction.
+	 */
 	@Override
 	public void start() throws DialException {
+		Assignment emptyAction = new Assignment(system.getSettings().systemOutput, ValueFactory.none());
 		if (system.isPaused()) {
-			system.getState().addToState(new Assignment(system.getSettings().systemOutput, ValueFactory.none()));
+			system.getState().addToState(emptyAction);
 		}
 		else {
-			system.addContent(new Assignment(system.getSettings().systemOutput, ValueFactory.none()));
+			system.addContent(emptyAction);
 		}
 	}
-	
+
+
+	/**
+	 * Returns true if the system is not paused, and false otherwise
+	 */
 	public boolean isRunning() {
 		return !system.isPaused();
 	}
 
-
-	@Override
-	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		String actionVar = system.getSettings().systemOutput;
-		if (updatedVars.contains(actionVar)) {
-			TurnTakingProcess process = new TurnTakingProcess(state);
-			process.start();
-		}
-	}
-
-	@Override
 	public void pause(boolean toPause) {	}
 
 
-	public class TurnTakingProcess extends Thread {
+	/**
+	 * Triggers the simulator by updating the simulator state and generating new observations
+	 * and user inputs.
+	 * 
+	 * @param the dialogue state of the main dialogue system
+	 * @param the updated variables in the dialogue system
+	 */
+	@Override
+	public void trigger(final DialogueState systemState, Collection<String> updatedVars) {
+		final String outputVar = system.getSettings().systemOutput;
+		if (updatedVars.contains(outputVar)) {
+			(new Thread() {
+				public void run() {
+					try {
+						synchronized (systemState) {
 
-		DialogueState systemState;
+							Assignment systemAction = (systemState.hasChanceNode(outputVar))? 
+									systemState.queryProb(outputVar).toDiscrete().getBest()
+									: Assignment.createDefault(outputVar);
 
-		public TurnTakingProcess(DialogueState systemState) {
-			this.systemState = systemState;
-		}
-
-
-		public void run() {
-			try {
-				synchronized (curState) {
-
-					Assignment systemAction = new Assignment(system.getSettings().systemOutput, ValueFactory.none());
-					if (systemState.hasChanceNode(system.getSettings().systemOutput)) {
-						systemAction = systemState.queryProb(system.getSettings().systemOutput).toDiscrete().getBest().removePrimes();
+									log.debug("Simulator input: " + systemAction);
+									performTurn(systemAction);
+						}
 					}
-
-					boolean turnPerformed = false;
-					while (!turnPerformed) {
-					curState.setParameters(domain.getParameters());									
-					curState.addToState(systemAction);
-					turnPerformed = performTurn();
+					catch (DialException e) {
+						log.debug("cannot update simulator: " + e);
 					}
 				}
-			}
-			catch (DialException e) {
-				log.debug("cannot update simulator: " + e);
-			}
-		}
-
-
-		private boolean performTurn() throws DialException {
-			while (!curState.getNewVariables().isEmpty()) {
-
-				Set<String> toProcess = curState.getNewVariables();
-				curState.reduce();	
-
-				for (Model model : domain.getModels()) {
-					model.trigger(curState, toProcess);
-				}
-
-				if (!curState.getUtilityNodeIds().isEmpty()) {
-					double reward = curState.queryUtil();
-					system.recordComment("Reward: " + reward);
-					curState.removeNodes(curState.getUtilityNodeIds());
-				}
-
-				Assignment fullSample = curState.getSample();
-				fullSample.trim(ListUtils.union(stateVars, StringUtils.addPrimes(stateVars)));
-				curState.addEvidence(fullSample);
-
-				// step 2: generate new observations (if any)
-				List<String> newObsVars = ListUtils.intersection
-						(obsVars, new ArrayList<String>(toProcess));
-				if (!newObsVars.isEmpty() && curState.hasChanceNodes(newObsVars)) {
-					CategoricalTable newObs = curState.queryProb(newObsVars).toDiscrete();
-					system.addContent(newObs.copy());
-				}
-
-				if (toProcess.contains(system.getSettings().userInput) 
-						&& curState.hasChanceNode(system.getSettings().userInput)) {
-
-					// step 3: generate the next user input
-					CategoricalTable newInput = curState.queryProb(system.getSettings().userInput).toDiscrete();
-					log.debug("Generated user input: " + newInput);
-
-					// wait for the main system to be ready
-					while (system.isPaused()) {
-						try { Thread.sleep(50); } catch (InterruptedException e) { }
-					}
-					system.addContent(newInput.copy());	
-					return true;
-				}	
-			}
-			return false;
+			}).start();
 		}
 	}
+
+
+	/**
+	 * Performs the dialogue turn in the simulator.
+	 * 
+	 * @param systemAction the last system action.
+	 * @throws DialException
+	 */
+	private synchronized void performTurn(Assignment systemAction) throws DialException {
+
+		boolean turnPerformed = false;
+		simulatorState.setParameters(domain.getParameters());
+		simulatorState.addToState(systemAction);
+
+		while (!simulatorState.getNewVariables().isEmpty()) {
+
+			Set<String> toProcess = simulatorState.getNewVariables();
+			simulatorState.reduce();	
+
+			for (Model model : domain.getModels()) {
+				model.trigger(simulatorState, toProcess);
+			}
+
+			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
+				double reward = simulatorState.queryUtil();
+				system.recordComment("Reward: " + reward);
+				log.debug("Reward: " + reward);
+				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
+			}
+
+			 if (addNewObservations()) {
+				 turnPerformed = true;
+			 }
+
+			simulatorState.addEvidence(simulatorState.getSample());
+		}
+
+		// if no user action is generated, repeat the process
+		if (!turnPerformed){
+		log.debug("repeating...");
+		performTurn(systemAction);
+		}
+	}
+
+
+	private boolean addNewObservations() throws DialException {
+		List<String> newObsVars = new ArrayList<String>();
+		for (String var : simulatorState.getChanceNodeIds()) {
+			if (var.contains("^o'")){
+				newObsVars.add(var);
+			}
+		}
+		if (!newObsVars.isEmpty()) {
+		CategoricalTable newObs = simulatorState.queryProb(newObsVars).toDiscrete().copy();
+		for (String newObsVar : newObsVars) {
+			newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
+		}
+		while (system.isPaused()) {
+			try { Thread.sleep(50); } catch (InterruptedException e) { }
+		}
+		if (!newObs.isEmpty()) {
+			system.addContent(newObs.copy());
+			if (newObs.getHeadVariables().contains(system.getSettings().userInput)) {
+				log.debug("Simulator output: " + newObs + "\n --------------");
+				return true;
+			}
+			else {
+				log.debug("Contextual variables: " + newObs);
+			}
+		}
+		}
+		return false;
+	}
+
 
 }
 

@@ -106,7 +106,7 @@ public class ForwardPlanner implements Module {
 		public void run() {
 			try {
 				UtilityTable evalActions =getQValues(initState, settings.horizon);
-				ForwardPlanner.log.debug("Q-values: " + evalActions);
+		//		ForwardPlanner.log.debug("Q-values: " + evalActions);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 
 				if (evalActions.getUtil(bestAction) < 0.001) {

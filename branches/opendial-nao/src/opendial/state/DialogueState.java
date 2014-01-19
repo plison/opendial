@@ -355,21 +355,26 @@ public class DialogueState extends BNetwork {
 		if (matchVariables.size() == 1 && hasChanceNode(matchVariables.first()) 
 				&& evidence.isEmpty() && getChanceNode(matchVariables.first()).getDistrib() 
 				instanceof IndependentProbDistribution) {
-			return (IndependentProbDistribution)getChanceNode(matchVariables.first()).getDistrib();
+			IndependentProbDistribution result =  (IndependentProbDistribution)
+					getChanceNode(matchVariables.first()).getDistrib();
+			return result;
 		}
 
-		if (!getNodeIds().containsAll(variables)) {
-			log.warning(variables + " not entirely contained in " + getNodeIds());
+		if (!getNodeIds().containsAll(matchVariables)) {
+			log.warning(matchVariables + " not contained in " + getNodeIds());
 		}
 
 		// else, perform the inference operation
 		try {
-			return new SwitchingAlgorithm().queryProb(new ProbQuery(this, matchVariables));
+			ProbQuery query = new ProbQuery(this, matchVariables);
+			IndependentProbDistribution result = new SwitchingAlgorithm().queryProb(query);
+			return result;
 		}
 
 		// if everything fails, returns an empty table
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
+			e.printStackTrace();
 			return new CategoricalTable();
 		}
 	}

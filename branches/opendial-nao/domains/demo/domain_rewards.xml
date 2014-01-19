@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<model trigger="a_u" type="decision">
+<model trigger="a_u">
 
 	<rule id="move-decision">
 		<case>

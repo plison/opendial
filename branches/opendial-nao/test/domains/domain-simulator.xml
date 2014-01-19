@@ -56,8 +56,6 @@
 <settings>
 <user>a_u</user>
 <system>a_m</system>
-<state>a_m,completed-task,i_u,perceived,carried,last(a_m),lastMove,a_uinit</state>
-<observations>perceived,carried</observations>
 <monitor>perceived,carried</monitor>
 </settings>
 
@@ -71,17 +69,28 @@
 
 
 
-<model trigger="a_uinit">
+<model trigger="perceived,carried">
+<rule>
+<case>
+<effect>
+<set var="perceived^o" value="{perceived}"/>
+<set var="carried^o" value="{carried}"/>
+</effect>
+</case>
+</rule>
+</model>
+
+<model trigger="a_u">
 <rule>
 <case>
 <effect prob="theta_error[0]">
-<set var="a_u" value="{a_uinit}"/>
+<set var="a_u^o" value="{a_u}"/>
 </effect>
 <effect prob="theta_error[1]">
-<set var="a_u" value="{a_uother}"/>
+<set var="a_u^o" value="{a_uother}"/>
 </effect>
 <effect prob="theta_error[2]">
-<set var="a_u" value="None"/>
+<set var="a_u^o" value="None"/>
 </effect>
 </case>
 </rule>
