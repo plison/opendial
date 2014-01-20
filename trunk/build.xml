@@ -82,7 +82,7 @@
 
 	
 	<target name="run" description="Runs the Main class to start the dialogue system" depends="compile">
-		<echo message="Other args: ${other_args}"/>
+		<echo message="Starting the dialogue system..."/>
 				<java classname="opendial.DialogueSystem" fork="true">
 					<classpath refid="compile.classpath"/>
  				<jvmarg line="${other_args}"/>
