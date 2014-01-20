@@ -87,7 +87,7 @@ public class Settings {
 	public Properties params = new Properties();
 
 	/** Domain-specific modules to run */
-	public Collection<Class<Module>> modules = new ArrayList<Class<Module>>();
+	public List<Class<Module>> modules = new ArrayList<Class<Module>>();
 	
 	
 	/**
@@ -171,7 +171,7 @@ public class Settings {
 						try {
 							clazz = Class.forName(split[i].trim());
 							for (int j = 0 ; j < clazz.getInterfaces().length ; j++) {
-								if (clazz.getInterfaces()[i].equals(Module.class)) {
+								if (clazz.getInterfaces()[j].equals(Module.class) && !modules.contains(clazz)) {
 									modules.add((Class<Module>)clazz);
 								}
 							}
