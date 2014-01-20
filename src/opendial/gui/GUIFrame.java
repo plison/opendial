@@ -19,8 +19,6 @@
 
 package opendial.gui;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
@@ -28,12 +26,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
@@ -50,7 +44,6 @@ import opendial.state.DialogueState;
  * @version $Date::                      $
  *
  */
-@SuppressWarnings("serial")
 public class GUIFrame implements Module {
 
 	// logger
@@ -76,6 +69,7 @@ public class GUIFrame implements Module {
 	}
 	
 	
+	@Override
 	public void start() {
  
 
@@ -94,6 +88,7 @@ public class GUIFrame implements Module {
 
 		frame.addWindowListener(new WindowAdapter() 
 		{
+			@Override
 			public void windowClosing(WindowEvent e) 
 			{ System.exit(0); }
 		}
@@ -116,6 +111,7 @@ public class GUIFrame implements Module {
 	}
 	
 	
+	@Override
 	public void pause(boolean pause) {
 		if (frame != null && frame.isVisible()) {
 		addComment((pause)? "system paused" : "system resumed");
@@ -133,12 +129,13 @@ public class GUIFrame implements Module {
 	 * dialogue state is name "current" in the selection list.
 	 * 
 	 */
+	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (frame != null && frame.isVisible()) {
 		chatTab.trigger(state, updatedVars);
 		stateMonitorTab.trigger(state, updatedVars);
 		menu.trigger();
-		if (system.getDomain().getName() == null) {
+		if (system.getDomain() == null) {
 			frame.setTitle("OpenDial toolkit");
 		}
 		else if (!frame.getTitle().contains(system.getDomain().getName())){

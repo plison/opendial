@@ -19,7 +19,6 @@
 
 package opendial.arch;
 
-import java.util.List;
 
 
 /**

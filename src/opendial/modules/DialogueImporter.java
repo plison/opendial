@@ -40,11 +40,12 @@ public class DialogueImporter extends Thread {
 		this.dialogue = dialogue;
 	}
 	
+	@Override
 	public void run() {
 		system.attachModule(WizardLearner.class);
 		for (final DialogueState state : dialogue) {
 			try {
-				while (system.isPaused()) {
+				while (system.isPaused() || !system.getModule(DialogueRecorder.class).isRunning()) {
 					try { Thread.sleep(100); } catch (Exception e) { }
 				}
 				system.addContent(state.copy()); 

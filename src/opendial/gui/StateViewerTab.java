@@ -27,8 +27,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +47,7 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -287,22 +286,22 @@ public class StateViewerTab extends JComponent {
 		zoomPanel.add(minus, BorderLayout.SOUTH);
 
 		controlPanel.add(zoomPanel, BorderLayout.WEST);
-		controlPanel.add(new JSeparator(JSeparator.VERTICAL), BorderLayout.CENTER);
+		controlPanel.add(new JSeparator(SwingConstants.VERTICAL), BorderLayout.CENTER);
 
 		// translation buttons
 		Container translationPanel = new Container();
 		translationPanel.setLayout(new BorderLayout());
-		JButton up = new BasicArrowButton(BasicArrowButton.NORTH);
+		JButton up = new BasicArrowButton(SwingConstants.NORTH);
 		up.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.NORTH))) ;
 		translationPanel.add(up, BorderLayout.NORTH);
-		JButton west = new BasicArrowButton(BasicArrowButton.WEST);
+		JButton west = new BasicArrowButton(SwingConstants.WEST);
 		west.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.WEST))) ;
 		translationPanel.add(west, BorderLayout.WEST);
 		translationPanel.add(new JLabel("        "), BorderLayout.CENTER);
-		JButton east = new BasicArrowButton(BasicArrowButton.EAST);
+		JButton east = new BasicArrowButton(SwingConstants.EAST);
 		east.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.EAST))) ;
 		translationPanel.add(east, BorderLayout.EAST);
-		JButton south = new BasicArrowButton(BasicArrowButton.SOUTH);
+		JButton south = new BasicArrowButton(SwingConstants.SOUTH);
 		south.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.SOUTH))) ;
 		translationPanel.add(south, BorderLayout.SOUTH);
 
@@ -456,7 +455,8 @@ public class StateViewerTab extends JComponent {
 		}
 		
 		private void resetThread() {
-			movement = new Thread() { public void run() { 
+			movement = new Thread() { @Override
+			public void run() { 
 				boolean continueProcess = true;
 				while (continueProcess) {
 					try {
@@ -469,8 +469,11 @@ public class StateViewerTab extends JComponent {
 			};
 		}
 
+		@Override
 		public void mouseClicked(MouseEvent e) {	}
+		@Override
 		public void mouseEntered(MouseEvent e) {}
+		@Override
 		public void mouseExited(MouseEvent e) {	}
 
 		@Override
@@ -491,10 +494,11 @@ public class JlistRenderer extends JLabel implements ListCellRenderer {
     public JlistRenderer() {
       setOpaque(true);
       setBorder(new EmptyBorder(1, 1, 1, 1));
-      separator = new JSeparator(JSeparator.HORIZONTAL);
+      separator = new JSeparator(SwingConstants.HORIZONTAL);
     }
     
-    public Component getListCellRendererComponent(JList list, Object value,
+    @Override
+	public Component getListCellRendererComponent(JList list, Object value,
         int index, boolean isSelected, boolean cellHasFocus) {
       String str = (value == null) ? "" : value.toString();
       if (str.contains("separator")) {

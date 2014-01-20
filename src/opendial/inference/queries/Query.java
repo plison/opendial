@@ -124,6 +124,7 @@ public abstract class Query {
 	/**
 	 * Returns a string representation of the query
 	 */
+	@Override
 	public String toString() {
 		String str = "";
 		for (String q : queryVars) {
@@ -148,6 +149,7 @@ public abstract class Query {
 	 * 
 	 * @return hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return queryVars.hashCode() +2*evidence.hashCode();
 	}

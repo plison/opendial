@@ -20,36 +20,20 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
-import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.values.ArrayVal;
-import opendial.bn.values.ValueFactory;
-import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.domains.rules.parameters.CompositeParameter;
-import opendial.domains.rules.parameters.Parameter;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
+
+import org.junit.Test;
 
 public class DemoTest {
 

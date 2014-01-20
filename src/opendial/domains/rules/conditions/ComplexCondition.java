@@ -225,6 +225,7 @@ public class ComplexCondition implements Condition {
 	 * @param o the object to compare with current instance
 	 * @return true if the conditions are equal, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		return this.hashCode() == o.hashCode();
 	}

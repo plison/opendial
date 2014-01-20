@@ -27,16 +27,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.values.ArrayVal;
+import opendial.utils.MathUtils;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.values.ArrayVal;
-import opendial.utils.MathUtils;
 
 /**
  * Density function for a Dirichlet distribution.  The distribution is defined through an array
@@ -116,6 +114,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * 
 	 * @return the dimensionality
 	 */
+	@Override
 	public int getDimensionality() {
 		return alphas.length;
 	}

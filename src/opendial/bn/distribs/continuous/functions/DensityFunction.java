@@ -22,11 +22,10 @@ package opendial.bn.distribs.continuous.functions;
 import java.util.List;
 import java.util.Map;
 
+import opendial.arch.DialException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import opendial.arch.DialException;
 
 /**
  * Density function for a continuous probability distribution. The density function can be either

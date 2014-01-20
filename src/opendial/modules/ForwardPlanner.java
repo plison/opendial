@@ -22,7 +22,6 @@ package opendial.modules;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import opendial.DialogueSystem;
@@ -47,19 +46,20 @@ public class ForwardPlanner implements Module {
 	public static int NB_BEST_OBSERVATIONS = 3;
 	public static double MIN_OBSERVATION_PROB = 0.1;
 
-	Settings settings;
-	List<Model> models;
+	DialogueSystem system;
+
 	boolean paused = false;
 
 	public ForwardPlanner(DialogueSystem system) {
-		this.settings = system.getSettings();
-		this.models = system.getDomain().getModels();		
+		this.system = system;
 	}
 	
+	@Override
 	public void pause(boolean shouldBePaused) {	
 		paused = shouldBePaused;
 	}
 
+	@Override
 	public void start()  {	}
 
 
@@ -68,6 +68,7 @@ public class ForwardPlanner implements Module {
 		return !paused;
 	}
 
+	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
 			try {
@@ -103,9 +104,10 @@ public class ForwardPlanner implements Module {
 		 * Runs the planner until the horizon has been reached, or the planner has run out
 		 * of time.  Adds the best action to the dialogue state.
 		 */
+		@Override
 		public void run() {
 			try {
-				UtilityTable evalActions =getQValues(initState, settings.horizon);
+				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
 		//		ForwardPlanner.log.debug("Q-values: " + evalActions);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 
@@ -147,7 +149,7 @@ public class ForwardPlanner implements Module {
 					addContent(copy, new CategoricalTable(action.removePrimes()));
 
 					if (!action.isDefault()) {
-						double expected = settings.discountFactor * getExpectedValue(copy, horizon - 1);
+						double expected = system.getSettings().discountFactor * getExpectedValue(copy, horizon - 1);
 						qValues.setUtil(action, qValues.getUtil(action) + expected);
 					}	
 				}
@@ -164,7 +166,7 @@ public class ForwardPlanner implements Module {
 			while (!state.getNewVariables().isEmpty()) {
 				Set<String> toProcess = state.getNewVariables();
 				state.reduce();	
-				for (Model model : models) {
+				for (Model model : system.getDomain().getModels()) {
 						model.trigger(state, toProcess);
 				}
 			}
@@ -172,7 +174,7 @@ public class ForwardPlanner implements Module {
 		
 
 		private boolean hasTransition(Assignment action) {
-			for (Model m : models) {
+			for (Model m : system.getDomain().getModels()) {
 				if (m.isTriggered(action.removePrimes().getVariables())) {
 					return true;
 				}
@@ -242,6 +244,7 @@ public class ForwardPlanner implements Module {
 			isTerminated = true;
 		}
 
+		@Override
 		public boolean isTerminated() {
 			return isTerminated;
 		}

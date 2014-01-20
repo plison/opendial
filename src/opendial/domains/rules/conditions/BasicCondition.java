@@ -29,8 +29,8 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
 import opendial.datastructs.Template.MatchResult;
+import opendial.datastructs.ValueRange;
 
 
 /**

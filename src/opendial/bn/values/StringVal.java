@@ -21,7 +21,6 @@ package opendial.bn.values;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Template;
-import opendial.utils.StringUtils;
 
 /**
  * String value.

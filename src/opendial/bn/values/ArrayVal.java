@@ -115,6 +115,7 @@ public class ArrayVal implements Value {
 	/**
 	 * Checks for equality
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ArrayVal) {
 			return ((ArrayVal)o).getVector().equals(getVector());
@@ -134,6 +135,7 @@ public class ArrayVal implements Value {
 	/**
 	 * Returns the hashcode for the array
 	 */
+	@Override
 	public int hashCode() {
 		return 2* getVector().hashCode();
 	}

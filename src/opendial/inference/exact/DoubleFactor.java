@@ -319,6 +319,7 @@ public class DoubleFactor {
 	/**
 	 * Returns a string representation of the factor
 	 */
+	@Override
 	public String toString() {
 		String str = "";
 		for (Assignment a : matrix.keySet()) {

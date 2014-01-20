@@ -19,10 +19,7 @@
 
 package opendial.inference.approximate;
 
-import java.util.Collection;
-
 import opendial.arch.Logger;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
 
@@ -91,7 +88,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	 * @return the (exponentiated) weight for the sample
 	 */
 	public double getWeight() {
-		return (double)Math.exp(logWeight);
+		return Math.exp(logWeight);
 	}
 
 	
@@ -118,6 +115,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	/**
 	 * Returns a string representation of the weighted sample
 	 */
+	@Override
 	public String toString() {
 		return super.toString() + " (w=" + getWeight() + ", util=" + utility+")";
 	}

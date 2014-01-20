@@ -20,21 +20,19 @@
 package opendial.domains;
 
 
-import org.junit.Test;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.domains.Domain;
 import opendial.domains.rules.effects.Effect;
 import opendial.inference.queries.ProbQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.state.StatePruner;
+
+import org.junit.Test;
 
 public class DialogueStateTest {
 

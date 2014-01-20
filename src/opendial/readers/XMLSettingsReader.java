@@ -19,23 +19,15 @@
 
 package opendial.readers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
+
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.inference.SwitchingAlgorithm;
-import opendial.inference.approximate.LikelihoodWeighting;
-import opendial.inference.exact.VariableElimination;
-import opendial.utils.XMLUtils;
 
 /**
  * 

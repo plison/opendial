@@ -32,8 +32,8 @@ import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.DialogueState;
@@ -298,6 +298,7 @@ public class AnchoredRule {
 	 * 
 	 * @return the string representation
 	 */
+	@Override
 	public String toString() {
 		if (groundings.isEmpty() || groundings.iterator().next().isEmpty()) {
 			return rule.toString();

@@ -20,10 +20,8 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -32,6 +30,8 @@ import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;
+
+import org.junit.Test;
 
 public class ImporterTest {
 

@@ -20,13 +20,12 @@
 package opendial.inference.approximate;
 
 import java.util.Arrays;
-
 import java.util.Set;
 import java.util.Stack;
 
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.other.EmpiricalDistribution;

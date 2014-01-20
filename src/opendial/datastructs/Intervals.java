@@ -19,15 +19,12 @@
 
 package opendial.datastructs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.inference.approximate.WeightedSample;
 
 
 /**
@@ -257,6 +254,7 @@ final class Interval<T> {
 	/**
 	 * Returns a string representation for the interval
 	 */
+	@Override
 	public String toString() {
 		return a + "[" + start + "," + end + "]";
 	}

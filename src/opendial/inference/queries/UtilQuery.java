@@ -97,6 +97,7 @@ public class UtilQuery extends Query {
 	/**
 	 * Returns a string representation for the utility query
 	 */
+	@Override
 	public String toString() {
 		return "U("+super.toString() +")";
 	}
@@ -108,6 +109,7 @@ public class UtilQuery extends Query {
 	 * 
 	 * @return the set of variables that are irrelevant
 	 */
+	@Override
 	protected Set<String> getIrrelevantNodes() {
 
 		Set<String> irrelevantNodesIds = new HashSet<String>();

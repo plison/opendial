@@ -46,30 +46,23 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.ArrayVal;
-import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
-import opendial.modules.DialogueRecorder;
 import opendial.modules.DialogueImporter;
+import opendial.modules.DialogueRecorder;
 import opendial.modules.WizardControl;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 /**
@@ -79,6 +72,7 @@ import opendial.utils.XMLUtils;
  * @version $Date:: 2014-01-16 02:21:14 #$
  *
  */
+@SuppressWarnings("serial")
 public class GUIMenuBar extends JMenuBar {
 
 	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/w/list";
@@ -96,6 +90,7 @@ public class GUIMenuBar extends JMenuBar {
 		JMenu domainMenu = new JMenu("Domain");
 		JMenuItem openDomain = new JMenuItem("Open Domain");
 		openDomain.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				openDomain();
 			}
@@ -108,6 +103,7 @@ public class GUIMenuBar extends JMenuBar {
 		domainMenu.add(importMenu);
 		final JMenuItem importState = new JMenuItem("Dialogue State");
 		importState.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				importAction("state");
 			}
@@ -116,6 +112,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		final JMenuItem importParams = new JMenuItem("Parameters");
 		importParams.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				importAction("parameters");				
 			}
@@ -126,6 +123,7 @@ public class GUIMenuBar extends JMenuBar {
 		domainMenu.add(exportMenu);
 		exportState = new JMenuItem("Dialogue State");
 		exportState.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				exportAction("state");
 			}
@@ -134,6 +132,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		exportParams = new JMenuItem("Parameters");
 		exportParams.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				exportAction("parameters");
 			}
@@ -143,6 +142,7 @@ public class GUIMenuBar extends JMenuBar {
 		domainMenu.add(new JSeparator());
 		final JMenuItem exit = new JMenuItem("Close OpenDial");
 		exit.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				System.exit(0);
 			}
@@ -157,6 +157,7 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
 		freezeItem.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getSystem().pause(!frame.getSystem().isPaused());
 			}
@@ -168,12 +169,14 @@ public class GUIMenuBar extends JMenuBar {
 		ButtonGroup modeGroup = new ButtonGroup();
 		JRadioButtonMenuItem normalMode = new JRadioButtonMenuItem("Normal mode");
 		normalMode.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				switchMode(false);
 			}
 		});
 		JRadioButtonMenuItem wozMode = new JRadioButtonMenuItem("Wizard-of-Oz mode");
 		wozMode.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				switchMode(true);
 			}
@@ -190,6 +193,7 @@ public class GUIMenuBar extends JMenuBar {
 		JMenuItem runThrough = new JMenuItem("Import Dialogue From...");
 
 		runThrough.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				importInteraction();
 			}});
@@ -198,6 +202,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
 		saveInteraction.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				saveInteraction();
 			}});
@@ -209,6 +214,7 @@ public class GUIMenuBar extends JMenuBar {
 		ButtonGroup group = new ButtonGroup();
 		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem("Single-best");
 		singleBest.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getChatTab().setNBest(1);
 				frame.addComment("Number of shown user hypotheses: 1");
@@ -216,6 +222,7 @@ public class GUIMenuBar extends JMenuBar {
 		});
 		JRadioButtonMenuItem threeBest = new JRadioButtonMenuItem("3-best list");
 		threeBest.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getChatTab().setNBest(3);
 				frame.addComment("Number of shown user hypotheses: 3");
@@ -223,6 +230,7 @@ public class GUIMenuBar extends JMenuBar {
 		});
 		JRadioButtonMenuItem allBest = new JRadioButtonMenuItem("Full N-best list");
 		allBest.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getChatTab().setNBest(20);
 				frame.addComment("Number of shown user hypotheses: 20");
@@ -241,6 +249,7 @@ public class GUIMenuBar extends JMenuBar {
 		ButtonGroup group2 = new ButtonGroup();
 		JRadioButtonMenuItem none = new JRadioButtonMenuItem("None");
 		none.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getSystem().getSettings().recording = Recording.NONE;
 				frame.addComment("Stop recording intermediate dialogue states");
@@ -248,6 +257,7 @@ public class GUIMenuBar extends JMenuBar {
 		});
 		JRadioButtonMenuItem last = new JRadioButtonMenuItem("Last input");
 		last.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getSystem().getSettings().recording = Recording.LAST_INPUT;
 				frame.addComment("Recording intermediate dialogue states for the last user input");
@@ -255,6 +265,7 @@ public class GUIMenuBar extends JMenuBar {
 		});
 		JRadioButtonMenuItem all = new JRadioButtonMenuItem("Full history");
 		all.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getSystem().getSettings().recording = Recording.ALL;
 				frame.addComment("Recording all intermediate dialogue states (warning: can slow down processing)");
@@ -275,6 +286,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		stateDisplayMenu = new JMenuItem("Show/Hide parameters");
 		stateDisplayMenu.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				frame.getStateViewerTab().showParameters(!frame.getStateViewerTab().showParameters());
 				frame.addComment("Show parameters: " + frame.getStateViewerTab().showParameters());
@@ -286,6 +298,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		JMenuItem modules = new JMenuItem("Load Modules");
 		modules.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				new ModulesPanel(frame);
 			}
@@ -296,6 +309,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		JMenuItem config = new JMenuItem("Settings");
 		config.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				new SettingsPanel(frame);
 			}
@@ -309,6 +323,7 @@ public class GUIMenuBar extends JMenuBar {
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About");
 		aboutItem.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				showAboutPanel(frame);
 			}
@@ -317,6 +332,7 @@ public class GUIMenuBar extends JMenuBar {
 		
 		JMenuItem docItem = new JMenuItem("Documentation");
 		docItem.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed (ActionEvent e) {
 				openDocumentation();
 			}
@@ -399,7 +415,8 @@ public class GUIMenuBar extends JMenuBar {
 			 // handle link events
 		    ep.addHyperlinkListener(new HyperlinkListener()
 		    {
-		        public void hyperlinkUpdate(HyperlinkEvent e)  {
+		        @Override
+				public void hyperlinkUpdate(HyperlinkEvent e)  {
 		            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
 		                    try {
 		                        Desktop.getDesktop().browse(e.getURL().toURI());

@@ -19,13 +19,10 @@
 
 package opendial.bn.distribs.other;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +31,6 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
@@ -87,6 +83,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	 * @param oldVarId the old variable label
 	 * @param newVarId the new variable label
 	 */
+	@Override
 	public void modifyVariableId(String oldVarId, String newVarId) {
 	//	log.debug("changing var id from " + oldVarId + " --> " + newVarId);
 		HashMap<Assignment,T> newTable = new HashMap<Assignment,T>();
@@ -123,6 +120,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	}
 
 	
+	@Override
 	public void pruneValues(double threshold) {
 		for (Assignment condition : table.keySet()) {
 			table.get(condition).pruneValues(threshold);
@@ -167,6 +165,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	 * 
 	 * @return the collection of variable labels
 	 */
+	@Override
 	public Collection<String> getHeadVariables() {
 		Set<String> headVars = new HashSet<String>();
 		for (IndependentProbDistribution subdistrib : table.values()) {
@@ -202,6 +201,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	 * Returns the posterior distribution P(X1,...Xn) given the condition provided
 	 * in the argument.  The type of the distribution is T.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public T getPosterior(Assignment condition) throws DialException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
@@ -218,6 +218,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	}
 	
 	
+	@Override
 	public ProbDistribution getPartialPosterior (Assignment condition) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
@@ -248,6 +249,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	 * @param range the input values (is ignored)
 	 * @return the possible values for the head variables.
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 		Set<Assignment> headRows = new HashSet<Assignment>();
 		for (Assignment condition : table.keySet()) {
@@ -277,6 +279,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution> impl
 	 * 
 	 * @return the copy
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public ConditionalDistribution<T> copy() {
 		ConditionalDistribution<T> newTable = new ConditionalDistribution<T>();

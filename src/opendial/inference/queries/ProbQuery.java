@@ -94,6 +94,7 @@ public class ProbQuery extends Query {
 	 *
 	 * @return the identifiers for the irrelevant nodes
 	 */
+	@Override
 	protected Set<String> getIrrelevantNodes() {
 		Set<String> irrelevantNodesIds = new HashSet<String>();
 
@@ -127,6 +128,7 @@ public class ProbQuery extends Query {
 	 * 
 	 * @return the string representation of the query
 	 */
+	@Override
 	public String toString() {
 		return "P("+super.toString() +")";
 	}
