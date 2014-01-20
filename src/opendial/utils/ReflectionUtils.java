@@ -42,7 +42,8 @@ public class ReflectionUtils {
 	// logger
 	public static Logger log = new Logger("ReflectionUtils", Logger.Level.NORMAL);
 
-	    public static <T> Map<String,Class<T>> findImplementingClasses
+	    @SuppressWarnings("unchecked")
+		public static <T> Map<String,Class<T>> findImplementingClasses
 	    (final Class<T> interfaceClass, final Package fromPackage) {
 
 	        if (interfaceClass == null) {
@@ -93,7 +94,7 @@ public class ReflectionUtils {
 	     * @throws ClassNotFoundException
 	     * @throws IOException
 	     */
-	    public static Class[] getAllClassesFromPackage
+	    public static Class<?>[] getAllClassesFromPackage
 	    (final String packageName) throws ClassNotFoundException, IOException {
 	    	
 	        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -105,7 +106,7 @@ public class ReflectionUtils {
 	            URL resource = resources.nextElement();
 	            dirs.add(new File(resource.getFile()));
 	        }
-	        ArrayList<Class> classes = new ArrayList<Class>();
+	        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 	        for (File directory : dirs) {
 	            classes.addAll(findClasses(directory, packageName));
 	        }
