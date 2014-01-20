@@ -40,7 +40,7 @@ public class SimulatorTest {
 	public static String simDomain = "test//domains//domain-simulator.xml";
 	
 	@Test
-	public void simulatorTest() throws DialException, InterruptedException {
+	public void testSimulator() throws DialException, InterruptedException {
 		
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
 		system.getDomain().getModels().remove(0);

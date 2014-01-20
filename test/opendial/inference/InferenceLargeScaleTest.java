@@ -59,7 +59,7 @@ public class InferenceLargeScaleTest {
 
 
 	@Test
-	public void bayesianNetworkTest4() throws DialException {
+	public void testNetwork() throws DialException {
 
 		InferenceChecks inference = new InferenceChecks();
 		inference.includeNaive(true);

@@ -45,7 +45,7 @@ public class LearningTest {
 	public static final String parametersFile = "test//domains/params-is.xml";
 
 	@Test
-	public void is2013Test() throws DialException, InterruptedException {
+	public void testIS2013() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile, "parameters");
 		domain.setParameters(params);

@@ -61,7 +61,7 @@ public class DemoTest {
 	public static final String domainFile2 = "test//domains//domain-demo.xml";
 
 	
-	public void paramTest0() throws DialException, InterruptedException {
+	public void testParam0() throws DialException, InterruptedException {
 		Double[] d = new Double[2];
 		d[0] = 3.0;
 		d[1] = 1.0;
@@ -81,7 +81,7 @@ public class DemoTest {
 	
 	
 	// @Test
-	public void paramTest1() throws DialException, InterruptedException {
+	public void testParam1() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		BNetwork params = XMLStateReader.extractBayesianNetwork(paramFile, "parameters");
 		domain.setParameters(params);
@@ -108,7 +108,7 @@ public class DemoTest {
 	
 	
 	@Test
-	public void demoTest() throws DialException {
+	public void testDemo() throws DialException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile2);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

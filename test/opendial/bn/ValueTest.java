@@ -53,7 +53,7 @@ public class ValueTest {
 	} */
 	
 	@Test
-	public void assignTest() {
+	public void testAssign() {
 		Assignment a = Assignment.createFromString("blabla=3 ^ !bloblo^TTT=32.4 ^v=[0.4,0.6] ^ final");
 		assertEquals(5, a.getVariables().size());
 		assertEquals(new HashSet<String>(Arrays.asList("blabla", "bloblo", "TTT", "v", "final")), a.getVariables());
@@ -65,7 +65,7 @@ public class ValueTest {
 	}
 	
 	@Test
-	public void classicalTest() {
+	public void testClassical() {
 		assertTrue(ValueFactory.create(" blabla ") instanceof StringVal);
 		assertEquals("blabla", ((StringVal)ValueFactory.create(" blabla ")).getString());
 		assertTrue(ValueFactory.create("3") instanceof DoubleVal);

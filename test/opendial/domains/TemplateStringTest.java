@@ -52,14 +52,14 @@ public class TemplateStringTest {
 	
 
 	@Test
-	public void SurfaceTemplateTest1() {
+	public void testTemplate1() {
 		Template template = new Template("this is a first test");
 		String utterance = "bla bla this is a first test bla";
 		assertTrue(template.match(utterance, false).isMatching());
 	}
 	
 	@Test
-	public void SurfaceTemplateTest2() {
+	public void testTemplate2() {
 		Template template = new Template("hi my name is {name}");
 		String utterance1 = "hi my name is Pierre, how are you?";
 		assertTrue(template.match(utterance1, false).isMatching());
@@ -71,7 +71,7 @@ public class TemplateStringTest {
 	}
 	
 	@Test
-	public void SurfaceTemplateTest3() {
+	public void testTemplate3() {
 		Template template = new Template("hi my name is {name} and I need coffee");
 		String utterance1 = " hi my name is Pierre and i need coffee ";
 		String utterance2 = "hi my name is Pierre and I need coffee right now";
@@ -85,7 +85,7 @@ public class TemplateStringTest {
 	}
 	 
 	@Test
-	public void SurfaceTemplateTest4() {
+	public void testTemplate4() {
 		Template template1 = new Template("hi my name is {name}");
 		assertEquals("Pierre Lison", template1.match("hi my name is Pierre Lison ", true).
 				getFilledSlots().getValue("name").toString());
@@ -101,7 +101,7 @@ public class TemplateStringTest {
 	}
 	
 	@Test
-	public void SurfaceTemplateTest5() {
+	public void testTemplate5() {
 		Template template1 = new Template("hi this is {A} and this is {B}");
 		assertEquals("an apple", template1.match("hi this is an apple and this is a banana", true).getFilledSlots().getValue("A").toString());
 		assertEquals("a banana", template1.match("hi this is an apple and this is a banana", true).getFilledSlots().getValue("B").toString());
@@ -109,7 +109,7 @@ public class TemplateStringTest {
 	
 	
 	@Test
-	public void SurfaceTemplateTest6() {
+	public void testTemplate6() {
 		Template template1 = new Template("{anything}");
 		assertEquals("bla bla bla", template1.match("bla bla bla", true).getFilledSlots().getValue("anything").toString());
 		
@@ -130,7 +130,7 @@ public class TemplateStringTest {
 	
 	
 	@Test
-	public void SurfaceTemplateTest7() throws Exception {
+	public void testTemplate7() throws Exception {
 		Template template1 = new Template("here we have slot {A} and slot {B}");
 		Assignment fillers = new Assignment();
 		fillers.addPair("A", "apple");
@@ -141,7 +141,7 @@ public class TemplateStringTest {
 	}
 	
 	@Test
-	public void SurfaceTemplateTest8() throws Exception {
+	public void testTemplate8() throws Exception {
 		Template template = new Template("here we have a test");
 		assertFalse(template.match("here we have a test2", true).isMatching());
 		assertFalse(template.match("here we have a test2", false).isMatching());
@@ -156,7 +156,7 @@ public class TemplateStringTest {
 	}
 	
 	@Test
-	public void SurfaceTemplateTest9() {
+	public void testTemplate9() {
 		Template template1 = new Template("{anything}");
 		assertEquals(0, template1.match
 				("bla bla bla", true).getBoundaries()[0], 0.0);
@@ -179,7 +179,7 @@ public class TemplateStringTest {
 		assertFalse(template3.match("something", false).isMatching());
 	}
 	
-	public void orTemplate() {
+	public void testTemplateOr() {
 		Template t1 = new Template("var({X})");
 		Template t2 = new Template("var3");
 		Template t3 = new Template("bli");
@@ -193,7 +193,7 @@ public class TemplateStringTest {
 	
 	
 	@Test
-	public void QuickTest() throws DialException {
+	public void testTemplateQuick() throws DialException {
 		Domain domain = XMLDomainReader.extractDomain("test/domains/quicktest.xml");
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

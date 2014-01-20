@@ -71,7 +71,7 @@
 	
 
 	<target name="run" description="Runs the Main class to start the dialogue system" depends="compile">
-				<java classname="opendial.DialogueSystem" fork="true" clonevm="true">
+				<java classname="opendial.DialogueSystem" fork="true">
 					<classpath refid="compile.classpath"/>
  				<jvmarg line="-Dapple.laf.useScreenMenuBar=true -Xdock:name=&quot;OpenDial&quot; -Xdock:icon=&quot;resources/opendial-icon.png&quot;"/>
 			          <syspropertyset>
