@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -80,10 +81,10 @@ public class Settings {
 	public static enum Recording {NONE, LAST_INPUT, ALL}
 	
 	/** Whether to record intermediate dialogue state */
-	public Recording recording;
+	public Recording recording = Recording.LAST_INPUT;
 	
 	/** Other parameters */
-	public Map<String,String> params = new HashMap<String, String>();
+	public Properties params = new Properties();
 
 	/** Domain-specific modules to run */
 	public Collection<Class<Module>> modules = new ArrayList<Class<Module>>();
@@ -103,7 +104,7 @@ public class Settings {
 	 * 
 	 * @param mapping the properties
 	 */
-	public Settings(Map<String,String> mapping) {
+	public Settings(Properties mapping) {
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
 		fillSettings(mapping);	
 	}
@@ -115,27 +116,27 @@ public class Settings {
 	 * 
 	 * @param mapping the properties
 	 */
-	public void fillSettings(Map<String,String> mapping) {
+	public void fillSettings(Properties mapping) {
 
-		for (String key : mapping.keySet()) {
+		for (String key : mapping.stringPropertyNames()) {
 			if (key.equalsIgnoreCase("horizon")) {
-				horizon = Integer.parseInt(mapping.get(key));
+				horizon = Integer.parseInt(mapping.getProperty(key));
 			}
 			else if (key.equalsIgnoreCase("discount")) {
-				discountFactor = Double.parseDouble(mapping.get(key));
+				discountFactor = Double.parseDouble(mapping.getProperty(key));
 			}
 
 			else if (key.equalsIgnoreCase("gui")) {
-				showGUI = Boolean.parseBoolean(mapping.get(key));
+				showGUI = Boolean.parseBoolean(mapping.getProperty(key));
 			}
 			else if (key.equalsIgnoreCase("user")) {
-				userInput = mapping.get(key);
+				userInput = mapping.getProperty(key);
 			}
 			else if (key.equalsIgnoreCase("system")) {
-				systemOutput = mapping.get(key);
+				systemOutput = mapping.getProperty(key);
 			}
 			else if (key.equalsIgnoreCase("monitor")) {
-				String[] split = mapping.get(key).split(",");
+				String[] split = mapping.getProperty(key).split(",");
 				for (int i = 0 ; i < split.length ; i++) {
 					if (split[i].trim().length() > 0) {
 					varsToMonitor.add(split[i].trim());
@@ -143,19 +144,19 @@ public class Settings {
 				}
 			}
 			else if (key.equalsIgnoreCase("samples")) {
-				nbSamples = Integer.parseInt(mapping.get(key));
+				nbSamples = Integer.parseInt(mapping.getProperty(key));
 			}
 			else if (key.equalsIgnoreCase("timeout")) {
-				maxSamplingTime = Integer.parseInt(mapping.get(key));
+				maxSamplingTime = Integer.parseInt(mapping.getProperty(key));
 			}
 			else if (key.equalsIgnoreCase("discretisation")) {
-				discretisationBuckets = Integer.parseInt(mapping.get(key));
+				discretisationBuckets = Integer.parseInt(mapping.getProperty(key));
 			}
 			else if (key.equalsIgnoreCase("recording")) {
-				if (mapping.get(key).trim().equalsIgnoreCase("last") ) {
+				if (mapping.getProperty(key).trim().equalsIgnoreCase("last") ) {
 					recording = Recording.LAST_INPUT;
 				}
-				else if (mapping.get(key).trim().equalsIgnoreCase("all")) {
+				else if (mapping.getProperty(key).trim().equalsIgnoreCase("all")) {
 					recording = Recording.ALL;
 				}
 				else {
@@ -163,7 +164,7 @@ public class Settings {
 				}
 			}
 			else if (key.equalsIgnoreCase("modules")) {
-				String[] split = mapping.get(key).split(",");
+				String[] split = mapping.getProperty(key).split(",");
 				for (int i = 0 ; i < split.length ; i++) {
 					if (split[i].trim().length() > 0) {
 						Class<?> clazz;
@@ -181,7 +182,7 @@ public class Settings {
 				}
 			}
 			else {
-				params.put(key, mapping.get(key));
+				params.put(key, mapping.getProperty(key));
 			}
 		}
 	}
@@ -193,21 +194,21 @@ public class Settings {
 	 * 
 	 * @return the corresponding mapping
 	 */
-	public Map<String,String> getFullMapping() {
-		Map<String,String> mapping = new HashMap<String,String>();
+	public Properties getFullMapping() {
+		Properties mapping = new Properties();
 		mapping.putAll(params);
-		mapping.put("horizon", ""+horizon);
-		mapping.put("discount", ""+discountFactor);
-		mapping.put("gui", ""+showGUI);
-		mapping.put("user", ""+userInput);
-		mapping.put("system", ""+systemOutput);
-		mapping.put("monitor", varsToMonitor.toString().replace("[", "").replace("]", ""));
-		mapping.put("samples", ""+nbSamples);
-		mapping.put("timeout", ""+maxSamplingTime);
-		mapping.put("discretisation", ""+discretisationBuckets);
+		mapping.setProperty("horizon", ""+horizon);
+		mapping.setProperty("discount", ""+discountFactor);
+		mapping.setProperty("gui", ""+showGUI);
+		mapping.setProperty("user", ""+userInput);
+		mapping.setProperty("system", ""+systemOutput);
+		mapping.setProperty("monitor", varsToMonitor.toString().replace("[", "").replace("]", ""));
+		mapping.setProperty("samples", ""+nbSamples);
+		mapping.setProperty("timeout", ""+maxSamplingTime);
+		mapping.setProperty("discretisation", ""+discretisationBuckets);
 		List<String> moduleNames = new ArrayList<String>();
 		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
-		mapping.put("modules", ""+moduleNames.toString().replace("[", "").replace("]", ""));
+		mapping.setProperty("modules", ""+moduleNames.toString().replace("[", "").replace("]", ""));
 		return mapping;
 	}
 
@@ -223,8 +224,8 @@ public class Settings {
 
 		Element root = doc.createElement("settings");
 		
-		Map<String,String> mapping = getFullMapping();
-		for (String otherParam : mapping.keySet()) {
+		Properties mapping = getFullMapping();
+		for (String otherParam : mapping.stringPropertyNames()) {
 			Element otherParamE = doc.createElement(otherParam);
 			otherParamE.setTextContent(""+mapping.get(otherParam));
 			root.appendChild(otherParamE);
