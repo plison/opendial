@@ -454,8 +454,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	public CategoricalTable getPosterior(Assignment condition) {
 		return this;
 	}
-
-	
+ 
+	 
 
 	/**
 	 * Returns the distribution.
