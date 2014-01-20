@@ -56,7 +56,7 @@ public class WizardTest {
 	public static final String domainFile = "test//domains//domain-woz.xml";
 
 	@Test
-	public void wizardLearningTest() throws DialException {
+	public void testWizardLearning() throws DialException {
 		List<DialogueState> interaction = XMLInteractionReader.extractInteraction(interactionFile);
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
@@ -78,7 +78,7 @@ public class WizardTest {
 	}
 	
 	@Test
-	public void wizardControlTest() throws DialException, InterruptedException {
+	public void testWizardControl() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
 		system.attachModule(WizardControl.class);

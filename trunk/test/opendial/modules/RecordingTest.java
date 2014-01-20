@@ -57,7 +57,7 @@ public class RecordingTest {
 	public static Logger log = new Logger("RecordingTest", Logger.Level.DEBUG);
 	
 	@Test
-	public void recordTest() throws DialException, InterruptedException {
+	public void testRecord() throws DialException, InterruptedException {
 		
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
@@ -91,7 +91,7 @@ public class RecordingTest {
 	}
 	
 	@Test
-	public void xmlTest() throws DialException, InterruptedException, IOException {
+	public void testXML() throws DialException, InterruptedException, IOException {
 		
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;

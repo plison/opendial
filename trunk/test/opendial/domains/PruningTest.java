@@ -73,7 +73,7 @@ public class PruningTest {
 	
 	
 	@Test
-	public void pruning1() throws DialException, InterruptedException {
+	public void testPruning0() throws DialException, InterruptedException {
 	
 		assertEquals(15, system.getState().getNodeIds().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
@@ -81,7 +81,7 @@ public class PruningTest {
 	
 
 	@Test
-	public void test() throws DialException, InterruptedException {
+	public void testPruning1() throws DialException, InterruptedException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"a_u");
 		
@@ -91,7 +91,7 @@ public class PruningTest {
 
 
 	@Test 
-	public void test2() throws DialException {
+	public void testPruning2() throws DialException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"i_u");
 		
@@ -100,7 +100,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void test3() throws DialException {
+	public void testPruning3() throws DialException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"direction");
 		
@@ -112,7 +112,7 @@ public class PruningTest {
 
 
 	@Test
-	public void test4() throws DialException {
+	public void testPruning4() throws DialException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"o");
 
@@ -123,7 +123,7 @@ public class PruningTest {
 
 
 	@Test
-	public void test5() throws DialException {
+	public void testPruning5() throws DialException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"o2");
 	
@@ -134,7 +134,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void test6() throws DialException, InterruptedException {
+	public void testPruning6() throws DialException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 		
@@ -154,7 +154,7 @@ public class PruningTest {
 
 
 	@Test
-	public void test7() throws DialException, InterruptedException {
+	public void testPruning7() throws DialException, InterruptedException {
 
 		ProbQuery query = new ProbQuery(system.getState(),"a_u2");
 		
@@ -165,7 +165,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void test8() throws DialException, InterruptedException {
+	public void testPruning8() throws DialException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 		

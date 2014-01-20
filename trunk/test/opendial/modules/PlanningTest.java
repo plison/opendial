@@ -71,7 +71,7 @@ public class PlanningTest {
 
 	
 	@Test
-	public void planning() throws DialException, InterruptedException {
+	public void testPlanning() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -85,7 +85,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void planning2() throws DialException, InterruptedException {
+	public void testPlanning2() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -98,7 +98,7 @@ public class PlanningTest {
 	}
 	
 	@Test
-	public void planning3() throws DialException, InterruptedException {
+	public void testPlanning3() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -110,7 +110,7 @@ public class PlanningTest {
 	
 	
 	@Test
-	public void planning4() throws DialException, InterruptedException {
+	public void testPlanning4() throws DialException, InterruptedException {
 	
 		DialogueSystem system = new DialogueSystem(domain3);
 		system.getSettings().showGUI = false;
@@ -129,7 +129,7 @@ public class PlanningTest {
 	
 	
 	@Test
-	public void planning5() throws DialException, InterruptedException {
+	public void testPlanning5() throws DialException, InterruptedException {
 
 
 		DialogueSystem system = new DialogueSystem(domain3);

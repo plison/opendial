@@ -38,7 +38,7 @@ public class OutputsTest {
 
 	
 	@Test
-	public void OutputParsing() {
+	public void testOutputs() {
 		
 		Effect o = new Effect();
 		assertEquals(o, Effect.parseEffect("Void"));
