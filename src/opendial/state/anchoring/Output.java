@@ -26,8 +26,8 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
@@ -149,6 +149,7 @@ public class Output {
 	 * 
 	 * @return the string representation
 	 */
+	@Override
 	public String toString() {
 		String str = "";
 		for (Effect e : effects.keySet()) {
@@ -165,6 +166,7 @@ public class Output {
 	/**
 	 * Returns the hashcode for the output
 	 */
+	@Override
 	public int hashCode() {
 		return effects.hashCode();
 	}

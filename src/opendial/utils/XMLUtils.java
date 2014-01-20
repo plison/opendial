@@ -19,16 +19,10 @@
 
 package opendial.utils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -45,6 +39,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,10 +52,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.readers.XMLDomainReader;
 
 /**
  * Utility functions for manipulating XML content
@@ -346,15 +339,18 @@ final class XMLErrorHandler extends DefaultHandler {
 
 	static Logger log = new Logger("XMLErrorHandler", Logger.Level.NORMAL);
 
+	@Override
 	public void error (SAXParseException e) throws SAXParseException { 
 		log.warning("Parsing error: "+e.getMessage());
 		throw e;
 	}
 
+	@Override
 	public void warning (SAXParseException e) { 
 		log.warning("Parsing problem: "+e.getMessage());
 	}
 
+	@Override
 	public void fatalError (SAXParseException e) { 
 		log.severe("Parsing error: "+e.getMessage()); 
 		log.severe("Cannot continue."); 

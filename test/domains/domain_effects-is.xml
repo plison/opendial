@@ -4,16 +4,16 @@
 
 	<rule>
 		<case>
-		<condition operator="or">
-			<if var="a_m" value="Ground(*)"/>
-			<if var="a_m" value="Confirm(*)"/>
-		</condition>
-		<effect>
-			<add var="history" value="{a_m}"/>
-		</effect>
+			<condition operator="or">
+				<if var="a_m" value="Ground(*)" />
+				<if var="a_m" value="Confirm(*)" />
+			</condition>
+			<effect>
+				<add var="history" value="{a_m}" />
+			</effect>
 		</case>
 	</rule>
-	
+
 
 	<rule id="nextintention">
 		<case>
@@ -23,7 +23,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -32,7 +32,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -42,7 +42,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -52,7 +52,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -62,7 +62,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -75,11 +75,11 @@
 			</condition>
 			<effect prob="0.4">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 			<effect prob="0.6">
 				<set var="floor" value="continue" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>
@@ -88,7 +88,7 @@
 			</condition>
 			<effect prob="1.0">
 				<set var="floor" value="start" />
-				<clear var="history"/>			
+				<clear var="history" />
 			</effect>
 		</case>
 		<case>

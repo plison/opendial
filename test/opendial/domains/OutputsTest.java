@@ -20,16 +20,14 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
 import opendial.arch.Logger;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Template;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.domains.rules.effects.Effect;
+
+import org.junit.Test;
 
 public class OutputsTest {
 

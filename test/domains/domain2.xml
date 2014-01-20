@@ -6,22 +6,22 @@
 			<value prob="0.7">Want(A)</value>
 			<value prob="0.3">Want(B)</value>
 		</variable>
-		
+
 		<variable id="i_u2">
 			<value prob="0.6">Want(A)</value>
 			<value prob="0.2">Want(B)</value>
 			<value prob="0.1">Want(C)</value>
 		</variable>
-		
+
 		<variable id="a_u">
 			<value>None</value>
 		</variable>
-		
+
 		<variable id="a_u2">
 			<value>None</value>
 		</variable>
-				
-				
+
+
 	</initialstate>
 
 	<model type="prediction" trigger="a_u">
@@ -34,7 +34,7 @@
 					<set var="a_u^p" value="Ask({X})" />
 				</effect>
 				<effect prob="0.1">
-					<clear var="a_u^p"/>
+					<clear var="a_u^p" />
 				</effect>
 			</case>
 		</rule>
@@ -51,16 +51,16 @@
 					<set var="a_u2^p" value="Ask({X})" />
 				</effect>
 				<effect prob="0.1">
-					<clear var="a_u2^p"/>
+					<clear var="a_u2^p" />
 				</effect>
 			</case>
 		</rule>
 	</model>
-	
-	
-	
+
+
+
 	<model type="prediction" trigger="a_u2^p">
-	
+
 		<rule id="predictrule3">
 			<case>
 				<condition>
@@ -77,37 +77,37 @@
 				</effect>
 			</case>
 		</rule>
-		
+
 	</model>
 
 
 	<model type="decision" trigger="a_u">
-	
+
 		<rule id="decide1">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})" />
 				</condition>
 				<effect util="3">
-					<set var="a_m" value="Do({X})"/>
+					<set var="a_m" value="Do({X})" />
 				</effect>
 			</case>
 		</rule>
-		
-		
+
+
 		<rule id="decide2">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})" />
 				</condition>
 				<effect util="-5">
-					<set var="a_m" value="Do({X})"  relation="!="/>
+					<set var="a_m" value="Do({X})" relation="!=" />
 				</effect>
 			</case>
 		</rule>
-			
-	
+
+
 	</model>
 
- 
+
 </domain>

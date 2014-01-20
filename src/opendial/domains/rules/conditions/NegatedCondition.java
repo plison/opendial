@@ -113,6 +113,7 @@ public class NegatedCondition implements Condition {
 	 * 
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return - initCondition.hashCode();
 	}
@@ -120,6 +121,7 @@ public class NegatedCondition implements Condition {
 	/**
 	 * Returns the string representation of the condition
 	 */
+	@Override
 	public String toString() {
 		return "!"+ initCondition.toString();
 	}
@@ -132,6 +134,7 @@ public class NegatedCondition implements Condition {
 	 * @param o the object to compare
 	 * @return true if equal, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof NegatedCondition) {
 			return ((NegatedCondition)o).getInitCondition().equals(initCondition);

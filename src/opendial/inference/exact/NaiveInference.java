@@ -141,7 +141,7 @@ public class NaiveInference implements InferenceAlgorithm {
 					jointLogProb += Math.log10(n.getProb(singleAssign.getValue(n.getId())));
 				}
 			}
-			result.put(singleAssign, (double)Math.pow(10,jointLogProb));
+			result.put(singleAssign, Math.pow(10,jointLogProb));
 		}
 		return result;
 	}
@@ -207,6 +207,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @param query the reduction query
 	 * @return the reduced network
 	 */
+	@Override
 	public BNetwork reduce(ReductionQuery query) throws DialException {
 
 		BNetwork network = new BNetwork();

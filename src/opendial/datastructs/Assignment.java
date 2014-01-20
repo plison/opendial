@@ -27,20 +27,19 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.utils.StringUtils;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Representation of an assignment of variables (expressed via their unique identifiers) 
@@ -914,6 +913,7 @@ public class Assignment {
 	 * @param o the object to compare
 	 * @return true if the assignments are equal, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Assignment) {
 			return map.equals(((Assignment)o).getPairs());
@@ -944,6 +944,7 @@ public class Assignment {
 	/**
 	 * Returns a string representation of the assignment
 	 */
+	@Override
 	public String toString() {
 		String str = "";
 		if (map.keySet().isEmpty()) {

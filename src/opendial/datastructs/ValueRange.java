@@ -108,10 +108,12 @@ public class ValueRange {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return range.toString();
 	}
 	
+	@Override
 	public int hashCode() {
 		return range.hashCode() - 1;
 	}

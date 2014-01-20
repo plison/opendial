@@ -20,13 +20,10 @@
 package opendial.bn.distribs;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 

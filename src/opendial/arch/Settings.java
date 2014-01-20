@@ -20,20 +20,15 @@
 package opendial.arch;
 
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
+
+import opendial.modules.Module;
+import opendial.readers.XMLSettingsReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import opendial.arch.Logger;
-import opendial.modules.Module;
-import opendial.readers.XMLSettingsReader;
 
 /**
  * System-wide settings for openDial.
@@ -87,7 +82,7 @@ public class Settings {
 	public Properties params = new Properties();
 
 	/** Domain-specific modules to run */
-	public Collection<Class<Module>> modules = new ArrayList<Class<Module>>();
+	public List<Class<Module>> modules = new ArrayList<Class<Module>>();
 	
 	
 	/**
@@ -116,6 +111,7 @@ public class Settings {
 	 * 
 	 * @param mapping the properties
 	 */
+	@SuppressWarnings("unchecked")
 	public void fillSettings(Properties mapping) {
 
 		for (String key : mapping.stringPropertyNames()) {
@@ -171,7 +167,7 @@ public class Settings {
 						try {
 							clazz = Class.forName(split[i].trim());
 							for (int j = 0 ; j < clazz.getInterfaces().length ; j++) {
-								if (clazz.getInterfaces()[i].equals(Module.class)) {
+								if (clazz.getInterfaces()[j].equals(Module.class) && !modules.contains(clazz)) {
 									modules.add((Class<Module>)clazz);
 								}
 							}
@@ -250,6 +246,7 @@ public class Settings {
 	 * 
 	 * @return the settings
 	 */
+	@Override
 	public String toString() {
 		return getFullMapping().toString();
 	}

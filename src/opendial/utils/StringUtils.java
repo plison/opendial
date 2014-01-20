@@ -20,21 +20,11 @@
 package opendial.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.values.NoneVal;
-import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 
 
 /**

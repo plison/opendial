@@ -30,14 +30,11 @@ import java.util.Stack;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
+import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.datastructs.Assignment;
 
 
 /**

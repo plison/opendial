@@ -21,28 +21,21 @@ package opendial.modules;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.collections15.ListUtils;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
-import opendial.state.StatePruner;
-import opendial.utils.StringUtils;
 
 /**
  * Simulator for the user/environment.  The simulator generated new environment observations
@@ -127,10 +120,12 @@ public class Simulator implements Module {
 	/**
 	 * Returns true if the system is not paused, and false otherwise
 	 */
+	@Override
 	public boolean isRunning() {
 		return !system.isPaused();
 	}
 
+	@Override
 	public void pause(boolean toPause) {	}
 
 
@@ -146,6 +141,7 @@ public class Simulator implements Module {
 		final String outputVar = system.getSettings().systemOutput;
 		if (updatedVars.contains(outputVar)) {
 			(new Thread() {
+				@Override
 				public void run() {
 					try {
 						synchronized (systemState) {

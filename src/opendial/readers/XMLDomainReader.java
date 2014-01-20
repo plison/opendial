@@ -22,23 +22,20 @@ package opendial.readers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * 

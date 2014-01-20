@@ -78,6 +78,7 @@ public class ActionNode extends BNode {
 		this.actionValues = new HashSet<Value>(actionValues);
 	}
 	
+	@Override
 	public void addInputNode(BNode inputNode) {
 		log.warning("Action node cannot have any input nodes, ignoring call");
 	}
@@ -159,6 +160,7 @@ public class ActionNode extends BNode {
 	 * 
 	 * @return the list of values
 	 */
+	@Override
 	public Set<Value> getValues() {
 		return new HashSet<Value>(actionValues);
 	}

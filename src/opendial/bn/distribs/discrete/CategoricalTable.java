@@ -27,28 +27,26 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
-import opendial.bn.values.NoneVal;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.bn.values.ArrayVal;
+import opendial.bn.values.DoubleVal;
+import opendial.bn.values.NoneVal;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
 import opendial.datastructs.ValueRange;
-import opendial.utils.CombinatoricsUtils;
 import opendial.utils.DistanceUtils;
 import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 /**
@@ -208,6 +206,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @param oldVarId the old identifier
 	 * @param newVarId the new identifier
 	 */
+	@Override
 	public void modifyVariableId(String oldVarId, String newVarId) {
 		//	log.debug("changing var id from " + oldVarId + " --> " + newVarId);
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
@@ -252,6 +251,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * 
 	 * @param the threshold
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
 		for (Assignment row : table.keySet()) {
@@ -377,6 +377,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @return the sampled assignment.
 	 * @throws DialException if no assignment could be sampled
 	 */
+	@Override
 	public Assignment sample(Assignment condition) throws DialException {
 		return sample();
 	}
@@ -389,6 +390,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @return the sampled assignment
 	 * @throws DialException if no assignment could be sampled
 	 */
+	@Override
 	public Assignment sample() throws DialException {
 
 		while (intervals == null) {
@@ -554,6 +556,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @param range possible input values (is ignored)
 	 * @return the table rows
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 		return getPossibleValues();
 	}
@@ -564,6 +567,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * 
 	 * @return the table rows
 	 */
+	@Override
 	public Set<Assignment> getPossibleValues() {
 		return getRows();
 	}

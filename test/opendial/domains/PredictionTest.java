@@ -20,17 +20,15 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.readers.XMLDomainReader;
+
+import org.junit.Test;
 
 public class PredictionTest {
 

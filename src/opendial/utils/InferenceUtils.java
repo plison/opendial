@@ -24,26 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Random;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.other.ConditionalDistribution;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
-import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 
 /**

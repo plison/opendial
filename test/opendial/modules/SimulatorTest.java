@@ -20,16 +20,15 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
+
+import org.junit.Test;
 
 public class SimulatorTest {
 

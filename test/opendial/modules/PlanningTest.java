@@ -20,28 +20,19 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.*;
-
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import opendial.DialogueSystem;
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLSettingsReader;
-import opendial.state.distribs.EquivalenceDistribution;
+
+import org.junit.Test;
 
 public class PlanningTest {
 

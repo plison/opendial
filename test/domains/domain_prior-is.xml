@@ -50,8 +50,8 @@
 			<effect prob="theta_1[7]" />
 		</case>
 	</rule>
-	
-	
+
+
 	<rule>
 		<case>
 			<condition>
@@ -63,7 +63,7 @@
 			</effect>
 			<effect prob="theta_2[1]" />
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="floor" value="start" />
 				<if var="carried" value="o2" relation="contains" />

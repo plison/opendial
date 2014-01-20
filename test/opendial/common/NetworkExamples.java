@@ -25,12 +25,10 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 

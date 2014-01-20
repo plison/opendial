@@ -52,16 +52,16 @@
 			</effect>
 			<effect prob="0.075">
 				<set var="i_u" value="Move(Turn)" />
-			</effect>	
+			</effect>
 		</case>
 	</rule>
-	
+
 	<rule id="perceptionprior">
 		<case>
 			<condition>
-				<if var="perceived" value="{OBJ}" relation="contains"/>
+				<if var="perceived" value="{OBJ}" relation="contains" />
 				<if var="completed-task" value="true" />
-			</condition>				
+			</condition>
 			<effect prob="0.2">
 				<set var="i_u" value="DoYouSee({OBJ})" />
 			</effect>
@@ -69,10 +69,10 @@
 				<set var="i_u" value="WhatDoYouSee" />
 			</effect>
 		</case>
-		<case>		
-		<condition>
+		<case>
+			<condition>
 				<if var="completed-task" value="true" />
-		</condition>		
+			</condition>
 			<effect prob="0.05">
 				<set var="i_u" value="DoYouSee(RedObj)" />
 			</effect>
@@ -84,46 +84,46 @@
 			</effect>
 		</case>
 	</rule>
-	
-	
+
+
 	<rule id="chitchatprior">
 		<case>
-			<condition>			
-				<if var="lastMove" value="None"/>
-				<if var="completed-task" value="true" />				
+			<condition>
+				<if var="lastMove" value="None" />
+				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.1" >
+			<effect prob="0.1">
 				<set var="i_u" value="Ask(Name)" />
 			</effect>
-			<effect prob="0.2" >
+			<effect prob="0.2">
 				<set var="i_u" value="Greeting" />
 			</effect>
 		</case>
 		<case>
-			<condition>			
-				<if var="lastMove" value="Release"/>
-				<if var="completed-task" value="true" />				
+			<condition>
+				<if var="lastMove" value="Release" />
+				<if var="completed-task" value="true" />
 			</condition>
-			<effect prob="0.2" >
+			<effect prob="0.2">
 				<set var="i_u" value="Closing" />
 			</effect>
 		</case>
-		</rule>
-	
-	
+	</rule>
+
+
 	<rule id="releaseprior">
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
-				<if var="carried" value="[]" relation="!="/>
-				<if var="carried" value="None" relation="!="/>
+				<if var="carried" value="[]" relation="!=" />
+				<if var="carried" value="None" relation="!=" />
 			</condition>
 			<effect prob="0.2">
 				<set var="i_u" value="Release" />
 			</effect>
 		</case>
 	</rule>
-	
+
 
 	<rule id="pickupprior">
 		<case>

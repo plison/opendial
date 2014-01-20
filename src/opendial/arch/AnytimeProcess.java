@@ -41,9 +41,10 @@ public abstract class AnytimeProcess extends Thread {
 	 * @param timeout the maximum duration of the process
 	 */
 	public AnytimeProcess(final long timeout) {
-		final Class cls = this.getClass();
+		final Class<? extends AnytimeProcess> cls = this.getClass();
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
 				if (!isTerminated()) {
 					log.debug("time (" + timeout + " ms.) has run out for " + cls.getSimpleName());

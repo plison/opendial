@@ -34,8 +34,8 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.domains.rules.effects.Effect;
 import opendial.state.anchoring.AnchoredRule;
 import opendial.state.anchoring.Output;
 
@@ -219,7 +219,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 */
 	private Condition convertToCondition(Effect e) {
 		ComplexCondition condition = new ComplexCondition();
-		for (BasicEffect subeffect : ((Effect)e).getSubEffects()) {
+		for (BasicEffect subeffect : e.getSubEffects()) {
 			Template variable = subeffect.getVariable();
 			Template value = subeffect.getTemplateValue();
 			Relation r = (subeffect.getType() == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;

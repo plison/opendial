@@ -25,19 +25,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
@@ -48,22 +40,21 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
-import opendial.domains.Domain;
-import opendial.domains.Model;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.LikelihoodWeighting;
-import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.modules.Module;
 import opendial.state.anchoring.AnchoredRule;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
 import opendial.state.nodes.UtilityRuleNode;
-import opendial.utils.StringUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 /**
@@ -122,6 +113,7 @@ public class DialogueState extends BNetwork {
 	 * contained as argument (and deletes the rest).
 	 * 
 	 */
+	@Override
 	public void reset(BNetwork network) {
 		evidence.removePairs(getChanceNodeIds());
 		super.reset(network);
@@ -499,6 +491,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @return the copy
 	 */
+	@Override
 	public DialogueState copy() throws DialException {
 		DialogueState sn= new DialogueState(super.copy());
 		sn.addEvidence(evidence.copy());
@@ -512,6 +505,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @return the string representation
 	 */
+	@Override
 	public String toString() {
 		String str = super.toString();
 		if (!evidence.isEmpty()) {
@@ -526,6 +520,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return super.hashCode() - 2*evidence.hashCode();
 	}

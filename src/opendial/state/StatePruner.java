@@ -21,7 +21,6 @@ package opendial.state;
 
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;

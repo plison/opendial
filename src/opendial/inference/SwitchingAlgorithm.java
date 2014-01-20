@@ -21,20 +21,13 @@ package opendial.inference;
 
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.other.ConditionalDistribution;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
