@@ -43,11 +43,12 @@ import opendial.state.DialogueState;
  * <p>Of course, nothing prevents in practice a module to operate both in synchronous and 
  * asynchronous mode.
  * 
- * <p> In order to be easily loaded into the system (via e.g. the button "Load Modules" in 
- * the GUI toolbar), modules should have a constructor with a single argument: the 
- * DialogueSystem object to which it should be connected.  Additional arguments can be 
- * specified through parameters in the system settings.  When necessary parameters are
- * missing, a MissingParameterException should be thrown.
+ * <p> In order to make the module easy to load into the system (via e.g. the button "Load 
+ * Modules" in the GUI toolbar or via the "<modules" parameters in system settings), it is
+ * a good idea to ensure that implement each module with a constructor with a single argument: 
+ * the  DialogueSystem object to which it should be connected.  Additional arguments can in
+ * this case be specified through parameters in the system settings.  When necessary parameters 
+ * are missing, a MissingParameterException should be thrown.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
