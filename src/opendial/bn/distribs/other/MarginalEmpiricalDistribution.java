@@ -49,7 +49,7 @@ import opendial.datastructs.ValueRange;
  *
  */
 public class MarginalEmpiricalDistribution implements ProbDistribution {
-
+  
 	// logger
 	public static Logger log = new Logger("MarginalEmpiricalDistribution", Logger.Level.DEBUG);
 

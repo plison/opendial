@@ -50,7 +50,7 @@ public class QuantificationTest {
 
 
 	@Test
-	public void test() throws DialException {
+	public void test1() throws DialException {
 
 			Domain domain = XMLDomainReader.extractDomain(domainFile); 
 			inference = new InferenceChecks();
@@ -74,7 +74,7 @@ public class QuantificationTest {
 	
 
 	@Test
-	public void thesisTests() throws DialException {
+	public void testThesis() throws DialException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(domainFile2); 

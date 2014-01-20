@@ -72,7 +72,7 @@ public class InferenceTest {
 	
 	
 	@Test
-	public void bayesianNetworkTest1() throws DialException {
+	public void testNetwork1() throws DialException {
 		
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		Map<Assignment,Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -105,7 +105,7 @@ public class InferenceTest {
 	
 	
 	@Test
-	public void bayesianNetworkTest1bis() throws DialException {
+	public void testNetwork1bis() throws DialException {
 		
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		Map<Assignment,Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -137,7 +137,7 @@ public class InferenceTest {
 	} 
 	
 	@Test
-	public void bayesianNetworkTest2() throws DialException {
+	public void testNetwork2() throws DialException {
 		
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
@@ -159,7 +159,7 @@ public class InferenceTest {
 
 	
 	@Test
-	public void bayesianNetworkTest2bis() throws DialException {
+	public void testNetwork2bis() throws DialException {
 		
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
@@ -181,7 +181,7 @@ public class InferenceTest {
 	
 
 	@Test
-	public void bayesianNetworkTest3bis() throws DialException {
+	public void testNetwork3bis() throws DialException {
 		
 		LikelihoodWeighting is = new LikelihoodWeighting(5000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
@@ -231,7 +231,7 @@ public class InferenceTest {
 	
 	
 	@Test
-	public void utilityTest() throws DialException {
+	public void testNetworkUtil() throws DialException {
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 
 		VariableElimination ve = new VariableElimination();
@@ -261,7 +261,7 @@ public class InferenceTest {
 	
 	
 	@Test
-	public void switchingTest() throws DialException {
+	public void testSwitching() throws DialException {
 		int oldFactor = SwitchingAlgorithm.MAX_BRANCHING_FACTOR;
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = 4;
 		BNetwork network = NetworkExamples.constructBasicNetwork2();

@@ -41,7 +41,7 @@ public class AssignmentTest {
 	public static Logger log = new Logger("AssignmentTest", Logger.Level.NORMAL);
 	
 	@Test
-	public void assignInterchanceTest() {
+	public void testAssignInterchance() {
 		Assignment a1 = new Assignment(new Assignment("Burglary", true), "Earthquake", ValueFactory.create(false));
 		Assignment a1bis = new Assignment(new Assignment("Earthquake", false), "Burglary", ValueFactory.create(true));
 		Assignment a2 = new Assignment(new Assignment("Burglary", false), "Earthquake", ValueFactory.create(true));

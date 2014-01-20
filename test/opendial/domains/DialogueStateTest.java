@@ -58,7 +58,7 @@ public class DialogueStateTest {
 
 
 	@Test
-	public void stateCopyTest() throws DialException, InterruptedException {
+	public void testStateCopy() throws DialException, InterruptedException {
 	
 		DialogueSystem	system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -90,7 +90,7 @@ public class DialogueStateTest {
 
 
 	@Test
-	public void stateCopyTest2() throws DialException, InterruptedException {
+	public void testStateCopy2() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.08;
 

@@ -73,7 +73,7 @@ public class DistributionsTest {
 	
 	
 	@Test
-	public void simpleDistrib() {
+	public void testSimpleDistrib() {
 		CategoricalTable.log.setLevel(Level.MIN);
 		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("var1", "val1"), 0.7);
@@ -90,7 +90,7 @@ public class DistributionsTest {
 	}
 	
 	@Test
-	public void mathTest() {
+	public void testMaths() {
 		assertEquals(4.0, MathUtils.getVolume(2, 1), 0.001);
 		assertEquals(Math.PI * 4, MathUtils.getVolume(2, 2), 0.001);
 		assertEquals(4.0/3.0 * Math.PI * 8, MathUtils.getVolume(2, 3), 0.001);
@@ -98,7 +98,7 @@ public class DistributionsTest {
 	}
 	
 	@Test
-	public void conversion1Distrib() throws DialException {
+	public void testConversion1Distrib() throws DialException {
 	
 		CategoricalTable table = new CategoricalTable();
 		table.addRow(new Assignment("var1", 1.5), 0.7);
@@ -198,7 +198,7 @@ public class DistributionsTest {
 	}
 	
 	@Test
-	public void uniformDistrib() {
+	public void testUniformDistrib() {
 		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new UniformDensityFunction(-2, 3.0));
 		assertEquals(continuous2.getProbDensity(new Assignment("var2", 1.2)), 1/5.0, 0.001);
 	//	assertEquals(continuous2.getCumulativeProb(new Assignment("var2", 2)), 4/5.0, 0.001);
@@ -218,7 +218,7 @@ public class DistributionsTest {
 	}
 	
 	@Test
-	public void gaussianDistrib() {
+	public void testGaussianDistrib() {
 		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", new GaussianDensityFunction(2.0, 3.0));
 		assertEquals(continuous2.getProbDensity(new Assignment("var2", 1.2)), 0.2070, 0.001);
 		assertEquals(continuous2.getProbDensity(new Assignment("var2", 2.0)), 0.23033, 0.001);
@@ -237,7 +237,7 @@ public class DistributionsTest {
 	
 	
 	@Test
-	public void kernelDistrib() throws InterruptedException {
+	public void testKernelDistrib() throws InterruptedException {
 		KernelDensityFunction kds = new KernelDensityFunction(Arrays.asList(new Double[]{0.1}, 
 				new Double[]{-1.5}, new Double[]{0.6}, new Double[]{1.3}, new Double[]{1.3}));
 		
@@ -267,7 +267,7 @@ public class DistributionsTest {
 	
 	
 	@Test
-	public void empiricalDistrib() throws DialException {
+	public void testEmpiricalDistrib() throws DialException {
 		
 		CategoricalTable st = new CategoricalTable();
 		st.addRow(new Assignment("var1", "val1"), 0.6);
@@ -336,7 +336,7 @@ public class DistributionsTest {
 	
 	
 	@Test
-	public void depEmpiricalDistribContinuous() throws DialException, InterruptedException {
+	public void testDepEmpiricalDistribContinuous() throws DialException, InterruptedException {
 		BNetwork bn = new BNetwork();
 		ChanceNode var1 = new ChanceNode("var1");
 		var1.addProb(ValueFactory.create("one"), 0.7);
@@ -367,7 +367,7 @@ public class DistributionsTest {
 	
 	
 	@Test
-	public void dirichletTest() throws InterruptedException, DialException {
+	public void testDirichlet() throws InterruptedException, DialException {
 		
 		int oldDiscretisationSettings = Settings.discretisationBuckets;
 		Settings.discretisationBuckets = 250;
@@ -428,7 +428,7 @@ public class DistributionsTest {
 	
 
 	@Test
-	public void kernelDistrib2() throws InterruptedException {
+	public void testKernelDistrib2() throws InterruptedException {
 
 		KernelDensityFunction mkds = new KernelDensityFunction(Arrays.asList(
 				new Double[]{0.1}, new Double[]{-1.5}, new Double[]{0.6}, new Double[]{1.3}, new Double[]{1.3}));
