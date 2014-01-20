@@ -79,7 +79,7 @@ public class BasicRuleTest {
 	
 
 	@Test
-	public void test() throws DialException, InterruptedException {
+	public void test1() throws DialException, InterruptedException {
 	
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);

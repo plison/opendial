@@ -52,8 +52,7 @@ public class NaoASR  implements Module, Runnable {
 	NaoSession session;
 
 	DialogueSystem system;
-	boolean paused = true;
- 
+	boolean paused = true; 
 
 	public NaoASR(DialogueSystem system) throws DialException {
 		this.system = system;
@@ -64,7 +63,7 @@ public class NaoASR  implements Module, Runnable {
 			throw new MissingParameterException(params);
 		}
 		session = NaoSession.grabSession(system.getSettings());
-		log.debug("connecting to Nao with address " + system.getSettings().params.get("ip"));
+		log.debug("connecting to Nao with address " + system.getSettings().params.get("nao_ip"));
 
 	}
 	
@@ -79,14 +78,14 @@ public class NaoASR  implements Module, Runnable {
 
 		session.call("ALSpeechRecognition", "pause", false);
 		session.call("ALSpeechRecognition", "setAudioExpression", false);
-		session.call("ALSpeechRecognition", "setParameter", "NBFirstPassHypotheses", 3);
-		session.call("ALSpeechRecognition", "setParameter", "NBSecondPassHypotheses", 5);
+	/**	session.call("ALSpeechRecognition", "setParameter", "NBFirstPassHypotheses", 3);
+		session.call("ALSpeechRecognition", "setParameter", "NBSecondPassHypotheses", 5); */
 
 
 		if (session.<ArrayList>call("ALSpeechRecognition", "getSubscribersInfo").size() > 0) {
 			session.call("ALSpeechRecognition", "unsubscribe", "naoASR");
 		}
-		String asrGrammar = system.getSettings().params.get("asr");
+		String asrGrammar = system.getSettings().params.getProperty("grammar");
 		log.info("Using ASR grammar: " + asrGrammar);
 		session.call("ALSpeechRecognition", "compile", asrGrammar, 
 				asrGrammar.replace("bnf", "lcf"), "English");
@@ -121,12 +120,34 @@ public class NaoASR  implements Module, Runnable {
 		while (true) {
 			try {	
 				Thread.sleep(80);  
-				ASRLoop thread = new ASRLoop(NaoSession.MAX_RESPONSE_DELAY);
-				thread.start();
+				
+					if (!paused) {
+						Map<String,Float> hypotheses = new HashMap<String,Float>();
+						Object o = session.call("ALMemory", "getData", "WordRecognized");
+						ArrayList val = new ArrayList();
+						if (o instanceof ArrayList) {
+							val.addAll(((ArrayList)o));
+						}
+						if (val.size() > 0) {
+							for (int i = 0 ; i < val.size()/2 ; i++) {
+								String str = val.get(i*2).toString();
+								float f = (Float) val.get(i*2+1);
+								if (f > 0.1) {
+									hypotheses.put(str, f);
+								}
+							}
+						} 
+						session.call("ALMemory", "insertData", "WordRecognized", "");
 
-				while (thread.isAlive()) {
-					thread.wait();
-				}
+						if (!hypotheses.isEmpty()) {
+							log.debug("initial hypotheses: " + hypotheses.toString());
+							CategoricalTable chypotheses = correctHypotheses(hypotheses);
+							log.debug("corrected hypotheses: " + chypotheses.toString().replace("\n", ", "));
+							system.addContent(chypotheses);
+						}
+
+					} 
+
 			}
 			catch (Exception e) { log.debug("exception : " + e); }
 
@@ -177,69 +198,6 @@ public class NaoASR  implements Module, Runnable {
 		return newHypotheses;
 	}
 
-
-	public class ASRLoop extends AnytimeProcess {
-
-		public ASRLoop(long timeout) {
-			super(timeout);
-		}
-
-		public void run() {
-
-			try {
-				if (!paused) {
-					Map<String,Float> hypotheses = new HashMap<String,Float>();
-					Object o = session.call("ALMemory", "getData", "WordRecognized");
-					ArrayList val = new ArrayList();
-					if (o instanceof ArrayList) {
-						val.addAll(((ArrayList)o));
-					}
-					if (val.size() > 0) {
-						for (int i = 0 ; i < val.size()/2 ; i++) {
-							String str = val.get(i*2).toString();
-							float f = (Float) val.get(i*2+1);
-							if (f > 0.1) {
-								hypotheses.put(str, f);
-							}
-						}
-					} 
-					session.call("ALMemory", "insertData", "WordRecognized", "");
-
-					if (!hypotheses.isEmpty()) {
-						log.debug("initial hypotheses: " + hypotheses.toString());
-						CategoricalTable chypotheses = correctHypotheses(hypotheses);
-						log.debug("corrected hypotheses: " + chypotheses.toString().replace("\n", ", "));
-						system.addContent(chypotheses);
-					}
-
-				} 
-			}
-			catch (Exception e) {
-				log.warning("cannot run recognition: " + e);
-			}
-			notifyAll();
-		}
-
-		@Override
-		public void terminate() {
-			log.debug("terminating ASR loop");
-			interrupt();
-			try { 
-				session.call("ALSpeechRecognition", "unsubscribe", "naoASR");
-				session.call("ALSpeechRecognition", "subscribe", "naoASR");
-			} 
-			catch (DialException e) {	
-				log.warning("could not unsubscribe ASR");
-			}
-			notifyAll();
-		}
-
-
-		public boolean isTerminated() {
-			return !isAlive();
-		}
-
-	}
 
 
 

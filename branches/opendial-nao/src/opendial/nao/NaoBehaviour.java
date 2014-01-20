@@ -53,33 +53,31 @@ public class NaoBehaviour implements Module {
 	static Logger log = new Logger("NaoBehaviour", Logger.Level.DEBUG);
 
 	public static final String ACTION_VAR = "a_m";
-	
+
 	DialogueSystem system;
 	NaoSession session;
 	boolean paused = true;
-	
-	
+
+
 	public NaoBehaviour(DialogueSystem system) throws DialException {
 		this.system = system;
 		session = NaoSession.grabSession(system.getSettings());
-}
+	}
 
 	@Override
 	public void start() throws DialException {
-
 		paused = false;
 		executeBehaviour(Arrays.asList("standup"));
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-			   @Override
-			   public void run() {  
-				  System.out.println("Shutting down Nao Behaviour");
-				  try {  
+			@Override
+			public void run() {  
+				System.out.println("Shutting down Nao Behaviour");
+				try {  
 					executeBehaviour(Arrays.asList("kneel"));
-					  session.call("ALBehaviorManager", "stopAllBehaviors");;
+					session.call("ALBehaviorManager", "stopAllBehaviors");;
 				}	catch (Exception e) {}
-			   }
-			 });
-		NaoCarryDetection.initialise(session.getIP());
+			}
+		});
 	}
 
 
@@ -87,7 +85,7 @@ public class NaoBehaviour implements Module {
 	public void pause(boolean toPause) {
 		paused = toPause;
 	}
-	
+
 	public boolean isRunning() {
 		return !paused;
 	}
@@ -98,34 +96,30 @@ public class NaoBehaviour implements Module {
 	 * @param state
 	 */
 	@Override
-	public void trigger(DialogueState state, Collection<String> updatedVars) {		 
-		if  (session != null && updatedVars.contains(ACTION_VAR) 
-				&& state.hasChanceNode(ACTION_VAR) 
-				&& !paused && !getActionValue().equals("")) {
-		String actionValue = getActionValue();
-		if (!actionValue.equals("")) {
-			log.debug("executing behaviour " + actionValue);
-			executeBehaviour(Arrays.asList(actionValue));
-		}
-		else {
-			log.debug("actionValue value is null");
-		}
+	public void trigger(DialogueState state, Collection<String> updatedVars) {	
+		if  (session != null && updatedVars.contains(ACTION_VAR) && !paused) {
+			String actionValue = getActionValue(state);
+			if (actionValue != null) {
+				executeBehaviour(Arrays.asList(actionValue));
+			}
 		}
 	}
-	
 
 
-	private String getActionValue() {
-			CategoricalTable actionTable = system.getContent(ACTION_VAR).toDiscrete();
+
+	private String getActionValue(DialogueState state) {
+		if (state.hasChanceNode(ACTION_VAR)) {
+			CategoricalTable actionTable = state.queryProb(ACTION_VAR).toDiscrete();
 			String fullVal = actionTable.getBest().getValue(ACTION_VAR).toString();
 			Matcher m = Pattern.compile("Do\\((.*)\\)").matcher(fullVal);
 			if (m.find()) {
-				return m.group(1);
+				return m.group(1).toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
 			} 
 			else if (fullVal.contains("Goodbye")) {
 				return "kneel";
 			}
-			return "";
+		}
+		return null;
 	}
 
 
@@ -134,18 +128,17 @@ public class NaoBehaviour implements Module {
 		try {	
 
 			for (String behaviourName : parallelBehaviours) {	
-				behaviourName = behaviourName.toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
-			
-				if (session.<Boolean>call("isBehaviorInstalled", behaviourName)) {
+
+				if (session.<Boolean>call("ALBehaviorManager", "isBehaviorInstalled", behaviourName)) {
 					BehaviourControl control = new BehaviourControl(behaviourName);
 					control.start();
 				}
-				
+
 				else if (behaviourName.equals("stop")) {
 					log.info("stopping all behaviours!");
 					session.call("ALBehaviorManager", "stopAllBehaviors");
 				}
-				
+
 				else {
 					log.info("behaviour " + behaviourName + " not present in robot library");
 				}
@@ -173,60 +166,30 @@ public class NaoBehaviour implements Module {
 		public void run() {
 			try {
 				log.debug("starting behaviour " + behaviour);
-	
-				behaviour = behaviour.toLowerCase().replace("(", "-").replace(",", "_").replace(")", "");
+
+				system.addContent(new CategoricalTable(new Assignment("motion", true)));
 				
 				session.call("ALBehaviorManager","runBehavior", behaviour);
-	
-				while (!session.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
-					Thread.sleep(50);
-				}
-				if (!system.getState().hasChanceNode("motion")) {
-					system.addContent(new CategoricalTable(new Assignment("motion", true)));
-				}
 				
-				while (session.<Boolean>call("ALBehaviorManager", "isBehaviorRunning", behaviour)) {
-					Thread.sleep(50);
-				}
 				system.getState().removeNode("motion");
-				log.debug("behaviour " + behaviour + " + finished");
 
 				if (behaviour.contains("pickup")) {
 					String obj = behaviour.split("-")[1];
-					boolean isCarried =  true; // CarriedObjectDetection.detectCarriedObject();
-					if (isCarried) {
-						updateCarriedVariable(1.0, obj);
-						system.addContent(new Assignment(system.getSettings().systemOutput, "Object successfully grasped"));
-					}
+					system.addContent(new Assignment("carried", ValueFactory.create("["+obj + "]")));
+					system.addContent(new Assignment(system.getSettings().systemOutput, "Object successfully grasped"));
+					session.call("ALMemory", "insertData", "carryObj", true); 
 				}
 				else if (behaviour.contains("release")) {
-					updateCarriedVariable(1.0, "");
+					system.addContent(new Assignment("carried", ValueFactory.create("[]")));
 					system.addContent(new Assignment(system.getSettings().systemOutput, "Object successfully released"));
-				}				
+					session.call("ALMemory", "insertData", "carryObj", false); 
+				}
+				
+				log.debug("behaviour " + behaviour + " successfully completed");
 			}
 			catch (Exception e) {
 				log.info("Exception: " + e.toString());
 			}
-		}
-	}
-
-
-
-	private void updateCarriedVariable(double carriedProb, String obj) {
-		try {
-		CategoricalTable table = new CategoricalTable();
-		table.addRow(new Assignment("carried", ValueFactory.create("["+obj+"]")), carriedProb);
-		if (!obj.equals("")) {
-			session.call("ALMemory", "insertData", "carryObj", true); 
-			table.addRow(new Assignment("carried", ValueFactory.create("[]")), 1- carriedProb);
-		}
-		else {
-			session.call("ALMemory", "carryObj", false); 
-		}
-		system.addContent(table);
-		}
-		catch (Exception e) {
-			log.warning("could not update carried variable: " + e);
 		}
 	}
 

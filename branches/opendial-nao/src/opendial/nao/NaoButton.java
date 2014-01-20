@@ -40,7 +40,7 @@ import opendial.state.DialogueState;
  */
 public class NaoButton implements Module, Runnable {
 
-	static Logger log = new Logger("NaoASR", Logger.Level.DEBUG);
+	static Logger log = new Logger("NaoButton", Logger.Level.DEBUG);
 
 	NaoSession session;
 	DialogueSystem system;
@@ -50,7 +50,7 @@ public class NaoButton implements Module, Runnable {
 		this.system = system;
 		session = NaoSession.grabSession(system.getSettings());
 	}
-	 
+
 	/**
 	 * @throws DialException 
 	 *
@@ -64,52 +64,25 @@ public class NaoButton implements Module, Runnable {
 
 		(new Thread(this)).start();
 	}
-	
-	 
+
+
 	public boolean isRunning() {
 		return true;
 	}
 
-	
+
 	public void run() {
+		NaoASR asr = system.getModule(NaoASR.class);
+		if (asr == null) {
+			return;
+		}
+
 		while (true) {
 			try {	
-				Thread.sleep(80);  
-				ButtonLoop thread = new ButtonLoop(NaoSession.MAX_RESPONSE_DELAY);
-				thread.start();
-
-				while (thread.isAlive()) {
-					thread.wait();
-				}
-			}
-			catch (Exception e) { log.debug("exception : " + e); }
-
-		}
-	}
-
-
-	public void pause(boolean toPause) { }
-
-	public void trigger(DialogueState state, Collection<String> updatedVars) {		 }
-
-
-	public class ButtonLoop extends AnytimeProcess {
-
-		public ButtonLoop(long timeout) {
-			super(timeout);
-		}
-
-
-
-		public void run() {
-			NaoASR asr = system.getModule(NaoASR.class);
-			if (asr == null) {
-				return;
-			}
-			try {
+				Thread.sleep(200);  
 				Object sensorVal = session.call("ALMemory", "getData", "MiddleTactilTouched");
 				if (sensorVal instanceof Float && ((Float)sensorVal) > 0.99f) {
-					if (!asr.paused ) {
+					if (asr.isRunning()) {
 						asr.pause(true);
 						Assignment feedback = new Assignment(system.getSettings().systemOutput, "OK, I'll go to sleep then");
 						system.addContent(feedback);
@@ -122,30 +95,15 @@ public class NaoButton implements Module, Runnable {
 					session.call("ALMemory", "insertData", "MiddleTactilTouched", 0.0f); 
 				}
 			}
-			catch (Exception e) {
-				log.warning("cannot run recognition: " + e);
-			}
-			notifyAll();
+			catch (Exception e) { log.debug("exception : " + e); }
+
 		}
-
-
-
-		@Override
-		public void terminate() {
-			log.debug("terminating button loop");
-			interrupt();
-			notifyAll();
-		}
-
-
-
-		@Override
-		public boolean isTerminated() {
-			return !isAlive();
-		}
-
-
 	}
+
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		 }
+
+
+	public void pause(boolean toPause) { }
 
 
 

@@ -42,7 +42,7 @@ public class ImporterTest {
 	public static String dialogueFile = "test/domains/woz-dialogue.xml";
 	
 	@Test
-	public void importerTest() throws DialException, InterruptedException {
+	public void testImporter() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 		Settings.nbSamples = Settings.nbSamples / 5;

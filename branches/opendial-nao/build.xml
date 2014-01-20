@@ -18,7 +18,6 @@
 	      <pathelement path="${build}"/> 
 	</path>
 
-	
 	<!-- INITIALISATION -->
 	<target name="init">
 		<!-- Create the time stamp -->
@@ -69,10 +68,27 @@
 			<report format="frames" todir="${testreports}"/>
 		</junitreport>
 	</target>
+
+
+	<condition property="other_args" value="-Dapple.laf.useScreenMenuBar=true -Xdock:name=&quot;OpenDial&quot; -Xdock:icon=&quot;resources/opendial-icon.png&quot;">
+		   <os family="mac"/>
+	</condition>
+	<condition property="other_args" value="">
+	   <os family="windows"/>
+	</condition>
+	<condition property="other_args" value="">
+	   <os family="unix"/>
+	</condition>
+
 	
 	<target name="run" description="Runs the Main class to start the dialogue system" depends="compile">
-				<java classname="opendial.DialogueSystem" fork="yes">
+		<echo message="Starting the dialogue system..."/>
+				<java classname="opendial.DialogueSystem" fork="true">
 					<classpath refid="compile.classpath"/>
+ 				<jvmarg line="${other_args}"/>
+					<syspropertyset>
+			                  <propertyref builtin="commandline"/>
+			          </syspropertyset>
 				</java>
 	</target>
 	

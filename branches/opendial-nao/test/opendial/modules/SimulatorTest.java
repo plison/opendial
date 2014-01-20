@@ -40,7 +40,7 @@ public class SimulatorTest {
 	public static String simDomain = "test//domains//domain-simulator.xml";
 	
 	@Test
-	public void simulatorTest() throws DialException, InterruptedException {
+	public void testSimulator() throws DialException, InterruptedException {
 		
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
 		system.getDomain().getModels().remove(0);
@@ -56,7 +56,7 @@ public class SimulatorTest {
 		system.startSystem();
 		
 		String str = "";
-		for (int i = 0 ; i < 100 && ! system.isPaused(); i++) {
+		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
 			Thread.sleep(1000);
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			try {

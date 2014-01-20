@@ -53,7 +53,7 @@ public class BNetworkStructureTest {
 
 	
 	@Test
-	public void buildBasicNetwork() throws DialException {
+	public void testBuildBasicNetwork() throws DialException {
 			
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		
@@ -125,7 +125,7 @@ public class BNetworkStructureTest {
 	
 	
 	@Test
-	public void structureTest() throws DialException {
+	public void testStructure() throws DialException {
 		
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(5, bn.getNode("Burglary").getDescendantIds().size());
@@ -147,7 +147,7 @@ public class BNetworkStructureTest {
 	}
 	
 	@Test
-	public void distributionTest() throws DialException {
+	public void testDistribution() throws DialException {
 		
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode e = bn.getChanceNode("Earthquake");
@@ -185,7 +185,7 @@ public class BNetworkStructureTest {
 	}
 	
 	@Test
-	public void removalTest() throws DialException {
+	public void testRemoval() throws DialException {
 		
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		bn.removeNode("Earthquake");
@@ -203,7 +203,7 @@ public class BNetworkStructureTest {
 	}
 	
 	@Test
-	public void idTestChange() throws DialException {
+	public void testIdChance() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNode node = bn.getNode("Alarm");
 		node.setId("Alarm2");
@@ -219,7 +219,7 @@ public class BNetworkStructureTest {
 	
 	
 	@Test
-	public void copyIdChange() throws DialException {
+	public void testCopyIdChange() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = bn.copy();
 		BNode node = bn.getNode("Earthquake");
@@ -263,7 +263,7 @@ public class BNetworkStructureTest {
 	
 	
 	@Test
-	public void defaultValue() throws DialException {
+	public void testDefaultValue() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode node = bn.getChanceNode("Burglary");
 		node.addProb(ValueFactory.create(false), 0.8);
@@ -277,7 +277,7 @@ public class BNetworkStructureTest {
 	}
 	
 	@Test
-	public void sortedNodes() throws DialException {
+	public void testSortedNodes() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals("Action", bn.getSortedNodes().get(7).getId());
 		assertEquals("Burglary", bn.getSortedNodes().get(6).getId());
@@ -313,7 +313,7 @@ public class BNetworkStructureTest {
 	
 	
 	@Test
-	public void cliques() throws DialException {
+	public void testCliques() throws DialException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(1, bn.getCliques().size());
 		assertEquals(8, bn.getCliques().get(0).size());

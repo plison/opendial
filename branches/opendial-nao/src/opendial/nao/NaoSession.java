@@ -66,7 +66,7 @@ public class NaoSession extends QimessagingService {
 			throw new Module.MissingParameterException(Arrays.asList("nao_ip"));
 		}
 		if (nao == null) {
-			nao = new NaoSession(settings.params.get("nao_ip"));
+			nao = new NaoSession(settings.params.getProperty("nao_ip"));
 		}
 		return nao;
 	}

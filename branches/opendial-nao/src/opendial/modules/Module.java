@@ -30,9 +30,24 @@ import opendial.state.DialogueState;
 
 
 /**
- * Representation of a system module.  In order to be easily loaded into the system,
- * modules should have a constructor with a unique parameter, the DialogueSystem instance
- * to which it should be connected.
+ * Representation of a system module.  A module is connected to the dialogue system and
+ * can read and write to its dialogue state.  It can also be paused/resumed.
+ * 
+ * <p>Two distinct families of modules can be distinguished: <ol>
+ * <li>Asynchronous modules run independently of the dialogue system (once initiated by
+ * the method start().
+ * <li>Synchronous modules are triggered upon an update of the dialogue state via the method
+ * trigger(state, updatedVars).  
+ * </ol>
+ * 
+ * <p>Of course, nothing prevents in practice a module to operate both in synchronous and 
+ * asynchronous mode.
+ * 
+ * <p> In order to be easily loaded into the system (via e.g. the button "Load Modules" in 
+ * the GUI toolbar), modules should have a constructor with a single argument: the 
+ * DialogueSystem object to which it should be connected.  Additional arguments can be 
+ * specified through parameters in the system settings.  When necessary parameters are
+ * missing, a MissingParameterException should be thrown.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -40,6 +55,7 @@ import opendial.state.DialogueState;
  */
 public interface Module {
 
+	
 
 	/**
 	 * Starts the module. 
@@ -73,6 +89,10 @@ public interface Module {
 	public boolean isRunning();
 
 
+	
+	/**
+	 * Exception thrown when a parameter is missing for the module initialisation.
+	 */
 	class MissingParameterException extends DialException {
 
 		List<String> missingParams;

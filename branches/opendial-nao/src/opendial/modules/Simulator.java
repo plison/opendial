@@ -105,7 +105,7 @@ public class Simulator implements Module {
 		if (!settings.params.containsKey("simulator-domain")) {
 			throw new MissingParameterException("simulator-domain");
 		}
-		return XMLDomainReader.extractDomain(settings.params.get("simulator-domain"));
+		return XMLDomainReader.extractDomain(settings.params.getProperty("simulator-domain"));
 	}
 
 
@@ -210,6 +210,14 @@ public class Simulator implements Module {
 	}
 
 
+	/**
+	 * Generates new simulated observations and adds them to the dialogue state. The 
+	 * method returns true when a new user input has been generated, and false 
+	 * otherwise.
+	 * 
+	 * @return whether a user input has been generated
+	 * @throws DialException
+	 */
 	private boolean addNewObservations() throws DialException {
 		List<String> newObsVars = new ArrayList<String>();
 		for (String var : simulatorState.getChanceNodeIds()) {

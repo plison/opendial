@@ -139,12 +139,15 @@
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
 		</case>
+	</rule>
+	
+	<rule id="pickupprior2">
 		<case>
 			<condition>
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
 			</condition>
-			<effect prob="0.05">
+			<effect prob="0.1">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
 		</case>

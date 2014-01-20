@@ -38,7 +38,7 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.InferenceUtils;
 
-public class NaoPerception implements Module {
+public class NaoPerception implements Module, Runnable {
 
 	public static Logger log = new Logger("NaoPerception", Logger.Level.DEBUG);
 
@@ -49,8 +49,6 @@ public class NaoPerception implements Module {
 	NaoSession session;
 	boolean paused = true;
 	
-	Map<String,Long> currentPerception;
-	
 	public NaoPerception(DialogueSystem system) throws DialException {
 		this.system = system;
 		session = NaoSession.grabSession(system.getSettings());
@@ -59,15 +57,14 @@ public class NaoPerception implements Module {
 	public void start() {
 		try {
 			paused = false;
-			session.call("ALLandmarkDetection", "unsubscribe", "naoPerception");
-			session.call("AlLandmarkDetection", "subscribe", "naoPerception", 200, 0);
-			currentPerception = new HashMap<String,Long>();
+			session.call("ALVideoDevice", "setActiveCamera", 1);
+			session.call("ALLandMarkDetection", "subscribe", "naoPerception", 200, 0);
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				   @Override
 				   public void run() {  
-					  System.out.println("Shutting down Nao perceptioin");
+					  System.out.println("Shutting down Nao perception");
 					  try {  
-						session.call("ALLandmarkDetection", "unsubscribe", "naoPerception");
+						session.call("ALLandMarkDetection", "unsubscribe", "naoPerception");
 					}	catch (Exception e) {}
 				   }
 				 });
@@ -75,7 +72,7 @@ public class NaoPerception implements Module {
 			catch (Exception e) {
 				log.warning("could not initiate Nao perception: " + e);
 			}
-		run();
+		(new Thread(this)).start();
 	}
 	
 	public void pause(boolean toPause) {
@@ -119,41 +116,24 @@ public class NaoPerception implements Module {
 	}
 
 	
-	public void updateState(Set<String> newObs) throws DialException {
-		CategoricalTable curTable = system.getContent("perceived").toDiscrete();
+	public void updateState(Set<String> perceivedObjects) throws DialException {
 		
-		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
+		CategoricalTable perception = system.getState().hasChanceNode("perceived")? 
+				system.getContent("perceived").toDiscrete().copy()
+				: new CategoricalTable(new Assignment("perceived", ValueFactory.none()));
 
-		for (Assignment row : curTable.getRows()) {
-			double newProb =  (1- INIT_PROB)*curTable.getProb(row);
-			if (newProb > 0.001) {
-				newTable.put(row, newProb);
-			}
-		} 
-		
-		SetVal newVal = (SetVal)ValueFactory.create("[]");
-		for (String label : newObs) {
-			//	newVal.add(ValueFactory.create("<label:"+label+">"));
-			newVal.add(ValueFactory.create(label));
+		CategoricalTable newperception = perception.copy();
+		for (Assignment a : perception.getRows()) {
+			newperception.addRow(a, (1-INIT_PROB)*perception.getProb(a));
 		}
-		Assignment assign = new Assignment("perceived", newVal);
-		if (!newTable.containsKey(assign)) {
-			newTable.put(assign, 0.0);
-		}
-		newTable.put(assign, newTable.get(assign) + INIT_PROB);
-		
-		newTable = InferenceUtils.normalise(newTable);
-		
-		if (!system.getState().hasChanceNode("perceived")) {
-			ChanceNode newNode = new ChanceNode("perceived");
-			system.getState().addNode(newNode);
-		}
-
-		if (curTable.getRows().size() != newTable.size()) {
-			system.addContent(new CategoricalTable(newTable));
+		SetVal newVal = (SetVal)ValueFactory.create(perceivedObjects.toString());
+		newperception.incrementRow(new Assignment("perceived", newVal), INIT_PROB);
+	
+		if (newperception.getRows().size() != perception.getRows().size()) {
+			system.addContent(newperception);
 		}
 		else {
-			system.getState().getChanceNode("perceived").setDistrib(new CategoricalTable(newTable));
+			system.getState().getChanceNode("perceived").setDistrib(newperception);
 			
 		}
 	}

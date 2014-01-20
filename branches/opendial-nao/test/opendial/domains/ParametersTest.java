@@ -88,7 +88,7 @@ public class ParametersTest {
 	
 	
 	@Test
-	public void paramTest1() throws DialException, InterruptedException {
+	public void testParam1() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 
@@ -121,7 +121,7 @@ public class ParametersTest {
 	
 	
 	@Test
-	public void paramTest2() throws DialException, InterruptedException {
+	public void testParam2() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 		
@@ -145,7 +145,7 @@ public class ParametersTest {
 	
 
 	@Test
-	public void paramTest3() throws DialException, InterruptedException {
+	public void testParam3() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
@@ -211,7 +211,7 @@ public class ParametersTest {
 	
 
 	@Test
-	public void paramTest5() throws DialException, InterruptedException {
+	public void testParam5() throws DialException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.detachModule(ForwardPlanner.class);

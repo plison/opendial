@@ -93,11 +93,7 @@ public class NaoTTS implements Module {
 			Value value = actionTable.getBest().getValue(system.getSettings().systemOutput);
 			
 		if (!value.equals(ValueFactory.none())) {
-			NaoASR asr = system.getModule(NaoASR.class);
-			if (asr != null) asr.pause(true);
 			say(value.toString());
-			if (asr != null) asr.pause(false);
-
 		}
 		}
 	}
@@ -106,48 +102,17 @@ public class NaoTTS implements Module {
 
 	private void say(String utterance) {
 
+		NaoASR asr = system.getModule(NaoASR.class);
+		if (asr != null) asr.pause(true);
+
 		try {
 			log.debug("saying utterance: " + utterance);
-
 			session.call("ALTextToSpeech", "say", utterance);
-
-			boolean synthesisStarted = false;
-			int nbLoopsStart = 0;
-			while (!synthesisStarted && nbLoopsStart <20) {
-				int textDone = session.<Integer>call("ALTextToSpeech",  "getData", "ALTextToSpeech/TextDone");
-				if (textDone != 1) {
-					synthesisStarted = true;
-				}
-				else {
-					try { 
-						Thread.sleep(50); 
-						nbLoopsStart++ ; 
-						} 
-					catch (InterruptedException e) { }
-				} 
-			}
-			if (nbLoopsStart == 20) {
-				log.warning("Problem starting up the TTS engine!");
-			}
-			
-			boolean synthesisEnded = false;
-			while (!synthesisEnded) {
-				int textDone = session.<Integer>call("ALTextToSpeech", "getData", "ALTextToSpeech/TextDone");
-				if (textDone == 1) {
-					synthesisEnded = true;
-				}
-				else {
-					try { 
-						Thread.currentThread().sleep(50); 
-						nbLoopsStart++ ; 
-						} 
-					catch (InterruptedException e) { }
-				} 
-			}
 		}
 		catch (Exception e) {
 			log.warning("cannot use TTS: " + e.toString());
 		}
+		if (asr != null) asr.pause(false);
 	}
 
 	

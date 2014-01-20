@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -99,7 +100,7 @@ public class XMLDomainReader {
 
 			// extracting rule-based probabilistic model
 			if (mainNode.getNodeName().equals("settings")) {
-						Map<String,String> settings = XMLSettingsReader.extractMapping(mainNode);
+						Properties settings = XMLSettingsReader.extractMapping(mainNode);
 						domain.getSettings().fillSettings(settings);
 				}
 					
