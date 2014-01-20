@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -168,8 +169,8 @@ public class SettingsPanel extends JDialog {
 						settings.systemOutput = systemVar.getText();
 						settings.varsToMonitor.clear();
 						
-						Map<String,String> otherStuff = new HashMap<String,String>();
-						otherStuff.put("monitor", toMonitor.getText().trim());
+						Properties otherStuff = new Properties();
+						otherStuff.setProperty("monitor", toMonitor.getText().trim());
 						
 						settings.fillSettings(otherStuff);
 						

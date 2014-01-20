@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -92,7 +93,8 @@ public class ModulesPanel extends JDialog {
 	JButton okButton;
 
 	protected Map<String,Class<Module>> classes;
-	Map<String,String> shownParams = new HashMap<String,String>();
+	
+	Properties shownParams = new Properties();
 	
 	public ModulesPanel(final GUIFrame frame) {
 		super(frame.getFrame(),Dialog.ModalityType.DOCUMENT_MODAL);
@@ -100,7 +102,7 @@ public class ModulesPanel extends JDialog {
 				
 		final Settings settings = frame.getSystem().getSettings();
 		setTitle("Module Settings");
-		shownParams.putAll(settings.params);
+	//	shownParams.putAll(settings.params);
 		
 		Container contentPane = getContentPane();
 		
@@ -216,7 +218,7 @@ public class ModulesPanel extends JDialog {
 		String[] columnNames = {"Parameter", "Value"};
 	    Object[][] data = new Object[shownParams.size()][2];
 	   int  i = 0;
-	    for (String param : shownParams.keySet()) {
+	    for (String param : shownParams.stringPropertyNames()) {
 	    	data[i][0] = param;
 	    	data[i][1] = shownParams.get(param);
 	    	i++;

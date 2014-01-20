@@ -25,12 +25,14 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -54,7 +56,8 @@ public class GUIFrame implements Module {
 	// logger
 	public static Logger log = new Logger("GUIFrame", Logger.Level.DEBUG);
 
-	
+	public static final String ICON_PATH = "resources/opendial-icon.png";
+
 	JFrame frame;
 
 	// tab for the state monitor
@@ -74,12 +77,16 @@ public class GUIFrame implements Module {
 	
 	
 	public void start() {
-
+ 
 
 		if (system.getSettings().showGUI) {
 		frame = new JFrame();
-
-		
+		try {
+		frame.setIconImage(ImageIO.read(new File(ICON_PATH)));
+		}
+		catch (Exception e) {
+			log.debug("could not employ icon: " + e);
+		}
 		JTabbedPane tabbedPane = new JTabbedPane();
 		frame.getContentPane().add(tabbedPane);
 

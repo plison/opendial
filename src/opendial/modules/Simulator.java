@@ -105,7 +105,7 @@ public class Simulator implements Module {
 		if (!settings.params.containsKey("simulator-domain")) {
 			throw new MissingParameterException("simulator-domain");
 		}
-		return XMLDomainReader.extractDomain(settings.params.get("simulator-domain"));
+		return XMLDomainReader.extractDomain(settings.params.getProperty("simulator-domain"));
 	}
 
 

@@ -147,7 +147,10 @@ public class StateViewerTab extends JComponent {
 		add(fullPanel);
 	
 		// configure the keyboard inputs for navigation
-		configureKeyInputs();	
+		configureKeyInputs();
+		
+		recordState(new DialogueState(), CURRENT_NAME);
+		listModel.add(1, "separator-current");
 	}
 
 
@@ -170,13 +173,19 @@ public class StateViewerTab extends JComponent {
 	 * @param state the updated Bayesian Network
 	 */
 	public synchronized void trigger(DialogueState state, Collection<String> updatedVars) {
+		
+		recordState(state, CURRENT_NAME);
+		listBox.setSelectedIndex(0);
+
 		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
-			if (mainFrame.getSystem().getSettings().recording == Recording.LAST_INPUT) {
-				listModel.clear();
-				states.clear();
+			if (mainFrame.getSystem().getSettings().recording == Recording.ALL) {
+				listModel.add(2, "separator-utterances");
 			}
-			else if (mainFrame.getSystem().getSettings().recording == Recording.ALL) {
-				listModel.add(1, "separator-utterances");
+			else {
+				while (listModel.size() > 2) {
+					String name = (String)listModel.remove(2);
+					states.remove(name);
+				}
 			}
 		}
 		if (mainFrame.getSystem().getSettings().recording != Recording.NONE && !updatedVars.isEmpty()) {
@@ -189,13 +198,8 @@ public class StateViewerTab extends JComponent {
 				log.warning("cannot copy state : " + e);
 			}
 		}
-		if (listModel.contains("separator-current")) {
-			listModel.remove(listModel.indexOf("separator-current"));
-		}
-		recordState(state, CURRENT_NAME);
-		listModel.add(1, "separator-current");
-		listBox.setSelectedIndex(0);
-		visualisation.showBayesianNetwork(mainFrame.getSystem().getState());
+
+		visualisation.showBayesianNetwork(state);
 	}
 	
 
@@ -212,7 +216,7 @@ public class StateViewerTab extends JComponent {
 	public void recordState(DialogueState state, String name) {
 		states.put(name, state);
 		if (!listModel.contains(name)) {
-			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(1, listModel.size()) ; 
+			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size()) ; 
 			listModel.add(position,name);
 		}
 		listBox.validate();

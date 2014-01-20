@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -53,22 +54,22 @@ public class XMLSettingsReader {
 	// ===================================
 
 	
-	public static Map<String,String> extractMapping(String settingsFile) {
+	public static Properties extractMapping(String settingsFile) {
 		try {
 			Document doc = XMLUtils.getXMLDocument(settingsFile);
-			Map<String,String> mapping = extractMapping(XMLUtils.getMainNode(doc));
+			Properties mapping = extractMapping(XMLUtils.getMainNode(doc));
 			return mapping;
 		}
 		catch (DialException e) {
 			log.warning("error extracting the settings: " + e);
-			return new HashMap<String,String>();
+			return new Properties();
 		}
 	}
 
 	
-	static Map<String,String> extractMapping(Node mainNode) {
+	static Properties extractMapping(Node mainNode) {
 		
-		Map<String,String> settings = new HashMap<String,String>();
+		Properties settings = new Properties();
 
 		NodeList firstElements = mainNode.getChildNodes();
 		for (int j = 0; j < firstElements.getLength(); j++) {

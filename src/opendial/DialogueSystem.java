@@ -455,24 +455,30 @@ public class DialogueSystem {
 	public static void main(String[] args) {
 		try {
 			DialogueSystem system = new DialogueSystem();
-			for (int i = 0 ; i < args.length ; i++) {
-				if (args[i].contains("--domain") && i < args.length-1) {
-					system.changeDomain(XMLDomainReader.extractDomain(args[i+1]));
-					log.info("Domain from " + args[i+1] + " successfully extracted");		
-				}
-				else if (args[i].contains("--settings") && i < args.length-1) {
-					system.settings = new Settings(XMLSettingsReader.extractMapping(args[i+1]));
-					log.info("Settings from " + args[i+1] + " successfully extracted");		
-				}
-				else if (args[i].contains("--dialogue") && i < args.length-1) {
-					List<DialogueState> dialogue = XMLInteractionReader.extractInteraction(args[i+1]);
-					log.info("Interaction from " + args[i+1] + " successfully extracted");		
-					(new DialogueImporter(system, dialogue)).start();
-				}
-				else if (args[i].contains("--gui") && i < args.length-1) {
-					system.settings.showGUI = Boolean.parseBoolean(args[i+1]);
-				}
+			String domainFile = System.getProperty("domain");
+			String settingsFile = System.getProperty("settings");
+			String dialogueFile = System.getProperty("dialogue");
+			String simulatorFile = System.getProperty("simulator");
+			
+			if (domainFile != null) {
+				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
+				log.info("Domain from " + domainFile + " successfully extracted");
 			}
+			if (settingsFile != null) {
+				system.changeSettings(new Settings(XMLSettingsReader.extractMapping(settingsFile)));
+				log.info("Settings from " + settingsFile + " successfully extracted");		
+			}
+			if (dialogueFile != null) {
+				List<DialogueState> dialogue = XMLInteractionReader.extractInteraction(dialogueFile);
+				log.info("Interaction from " + dialogueFile + " successfully extracted");		
+				(new DialogueImporter(system, dialogue)).start();
+			}
+			if (simulatorFile != null) {
+				Simulator simulator = new Simulator(system, XMLDomainReader.extractDomain(simulatorFile));
+				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
+				system.attachModule(simulator);
+			}
+			system.changeSettings(new Settings(System.getProperties()));;
 			system.startSystem();
 		}
 		catch (DialException e) {

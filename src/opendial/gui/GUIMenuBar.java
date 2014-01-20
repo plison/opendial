@@ -81,7 +81,6 @@ import opendial.utils.XMLUtils;
  */
 public class GUIMenuBar extends JMenuBar {
 
-	public static final String ICON_PATH = "resources/opendial-icon.png";
 	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/w/list";
 	
 	// logger
@@ -376,7 +375,7 @@ public class GUIMenuBar extends JMenuBar {
 
 	protected void showAboutPanel(GUIFrame frame) {
 		try {
-			BufferedImage original = ImageIO.read(new File(ICON_PATH));
+			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
 			
 			JLabel label = new JLabel();
 			Font font = label.getFont();
