@@ -24,28 +24,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on the relevant 
@@ -126,6 +124,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * 
 	 * @param threshold the frequency threshold
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		if (pruned) {
 			return;
@@ -200,6 +199,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @return the selected sample
 	 * @throws DialException 
 	 */
+	@Override
 	public Assignment sample() throws DialException {
 
 		if (preferredType == null) {
@@ -230,6 +230,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @return the selected sample
 	 * @throws DialException 
 	 */
+	@Override
 	public Assignment sample(Assignment condition) throws DialException {
 		return sample();
 	}
@@ -300,6 +301,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	}
 	
 	
+	@Override
 	public EmpiricalDistribution getPartialPosterior(Assignment condition) {
 		return getPosterior(condition);
 	}
@@ -315,6 +317,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * 
 	 * @return the possible values for the head variables
 	 */
+	@Override
 	public Set<Assignment> getPossibleValues() {
 		Set<Assignment> possible = new HashSet<Assignment>();
 		for (Assignment sample : samples) {
@@ -332,6 +335,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @param inputValues the input values for the conditional variables (is ignored)
 	 * @return the possible values for the head variables
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 		return getPossibleValues();
 	}
@@ -344,6 +348,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	/**
 	 * Returns a discrete representation of the empirical distribution.
 	 */
+	@Override
 	public CategoricalTable toDiscrete() {
 		return createSimpleTable(variables);
 	}
@@ -355,6 +360,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * 
 	 * @return the corresponding continuous distribution.
 	 */
+	@Override
 	public ContinuousDistribution toContinuous() throws DialException {
 		if (continuousCache == null) {
 			if (variables.size() != 1) {

@@ -33,6 +33,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -68,11 +69,14 @@ public class WizardControl implements Module {
 		}
 	}
 	
+	@Override
 	public void start()  {	}
 
 
+	@Override
 	public void pause(boolean shouldBePaused) { 	}
 
+	@Override
 	public boolean isRunning() {  return true;	}
 	
 	
@@ -102,6 +106,7 @@ public class WizardControl implements Module {
 	}
 	
 	
+	@SuppressWarnings("serial")
 	public void addActionSelection(ActionNode actionNode) {
 		
 		DefaultListModel model = new DefaultListModel();
@@ -121,10 +126,11 @@ public class WizardControl implements Module {
 		final JButton button = new JButton("Select");
 		button.addActionListener(new WizardBoxListener(listBox, actionNode.getId().replace("'", "")));
 
-		InputMap inputMap = button.getInputMap(JButton.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		inputMap.put(enter, "ENTER");
 		button.getActionMap().put("ENTER", new AbstractAction() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				button.doClick();
 		} });

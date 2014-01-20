@@ -22,17 +22,14 @@ package opendial.bn.distribs.discrete;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.functions.DeterministicFunction;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.utils.CombinatoricsUtils;
 
 
 /**
@@ -106,6 +103,7 @@ public class DeterministicDistribution implements DiscreteDistribution {
 	/**
 	 * Does nothing
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		return;
 	}
@@ -141,6 +139,7 @@ public class DeterministicDistribution implements DiscreteDistribution {
 	 * @param the head assignment
 	 * @return the resulting probability
 	 */
+	@Override
 	public double getProb(Assignment condition, Assignment head) {
 		Value value = function.getValue(condition);
 		if (head.containsVar(variable) && head.getValue(variable).equals(value)) {
@@ -195,6 +194,7 @@ public class DeterministicDistribution implements DiscreteDistribution {
 	/**
 	 * Returns the hashcode for the distribution
 	 */
+	@Override
 	public int hashCode() {
 		return variable.hashCode() - function.hashCode();
 	}

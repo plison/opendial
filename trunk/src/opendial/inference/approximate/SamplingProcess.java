@@ -3,15 +3,10 @@ package opendial.inference.approximate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.arch.AnytimeProcess;
-import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
@@ -91,6 +86,7 @@ public class SamplingProcess extends AnytimeProcess {
 	/**
 	 * Returns a string representation of the query and number of collected samples
 	 */
+	@Override
 	public String toString() {
 		return query.toString() + " (" + samples.size() + " samples already collected)";
 	}
@@ -104,6 +100,7 @@ public class SamplingProcess extends AnytimeProcess {
 	 * 
 	 * @return the collected samples
 	 */
+	@Override
 	public void run() {
 
 		List<BNode> sortedNodes = query.getFilteredSortedNodes();
@@ -264,6 +261,7 @@ public class SamplingProcess extends AnytimeProcess {
 		}
 	}
 
+	@Override
 	public boolean isTerminated() {
 		return isTerminated;
 	}

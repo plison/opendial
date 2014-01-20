@@ -24,9 +24,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,38 +33,27 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import opendial.DialogueSystem;
-import opendial.arch.Settings;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.modules.DialogueRecorder;
 import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
@@ -82,6 +69,7 @@ import opendial.utils.ReflectionUtils;
  * @version $Date:: 2014-01-16 02:21:14 #$
  *
  */
+@SuppressWarnings("serial")
 public class ModulesPanel extends JDialog {
 
 	public static Logger log = new Logger("ModulesPanel", Logger.Level.DEBUG);
@@ -100,7 +88,6 @@ public class ModulesPanel extends JDialog {
 		super(frame.getFrame(),Dialog.ModalityType.DOCUMENT_MODAL);
 		this.frame = frame;
 				
-		final Settings settings = frame.getSystem().getSettings();
 		setTitle("Module Settings");
 	//	shownParams.putAll(settings.params);
 		
@@ -147,11 +134,13 @@ public class ModulesPanel extends JDialog {
 	    updateButtonStatus();
 	    
 		cancelButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) { setVisible(false); } });
 		
 		
 		table.addPropertyChangeListener(new PropertyChangeListener() {
-	        public void propertyChange(PropertyChangeEvent evt) {
+	        @Override
+			public void propertyChange(PropertyChangeEvent evt) {
 	            if ("tableCellEditor".equals(evt.getPropertyName())) {
 	            	updateButtonStatus(); 
 	            }
@@ -159,6 +148,7 @@ public class ModulesPanel extends JDialog {
 	    });
 		
 		okButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) { 
 				updateSettings();
 				 } 
@@ -271,7 +261,8 @@ class CheckBoxList extends JList {
    public CheckBoxList() {
       setCellRenderer(new CellRenderer());
       addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
+            @Override
+			public void mousePressed(MouseEvent e) {
                int index = locationToIndex(e.getPoint());
                if (index != -1) {
                   JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
@@ -310,7 +301,8 @@ class CheckBoxList extends JList {
    }
 
    protected class CellRenderer implements ListCellRenderer  {
-      public Component getListCellRendererComponent(
+      @Override
+	public Component getListCellRendererComponent(
                     JList list, Object value, int index,
                     boolean isSelected, boolean cellHasFocus) {
          JCheckBox checkbox = (JCheckBox) value;

@@ -25,12 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -43,7 +37,11 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.utils.StringUtils;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 /**
@@ -89,6 +87,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	/**
 	 * Does nothing.
 	 */
+	@Override
 	public void pruneValues(double frequencyThreshold) {
 		return;
 	}
@@ -115,6 +114,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * 
 	 * @return the sampled (variable, value) pair
 	 */
+	@Override
 	public Assignment sample() {
 		Value v = (function.getDimensionality() > 1)? 
 				ValueFactory.create(function.sample()) 
@@ -328,6 +328,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 *
 	 * @return the pretty print
 	 */
+	@Override
 	public String toString() {
 		return "PDF(" + variable+")=" + function.toString();
 	}
@@ -358,6 +359,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @return the corresponding node
 	 * @throws DialException 
 	 */
+	@Override
 	public Node generateXML(Document doc) throws DialException {
 		
 		Element var = doc.createElement("variable");

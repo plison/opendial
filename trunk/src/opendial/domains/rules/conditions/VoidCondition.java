@@ -98,6 +98,7 @@ public class VoidCondition implements Condition {
 	 * @param o the object to compare
 	 * @return true if o is also a void condition
 	 */
+	@Override
 	public boolean equals(Object o) {
 		return (o instanceof VoidCondition);
 	}

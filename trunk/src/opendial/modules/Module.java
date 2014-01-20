@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.state.DialogueState;
 
@@ -94,6 +93,7 @@ public interface Module {
 	/**
 	 * Exception thrown when a parameter is missing for the module initialisation.
 	 */
+	@SuppressWarnings("serial")
 	class MissingParameterException extends DialException {
 
 		List<String> missingParams;

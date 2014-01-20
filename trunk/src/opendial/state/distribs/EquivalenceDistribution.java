@@ -32,8 +32,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.values.Value;
 import opendial.bn.values.BooleanVal;
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
@@ -79,6 +79,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	/**
 	 * Does nothing
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		return;
 	}
@@ -148,6 +149,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @param head the head assignment
 	 * @return the resulting probability 
 	 */
+	@Override
 	public double getProb(Assignment condition, Assignment head) {
 		try {
 			double prob = getProb(condition);
@@ -201,6 +203,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @param inputValues the set of possible input values (is ignored)
 	 * @return the set with the two possible assignments
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 		Set<Assignment> vals = new HashSet<Assignment>();
 		vals.add(new Assignment(createLabel(), ValueFactory.create(true)));

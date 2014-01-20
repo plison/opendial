@@ -22,9 +22,6 @@ package opendial.readers;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -36,6 +33,9 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.XMLUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * XML reader for the initial state specification (and for parameters):

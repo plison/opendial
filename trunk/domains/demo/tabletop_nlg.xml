@@ -22,7 +22,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move({X}))" />
-				<if var="X" value="Short" relation="notcontains"/>
+				<if var="X" value="Short" relation="notcontains" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="OK, moving {X}" />
@@ -36,7 +36,7 @@
 				<set var="u_m" value="OK, picking up the red object" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Do(PickUp(BlueObj))" />
 			</condition>
@@ -81,7 +81,8 @@
 				<if var="a_m" value="Say(AlreadyCarryObject)" />
 			</condition>
 			<effect util="1">
-				<set var="u_m" value="Sorry, I cannot do that, I am already carrying an object" />
+				<set var="u_m"
+					value="Sorry, I cannot do that, I am already carrying an object" />
 			</effect>
 		</case>
 		<case>
@@ -105,7 +106,8 @@
 				<if var="a_m" value="Say(CannotResolve)" />
 			</condition>
 			<effect util="1">
-				<set var="u_m" value="Sorry, I don't know which object you are talking about" />
+				<set var="u_m"
+					value="Sorry, I don't know which object you are talking about" />
 			</effect>
 		</case>
 		<case>
@@ -116,7 +118,7 @@
 				<set var="u_m" value="Should I move left?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Left,Short))" />
 			</condition>
@@ -124,7 +126,7 @@
 				<set var="u_m" value="Should I move a bit to the left?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Right))" />
 			</condition>
@@ -132,7 +134,7 @@
 				<set var="u_m" value="Should I move right?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Right,Short))" />
 			</condition>
@@ -140,7 +142,7 @@
 				<set var="u_m" value="Should I move a bit to the right?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Forward))" />
 			</condition>
@@ -148,7 +150,7 @@
 				<set var="u_m" value="Should I move forward?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Forward,Short))" />
 			</condition>
@@ -156,7 +158,7 @@
 				<set var="u_m" value="Should I move a bit forward?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Backward))" />
 			</condition>
@@ -164,7 +166,7 @@
 				<set var="u_m" value="Should I move backward?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Backward,Short))" />
 			</condition>
@@ -172,7 +174,7 @@
 				<set var="u_m" value="Should I step a bit backward?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Move(Turn))" />
 			</condition>
@@ -180,7 +182,7 @@
 				<set var="u_m" value="Should I turn 180 degrees?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Stop)" />
 			</condition>
@@ -188,7 +190,7 @@
 				<set var="u_m" value="Should I stop?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(Release)" />
 			</condition>
@@ -196,7 +198,7 @@
 				<set var="u_m" value="Should I release the object?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(PickUp(RedObj))" />
 			</condition>
@@ -204,7 +206,7 @@
 				<set var="u_m" value="Should I pick up the red object?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(PickUp(BlueObj))" />
 			</condition>
@@ -212,7 +214,7 @@
 				<set var="u_m" value="Should I pick up the blue object?" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Confirm(PickUp(AtFeet))" />
 			</condition>
@@ -239,17 +241,17 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Describe({X})" />
-				<if var="X" value="[]"/>
+				<if var="X" value="[]" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="I do not see anything" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Describe({X})" />
-				<if var="X" value="RedObj" relation="contains"/>
-				<if var="X" value="BlueObj" relation="contains"/>
+				<if var="X" value="RedObj" relation="contains" />
+				<if var="X" value="BlueObj" relation="contains" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="I see a red and a blue cylinder" />
@@ -258,7 +260,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Describe({X})" />
-				<if var="X" value="RedObj" relation="contains"/>
+				<if var="X" value="RedObj" relation="contains" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="I see a red cylinder" />
@@ -267,7 +269,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Describe({X})" />
-				<if var="X" value="BlueObj" relation="contains"/>
+				<if var="X" value="BlueObj" relation="contains" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="I see a blue cylinder" />
@@ -281,7 +283,7 @@
 				<set var="u_m" value="Hi there" />
 			</effect>
 		</case>
-	<case>
+		<case>
 			<condition>
 				<if var="a_m" value="Say(Goodbye)" />
 			</condition>

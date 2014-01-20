@@ -20,18 +20,15 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
@@ -40,11 +37,11 @@ import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.inference.approximate.LikelihoodWeighting;
@@ -53,6 +50,8 @@ import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
+
+import org.junit.Test;
 
 public class ParametersTest {
 
@@ -234,10 +233,10 @@ public class ParametersTest {
 		assertEquals(1.0, system.getState(). 
 				queryProb("theta_6").toContinuous().getFunction().getMean()[0], 0.07);
 		
-		assertEquals(0.72, ((CategoricalTable)system.getContent("a_u").toDiscrete()).
+		assertEquals(0.72, system.getContent("a_u").toDiscrete().
 				getProb(new Assignment("a_u", "Approval")), 0.07);
 		
-		assertEquals(0.28, ((CategoricalTable)system.getContent("a_u").toDiscrete()).
+		assertEquals(0.28, system.getContent("a_u").toDiscrete().
 				getProb(new Assignment("a_u", "Irony")), 0.07);
 		
 }

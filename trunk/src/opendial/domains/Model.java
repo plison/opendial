@@ -21,22 +21,15 @@ package opendial.domains;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.BNetwork;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
-import opendial.domains.rules.Rule.RuleType;
-import opendial.modules.Module;
 import opendial.state.DialogueState;
-import opendial.state.StatePruner;
-import opendial.utils.StringUtils;
 
 /**
  * Representation of a rule model -- that is, a collection of rules of 

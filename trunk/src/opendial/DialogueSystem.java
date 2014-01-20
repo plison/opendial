@@ -23,24 +23,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.collections15.ListUtils;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.arch.Logger.Level;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
-import opendial.inference.exact.VariableElimination;
-import opendial.inference.queries.ProbQuery;
 import opendial.modules.DialogueImporter;
 import opendial.modules.DialogueRecorder;
 import opendial.modules.ForwardPlanner;
@@ -50,6 +44,8 @@ import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
+
+import org.apache.commons.collections15.ListUtils;
 
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
@@ -99,7 +95,14 @@ public class DialogueSystem {
 	 * @throws DialException if the system could not be created
 	 */
 	public DialogueSystem() throws DialException {
-		this(new Domain());
+		settings = new Settings();
+		curState = new DialogueState();
+		
+		// inserting standard modules
+		modules = new ArrayList<Module>();
+		modules.add(new GUIFrame(this));
+		modules.add(new DialogueRecorder(this));
+		modules.add(new ForwardPlanner(this));
 	}
 
 
@@ -110,14 +113,8 @@ public class DialogueSystem {
 	 * @throws DialException if the system could not be created
 	 */
 	public DialogueSystem(Domain domain) throws DialException {
-		settings = new Settings();
-		modules = new ArrayList<Module>();
+		this();
 		changeDomain(domain);
-		
-		// inserting standard modules
-		modules.add(new GUIFrame(this));
-		modules.add(new DialogueRecorder(this));
-		modules.add(new ForwardPlanner(this));
 	}
 	
 	

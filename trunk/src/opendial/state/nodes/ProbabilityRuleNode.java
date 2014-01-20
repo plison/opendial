@@ -67,6 +67,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 	 * 
 	 * @return the possible effects
 	 */
+	@Override
 	public Set<Value> getValues() {
 		if (cachedValues == null) {
 			cachedValues = new HashSet<Value>();
@@ -81,6 +82,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 	/**
 	 * Copies the rule node
 	 */
+	@Override
 	public ProbabilityRuleNode copy() throws DialException {
 		ProbabilityRuleNode rn = new ProbabilityRuleNode(rule);
 		rn.setId(nodeId);

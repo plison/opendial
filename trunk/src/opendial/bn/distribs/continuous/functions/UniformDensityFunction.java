@@ -19,21 +19,19 @@
 
 package opendial.bn.distribs.continuous.functions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.values.ValueFactory;
 
 /**
  * (Univariate) uniform density function, with a minimum and maximum.
@@ -76,6 +74,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @param x the point
 	 * @return the density at the point
 	 */
+	@Override
 	public double getDensity(Double... x) {
 		if (x[0] >= minimum && x[0] <= maximum) {
 			return 1.0f/(maximum-minimum);
@@ -103,6 +102,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 * 
 	 * @return the discretised values and their probability mass.
 	 */
+	@Override
 	public Map<Double[],Double> discretise(int nbBuckets) {
 		Map<Double[], Double> values = new HashMap<Double[],Double>(nbBuckets);
 		double step = (maximum-minimum)/nbBuckets;
@@ -166,6 +166,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return (new Double(maximum)).hashCode() - (new Double(minimum)).hashCode();
 	}

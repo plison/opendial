@@ -25,24 +25,20 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import opendial.arch.Settings;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 
 
 /**
@@ -150,10 +146,12 @@ public class SettingsPanel extends JDialog {
 		Container okcancelBox = new Container();
 		okcancelBox.setLayout(new BorderLayout());
 		JButton cancelButton = new JButton("  Cancel  ");
-		cancelButton.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) { setVisible(false); } });
+		cancelButton.addActionListener(new ActionListener() {@Override
+		public void actionPerformed(ActionEvent e) { setVisible(false); } });
 		okcancelBox.add(cancelButton, BorderLayout.WEST);
 		JButton okButton = new JButton("     OK     ");
 		okButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) { 
 						try {
 						Settings.nbSamples = Integer.parseInt(sampleNumber.getText());

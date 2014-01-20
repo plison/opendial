@@ -19,21 +19,18 @@
 
 package opendial.bn;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
+import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
@@ -42,20 +39,20 @@ import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.distribs.other.ConditionalDistribution;
+import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.gui.stateviewer.DistributionViewer;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
-import opendial.utils.DistanceUtils;
 import opendial.utils.MathUtils;
+
+import org.junit.Test;
 
 /**
  * 
@@ -106,7 +103,7 @@ public class DistributionsTest {
 		table.addRow(new Assignment("var1", -3.0), 0.2);
 		assertTrue(table.isWellFormed());
 		assertEquals(table.getProb(new Assignment("var1", "2.0")), 0.1, 0.001);
-		ContinuousDistribution continuous = (ContinuousDistribution)table.toContinuous();
+		ContinuousDistribution continuous = table.toContinuous();
 		assertEquals(continuous.getProbDensity(new Assignment("var1", "2.0")), 0.2, 0.001);
 		assertEquals(continuous.getProbDensity(new Assignment("var1", "2.1")), 0.2, 0.001);
 		assertEquals(continuous.getCumulativeProb(new Assignment("var1", "-3.1")), 0.0, 0.001);
@@ -178,7 +175,7 @@ public class DistributionsTest {
 		table.addRow(new Assignment("A", 2.5), 0.3);
 		assertEquals(0.3, table.getProb(new Assignment("A", 2.5)), 0.0001f);
 		assertEquals(0.6, table.getProb(new Assignment("A", 1.0)), 0.0001f);
-		ContinuousDistribution distrib = (ContinuousDistribution)table.toContinuous();
+		ContinuousDistribution distrib = table.toContinuous();
 		assertEquals(0.2 , distrib.getProbDensity(new Assignment("A", 2.5)), 0.01);
 		assertEquals(0.4, distrib.getProbDensity(new Assignment("A", 1)), 0.001);
 		assertEquals(0, distrib.getProbDensity(new Assignment("A", -2)), 0.001f);
@@ -389,7 +386,7 @@ public class DistributionsTest {
 		BNetwork network = new BNetwork();
 		network.addNode(n);
 		
-		CategoricalTable table = (CategoricalTable)(new VariableElimination()).queryProb(new ProbQuery(network, "x"));
+		CategoricalTable table = (new VariableElimination()).queryProb(new ProbQuery(network, "x"));
 		double sum = 0;
 		for (Assignment a : table.getRows()) {
 			if (((ArrayVal)a.getValue("x")).getVector().get(0) < 0.33333) {
@@ -398,7 +395,7 @@ public class DistributionsTest {
 		}
 		assertEquals(0.5, sum, 0.1);		
 		
-		DiscreteDistribution conversion1 = (DiscreteDistribution)(new VariableElimination()).
+		DiscreteDistribution conversion1 = (new VariableElimination()).
 				queryProb(new ProbQuery(network, "x"));
 		
 		assertTrue(Math.abs(conversion1.getPosterior(new Assignment()).getRows().size()
@@ -406,7 +403,7 @@ public class DistributionsTest {
 		assertEquals(0.02, conversion1.getPosterior(new Assignment()).getProb(new Assignment("x",
 				ValueFactory.create("[0.3333,0.6666]"))), 0.05);
 		
-		EmpiricalDistribution conversion3 = (EmpiricalDistribution)(new LikelihoodWeighting(4000, 1000)).
+		EmpiricalDistribution conversion3 = (new LikelihoodWeighting(4000, 1000)).
 				queryProb(new ProbQuery(network, "x"));
 		
 
@@ -419,8 +416,8 @@ public class DistributionsTest {
 		assertEquals(distrib.getFunction().getMean()[0], 0.333333, 0.01);
 		assertEquals(distrib.getFunction().getVariance()[0], 0.002, 0.01);
 		
-		assertEquals(((ContinuousDistribution)conversion3.toContinuous()).getFunction().getMean()[0], 0.333333, 0.05);
-		assertEquals(((ContinuousDistribution)conversion3.toContinuous()).getFunction().getVariance()[0], 0.002, 0.05);
+		assertEquals(conversion3.toContinuous().getFunction().getMean()[0], 0.333333, 0.05);
+		assertEquals(conversion3.toContinuous().getFunction().getVariance()[0], 0.002, 0.05);
 
 		Settings.discretisationBuckets = oldDiscretisationSettings;
 	}

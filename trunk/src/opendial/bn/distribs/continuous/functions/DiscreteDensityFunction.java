@@ -25,19 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Assignment;
 import opendial.utils.DistanceUtils;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Density function defined via a set of discrete points.  The density at a given point x
@@ -236,6 +233,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * Returns the cumulative distribution for the distribution (by counting all the points
 	 * with a value that is lower than x). 
 	 */
+	@Override
 	public Double getCDF(Double... x) throws DialException {
 		if (x.length != getDimensionality()) {
 			throw new DialException("Illegal dimensionality: " + x.length + "!=" + getDimensionality());

@@ -19,41 +19,22 @@
 
 package opendial.domains;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeSet;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
-import opendial.arch.Logger.Level;
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.BNode;
-import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.inference.InferenceAlgorithm;
-import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 import opendial.state.distribs.EquivalenceDistribution;
+
+import org.junit.Test;
 
 /**
  * 

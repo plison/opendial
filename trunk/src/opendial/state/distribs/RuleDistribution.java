@@ -102,6 +102,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	/**
 	 * Does nothing
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		return;
 	}
@@ -165,6 +166,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	}
 	
 	
+	@Override
 	public CategoricalTable getPartialPosterior(Assignment condition) throws DialException {
 		return getPosterior(condition);
 	}
@@ -211,6 +213,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	 * 
 	 * @return a singleton set with the label of the anchored rule
 	 */
+	@Override
 	public Collection<String> getHeadVariables() {
 		Set<String> headVars = new HashSet<String>(Arrays.asList(id));
 		return headVars;

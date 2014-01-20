@@ -25,16 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
+import opendial.utils.StringUtils;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.values.ArrayVal;
-import opendial.bn.values.ValueFactory;
-import opendial.utils.StringUtils;
 
 /**
  * Gaussian density function.  In the multivariate case, the density function is currently
@@ -277,6 +275,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return mean.hashCode() + variance.hashCode();
 	}
@@ -286,6 +285,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * Returns the mean of the Gaussian.
 	 * 
 	 */
+	@Override
 	public Double[] getMean() {
 		return mean;
 	}
@@ -295,6 +295,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * Returns the variance of the Gaussian.
 	 * 
 	 */
+	@Override
 	public Double[] getVariance() {
 		return variance;
 	}

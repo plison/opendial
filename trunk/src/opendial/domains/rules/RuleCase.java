@@ -276,6 +276,7 @@ public class RuleCase {
 	 * Returns true if the object is a identical rule case, and
 	 * false otherwise.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		return (o instanceof RuleCase 
 				&& condition.equals(((RuleCase)o).condition) 

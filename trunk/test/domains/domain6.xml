@@ -2,17 +2,17 @@
 
 <domain>
 
-<initialstate>
+	<initialstate>
 
 
-</initialstate>
+	</initialstate>
 
-<model type="update" trigger="">
+	<model type="update" trigger="">
 
-<rule>
+		<rule>
 
-</rule>
-	
-</model>
+		</rule>
+
+	</model>
 
 </domain>

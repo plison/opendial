@@ -27,15 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.utils.DistanceUtils;
-import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Density function represented as a Gaussian kernel of data points. The distribution
@@ -211,6 +209,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return points.hashCode();
 	}
@@ -253,6 +252,7 @@ public class KernelDensityFunction implements DensityFunction {
 	/**
 	 * Returns the variance of the KDE.
 	 */
+	@Override
 	public Double[] getVariance() {
 		Double[] mean = getMean();
 		Double[] variance = new Double[points.get(0).length];
@@ -277,6 +277,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * 
 	 * @return the cumulative probability from 0 to x.
 	 */
+	@Override
 	public Double getCDF(Double... x) throws DialException {
 		if (x.length != getDimensionality()) {
 			throw new DialException("Illegal dimensionality: " + x.length + "!=" + getDimensionality());

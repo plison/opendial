@@ -26,9 +26,6 @@ import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -38,40 +35,11 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
 
-import org.apache.commons.collections15.Transformer;
-
-import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
-import edu.uci.ics.jung.algorithms.layout.DAGLayout;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
-import edu.uci.ics.jung.algorithms.layout.StaticLayout;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.Layer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
-import edu.uci.ics.jung.visualization.renderers.VertexLabelRenderer;
-import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.nodes.ActionNode;
@@ -79,12 +47,28 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.gui.StateViewerTab;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.Query;
 import opendial.state.DialogueState;
 import opendial.state.nodes.ProbabilityRuleNode;
 import opendial.state.nodes.UtilityRuleNode;
 import opendial.utils.StringUtils;
+
+import org.apache.commons.collections15.Transformer;
+
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.StaticLayout;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.Layer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
+import edu.uci.ics.jung.visualization.renderers.VertexLabelRenderer;
+import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
 
 /**
@@ -237,6 +221,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		currentState = state;	
 		if (!isUpdating) {
 			new Thread(new Runnable() { 
+				@Override
 				public void run() { 
 					isUpdating = true;
 					synchronized (currentState) {
@@ -419,13 +404,14 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 */
 	final class CustomVertexShapeRenderer implements Transformer<String, Shape> {
 
+		@Override
 		public Shape transform(String arg0) {
 			BNode node = getBNode(arg0);
 			if (node instanceof ProbabilityRuleNode) {
-				return (Shape) new Ellipse2D.Double(-5.0,-5.0,20.0,20.0);
+				return new Ellipse2D.Double(-5.0,-5.0,20.0,20.0);
 			}
 			else if (node instanceof ChanceNode) {
-				return (Shape) new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
+				return new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 			else if (node instanceof UtilityNode) {
 				GeneralPath p0 = new GeneralPath();
@@ -434,13 +420,13 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 				p0.lineTo(0.0f, 15);
 				p0.lineTo(-15, 0.0f);
 				p0.closePath();
-				return (Shape) p0;
+				return p0;
 			}
 			else if (node instanceof ActionNode) {
-				return (Shape) new Rectangle2D.Double(-15.0,-15.0,30.0,30.0);
+				return new Rectangle2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 			else {
-				return (Shape) new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
+				return new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
 			}
 		}
 	}

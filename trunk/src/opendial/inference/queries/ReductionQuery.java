@@ -27,7 +27,6 @@ import java.util.Set;
 
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
-import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 
@@ -117,6 +116,7 @@ public class ReductionQuery extends ProbQuery {
 	}
 	
 	
+	@Override
 	public String toString() {
 		String prob = super.toString();
 		return "Reduce"+prob.substring(1, prob.length());

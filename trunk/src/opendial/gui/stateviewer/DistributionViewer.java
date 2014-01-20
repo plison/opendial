@@ -23,24 +23,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.ProbDistribution.DistribType;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.datastructs.Assignment;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -55,25 +53,9 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataItem;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.values.ArrayVal;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 
 /**
  * 
@@ -94,7 +76,8 @@ public class DistributionViewer extends JDialog {
 		update(distrib);
 		
 		addWindowListener( new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+            @Override
+			public void windowClosing(WindowEvent e) {
             	super.windowClosing(e);
                 viewer.shownDistribs.remove(distrib.getHeadVariables());
             }
@@ -125,7 +108,8 @@ public class DistributionViewer extends JDialog {
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		BarRenderer renderer = (BarRenderer) plot.getRenderer(); 
 		renderer.setToolTipGenerator(new CategoryToolTipGenerator()
-		{ public String generateToolTip(CategoryDataset data, int series, int category) {
+		{ @Override
+		public String generateToolTip(CategoryDataset data, int series, int category) {
 			return "P("+variableName + "=" + data.getColumnKeys().get(category) + ") = "
 					+ data.getValue(series, category); 
 		} });
@@ -207,7 +191,7 @@ public class DistributionViewer extends JDialog {
 		
 		static final int WINDOW = 10;
 		
-		public Series(Comparable key) {
+		public Series(String key) {
 			super(key);
 		}
 			

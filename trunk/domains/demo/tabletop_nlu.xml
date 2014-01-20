@@ -217,8 +217,8 @@
 			</effect>
 		</case>
 	</rule>
-	
-	
+
+
 	<rule>
 		<case>
 			<condition operator="or">
@@ -229,7 +229,7 @@
 			</effect>
 		</case>
 	</rule>
-	
+
 
 	<rule>
 		<case>

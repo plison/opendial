@@ -20,14 +20,9 @@
 package opendial.domains;
 
 
-import java.util.Arrays;
-
-import org.junit.Test;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.ProbQuery;
@@ -35,6 +30,8 @@ import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
+
+import org.junit.Test;
 
 public class QuantificationTest {
 

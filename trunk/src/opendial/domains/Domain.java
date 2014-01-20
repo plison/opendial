@@ -25,7 +25,6 @@ import java.util.List;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
 
 /**
@@ -120,6 +119,7 @@ public class Domain {
 		return settings;
 	}
 	
+	@Override
 	public String toString() {
 		return domainName;
 	}
