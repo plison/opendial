@@ -20,16 +20,13 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
 import opendial.DialogueSystem;
-import opendial.arch.Settings;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
@@ -42,6 +39,8 @@ import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.utils.DistanceUtils;
+
+import org.junit.Test;
 
 public class PruningTest {
 

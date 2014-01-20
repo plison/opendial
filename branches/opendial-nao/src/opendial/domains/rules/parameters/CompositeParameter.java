@@ -169,6 +169,7 @@ public class CompositeParameter implements Parameter {
 	 * @return the parameter value
 	 * @throws DialException if the value could not be retrieved from the assignment
 	 */
+	@Override
 	public double getParameterValue(Assignment input) throws DialException {
 		double totalValue = (operator == Operator.ADD)? 0.0 : 1.0;
 		for (Parameter paramVar : parameters) {
@@ -188,6 +189,7 @@ public class CompositeParameter implements Parameter {
 	 *
 	 * @return the collection of parameter identifiers
 	 */
+	@Override
 	public Collection<String> getParameterIds() {
 		Set<String> ids = new HashSet<String>();
 		for (Parameter param : parameters) {
@@ -206,6 +208,7 @@ public class CompositeParameter implements Parameter {
 	/**
 	 * Returns a string representation of the composite parameter
 	 */
+	@Override
 	public String toString() {
 		String str = "";
 		for (Parameter param : parameters) {
@@ -225,6 +228,7 @@ public class CompositeParameter implements Parameter {
 	 * @param o the object to compare
 	 * @return true if identical, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CompositeParameter) {
 			return parameters.equals(((CompositeParameter)o).getParameterIds());
@@ -238,6 +242,7 @@ public class CompositeParameter implements Parameter {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return parameters.hashCode() - operator.hashCode();
 	}

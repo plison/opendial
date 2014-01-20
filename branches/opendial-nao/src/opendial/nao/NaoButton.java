@@ -22,7 +22,6 @@ package opendial.nao;
 import java.util.Collection;
 
 import opendial.DialogueSystem;
-import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;

@@ -27,31 +27,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-
-import org.apache.commons.collections15.ListUtils;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.utils.CombinatoricsUtils;
+
+import org.apache.commons.collections15.ListUtils;
 
 /**
  * Implementation of the Variable Elimination algorithm
@@ -340,6 +335,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @return the probability distributions for the retained variables
 	 * @throws DialException if the reduction operation failed
 	 */
+	@Override
 	public BNetwork reduce(ReductionQuery query) throws DialException {
 
 		// create the query factor

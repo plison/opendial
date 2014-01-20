@@ -21,14 +21,12 @@ package opendial.datastructs;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
@@ -242,6 +240,7 @@ public class Template {
 	 * 
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return rawString.hashCode();
 	}
@@ -252,6 +251,7 @@ public class Template {
 	 * 
 	 * @return the raw string
 	 */
+	@Override
 	public String toString() {
 		return rawString;
 	}
@@ -263,6 +263,7 @@ public class Template {
 	 * @param o the object to compare
 	 * @return true if identical, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Template) {
 			if (((Template)o).getRawString().equals(rawString) && 
@@ -385,6 +386,7 @@ public class Template {
 			return filledSlots;
 		}
 
+		@Override
 		public String toString() {
 			return isMatching + " (" + filledSlots+")";
 		}

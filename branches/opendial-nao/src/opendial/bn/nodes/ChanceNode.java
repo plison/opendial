@@ -32,7 +32,6 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -415,6 +414,7 @@ public class ChanceNode extends BNode {
 		return new ChanceNode(nodeId, distrib.copy());
 	}
 
+	@Override
 	public int hashCode() {
 		return super.hashCode() + distrib.hashCode();
 	}
@@ -424,6 +424,7 @@ public class ChanceNode extends BNode {
 	 * Returns the string representation of the distribution.
 	 * 
 	 */
+	@Override
 	public String toString() {
 		return distrib.toString();
 	}
@@ -433,6 +434,7 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 
+	@Override
 	protected void modifyVariableId(String oldId, String newId) {
 		super.modifyVariableId(oldId, newId);
 		distrib.modifyVariableId(oldId, newId);

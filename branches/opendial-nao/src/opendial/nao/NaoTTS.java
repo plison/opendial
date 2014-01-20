@@ -19,24 +19,13 @@
 
 package opendial.nao;
 
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.aldebaran.qimessaging.Application;
-import com.aldebaran.qimessaging.Future;
-import com.aldebaran.qimessaging.Object;
-import com.aldebaran.qimessaging.Session;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.modules.Module;

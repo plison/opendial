@@ -21,46 +21,22 @@ package opendial.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -68,8 +44,6 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
@@ -85,6 +59,7 @@ import opendial.utils.StringUtils;
  * @version $Date::                      $
  *
  */
+@SuppressWarnings("serial")
 public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public static final String TAB_TITLE = " Chat Window ";
@@ -148,6 +123,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		tip.setVisible(false);
 		 
 		helpButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				tip.setVisible(!tip.isVisible());
 			}
@@ -290,8 +266,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	
 	void updateActivation() {
-		if (system.getDomain().getModels().size() == 0 && system.getDomain().getInitialState().getChanceNodes().size() == 0
-				&& system.getModules().size() <= 3) {
+		if (system.getDomain() == null) {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
 			if (lines.getText().length() <= 100 && ! lines.getText().contains("No domain currently selected")) {
@@ -352,6 +327,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			this.table = table;
 		}
 		
+		@Override
 		public void run() {
 			try {
 			system.addContent(table);

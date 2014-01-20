@@ -20,31 +20,27 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Container;
 import java.util.List;
 
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
-import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
-import opendial.modules.WizardLearner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.state.DialogueState;
 
-import javax.swing.JList;
+import org.junit.Test;
 
 public class WizardTest {
 

@@ -19,23 +19,16 @@
 
 package opendial.nao;
 
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;

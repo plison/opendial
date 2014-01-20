@@ -19,29 +19,26 @@
 
 package opendial.inference;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import org.junit.Test;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.Value;
 import opendial.common.InferenceChecks;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.queries.ProbQuery;
+
+import org.junit.Test;
 
 /**
  * 

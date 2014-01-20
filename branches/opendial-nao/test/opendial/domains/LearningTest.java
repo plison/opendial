@@ -19,10 +19,7 @@
 
 package opendial.domains;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -30,10 +27,11 @@ import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
-import opendial.domains.Domain;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
+
+import org.junit.Test;
 
 public class LearningTest {
 

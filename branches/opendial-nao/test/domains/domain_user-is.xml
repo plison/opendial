@@ -29,7 +29,7 @@
 			</effect>
 			<effect prob="theta_8[2]">
 				<set var="a_u^p" value="Nothing" />
-			</effect>		
+			</effect>
 		</case>
 		<case>
 			<condition>
@@ -86,9 +86,9 @@
 				<set var="a_u^p" value="Nothing" />
 			</effect>
 		</case>
-			<case>
+		<case>
 			<condition>
-				<if var="i_u" value="None"/>
+				<if var="i_u" value="None" />
 			</condition>
 			<effect prob="1.0">
 				<set var="a_u^p" value="Nothing" />

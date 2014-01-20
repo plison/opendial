@@ -21,22 +21,19 @@ package opendial.nao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
-import opendial.utils.InferenceUtils;
+
 
 public class NaoPerception implements Module, Runnable {
 
@@ -84,6 +81,7 @@ public class NaoPerception implements Module, Runnable {
 	}
 	
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
 			
 		while (session != null) {

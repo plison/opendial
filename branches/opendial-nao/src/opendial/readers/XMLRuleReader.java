@@ -24,15 +24,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Node;
-
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Template;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
@@ -49,6 +46,8 @@ import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.utils.XMLUtils;
+
+import org.w3c.dom.Node;
 
 /**
  *  Extraction of a probabilistic rule given an XML specification

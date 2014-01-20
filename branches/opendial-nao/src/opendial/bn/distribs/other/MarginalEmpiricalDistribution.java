@@ -22,20 +22,16 @@ package opendial.bn.distribs.other;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
-import java.util.Random;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 
@@ -100,6 +96,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	/**
 	 * Prunes the values of the underlying empirical distribution.
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		empirical.pruneValues(threshold);
 	}
@@ -149,6 +146,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	 * @return the selected sample
 	 * @throws DialException 
 	 */
+	@Override
 	public Assignment sample(Assignment condition) throws DialException {
 		if (condition.isEmpty()) {
 			return sample();
@@ -231,6 +229,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	}
 	
 	
+	@Override
 	public ProbDistribution getPartialPosterior (Assignment condition) {
 		EmpiricalDistribution newEmpirical = empirical.getPartialPosterior(condition);
 		Set<String> newHeadVars = new HashSet<String>(headVars);
@@ -254,6 +253,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	 * 
 	 * @return the possible values for the head variables
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 		return empirical.getValues(range);
 	}
@@ -274,6 +274,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	/**
 	 * Returns a discrete representation of the empirical distribution.
 	 */
+	@Override
 	public DiscreteDistribution toDiscrete() {
 		if (discreteCache == null) {
 			if (condVars.isEmpty()) {
@@ -434,7 +435,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 		}
 
 		for (Assignment condition : temp.keySet()) {
-			table.addRows(condition, (CategoricalTable)(temp.get(condition).toDiscrete()));
+			table.addRows(condition, (temp.get(condition).toDiscrete()));
 		}
 		table.fillConditionalHoles();
 		return table;

@@ -20,16 +20,12 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
-import javax.swing.JMenuBar;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -43,6 +39,8 @@ import opendial.gui.GUIMenuBar;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;
+
+import org.junit.Test;
 
 public class RecordingTest {
 

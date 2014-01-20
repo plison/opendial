@@ -45,8 +45,8 @@ public class NaoSession extends QimessagingService {
 			
 	private NaoSession(String ip) throws DialException {
 		try {
-			this.ip = ip;
-	    Application app = new Application(new String[0]);
+		this.ip = ip;
+	    new Application(new String[0]);
 		sess = new Session();
 		Future<Void> fut = sess.connect("tcp://"+ip +":9559");
 		synchronized(fut) {

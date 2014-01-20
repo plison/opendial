@@ -19,14 +19,12 @@
 
 package opendial.bn;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertFalse;
 import opendial.arch.Logger;
-import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+
+import org.junit.Test;
 
 /**
  * 

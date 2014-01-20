@@ -19,24 +19,18 @@
 
 package opendial.bn.distribs.discrete;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.other.ConditionalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.DistanceUtils;
 import opendial.utils.StringUtils;
 
 /**
@@ -206,6 +200,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @param head the head assignment
 	 * @return the associated probability, if one exists.
 	 */
+	@Override
 	public double getProb(Assignment condition, Assignment head) {
 
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
@@ -308,6 +303,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	
 	
 
+	@Override
 	public ProbDistribution getPartialPosterior (Assignment condition) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
@@ -370,6 +366,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	/**
 	 * Returns the distribution
 	 */
+	@Override
 	public ConditionalCategoricalTable toDiscrete() {
 		return this;
 	}
@@ -378,6 +375,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	/**
 	 * Copies the distribution
 	 */
+	@Override
 	public ConditionalCategoricalTable copy() {
 		ConditionalCategoricalTable newC = new ConditionalCategoricalTable();
 		try {

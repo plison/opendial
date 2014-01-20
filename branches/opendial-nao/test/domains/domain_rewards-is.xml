@@ -16,12 +16,12 @@
 		</case>
 	</rule>
 
-    <rule id="pickup">
+	<rule id="pickup">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="PickUp({X})" />
-				<if var="perceived" value="{X}" relation="contains"/>
-				<if var="carried" value="[]"/>
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="carried" value="[]" />
 			</condition>
 			<effect util="6">
 				<set var="a_m" value="Do({i_u})" />
@@ -33,7 +33,7 @@
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="PickUp({X})" />
-				<if var="perceived" value="{X}" relation="contains"/>
+				<if var="perceived" value="{X}" relation="contains" />
 				<if var="carried" value="[]" relation="!=" />
 			</condition>
 			<effect util="12">
@@ -50,14 +50,14 @@
 			</effect>
 		</case>
 	</rule>
-	
-	
-	
+
+
+
 	<rule id="release">
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="Release({X})" />
-				<if var="carried" value="{X}" relation="contains"/>
+				<if var="carried" value="{X}" relation="contains" />
 			</condition>
 			<effect util="6">
 				<set var="a_m" value="Do({i_u})" />
@@ -69,28 +69,28 @@
 		<case>
 			<condition>
 				<if var="i_u" value="Release({X})" />
-				<if var="carried" value="{X}" relation="notcontains"/>
+				<if var="carried" value="{X}" relation="notcontains" />
 			</condition>
 			<effect util="12">
 				<set var="a_m" value="Excuse(DoNotCarryObject)" />
 			</effect>
 		</case>
 	</rule>
-	
-	
+
+
 
 	<rule>
 		<case>
 			<condition>
-				<if var="a_u" value="None" relation="!="/>
+				<if var="a_u" value="None" relation="!=" />
 			</condition>
 			<effect util="-1.5">
 				<set var="a_m" value="None" />
-			</effect>		
+			</effect>
 		</case>
 	</rule>
-	
-	
+
+
 	<rule>
 		<case>
 			<effect util="-6.0">
@@ -100,10 +100,10 @@
 			<effect util="-6.0">
 				<set var="a_m" value="Ground(*)" />
 				<set var="a_m" value="Ground({i_u})" relation="!=" />
-			</effect>	
+			</effect>
 			<effect util="-6.0">
 				<set var="a_m" value="Excuse(*)" />
-			</effect>	
+			</effect>
 		</case>
 	</rule>
 
@@ -117,14 +117,14 @@
 			</effect>
 		</case>
 	</rule>
-	
+
 	<rule>
 		<case>
 			<condition operator="or">
 				<if var="history" value="Ground({X})" relation="contains" />
 			</condition>
 			<effect util="-2">
-				<set var="a_m" value="{X}" relation="!="/>
+				<set var="a_m" value="{X}" relation="!=" />
 			</effect>
 		</case>
 	</rule>
@@ -132,9 +132,9 @@
 
 	<rule>
 		<case>
-		<condition>
-				<if var="a_m" value="AskRepeat" relation="!="/>
-		</condition>
+			<condition>
+				<if var="a_m" value="AskRepeat" relation="!=" />
+			</condition>
 			<effect util="-1.0">
 				<set var="a_m" value="AskRepeat" />
 			</effect>

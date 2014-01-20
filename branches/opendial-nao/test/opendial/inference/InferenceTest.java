@@ -19,17 +19,14 @@
 
 package opendial.inference;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Map;
-
-import org.junit.Test;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
@@ -37,11 +34,8 @@ import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
-import opendial.common.InferenceChecks;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
 import opendial.inference.approximate.LikelihoodWeighting;
@@ -49,6 +43,8 @@ import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
+
+import org.junit.Test;
 
 /**
  * 

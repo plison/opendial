@@ -19,15 +19,12 @@
 
 package opendial.inference;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
@@ -39,7 +36,8 @@ import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.ReductionQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.state.StatePruner;
+
+import org.junit.Test;
 
 /**
  * 

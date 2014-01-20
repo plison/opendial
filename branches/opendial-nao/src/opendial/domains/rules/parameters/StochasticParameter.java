@@ -98,6 +98,7 @@ public class StochasticParameter implements Parameter {
 	 *
 	 * @return a collection with one element: the parameter distribution
 	 */
+	@Override
 	public Collection<String> getParameterIds() {
 		return Arrays.asList(paramId);
 	}
@@ -111,6 +112,7 @@ public class StochasticParameter implements Parameter {
 	 * @return the actual value for the parameter
 	 * @throws DialException if the value is not specified in the input assignment
 	 */
+	@Override
 	public double getParameterValue(Assignment input) throws DialException {
 		Value value = input.getValue(paramId);
 		if (input.containsVar(paramId) && value instanceof DoubleVal) {
@@ -130,6 +132,7 @@ public class StochasticParameter implements Parameter {
 	/**
 	 * Returns a string representation of the stochastic parameter
 	 */
+	@Override
 	public String toString() {
 		if (dimension != -1) {
 			return paramId.toString()+"["+dimension+"]";
@@ -142,6 +145,7 @@ public class StochasticParameter implements Parameter {
 	/**
 	 * Returns the hashcode for the parameter
 	 */
+	@Override
 	public int hashCode() {
 		return -paramId.hashCode() + dimension;
 	}

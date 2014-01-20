@@ -20,10 +20,6 @@
 package opendial.bn.distribs.utility;
 
 
-import java.util.Map;
-import java.util.Set;
-
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
 /**

@@ -25,11 +25,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import opendial.DialogueSystem;
-import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
@@ -82,7 +79,7 @@ public class NaoASR  implements Module, Runnable {
 		session.call("ALSpeechRecognition", "setParameter", "NBSecondPassHypotheses", 5); */
 
 
-		if (session.<ArrayList>call("ALSpeechRecognition", "getSubscribersInfo").size() > 0) {
+		if (session.<ArrayList<?>>call("ALSpeechRecognition", "getSubscribersInfo").size() > 0) {
 			session.call("ALSpeechRecognition", "unsubscribe", "naoASR");
 		}
 		String asrGrammar = system.getSettings().params.getProperty("grammar");
@@ -115,6 +112,7 @@ public class NaoASR  implements Module, Runnable {
 	}
 
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void run() {
 		while (true) {

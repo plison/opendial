@@ -105,6 +105,7 @@ public class FixedParameter implements Parameter {
 	 * 
 	 * @return the value for the parameter
 	 */
+	@Override
 	public double getParameterValue(Assignment input) {
 		return getParameterValue();
 	}
@@ -115,6 +116,7 @@ public class FixedParameter implements Parameter {
 	 *
 	 * @return an empty set of distributions
 	 */
+	@Override
 	public Collection<String> getParameterIds() {
 		return new LinkedList<String>();
 	}
@@ -125,6 +127,7 @@ public class FixedParameter implements Parameter {
 	 *
 	 * @return the string
 	 */
+	@Override
 	public String toString() {
 		return""+ param;
 	}
@@ -135,6 +138,7 @@ public class FixedParameter implements Parameter {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return 2* new Double(param).hashCode();
 	}

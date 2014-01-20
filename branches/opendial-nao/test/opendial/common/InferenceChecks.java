@@ -19,37 +19,25 @@
 
 package opendial.common;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.jfree.util.Log;
-import org.junit.Test;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.distribs.utility.UtilityDistribution;
-import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.Query;
 import opendial.inference.queries.UtilQuery;
 
 public class InferenceChecks {

@@ -47,12 +47,16 @@ public class WizardLearner implements Module {
 		this.system = system;
 	}
 	
+	@Override
 	public void start() {	}
 
+	@Override
 	public void pause(boolean shouldBePaused) {	}
 
+	@Override
 	public boolean isRunning() {  return true;	}
 
+	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!state.getActionNodeIds().isEmpty()) {
 			if (state.getEvidence().getVariables().containsAll(state.getActionNodeIds())) {

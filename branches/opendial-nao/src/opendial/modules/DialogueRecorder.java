@@ -24,11 +24,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -36,6 +31,11 @@ import opendial.arch.Settings;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
+
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class DialogueRecorder implements Module {
 
@@ -52,6 +52,7 @@ public class DialogueRecorder implements Module {
 	}
 	
 	
+	@Override
 	public void start() {
 		try {
 			doc = XMLUtils.newXMLDocument();
@@ -141,6 +142,7 @@ public class DialogueRecorder implements Module {
 	}
 
 
+	@Override
 	public boolean isRunning() {
 		return doc != null;
 	}

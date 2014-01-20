@@ -35,8 +35,8 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.domains.rules.effects.Effect;
 
 
 /**
@@ -119,6 +119,7 @@ public class OutputDistribution implements DiscreteDistribution {
 	 * @param head the head assignment
 	 * @return the resulting probability
 	 */
+	@Override
 	public double getProb(Assignment condition, Assignment head) {
 		if (!cache.containsKey(condition)) {
 			fillCacheForCondition(condition);
@@ -162,6 +163,7 @@ public class OutputDistribution implements DiscreteDistribution {
 	 * @param range the range of values for the parents
 	 * @return the possible values for the output
 	 */
+	@Override
 	public Set<Assignment> getValues(ValueRange range) {
 
 		// check whether the parents contain add or discard operations
@@ -269,6 +271,7 @@ public class OutputDistribution implements DiscreteDistribution {
 	/**
 	 * Does nothing.
 	 */
+	@Override
 	public void pruneValues(double threshold) {
 		return;
 	}

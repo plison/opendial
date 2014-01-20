@@ -192,6 +192,7 @@ public class Rule {
 	 *
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return this.getClass().hashCode() - id.hashCode() + cases.hashCode();
 	}
@@ -204,6 +205,7 @@ public class Rule {
 	 * @param o the object to compare
 	 * @ return true if the object is an identical rule, false otherwise.
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof Rule) {
 			return id.equals(((Rule)o).getRuleId()) 

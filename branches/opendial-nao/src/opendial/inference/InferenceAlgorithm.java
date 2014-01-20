@@ -23,7 +23,6 @@ package opendial.inference;
 import opendial.arch.DialException;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.ReductionQuery;

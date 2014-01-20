@@ -20,17 +20,15 @@
 package opendial.bn.distribs;
 
 
-import java.util.Map;
 import java.util.Set;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import opendial.arch.DialException;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * Generic probability distribution P(X1,...,Xn) without conditional variables.
