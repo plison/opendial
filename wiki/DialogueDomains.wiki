@@ -52,6 +52,50 @@ Examples of domain specification can be found in the directory `domains` and `te
 
 == Initial state ==
 
+The initial state for the domain defines the set of variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
+
+Variables with a discrete range of possible values are defined in this manner:
+{{{
+<variable id="variable_id">
+  <value prob="probability for first value">first value</value>
+  <value prob="probability for second value">second value</value>
+  ...
+  <value prob="probability for the nth value">nth value</value>
+</variable>
+
+The probability values must be comprised between 0 and 1.  If the total probability for all values amount to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the probability attribute is ommitted, the value is assumed to have a probability 1. 
+
+Here is a simple example of initial state variable:
+{{{
+<variable id="userIntention">
+  <value prob="0.5">Want(Object_A)</value>
+  <value prob="0.3">Want(Object_B)</value>
+</variable>
+}}}
+
+State variables can also be defined for continuous range of values.  In such a case, the variable distribution is defined in a parametric manner:
+ * *Uniform distributions* are defined with two parameters `min` and `max`.  The distribution U(-1,3) is encoded as:
+{{{
+<variable id="uniform_example">
+  <distrib type="uniform">
+    <min>-1</min>
+    <max>3</max>
+  </distrib>
+</variable>
+}}}
+
+ * *Gaussian distributions* are defined with two parameters `mean`and `variance` -- for instance, N(2, 4) is encoded as:
+{{{
+<variable id="gaussian_example">
+  <distrib type="gaussian">
+    <mean>-1</mean>
+    <variance>3</variance>
+  </distrib>
+</variable>
+}}}
+
+Multivariate Gaussians can be defined by replacing the scalar mean and variance by vectors (NB: at the moment, !OpenDial only supports multivariate gaussians with a diagonal covariance).
+
 == Parameters ==
 
 == Models ==
