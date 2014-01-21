@@ -48,7 +48,7 @@ For more complex domains, splitting the domain specification in several times ca
     <import href="path to another file" />
 }}}
 
-Examples of domain specification can be found in the directory `domains` and `test/domains` of the OpenDial trunk.
+Examples of domain specification can be found in the directory `domains` and `test/domains` of the base directory.
 
 == Initial state and parameters ==
 
@@ -75,13 +75,19 @@ A dialogue model is essentially defined as a set of probabilistic rules combined
 </model>
 }}}
 
-The rules can either encode probability or utility rules, as explained below (also see [folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Pierre Lison's Ph.D. thesis] for more explanations).
+The rules can either encode probability or utility rules, as explained below (also see [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Pierre Lison's Ph.D. thesis] for more explanations).
 
 === Probability rules ===
 
 
+==== Conditions ====
+
+==== Effects ====
+
+
 === Utility rules ===
+
+=== Quantification ===
 
 
 == Settings ==
-
