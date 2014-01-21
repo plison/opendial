@@ -10,10 +10,6 @@ A !OpenDial dialogue domain follows the skeleton below:
 {{{
 <domain>
 
-  <settings>
-    <!--(optional) domain-specific settings -->
-  </settings>
-
   <initialstate>
     <!--(optional) initial state variables -->
   </initialstate>
@@ -36,6 +32,56 @@ A !OpenDial dialogue domain follows the skeleton below:
     <!-- probabilistic rules for model n -->
   </model>
 
+
+  <settings>
+    <!--(optional) domain-specific settings -->
+  </settings>
+
 </domain>
 
 }}}
+
+The settings, initial state and parameters can be left out of the domain specification if empty.  The number of rule-structured models is arbitrary.
+
+For more complex domains, splitting the domain specification in several times can be useful.   The `import` marker can be used to import the content of another XML file:
+{{{
+    <import href="path to another file" />
+}}}
+
+Examples of domain specification can be found in the directory `domains` and `test/domains` of the OpenDial trunk.
+
+== Initial state and parameters ==
+
+== Models ==
+
+A dialogue model is essentially defined as a set of probabilistic rules combined with one or more "trigger variables" that defines when the rules are to be applied:
+{{{
+<model trigger="trigger variable(s)">
+
+ <rule id="rule 1">
+      ...
+ </rule>
+
+ <rule id="rule 2">
+      ...
+ </rule>
+
+ ...
+
+ <rule id="rule n">
+      ...
+ </rule>
+
+</model>
+}}}
+
+The rules can either encode probability or utility rules, as explained below (also see [folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Pierre Lison's Ph.D. thesis] for more explanations).
+
+=== Probability rules ===
+
+
+=== Utility rules ===
+
+
+== Settings ==
+
