@@ -94,7 +94,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 </variable>
 }}}
 
- * *Gaussian distributions*[[1]] are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
+ * *Gaussian distributions*`[1]` are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
 {{{
 <variable id="gaussian_example">
   <distrib type="gaussian">
@@ -217,7 +217,7 @@ As exemplified in the rules above, the `condition` XML node is composed of a lis
 || `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
 || `value` || Obligatory || The variable value to check ||
 
-The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.[[2]]
+The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.`[2]`
 
 ==== Effects ====
 
@@ -233,9 +233,9 @@ The basic conditions are linked together with either a conjunction (`and`) or a 
 
 
 ---
-[[1]] Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
+`[1]` Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
 
-[[2]] If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
+`[2]` If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
 {{{
 <condition>
   <if var="A" relation="=" value="a1"/>
