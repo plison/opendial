@@ -44,9 +44,9 @@ import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
-
+   
 import org.apache.commons.collections15.ListUtils;
-
+ 
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
  *  <li> the current dialogue state
@@ -126,7 +126,12 @@ public class DialogueSystem {
 		paused=false;
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
+				if (!module.isRunning()) {
 				module.start();
+				}
+				else {
+					module.pause(false);
+				}
 			}
 			catch (DialException e) {
 				log.warning("could not start module " + module.getClass().getCanonicalName());
@@ -151,15 +156,10 @@ public class DialogueSystem {
 		this.domain = domain;
 		curState = domain.getInitialState().copy();
 		curState.setParameters(domain.getParameters());
-		if (!paused) {
-			synchronized (curState) {
-			curState.setAsNew();
-			update();
-			}
-		}
+		startSystem();
 	}
 
-
+  
 	/**
 	 * Attaches the module to the dialogue system.
 	 * 
@@ -205,7 +205,7 @@ public class DialogueSystem {
 		}
 	}
 
-
+ 
 	/**
 	 * Detaches the module of the dialogue system.  If the module is
 	 * not included in the system, does nothing.
@@ -228,6 +228,8 @@ public class DialogueSystem {
 	 */
 	public void pause(boolean shouldBePaused) {
 		paused = shouldBePaused;
+		recordComment((shouldBePaused)? "system paused" : "system resumed");
+
 		for (Module module : modules) {
 			module.pause(shouldBePaused);
 		}
