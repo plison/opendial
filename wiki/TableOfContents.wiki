@@ -6,6 +6,6 @@
  * [DialogueDomains Specifying Dialogue Domains]
   * [DialogueDomains#General_Structure General Structure]
   * [DialogueDomains#Initial_State Initial State]
-  * [DialogueDomains#Paramaters Parameters]
+  * [DialogueDomains#Parameters Parameters]
   * [DialogueDomains#Models Models]
   * [DialogueDomains#Settings Settings]
