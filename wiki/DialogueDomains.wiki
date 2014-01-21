@@ -76,8 +76,15 @@ Here is a simple example of initial state variable:
 </variable>
 }}}
 
-State variables can also be defined for continuous range of values.  In such a case, the probability distribution is defined in a parametric manner:
- * *Uniform distributions* are defined with two parameters `min` and `max`.  The distribution _U(-1,3)_ is encoded as:
+Although this might be less common to do, state variables can also be defined for continuous range of values (see below for the XML format).
+
+== Parameters ==
+
+As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown (and must be estimated from data). Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
+
+Parameters are defined in exactly the same way as state variables. Their distributions are defined in a parametric manner: 
+
+ * *Uniform distributions* are defined with two parameters `min` and `max`.  The distribution _U(-1,3)_ is thus encoded as:
 {{{
 <variable id="uniform_example">
   <distrib type="uniform">
@@ -97,15 +104,6 @@ State variables can also be defined for continuous range of values.  In such a c
 </variable>
 }}}
 
-See [http://opendial.googlecode.com/svn/trunk/src/opendial/bn/distribs/continuous/ `src/opendial/bn/distribs/continuous`] for details on these distributions.
-
-== Parameters ==
-
-As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown (and must be estimated from data). Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
-
-Parameters are defined in exactly the same way as state variables.  The prior distributions can be encoded as :
- * *Uniform distributions*: _cf above_ 
- * *Gaussian distributions*: _cf above_
  * *Dirichlet distributions*.  A Dirichlet distribution is a multivariate continuous distribution.  It is often employed to describe the prior parameter distribution of categorical/multinomial distributions. Dirichlet distributions are defined by a list of _alpha_ values (one for each dimension).  For instance, the 3-dimensional distribution _Dirichlet(1,1,2)_ is expressed as:
 {{{
 <variable id="parameter_example">
