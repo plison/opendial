@@ -1,3 +1,6 @@
 
-
-* [GettingStarted Getting started]
+ * [GettingStarted Getting started]
+  * [GettingStarted#Downloading-OpenDial Downloading !OpenDial] 
+  * [GettingStarted#Compiling-OpenDial Compiling !OpenDial]
+  * [GettingStarted#Starting-OpenDial Starting !OpenDial]
+  * [GettingStarted#Using-OpenDial Using !OpenDial]
