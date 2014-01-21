@@ -214,7 +214,7 @@ We now detail how the conditions and effects are practically specified.
 
 Conditions are specified with one and more basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
 || `var` || Obligatory || The variable label ||
-|| `relation` || Optional ||  Binary relation to satisfy.  Admissible values are `=` (equality), `!=` (inequality), `<` (lower than), `>` (higher than), and`in` (contains).  Default relation is equality. ||
+|| `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
 || `value` || Obligatory || The variable value to check ||
 
 When more than one basic condition is defined, the basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
