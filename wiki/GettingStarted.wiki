@@ -3,7 +3,7 @@
 = Getting started =
 
 
-== Downloading !OpenDial ==
+== 1. Downloading !OpenDial ==
 
 You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
 
@@ -18,7 +18,7 @@ _NB: the checkout operation above is read-only. If you want to commit your own c
 
 <br>
 
-== Compiling !OpenDial ==
+== 2. Compiling !OpenDial ==
 
 If you have downloaded !OpenDial from the SVN, you'll need to compile the Java source code.  The easiest way to do it is via [http://ant.apache.org Ant]. First check whether ant is installed on your machine (simply type `ant` on the command line and see the result).
 
@@ -37,7 +37,7 @@ If everything works correctly, all tests should be successful (although it is no
 
 <br>
 
-== Starting !OpenDial ==
+== 3. Starting !OpenDial ==
 
 Once !OpenDial is installed and compiled, you are now ready to run it.  Simply type:
 {{{
@@ -66,7 +66,7 @@ ant run -Dproperty=value -Dproperty2=value2 ....
 
 <br>
 
-== Using !OpenDial == 
+== 4. Using !OpenDial == 
 
 You can try out !OpenDial by opening a dialogue domain such as `domains/example/example-domain.xml` and typing a new user input such as: "please turn left".  You should then see in the chat window the system answer: "OK, turning Left".
 
