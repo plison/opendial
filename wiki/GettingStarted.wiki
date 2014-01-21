@@ -5,11 +5,43 @@
 
 == Downloading !OpenDial ==
 
-_downloading from SVN or package_
+The first step is of course to download the !OpenDial software.  You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
+
+ * *Release packages*: _TODO_
+
+ * *SVN repository*: Enter the following to checkout the latest !OpenDial version from the SVN:
+{{{
+ svn checkout http://opendial.googlecode.com/svn/trunk/ opendial
+}}}
+
+NB: this checkout is read-only. If you want to commit your own changes (either to the trunk or to a separate branch), feel free to contact me, I will simply add you as a project contributor.
 
 == Compiling !OpenDial ==
 
+If you have downloaded !OpenDial from the SVN, you'll need to compile the Java source code.  The easiest way to do it is via [http://ant.apache.org Ant]. First check whether ant is installed on your machine (simply type `ant` on the command line and see the result).
+
+To compile the !OpenDial source codes, simply go to the main opendial directory (containing the `build.xml`file) and type:
+{{{
+ant
+}}}
+
+The above command will compile all java files and install the classes in the `bin` directory.
+
+You can check whether !OpenDial works as expected by running the JUnit tests:
+{{{
+ant test
+}}}
+If everything works correctly, all tests should be successful (although it is not unusual to encounter one or two failed tests because of approximation errors during sampling).
+
+
 == Starting !OpenDial ==
+
+Once !OpenDial is installed and compiled, you are now ready to run it.  Simply type:
+{{{
+ant run
+}}}
+
+
 
 _using ant_
 _command line arguments_
