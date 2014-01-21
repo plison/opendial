@@ -106,7 +106,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 
  * *Dirichlet distributions*.  A Dirichlet distribution is a multivariate continuous distribution.  It is often employed to describe the prior parameter distribution of categorical/multinomial distributions. Dirichlet distributions are defined by a list of _alpha_ values (one for each dimension).  For instance, the 3-dimensional distribution _Dirichlet(1,1,2)_ is expressed as:
 {{{
-<variable id="parameter_example">
+<variable id="dirichlet_example">
 <alpha>1</alpha>
 <alpha>1</alpha>
 <alpha>2</alpha>
@@ -137,10 +137,76 @@ A dialogue model is essentially defined as a set of probabilistic rules combined
 </model>
 }}}
 
-The rules can either encode probability or utility rules, as explained below (also see [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Pierre Lison's Ph.D. thesis] for more explanations).
+The rules can either encode probability or utility rules, as explained below (also see [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis] for more explanations).
 
 === Probability rules ===
 
+Probability rules express how some particular state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").  The rules are structured as an *if...then...else* construction:
+{{{
+if (condition c1) then
+  P(effect e1) = ...  
+  P(effect e2) = ...
+  ...
+else if (condition c2) then
+  P(effect e3) = ...
+  ....
+...
+else
+  P(effect m) = ...
+}}}
+
+In the XML format, probability rules are defined as (ordered) list of cases.  Each case has a (possibly empty) condition and a list of alternative effects (each with a particular probability). 
+
+Here two concrete examples of probability rules (corresponding to rules r,,5 and r,,6 in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis]):
+{{{
+<rule id="r5>
+  <case>
+    <condition operator="or">
+      <if var="B" value="b1" relation="="/>
+      <if var="C" value="b1" relation="="/>
+    </condition>
+    <effect prob="0.6">
+      <set var="A" value="a1"/>
+    </effect>
+  </case>
+  <case>
+    <condition>
+      <if var="C" value="c2"/>
+    </condition>
+    <effect prob="0.3">
+      <set var="A" value="a1"/>
+    </effect>
+    <effect prob="0.7">
+      <set var="A" value="a2"/>
+    </effect>
+   </case>
+</rule>
+
+<rule id="r6>
+  <case>
+    <condition operator="and">
+      <if var="C" value="c1" relation="="/>
+      <if var="D" value="b1" relation="!="/>
+    </condition>
+    <effect prob="0.9">
+      <set var="A" value="a2"/>
+      <set var="E" value="e2"/>
+    </effect>
+    <effect prob="0.1">
+      <set var="A" value="a2"/>
+      <set var="E" value="e1"/>
+    </effect>
+  </case>
+  <case>
+    <condition>
+      <if var="C" value="c2"/>
+    </condition>
+    <effect prob="1.0">
+      <set var="E" value="e2"/>
+    </effect>
+   </case>
+</rule>
+}}}
 
 ==== Conditions ====
 
