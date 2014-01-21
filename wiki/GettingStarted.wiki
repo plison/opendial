@@ -44,6 +44,7 @@ ant run
 A window similar to this one should pop up:
 
 
+<p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png" width=600>
 
 
@@ -71,7 +72,7 @@ You can try out !OpenDial by opening a dialogue domain such as `domains/example/
 
 <p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png" width=600>
-</p>
+
 
 In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
 
