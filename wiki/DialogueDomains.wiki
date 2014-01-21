@@ -219,7 +219,7 @@ Conditions are specified with one and more basic conditions.  Each basic conditi
 
 When more than one basic condition is defined, the basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
 
-One can also define more advanced, nested conditions, such as A=a1 &and; &not;(B=b1 &or; C!=c1):
+One can also define more advanced, nested conditions, such as A=a1 *and* *not*(B=b1 *or* C!=c1):
 {{{
 <condition>
   <if var="A" relation="=" value="a1"/>
