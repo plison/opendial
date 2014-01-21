@@ -62,6 +62,7 @@ Variables with a discrete range of possible values are defined in this manner:
   ...
   <value prob="probability for the nth value">nth value</value>
 </variable>
+}}}
 
 The probability values must be comprised between 0 and 1.  If the total probability for all values amount to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the probability attribute is ommitted, the value is assumed to have a probability 1. 
 
