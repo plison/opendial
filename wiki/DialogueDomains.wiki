@@ -4,7 +4,7 @@
 
 This section details how to practically encode dialogue domains for !OpenDial using XML.
 
-== General structure ==
+== 1. General structure ==
 
 A !OpenDial dialogue domain follows the skeleton below:
 {{{
@@ -52,7 +52,7 @@ Examples of domain specification can be found in the directory `domains` and `te
 
 <br>
 
-== Initial state ==
+== 2. Initial state ==
 
 The initial state for the domain defines the variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
 
@@ -78,7 +78,7 @@ Here is a simple example of initial state variable:
 
 Although this might be less common to do, state variables can also be defined for continuous range of values (see below for the XML format).
 
-== Parameters ==
+== 3. Parameters ==
 
 As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown (and must be estimated from data). Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
 
@@ -114,7 +114,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 }}}
 
 
-== Models ==
+== 4. Models ==
 
 A dialogue model is essentially defined as a set of probabilistic rules combined with one or more "trigger variables" that defines when the rules are to be applied:
 {{{
@@ -240,4 +240,4 @@ One can also define more advanced, nested conditions, such as A=a1 *and* *not*(B
 === Quantification ===
 
 
-== Settings ==
+== 5. Settings ==
