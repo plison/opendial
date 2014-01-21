@@ -5,7 +5,7 @@
 
 == Downloading !OpenDial ==
 
-The first step is of course to download the !OpenDial software.  You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
+You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
 
  * *Release packages*: _TODO_
 
@@ -14,7 +14,7 @@ The first step is of course to download the !OpenDial software.  You can either 
  svn checkout http://opendial.googlecode.com/svn/trunk/ opendial
 }}}
 
-NB: this checkout is read-only. If you want to commit your own changes (either to the trunk or to a separate branch), feel free to contact me, I will simply add you as a project contributor.
+_NB: the checkout operation above is read-only. If you want to commit your own changes (either to the trunk or to a separate branch), feel free to contact me, I will simply add you as a project contributor._
 
 == Compiling !OpenDial ==
 
@@ -61,4 +61,29 @@ ant run -Dproperty=value -Dproperty2=value2 ....
 
 == Using !OpenDial == 
 
-_describe here the GUI (tab and state viewer)_
+You can try out !OpenDial by opening a dialogue domain such as `domains/example/example-domain.xml` and typing a new user input such as: "please turn left".  You should then see in the chat window the system answer: "OK, turning Left".
+
+ * *Chat window*: the chat window displays the current conversation history.  At the bottom of the page, a text field can be used to enter new inputs (this feature is useful to test the system behaviour without a speech recognizer).
+
+ * *State Viewer*: The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
+
+<img src="http://opendial.googlecode.com/svn/wiki/opendial_view.png" width=600>
+
+In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
+
+* *Toolbar*: the !OpenDial toolbar offers several functionalities:
+
+|| _Domain_ > _Open Domain_ || Changes the current dialogue domain ||
+|| _Domain_ > _Import_ > _Dialogue State_ || Imports a previously saved dialogue state into the system ||
+|| _Domain_ > _Import_ > _Parameters_ || Imports parameter variables into the system ||
+|| _Domain_ > _Export_ > _Dialogue State_ || Exports the current dialogue state into an XML file ||
+|| _Domain_ > _Import_ > _Parameters_ || Exports the current parameters into an XML file ||
+|| _Interaction_ > _Pause/Resume_ || Pauses or resumes the current interaction ||
+|| _Interaction_ > _Interaction Mode_ || Switches between a 'normal' mode (where the system decides what actions to perform) and a Wizard-of-oz mode (in which the system waits for a wizard to select the action). ||
+|| _Interaction_ > _Import Dialogue From_ || Imports a previous saved dialogue and runs through it again ||
+|| _Interaction_ > _Save Dialogue As_ || Exports the dialogue history to an XML file ||
+|| _Options_ > _View Utterances_ || Determines how to display the user utterances in the chat window ||
+|| _Options_ > _Record Intermediate States_ || Determines whether to record intermediate states in the state viewer ||
+|| _Options_ > _Show/Hide Parameters_ || Determines whether to display parameters in the state viewer||
+|| _Options_ > _Load Modules_ || Loads or unloads modules ||
+|| _Options_ > _Settings_ || Changes the current system settings ||
