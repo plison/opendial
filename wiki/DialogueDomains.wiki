@@ -43,18 +43,20 @@ A !OpenDial dialogue domain follows the skeleton below:
 
 The settings, initial state and parameters can be left out of the domain specification if empty.  The number of rule-structured models is arbitrary.
 
-For more complex domains, splitting the domain specification in several times can be useful.   The `import` marker can be used to import the content of another XML file:
+For more complex domains, the domain specification can be split in several files through the `import`marker: 
 {{{
     <import href="path to another file" />
 }}}
 
 Examples of domain specification can be found in the directory `domains` and `test/domains` of the base directory.
 
+<br>
+
 == Initial state ==
 
-The initial state for the domain defines the set of variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
+The initial state for the domain defines the variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
 
-Variables with a discrete range of possible values are defined in this manner:
+Variables with a discrete range of values are defined in this manner:
 {{{
 <variable id="variable_id">
   <value prob="probability for first value">first value</value>
@@ -64,7 +66,7 @@ Variables with a discrete range of possible values are defined in this manner:
 </variable>
 }}}
 
-The probability values must be comprised between 0 and 1.  If the total probability for all values amount to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the probability attribute is ommitted, the value is assumed to have a probability 1. 
+The probability values must be comprised between 0 and 1.  If the total probability amounts to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the `prob` attribute is omitted, the value is assumed to have a probability 1. 
 
 Here is a simple example of initial state variable:
 {{{
@@ -74,7 +76,7 @@ Here is a simple example of initial state variable:
 </variable>
 }}}
 
-State variables can also be defined for continuous range of values.  In such a case, the variable distribution is defined in a parametric manner:
+State variables can also be defined for continuous range of values.  In such a case, the probability distribution is defined in a parametric manner:
  * *Uniform distributions* are defined with two parameters `min` and `max`.  The distribution U(-1,3) is encoded as:
 {{{
 <variable id="uniform_example">
@@ -85,7 +87,7 @@ State variables can also be defined for continuous range of values.  In such a c
 </variable>
 }}}
 
- * *Gaussian distributions* are defined with two parameters `mean`and `variance` -- for instance, N(2, 4) is encoded as:
+ * *Gaussian distributions* are defined with two parameters `mean` and `variance` -- for instance, N(2, 4) is encoded as:
 {{{
 <variable id="gaussian_example">
   <distrib type="gaussian">
@@ -95,9 +97,11 @@ State variables can also be defined for continuous range of values.  In such a c
 </variable>
 }}}
 
-Multivariate Gaussians can be defined by replacing the scalar mean and variance by vectors (NB: at the moment, !OpenDial only supports multivariate gaussians with a diagonal covariance).
+See [http://opendial.googlecode.com/svn/trunk/src/opendial/bn/distribs/continuous/ `src/opendial/bn/distribs/continuous`] for details.
 
 == Parameters ==
+
+As shall be explained in the next section, probabilistic rules 
 
 == Models ==
 
