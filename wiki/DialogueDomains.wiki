@@ -157,13 +157,13 @@ else
 
 In the XML format, probability rules are defined as (ordered) list of cases.  Each case has a (possibly empty) condition and a list of alternative effects (each with a particular probability). 
 
-Here two concrete examples of probability rules (corresponding to rules r,,5 and r,,6 in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis]):
+Here two concrete examples of probability rules (corresponding to rules r,,5,, and r,,6,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis]):
 {{{
-<rule id="r5>
+<rule id="r5">
   <case>
     <condition operator="or">
-      <if var="B" value="b1" relation="="/>
-      <if var="C" value="b1" relation="="/>
+      <if var="B" relation="=" value="b1"/>
+      <if var="C" relation="=" value="b1"/>
     </condition>
     <effect prob="0.6">
       <set var="A" value="a1"/>
@@ -171,7 +171,7 @@ Here two concrete examples of probability rules (corresponding to rules r,,5 and
   </case>
   <case>
     <condition>
-      <if var="C" value="c2"/>
+      <if var="C" relation="=" value="c2"/>
     </condition>
     <effect prob="0.3">
       <set var="A" value="a1"/>
@@ -182,11 +182,11 @@ Here two concrete examples of probability rules (corresponding to rules r,,5 and
    </case>
 </rule>
 
-<rule id="r6>
+<rule id="r6">
   <case>
     <condition operator="and">
-      <if var="C" value="c1" relation="="/>
-      <if var="D" value="b1" relation="!="/>
+      <if var="C" relation="=" value="c1"/>
+      <if var="D"  relation="!=" value="b1"/>
     </condition>
     <effect prob="0.9">
       <set var="A" value="a2"/>
@@ -199,16 +199,38 @@ Here two concrete examples of probability rules (corresponding to rules r,,5 and
   </case>
   <case>
     <condition>
-      <if var="C" value="c2"/>
+      <if var="C" relation="=" value="c2"/>
     </condition>
-    <effect prob="1.0">
+    <effect prob="0.5">
       <set var="E" value="e2"/>
     </effect>
    </case>
 </rule>
 }}}
 
+We now detail how the conditions and effects are practically specified.
+
 ==== Conditions ====
+
+Conditions are specified with one and more basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
+|| `var` || Obligatory || The variable label ||
+|| `relation` || Optional ||  binary relation to satisfy.  Admissible values are `=` (equality), `!=` (inequality), `<` (lower than), `>` (higher than), `in` (contains).  Default is equality. ||
+|| `value` || Obligatory || The variable value to check ||
+
+When more than one basic condition is defined, the basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
+
+One can also define more advanced, nested conditions, such as A=a1 &and; &not;(B=b1 &or; C!=c1):
+{{{
+<condition>
+  <if var="A" relation="=" value="a1"/>
+  <not>
+    <or>
+      <if var="B" relation="=" value="b1"/>
+      <if var="C" relation="!=" value="c1"/>
+    </or>
+  </not>
+</condition>
+}}}
 
 ==== Effects ====
 
