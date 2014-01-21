@@ -1,9 +1,0 @@
-#summary OpenDial user manual
-
-= !OpenDial user manual =
-
-* [QuickStart Quick start guide]
-
-* [WritingProbabilisticRules Writing probabilistic rules]
-
-* [EstimatingParameters Estimating parameters from data]
