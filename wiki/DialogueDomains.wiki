@@ -50,7 +50,9 @@ For more complex domains, splitting the domain specification in several times ca
 
 Examples of domain specification can be found in the directory `domains` and `test/domains` of the base directory.
 
-== Initial state and parameters ==
+== Initial state ==
+
+== Parameters ==
 
 == Models ==
 
