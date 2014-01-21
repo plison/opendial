@@ -66,9 +66,24 @@ ant run -Dproperty=value -Dproperty2=value2 ....
 
 You can try out !OpenDial by opening a dialogue domain such as `domains/example/example-domain.xml` and typing a new user input such as: "please turn left".  You should then see in the chat window the system answer: "OK, turning Left".
 
- * *Chat window*: the chat window displays the current conversation history.  At the bottom of the page, a text field can be used to enter new inputs (this feature is useful to test the system behaviour without a speech recognizer).
+=== Chat Window ===
 
- * *State Viewer*: The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
+The chat window displays the current conversation history.  
+
+<p align="center">
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_chat.png" width=600>
+
+At the bottom of the page, a text field can be used to enter new inputs (this feature is useful to test the system behaviour without a speech recognizer). N-best lists can be entered by specifying probabilities in parentheses and separating alternative hypotheses with a semicolon (;).  For instance, the user input:
+{{{
+now move left (0.55) ; do not move left (0.15)
+}}}
+
+represents a N-best list with three alternative elements: "now move left" with probability 0.55, "do not move left" with probability 0.15, and a last empty element (no input) with probability 0.3.
+
+
+=== State Viewer ===
+
+The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
 
 <p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png" width=600>
@@ -76,7 +91,9 @@ You can try out !OpenDial by opening a dialogue domain such as `domains/example/
 
 In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
 
- * *Toolbar*: the !OpenDial toolbar offers several functions:
+=== Toolbar ===
+
+The !OpenDial toolbar offers several functions:
 
 || _Domain_ > _Open Domain_ || Changes the current dialogue domain ||
 || _Domain_ > _Import_ > _Dialogue State_ || Imports a previously saved dialogue state into the system ||
