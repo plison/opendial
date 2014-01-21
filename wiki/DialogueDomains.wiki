@@ -11,29 +11,29 @@ A !OpenDial dialogue domain follows the skeleton below:
 <domain>
 
 <settings>
-<!-- (optional) domain-specific settings -->
+<!--(optional) domain-specific settings -->
 </settings>
 
 <initialstate>
-<!-- (optional) list of initial state variables -->
+<!--(optional) initial state variables -->
 </initialstate>
 
 <parameters>
-<!-- (optional) list of prior distributions for rule parameters -->
+<!--(optional) prior distributions for rule parameters -->
 </parameters>
 
 <model trigger="trigger variables for model 1">
-<!-- list of rules for model 1 -->
+<!--probabilistic rules for model 1 -->
 </model>
 
 <model trigger="trigger variables for model 2">
-<!-- list of rules for model 2 -->
+<!-- probabilistic rules for model 2 -->
 </model>
 
 ... 
 
 <model trigger="trigger variables for model n">
-<!-- list of rules for model n -->
+<!-- probabilistic rules for model n -->
 </model>
 
 </domain>
