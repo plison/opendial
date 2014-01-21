@@ -16,6 +16,8 @@ You can either download a release package or directly checkout the latest, bleed
 
 _NB: the checkout operation above is read-only. If you want to commit your own changes (either to the trunk or to a separate branch), feel free to contact me, I will simply add you as a project contributor._
 
+<br>
+
 == Compiling !OpenDial ==
 
 If you have downloaded !OpenDial from the SVN, you'll need to compile the Java source code.  The easiest way to do it is via [http://ant.apache.org Ant]. First check whether ant is installed on your machine (simply type `ant` on the command line and see the result).
@@ -33,6 +35,7 @@ ant test
 }}}
 If everything works correctly, all tests should be successful (although it is not unusual to encounter one or two failed tests because of approximation errors during sampling).
 
+<br>
 
 == Starting !OpenDial ==
 
@@ -61,6 +64,7 @@ Command line parameters must be specified in the following manner:
 ant run -Dproperty=value -Dproperty2=value2 ....
 }}}
 
+<br>
 
 == Using !OpenDial == 
 
@@ -109,3 +113,5 @@ The !OpenDial toolbar offers several functions:
 || _Options_ > _Show/Hide Parameters_ || Determines whether to display parameters in the state viewer||
 || _Options_ > _Load Modules_ || Loads or unloads modules ||
 || _Options_ > _Settings_ || Changes the current system settings ||
+
+<br><br>
