@@ -232,7 +232,8 @@ The basic conditions are linked together with either a conjunction (`and`) or a 
 == 5. Settings ==
 
 
----
+---- 
+
 `[1]` Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
 
 `[2]` If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
