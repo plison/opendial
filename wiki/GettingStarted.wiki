@@ -71,7 +71,7 @@ You can try out !OpenDial by opening a dialogue domain such as `domains/example/
 
 In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
 
-* *Toolbar*: the !OpenDial toolbar offers several functionalities:
+ * *Toolbar*: the !OpenDial toolbar offers several functionalities:
 
 || _Domain_ > _Open Domain_ || Changes the current dialogue domain ||
 || _Domain_ > _Import_ > _Dialogue State_ || Imports a previously saved dialogue state into the system ||
