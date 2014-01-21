@@ -66,7 +66,7 @@ Variables with a discrete range of values are defined in this manner:
 </variable>
 }}}
 
-The probability values must be comprised between 0 and 1.  If the total probability amounts to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the `prob` attribute is omitted, the value is assumed to have a probability 1. 
+Probability values must be comprised between 0 and 1.  If the total probability amounts to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the `prob` attribute is omitted, the value is assumed to have a probability 1. 
 
 Here is a simple example of initial state variable:
 {{{
@@ -76,11 +76,11 @@ Here is a simple example of initial state variable:
 </variable>
 }}}
 
-Although this might be less common to do, state variables can also be defined for continuous range of values (see below for the XML format).
+Probability distributions can also be defined for a continuous range, as explained below. 
 
 == 3. Parameters ==
 
-As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown (and must be estimated from data). Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
+As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown and must be estimated from data. Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
 
 Parameters are defined in exactly the same way as state variables. Their distributions are defined in a parametric manner: 
 
@@ -94,7 +94,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 </variable>
 }}}
 
- * *Gaussian distributions* are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
+ * *Gaussian distributions*[[1]] are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
 {{{
 <variable id="gaussian_example">
   <distrib type="gaussian">
@@ -141,7 +141,7 @@ The rules can either encode probability or utility rules, as explained below (al
 
 === Probability rules ===
 
-Probability rules express how some particular state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").  The rules are structured as an *if...then...else* construction:
+Probability rules express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").  Probability rules are structured as an *if...then...else* construction:
 {{{
 if (condition c1) then
   P(effect e1) = ...  
@@ -155,7 +155,7 @@ else
   P(effect m) = ...
 }}}
 
-In the XML format, probability rules are defined as (ordered) list of cases.  Each case has a (possibly empty) condition and a list of alternative effects (each with a particular probability). 
+Probability rules are expressed in XML as (ordered) list of cases.  Each case has a (possibly empty) condition and a list of alternative effects (each with a particular probability). 
 
 Here two concrete examples of probability rules (corresponding to rules r,,5,, and r,,6,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis]):
 {{{
@@ -212,14 +212,30 @@ We now detail how the conditions and effects are practically specified.
 
 ==== Conditions ====
 
-Conditions are specified with one and more basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
+As exemplified in the rules above, the `condition` XML node is composed of a list of basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
 || `var` || Obligatory || The variable label ||
 || `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
 || `value` || Obligatory || The variable value to check ||
 
-When more than one basic condition is defined, the basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
+The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.[[2]]
 
-One can also define more advanced, nested conditions, such as A=a1 *and* *not*(B=b1 *or* C!=c1):
+==== Effects ====
+
+
+
+
+=== Utility rules ===
+
+=== Quantification ===
+
+
+== 5. Settings ==
+
+
+---
+[[1]] Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
+
+[[2]] If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
 {{{
 <condition>
   <if var="A" relation="=" value="a1"/>
@@ -231,13 +247,3 @@ One can also define more advanced, nested conditions, such as A=a1 *and* *not*(B
   </not>
 </condition>
 }}}
-
-==== Effects ====
-
-
-=== Utility rules ===
-
-=== Quantification ===
-
-
-== 5. Settings ==
