@@ -43,9 +43,9 @@ ant run
 
 A window similar to this one should pop up:
 
-<center>
-<img src="http://opendial.googlecode.com/svn/wiki/opendial_start.png" width=600>
-</center>
+
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png" width=600>
+
 
 Additional properties can be included in the command line.  All these properties are optional (and can usually also be changed through the graphical interface):
 || *Property* || *Value* ||
@@ -69,9 +69,8 @@ You can try out !OpenDial by opening a dialogue domain such as `domains/example/
 
  * *State Viewer*: The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
 
-<center>
-<img src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png" width=600>
-</center>
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png" width=600>
+
 
 In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
 
