@@ -21,7 +21,7 @@ Three XML markups are available for such nested conditions: `or`, `and` and `not
 
 == 2. References ==
 
-Conditions may be more complex than simple checks between a state variable and a fixed value. For instance, one may want to specify that two variables `A` and `B` must have an identical value.  This can be done via _variable references_ inside the `value` attribute of an `<if ...>` markup.  References to state variables are denoted with curly brackets { } to distinguish them from usual strings.
+Conditions may be more complex than simple checks between a state variable and a fixed value (whatever this value might be). For instance, one may want to specify that two variables `A` and `B` must have an identical value.  This can be done via _variable references_ inside the `value` attribute of an `<if ...>` markup.  References to state variables are denoted with curly brackets { } to distinguish them from usual strings.
 
 For instance, assuming two state variables `firstvar` and `secondvar`, the condition `firstvar==secondvar`` may be written as :
 {{{
