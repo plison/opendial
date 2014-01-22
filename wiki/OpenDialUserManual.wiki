@@ -1,6 +1,6 @@
 = !OpenDial User Guide =
 
-This user manual will show you how to practically employ the !OpenDial toolkit to develop dialogue systems.
+This user guide explains how to practically employ the !OpenDial toolkit to develop dialogue systems.
 
  * ==[GettingStarted Getting started]==
 
