@@ -228,6 +228,9 @@ The basic conditions are linked together with either a conjunction (`and`) or a 
 
 === Quantification ===
 
+=== Operations on strings ===
+
+=== Operation on sets ===
 
 == 5. Settings ==
 
