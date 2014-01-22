@@ -18,7 +18,7 @@ We saw in the previous section that the rule conditions were essentially defined
 
 Three XML markups are available for such nested conditions: `or`, `and` and `not`, respectively denoting disjunctions, conjunctions and negations.
 
-== 2. Variable pointers in conditions and effects ==
+== 2. References ==
 
 == 3. Quantification ==
 
