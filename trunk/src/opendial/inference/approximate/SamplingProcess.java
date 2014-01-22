@@ -1,5 +1,6 @@
 package opendial.inference.approximate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -197,7 +198,7 @@ public class SamplingProcess extends AnytimeProcess {
 	 * @throws DialException
 	 */
 	private void addReadySample(WeightedSample sample) throws DialException {
-		for (ChanceNode cn : query.getNetwork().getChanceNodes()) {
+		for (ChanceNode cn : new ArrayList<ChanceNode>(query.getNetwork().getChanceNodes())) {
 			if (cn.getDistrib() instanceof MarginalEmpiricalDistribution) {
 				Assignment fullSample = ((MarginalEmpiricalDistribution)cn.getDistrib()).
 						getFullDistrib().consistentSample(query.getEvidence());

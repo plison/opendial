@@ -266,7 +266,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public String toString() {
-		return "N("+mean+"," + variance+")";
+		return "N("+ValueFactory.create(mean)+"," + ValueFactory.create(variance)+")";
 	}
 
 

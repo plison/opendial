@@ -127,7 +127,7 @@ public class DialogueState extends BNetwork {
 	 *  
 	 * @param variables the variables for which to clear the assignment
 	 */
-	public void clearEvidence(Set<String> variables) {
+	public void clearEvidence(Collection<String> variables) {
 		evidence.removePairs(variables);
 	}
 
