@@ -1,0 +1,97 @@
+#summary Specifying dialogue domains: advanced modelling
+
+
+=== Quantification ===
+
+The expressivity of probabilistic rules can be greatly improved by introducing free variables in the rule specification.  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
+{{{
+
+<rule id="r3">
+  <case>
+    <condition>
+      <if var="shape({X})" value="sphere"/>
+    </condition>
+    <effect prob="0.9">
+      <set var="graspable({X})" value="true"/>
+    </effect>
+    <effect prob="0.1">
+      <set var="graspable({X})" value="false"/>
+    </effect>
+  </case>
+  <case>
+    <condition>
+      <if var="shape({X})" value="cone"/>
+    </condition>
+    <effect prob="0.2">
+      <set var="graspable({X})" value="true"/>
+    </effect>
+    <effect prob="0.8">
+      <set var="graspable({X})" value="false"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
+The rule will then apply for any arbitrary object _X_ that has a state variable `shape`(_X_) in the dialogue state. In order to distinguish the free variable _X_ from normal strings, free variables must be surrounded by curly brackets { }.
+
+Free variables can also be employed in utility rules:
+{{{
+
+<rule id="r4">
+  <case>
+    <condition>
+      <if var="task" value="grasp({X})"/>
+      <if var="graspable({X})" value="true"/>
+    </condition>
+    <effect util="2">
+      <set var="a_m" value="grasp({X})"/>
+    </effect>
+  </case>
+  <case>
+    <effect util="-2">
+      <set var="a_m" value="grasp({X})"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
+=== Operations on strings ===
+
+Many variables of a dialogue system have values that are encoded as strings.  We integrated therefore special functions to manipulate strings in probabilistic rules.  Rule conditions can notably applied to perform string matching, as in this example:
+{{{
+
+<rule id="r14">
+  <case>
+    <condition>
+      <if var="u_u" value="take the {OBJ}" relation="in"/>
+    </condition>
+    <effect>
+      <set var="a_u" value="Request({OBJ})"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
+The rule above indicates that if the variable `u_u` contains a substring that matches the pattern `take the {OBJ}` (where `{OBJ}` is a placeholder), the variable `a_u` will be set to `Request({OBJ})`.  Note again the use of curly brackets to denote the placeholders.
+
+
+=== Operation on sets ===
+
+In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts).  Probabilistic rules come with built-in functions to manipulate such collections:
+ * Rule conditions can check for the presence/absence of particular items in a collection
+ * In addition to the standard `set` operation, effects can also include special effects to `add`, `remove` or `clear` elements from a collection:
+{{{
+
+<rule id="r12">
+  <case>
+    <condition>
+      <if var="A" value="a1" relation="!in"/>
+    </condition>
+    <effect>
+      <add var="A" value="a1"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
+The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.
