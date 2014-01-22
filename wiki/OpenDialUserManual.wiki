@@ -12,7 +12,7 @@ This user manual will show you how to practically employ the !OpenDial toolkit t
 
  * ==[BuildingDialogueSystem Building up a complete dialogue system]==
 
- * == [Javadoc]
+ * == [Javadoc] ==
 
 <br><br><br>
 
