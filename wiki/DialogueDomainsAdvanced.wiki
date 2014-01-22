@@ -1,7 +1,26 @@
 #summary Specifying dialogue domains: advanced modelling
 
 
-=== Quantification ===
+== 1. Nested conditions ==
+
+We saw in the previous section that the rule conditions were essentially defined as conjunctions or disjunctions of basic conditions. If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
+{{{
+<condition>
+  <if var="A" relation="=" value="a1"/>
+  <not>
+    <or>
+      <if var="B" relation="=" value="b1"/>
+      <if var="C" relation="!=" value="c1"/>
+    </or>
+  </not>
+</condition>
+}}}
+
+Three XML markups are available for such nested conditions: `or`, `and` and `not`, respectively denoting disjunctions, conjunctions and negations.
+
+== 2. Variable pointers in conditions and effects ==
+
+== 3. Quantification ==
 
 The expressivity of probabilistic rules can be greatly improved by introducing free variables in the rule specification.  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
 {{{
@@ -55,7 +74,7 @@ Free variables can also be employed in utility rules:
 </rule>
 }}}
 
-=== Operations on strings ===
+== 4. Operations on strings ==
 
 Many variables of a dialogue system have values that are encoded as strings.  We integrated therefore special functions to manipulate strings in probabilistic rules.  Rule conditions can notably applied to perform string matching, as in this example:
 {{{
@@ -75,7 +94,7 @@ Many variables of a dialogue system have values that are encoded as strings.  We
 The rule above indicates that if the variable `u_u` contains a substring that matches the pattern `take the {OBJ}` (where `{OBJ}` is a placeholder), the variable `a_u` will be set to `Request({OBJ})`.  Note again the use of curly brackets to denote the placeholders.
 
 
-=== Operation on sets ===
+== 5. Operations on sets ==
 
 In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts).  Probabilistic rules come with built-in functions to manipulate such collections:
  * Rule conditions can check for the presence/absence of particular items in a collection
