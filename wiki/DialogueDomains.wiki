@@ -199,9 +199,11 @@ The basic conditions are linked together with either a conjunction (`and`) or a 
 
 Each `case` contains one or more (alternative) effects. Each effect has a particular probability of occurrence.  This probability can be specified by hand, as in the example above:
 {{{
-    <effect prob="0.5">
-      <set var="E" value="e2"/>
+...
+    <effect prob="0.03">
+      <set var="Fire" value="true"/>
     </effect>
+...
 }}}
 When the effect does not specify any `prob` attribute, the effect is assumed to have a probability 1.  When the total probability for all effects is lower than 1, an empty effect is implicitly assumed to cover the remaining probability mass.
 
