@@ -23,6 +23,7 @@ package opendial.domains;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.ProbQuery;
@@ -71,7 +72,7 @@ public class QuantificationTest {
 	
 
 	@Test
-	public void testThesis() throws DialException {
+	public void test2() throws DialException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(domainFile2); 
@@ -94,6 +95,8 @@ public class QuantificationTest {
 		StatePruner.ENABLE_PRUNING = true;
 		
 	}	
+	
+
 
 }
 

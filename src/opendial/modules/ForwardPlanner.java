@@ -53,7 +53,7 @@ public class ForwardPlanner implements Module {
 	public ForwardPlanner(DialogueSystem system) {
 		this.system = system;
 	}
-	
+
 	@Override
 	public void pause(boolean shouldBePaused) {	
 		paused = shouldBePaused;
@@ -89,7 +89,7 @@ public class ForwardPlanner implements Module {
 	public class PlannerProcess extends AnytimeProcess {
 
 		DialogueState initState;
-		
+
 		/**
 		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
 		 */
@@ -97,7 +97,7 @@ public class ForwardPlanner implements Module {
 			super(Settings.maxSamplingTime * 2);
 			this.initState = initState;
 		}
-		
+
 		boolean isTerminated = false;
 
 		/**
@@ -108,7 +108,7 @@ public class ForwardPlanner implements Module {
 		public void run() {
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
-		//		ForwardPlanner.log.debug("Q-values: " + evalActions);
+				//		ForwardPlanner.log.debug("Q-values: " + evalActions);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 
 				if (evalActions.getUtil(bestAction) < 0.001) {
@@ -144,7 +144,7 @@ public class ForwardPlanner implements Module {
 				qValues.setUtil(action, reward);
 
 				if (horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
-					
+
 					DialogueState copy = state.copy();
 					addContent(copy, new CategoricalTable(action.removePrimes()));
 
@@ -157,21 +157,20 @@ public class ForwardPlanner implements Module {
 			return qValues;
 		}
 
-		
+
 		private void addContent(DialogueState state, CategoricalTable newContent) 
 				throws DialException {
-			
 			state.addToState(newContent);
 			
 			while (!state.getNewVariables().isEmpty()) {
 				Set<String> toProcess = state.getNewVariables();
 				state.reduce();	
 				for (Model model : system.getDomain().getModels()) {
-						model.trigger(state, toProcess);
+					model.trigger(state, toProcess);
 				}
 			}
 		}
-		
+
 
 		private boolean hasTransition(Assignment action) {
 			for (Model m : system.getDomain().getModels()) {
