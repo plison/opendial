@@ -350,7 +350,7 @@ public class DialogueSystem {
 			curState.reduce();	
 			
 			for (Model model : domain.getModels()) {
-					model.trigger(curState, toProcess);
+				model.trigger(curState, toProcess);
 			}
 			
 			for (Module module : modules) {
