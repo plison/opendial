@@ -194,7 +194,7 @@ As exemplified in the rule above, the `condition` XML node is composed of a list
 || `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
 || `value` || Obligatory || The variable value to check ||
 
-The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.`[2]`
+The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
 
 
 ==== Effects ====
@@ -297,7 +297,7 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 
 == 5. Settings ==
 
-In addition to an initial state, parameters and rule-structured models, a dialogue domain can also include particular system settings to override the default values.`[3]`
+In addition to an initial state, parameters and rule-structured models, a dialogue domain can also include particular system settings to override the default values.`[2]`
 
 The settings are defined as simple list of elements:
 {{{
@@ -327,17 +327,4 @@ These properties can also be modified through the GUI or by adding a `-Dproperty
 
 `[1]` Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
 
-`[2]` If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
-{{{
-<condition>
-  <if var="A" relation="=" value="a1"/>
-  <not>
-    <or>
-      <if var="B" relation="=" value="b1"/>
-      <if var="C" relation="!=" value="c1"/>
-    </or>
-  </not>
-</condition>
-}}}
-
-`[3]` The default settings can be found in the file `resources/settings.xml`.
+`[2]` The default settings can be found in the file `resources/settings.xml`.
