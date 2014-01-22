@@ -74,7 +74,7 @@ Free variables can also be employed in utility rules:
 </rule>
 }}}
 
-== 4. Operations on strings ==
+== 4. String matching ==
 
 Many variables of a dialogue system have values that are encoded as strings.  We integrated therefore special functions to manipulate strings in probabilistic rules.  Rule conditions can notably applied to perform string matching, as in this example:
 {{{
