@@ -468,6 +468,11 @@ public class GUIMenuBar extends JMenuBar {
 	public static void importAction(DialogueSystem system, String file, String tag) throws DialException {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
+			for (String oldParam : system.getState().getParameterIds()) {
+				if (!parameters.hasChanceNode(oldParam)) {
+				parameters.addNode(system.getState().getChanceNode(oldParam));
+				}
+			}
 			system.getState().setParameters(parameters);
 		}
 		else {
