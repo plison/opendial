@@ -49,7 +49,7 @@ import opendial.arch.Settings;
  *
  */
 public class SettingsPanel extends JDialog {
-
+ 
 	/**
 	 * 
 	 */

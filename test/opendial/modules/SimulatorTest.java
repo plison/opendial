@@ -20,7 +20,7 @@
 package opendial.modules;
 
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -37,6 +37,9 @@ public class SimulatorTest {
 
 	public static String mainDomain = "test//domains//domain-demo.xml";
 	public static String simDomain = "test//domains//domain-simulator.xml";
+	
+	public static String mainDomain2 = "test//domains//example-domain-params.xml";
+	public static String simDomain2 = "test//domains//example-simulator.xml";
 	
 	@Test
 	public void testSimulator() throws DialException, InterruptedException {
@@ -70,7 +73,27 @@ public class SimulatorTest {
 		system.pause(true);
 		
 		Settings.nbSamples = nbSamples * 10 ;
-
+	}
+	
+	@Test
+	public void testRewardLearner() throws DialException, InterruptedException {
+		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain2));
+		Domain simDomain3 = XMLDomainReader.extractDomain(simDomain2);
+		Simulator sim = new Simulator(system, simDomain3);
+		system.attachModule(sim);
+		system.getSettings().showGUI = false;
+		
+		system.startSystem();
+		Thread.sleep(5000);
+		log.debug("theta_correct " + system.getContent("theta_correct"));
+		log.debug("theta_incorrect " + system.getContent("theta_incorrect"));
+		log.debug("theta_repeat " + system.getContent("theta_repeat"));
+		assertEquals(2.0, system.getContent("theta_correct").toContinuous().getFunction().getMean()[0], 0.5);
+		assertEquals(-2.0, system.getContent("theta_incorrect").toContinuous().getFunction().getMean()[0], 0.5);
+		assertEquals(0.5, system.getContent("theta_repeat").toContinuous().getFunction().getMean()[0], 0.2);
+		
+		system.pause(true);
+		
 	}
 	
 	private static void checkCondition(String str) {

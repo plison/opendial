@@ -57,6 +57,7 @@ import opendial.arch.Settings;
 import opendial.modules.DialogueRecorder;
 import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
+import opendial.modules.RewardLearner;
 import opendial.modules.WizardControl;
 import opendial.modules.WizardLearner;
 import opendial.utils.ReflectionUtils;
@@ -194,7 +195,7 @@ public class ModulesPanel extends JDialog {
 			newList[i].setEnabled(true);
 			if (cls.equals(GUIFrame.class) || cls.equals(DialogueRecorder.class) 
 					|| cls.equals(ForwardPlanner.class) || cls.equals(WizardLearner.class) 
-					|| cls.equals(WizardControl.class)) {
+					|| cls.equals(RewardLearner.class)  || cls.equals(WizardControl.class)) {
 						newList[i].setEnabled(false);
 			}
 			i++;

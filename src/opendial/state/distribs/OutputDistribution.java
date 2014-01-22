@@ -55,7 +55,7 @@ public class OutputDistribution implements DiscreteDistribution {
 
 	// output variables	
 	String baseVar;
-	
+
 	// primes attached to the variable label
 	String primes;
 
@@ -89,8 +89,8 @@ public class OutputDistribution implements DiscreteDistribution {
 		cache.clear();
 	}
 
-	
-	
+
+
 	/**
 	 * Samples a particular value for the output variable.
 	 * 
@@ -101,15 +101,15 @@ public class OutputDistribution implements DiscreteDistribution {
 	@Override
 	public Assignment sample(Assignment condition) throws DialException {	
 		synchronized(cache) {
-		if (!cache.containsKey(condition)) {
-			fillCacheForCondition(condition);
-		}	
-		return cache.get(condition).sample();
+			if (!cache.containsKey(condition)) {
+				fillCacheForCondition(condition);
+			}	
+			return cache.get(condition).sample();
 		}
 	}
 
 
-	
+
 
 	/**
 	 * Returns the probability associated with the given conditional and head
@@ -142,8 +142,8 @@ public class OutputDistribution implements DiscreteDistribution {
 		}	
 		return cache.get(condition);
 	}
-	
-	
+
+
 	/**
 	 * Returns the probability table associated with the condition
 	 * 
@@ -178,9 +178,9 @@ public class OutputDistribution implements DiscreteDistribution {
 				}
 			}
 		}
-		
+
 		Set<Assignment> result = new HashSet<Assignment>();
-		
+
 		// if the parents do not contain add or discard, the extraction of values can be 
 		// performed efficiently
 		if (!containsAddOrDiscard) {
@@ -204,7 +204,7 @@ public class OutputDistribution implements DiscreteDistribution {
 				result.add(new Assignment(baseVar+primes, ValueFactory.none()));
 			}
 		}
-		
+
 		// else, we generate all possible conditions
 		else {
 			Set<Assignment> conditions = range.linearise();
@@ -213,7 +213,7 @@ public class OutputDistribution implements DiscreteDistribution {
 				result.addAll(table.getRows());
 			}
 		}
-	
+
 		return result;
 	}
 
@@ -229,7 +229,7 @@ public class OutputDistribution implements DiscreteDistribution {
 		return headVars;
 	}
 
-	
+
 
 	/**
 	 * Returns discrete.
@@ -256,8 +256,8 @@ public class OutputDistribution implements DiscreteDistribution {
 	}
 
 
-	
-	
+
+
 	/**
 	 * Returns a copy of the distribution
 	 */
@@ -266,8 +266,8 @@ public class OutputDistribution implements DiscreteDistribution {
 		return new OutputDistribution(baseVar + primes);
 	}
 
-	
-	
+
+
 	/**
 	 * Does nothing.
 	 */
@@ -275,7 +275,7 @@ public class OutputDistribution implements DiscreteDistribution {
 	public void pruneValues(double threshold) {
 		return;
 	}
-	
+
 	/**
 	 * Returns "(output)".
 	 */
@@ -294,48 +294,52 @@ public class OutputDistribution implements DiscreteDistribution {
 
 		// creating the table
 		CategoricalTable probTable = new CategoricalTable();
-		
+
+		// combining all effects
 		Effect combinedEffect = new Effect();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
 				combinedEffect.addSubEffects(((Effect)inputVal).getSubEffects());
 			}
 		}
-		Value previousValue = ValueFactory.none();
-		if (!combinedEffect.getClearVariables().contains(baseVar)) {
-			String previousLabel = baseVar + ((primes.length() > 0)? primes.substring(0, primes.length()-1) : "");
-			previousValue = condition.getValue(previousLabel);
-		}
-		
+
 		Set<Value> setValues = combinedEffect.getValues(baseVar, EffectType.SET);
+		Set<Value> addValues = combinedEffect.getValues(baseVar, EffectType.ADD);
+		Set<Value> discardValues = combinedEffect.getValues(baseVar, EffectType.DISCARD);
+
+		Value previousValue = (!combinedEffect.getClearVariables().contains(baseVar))?
+				condition.getValue(baseVar) : ValueFactory.none();
+
+		// case 1: at least one effect is a classical set operation
 		if (!setValues.isEmpty()) {
-		for (Value v : setValues) {
-			probTable.addRow(new Assignment(baseVar+primes, v), (1.0 / setValues.size()));
-		}		
+			for (Value v : setValues) {
+				probTable.addRow(new Assignment(baseVar+primes, v), (1.0 / setValues.size()));
+			}		
+		}
+
+		// case 2: operations on set (add / removal)
+		else if (!addValues.isEmpty() || !discardValues.isEmpty()) {
+
+			SetVal addVal = ValueFactory.create(addValues);
+			if (previousValue instanceof SetVal) {
+				addVal.addAll((SetVal)previousValue);
+			} 
+			else if (!previousValue.equals(ValueFactory.none())) {
+				addVal.add(previousValue);
+			}
+			addVal.removeAll(discardValues);
+			probTable.addRow(new Assignment(baseVar+primes, addVal), 1.0);
 		}
 		
+		// case 3: backtrack to previous value
 		else {
-			Set<Value> addValues = combinedEffect.getValues(baseVar, EffectType.ADD);
-			Set<Value> discardValues = combinedEffect.getValues(baseVar, EffectType.DISCARD);
-			if (!addValues.isEmpty() || !discardValues.isEmpty()) {
-				SetVal addVal = ValueFactory.create(addValues);
-				if (previousValue instanceof SetVal) {
-					addVal.addAll((SetVal)previousValue);
-				} 
-				else if (!previousValue.equals(ValueFactory.none())) {
-					addVal.add(previousValue);
-				}
-				addVal.removeAll(discardValues);
-				probTable.addRow(new Assignment(baseVar+primes, addVal), 1.0);
-			}
-			else {
-				probTable.addRow(new Assignment(baseVar+primes, previousValue), 1.0);
-			}
+			probTable.addRow(new Assignment(baseVar+primes, previousValue), 1.0);
 		}
+
 
 		cache.put(new Assignment(condition), probTable);
 	}
-	
-	
-	
+
+
+
 }

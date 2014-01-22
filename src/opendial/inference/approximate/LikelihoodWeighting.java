@@ -57,9 +57,11 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 	long maxSamplingTime = Settings.maxSamplingTime;
 
-	/** geometric factor used in supervised learning from Wizard-of-Oz data */
-	public static final double GEOMETRIC_FACTOR = 0.5;
 
+	// ===================================
+	//  CONSTRUCTORS
+	// ===================================
+	
 	/**
 	 * Creates a new likelihood weighting algorithm with the specified number of 
 	 * samples and sampling time
@@ -73,7 +75,6 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	}
 
 
-
 	/**
 	 * Creates a new likelihood weighting algorithm with the specified number of 
 	 * samples and sampling time
@@ -81,6 +82,12 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 */
 	public LikelihoodWeighting() { }
 
+	
+
+	// ===================================
+	//  PUBLIC METHODS
+	// ===================================
+	
 
 	/**
 	 * Queries for the probability distribution of the set of random variables in 
@@ -146,7 +153,6 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
 		
 		// extract and redraw the samples
 		Stack<WeightedSample> samples = isquery.getSamples();
@@ -238,65 +244,12 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 		return network;
 	}
 
+	
 
-	/**
-	 * Queries for the probability distribution of the set of random variables in 
-	 * the Bayesian network, given the provided evidence
-	 * 
-	 * @param query the full query
-	 * @return the resulting probability distribution
-	 * @throws DialException if the inference operation failed
-	 */
-	public EmpiricalDistribution queryWizard(UtilQuery query, Assignment wizardAction) throws DialException {
-
-		// creates a new query thread
-		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-				
-		// extract and redraw the samples according to their weight.
-		Stack<WeightedSample> samples = isquery.getSamples();
-		reweightSamples(samples, wizardAction);
-		samples = redrawSamples(samples);
-
-		// creates an empirical distribution from the samples
-		EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
-		for (WeightedSample sample : samples) {
-			sample.trim(query.getQueryVars());
-			empiricalDistrib.addSample(sample);
-		}
-
-		return empiricalDistrib;
-	}
-
-
-	private void reweightSamples(Stack<WeightedSample> samples,
-			Assignment wizardAction) {
-
-		UtilityTable averages = new UtilityTable();
-
-		Set<String> actionVars = wizardAction.getVariables();
-		for (WeightedSample sample : samples) {
-			Assignment action = sample.getTrimmed(actionVars);
-			averages.incrementUtil(action, sample.getUtility());
-		}
-		if (averages.getTable().size() == 1) {
-			return;
-		}
-
-		log.debug("Utilities : " + averages.toString().replace("\n", ", ") + " ==> gold action = " + wizardAction);
-
-		for (WeightedSample sample : samples) {
-
-			UtilityTable copy = averages.copy();
-			Assignment sampleAssign = sample.getTrimmed(actionVars);
-			copy.setUtil(sampleAssign, sample.getUtility());
-			int ranking = copy.getRanking(wizardAction);
-			if (ranking != -1) {
-				sample.addLogWeight(Math.log((GEOMETRIC_FACTOR 
-						* Math.pow(1-GEOMETRIC_FACTOR, ranking)) + 0.00001));
-			}				
-		}
-	}
-
+	// ===================================
+	//  PRIVATE METHODS
+	// ===================================
+	
 
 
 	/**
@@ -307,7 +260,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @return the redrawn samples given their weight
 	 * @throws DialException
 	 */
-	private Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples) throws DialException {
+	public static Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples) throws DialException {
 
 		int sampleSize = samples.size();
 		WeightedSample[] sampleArray = new WeightedSample[sampleSize];
@@ -327,8 +280,6 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 		}
 		return reweightedSamples;
 	}
-
-
 
 
 

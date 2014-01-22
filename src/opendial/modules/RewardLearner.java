@@ -22,7 +22,9 @@ package opendial.modules;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -32,8 +34,8 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.DoubleVal;
 import opendial.datastructs.Assignment;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
@@ -41,29 +43,22 @@ import opendial.inference.approximate.WeightedSample;
 import opendial.inference.queries.UtilQuery;
 import opendial.state.DialogueState;
 
-/**
- * Module employed to update parameters when provided with gold-standard
- * actions from Wizard-of-Oz data.
- * 
- * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
- */
-public class WizardLearner implements Module {
+
+public class RewardLearner implements Module {
 
 	// logger
-	public static Logger log = new Logger("WizardLearner", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RewardLearner", Logger.Level.DEBUG);
 
 	DialogueSystem system;
-	
-	/** geometric factor used in supervised learning from Wizard-of-Oz data */
-	public static final double GEOMETRIC_FACTOR = 0.5;
+
+	Map<Set<String>, DialogueState> previousStates;
 
 
-
-	public WizardLearner(DialogueSystem system) {
+	public RewardLearner(DialogueSystem system) {
 		this.system = system;
+		previousStates = new HashMap<Set<String>, DialogueState>();
 	}
-	
+
 	@Override
 	public void start() {	}
 
@@ -73,31 +68,36 @@ public class WizardLearner implements Module {
 	@Override
 	public boolean isRunning() {  return true;	}
 
-	
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
+
+		for (String evidenceVar : state.getEvidence().getVariables()) {
+			if (evidenceVar.startsWith("R(") && evidenceVar.endsWith(")")) {
+				Assignment actualAction = Assignment.createFromString
+						(evidenceVar.substring(2, evidenceVar.length()-1));
+				double actualUtility = ((DoubleVal)state.getEvidence().getValue(evidenceVar)).getDouble();
+
+				if (previousStates.containsKey(actualAction.getVariables())) {
+					DialogueState previousState = previousStates.get(actualAction.getVariables());
+					learnFromFeedback(previousState, actualAction, actualUtility);
+				}
+				state.clearEvidence(Arrays.asList(evidenceVar));
+			}
+		}
+		
 		if (!state.getActionNodeIds().isEmpty()) {
-			if (state.getEvidence().containsVars(state.getActionNodeIds())) {
 			try {
-				Assignment wizardAction = state.getEvidence().getTrimmed(state.getActionNodeIds());
-				state.clearEvidence(wizardAction.getVariables());
-				learnFromWizardAction(state, wizardAction);
-				state.addToState(wizardAction.removePrimes());
+			previousStates.put(new HashSet<String>(state.getActionNodeIds()), state.copy());
 			}
 			catch (DialException e) {
-				log.warning("could not learn from wizard actions: " + e);
-			}
-			}
-			else {
-				state.removeNodes(state.getActionNodeIds());
-				state.removeNodes(state.getUtilityNodeIds());
+				log.warning("cannot copy state: " + e);
 			}
 		}
 	}
 
+	private void learnFromFeedback(DialogueState state, Assignment actualAction, 
+			double actualUtility) {
 
-
-	private void learnFromWizardAction(DialogueState state, Assignment wizardAction) {
 		try {
 			
 			// determine the relevant parameters (discard the isolated ones)
@@ -107,17 +107,20 @@ public class WizardLearner implements Module {
 					relevantParams.add(param);
 				}
 			}
-			
 			if (!relevantParams.isEmpty()) {
-								
+
 				// creates a new query thread
 				SamplingProcess isquery = new SamplingProcess
-						(new UtilQuery(state, relevantParams), 
+						(new UtilQuery(state, relevantParams, actualAction), 
 								Settings.nbSamples, Settings.maxSamplingTime);
-						
+
 				// extract and redraw the samples according to their weight.
 				Stack<WeightedSample> samples = isquery.getSamples();
-				reweightSamples(samples, wizardAction);
+
+				for (WeightedSample sample : samples) {
+					double weight = (1.0 / (Math.abs(sample.getUtility() - actualUtility) + 1));
+					sample.addLogWeight(Math.log(weight));
+				}
 				samples = LikelihoodWeighting.redrawSamples(samples);
 
 				// creates an empirical distribution from the samples
@@ -126,9 +129,9 @@ public class WizardLearner implements Module {
 					sample.trim(relevantParams);
 					empiricalDistrib.addSample(sample);
 				}
-							
+
 				for (String param : relevantParams) {
-					ChanceNode paramNode = state.getChanceNode(param);
+					ChanceNode paramNode = system.getState().getChanceNode(param);
 					MarginalEmpiricalDistribution newDistrib = new MarginalEmpiricalDistribution
 							(Arrays.asList(param), paramNode.getInputNodeIds(), empiricalDistrib);
 					paramNode.setDistrib(newDistrib);
@@ -136,43 +139,12 @@ public class WizardLearner implements Module {
 			}
 		}
 		catch (DialException e) {
-			log.warning("could not learn from wizard action: " + e);
+			log.warning("could not learn from action feedback: " + e);
 		}
+
 	}
 
-	
 
-
-	private void reweightSamples(Stack<WeightedSample> samples,
-			Assignment wizardAction) {
-
-		UtilityTable averages = new UtilityTable();
-
-		Set<String> actionVars = wizardAction.getVariables();
-		for (WeightedSample sample : samples) {
-			Assignment action = sample.getTrimmed(actionVars);
-			averages.incrementUtil(action, sample.getUtility());
-		}
-		if (averages.getTable().size() == 1) {
-			return;
-		}
-
-		log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
-				+ " ==> gold action = " + wizardAction);
-
-		for (WeightedSample sample : samples) {
-
-			UtilityTable copy = averages.copy();
-			Assignment sampleAssign = sample.getTrimmed(actionVars);
-			copy.setUtil(sampleAssign, sample.getUtility());
-			int ranking = copy.getRanking(wizardAction);
-			if (ranking != -1) {
-				sample.addLogWeight(Math.log((GEOMETRIC_FACTOR 
-						* Math.pow(1-GEOMETRIC_FACTOR, ranking)) + 0.00001));
-			}				
-		}
-	}
-	
 
 
 }

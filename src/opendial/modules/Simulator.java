@@ -114,6 +114,7 @@ public class Simulator implements Module {
 		else {
 			system.addContent(emptyAction);
 		}
+		system.attachModule(RewardLearner.class);
 	}
 
 
@@ -187,6 +188,8 @@ public class Simulator implements Module {
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
 				double reward = simulatorState.queryUtil();
 				system.recordComment("Reward: " + reward);
+				system.getState().addEvidence(new Assignment(
+						"R(" + systemAction.addPrimes()+")", reward));
 				log.debug("Reward: " + reward);
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
@@ -230,13 +233,14 @@ public class Simulator implements Module {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}
 		if (!newObs.isEmpty()) {
-			system.addContent(newObs.copy());
 			if (newObs.getHeadVariables().contains(system.getSettings().userInput)) {
 				log.debug("Simulator output: " + newObs + "\n --------------");
+				system.addContent(newObs.copy());
 				return true;
 			}
 			else {
 				log.debug("Contextual variables: " + newObs);
+				system.addContent(newObs.copy());
 			}
 		}
 		}
