@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="i_u" type="prediction">
+
+	<rule id="usermodel">
+		<case>
+			<condition operator="and">
+				<if var="last(a_m)" value="Confirm({X})" />
+				<if var="i_u" value="{X}" />
+			</condition>
+			<effect prob="0.7116">
+				<set var="a_u^p" value="Confirm" />
+			</effect>
+			<effect prob="0.2482">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+			<effect prob="0.0402"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="last(a_m)" value="Confirm({X})" />
+				<if var="i_u" value="{X}" relation="!=" />
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.4953">
+				<set var="a_u^p" value="Disconfirm" />
+			</effect>
+			<effect prob="0.4481">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+			<effect prob="0.0567"/>
+		</case>
+		<case>
+			<condition operator="and">
+				<if var="lastMove" value="{i_u}" />
+			</condition>
+			<effect prob="0.3108">
+				<set var="a_u^p" value="RepeatLast" />
+			</effect>
+			<effect prob="0.5883">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+			<effect prob="0.101"/>
+		</case>
+	 <case>
+			<condition operator="or">
+				<if var="last(a_m)" value="AskRepeat" />
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.9417">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+			<effect prob="0.0583"/>
+		</case>  	
+		<case>
+			<condition>
+				<if var="i_u" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.8671">
+				<set var="a_u^p" value="{i_u}" />
+			</effect>
+			<effect prob="0.1329"/>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition>
+				<if var="last(a_m)" value="Do(*)" />
+			</condition>
+			<effect prob="0.0621">
+				<set var="a_u^p" value="Stop" />
+			</effect>
+			<effect prob="0.0677">
+				<set var="a_u^p" value="Disconfirm" />
+			</effect>
+			<effect prob="0.8702"/>
+		</case>
+	</rule>
+
+</model>
