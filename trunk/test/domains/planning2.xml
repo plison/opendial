@@ -8,7 +8,7 @@
 
 	<model type="update" trigger="a_u">
 
-		<rule>
+		<rule id="intent">
 			<case>
 				<condition>
 					<if var="a_u" value="Ask({X})" />
@@ -16,14 +16,11 @@
 				<effect prob="0.95">
 					<set var="i_u" value="Want({X})" />
 				</effect>
-			</case>
-			<case>
-				<effect>
+				<effect prob="0.05">
 					<clear var="i_u" />
 				</effect>
 			</case>
 		</rule>
-
 
 	</model>
 

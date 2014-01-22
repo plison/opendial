@@ -295,33 +295,38 @@ public class OutputDistribution implements DiscreteDistribution {
 		// creating the table
 		CategoricalTable probTable = new CategoricalTable();
 		
-		Effect fullOutput = new Effect();
+		Effect combinedEffect = new Effect();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
-				fullOutput.addSubEffects(((Effect)inputVal).getSubEffects());
+				combinedEffect.addSubEffects(((Effect)inputVal).getSubEffects());
 			}
 		}
 		Value previousValue = ValueFactory.none();
-		if (!fullOutput.getClearVariables().contains(baseVar)) {
+		if (!combinedEffect.getClearVariables().contains(baseVar)) {
 			String previousLabel = baseVar + ((primes.length() > 0)? primes.substring(0, primes.length()-1) : "");
-			condition.getValue(previousLabel);
+			previousValue = condition.getValue(previousLabel);
 		}
 		
-		Set<Value> setValues = fullOutput.getValues(baseVar, EffectType.SET);
+		Set<Value> setValues = combinedEffect.getValues(baseVar, EffectType.SET);
+		if (!setValues.isEmpty()) {
 		for (Value v : setValues) {
 			probTable.addRow(new Assignment(baseVar+primes, v), (1.0 / setValues.size()));
-		
+		}		
 		}
-		if (setValues.isEmpty()) {
-			Set<Value> addValues = fullOutput.getValues(baseVar, EffectType.ADD);
-			Set<Value> discardValues = fullOutput.getValues(baseVar, EffectType.DISCARD);
-			SetVal addVal = ValueFactory.create(addValues);
-			if (previousValue instanceof SetVal) {
-				addVal.addAll((SetVal)previousValue);
-			} 
-			addVal.removeAll(discardValues);
-			if (!addVal.getSet().isEmpty()) {
-			probTable.addRow(new Assignment(baseVar+primes, addVal), 1.0);
+		
+		else {
+			Set<Value> addValues = combinedEffect.getValues(baseVar, EffectType.ADD);
+			Set<Value> discardValues = combinedEffect.getValues(baseVar, EffectType.DISCARD);
+			if (!addValues.isEmpty() || !discardValues.isEmpty()) {
+				SetVal addVal = ValueFactory.create(addValues);
+				if (previousValue instanceof SetVal) {
+					addVal.addAll((SetVal)previousValue);
+				} 
+				else if (!previousValue.equals(ValueFactory.none())) {
+					addVal.add(previousValue);
+				}
+				addVal.removeAll(discardValues);
+				probTable.addRow(new Assignment(baseVar+primes, addVal), 1.0);
 			}
 			else {
 				probTable.addRow(new Assignment(baseVar+primes, previousValue), 1.0);

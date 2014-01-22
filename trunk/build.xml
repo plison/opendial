@@ -99,7 +99,7 @@
 	<target name="javadoc">
 		<javadoc access="public" destdir="${javadoc}" author="true"
 			version="true" use="true" windowtitle="openDial API" verbose="no">
-
+		    <classpath refid="compile.classpath"/>
 			<fileset dir="${src}" defaultexcludes="yes">
 				<include name="**/*.java" />
 			</fileset>
