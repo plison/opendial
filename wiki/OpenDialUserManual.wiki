@@ -1,4 +1,4 @@
-= !OpenDial user manual =
+= !OpenDial User Guide =
 
 This user manual will show you how to practically employ the !OpenDial toolkit to develop dialogue systems.
 
@@ -8,8 +8,9 @@ This user manual will show you how to practically employ the !OpenDial toolkit t
 
  * ==[ParameterEstimation Learning rule parameters from data]==
 
- * ==[WritingModules Writing new modules]==
+ * ==[BuildingDialogueSystem Building up a complete dialogue system]==
 
+ * == [Javadoc]
 
 <br><br><br>
 
