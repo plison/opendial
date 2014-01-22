@@ -4,9 +4,9 @@ This user manual will show you how to practically employ the !OpenDial toolkit t
 
  * ==[GettingStarted Getting started]==
 
- * ==[DialogueDomains Specifying dialogue domains with probabilistic rules (basic principles)]==
+ * ==[DialogueDomains Specifying dialogue domains: basic principles]==
 
- * ==[DialogueDomainsAdvanced Specifying dialogue domains with probabilistic rules (advanced modelling)]==
+ * ==[DialogueDomainsAdvanced Specifying dialogue domains: advanced modelling]==
 
  * ==[ParameterEstimation Learning rule parameters from data]==
 
