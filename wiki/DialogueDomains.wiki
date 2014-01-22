@@ -148,61 +148,35 @@ if (condition c1) then
   P(effect e2) = ...
   ...
 else if (condition c2) then
-  P(effect e3) = ...
-  ....
-...
+  ...
 else
-  P(effect m) = ...
+  ...
 }}}
 
-Probability rules are expressed in XML as (ordered) list of cases.  Each case has a (possibly empty) condition and a list of alternative effects (each with a particular probability). 
+In XML, these probability rules are expressed as (ordered) list of `case`s.  Each `case` has a (possibly empty) `condition` and a list of alternative `effect`s (each with a particular probability). 
 
-Here two concrete examples of probability rules (corresponding to rules r,,5,, and r,,6,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis]):
+Here is one concrete example of probability rule (corresponding to the rule r,,1,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 65):
 {{{
-<rule id="r5">
-  <case>
-    <condition operator="or">
-      <if var="B" relation="=" value="b1"/>
-      <if var="C" relation="=" value="b1"/>
-    </condition>
-    <effect prob="0.6">
-      <set var="A" value="a1"/>
-    </effect>
-  </case>
-  <case>
-    <condition>
-      <if var="C" relation="=" value="c2"/>
-    </condition>
-    <effect prob="0.3">
-      <set var="A" value="a1"/>
-    </effect>
-    <effect prob="0.7">
-      <set var="A" value="a2"/>
-    </effect>
-   </case>
-</rule>
 
-<rule id="r6">
+<rule id="r1">
   <case>
-    <condition operator="and">
-      <if var="C" relation="=" value="c1"/>
-      <if var="D"  relation="!=" value="b1"/>
+    <condition>
+      <if var="Rain" value="false"/>
+      <if var="Weather" value="hot"/>
     </condition>
-    <effect prob="0.9">
-      <set var="A" value="a2"/>
-      <set var="E" value="e2"/>
+    <effect prob="0.03">
+      <set var="Fire" value="true"/>
     </effect>
-    <effect prob="0.1">
-      <set var="A" value="a2"/>
-      <set var="E" value="e1"/>
+    <effect prob="0.97">
+      <set var="Fire" value="false"/>
     </effect>
   </case>
   <case>
-    <condition>
-      <if var="C" relation="=" value="c2"/>
-    </condition>
-    <effect prob="0.5">
-      <set var="E" value="e2"/>
+    <effect prob="0.01">
+      <set var="Fire" value="true"/>
+    </effect>
+    <effect prob="0.99">
+      <set var="Fire" value="false"/>
     </effect>
    </case>
 </rule>
@@ -212,17 +186,54 @@ We now detail how the conditions and effects are practically specified.
 
 ==== Conditions ====
 
-As exemplified in the rules above, the `condition` XML node is composed of a list of basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
+As exemplified in the rule above, the `condition` XML node is composed of a list of basic conditions.  Each basic condition is written as an `<if ...>` tag with three attributes:
+
 || `var` || Obligatory || The variable label ||
 || `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
 || `value` || Obligatory || The variable value to check ||
 
 The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.`[2]`
 
+
 ==== Effects ====
 
+Each `case` contains one or more (alternative) effects. Each effect has a particular probability of occurrence.  This probability can be specified by hand, as in the example above:
+{{{
+    <effect prob="0.5">
+      <set var="E" value="e2"/>
+    </effect>
+}}}
+When the effect does not specify any `prob` attribute, the effect is assumed to have a probability 1.  When the total probability for all effects is lower than 1, an empty effect is implicitly assumed to cover the remaining probability mass.
 
+The probability of a particular effect can also be a parameter.  In this case, each case with _n_ alternative effects is associated with a _nth_ dimensional Dirichlet distribution that express the possible values for the effect probabilities.   For instance, the effect probabilities in rule r,,1,, can become:
+{{{
+<rule id="r1">
+  <case>
+    <condition>
+      <if var="Rain" value="false"/>
+      <if var="Weather" value="hot"/>
+    </condition>
+    <effect prob="firstdirichlet[0]">
+      <set var="Fire" value="true"/>
+    </effect>
+    <effect prob="firstdirichlet[1]">
+      <set var="Fire" value="false"/>
+    </effect>
+  </case>
+  <case>
+    <effect prob="seconddirichlet[0]">
+      <set var="Fire" value="true"/>
+    </effect>
+    <effect prob="seconddirichlet[1]">
+      <set var="Fire" value="false"/>
+    </effect>
+   </case>
+</rule>
+}}}
 
+Note the brackets after the parameter name to indicate the mapping between particular effects and the dimension of the Dirichlet. 
+
+Inside each `effect` is a list of basic assignment of values to variables.  Each assignment is defined by a `set` node with two attributes: `var` and `value`.
 
 === Utility rules ===
 
