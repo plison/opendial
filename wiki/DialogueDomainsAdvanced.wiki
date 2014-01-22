@@ -21,6 +21,31 @@ Three XML markups are available for such nested conditions: `or`, `and` and `not
 
 == 2. References ==
 
+Conditions may be more complex than simple checks between a state variable and a fixed value. For instance, one may want to specify that two variables `A` and `B` must have an identical value.  This can be done via _variable references_ inside the `value` attribute of an `<if ...>` markup.  References to state variables are denoted with curly brackets { } to distinguish them from usual strings.
+
+For instance, assuming two state variables `firstvar` and `secondvar`, the condition `firstvar==secondvar`` may be written as :
+{{{
+<if var="firstvar" relation="=" value="{secondvar}"/>
+}}}
+
+The condition will therefore be true if e.g. `firstvar=foo` and `secondvar=foo`.  The curly brackets are important: without them, the condition states that the firstvar must have as value the string `secondvar` (instead of the value denoted by the variable `secondvar`).
+
+More complex conditions must be constructed:
+{{{
+<if var="firstvar" relation="=" value="Predicate({secondvar}, {thirdvar})"/>
+}}}
+
+The condition will in this case be true if e.g. `secondvar=foo`, `thirdvar=bar`, and `firstvar=Predicate(foo,bar)`.
+
+Variable references may similarly be used in effects:
+{{{
+<set var="firstvar" value="{secondvar}"/>
+}}}
+The value of `firstvar` will in this case be assigned to the value of `secondvar`.
+
+Each variable referenced in such a manner is automatically added as an input node of the rule node constructed from the probabilistic rule.
+
+
 == 3. Quantification ==
 
 The expressivity of probabilistic rules can be greatly improved by introducing free variables in the rule specification.  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
@@ -74,6 +99,8 @@ Free variables can also be employed in utility rules:
   </case>
 </rule>
 }}}
+
+The careful reader may notice that the same notation (curly brackets) are employed for both references to state variables (section 2 above) and free variables.  !OpenDial automatically decides whether the notation represents a reference or a quantified variable by assuming that a given `{X}` represents a reference if the variable X exists in the dialogue state, and will assume that X represents a free variable otherwise.
 
 == 4. String matching ==
 
