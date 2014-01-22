@@ -25,6 +25,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.ProbQuery;
@@ -51,6 +52,7 @@ public class BasicRuleTest2 {
 	public static final String domainFile = "test//domains//domain2.xml";
 	public static final String domainFile2 = "test//domains//domain3.xml";
 	public static final String domainFile3 = "test//domains//domain4.xml";
+	public static final String domainFile4 = "test//domains//thesistest2.xml";
 
 	static Domain domain;
 
@@ -227,6 +229,22 @@ public class BasicRuleTest2 {
 		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")), 1.6);
 	 	
+	}
+	
+	
+	@Test
+	public void test6() throws DialException {
+		
+		Domain domain2 = XMLDomainReader.extractDomain(domainFile4); 
+		DialogueSystem system2 = new DialogueSystem(domain2);
+		system2.getSettings().showGUI = false;
+		system2.detachModule(ForwardPlanner.class);
+		system2.startSystem(); 
+		ProbQuery query = new ProbQuery(system2.getState(),"A");
+		inference.checkProb(query, new Assignment("A", ValueFactory.create("[a2]")), 1.0);
+
+		query = new ProbQuery(system2.getState(),"a_u");
+		inference.checkProb(query, new Assignment("a_u", "Request(ball)"), 0.5);
 	}
 	
 	

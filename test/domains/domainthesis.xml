@@ -17,6 +17,7 @@
 			<value prob="0.8">grasp(obj1)</value>
 			<value prob="0.1">grasp(obj3)</value>
 		</variable>
+	
 
 	</initialstate>
 
@@ -69,5 +70,7 @@
 			</case>
 		</rule>
 	</model>
+	
+	
 
 </domain>
