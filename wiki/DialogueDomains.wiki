@@ -182,6 +182,8 @@ Here is one concrete example of probability rule (corresponding to the rule r,,1
 </rule>
 }}}
 
+Rule r,,1,, simply indicates that the probability of a fire if there is no rain and a hot weather is 0.03, while this probability is 0.01 in other cases. 
+
 We now detail how the conditions and effects are practically specified.
 
 ==== Conditions ====
@@ -238,7 +240,60 @@ Inside each `effect` is a list of basic assignment of values to variables.  Each
 
 === Utility rules ===
 
-Rule can also be employed to express utility models.  A utility rule 
+Rule can also be employed to express utility models.  A utility rule defines the utility of particular actions (from the system perspective) depending on particular state variables.  The general skeleton remains similar to probability rules, with the difference that effects are this time associated to particular utilities instead of probabilities.  Here is an example of utility rule (rule r,,2 of [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 69):
+{{{
+<rule id="r2">
+  <case>
+    <condition>
+      <if var="Fire" value="true"/>
+    </condition>
+    <effect util="5">
+      <set var="Tanker" value="drop-water"/>
+    </effect>
+    <effect util="-5">
+      <set var="Tanker" value="wait"/>
+    </effect>
+  </case>
+  <case>
+    <effect util="-1">
+    <set var="Tanker" value="drop-water"/>
+    </effect>
+    <effect util="0">
+    <set var="Tanker" value="wait"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
+Rule r,,2,, indicates that the utility of the `drop-water` action is +5 is there is a fire (and -1 otherwise), and that the utility of `wait` is -5 is there is a fire and 0 otherwise.
+
+Conditions are defined similarly to probability rules.  Effects also have a similar structure, with the `prob` attribute replaced by `util`.  The variables specified in the effect (`Tanker` in the above example) are action variables.
+
+As for probability rules, the utilities can be fixed or correspond to parameters to estimate.  For instance, rule r,,2,, can include four parameters that denote the respective utility of the system actions depending on the situation:
+{{{
+<rule id="r2">
+  <case>
+    <condition>
+      <if var="Fire" value="true"/>
+    </condition>
+    <effect util="firstgaussian">
+      <set var="Tanker" value="drop-water"/>
+    </effect>
+    <effect util="secondgaussian">
+      <set var="Tanker" value="wait"/>
+    </effect>
+  </case>
+  <case>
+    <effect util="thirdgaussian">
+    <set var="Tanker" value="drop-water"/>
+    </effect>
+    <effect util="fourthgaussian">
+    <set var="Tanker" value="wait"/>
+    </effect>
+  </case>
+</rule>
+}}}
+
 
 === Quantification ===
 
