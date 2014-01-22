@@ -157,8 +157,8 @@ public class WizardLearner implements Module {
 			return;
 		}
 
-		log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
-				+ " ==> gold action = " + wizardAction);
+	//	log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
+	//			+ " ==> gold action = " + wizardAction);
 
 		for (WeightedSample sample : samples) {
 
