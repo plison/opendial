@@ -1,4 +1,4 @@
-#summary Encoding rule-structured dialogue domains in XML.
+#summary Encoding rule-structured dialogue domains in XML (basic principles).
 
 = Dialogue domains =
 
