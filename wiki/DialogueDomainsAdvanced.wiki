@@ -157,3 +157,29 @@ Rule effects can also include special effects to `add`, `remove` or `clear` elem
 The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.
 
 The `add` markup is used to add a new element to the current set, while `remove` will delete an element.  Finally, `clear` will remove all elements in the set.
+
+6. Prior distributions
+
+Probability rules can be employed for two distinct purposes.  The first purpose is to update the values of a specific state variable given some new information (for instance, inferring the user dialogue act _a,,u,,_ given the observed user utterance _u,,u,,_). But probability rules can also be used to provide a _prior_ distribution for a future state variable that is expected to be observed in the next time steps.  For instance, the last user intention _i,,u,,_ may be used to predict the next dialogue act from the user.  This prediction does not by itself create a new dialogue act (it's only a prediction), but it can be used as a useful prior for this observation. `[1]` 
+
+To distinguish these prior information from actual observed values, !OpenDial assumes that predictive variables are denoted with a superscript `^p`.  A variable `X^p` represents therefore a prediction on the variable `X` to be observed in the future.
+
+At runtime, !OpenDial will automatically connect together predicted and observed distributions and derive the resulting posterior distribution.
+
+The following rule in the example states that, if the system asks the user to repeat, the user is expected to comply (and repeat the same dialogue act) with a probability 0.9.  
+
+{{{
+<rule id="repeatpredict">
+  <case>
+    <condition>
+      <if var="a_m" value="AskRepeat" />
+    </condition>
+    <effect prob="0.9">
+      <set var="a_u^p" value="{a_u}" />
+    </effect>
+  </case>
+</rule>
+}}}
+----
+
+`[1]` See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 78-79 for details.
