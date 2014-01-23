@@ -48,7 +48,7 @@ Each variable referenced in such a manner is automatically added as an input nod
 
 == 3. Quantification ==
 
-The expressivity of probabilistic rules can be greatly improved by introducing free variables in the rule specification.  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
+The expressivity of probabilistic rules can be greatly improved by introducing universally quantified variables in the rule specification.  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
 {{{
 
 <rule id="r3">
@@ -125,8 +125,20 @@ The rule above indicates that if the variable `u_u` contains a substring that ma
 == 5. Operations on sets ==
 
 In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts).  Probabilistic rules come with built-in functions to manipulate such collections:
- * Rule conditions can check for the presence/absence of particular items in a collection
- * In addition to the standard `set` operation, effects can also include special effects to `add`, `remove` or `clear` elements from a collection:
+
+=== Conditions on sets ===
+ * *Rule conditions* can check for the presence/absence of particular items in a collection, as for instance:
+{{{
+<if var="somecollection" value="element1" relation="in"/>
+}}}
+
+The condition will then be true if e.g. `somecollection=[element1,element2,element4].
+
+In addition to the relation `in`, the relation `!in` (does not contain) can also be employed.
+
+=== Addition and removal of elements ===
+
+Rule effects can also include special effects to `add`, `remove` or `clear` elements from a collection:
 {{{
 
 <rule id="r12">
@@ -142,3 +154,5 @@ In addition to strings, many state variables also contain collections of element
 }}}
 
 The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.
+
+The `add` markup is used to add a new element to the current set, while `remove` will delete an element.  Finally, `clear` will remove all elements in the set.
