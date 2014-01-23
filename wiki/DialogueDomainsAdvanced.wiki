@@ -127,7 +127,8 @@ The rule above indicates that if the variable `u_u` contains a substring that ma
 In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts).  Probabilistic rules come with built-in functions to manipulate such collections:
 
 === Conditions on sets ===
- * *Rule conditions* can check for the presence/absence of particular items in a collection, as for instance:
+
+Rule conditions can check for the presence/absence of particular items in a collection, as for instance:
 {{{
 <if var="somecollection" value="element1" relation="in"/>
 }}}
