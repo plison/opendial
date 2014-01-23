@@ -152,7 +152,7 @@ One example of basic condition is
 {{{
           <if var="u_u" value="turn * left" relation="in" />
 }}}
-This condition will be satisfied if the pattern "turn * left" is found inside the string of the user utterance `u_u`.  See [DialogueDomainsAdvanced#String_matching] for more details on the string matching functionalities integrated in !OpenDial.
+This condition will be satisfied if the pattern "turn * left" is found inside the string of the user utterance `u_u`.  See [DialogueDomainsAdvanced#String_matching String matching] for more details on the string matching functionalities integrated in !OpenDial.
 
 The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that define a full probability distributions over alternative effects.
 
