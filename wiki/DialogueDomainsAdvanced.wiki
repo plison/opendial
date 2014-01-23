@@ -121,6 +121,20 @@ Many variables of a dialogue system have values that are encoded as strings.  We
 
 The rule above indicates that if the variable `u_u` contains a substring that matches the pattern `take the {OBJ}` (where `{OBJ}` is a placeholder), the variable `a_u` will be set to `Request({OBJ})`.  Note again the use of curly brackets to denote the placeholders.
 
+If the actual content of the slot can be ignored, the placeholder can be replaced by a wildcard:
+{{{
+<rule>
+  <case>
+    <condition>
+      <if var="u_u" value="turn * left" relation="in" />
+    </condition>
+    <effect>
+      <set var="a_u" value="Request(Left)" />
+    </effect>
+  </case>
+</rule>
+}}}
+The above rule will be fired for a user utterance such as `turn left`, `turn to the left`, or even `now robot please turn to the left` (due to the partial matching). 
 
 == 5. Operations on sets ==
 
