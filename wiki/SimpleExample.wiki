@@ -212,7 +212,7 @@ Putting together the three models we have constructed so far, we get this domain
 
 <domain>
 
-<!-- A very simple NLU model for the example -->
+  <!-- The NLU model -->
   <model trigger="u_u">
 
     <rule>
@@ -312,6 +312,7 @@ Putting together the three models we have constructed so far, we get this domain
   </model>
 
 
+  <!-- The NLG model -->
 <model trigger="a_m">
   <rule>
       <case>
@@ -349,4 +350,56 @@ Putting together the three models we have constructed so far, we get this domain
   </rule>
 </model>
 }}}
+
+== Clarification strategies ==
+
+The current domain suffers from a lack of robustness in the face of noise and uncertainty.  For instance, if the system observes a user utterance `u_u = move left` with a probability of 0.1 (this can be done in the chat window by adding the probability in parentheses at the end of the utterance), it will ignore the fact that this instruction is highly uncertain and select `Move(Left)` as the next action.
+
+A better approach would be to only execute the action when a certain probability threshold has been reached. One can add the following rule to the action-selection model:
+{{{
+  <rule>
+      <case>
+        <effect util="-0.5">
+          <set var="a_m" value="Move(*)"/>
+        </effect>
+      </case>
+    </rule>
+}}}
+
+This rule will reduce the utility of all `Move(*)` actions by 0.5.  In other words, this means that these actions will only be executed if their probability is higher than 0.5.
+
+We can also add another system action `AskRepeat` to ask the user to repeat the utterance when faced with uncertainty:
+{{{
+    <rule>
+      <case>
+        <effect util="0.2">
+          <set var="a_m" value="AskRepeat"/>
+        </effect>
+      </case>
+    </rule>
+}}}
+The NLG rule should also be extended with another case:
+{{{
+...
+  <case>
+      <condition>
+        <if var="a_m" value="AskRepeat"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Sorry, could you repeat?"/>
+      </effect>
+    </case>
+ </rule>
+}}}
+
+We can test the resulting dialogue domain in the !OpenDial user interface and verify the resulting system behaviour:
+
+http://opendial.googlecode.com/svn/wiki/example_step2.png
+
+== Adding prior distributions ==
+
+The `AskRepeat` action currently encoded in the dialogue domain is not very sophisticated.  It simply asks the user to repeat but does not "accumulate" evidence over the turns.  Assume for instance the following N-Best list for the user utterance: 
+u_u =  move forward (0.6)
+       move backward (0.2)
+
 
