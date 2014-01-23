@@ -1,6 +1,6 @@
-#summary A first example of dialogue domain
+#summary A first, step-by-step example of dialogue domain
 
-= A first example =
+= A step-by-step example =
 
 Imagine you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. Probabilistic rules allow us to design such a dialogue controller in a very manner.
 
@@ -427,10 +427,35 @@ We can write a rule that encodes the common sense assumption that the user is li
 
 The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.9 (the remaining 0.1 covers the cases where the user decides to say something else).
 
-In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript ^p. A variable X^p represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables] for details).
+In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript ^p. A variable X^p represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables Predictive variables] for details).
 
-The reader should also note that the effect value is `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable (see [https://code.google.com/p/opendial/wiki/DialogueDomainsAdvanced#2._References] for more details on such references).
+The reader should also note that the effect value is `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable (see [https://code.google.com/p/opendial/wiki/DialogueDomainsAdvanced#2._References Variable references] for more details).
 
 Thanks to this rule providing a prior distribution over the next dialogue act, the dialogue system is able to accumulate evidence and select the right action to execute:
 
 http://opendial.googlecode.com/svn/wiki/example_step3.png
+
+== Using quantifiers ==
+
+Some rules in the current dialogue domain seem to include some recurring patterns: for instance, the utility rule for the system action states that, if the user dialogue act has the form `Request`(_some action_), the system can execute the corresponding action `Move`(_some action_) with utility 1.
+
+The expressivity of probabilistic rules can be greatly enriched through the use of _universal quantifiers_.  The rule conditions and effects can indeed be partly underspecified and include free variables.  In other words, the mapping between conditions and effects specified by the rule is duplicated for every possible assignment of values for these free variables.
+
+The utility rule for the selection of the next system action can for instance be simplified into:
+{{{
+  <rule>
+      <case>
+        <condition>
+          <if var="a_u" value="Request({X})" />
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="Move({X})" />
+        </effect>
+      </case>
+    </rule>
+}}}
+
+Note the use of the curly brackets to mark the free variable `X`. 
+
+== Parameters ==
+
