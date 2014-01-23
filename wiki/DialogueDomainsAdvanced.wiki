@@ -164,7 +164,7 @@ Probability rules can be employed for two distinct purposes.  The first purpose 
 
 To distinguish these prior information from actual observed values, !OpenDial assumes that predictive variables are denoted with a superscript `^p`.  A variable `X^p` represents therefore a prediction on the variable `X` to be observed in the future.
 
-At runtime, !OpenDial will automatically connect together predicted and observed distributions and derive the resulting posterior distribution.
+At runtime, !OpenDial will then automatically connect together predicted and observed distributions and derive the resulting posterior distribution.
 
 The following rule in the example states that, if the system asks the user to repeat, the user is expected to comply (and repeat the same dialogue act) with a probability 0.9.  
 
