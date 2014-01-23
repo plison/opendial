@@ -263,7 +263,7 @@ With the current dialogue domain, the system will again ask the user to repeat. 
 
 We can write a rule that encodes the common sense assumption that the user is likely to repeat her/his utterance when asked to do so:
 {{{
-<!-- Prediction on the next user action
+<!-- Prediction on the next user action -->
 <model trigger="a_m">
     <rule>
       <case>
@@ -311,3 +311,7 @@ The utility rule for the selection of the next system action can for instance be
 Note the use of the curly brackets to mark the free variable `X`. 
 
 == Parameters ==
+
+
+
+== Final domain specification ==
