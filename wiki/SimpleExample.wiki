@@ -398,8 +398,39 @@ http://opendial.googlecode.com/svn/wiki/example_step2.png
 
 == Adding prior distributions ==
 
-The `AskRepeat` action currently encoded in the dialogue domain is not very sophisticated.  It simply asks the user to repeat but does not "accumulate" evidence over the turns.  Assume for instance the following N-Best list for the user utterance: 
-u_u =  move forward (0.6)
-       move backward (0.2)
+The `AskRepeat` action currently encoded in the dialogue domain is not very sophisticated.  It simply asks the user to repeat but does not "accumulate" evidence over the turns.  Assume for instance the dialogue excerpt:
+{{{
+user:    move forward (0.65)
+system:  Sorry, could you repeat?
+user:    move forward (0.65)
 
+}}}
 
+With the current dialogue domain, the system will again ask the user to repeat.  The fact that the top hypothesis in both utterances is `move forward` should however give us an increased confidence in the fact that the user intention is indeed `move forward`. 
+
+We can write a rule that encodes the common sense assumption that the user is likely to repeat her/his utterance when asked to do so:
+{{{
+<!-- Prediction on the next user action
+<model trigger="a_m">
+    <rule>
+      <case>
+        <condition>
+          <if var="a_m" value="AskRepeat" />
+        </condition>
+        <effect prob="0.9">
+          <set var="a_u^p" value="{a_u}" />
+        </effect>
+      </case>
+    </rule>
+</model>
+}}}
+
+The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.9 (the remaining 0.1 covers the cases where the user decides to say something else).
+
+In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript ^p. A variable X^p represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables] for details).
+
+The reader should also note that the effect value is `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable (see [https://code.google.com/p/opendial/wiki/DialogueDomainsAdvanced#2._References] for more details on such references).
+
+Thanks to this rule providing a prior distribution over the next dialogue act, the dialogue system is able to accumulate evidence and select the right action to execute:
+
+http://opendial.googlecode.com/svn/wiki/example_step3.png
