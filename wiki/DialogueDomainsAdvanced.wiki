@@ -181,7 +181,7 @@ The following rule in the example states that, if the system asks the user to re
 </rule>
 }}}
 
-(Note the reference to the existing dialogue act `a_u` in the above rule).
+Note the reference to the existing dialogue act `a_u` in the effect. The above rule allows the system to prime the probability of a repeated dialogue act compared to other hypotheses.
 
 ----
 
