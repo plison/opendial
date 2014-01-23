@@ -158,7 +158,7 @@ The above rule specifies that the value `a1` must be added to the set `A` if it 
 
 The `add` markup is used to add a new element to the current set, while `remove` will delete an element.  Finally, `clear` will remove all elements in the set.
 
-6. Prior distributions
+== 6. Prior distributions ==
 
 Probability rules can be employed for two distinct purposes.  The first purpose is to update the values of a specific state variable given some new information (for instance, inferring the user dialogue act _a,,u,,_ given the observed user utterance _u,,u,,_). But probability rules can also be used to provide a _prior_ distribution for a future state variable that is expected to be observed in the next time steps.  For instance, the last user intention _i,,u,,_ may be used to predict the next dialogue act from the user.  This prediction does not by itself create a new dialogue act (it's only a prediction), but it can be used as a useful prior for this observation. `[1]` 
 
