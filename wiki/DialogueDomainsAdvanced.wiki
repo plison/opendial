@@ -180,6 +180,9 @@ The following rule in the example states that, if the system asks the user to re
   </case>
 </rule>
 }}}
+
+(Note the reference to the existing dialogue act `a_u` in the above rule).
+
 ----
 
 `[1]` See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 78-79 for details.
