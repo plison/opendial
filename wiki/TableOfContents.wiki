@@ -15,3 +15,4 @@
   * [DialogueDomainsAdvanced#3._Quantification 3. Quantification]
   * [DialogueDomainsAdvanced#4._String_matching 4. String matching]
   * [DialogueDomainsAdvanced#5._Operations_on_sets 5. Operations on sets]
+  * [DialogueDomainsAdvanced#6._Predictive_variables 6. Predictive variables]
