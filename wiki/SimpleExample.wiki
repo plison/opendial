@@ -4,6 +4,8 @@
 
 Imagine you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. Probabilistic rules allow us to design such a dialogue controller in a very manner.
 
+== General skeleton == 
+
 We start by creating an XML file with the specification of the dialogue domain.  The top XML node must be `<domain>`:
 {{{
 <domain>
@@ -30,6 +32,8 @@ Inside each model is a collection of rules. Two distinct types of rules can be e
  * _Probability rules_ express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").
 
  * _Utility rules_ express the utility of particular actions (from the system perspective) depending on particular state variables. 
+
+== A first rule == 
 
 As we are here interested in mapping a given user utterance to a specific system action, our first rule will be a utility rule. Here is how we can encode the mapping between user and system utterances:
 
@@ -85,4 +89,264 @@ We can also click on the state viewer and inspects both the current dialogue sta
 
 http://opendial.googlecode.com/svn/wiki/example_step1bis.png
 
- 
+== Integrating a NLU model == 
+
+One shortcoming of the current dialogue domain is its rigidity when it comes to the user input.  User utterances such as "turn to the left" or "now move forward" are simply ignored by the system.  Although we could in principle enumerate all possibilities in the utility rule, a better approach is to write an explicit rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
+
+
+We will therefore write a new model, with one single probability rule:
+{{{
+  <model trigger="u_u">
+    <rule>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="turn * left" relation="in" />
+          <if var="u_u" value="move * left" relation="in" />
+          <if var="u_u" value="go * left" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Left)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="turn * right" relation="in" />
+          <if var="u_u" value="move * right" relation="in" />
+          <if var="u_u" value="go * right" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Right)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="move * forward" relation="in" />
+          <if var="u_u" value="go * forward" relation="in" />
+          <if var="u_u" value="go * straight" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Forward)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="move * backward" relation="in" />
+          <if var="u_u" value="go * backward" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Backward)" />
+        </effect>
+      </case>
+      <case>
+        <effect prob="1">
+          <set var="a_u" value="Unknown" />
+        </effect>
+      </case>
+    </rule>
+  </model>
+}}}
+
+A few things are worth noting in this model.  First, the rule conditions are a bit more complicated. Each condition is encoded as a disjunction of basic conditions, as indicated by the attribute `operator`.  
+
+One example of basic condition is 
+{{{
+          <if var="u_u" value="turn * left" relation="in" />
+}}}
+This condition will be satisfied if the pattern "turn * left" is found inside the string of the user utterance `u_u`.  See [DialogueDomainsAdvanced#String_matching] for more details on the string matching functionalities integrated in !OpenDial.
+
+The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that define a full probability distributions over alternative effects.
+
+
+== Integrating a NLG model == 
+
+Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: 
+ # The dialogue system first selects a high-level logical representation of the next action,
+ # The system then selects the best linguistic realisation for this logical action.
+
+Such an NLG model can be easily constructed with one utility rule:
+{{{
+
+<model trigger="a_m">
+  <rule>
+      <case>
+      <condition>
+        <if var="a_m" value="Move(Left)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, turning left"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Right)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, turning right"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Forward)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, moving forward"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Backward)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, moving backward"/>
+      </effect>
+    </case>
+  </rule>
+</model>
+}}}
+
+== The domain so far == 
+
+Putting together the three models we have constructed so far, we get this domain specification:
+
+{{{
+
+<domain>
+
+<!-- A very simple NLU model for the example -->
+  <model trigger="u_u">
+
+    <rule>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="turn * left" relation="in" />
+          <if var="u_u" value="move * left" relation="in" />
+          <if var="u_u" value="go * left" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Left)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="turn * right" relation="in" />
+          <if var="u_u" value="move * right" relation="in" />
+          <if var="u_u" value="go * right" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Right)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="move * forward" relation="in" />
+          <if var="u_u" value="go * forward" relation="in" />
+          <if var="u_u" value="go * straight" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Forward)" />
+        </effect>
+      </case>
+      <case>
+        <condition operator="or">
+          <if var="u_u" value="move * backward" relation="in" />
+          <if var="u_u" value="go * backward" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Backward)" />
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="u_u" value="stop" relation="in" />
+        </condition>
+        <effect prob="1">
+          <set var="a_u" value="Request(Stop)" />
+        </effect>
+      </case>
+      <case>
+        <effect>
+          <set var="a_u" value="Unknown" />
+        </effect>
+      </case>
+    </rule>
+    </model>
+    
+  <!-- The action-selection model -->
+  <model trigger="a_u">
+
+    <rule>
+      <case>
+        <condition>
+          <if var="a_u" value="Request(Left)" />
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="Move(Left)" />
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_u" value="Request(Right)" />
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="Move(Right)" />
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_u" value="Request(Forward)" />
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="Move(Forward)" />
+        </effect>
+      </case>
+      <case>
+        <condition>
+          <if var="a_u" value="Request(Backward)" />
+        </condition>
+        <effect util="1">
+          <set var="a_m" value="Move(Backward)" />
+        </effect>
+      </case>
+    </rule>
+
+  </model>
+
+
+<model trigger="a_m">
+  <rule>
+      <case>
+      <condition>
+        <if var="a_m" value="Move(Left)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, turning left"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Right)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, turning right"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Forward)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, moving forward"/>
+      </effect>
+    </case>
+    <case>
+      <condition>
+        <if var="a_m" value="Move(Backward)"/>
+      </condition>
+      <effect util="1">
+        <set var="u_m" value="Ok, moving backward"/>
+      </effect>
+    </case>
+  </rule>
+</model>
+}}}
+
