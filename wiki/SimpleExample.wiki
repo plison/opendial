@@ -280,7 +280,7 @@ We can write a rule that encodes the common sense assumption that the user is li
 
 The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.95 (the remaining 0.05 covers the cases where the user decides to say something else).
 
-In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript ^p. A variable X^p represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables Predictive variables] for details).
+In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript `^p`. A variable `X^p` represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables Predictive variables] for details).
 
 The reader should also note that the effect value is `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable (see [https://code.google.com/p/opendial/wiki/DialogueDomainsAdvanced#2._References Variable references] for more details).
 
