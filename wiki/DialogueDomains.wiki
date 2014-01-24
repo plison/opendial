@@ -115,7 +115,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 </variable>
 }}}
 
- * *Gaussian distributions*`[1]` are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
+ * *Gaussian distributions*^[1]^ are defined with two parameters `mean` and `variance` -- for instance, _N(2,4)_ is encoded as:
 {{{
 <variable id="gaussian_example">
   <distrib type="gaussian">
@@ -288,7 +288,7 @@ Each `case` contains one or more (alternative) effects. Each effect has a partic
 
 When the effect does not specify any `prob` attribute, the effect is assumed to have a probability 1.  When the total probability for all effects is lower than 1, an empty effect is implicitly assumed to cover the remaining probability mass.
 
-The probability of a particular effect can also be a parameter.  In this case, each case with _n_ alternative effects is associated with a _nth_ dimensional Dirichlet distribution that express the possible values for the effect probabilities.   For instance, the effect probabilities in rule r,,1,, can become:
+The probability of a particular effect can also be a parameter.  In this case, each case with _n_ alternative effects is associated with a _nth_ dimensional Dirichlet distribution that express the possible values for the effect probabilities.   For instance, the effect probabilities in rule r,,1,, can be rewritten as:
 {{{
 <rule id="r1">
   <case>
@@ -328,7 +328,7 @@ Inside each `effect` is a list of basic assignment of values to variables.  Each
 *XML format for `<set .../>` (for probability rules):*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 || Variable label ||
-|| `value` || Element || 1-n || Variable value ||
+|| `value` || Element || 1 || Variable value ||
 
 <br>
 
@@ -397,7 +397,7 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 *XML format for `<set ... />` (for utility rules):*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 ||  variable label (action variable) ||
-|| `value` || Element || 1-n || Variable value ||
+|| `value` || Element || 1 || Variable value ||
 
 <br>
 
