@@ -48,12 +48,13 @@ For more complex domains, the domain specification can be split in several files
     <import href="path to another file" />
 }}}
 
-Examples of domain specifications can be found in the directory `domains` and `test/domains` of the base directory.
+Numerous examples of dialogue domains can be found in the directory `domains` and `test/domains` of the base directory.
 
 *XML format for `<domain>`:*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `<initialstate>` || Element || 0-1 || Initial state for the dialogue domain ||
 || `<parameters>` || Element || 0-1 || Prior parameter distributions ||
+|| `<import href="..."/>` || Element || 0-n || Import of other XML files ||
 || `<model trigger="...">` || Element || 0-n || Dialogue model ||
 || `<settings>` || Element || 0-1 || Domain-specific system settings ||
 
@@ -63,7 +64,7 @@ Examples of domain specifications can be found in the directory `domains` and `t
 
 The initial state for the domain defines the variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
 
-Variables with a discrete range of values are defined as simple categorical tables:
+Variables with a discrete range of values are defined as categorical tables:
 {{{
 <variable id="variable_id">
   <value prob="probability for first value">first value</value>
@@ -75,7 +76,7 @@ Variables with a discrete range of values are defined as simple categorical tabl
 
 Probability values must be comprised between 0 and 1.  If the total probability amounts to less than 1, !OpenDial automatically adds an empty value (`None`) for the remaining probability mass.  If the `prob` attribute is omitted, the value is assumed to have a probability 1. 
 
-Here is a simple example of initial state variable:
+Here is a simple example of state variable:
 {{{
 <variable id="userIntention">
   <value prob="0.5">Want(Object_A)</value>
@@ -95,7 +96,7 @@ Probability distributions can also be defined for a continuous range, using the 
 || `<value prob="p">` || Element || 1-n || Possible value for the variable with probability `p`.  If the attribute `prob` is omitted,<br> the probability is assumed to be 1.||
 || _or_ `<distrib type="...">` || Element || 0-1 || _cf. below_ ||
 
-Note that a couple of special characters should be avoided when choosing variable labels.  Variables should _*not*_ include primes ', curly or square brackets. Furthermore, variables ending with `^p`, `^t` and `^o` have a special function (`^p` denotes [AdvancedModelling#Predictive predictive variables], `^t` denotes temporary variables that are deleted after each update loop, and `^o` denotes output variables for [ParameterEstimation#Learning_from_(real_or_simulated)_interactions user simulators]). 
+Note that a couple of special characters should be avoided when choosing variable labels.  Variables should _*not*_ include primes ('), curly brackets ({,}) or square brackets (`[`,`]`), as these are used internally in !OpenDial. Furthermore, variables ending with `^p`, `^t` and `^o` have a special function (`^p` denotes [AdvancedModelling#Predictive predictive variables], `^t` denotes temporary variables that are deleted after each update loop, and `^o` denotes output variables for [ParameterEstimation#Learning_from_(real_or_simulated)_interactions user simulators]). 
 <br>
 
 == 3. Parameters ==
@@ -265,7 +266,7 @@ As exemplified in the rule above, the `condition` XML node is composed of a list
 
 Each basic condition is written as an `<if .../>` markup with three basic attributes:
 
-*XML format for `<condition>`:*
+*XML format for `<if .../>`:*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 || Variable label ||
 || `relation` || Attribute || 0-1 || (Optional) binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than), `in` (contains), and `!in` (not contains).  Default relation is equality. ||
@@ -322,7 +323,7 @@ Note the brackets after the parameter name to refer to a specific dimension of t
 
 Inside each `effect` is a list of basic assignment of values to variables.  Each assignment is defined by a `<set.../>` markup with two attributes: `var` and `value`.
 
-*XML format for `<set>`:*
+*XML format for `<set .../>` (for probability rules):*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 || Variable label ||
 || `value` || Element || 1-n || Variable value ||
@@ -391,7 +392,7 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 || `util` || Attribute || 0-1 || Utility for the action (either fixed or parameter). Default value is 0. ||
 || `<set ...>` || Element || 1-n || Basic effect ||
 
-*XML format for `<set>`:*
+*XML format for `<set ... />` (for utility rules):*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 ||  variable label (action variable) ||
 || `value` || Element || 1-n || Variable value ||
