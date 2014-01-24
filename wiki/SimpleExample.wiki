@@ -388,7 +388,8 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ----
 
-`[1]` `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
+===[1]===
+`u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
 
 `[2]` Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
 
