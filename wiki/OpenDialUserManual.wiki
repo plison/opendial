@@ -6,7 +6,9 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[SimpleExample Step-by-step example]*<br>A detailed, step-by-step example of dialogue domain specification for !OpenDial
 
- * *[DialogueDomains]* and *[DialogueDomainsAdvanced]*<br>XML encoding format for dialogue domains.
+ * *[DialogueDomains Dialogue domain specification]* <br>XML encoding format for dialogue domains.
+
+ * *[AdvancedModelling Advanced modelling]* <br>Build-in functionalities for handling nested conditions, variable references, quantification<br> mechanisms, string matching, set-theoretic operations and predictive variables.
 
  * *[ParameterEstimation Parameter estimation]*<br>How to estimate rule parameters from data]
 
