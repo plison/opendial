@@ -16,7 +16,7 @@
   * [AdvancedModelling#3._Quantification 3. Quantification]
   * [AdvancedModelling#4._String_matching 4. String matching]
   * [AdvancedModelling#5._Operations_on_sets 5. Operations on sets]
-  * [AdvancedModelling#6._Predictive_variables 6. Predictive 
+  * [AdvancedModelling#6._Predictive_variables 6. Predictive variables]
  * [ParameterEstimation Parameter estimation]
  * [BuildingDialogueSystem Building up a complete dialogue system]
  * [Javadoc]
