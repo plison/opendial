@@ -1,4 +1,4 @@
-#summary Specifying rule-structured dialogue domains in XML: advanced modelling
+#summary Advanced modelling aspects when specifying dialogue domains
 
 = Advanced modelling =
 
