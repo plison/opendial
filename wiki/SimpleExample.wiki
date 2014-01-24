@@ -2,7 +2,7 @@
 
 = A step-by-step example =
 
-Imagine you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. Probabilistic rules allow us to design such a dialogue controller in a very manner.
+Imagine you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
 
 == General skeleton == 
 
