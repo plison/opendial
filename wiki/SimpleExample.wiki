@@ -394,8 +394,8 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ^[3]^ See the section [DialogueDomains#String_matching String matching] for more details on the string matching functionalities implemented in !OpenDial.
 
-^[4]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 78-79 for details.
+^[4]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 78-79 for details.
 
-^[5]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 67-68 and 74-76 for details.
+^[5]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 67-68 and 74-76 for details.
 
-^[6]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
+^[6]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
