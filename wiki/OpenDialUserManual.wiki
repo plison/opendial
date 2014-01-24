@@ -16,6 +16,9 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[Javadoc]*<br>!OpenDial API.
 
+<br>
+
+As this user guide is still a work in progress, your feedback is most welcome!  If you have any questions<br> or problems with !OpenDial, feel free to contact me, preferably by email: [mailto:plison@ifi.uio.no Pierre Lison].
 <br><br><br>
 
 ----
