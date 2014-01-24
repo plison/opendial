@@ -32,7 +32,7 @@ The condition will therefore be true if e.g. `firstvar=foo` and `secondvar=foo`.
 
 More complex conditions must be constructed:
 {{{
-<if var="firstvar" relation="=" value="something({secondvar}, {thirdvar})"/>
+<if var="firstvar" relation="=" value="something({secondvar},{thirdvar})"/>
 }}}
 
 The condition will in this case be true if e.g. `secondvar=foo`, `thirdvar=bar`, and `firstvar=something(foo,bar)`.
@@ -48,7 +48,7 @@ Each variable referenced in such a manner is automatically added as an input nod
 
 == 3. Quantification ==
 
-The expressivity of probabilistic rules can be greatly improved by introducing universally quantified variables in the rule specification.^[1]^  For instance, one may write a rule that determines how the graspability of an object _X_ depends on the object field:
+The expressivity of probabilistic rules can be greatly improved by introducing universally quantified variables in the rule specification.^[1]^  For instance, one may write a rule that determines how the graspability of an object _X_ depends on its shape:
 {{{
 
 <rule id="r3">
@@ -77,7 +77,7 @@ The expressivity of probabilistic rules can be greatly improved by introducing u
 </rule>
 }}}
 
-The rule will then apply for any arbitrary object _X_ for which a state variable `shape`(_X_) exists in the dialogue state. In order to distinguish the free variable _X_ from normal strings, free variables must be surrounded by curly brackets { }.
+The rule will then apply for any arbitrary value _X_ for which a state variable `shape`(_X_) exists in the dialogue state. In order to distinguish the free variable _X_ from normal strings, free variables must be surrounded by curly brackets { }.
 
 Free variables can also be employed in utility rules:
 {{{
@@ -138,9 +138,9 @@ The above rule will be fired for a user utterance such as "`turn left`", "`turn 
 
 == 5. Operations on sets ==
 
-In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such collections:
+In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such collections.
 
-=== Conditions on sets ===
+==== Conditions on sets: ====
 
 Rule conditions can check for the presence/absence of particular items in a collection, as for instance:
 {{{
@@ -149,7 +149,7 @@ Rule conditions can check for the presence/absence of particular items in a coll
 
 The condition will therefore be satisfied if `somecollection=[element1,element3]`, but not if `somecollection=[element3]`. In addition to the relation `in`, the relation `!in` (does not contain) can also be employed in the condition.
 
-=== Addition and removal of elements ===
+==== Addition and removal of elements: ====
 
 Rule effects can also include special effects to `add`, `remove` or `clear` elements from a collection:
 {{{
