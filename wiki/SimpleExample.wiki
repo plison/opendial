@@ -15,7 +15,7 @@ We start by creating an XML file with the specification of the dialogue domain. 
 
 Each dialogue domain is constituted of a set of (rule-structured) _models_.  A model is essentially a collection of probabilistic rules together with a trigger variable that indicates when the rules should be applied.
 
-In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger. [#1 [1]]  The domain specification becomes:
+In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger. `[1]`  The domain specification becomes:
 
 {{{
 <domain>
@@ -388,7 +388,7 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ----
 
-<a id="1">`[1]`</a> `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
+`[1]` `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
 
 `[2]` Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
 
