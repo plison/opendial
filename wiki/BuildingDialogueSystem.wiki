@@ -1,0 +1,13 @@
+#summary How to use OpenDial to build a complete, end-to-end dialogue system
+
+= Building a complete dialogue system ==
+
+== Creating new modules ==
+
+_synchronous and asynchronous_
+_parameters_
+_attaching_
+
+== Example of a synchronous module ==
+
+== Example of asynchronous module ==
