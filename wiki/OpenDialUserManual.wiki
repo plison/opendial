@@ -4,7 +4,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[GettingStarted Getting started]*<br>How to compile and start !OpenDial.
 
- * *[SimpleExample Step-by-step example]*<br>A detailed, step-by-step example of dialogue domain specification for !Opendial
+ * *[SimpleExample Step-by-step example]*<br>A detailed, step-by-step example of dialogue domain specification for !OpenDial
 
  * *[DialogueDomains]* and *[DialogueDomainsAdvanced]*<br>XML encoding format for dialogue domains.
 
