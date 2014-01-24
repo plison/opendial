@@ -85,14 +85,15 @@ public class SimulatorTest {
 		
 		system.startSystem();
 		Thread.sleep(5000);
+		system.pause(true);
+
 		log.debug("theta_correct " + system.getContent("theta_correct"));
 		log.debug("theta_incorrect " + system.getContent("theta_incorrect"));
 		log.debug("theta_repeat " + system.getContent("theta_repeat"));
-		assertEquals(2.0, system.getContent("theta_correct").toContinuous().getFunction().getMean()[0], 0.5);
-		assertEquals(-2.0, system.getContent("theta_incorrect").toContinuous().getFunction().getMean()[0], 0.5);
-		assertEquals(0.5, system.getContent("theta_repeat").toContinuous().getFunction().getMean()[0], 0.2);
+		assertEquals(2.0, system.getContent("theta_correct").toContinuous().getFunction().getMean()[0], 0.6);
+		assertEquals(-2.0, system.getContent("theta_incorrect").toContinuous().getFunction().getMean()[0], 0.6);
+		assertEquals(0.5, system.getContent("theta_repeat").toContinuous().getFunction().getMean()[0], 0.3);
 		
-		system.pause(true);
 		
 	}
 	

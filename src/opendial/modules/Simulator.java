@@ -123,7 +123,7 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public boolean isRunning() {
-		return !system.isPaused();
+		return false;
 	}
 
 	@Override
@@ -152,7 +152,11 @@ public class Simulator implements Module {
 									: Assignment.createDefault(outputVar);
 
 									log.debug("Simulator input: " + systemAction);
-									performTurn(systemAction);
+									boolean turnPerformed = performTurn(systemAction);
+									int repeat = 0 ;
+									while (!turnPerformed && repeat < 5) {
+										turnPerformed = performTurn(systemAction);
+									}
 						}
 					}
 					catch (DialException e) {
@@ -170,7 +174,7 @@ public class Simulator implements Module {
 	 * @param systemAction the last system action.
 	 * @throws DialException
 	 */
-	private synchronized void performTurn(Assignment systemAction) throws DialException {
+	private synchronized boolean performTurn(Assignment systemAction) throws DialException {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
@@ -195,17 +199,12 @@ public class Simulator implements Module {
 			}
 
 			 if (addNewObservations()) {
-				 turnPerformed = true;
+				turnPerformed = true;
 			 }
 
 			simulatorState.addEvidence(simulatorState.getSample());
 		}
-
-		// if no user action is generated, repeat the process
-		if (!turnPerformed){
-		log.debug("repeating...");
-		performTurn(systemAction);
-		}
+		return turnPerformed;
 	}
 
 

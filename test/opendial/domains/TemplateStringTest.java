@@ -190,6 +190,7 @@ public class TemplateStringTest {
 	}
 	
 	
+	
 	@Test
 	public void testTemplateQuick() throws DialException {
 		Domain domain = XMLDomainReader.extractDomain("test/domains/quicktest.xml");

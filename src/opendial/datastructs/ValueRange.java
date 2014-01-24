@@ -121,5 +121,16 @@ public class ValueRange {
 	public boolean isEmpty() {
 		return range.isEmpty();
 	}
+
+	public void intersectRange(ValueRange groundings) {
+		for (String id : groundings.getVariables()) {
+			if (range.containsKey(id)) {
+				range.get(id).retainAll(groundings.getValues(id));
+			}
+			else {
+				addValues(id, groundings.getValues(id));
+			}
+		}
+	}
 }
 

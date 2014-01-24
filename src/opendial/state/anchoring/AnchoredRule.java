@@ -114,11 +114,12 @@ public class AnchoredRule {
 		groundings = new HashSet<Assignment>();
 		Set<Assignment> conditions = inputs.linearise();
 		for (Assignment input : conditions) {
-			groundings.addAll(rule.getGroundings(input.removePrimes()));
+			groundings.addAll(rule.getGroundings(input));
 		}
 		if (groundings.size() > 1) {
 			groundings.remove(new Assignment());
 		}
+
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values and groundings)
 		effects = new HashSet<Effect>();
@@ -126,10 +127,9 @@ public class AnchoredRule {
 		parameters = new HashSet<String>();
 		
 		for (Assignment input : conditions) {
-			Assignment input2 = input.removePrimes();
 			Output output = new Output(rule.getRuleType());
 			for (Assignment grounding : groundings) {
-				Assignment fullInput = new Assignment(input2, grounding);
+				Assignment fullInput = new Assignment(input, grounding);
 				RuleCase matchingCase = rule.getMatchingCase(fullInput);
 				if (!matchingCase.equals(new RuleCase())) {
 					relevant = true;					
@@ -273,8 +273,7 @@ public class AnchoredRule {
 	 */
 	public Output getMatchingOutput(Assignment input) {
 
-		Assignment input2 = input.removePrimes();
-		input2.removeAll(parameters);
+		Assignment input2 = input.getTrimmed(inputs.getVariables());
 
 		if (cache.containsKey(input2)) {
 			return cache.get(input2);
