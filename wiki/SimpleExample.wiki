@@ -1,6 +1,6 @@
 #summary A first, step-by-step example of dialogue domain
 
-= A step-by-step example =
+= Step-by-step example =
 
 Assume you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
 
@@ -92,7 +92,7 @@ We can also click on the state viewer and inspects both the current dialogue sta
 http://opendial.googlecode.com/svn/wiki/example_step1bis.png
 <br><br>
 
-== Adding a basic language understanding model == 
+== Language understanding model == 
 
 One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "`turn to the left`" or "`now please move forward`" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
 
@@ -155,18 +155,14 @@ One example of basic condition is
 {{{
           <if var="u_u" value="turn * left" relation="in" />
 }}}
-This condition is satisfied whenever the pattern `turn * left` is found inside the string of the user utterance `u_u`.  The `relation="in"` attribute indicates that the condition checks whether the pattern is included as a substring of the full utterance (in other words, it performs partial matching). The `*` sign indicates a wildcard and can capture any subsequence.^[3]^
+This condition is satisfied whenever the pattern `turn * left` is found inside the string of the user utterance `u_u`.  The attribute `relation="in"` indicates that the condition checks whether the pattern is included as a substring of the full utterance (in other words, it performs partial matching). The `*` sign indicates a wildcard and can capture any subsequence.^[3]^
 
 The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that are non-deterministic (i.e. they include several alternative effects with distinct probabilities of occurrence). 
 
 
-== Adding a generation model == 
+== Generation model == 
 
-Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: 
- # The dialogue system first selects a high-level logical representation of the next action,
- # The system then selects the best linguistic realisation for this logical action.
-
-Such an generation model can be easily constructed with one single utility rule:
+Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: (1) selection of a high-level logical representation of the next action, followed by (2) selection of the best linguistic realisation for this logical action. Such a generation model can be easily constructed with one single utility rule:
 {{{
 
 <model trigger="a_m">
@@ -209,9 +205,9 @@ Such an generation model can be easily constructed with one single utility rule:
 
 == Clarification strategies ==
 
-The current domain suffers from a lack of robustness in the face of noise and uncertainty.  For instance, if the system observes a user utterance `u_u = move left` with a probability of 0.1 (this can be done in the chat window by adding the probability in parentheses at the end of the utterance), it will ignore the fact that this instruction is highly uncertain and select `Move(Left)` as the next action.
+The current domain suffers from a lack of robustness in the face of noise and uncertainty.  For instance, if the system observes a user utterance such as "`u_u = move left`" with a probability of 0.1 (this can be tested in the chat window by adding the probability in parentheses at the end of the utterance), it will ignore the fact that this instruction is highly uncertain and select `Move(Left)` as the next action.
 
-A better approach would be to only execute the action when a certain probability threshold has been reached. One can add the following rule to the action-selection model:
+A better approach is to only execute the action when a certain probability threshold has been reached. One can add the following rule to the action-selection model:
 {{{
   <rule>
       <case>
@@ -224,7 +220,7 @@ A better approach would be to only execute the action when a certain probability
 
 This rule will reduce the utility of all `Move(*)` actions by 0.5.  In other words, this means that these actions will only be executed if their probability is higher than 0.5.
 
-We can also add another system action `AskRepeat` to ask the user to repeat the utterance when faced with uncertainty:
+We can also add another system action `AskRepeat` to request the user to repeat the utterance when faced with uncertainty:
 {{{
     <rule>
       <case>
@@ -234,9 +230,10 @@ We can also add another system action `AskRepeat` to ask the user to repeat the 
       </case>
     </rule>
 }}}
-The NLG rule should also be extended with another case:
+
+The generation rule should also be extended with another case:
 {{{
-...
+<!-- ...-->
   <case>
       <condition>
         <if var="a_m" value="AskRepeat"/>
@@ -250,11 +247,13 @@ The NLG rule should also be extended with another case:
 
 We can test the resulting dialogue domain in the !OpenDial user interface and verify the resulting system behaviour:
 
+<p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step2.png
+<br><br>
 
-== Adding prior distributions ==
+== Prior distributions ==
 
-The `AskRepeat` action currently encoded in the dialogue domain is not very sophisticated.  It simply asks the user to repeat but does not "accumulate" evidence over the turns.  Assume for instance the dialogue excerpt:
+The `AskRepeat` action included in the current dialogue domain is not very sophisticated.  It simply asks the user to repeat but does not "accumulate" evidence over the turns.  Assume for instance the dialogue excerpt:
 {{{
 user:    move forward (0.65)
 system:  Sorry, could you repeat?
@@ -262,7 +261,7 @@ user:    move forward (0.65)
 
 }}}
 
-With the current dialogue domain, the system will again ask the user to repeat.  The fact that the top hypothesis in both utterances is `move forward` should however give us an increased confidence in the fact that the user intention is indeed `move forward`. 
+With the current dialogue domain, the system will again ask the user to repeat.  Ideally, the fact that the top hypothesis in both utterances is "`move forward`" should provide the system with an increased confidence for the hypothesis "`move forward`".
 
 We can write a rule that encodes the common sense assumption that the user is likely to repeat her/his utterance when asked to do so:
 {{{
@@ -281,23 +280,25 @@ We can write a rule that encodes the common sense assumption that the user is li
 </model>
 }}}
 
-The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.95 (the remaining 0.05 covers the cases where the user decides to say something else).
+The above rule states that when the system requests the user to repeat the instruction, the next user dialogue act is predicted to be identical to the current one with probability 0.95 (the remaining 0.05 covers the cases where the user decides to say something else).
 
-In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript `^p`. A variable `X^p` represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables Predictive variables] for details).
+In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, !OpenDial relies on the convention that predictive variables are denoted with a superscript `^p`. A variable `X^p` represents therefore a prediction on the variable X to be observed in the future.^[4]^
 
-The reader should also note that the effect value is `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable (see [https://code.google.com/p/opendial/wiki/DialogueDomainsAdvanced#2._References Variable references] for more details).
+The reader should also note that the effect value is written as `{a_u}`.  This value is a _reference_ to the current value of the the variable `a_u`. The curly brackets { } are important: without them, the effect would simply state that `a_u^p` must be set to the string `"a_u"` instead of referring to the value denoted by the variable.
 
 Thanks to this rule providing a prior distribution over the next dialogue act, the dialogue system is able to accumulate evidence and select the right action to execute:
 
+<p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step3.png
+<br><br>
 
 == Using quantifiers ==
 
-Some rules in the current dialogue domain seem to include some recurring patterns: for instance, the utility rule for the system action states that, if the user dialogue act has the form `Request`(_some action_), the system can execute the corresponding action `Move`(_some action_) with utility 1.
+Some of the rules in the current dialogue domain exhibit recurring patterns: for instance, the utility rule for the system action states that, if the user dialogue act has the form `Request`(_some action_), the system can execute the corresponding action `Move`(_some action_) with utility 1.
 
-The expressivity of probabilistic rules can be greatly enriched through the use of _universal quantifiers_.  The rule conditions and effects can indeed be partly underspecified and include free variables.  In other words, the mapping between conditions and effects specified by the rule is duplicated for every possible assignment of values for these free variables.
+The expressivity of probabilistic rules can be greatly enriched through the use of _universal quantifiers_.  The rule conditions and effects can indeed be partly underspecified and include free variables.  In other words, the mapping between conditions and effects specified by the rule is duplicated for every possible assignment of values for these free variables.^[5]^
 
-The utility rule for the selection of the next system action can for instance be simplified into:
+The utility rule for the selection of the next system action can consequently be reduced to the following:
 {{{
   <rule>
       <case>
@@ -311,19 +312,19 @@ The utility rule for the selection of the next system action can for instance be
     </rule>
 }}}
 
-Note the use of the curly brackets to mark the free variable `X`. 
+Note the use of the curly brackets to mark the free variable `X`. At runtime, !OpenDial will determine the set of possible assignments (called _groundings_) for the free variables and duplicate the rule for each of these groundings. Note that free variable labels such as `X` must not conflict with the label of existing state variables.
 
 == Parameters ==
 
-The probabilities and utilities of the current domain are all handcrafted. Although this handcrafted approach may work well in specific cases, it remains vulnerable to human errors and inaccuracies.  For instance, the utility of the `AskRepeat` action (which we set to 0.2) or the probability of a user repetition after it (set to 0.95) are just informed guesses.  Actual interactions may very well deviate from these them.
+The probabilities and utilities of the current domain are all handcrafted. Although this handcrafted approach may work well in specific cases, it remains vulnerable to human errors and inaccuracies.  For instance, the utility of the `AskRepeat` action (currently set to 0.2) or the probability of a user repetition after such a request (set to 0.95) are just informed guesses.  Actual interactions may very well deviate from these them.
 
-A more principle, data-driven approach is to associate these rules with parameters whose values it to be estimated from data. Both effect probabilities and utilities can be replaced by parameters.
+A more principle, data-driven approach is to associate these rules with parameters whose values must be estimated from data. Both effect probabilities and utilities can be replaced by parameters.
 
-Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values. Several types of parametric distributions are available to this end (uniform, Gaussian, Dirichlet). `[3]`
+Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values. Several types of parametric distributions are available to this end, such as uniform, Gaussian, and Dirichlet distributions.^[6]^
 
 We can create two parameters for our domain: 
- * one for the utility of the `AskRepeat` action.  A reasonable prior distribution for this parameter is a Gaussian centered on 0, for instance N(0,5)
- * one for the probability of the user repetition. As we may expect the user to comply with the system request in most cases, we can encode this probability distribution as a Dirichlet distribution such as Dir(3,1).
+ * one parameter for the utility of the `AskRepeat` action.  A reasonable prior distribution for this parameter is a Gaussian centered on 0.  For the purpose of this example, we shall set this distribution to `~ N(0,5)`.
+ * one parameter for the probability of the user repetition. As we may expect the user to comply with the system request in most cases, we can encode this probability distribution as a Dirichlet distribution `~ Dir(3,1)`.
 
 These prior parameter distributions are specified at the top of the domain specification:
 {{{
@@ -393,4 +394,8 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ^[3]^ See the section [DialogueDomains#String_matching String matching] for more details on the string matching functionalities implemented in !OpenDial.
 
-`[1]` See [folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
+^[4]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 78-79 for details.
+
+^[5]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 67-68 and 74-76 for details.
+
+^[6]^ See [http://folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
