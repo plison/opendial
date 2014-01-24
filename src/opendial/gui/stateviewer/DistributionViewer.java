@@ -132,7 +132,7 @@ public class DistributionViewer extends JDialog {
 			series.add(new Series("dimension " + i));
 		}
 		
-		Map<Double[],Double> points = distrib.getFunction().discretise(200);
+		Map<Double[],Double> points = distrib.getFunction().discretise(500);
 		for (Double[] point : points.keySet()) {
 			for (int k = 0 ; k < point.length ; k++) {
 				series.get(k).add(point[k].doubleValue(), distrib.getFunction().getDensity(point));

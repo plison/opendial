@@ -119,6 +119,7 @@ public class AnchoredRule {
 		if (groundings.size() > 1) {
 			groundings.remove(new Assignment());
 		}
+
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values and groundings)
 		effects = new HashSet<Effect>();
