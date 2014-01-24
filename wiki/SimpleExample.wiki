@@ -4,6 +4,8 @@
 
 Assume you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
 
+We focus in this example on the specification of the dialogue domain to process the user inputs and select the most relevant actions depending on the conversational situation.  Of course, a real robot will also need to include distinct modules for the actual speech recognition, speech synthesis and motor control.  The implementation of such modules is described in the section [BuildingDialogueSystem Building a complete dialogue system].
+
 == General skeleton == 
 
 We start by creating an XML file with the specification of the dialogue domain.  The top XML node must be `<domain>`:
@@ -15,7 +17,7 @@ We start by creating an XML file with the specification of the dialogue domain. 
 
 Each dialogue domain is constituted of a set of (rule-structured) _models_.  A model is essentially a collection of probabilistic rules together with a trigger variable that indicates when the rules should be applied.
 
-In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger. `[1]`  The domain specification becomes:
+In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger.^[1]^  The domain specification becomes:
 
 {{{
 <domain>
@@ -27,7 +29,7 @@ In our case, we want to define a model that is triggered when a new user utteran
 </domain>
 }}}
 
-Inside each model is a collection of probabilistic rules.`[2]` Two distinct types of rules can be encoded: 
+Inside each model is a collection of probabilistic rules.^[2]^ Two distinct types of rules can be encoded: 
 
  * _Probability rules_ express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").
 
@@ -75,13 +77,10 @@ As we want to map user utterances to specific system actions, our first rule wil
 }}}
 
 As we can see, each rule is composed of an ordered list of `case` elements.  Each case is associated with a specific condition and a set of effects (although in this particular rule, there is only one effect in each case).  The rule can be read as such: 
- # *if* the user input `u_u` is equal to "move left", *then* the utility of u_m="OK, moving left" is equal to 1.
- # *else if* the user input `u_u` is equal to "move right", *then* the utility of u_m="OK, moving left" is equal to 1.
- # *else if* the user input `u_u` is equal to "move left", *then* the utility of the u_m="OK, moving left" is equal to 1.
- # *else if* the user input `u_u` is equal to "move left", *then* the utility of the u_m="OK, moving left" is equal to 1.
- # *else* no utility is set.
 
-We can now run !OpenDial, open the domain we have designed, and type for instance `turn left` in the chat window.  
+    ***if* user input `u_u` is equal to "`turn left`" *then*<br><ul>the utility of u_m="`OK, turning left`" is set to 1.</ul>*else if* user input `u_u` is equal to "`turn right`" *then*<br><ul> the utility of u_m="`OK, turning right`" is set to 1.</ul>*else if* user input `u_u` is equal to "`move forward`" *then*<br><ul>the utility of u_m="`OK, moving forward` is set to 1.</ul>*else if* user input `u_u` is equal to "`move backward`" *then*<br><ul> the utility of u_m="`OK, moving backward`" is set to 1.</ul>*else*<ul>no utility is set.</ul>
+
+We can now run !OpenDial, open the domain we have designed, and type for instance "`turn left`" in the chat window.  The system response should be "`OK, turning left!`" since the system will automatically select the action with highest utility.
 
 <br><p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step1.png
@@ -95,10 +94,10 @@ http://opendial.googlecode.com/svn/wiki/example_step1bis.png
 
 == Adding a basic language understanding model == 
 
-One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "turn to the left" or "now move forward" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
+One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "`turn to the left`" or "`now please move forward`" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
 
 
-We will therefore write a new model, with one single probability rule:
+We will therefore write a new model with one single probability rule and trigger variable `u_u`:
 {{{
   <model trigger="u_u">
     <rule>
@@ -150,24 +149,24 @@ We will therefore write a new model, with one single probability rule:
   </model>
 }}}
 
-A few things are worth noting in this model.  First, the rule conditions are a bit more complicated. Each condition is encoded as a disjunction of basic conditions, as indicated by the attribute `operator`.  
+A few things are worth noting in this model.  First, the rule conditions are a bit more complicated. Each condition is encoded as a disjunction of basic conditions, as indicated by the attribute `operator=or`.  
 
 One example of basic condition is 
 {{{
           <if var="u_u" value="turn * left" relation="in" />
 }}}
-This condition will be satisfied if the pattern `turn * left` is found inside the string of the user utterance `u_u`.  See [DialogueDomainsAdvanced#String_matching String matching] for more details on the string matching functionalities integrated in !OpenDial.
+This condition is satisfied whenever the pattern `turn * left` is found inside the string of the user utterance `u_u`.  The `relation="in"` attribute indicates that the condition checks whether the pattern is included as a substring of the full utterance (in other words, it performs partial matching). The `*` sign indicates a wildcard and can capture any subsequence.^[3]^
 
-The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that define a full probability distributions over alternative effects.
+The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that are non-deterministic (i.e. they include several alternative effects with distinct probabilities of occurrence). 
 
 
-== Integrating a NLG model == 
+== Adding a generation model == 
 
 Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: 
  # The dialogue system first selects a high-level logical representation of the next action,
  # The system then selects the best linguistic realisation for this logical action.
 
-Such an NLG model can be easily constructed with one utility rule:
+Such an generation model can be easily constructed with one single utility rule:
 {{{
 
 <model trigger="a_m">
@@ -177,7 +176,7 @@ Such an NLG model can be easily constructed with one utility rule:
         <if var="a_m" value="Move(Left)"/>
       </condition>
       <effect util="1">
-        <set var="u_m" value="Ok, turning left"/>
+        <set var="u_m" value="Ok, turning left!"/>
       </effect>
     </case>
     <case>
@@ -185,7 +184,7 @@ Such an NLG model can be easily constructed with one utility rule:
         <if var="a_m" value="Move(Right)"/>
       </condition>
       <effect util="1">
-        <set var="u_m" value="Ok, turning right"/>
+        <set var="u_m" value="Ok, turning right!"/>
       </effect>
     </case>
     <case>
@@ -193,7 +192,7 @@ Such an NLG model can be easily constructed with one utility rule:
         <if var="a_m" value="Move(Forward)"/>
       </condition>
       <effect util="1">
-        <set var="u_m" value="Ok, moving forward"/>
+        <set var="u_m" value="Ok, moving forward!"/>
       </effect>
     </case>
     <case>
@@ -201,7 +200,7 @@ Such an NLG model can be easily constructed with one utility rule:
         <if var="a_m" value="Move(Backward)"/>
       </condition>
       <effect util="1">
-        <set var="u_m" value="Ok, moving backward"/>
+        <set var="u_m" value="Ok, moving backward!"/>
       </effect>
     </case>
   </rule>
@@ -388,8 +387,10 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ----
 
-`[1]` `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
+^[1]^ `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
 
-`[2]` Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
+^[2]^ Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
+
+^[3]^ See the section [DialogueDomains#String_matching String matching] for more details on the string matching functionalities implemented in !OpenDial.
 
 `[1]` See [folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
