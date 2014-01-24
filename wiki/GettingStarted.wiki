@@ -47,7 +47,7 @@ ant run
 A window similar to this one should pop up:
 
 
-<p align="center">
+<br><p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png"><br><br>
 
 
@@ -74,7 +74,7 @@ You can try out !OpenDial by opening a dialogue domain such as `domains/example/
 
 The chat window displays the current conversation history.  
 
-<p align="center">
+<br><p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_chat.png"><br><br>
 
 At the bottom of the page, a text field can be used to enter new inputs (this feature is useful to test the system behaviour without a speech recognizer). N-best lists can be entered by specifying probabilities in parentheses and separating alternative hypotheses with a semicolon (;).  For instance, the user input:
@@ -89,7 +89,7 @@ represents a N-best list with three alternative elements: "now move left" with p
 
 The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
 
-<p align="center">
+<br><p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png"><br><br>
 
 
