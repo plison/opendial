@@ -11,7 +11,7 @@
   * [SimpleExample#Prior_distributions Prior distributions]
   * [SimpleExample#Using_quantifiers Using quantifiers]
   * [SimpleExample#Parameters Parameters]
-  * [SimpleExample#Final_domain_specification Final domain specification]
+  * [SimpleExample#Final_domain Final domain]
  * [DialogueDomains Dialogue domain specification]
   * [DialogueDomains#1._General_structure 1. General structure]
   * [DialogueDomains#2._Initial_state 2. Initial state]
