@@ -369,7 +369,7 @@ And the last modification is to replace the fixed values in the probabilistic ru
 
 }}}
 
-Note that since Dirichlets are multivariate distributions, the parameter of the second rule must index the dimension of the distribution (the first dimension in this case: [0]).
+Note that since Dirichlets are multivariate distributions, the parameter of the second rule must index the dimension of the distribution (the first dimension in this case: `[0]`).
 
 One can inspect the distribution of the two parameters through the state viewer:
 
