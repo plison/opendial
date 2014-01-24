@@ -391,6 +391,11 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 || `util` || Attribute || 0-1 || Utility for the action (either fixed or parameter). Default value is 0. ||
 || `<set ...>` || Element || 1-n || Basic effect ||
 
+*XML format for `<set>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `var` || Attribute || 1 ||  variable label (action variable) ||
+|| `value` || Element || 1-n || Variable value ||
+
 <br>
 
 
