@@ -32,10 +32,10 @@ The condition will therefore be true if e.g. `firstvar=foo` and `secondvar=foo`.
 
 More complex conditions must be constructed:
 {{{
-<if var="firstvar" relation="=" value="Predicate({secondvar}, {thirdvar})"/>
+<if var="firstvar" relation="=" value="something({secondvar}, {thirdvar})"/>
 }}}
 
-The condition will in this case be true if e.g. `secondvar=foo`, `thirdvar=bar`, and `firstvar=Predicate(foo,bar)`.
+The condition will in this case be true if e.g. `secondvar=foo`, `thirdvar=bar`, and `firstvar=something(foo,bar)`.
 
 Variable references may similarly be used in effects:
 {{{
