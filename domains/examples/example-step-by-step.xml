@@ -1,7 +1,7 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <domain>
 
-<!-- Parameters -->
+	<!-- Parameters -->
 	<parameters>
 
 		<variable id="theta_repeat">
@@ -19,66 +19,66 @@
 		</variable>
 
 	</parameters>
-	
-<!-- NLU model -->
+
+	<!-- NLU model -->
 	<model trigger="u_u">
 
-    <rule>
-      <case>
-        <condition operator="or">
-          <if var="u_u" value="turn * left" relation="in" />
-          <if var="u_u" value="move * left" relation="in" />
-          <if var="u_u" value="go * left" relation="in" />
-        </condition>
-        <effect prob="1">
-          <set var="a_u" value="Request(Left)" />
-        </effect>
-      </case>
-      <case>
-        <condition operator="or">
-          <if var="u_u" value="turn * right" relation="in" />
-          <if var="u_u" value="move * right" relation="in" />
-          <if var="u_u" value="go * right" relation="in" />
-        </condition>
-        <effect prob="1">
-          <set var="a_u" value="Request(Right)" />
-        </effect>
-      </case>
-      <case>
-        <condition operator="or">
-          <if var="u_u" value="move * forward" relation="in" />
-          <if var="u_u" value="go * forward" relation="in" />
-          <if var="u_u" value="go * straight" relation="in" />
-        </condition>
-        <effect prob="1">
-          <set var="a_u" value="Request(Forward)" />
-        </effect>
-      </case>
-      <case>
-        <condition operator="or">
-          <if var="u_u" value="move * backward" relation="in" />
-          <if var="u_u" value="go * backward" relation="in" />
-        </condition>
-        <effect prob="1">
-          <set var="a_u" value="Request(Backward)" />
-        </effect>
-      </case>
-      <case>
-        <condition>
-          <if var="u_u" value="stop" relation="in" />
-        </condition>
-        <effect prob="1">
-          <set var="a_u" value="Request(Stop)" />
-        </effect>
-      </case>
-      <case>
-        <effect>
-          <set var="a_u" value="Unknown" />
-        </effect>
-      </case>
-    </rule>
-    </model>
-    
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="turn * left" relation="in" />
+					<if var="u_u" value="move * left" relation="in" />
+					<if var="u_u" value="go * left" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Left)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="turn * right" relation="in" />
+					<if var="u_u" value="move * right" relation="in" />
+					<if var="u_u" value="go * right" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Right)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="move * forward" relation="in" />
+					<if var="u_u" value="go * forward" relation="in" />
+					<if var="u_u" value="go * straight" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Forward)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="move * backward" relation="in" />
+					<if var="u_u" value="go * backward" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Backward)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="u_u" value="stop" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Stop)" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<set var="a_u" value="Unknown" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
 	<!-- Action selection model -->
 	<model trigger="a_u">
 
@@ -92,48 +92,48 @@
 				</effect>
 			</case>
 		</rule>
-		
+
 		<rule>
 			<case>
 				<effect util="-0.5">
-					<set var="a_m" value="Move(*)"/>
+					<set var="a_m" value="Move(*)" />
 				</effect>
 			</case>
 		</rule>
 
-	
+
 		<rule>
 			<case>
 				<effect util="theta_repeat">
-					<set var="a_m" value="AskRepeat"/>
+					<set var="a_m" value="AskRepeat" />
 				</effect>
 			</case>
 		</rule>
-		
+
 	</model>
 
 
-<!-- NLG model -->
-<model trigger="a_m">
-	<rule>
-    	<case>
-			<condition>
-				<if var="a_m" value="Move({X})"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="Ok, moving {X}"/>
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_m" value="AskRepeat"/>
-			</condition>
-			<effect util="1">
-				<set var="u_m" value="Sorry, could you repeat?"/>
-			</effect>
-		</case>
-	</rule>
-</model>
+	<!-- NLG model -->
+	<model trigger="a_m">
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Move({X})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Ok, moving {X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Sorry, could you repeat?" />
+				</effect>
+			</case>
+		</rule>
+	</model>
 
 
 
@@ -152,5 +152,5 @@
 		</rule>
 	</model>
 
-	
+
 </domain>
