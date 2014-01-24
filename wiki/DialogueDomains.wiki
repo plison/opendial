@@ -194,7 +194,9 @@ The trigger variables must be separated by a comma. The rules can either encode 
 
 === Probability rules ===
 
-Probability rules express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").  Probability rules are structured as an *if...then...else* construction:
+Probability rules express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").  The output variables may either already exist in the dialogue state (in which case their content is erased) or represent new variables to include in the dialogue state.
+
+Probability rules are structured as an *if...then...else* construction:
 {{{
 if (condition c1) then
   P(effect e1) = ...  
