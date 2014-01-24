@@ -1,22 +1,23 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <domain>
 
-<parameters>
+	<parameters>
 
-<variable id="theta_repeat">
-<distrib type="gaussian">
-<mean>0</mean>
-<variance>5</variance>
-</distrib></variable>
+		<variable id="theta_repeat">
+			<distrib type="gaussian">
+				<mean>0</mean>
+				<variance>5</variance>
+			</distrib>
+		</variable>
 
-<variable id="theta_repeatpredict">
-<distrib type="dirichlet">
-<alpha>1</alpha>
-<alpha>1</alpha>
-</distrib>
-</variable>
+		<variable id="theta_repeatpredict">
+			<distrib type="dirichlet">
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
 
-</parameters>
+	</parameters>
 
 	<!-- A very simple NLU model for the example -->
 	<model trigger="u_u">
