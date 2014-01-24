@@ -421,7 +421,11 @@ public class DialogueState extends BNetwork {
 	public List<ChanceNode> getMatchingNodes(Collection<Template> templates) {
 		List<ChanceNode> inputVars = new ArrayList<ChanceNode>();
 		for (Template t : templates) {
-
+			for (String slot : t.getSlots()) {
+				if (hasChanceNode(slot)) {
+					t = t.fillSlots(queryProb(slot).toDiscrete().getBest());
+				}
+			}
 			for (String currentVar : getChanceNodeIds()) {
 				if (!currentVar.contains("'") && t.match(currentVar, true).isMatching()) {
 					inputVars.add(getChanceNode(currentVar));

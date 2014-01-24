@@ -123,6 +123,7 @@ public class DialogueSystem {
 	 * Starts the dialogue system and its modules.
 	 */
 	public void startSystem() {
+		paused=false;
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
 				if (!module.isRunning()) {
@@ -137,7 +138,6 @@ public class DialogueSystem {
 				modules.remove(module);
 			}
 		}
-		paused=false;
 		synchronized (curState) {
 			curState.setAsNew();
 			update();
@@ -237,7 +237,7 @@ public class DialogueSystem {
 		}
 		if (!shouldBePaused && !curState.getNewVariables().isEmpty()) {
 			 synchronized (curState) {
-						update();
+					update();
 				}
 			}
 	}

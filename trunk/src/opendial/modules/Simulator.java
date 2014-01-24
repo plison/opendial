@@ -123,7 +123,7 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public boolean isRunning() {
-		return !system.isPaused();
+		return false;
 	}
 
 	@Override
