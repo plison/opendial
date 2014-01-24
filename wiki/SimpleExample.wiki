@@ -270,7 +270,7 @@ We can write a rule that encodes the common sense assumption that the user is li
         <condition>
           <if var="a_m" value="AskRepeat" />
         </condition>
-        <effect prob="0.9">
+        <effect prob="0.95">
           <set var="a_u^p" value="{a_u}" />
         </effect>
       </case>
@@ -278,7 +278,7 @@ We can write a rule that encodes the common sense assumption that the user is li
 </model>
 }}}
 
-The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.9 (the remaining 0.1 covers the cases where the user decides to say something else).
+The above rule states that when the system asks the user to repeat, the next user dialogue act is predicted to be identical to the current one with probability 0.95 (the remaining 0.05 covers the cases where the user decides to say something else).
 
 In order to distinguish such prediction on a future event (in this case, the next dialogue act) from actual observed values, OpenDial assumes that predictive variables are denoted with a superscript ^p. A variable X^p represents therefore a prediction on the variable X to be observed in the future (cf. [DialogueDomainsAdvanced#6._Predictive_variables Predictive variables] for details).
 
@@ -312,6 +312,76 @@ Note the use of the curly brackets to mark the free variable `X`.
 
 == Parameters ==
 
+The probabilities and utilities of the current domain are all handcrafted. Although this handcrafted approach may work well in specific cases, it remains vulnerable to human errors and inaccuracies.  For instance, the utility of the `AskRepeat` action (which we set to 0.2) or the probability of a user repetition after it (set to 0.95) are just informed guesses.  Actual interactions may very well deviate from these them.
 
+A more principle, data-driven approach is to associate these rules with parameters whose values it to be estimated from data. Both effect probabilities and utilities can be replaced by parameters.
+
+Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values. Several types of parametric distributions are available to this end (uniform, Gaussian, Dirichlet). `[3]`
+
+We can create two parameters for our domain: 
+ * one for the utility of the `AskRepeat` action.  A reasonable prior distribution for this parameter is a Gaussian centered on 0, for instance N(0,5)
+* one for the probability of the user repetition. As we may expect the user to comply with the system request in most cases, we can encode this probability distribution as a Dirichlet distribution such as Dir(3,1).
+
+These prior parameter distributions are specified at the top of the domain specification:
+{{{
+ <parameters>
+
+    <variable id="theta_repeat">
+      <distrib type="gaussian">
+        <mean>0</mean>
+        <variance>5</variance>
+      </distrib>
+    </variable>
+
+    <variable id="theta_repeatpredict">
+      <distrib type="dirichlet">
+        <alpha>3</alpha>
+        <alpha>1</alpha>
+      </distrib>
+    </variable>
+
+  </parameters>
+}}}
+
+And the last modification is to replace the fixed values in the probabilistic rules by their parameters:
+{{{
+   <rule>
+      <case>
+        <effect util="theta_repeat">
+          <set var="a_m" value="AskRepeat" />
+        </effect>
+      </case>
+    </rule>
+
+...
+
+ 
+    <rule>
+      <case>
+        <condition>
+          <if var="a_m" value="AskRepeat" />
+        </condition>
+        <effect prob="theta_repeatpredict[0]">
+          <set var="a_u^p" value="{a_u}" />
+        </effect>
+      </case>
+    </rule>
+
+}}}
+
+Note that since Dirichlets are multivariate distributions, the parameter of the second rule must index the dimension of the distribution (the first dimension in this case: [0]).
+
+One can inspect the distribution of the two parameters through the state viewer:
+
+http://opendial.googlecode.com/svn/wiki/example_step5.png
+
+The parameters must then be optimised from dialogue data.  This will be covered in the section [ParameterEstimation Learning rule parameters from data].
 
 == Final domain specification ==
+The full XML specification for the dialogue domain can be found at [http://opendial.googlecode.com/svn/trunk/domains/examples/domain-step-by-step.xml domains/examples/domain-step-by-step.xml].
+
+
+
+----
+
+`[1]` See [folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
