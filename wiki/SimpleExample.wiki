@@ -2,7 +2,7 @@
 
 = A step-by-step example =
 
-Imagine you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
+Assume you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
 
 == General skeleton == 
 
@@ -15,7 +15,7 @@ We start by creating an XML file with the specification of the dialogue domain. 
 
 Each dialogue domain is constituted of a set of (rule-structured) _models_.  A model is essentially a collection of probabilistic rules together with a trigger variable that indicates when the rules should be applied.
 
-In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the trigger variable `u_u` (`u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings).  The domain specification becomes therefore:
+In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger. [#1 [1]]  The domain specification becomes:
 
 {{{
 <domain>
@@ -27,15 +27,15 @@ In our case, we want to define a model that is triggered when a new user utteran
 </domain>
 }}}
 
-Inside each model is a collection of rules. Two distinct types of rules can be encoded:
+Inside each model is a collection of probabilistic rules.`[2]` Two distinct types of rules can be encoded: 
 
  * _Probability rules_ express how a subset of state variables (the "input variables" of the rule) affect the probability distribution over some other state variables (the "output variables").
 
- * _Utility rules_ express the utility of particular actions (from the system perspective) depending on particular state variables. 
+ * _Utility rules_ express the utility of particular actions (from the system perspective) depending on particular input variables. 
 
 == A first rule == 
 
-As we are here interested in mapping a given user utterance to a specific system action, our first rule will be a utility rule. Here is how we can encode the mapping between user and system utterances:
+As we want to map user utterances to specific system actions, our first rule will be a utility rule. We can encode the mapping between user utterances `u_u` and system utterances `u_m` in the following manner:
 
 {{{
   <rule>
@@ -83,15 +83,19 @@ As we can see, each rule is composed of an ordered list of `case` elements.  Eac
 
 We can now run !OpenDial, open the domain we have designed, and type for instance `turn left` in the chat window.  
 
+<br><p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step1.png
+<br><br>
 
-We can also click on the state viewer and inspects both the current dialogue state (in the form of a Bayesian network) and the intermediate states that led to it.
+We can also click on the state viewer and inspects both the current dialogue state (in the form of a Bayesian network) as well as the intermediate states during the state update. 
 
+<br><p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step1bis.png
+<br><br>
 
-== Integrating a NLU model == 
+== Adding a basic language understanding model == 
 
-One shortcoming of the current dialogue domain is its rigidity when it comes to the user input.  User utterances such as "turn to the left" or "now move forward" are simply ignored by the system.  Although we could in principle enumerate all possibilities in the utility rule, a better approach is to write an explicit rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
+One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "turn to the left" or "now move forward" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
 
 
 We will therefore write a new model, with one single probability rule:
@@ -383,5 +387,9 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 
 ----
+
+`[1]` `u_u` is the default label for the user utterance in !OpenDial.  This can be changed in the system settings.
+
+`[2]` Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
 
 `[1]` See [folk.uio.no/plison/pdfs/thesis-plison2013.pdf Lison (2013)], p. 91-96 for more details.
