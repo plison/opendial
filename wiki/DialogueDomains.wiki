@@ -436,6 +436,6 @@ These properties can also be modified through the GUI or by adding a `-Dproperty
 
 ^[2]^ Conditions can also include the nested operators `<and>`, `<not>` and `<or>` (cf. [AdvancedModelling#Nested_conditions Advanced modelling: nested conditions]).
 
-^[3]^ In addition, effects can also include set-theoretic operations such as `<add ...>`, `<remove ...>` and `<clear ...> (cf. [AdvancedModelling#Operations_on_sets Operations on sets]).
+^[3]^ In addition, effects can also include set-theoretic operations such as `<add ...>`, `<remove ...>` and `<clear ...> (cf. [AdvancedModelling#Operations_on_sets Advanced Modelling: Operations on sets]).
 
 ^[4]^ The default settings can be found in the file `resources/settings.xml`.
