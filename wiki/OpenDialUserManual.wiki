@@ -2,17 +2,17 @@
 
 This user guide explains how to practically employ the !OpenDial toolkit to develop dialogue systems.
 
- * ==[GettingStarted Getting started]==
+ * *[GettingStarted Getting started]*<br>How to compile and start !OpenDial.
 
- * ==[DialogueDomains Specifying dialogue domains: basic principles]==
+ * *[SimpleExample Step-by-step example]*<br>A detailed, step-by-step example of dialogue domain specification for !Opendial
 
- * ==[DialogueDomainsAdvanced Specifying dialogue domains: advanced modelling]==
+ * *[DialogueDomains]* and *[DialogueDomainsAdvanced]*<br>XML encoding format for dialogue domains.
 
- * ==[ParameterEstimation Learning rule parameters from data]==
+ * *[ParameterEstimation Parameter estimation]*<br>How to estimate rule parameters from data]
 
- * ==[BuildingDialogueSystem Building up a complete dialogue system]==
+ * *[BuildingDialogueSystem Building up a complete dialogue system]*<br>How to implement new modules with !OpenDial.
 
- * == [Javadoc] ==
+ * *[Javadoc]*<br>!OpenDial API.
 
 <br><br><br>
 
