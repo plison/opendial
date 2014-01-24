@@ -377,7 +377,9 @@ Note that since Dirichlets are multivariate distributions, the parameter of the 
 
 One can inspect the distribution of the two parameters through the state viewer:
 
+<p align="center">
 http://opendial.googlecode.com/svn/wiki/example_step5.png
+<br><br>
 
 The parameters must then be optimised from dialogue data.  This will be covered in the section [ParameterEstimation Learning rule parameters from data].
 
