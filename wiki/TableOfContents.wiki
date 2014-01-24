@@ -4,7 +4,7 @@
   * [GettingStarted#3._Starting_OpenDial 3. Starting OpenDial]
   * [GettingStarted#4._Using_OpenDial 4. Using OpenDial]
  * [SimpleExample Step-by-step example]
- * [DialogueDomains Specifying Dialogue Domains: Basic Principles]
+ * [DialogueDomains Dialogue domain specification]
   * [DialogueDomains#1._General_structure 1. General structure]
   * [DialogueDomains#2._Initial_state 2. Initial state]
   * [DialogueDomains#3._Parameters 3. Parameters]
