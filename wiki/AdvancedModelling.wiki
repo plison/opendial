@@ -4,7 +4,7 @@
 
 == 1. Nested conditions ==
 
-We explained in the section on [DialogueDomains dialogue domains] that rule conditions were essentially defined as conjunctions or disjunctions of basic conditions. If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
+We explained in the section on [DialogueDomains dialogue domains] that rule conditions are essentially defined as conjunctions or disjunctions of basic conditions. If needed, one can also define more advanced, nested conditions, such as for instance A=a1 *and* *not*(B=b1 *or* C!=c1):
 {{{
 <condition>
   <if var="A" relation="=" value="a1"/>
