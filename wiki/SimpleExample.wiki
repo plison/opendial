@@ -320,7 +320,7 @@ Since !OpenDial adopts a Bayesian approach to parameter estimation, each paramet
 
 We can create two parameters for our domain: 
  * one for the utility of the `AskRepeat` action.  A reasonable prior distribution for this parameter is a Gaussian centered on 0, for instance N(0,5)
-* one for the probability of the user repetition. As we may expect the user to comply with the system request in most cases, we can encode this probability distribution as a Dirichlet distribution such as Dir(3,1).
+ * one for the probability of the user repetition. As we may expect the user to comply with the system request in most cases, we can encode this probability distribution as a Dirichlet distribution such as Dir(3,1).
 
 These prior parameter distributions are specified at the top of the domain specification:
 {{{
