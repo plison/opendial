@@ -4,9 +4,9 @@
 
 This section details how to practically encode dialogue domains for !OpenDial using XML.
 
-== 1. General structure ==
+== General structure ==
 
-A !OpenDial dialogue domain follows the skeleton below:
+An !OpenDial dialogue domain follows the skeleton below:
 {{{
 <domain>
 
@@ -48,11 +48,11 @@ For more complex domains, the domain specification can be split in several files
     <import href="path to another file" />
 }}}
 
-Examples of domain specification can be found in the directory `domains` and `test/domains` of the base directory.
+Examples of domain specifications can be found in the directory `domains` and `test/domains` of the base directory.
 
 <br>
 
-== 2. Initial state ==
+== Initial state ==
 
 The initial state for the domain defines the variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
 
@@ -78,7 +78,7 @@ Here is a simple example of initial state variable:
 
 Probability distributions can also be defined for a continuous range, as explained below. 
 
-== 3. Parameters ==
+== Parameters ==
 
 As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown and must be estimated from data. Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
 
@@ -114,7 +114,7 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 }}}
 
 
-== 4. Models ==
+== Models ==
 
 A dialogue model is essentially defined as a set of probabilistic rules combined with one or more "trigger variables" that defines when the rules are to be applied:
 {{{
@@ -295,7 +295,7 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 }}}
 
 
-== 5. Settings ==
+== Settings ==
 
 In addition to an initial state, parameters and rule-structured models, a dialogue domain can also include particular system settings to override the default values.`[2]`
 
