@@ -4,9 +4,9 @@
 
 This section details how to practically encode dialogue domains for !OpenDial using XML.
 
-== General structure ==
+== 1. General structure ==
 
-An !OpenDial dialogue domain follows the skeleton below:
+A well-formed !OpenDial dialogue domain follows the skeleton below:
 {{{
 <domain>
 
@@ -50,13 +50,20 @@ For more complex domains, the domain specification can be split in several files
 
 Examples of domain specifications can be found in the directory `domains` and `test/domains` of the base directory.
 
+*XML format for `<domain>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `<initialstate>` || Element || 0-1 || Initial state for the dialogue domain ||
+|| `<parameters>` || Element || 0-1 || Prior parameter distributions ||
+|| `<model trigger="...">` || Element || 0-n || Dialogue model ||
+|| `<settings>` || Element || 0-1 || Domain-specific system settings ||
+
 <br>
 
-== Initial state ==
+== 2. Initial state ==
 
 The initial state for the domain defines the variables included in the dialogue state upon starting the dialogue system. Each variable has a particular identifier and a probability distribution.
 
-Variables with a discrete range of values are defined in this manner:
+Variables with a discrete range of values are defined as simple categorical tables:
 {{{
 <variable id="variable_id">
   <value prob="probability for first value">first value</value>
@@ -76,11 +83,24 @@ Here is a simple example of initial state variable:
 </variable>
 }}}
 
-Probability distributions can also be defined for a continuous range, as explained below. 
+Probability distributions can also be defined for a continuous range, using the XML element `<distrib type="...">` (see below).
 
-== Parameters ==
+*XML format for `<initialstate>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `<variable id="...">` || Element || 0-n || State variable ||
 
-As shall be explained in the next section, probabilistic rules can include parameters whose values is initially unknown and must be estimated from data. Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values.
+*XML format for `<variable>` in `<initialstate>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `id` || Attribute || 1 || Variable label ||
+|| `<value prob="p">` || Element || 1-n || Possible value for the variable with probability `p`.  If the attribute `prob` is omitted,<br> the probability is assumed to be 1.||
+|| _or_ `<distrib type="...">` || Element || 0-1 || _cf. below_ ||
+
+Note that a couple of special characters should be avoided when choosing variable labels.  Variables should _*not*_ include primes ', curly or square brackets. Furthermore, variables ending with `^p`, `^t` and `^o` have a special function (`^p` denotes [AdvancedModelling#Predictive predictive variables], `^t` denotes temporary variables that are deleted after each update loop, and `^o` denotes output variables for [ParameterEstimation#Learning_from_(real_or_simulated)_interactions user simulators]). 
+<br>
+
+== 3. Parameters ==
+
+Probabilistic rules can include parameters whose values is initially unknown and must be estimated from data. As !OpenDial adopts a Bayesian learning approach, each parameter must be associated with an prior distribution over its (usually continuous) range of possible values.
 
 Parameters are defined in exactly the same way as state variables. Their distributions are defined in a parametric manner: 
 
@@ -113,8 +133,32 @@ Parameters are defined in exactly the same way as state variables. Their distrib
 </variable>
 }}}
 
+*XML format for `<parameters>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `<variable id="...">` || Element || 0-n || State variable ||
 
-== Models ==
+*XML format for `<variable>` in `<parameters>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `id` || Attribute || 1 || Variable label ||
+|| `<distrib type="x">` || Element || 1 || Density function of type "`gaussian`", "`uniform`" or "`dirichlet`".||
+
+*XML format for `<distrib type="uniform">`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `min` || Element || 1 || Minimum value ||
+|| `max` || Element || 1 || Maximum value ||
+
+*XML format for `<distrib type="gaussian">`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `mean` || Element || 1 || Mean ||
+|| `variance` || Element || 1 || Variance ||
+
+*XML format for `<distrib type="dirichlet">`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `alpha` || Element || 1-n || Alpha values (the number of alphas corresponding to the dimension) ||
+
+<br>
+
+== 4. Models ==
 
 A dialogue model is essentially defined as a set of probabilistic rules combined with one or more "trigger variables" that defines when the rules are to be applied:
 {{{
@@ -137,7 +181,15 @@ A dialogue model is essentially defined as a set of probabilistic rules combined
 </model>
 }}}
 
-The trigger variables must be separated by a comma. The rules can either encode probability or utility rules, as explained below (also see [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis] for more explanations).
+The trigger variables must be separated by a comma. The rules can either encode probability or utility rules, as we explain below.
+
+*XML format for `<model>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `id` || Attribute || 0-1 || (optional) name for the model ||
+|| `trigger` || Attribute || 1 || Comma-separated list of trigger variables ||
+|| `<rule>` || Element || 1-n || Probability or utility rule ||
+
+<br>
 
 === Probability rules ===
 
@@ -155,7 +207,7 @@ else
 
 In XML, these probability rules are expressed as (ordered) list of `case`s.  Each `case` has a (possibly empty) `condition` and a list of alternative `effect`s (each with a particular probability). 
 
-Here is one concrete example of probability rule (corresponding to the rule r,,1,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 65):
+Here is one concrete example of probability rule (corresponding to the rule r,,1,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 65):
 {{{
 
 <rule id="r1">
@@ -184,17 +236,42 @@ Here is one concrete example of probability rule (corresponding to the rule r,,1
 
 Rule r,,1,, simply indicates that the probability of a fire if there is no rain and a hot weather is 0.03, while this probability is 0.01 in other cases. 
 
+
+*XML format for `<rule>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `id` || Attribute || 0-1 || (optional) name for the rule ||
+|| `<case>` || Element || 1-n || List of rule cases ||
+
+*XML format for `<case>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `<condition>` || Element || 0-1 || Condition for the case.  If omitted, !OpenDial assumes<br> an empty (i.e. trivially true) condition. ||
+|| `<effect>` || Element || 1-n || List of alternative effects for the case ||
+
+<br>
+
 We now detail how the conditions and effects are practically specified.
 
 ==== Conditions ====
 
-As exemplified in the rule above, the `condition` XML node is composed of a list of basic conditions.  Each basic condition is written as an `<if .../>` markup with three attributes:
+As exemplified in the rule above, the `condition` XML node is composed of a list of basic conditions.  
 
-|| `var` || Obligatory || The variable label ||
-|| `relation` || Optional ||  Binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than) and `in` (contains).  Default relation is equality. ||
-|| `value` || Obligatory || The variable value to check ||
 
-The basic conditions are linked together with either a conjunction (`and`) or a disjunction (`or`).  Default value is a conjunction.
+*XML format for `<condition>`:*^[2]^
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `operator` || Attribute || 0-1 || (Optional) logical operator.  Possible values are "`and`" and "`or`". Default value is "`and`". ||
+|| `<if ...>` || Element || 0-n || Basic condition. ||
+
+<br>
+
+Each basic condition is written as an `<if .../>` markup with three basic attributes:
+
+*XML format for `<condition>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `var` || Attribute || 1 || Variable label ||
+|| `relation` || Attribute || 0-1 || (Optional) binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than), `in` (contains), and `!in` (not contains).  Default relation is equality. ||
+|| `var` || Attribute || 1 || Variable value to check ||
+
+<br>
 
 
 ==== Effects ====
@@ -234,13 +311,27 @@ The probability of a particular effect can also be a parameter.  In this case, e
 </rule>
 }}}
 
-Note the brackets after the parameter name to indicate the mapping between particular effects and the dimension of the Dirichlet. 
+Note the brackets after the parameter name to refer to a specific dimension of the multivariate Dirichlet. 
+
+*XML format for `<effect>` (for probability rules):* ^[3]^
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `prob` || Attribute || 0-1 || Probability for the effect (either fixed or parameter). Default value is 1. ||
+|| `<set ...>` || Element || 1-n || Basic effect ||
+
+<br>
 
 Inside each `effect` is a list of basic assignment of values to variables.  Each assignment is defined by a `<set.../>` markup with two attributes: `var` and `value`.
 
+*XML format for `<set>`:*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `var` || Attribute || 1 || Variable label ||
+|| `value` || Element || 1-n || Variable value ||
+
+<br>
+
 === Utility rules ===
 
-Rule can also be employed to express utility models.  A utility rule defines the utility of particular actions (from the system perspective) depending on particular state variables.  The general skeleton remains similar to probability rules, with the difference that effects are this time associated to particular utilities instead of probabilities.  Here is an example of utility rule (rule r,,2,, of [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf my Ph.D. thesis], p. 69):
+Rule can also be employed to express utility models.  A utility rule defines the utility of particular actions (from the system perspective) depending on particular state variables.  The general skeleton remains similar to probability rules, with the difference that effects are this time associated to particular utilities instead of probabilities.  Here is an example of utility rule (rule r,,2,, of [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 69):
 {{{
 <rule id="r2">
   <case>
@@ -267,7 +358,7 @@ Rule can also be employed to express utility models.  A utility rule defines the
 
 Rule r,,2,, indicates that the utility of the `drop-water` action is +5 is there is a fire (and -1 otherwise), and that the utility of `wait` is -5 is there is a fire and 0 otherwise.
 
-Conditions are defined similarly to probability rules.  Effects also have a similar structure, with the `prob` attribute replaced by `util`.  The variables specified in the effect (`Tanker` in the above example) are action variables.
+Conditions are defined similarly to probability rules.  Effects also have a similar structure, with one exception: the `prob` attribute is replaced by `util`.  The variables specified in the effect (`Tanker` in the above example) are action variables.
 
 As for probability rules, utilities can be fixed or correspond to parameters to estimate.  For instance, rule r,,2,, can include four parameters that denote the respective utility of the system actions depending on the situation:
 {{{
@@ -295,9 +386,17 @@ As for probability rules, utilities can be fixed or correspond to parameters to 
 }}}
 
 
-== Settings ==
+*XML format for `<effect>` (for utility rules):*
+|| *Content* || *XML Type* || *Cardinality* || *Description* ||
+|| `util` || Attribute || 0-1 || Utility for the action (either fixed or parameter). Default value is 0. ||
+|| `<set ...>` || Element || 1-n || Basic effect ||
 
-In addition to an initial state, parameters and rule-structured models, a dialogue domain can also include particular system settings to override the default values.`[2]`
+<br>
+
+
+== 5. Settings ==
+
+In addition to an initial state, parameters and rule-structured models, a dialogue domain can also include particular system settings to override the default values.^[4]^
 
 The settings are defined as simple list of elements:
 {{{
@@ -310,21 +409,28 @@ The settings are defined as simple list of elements:
 
 These properties can also be modified through the GUI or by adding a `-Dproperty=value` flag to the command line.
 
-|| gui || Boolean || Whether to start the GUI or not ||
-|| user || String || Variable label for the user utterance ||
-|| system || String || Variable label for the system utterance ||
-|| monitor || Comma-separated list || Additional variables to monitor in the chat window ||
-|| samples || Integer || Number of samples to use when sampling ||
-|| timeout || Integer || Maximum sampling time (in milliseconds) ||
-|| discretisation || Integer || Number of buckets when converting continuous to discrete distributions ||
-|| horizon || Integer || Planning horizon ||
-|| discount || Double || Discount factor for horizons > 1 ||
-|| recording || `none`, `last` or `all` || Whether to keep a record of intermediary dialogue states <br> (either none, only for the last user input, or all dialogue states in the history) ||
-|| modules || Comma-separated list || List of classes implementing `Module` to attach to the dialogue system ||
+
+*XML format for `<settings>`:*
+|| *Content* || *XML Type* || *Value*|| *Cardinality* || *Description* ||
+|| gui || Element || Boolean || 0-1 || Whether to start the GUI or not ||
+|| user || Element || String || 0-1 || Variable label for the user utterance ||
+|| system || Element || String || 0-1 || Variable label for the system utterance ||
+|| monitor || Element || Comma-separated list || 0-1 || Additional variables to monitor in the chat window ||
+|| samples || Element || Integer || 0-1 || Number of samples to use when sampling ||
+|| timeout || Element || Integer || 0-1 || Maximum sampling time (in milliseconds) ||
+|| discretisation || Element || Integer || 0-1 || Number of buckets when converting continuous to discrete distributions ||
+|| horizon || Element || Integer || 0-1 || Planning horizon ||
+|| discount || Element || Double || 0-1 || Discount factor for horizons > 1 ||
+|| recording || Element || `none`, `last` or `all` || 0-1 || Whether to keep a record of intermediary dialogue states <br> (either none, only for the last user input, or all dialogue states in the history) ||
+|| modules || Element || Comma-separated list || 0-1 || List of classes implementing `Module` to attach to the dialogue system ||
 
 <br><br>
 ----
 
-`[1]` Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
+^[1]^ Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
 
-`[2]` The default settings can be found in the file `resources/settings.xml`.
+^[2]^ Conditions can also include the nested operators `<and>`, `<not>` and `<or>` (cf. [AdvancedModelling#Nested_conditions Advanced modelling: nested conditions]).
+
+^[3]^ In addition, effects can also include set-theoretic operations such as `<add ...>`, `<remove ...>` and `<clear ...> (cf. [AdvancedModelling#Operations_on_sets Operations on sets]).
+
+^[4]^ The default settings can be found in the file `resources/settings.xml`.
