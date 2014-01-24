@@ -1,0 +1,7 @@
+#summary How to estimate the parameters of probabilistic rules
+
+= Estimating rule parameters from data =
+
+== Learning from Wizard-of-Oz data ==
+
+== Learning from (real or simulated) interactions ==
