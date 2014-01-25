@@ -18,7 +18,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
 <br>
 
-Your feedback is much appreciated!  If you have any questions or problems with !OpenDial (or if you have any suggestions<br> to improve the software or this documentation), feel free to contact me, preferably by email: [mailto:plison@ifi.uio.no Pierre Lison].
+Your feedback is much appreciated!  If you have any questions, problems or suggestions about !OpenDial<br> or its documentation, feel free to contact me, preferably by email: [mailto:plison@ifi.uio.no Pierre Lison].
 <br><br>
 
 
