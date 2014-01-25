@@ -76,6 +76,7 @@ public class SamplingProcess extends AnytimeProcess {
 		if (!isTerminated) {
 			if (samples.size() == 0) {
 				log.debug("no samples for query: " + query);
+				query.getEvidence().clear();
 			}
 			else {
 				isTerminated = true;

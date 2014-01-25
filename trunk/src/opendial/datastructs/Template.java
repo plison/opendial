@@ -338,16 +338,25 @@ public class Template {
 
 
 	private String constructRegex(String init) {
-		String regex = new String(init);
-		regex = regex.replace("(", "\\(").replace(")", "\\)");
-		regex = regex.replace("[", "\\[").replace("]", "\\]");
-		regex = regex.replace("?", "\\?");
-		regex = regex.replace("* ", "*");
-		regex = regex.replace("{}", "\\{\\}");
-		regex = regex.replace("*", "(?:.*)");
-		regex = regex.replace("!", "\\!");
-		regex = regex.replace("^", "\\^");
-		return regex;
+		StringBuilder builder = new StringBuilder();
+		char[] charArr = init.toLowerCase().toCharArray();
+
+	    for(int i = 0; i < charArr.length; i++) {
+	        if (charArr[i] == '(') { builder.append("\\("); }
+	        else if (charArr[i] == ')') { builder.append("\\)"); }
+	        else if (charArr[i] == '[') { builder.append("\\["); }
+	        else if (charArr[i] == ']') { builder.append("\\]"); }
+	        else if (charArr[i] == '?') { builder.append("\\?"); }
+	        else if (charArr[i] == '!') { builder.append("\\!"); }
+	        else if (charArr[i] == '^') { builder.append("\\^"); }
+	        else if (charArr[i] == '*' && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
+	        else if (charArr[i] == '*') { builder.append("(?:.*)"); }
+	        else if (charArr[i] == '{' && charArr[i+1]=='}') { builder.append("\\{\\}"); i++; }
+	        else {
+	        	builder.append(charArr[i]);
+	        }
+	    }
+		return builder.toString();
 	}
 
 
