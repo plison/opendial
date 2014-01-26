@@ -2,6 +2,26 @@
 
 = Estimating rule parameters from data =
 
+The probabilities and utilities specified in the effects of probabilistic rules can be automatically optimised from dialogue data. !OpenDial relies on [http://artint.info/html/ArtInt_196.html Bayesian learning] to perform this parameter estimation.  Each (univariate or multivariate) parameter is therefore associated with a specific distribution that is progressively narrowed down as more data points are observed in order to provide the best "fit" for the observed data.
+
+== Learning from raw dialogues ==
+
+Some parameters can be learned from raw, unannotated dialogues.  Take for instance the dialogue domain described in the [SimpleExample step-by-step example].  The parameter `theta_repeatpredict` (which reflects the probability that the user will comply to the system request to repeat the instruction) can be automatically estimated by interacting with users. Each observed dialogue act `a_u` after a system request `AskRepeat` will thus trigger a Bayesian update of the parameter.
+
+One can easily test this learning mechanism by starting !OpenDial with the domain domains/examples/example-step-by-step.xml and entering a few commands with a low probability (in order to trigger the `AskRepeat` response).  The state viewer shows how the prior prediction `a_u^p` and the actual dialogue act `a_u'` are combined.  
+
+<p align="center"> 
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png"><br><br>
+
+The parameter `theta_repeatpredict` is automatically refined as a result of this update.
+
+Once the interaction is complete, the posterior parameter distributions can be easily exported by clicking on Domains -> Export -> Parameters. As the posterior distribution of `theta_repeatpredict` may not be a Dirichlet distribution anymore due to the partial observability of the graphical model, the posterior distribution is encoded as a multivariate Gaussian distribution (with a diagonal covariance).
+
+
 == Learning from Wizard-of-Oz data ==
 
+Although the probability parameter `theta_repeatpredict` on the predicted user act could be directly estimated from raw dialogues, this 
+is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
+
+One simple way to estimate such utility parameters is to collect Wizard-of-Oz data. 
 == Learning from (real or simulated) interactions ==
