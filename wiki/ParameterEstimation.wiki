@@ -17,12 +17,16 @@ The parameter `theta_repeatpredict` is automatically refined as a result of this
 
 Once the interaction is complete, the posterior parameter distributions can be exported by clicking on `Domains -> Export -> Parameters`. As the posterior distribution of `theta_repeatpredict` may not be a Dirichlet distribution anymore due to the partial observability of the graphical model, the posterior distribution is encoded as a multivariate Gaussian distribution (with a diagonal covariance).
 
+In order to record a given dialogue history, the user can simply click on `Interactions -> Save Dialogue As...`.  Similarly, previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This functionality enables the system designer to "replay" a previous interaction, including the Bayesian update of parameters.
+
 == Learning from Wizard-of-Oz data ==
 
 Although the probability parameter `theta_repeatpredict` on the predicted user act could be directly estimated from raw dialogues, this 
 is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
 
 One simple way to estimate such utility parameters is to collect Wizard-of-Oz data. A Wizard-of-Oz experiment is an interaction in which a human user is asked to interact with a system that is remotely operated by a human agent.  Learning from Wizard-of-Oz data is equivalent to learning "by imitation", as the system will seek to find the parameter values that can best reproduce the conversational behaviour of the wizard.
+
+=== Collecting Wizard-of-Oz data through !OpenDial === 
 
 A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  The Wizard-of-Oz mode delegates to the Wizard the responsability of selecting the system actions.  
 
@@ -33,6 +37,6 @@ When a new user input is received, !OpenDial will therefore trigger the domain m
 
 Note that the action selection box only displays actions that are relevant in the current situation (i.e. for which at least one utility rule specifies a utility). After observing the user input `a_u=Request(Left)`, three actions will therefore be available to the wizard: `Move(Left)`, `AskRepeat`, as well as the default `None` (representing the absence of any action).  
 
-One a Wizard-of-Oz interaction is complete, it can be saved to a file by clicking on `Interaction -> Save Dialogue As...`.  The dialogue can then be imported at any time in order to estimate the posterior distributions of the domain parameters given the Wizard action choices.
+As for any dialogue, Wizard-of-Oz interactions can be saved to a file by clicking on `Interactions -> Save Dialogue As` and replayed at a later time to re-run the parameter estimation.
 
 == Learning from (real or simulated) interactions ==
