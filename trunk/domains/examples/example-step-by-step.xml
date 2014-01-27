@@ -93,6 +93,14 @@
 			</case>
 		</rule>
 
+		<rule id ="negative">
+			<case>
+				<effect util="-0.5">
+					<set var="a_m" value="Move(*)" />
+				</effect>
+			</case>
+		</rule>
+
 
 		<rule id="repeat">
 			<case>
