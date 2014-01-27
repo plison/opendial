@@ -69,7 +69,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * Creates a new density function with the given mean and variance vector.
 	 * Only diagonal coveriance are currently supported
 	 * 
-	 * @param mean[] the Gaussian mean vector
+	 * @param mean the Gaussian mean vector
 	 * @param variance the variances for each dimension
 	 */
 	public GaussianDensityFunction(Double[] mean, Double[] variance) {
@@ -91,7 +91,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	/**
 	 * Creates a new, univariate density function with a given mean and variance
 	 *
-	 * @param mean[] the Gaussian mean 
+	 * @param mean the Gaussian mean 
 	 * @param variance the variance
 	 */
 	public GaussianDensityFunction(Double mean, Double variance) {

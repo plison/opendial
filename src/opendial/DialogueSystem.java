@@ -212,7 +212,7 @@ public class DialogueSystem {
 	 * Detaches the module of the dialogue system.  If the module is
 	 * not included in the system, does nothing.
 	 * 
-	 * @param module the module to detach
+	 * @param moduleClass the class of the module to detach.
 	 */
 	public void detachModule(Class<? extends Module> moduleClass) {
 		Module module = getModule(moduleClass);
@@ -226,16 +226,16 @@ public class DialogueSystem {
 	/**
 	 * Pauses or resumes the dialogue system.
 	 * 
-	 * @param shouldBePaused whether the system should be paused or resumed.
+	 * @param toPause whether the system should be paused or resumed.
 	 */
-	public void pause(boolean shouldBePaused) {
-		paused = shouldBePaused;
-		recordComment((shouldBePaused)? "system paused" : "system resumed");
+	public void pause(boolean toPause) {
+		paused = toPause;
+		recordComment((toPause)? "system paused" : "system resumed");
 
 		for (Module module : modules) {
-			module.pause(shouldBePaused);
+			module.pause(toPause);
 		}
-		if (!shouldBePaused && !curState.getNewVariables().isEmpty()) {
+		if (!toPause && !curState.getNewVariables().isEmpty()) {
 			 synchronized (curState) {
 					update();
 				}
@@ -308,7 +308,7 @@ public class DialogueSystem {
 	 * Adds the content (expressed as a certain assignment over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
-	 * @param table the categorical table to add
+	 * @param assign the value assignment to add
 	 * @throws DialException if the state could not be updated.
 	 */
 	public void addContent(Assignment assign) throws DialException {
@@ -345,7 +345,6 @@ public class DialogueSystem {
 	protected void update() {
 		
 		while (!curState.getNewVariables().isEmpty()) {
-			
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
 			

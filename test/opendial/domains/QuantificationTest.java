@@ -23,7 +23,6 @@ package opendial.domains;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.ProbQuery;

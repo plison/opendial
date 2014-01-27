@@ -36,6 +36,7 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.utils.StringUtils;
 
 /**
  * Simulator for the user/environment.  The simulator generated new environment observations
@@ -72,7 +73,7 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param simDomain the dialogue domain for the simulator
+	 * @param domain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system, Domain domain) throws DialException {
@@ -134,8 +135,8 @@ public class Simulator implements Module {
 	 * Triggers the simulator by updating the simulator state and generating new observations
 	 * and user inputs.
 	 * 
-	 * @param the dialogue state of the main dialogue system
-	 * @param the updated variables in the dialogue system
+	 * @param systemState the dialogue state of the main dialogue system
+	 * @param updatedVars the updated variables in the dialogue system
 	 */
 	@Override
 	public void trigger(final DialogueState systemState, Collection<String> updatedVars) {
@@ -191,10 +192,11 @@ public class Simulator implements Module {
 
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
 				double reward = simulatorState.queryUtil();
-				system.recordComment("Reward: " + reward);
+				String comment = "Reward: " + StringUtils.getShortForm(reward);
+				system.recordComment(comment);
+				log.debug(comment);
 				system.getState().addEvidence(new Assignment(
 						"R(" + systemAction.addPrimes()+")", reward));
-				log.debug("Reward: " + reward);
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 

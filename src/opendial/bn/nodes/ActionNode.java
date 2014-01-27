@@ -170,8 +170,7 @@ public class ActionNode extends BNode {
 	 * Returns a sample point for the action, assuming a uniform distribution
 	 * over the action values
 	 * 
-	 * @param sample
-	 * @return
+	 * @return the sample value
 	 */
 	public Value sample() { 
 		int index = sampler.nextInt(actionValues.size());
@@ -183,8 +182,8 @@ public class ActionNode extends BNode {
 	 * Returns a sample point for the action, assuming a uniform distribution
 	 * over the action values
 	 * 
-	 * @param sample
-	 * @return
+	 * @param input the input assignment
+	 * @return the sample value
 	 */
 	public Value sample(Assignment input) {
 		int index = sampler.nextInt(actionValues.size());

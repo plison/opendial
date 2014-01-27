@@ -48,8 +48,8 @@ public final class NoneVal implements Value {
 	/**
 	 * Returns true if both values are none
 	 *
-	 * @param o
-	 * @return
+	 * @param o the object
+	 * @return true if equals, false otherwise
 	 */
 	@Override
 	public boolean equals (Object o) {
@@ -86,6 +86,14 @@ public final class NoneVal implements Value {
 	}
 
 	
+	
+	/**
+	 * True if subvalue is contained in the current instance, and false
+	 * otherwise
+	 * 
+	 * @param subvalue the possibly contained value
+	 * @return true if contained, false otherwise
+	 */
 	@Override
 	public boolean contains(Value subvalue) {
 		return false;

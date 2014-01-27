@@ -112,7 +112,6 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
 	 * 
-	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
 	 * @throws DialException 
 	 */

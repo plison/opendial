@@ -40,7 +40,8 @@ public interface DeterministicFunction {
 	
 	/**
 	 * Returns a copy of the function
-	 * @return
+	 * 
+	 * @return the copy
 	 */
 	public DeterministicFunction copy();
 

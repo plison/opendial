@@ -302,8 +302,9 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 
 	/**
 	 * Returns true if the distribution is well-formed -- more specifically,
-	 * if the cumulative density function sums up to 1.0 as it should
-	 * @return
+	 * if the cumulative density function sums up to 1.0 as it should.
+	 * 
+	 * @return true if well-formed, false otherwise.
 	 */
 	@Override
 	public boolean isWellFormed() {

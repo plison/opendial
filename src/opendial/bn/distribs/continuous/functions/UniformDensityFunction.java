@@ -153,7 +153,7 @@ public class UniformDensityFunction implements DensityFunction {
 	/**
 	 * Returns a pretty print for the density function
 	 * 
-	 * @return
+	 * @return the pretty print for the density
 	 */
 	@Override
 	public String toString() {

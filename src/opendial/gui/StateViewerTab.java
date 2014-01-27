@@ -37,7 +37,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -171,11 +170,10 @@ public class StateViewerTab extends JComponent {
 	 * 
 	 * @param state the updated Bayesian Network
 	 */
-	public synchronized void trigger(DialogueState state, Collection<String> updatedVars) {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		
 		recordState(state, CURRENT_NAME);
 		listBox.setSelectedIndex(0);
-
 		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
 			if (mainFrame.getSystem().getSettings().recording == Recording.ALL) {
 				listModel.add(2, "separator-utterances");
@@ -197,7 +195,7 @@ public class StateViewerTab extends JComponent {
 				log.warning("cannot copy state : " + e);
 			}
 		}
-
+		
 		visualisation.showBayesianNetwork(state);
 	}
 	
@@ -218,8 +216,7 @@ public class StateViewerTab extends JComponent {
 			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size()) ; 
 			listModel.add(position,name);
 		}
-		listBox.validate();
-		listBox.repaint();
+		
 	}
 	
 	/**
@@ -231,8 +228,8 @@ public class StateViewerTab extends JComponent {
 		logArea.setText("<html><font face=\"helvetica\">"+ text + "</font></html>");
 	}
 	
-	public JFrame getMainFrame() {
-		return mainFrame.getFrame();
+	public GUIFrame getMainFrame() {
+		return mainFrame;
 	}
 
 	
@@ -250,7 +247,7 @@ public class StateViewerTab extends JComponent {
 	 */
 	private JPanel createLeftSide() {
 		JPanel leftPanel = new JPanel();
-		listModel = new DefaultListModel();
+		listModel = new CustomListModel();
 		leftPanel.setLayout(new BorderLayout());
 		listBox = new JList(listModel);
 		listBox.setCellRenderer(new JlistRenderer());
@@ -488,8 +485,22 @@ public class StateViewerTab extends JComponent {
 		}
 	}
 	
+
+final class CustomListModel extends DefaultListModel {
 	
-public class JlistRenderer extends JLabel implements ListCellRenderer {
+	@Override
+	public Object getElementAt(int index) {
+		if (index < super.size()) {
+			return super.getElementAt(index);
+		}
+		else {
+			return "";
+		}
+	}
+}
+	
+	
+ final class JlistRenderer extends JLabel implements ListCellRenderer {
     JSeparator separator;
     public JlistRenderer() {
       setOpaque(true);
@@ -519,5 +530,6 @@ public class JlistRenderer extends JLabel implements ListCellRenderer {
       return this;
     }
 }
+
 
 }

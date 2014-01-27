@@ -162,8 +162,8 @@ public class WizardLearner implements Module {
 			return;
 		}
 
-	//	log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
-	//			+ " ==> gold action = " + wizardAction);
+	/**	log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
+				+ " ==> gold action = " + wizardAction); */
 
 		for (WeightedSample sample : samples) {
 
@@ -172,8 +172,9 @@ public class WizardLearner implements Module {
 			copy.setUtil(sampleAssign, sample.getUtility());
 			int ranking = copy.getRanking(wizardAction);
 			if (ranking != -1) {
-				sample.addLogWeight(Math.log((GEOMETRIC_FACTOR 
-						* Math.pow(1-GEOMETRIC_FACTOR, ranking)) + 0.00001));
+				double logweight = Math.log((GEOMETRIC_FACTOR 
+						* Math.pow(1-GEOMETRIC_FACTOR, ranking)) + 0.00001);
+				sample.addLogWeight(logweight);
 			}				
 		}
 	}

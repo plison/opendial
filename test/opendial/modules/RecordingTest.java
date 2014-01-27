@@ -31,8 +31,6 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
-import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;

@@ -173,7 +173,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	/**
 	 * Queries for the utility without any particular query variable
 	 * 
-	 * @param BNetwork network
+	 * @param network the graphical model
 	 * @return the utility
 	 * @throws DialException if the inference operation failed
 	 */
