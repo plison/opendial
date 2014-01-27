@@ -142,7 +142,7 @@ We will therefore write a new model with one single probability rule and trigger
       </case>
       <case>
         <effect prob="1">
-          <set var="a_u" value="Unknown" />
+          <set var="a_u" value="None" />
         </effect>
       </case>
     </rule>
