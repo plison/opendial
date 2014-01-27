@@ -7,7 +7,7 @@
 		<variable id="theta_repeat">
 			<distrib type="gaussian">
 				<mean>0</mean>
-				<variance>5</variance>
+				<variance>1</variance>
 			</distrib>
 		</variable>
 
@@ -73,7 +73,7 @@
 			</case>
 			<case>
 				<effect>
-					<set var="a_u" value="Unknown" />
+					<set var="a_u" value="None" />
 				</effect>
 			</case>
 		</rule>
@@ -82,7 +82,7 @@
 	<!-- Action selection model -->
 	<model trigger="a_u">
 
-		<rule>
+		<rule id="movement">
 			<case>
 				<condition>
 					<if var="a_u" value="Request({X})" />
@@ -93,7 +93,7 @@
 			</case>
 		</rule>
 
-		<rule>
+		<rule id ="negative">
 			<case>
 				<effect util="-0.5">
 					<set var="a_m" value="Move(*)" />
@@ -102,7 +102,7 @@
 		</rule>
 
 
-		<rule>
+		<rule id="repeat">
 			<case>
 				<effect util="theta_repeat">
 					<set var="a_m" value="AskRepeat" />

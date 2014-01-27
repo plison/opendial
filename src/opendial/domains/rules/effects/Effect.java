@@ -185,6 +185,9 @@ public class Effect implements Value {
 			if (e.getType() == EffectType.CLEAR) {
 				result.add(e.getVariable().getRawString());
 			}
+			else if (e.getType() == EffectType.SET && e.getValue().equals(ValueFactory.none())) {
+				result.add(e.getVariable().getRawString());				
+			}
 		}
 		return result;
 	}
