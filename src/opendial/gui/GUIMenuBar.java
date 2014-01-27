@@ -55,6 +55,7 @@ import opendial.domains.Domain;
 import opendial.modules.DialogueImporter;
 import opendial.modules.DialogueRecorder;
 import opendial.modules.WizardControl;
+import opendial.modules.WizardLearner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
@@ -346,7 +347,7 @@ public class GUIMenuBar extends JMenuBar {
 
 	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
-				frame.getSystem().attachModule(WizardControl.class);
+			frame.getSystem().attachModule(WizardControl.class);
 				frame.addComment("Switching interaction to Wizard-of-Oz mode");
 
 		}

@@ -28,6 +28,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -121,6 +122,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 */
 	@Override
 	public BNetwork reduce(ReductionQuery query) throws DialException {
+		
 		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds()) && query.getEvidence().isEmpty()) {	
 			BNetwork subnetwork = query.getNetwork();
 			return subnetwork;

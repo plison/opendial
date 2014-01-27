@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -107,7 +108,7 @@ public class WizardControl implements Module {
 	
 	
 	@SuppressWarnings("serial")
-	public void addActionSelection(ActionNode actionNode) {
+	public void addActionSelection(ActionNode actionNode) throws DialException {
 		
 		DefaultListModel model = new DefaultListModel();
 		for (Value v : actionNode.getValues()) {
@@ -124,7 +125,7 @@ public class WizardControl implements Module {
 		container.setLayout(new BorderLayout());
 		container.add(scrollPane);
 		final JButton button = new JButton("Select");
-		button.addActionListener(new WizardBoxListener(listBox, actionNode.getId().replace("'", "")));
+		button.addActionListener(new WizardBoxListener(listBox, actionNode.getId().replace("'", ""), system.getState().copy()));
 
 		InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
@@ -150,10 +151,12 @@ public class WizardControl implements Module {
 
 		JList listBox;
 		String actionVar;
+		DialogueState copy;
 		
-		public WizardBoxListener(JList listBox, String actionVar) {
+		public WizardBoxListener(JList listBox, String actionVar, DialogueState copy) {
 			this.listBox = listBox;
 			this.actionVar = actionVar;
+			this.copy = copy;
 		}
 		
 		@Override
@@ -164,6 +167,10 @@ public class WizardControl implements Module {
 				Assignment action = new Assignment(actionVar, actionValue);
 				if (system.getModule(DialogueRecorder.class) != null) {
 					system.getModule(DialogueRecorder.class).addWizardAction(action);
+				}
+				Set<String> updatedParams = WizardLearner.learnFromWizardAction(copy, action.addPrimes());
+				for (String param : updatedParams) {
+					system.getState().getChanceNode(param).setDistrib(copy.getChanceNode(param).getDistrib());
 				}
 				system.addContent(action);
 				gui.getChatTab().remove(gui.getChatTab().getComponent(2));

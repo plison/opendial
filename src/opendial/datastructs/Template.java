@@ -323,7 +323,6 @@ public class Template {
 	public static boolean isWhitespaceOrPunctuation(char c) {
 		return Character.isWhitespace(c) 
 				||	c == ','
-				||	c == '\''
 				|| c == '.'
 				|| c == '!'
 				|| c == '?'
@@ -337,7 +336,7 @@ public class Template {
 	}
 
 
-	private String constructRegex(String init) {
+	private static String constructRegex(String init) {
 		StringBuilder builder = new StringBuilder();
 		char[] charArr = init.toLowerCase().toCharArray();
 

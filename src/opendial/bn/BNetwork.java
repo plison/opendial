@@ -544,13 +544,7 @@ public class BNetwork {
 			for (BNode n : sorted) {
 				if (clique.contains(n.getId())) {
 					BNode copy = n.copy();
-					if (n instanceof ChanceNode 
-							&& ((ChanceNode)n).getDistrib() instanceof MarginalEmpiricalDistribution
-							&& !clique.containsAll(((MarginalEmpiricalDistribution)((ChanceNode)n).
-									getDistrib()).getFullSample().getVariables())) {
-						((ChanceNode)n).setDistrib(((MarginalEmpiricalDistribution)
-								((ChanceNode)n).getDistrib()).trim(clique));
-					}
+
 					for (String input : n.getInputNodeIds()) {
 						if (!subnetwork.hasNode(input)) {
 							log.warning("problem in the topological ordering of the nodes");

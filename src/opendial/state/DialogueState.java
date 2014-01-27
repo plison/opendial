@@ -427,7 +427,7 @@ public class DialogueState extends BNetwork {
 				}
 			}
 			for (String currentVar : getChanceNodeIds()) {
-				if (!currentVar.contains("'") && t.match(currentVar, true).isMatching()) {
+				if (t.match(currentVar, true).isMatching()) {
 					inputVars.add(getChanceNode(currentVar));
 				}
 			}
