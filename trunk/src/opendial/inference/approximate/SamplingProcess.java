@@ -2,7 +2,10 @@ package opendial.inference.approximate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import opendial.arch.AnytimeProcess;
@@ -10,6 +13,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
+import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -17,6 +21,8 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.inference.SwitchingAlgorithm;
+import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 
 /**
@@ -51,7 +57,7 @@ public class SamplingProcess extends AnytimeProcess {
 	//  PUBLIC METHODS
 	// ===================================
 
-	
+
 	/**
 	 * Creates a new sampling query with the given arguments
 	 * 
@@ -65,7 +71,7 @@ public class SamplingProcess extends AnytimeProcess {
 		samples = new Stack<WeightedSample>();
 		this.nbSamples = nbSamples;
 	}
-	
+
 
 	/**
 	 * Terminates all sampling threads, compile their results, and notifies
@@ -104,10 +110,9 @@ public class SamplingProcess extends AnytimeProcess {
 	 */
 	@Override
 	public void run() {
-
 		List<BNode> sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
-		
+
 		// continue until the thread is marked as finished
 		while (!isTerminated) {
 			try {
@@ -145,16 +150,16 @@ public class SamplingProcess extends AnytimeProcess {
 				if (sample.getWeight() > WEIGHT_THRESHOLD) {
 					addSample(sample);
 				}
-				
+
 			}
 			catch (DialException e) {
 				log.info("exception caught: " + e);
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the collected samples
 	 * 
@@ -172,7 +177,7 @@ public class SamplingProcess extends AnytimeProcess {
 	//  PRIVATE METHODS
 	// ===================================
 
-	
+
 	/**
 	 * Adds a sample to the stack of collected samples.  If the desired
 	 * number of samples is achieved, terminate the sample collection.
@@ -191,7 +196,7 @@ public class SamplingProcess extends AnytimeProcess {
 		}
 	}
 
-	
+
 	/**
 	 * Extracts the samples that are already available from a previous 
 	 * sampling operation and adds them to the new sample.
@@ -199,12 +204,30 @@ public class SamplingProcess extends AnytimeProcess {
 	 * @throws DialException
 	 */
 	private void addReadySample(WeightedSample sample) throws DialException {
-		for (ChanceNode cn : new ArrayList<ChanceNode>(query.getNetwork().getChanceNodes())) {
-			if (cn.getDistrib() instanceof MarginalEmpiricalDistribution) {
-				Assignment fullSample = ((MarginalEmpiricalDistribution)cn.getDistrib()).
-						getFullDistrib().consistentSample(query.getEvidence());
-				sample.addAssignment(fullSample);
+		try {
+			for (ChanceNode cn : query.getNetwork().getChanceNodes()) {
+				if (sample.containsVar(cn.getId())) {
+					continue;
+				}
+				if (cn.getDistrib() instanceof MarginalEmpiricalDistribution) {
+					EmpiricalDistribution fullDistrib = ((MarginalEmpiricalDistribution)cn.getDistrib()).getFullDistrib();				
+					Assignment a = new Assignment(fullDistrib.getCompatibleSample(query.getEvidence()));
+					for (String var : new ArrayList<String>(a.getVariables())) {
+						if (!query.getNetwork().hasChanceNode(var)
+							|| !(query.getNetwork().getChanceNode(var).getDistrib() 
+								instanceof MarginalEmpiricalDistribution)
+							|| ((MarginalEmpiricalDistribution)query.getNetwork().getChanceNode(var)
+								.getDistrib()).getFullDistrib() != fullDistrib) {
+							a.removePair(var);
+						}
+					}
+					sample.addAssignment(a);
+				}
 			}
+		}
+		catch (ConcurrentModificationException e) {
+			log.debug("exception : " +e);
+			addReadySample(sample);
 		}
 	}
 
@@ -240,7 +263,7 @@ public class SamplingProcess extends AnytimeProcess {
 		}
 	}
 
-	
+
 	/**
 	 * Samples the action node.  If the node is part of the evidence, simply add it to 
 	 * the sample. Else, samples an action at random.

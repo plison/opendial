@@ -25,6 +25,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
 
@@ -82,19 +83,23 @@ public class SimulatorTest {
 		Simulator sim = new Simulator(system, simDomain3);
 		system.attachModule(sim);
 		system.getSettings().showGUI = false;
-		
+		Settings.nbSamples = Settings.nbSamples * 2;
 		system.startSystem();
-		Thread.sleep(5000);
+		Thread.sleep(4000);
 		system.pause(true);
-
-		log.debug("theta_correct " + system.getContent("theta_correct"));
-		log.debug("theta_incorrect " + system.getContent("theta_incorrect"));
-		log.debug("theta_repeat " + system.getContent("theta_repeat"));
-		assertEquals(2.0, system.getContent("theta_correct").toContinuous().getFunction().getMean()[0], 0.6);
-		assertEquals(-2.0, system.getContent("theta_incorrect").toContinuous().getFunction().getMean()[0], 0.6);
-		assertEquals(0.5, system.getContent("theta_repeat").toContinuous().getFunction().getMean()[0], 0.3);
+		Thread.sleep(100);
 		
+		IndependentProbDistribution theta_correct = system.getContent("theta_correct");
+		IndependentProbDistribution theta_incorrect = system.getContent("theta_incorrect");
+		IndependentProbDistribution theta_repeat = system.getContent("theta_repeat");
+		log.debug("theta_correct " + theta_correct);
+		log.debug("theta_incorrect " + theta_incorrect);
+		log.debug("theta_repeat " + theta_repeat);
+		assertEquals(2.0, theta_correct.toContinuous().getFunction().getMean()[0], 0.6);
+		assertEquals(-2.0, theta_incorrect.toContinuous().getFunction().getMean()[0], 0.6);
+		assertEquals(0.5, theta_repeat.toContinuous().getFunction().getMean()[0], 0.3);
 		
+		Settings.nbSamples = Settings.nbSamples  / 2;
 	}
 	
 	private static void checkCondition(String str) {

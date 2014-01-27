@@ -273,20 +273,20 @@ public class AnchoredRule {
 	 */
 	public Output getMatchingOutput(Assignment input) {
 
-		Assignment input2 = input.getTrimmed(inputs.getVariables());
+		Assignment ruleInput = input.getTrimmed(inputs.getVariables());
 
-		if (cache.containsKey(input2)) {
-			return cache.get(input2);
+		if (cache.containsKey(ruleInput)) {
+			return cache.get(ruleInput);
 		}
 		
 		Output output = new Output(rule.getRuleType());
 		for (Assignment grounding :groundings) {
 			
-			Assignment fullInput = new Assignment(input2, grounding);
+			Assignment fullInput = new Assignment(ruleInput, grounding);
 			RuleCase matchingOutput = rule.getMatchingCase(fullInput);	
 			output.addCase(matchingOutput);
 		}
-		cache.put(input2, output);
+		cache.put(ruleInput, output);
 		return output;
 	}
 	

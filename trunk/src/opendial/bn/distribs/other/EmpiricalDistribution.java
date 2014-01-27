@@ -164,27 +164,6 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		pruned = true;
 	}
 
-
-	public EmpiricalDistribution trim(Set<String> nodeIds) {
-		if (getHeadVariables().equals(nodeIds)) {
-			return this;
-		}
-		EmpiricalDistribution trimmedDistrib = new EmpiricalDistribution();
-		boolean isContained = false;
-		for (String var : nodeIds) {
-			if (variables.contains(var)) {
-				isContained = true;
-			}
-		}
-		if (isContained) {
-			for (Assignment sample : samples) {
-				Assignment trimmedSample = sample.getTrimmed(nodeIds);
-				trimmedDistrib.addSample(trimmedSample);
-			}
-		}
-		return trimmedDistrib;
-	}
-
 	
 
 	// ===================================
@@ -237,7 +216,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 	
 	
-	public Assignment consistentSample(Assignment evidence) throws DialException {
+	public Assignment getCompatibleSample(Assignment evidence) throws DialException {
 		for (int i = 0 ; i < 10 ; i++) {
 			Assignment sampled = sample();
 			if (sampled.consistentWith(evidence)) {
@@ -529,6 +508,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		}
 		return toDiscrete().generateXML(document); 
 	}
+
 
 
 

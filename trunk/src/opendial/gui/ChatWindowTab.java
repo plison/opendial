@@ -294,7 +294,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 				showVariable((CategoricalTable)distrib);
 			}
 			else {
-				showVariable(state.queryProb(system.getSettings().systemOutput).toDiscrete());
+				showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
 			}
 			}
 			catch (DialException e) {

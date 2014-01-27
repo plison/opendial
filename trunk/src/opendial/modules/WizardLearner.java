@@ -96,9 +96,17 @@ public class WizardLearner implements Module {
 	}
 
 
-
-	private void learnFromWizardAction(DialogueState state, Assignment wizardAction) {
-		try {
+	/**
+	 * Updates the domain parameters given the wizard action selected at the provided 
+	 * dialogue state, and returns the list of updated parameters.
+	 * 
+	 * @param state the dialogue state to update
+	 * @param wizardAction the wizard action
+	 * @return the list of updated parameters
+	 * @throws DialException if the update fails
+	 */
+	protected static Set<String> learnFromWizardAction(DialogueState state, 
+			Assignment wizardAction) throws DialException {
 			
 			// determine the relevant parameters (discard the isolated ones)
 			Set<String> relevantParams = new HashSet<String>();
@@ -106,8 +114,7 @@ public class WizardLearner implements Module {
 				if (!state.getChanceNode(param).getOutputNodesIds().isEmpty()) {
 					relevantParams.add(param);
 				}
-			}
-			
+			}			
 			if (!relevantParams.isEmpty()) {
 								
 				// creates a new query thread
@@ -134,16 +141,14 @@ public class WizardLearner implements Module {
 					paramNode.setDistrib(newDistrib);
 				}
 			}
-		}
-		catch (DialException e) {
-			log.warning("could not learn from wizard action: " + e);
-		}
+			
+			return relevantParams;
 	}
 
 	
 
 
-	private void reweightSamples(Stack<WeightedSample> samples,
+	private static void reweightSamples(Stack<WeightedSample> samples,
 			Assignment wizardAction) {
 
 		UtilityTable averages = new UtilityTable();
@@ -157,8 +162,8 @@ public class WizardLearner implements Module {
 			return;
 		}
 
-	//	log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
-	//			+ " ==> gold action = " + wizardAction);
+		log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
+				+ " ==> gold action = " + wizardAction);
 
 		for (WeightedSample sample : samples) {
 
