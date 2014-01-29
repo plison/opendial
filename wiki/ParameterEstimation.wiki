@@ -95,6 +95,10 @@ An example of such simulator domain is provided in [http://opendial.googlecode.c
  * Some state variables are labelled with an `^o` suffix.  This suffix is used to indicate which variables are intended to be part of the generated output of the simulator (the remaining variables are internal to the simulator). In the case of the simulator domain in `example-simulator.xml`, the only output variable is the user dialogue act.  More complex domains may however include other contextual variables.
  * Note the use of a Dirichlet parameter called `error`.  This parameter is employed as the _error model_ of the simulator.  At runtime, the simulator will sample a particular (multivariate) value from this Dirichlet and use it to determine the confidence score of the user input.
 
+In order to run the simulator, one can simply click on `Options > Load Modules`, activate the simulator module and indicate the dialogue domain that should be used for the simulation. 
+
+More advanced simulators can be constructed as separate modules, as explained in [BuildingDialogueSystem Building up a complete dialogue system].
+
 <br><br>
 
 ----
