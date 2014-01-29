@@ -1,6 +1,6 @@
 #summary How to estimate the parameters of probabilistic rules
 
-= Parameter estimation =
+= Learning rule parameters from data =
 
 The probabilities and utilities specified in the effects of probabilistic rules can be automatically optimised from dialogue data. !OpenDial relies on [http://artint.info/html/ArtInt_196.html Bayesian learning] to perform this parameter estimation.  Each (univariate or multivariate) parameter is therefore associated with a specific distribution that is progressively narrowed down as more data points are observed in order to provide the best "fit" for the observed data.
 
@@ -52,9 +52,9 @@ As for any dialogue, Wizard-of-Oz interactions can be saved to a file by clickin
 
 Previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This function does more than simply displaying the dialogue history in the chat window - it actually "replays" the full interaction, performing dialogue update at each step (including the update of parameter distributions). This import function is therefore a crucial tool to estimate model parameters based on previously recorded dialogue data. 
 
-= 2. Supervised learning of parameters ==
+== 2. Parameter estimation ==
 
-=== Learning from raw dialogues ===
+=== With unannotated dialogues ===
 
 Some parameters can be directly learned from raw, unannotated dialogues.  Take for instance the dialogue domain described in the [SimpleExample step-by-step example].  The parameter `theta_repeatpredict` (which reflects the probability that the user will comply to the system request to repeat the instruction) can be automatically estimated through repeated interactions with users. Each observed dialogue act `a_u` after a system request `AskRepeat` will thus trigger a Bayesian update of the parameter.
 
@@ -67,13 +67,36 @@ The parameter `theta_repeatpredict` is automatically refined as a result of this
 
 Once the interaction is complete, the posterior parameter distributions can be exported by clicking on `Domains -> Export -> Parameters`. As the posterior distribution of `theta_repeatpredict` may not be a Dirichlet distribution anymore due to the partial observability of the graphical model, the posterior distribution is encoded as a multivariate Gaussian distribution (with a diagonal covariance).
 
-=== Learning from Wizard-of-Oz data ===
+=== With Wizard-of-Oz dialogues ===
 
 Although the probability parameter `theta_repeatpredict` on the predicted user act could be directly estimated from raw dialogues, this 
 is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
 
-One simple way to estimate such utility parameters is to collect Wizard-of-Oz data.
+One simple way to estimate such utility parameters is to collect Wizard-of-Oz data (cf. explanations above) and estimate posterior parameter distributions from them. The most likely parameter values are in this case those that provide the best "fit" for the wizard decisions - in other words, the parameter values that best imitate the wizard's conversational behaviour in similar situations).^[1]^ 
 
-and replayed at a later time to re-run the parameter estimation.
+In practice, you can simply import a previously recorded Wizard-of-Oz dialogue (for instance the one in [http://opendial.googlecode.com/svn/trunk/domains/examples/woz-dialogue.xml domains/examples/woz-dialogue.xml]).  At the end of the interaction, the parameters will be automatically updated to reflect the Wizard-of-Oz decisions, as illustrated in the screenshots below.
 
-== Learning from (real or simulated) interactions ==
+<p align="center"> 
+*Parameter distributions before learning*:
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz1.png">
+
+<p align="center"> 
+*Parameter distributions after learning*:
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz2.png"><br>
+_(we can notice that the `theta_repeat` distribution has narrowed down and that its mean is now centered around 0.2-0.3)_ <br>
+
+=== With simulated dialogues ===
+
+Finally, the last possible method for parameter estimation is via simulation. A simulator automatically generates user inputs in accordance with an internal model of the user behaviour.  
+
+The easiest way to build a user simulator in !OpenDial is to use the `Simulator` module.  The simulator module takes as input a dialogue domain specification in the same format as a [DialogueDomains standard dialogue domain].  After observing system actions, the simulator will automatically update its internal state and generate new user inputs in accordance with the specified model.  
+
+An example of such simulator domain is provided in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-simulator.xml domains/examples/example-simulator.xml].  Two elements are worth noting in this specification:
+ * Some state variables are labelled with an `^o` suffix.  This suffix is used to indicate which variables are intended to be part of the generated output of the simulator (the remaining variables are internal to the simulator). In the case of the simulator domain in `example-simulator.xml`, the only output variable is the user dialogue act.  More complex domains may however include other contextual variables.
+ * Note the use of a Dirichlet parameter called `error`.  This parameter is employed as the _error model_ of the simulator.  At runtime, the simulator will sample a particular (multivariate) value from this Dirichlet and use it to determine the confidence score of the user input.
+
+<br><br>
+
+----
+
+^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], chapter 5 for details.
