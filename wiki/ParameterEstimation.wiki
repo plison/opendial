@@ -1,5 +1,38 @@
 #summary How to estimate the parameters of probabilistic rules
 
+
+= Recording dialogues =
+
+!OpenDial comes bundled with specific functions to export and import dialogues right from the user interface. To record a particular interaction, click on `Interactions -> Save Dialogue As...`.  The function will record the sequence of dialogue turns (from the user and from the system) in the form of an XML file.  Every turn contains a particular utterance (encoded as a probability distribution in the case of uncertain user inputs) as well as other optional contextual variables.  The recorded XML file follows the following skeleton:
+{{{
+<interaction>
+
+  <userTurn>
+    <variable id="u_u">
+      <!-- distribution for the user utterance -->
+    </variable>
+    
+    <!-- other contextual variables -->
+  </userTurn>
+
+  <systemTurn>
+    <variable id="u_m">
+      <!-- System utterance -->
+    </variable>
+
+    <!-- other contextual variables -->
+  </systemTurn>
+
+  <!-- etc. -->
+}}}
+
+The (domain-specific) contextual variables to include are specified in the [[DialogueDomains#5._System_settings system settings].
+
+= Importing dialogues =
+
+Similarly, previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This function does more than simply displaying the dialogue history in the chat window - it actually "replays" the full interaction, performing dialogue update at each step (including the update of parameter distributions). This import function is therefore a crucial tool to estimate model parameters based on previously recorded dialogue data. 
+
+
 = Estimating rule parameters from data =
 
 The probabilities and utilities specified in the effects of probabilistic rules can be automatically optimised from dialogue data. !OpenDial relies on [http://artint.info/html/ArtInt_196.html Bayesian learning] to perform this parameter estimation.  Each (univariate or multivariate) parameter is therefore associated with a specific distribution that is progressively narrowed down as more data points are observed in order to provide the best "fit" for the observed data.
