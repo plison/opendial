@@ -1,7 +1,12 @@
 #summary How to estimate the parameters of probabilistic rules
 
+= Parameter estimation =
 
-= Recording dialogues =
+The probabilities and utilities specified in the effects of probabilistic rules can be automatically optimised from dialogue data. !OpenDial relies on [http://artint.info/html/ArtInt_196.html Bayesian learning] to perform this parameter estimation.  Each (univariate or multivariate) parameter is therefore associated with a specific distribution that is progressively narrowed down as more data points are observed in order to provide the best "fit" for the observed data.
+
+== 1. Data collection ==
+
+=== Recording dialogues ===
 
 !OpenDial comes bundled with specific functions to export and import dialogues right from the user interface. To record a particular interaction, click on `Interactions -> Save Dialogue As...`.  The function will record the sequence of dialogue turns (from the user and from the system) in the form of an XML file.  Every turn contains a particular utterance (encoded as a probability distribution in the case of uncertain user inputs) as well as other optional contextual variables.  The recorded XML file follows the following skeleton:
 {{{
@@ -26,18 +31,30 @@
   <!-- etc. -->
 }}}
 
-The (domain-specific) contextual variables to include are specified in the [[DialogueDomains#5._System_settings system settings].
+The order of user and system turns is arbitrary (user turns can follow other user turns without any system utterance, and vice versa). The (domain-specific) contextual variables to include in each turn are specified in the [DialogueDomains#5._System_settings system settings].
 
-= Importing dialogues =
+!OpenDial can be paused/resumed at any time during the data collection using the `Interactions -> Pause/Resume` button.
 
-Similarly, previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This function does more than simply displaying the dialogue history in the chat window - it actually "replays" the full interaction, performing dialogue update at each step (including the update of parameter distributions). This import function is therefore a crucial tool to estimate model parameters based on previously recorded dialogue data. 
+=== Recording Wizard-of-Oz interactions ===
 
+Another type of data which is useful to record is Wizard-of-Oz interactions. A Wizard-of-Oz experiment is an interaction in which a human user is asked to interact with a system that is remotely operated by a human agent.  A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  
 
-= Estimating rule parameters from data =
+The Wizard-of-Oz mode delegates to the Wizard the responsibility of selecting the system actions.  When a new user input is received, !OpenDial will therefore trigger the domain models as usual, but will not select the highest-utility actions.  Instead, the system will show a list of possible actions on the right side of the chat window.  The wizard is then expected to select the most appropriate action in this list. 
 
-The probabilities and utilities specified in the effects of probabilistic rules can be automatically optimised from dialogue data. !OpenDial relies on [http://artint.info/html/ArtInt_196.html Bayesian learning] to perform this parameter estimation.  Each (univariate or multivariate) parameter is therefore associated with a specific distribution that is progressively narrowed down as more data points are observed in order to provide the best "fit" for the observed data.
+<p align="center"> 
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz.png"><br><br>
 
-== Learning from raw dialogues ==
+Note that the action selection box only displays actions that are relevant in the current situation (i.e. for which at least one utility rule specifies a utility). Using the domain from the [SimpleExample step-by-step example], three actions will therefore be available to the wizard after observing the user input `a_u=Request(Left)`, namely `Move(Left)`, `AskRepeat`, and the default `None` (representing the absence of any action).  
+
+As for any dialogue, Wizard-of-Oz interactions can be saved to a file by clicking on `Interactions -> Save Dialogue As`.
+
+== Importing dialogues ==
+
+Previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This function does more than simply displaying the dialogue history in the chat window - it actually "replays" the full interaction, performing dialogue update at each step (including the update of parameter distributions). This import function is therefore a crucial tool to estimate model parameters based on previously recorded dialogue data. 
+
+= 2. Supervised learning of parameters ==
+
+=== Learning from raw dialogues ===
 
 Some parameters can be directly learned from raw, unannotated dialogues.  Take for instance the dialogue domain described in the [SimpleExample step-by-step example].  The parameter `theta_repeatpredict` (which reflects the probability that the user will comply to the system request to repeat the instruction) can be automatically estimated through repeated interactions with users. Each observed dialogue act `a_u` after a system request `AskRepeat` will thus trigger a Bayesian update of the parameter.
 
@@ -50,26 +67,13 @@ The parameter `theta_repeatpredict` is automatically refined as a result of this
 
 Once the interaction is complete, the posterior parameter distributions can be exported by clicking on `Domains -> Export -> Parameters`. As the posterior distribution of `theta_repeatpredict` may not be a Dirichlet distribution anymore due to the partial observability of the graphical model, the posterior distribution is encoded as a multivariate Gaussian distribution (with a diagonal covariance).
 
-In order to record a given dialogue history, the user can simply click on `Interactions -> Save Dialogue As...`.  Similarly, previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This functionality enables the system designer to "replay" a previous interaction, including the Bayesian update of parameters.
-
-== Learning from Wizard-of-Oz data ==
+=== Learning from Wizard-of-Oz data ===
 
 Although the probability parameter `theta_repeatpredict` on the predicted user act could be directly estimated from raw dialogues, this 
 is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
 
-One simple way to estimate such utility parameters is to collect Wizard-of-Oz data. A Wizard-of-Oz experiment is an interaction in which a human user is asked to interact with a system that is remotely operated by a human agent.  Learning from Wizard-of-Oz data is equivalent to learning "by imitation", as the system will seek to find the parameter values that can best reproduce the conversational behaviour of the wizard.
+One simple way to estimate such utility parameters is to collect Wizard-of-Oz data.
 
-=== Collecting Wizard-of-Oz data through !OpenDial === 
-
-A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  The Wizard-of-Oz mode delegates to the Wizard the responsability of selecting the system actions.  
-
-When a new user input is received, !OpenDial will therefore trigger the domain models as usual, but will not select the highest-utility actions.  Instead, the system will show a list of possible actions on the right side of the chat window.  The wizard is then expected to select the most appropriate action in this list. 
-
-<p align="center"> 
-<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz.png"><br><br>
-
-Note that the action selection box only displays actions that are relevant in the current situation (i.e. for which at least one utility rule specifies a utility). After observing the user input `a_u=Request(Left)`, three actions will therefore be available to the wizard: `Move(Left)`, `AskRepeat`, as well as the default `None` (representing the absence of any action).  
-
-As for any dialogue, Wizard-of-Oz interactions can be saved to a file by clicking on `Interactions -> Save Dialogue As` and replayed at a later time to re-run the parameter estimation.
+and replayed at a later time to re-run the parameter estimation.
 
 == Learning from (real or simulated) interactions ==
