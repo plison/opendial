@@ -71,8 +71,7 @@ Once the interaction is complete, the posterior parameter distributions can be e
 
 === With Wizard-of-Oz dialogues ===
 
-Although the probability parameter `theta_repeatpredict` on the predicted user act could be directly estimated from raw dialogues, this 
-is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
+The parameter `theta_repeatpredict` could be directly estimated from unnannotated dialogues. This is not the case for the utility `theta_repeat`.  Indeed, there is no way the system could learn the utility of the `AskRepeat` action without receiving some feedback on the desirability of this action.
 
 One simple way to estimate such utility parameters is to collect Wizard-of-Oz data (cf. explanations above) and estimate posterior parameter distributions from them. The most likely parameter values are in this case those that provide the best "fit" for the wizard decisions - in other words, the parameter values that best imitate the wizard's conversational behaviour in similar situations).^[1]^ 
 
