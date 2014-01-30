@@ -42,6 +42,7 @@ public class ProbQuery extends Query {
 	
 	/**
 	 * Creates a new query with the given network and query variables
+	 * 
 	 * @param network the Bayesian network
 	 * @param queryVars the query variables
 	 */
@@ -51,6 +52,7 @@ public class ProbQuery extends Query {
 
 	/**
 	 * Creates a new query with the given network and query variables
+	 * 
 	 * @param network the Bayesian network
 	 * @param queryVars the query variables
 	 */
@@ -61,6 +63,7 @@ public class ProbQuery extends Query {
 
 	/**
 	 * Creates a new query with the given network and query variables
+	 * 
 	 * @param network the Bayesian network
 	 * @param queryVars the query variables
 	 * @param evidence the evidence for the query
@@ -70,22 +73,24 @@ public class ProbQuery extends Query {
 	}
 
 	/**
-	 * Creates a new query with the given (structured) network and query variables
-	 * @param network the structured network
+	 * Creates a new query with the given dialogue state and query variables
+	 * 
+	 * @param state the dialogue state
 	 * @param queryVars the query variables
 	 */
-	public ProbQuery (DialogueState sn, String... queryVars) {
-		this(sn, Arrays.asList(queryVars), sn.getEvidence());
+	public ProbQuery (DialogueState state, String... queryVars) {
+		this(state, Arrays.asList(queryVars), state.getEvidence());
 	}
 	
 	
 	/**
-	 * Creates a new query with the given (structured) network and query variables
-	 * @param network the structured network
+	 * Creates a new query with the given dialogue state and query variables
+	 * 
+	 * @param state the dialogue state
 	 * @param queryVars the query variables
 	 */
-	public ProbQuery (DialogueState sn, Collection<String> queryVars) {
-		this(sn, queryVars, sn.getEvidence());
+	public ProbQuery (DialogueState state, Collection<String> queryVars) {
+		this(state, queryVars, state.getEvidence());
 	}
 	
 	

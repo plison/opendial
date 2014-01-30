@@ -26,7 +26,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.state.DialogueState;
-
+ 
 public class DialogueImporter extends Thread {
 
 	// logger

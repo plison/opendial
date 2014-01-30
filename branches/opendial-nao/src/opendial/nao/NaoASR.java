@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -48,6 +49,8 @@ public class NaoASR  implements Module, Runnable {
 
 	NaoSession session;
 
+	Stack<String> locks;
+	
 	DialogueSystem system;
 	boolean paused = true; 
 
@@ -62,6 +65,7 @@ public class NaoASR  implements Module, Runnable {
 		session = NaoSession.grabSession(system.getSettings());
 		log.debug("connecting to Nao with address " + system.getSettings().params.get("nao_ip"));
 
+		locks = new Stack<String>();
 	}
 	
 	/**
@@ -172,6 +176,19 @@ public class NaoASR  implements Module, Runnable {
 			e.printStackTrace();
 		}
 		paused = toPause;
+	}
+	
+	
+	public void lockASR(String origin) {
+		locks.add(origin);
+		pause(true);
+	}
+	
+	public void unlockASR(String origin) {
+		locks.remove(origin);
+		if (locks.isEmpty()) {
+			pause(false);
+		}
 	}
 	
 	public boolean isRunning() {

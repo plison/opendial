@@ -87,12 +87,12 @@ public class ReflectionUtils {
 	    }
 
 	    /**
-	     * Load all classes from a package.
+	     * Return all classes from a package.
 	     * 
-	     * @param packageName
-	     * @return
-	     * @throws ClassNotFoundException
-	     * @throws IOException
+	     * @param packageName the package name
+	     * @return all classes from the package
+	     * @throws ClassNotFoundException if no class if found
+	     * @throws IOException I/O error
 	     */
 	    public static Class<?>[] getAllClassesFromPackage
 	    (final String packageName) throws ClassNotFoundException, IOException {
@@ -116,10 +116,10 @@ public class ReflectionUtils {
 	    /**
 	     * Find file in package.
 	     * 
-	     * @param directory
-	     * @param packageName
-	     * @return
-	     * @throws ClassNotFoundException
+	     * @param directory the directory
+	     * @param packageName the package name
+	     * @return the list of found classes
+	     * @throws ClassNotFoundException if the class is not found
 	     */
 	    public static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
 	        List<Class<?>> classes = new ArrayList<Class<?>>();

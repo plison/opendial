@@ -92,7 +92,7 @@ public class NaoTTS implements Module {
 	private void say(String utterance) {
 
 		NaoASR asr = system.getModule(NaoASR.class);
-		if (asr != null) asr.pause(true);
+		if (asr != null) asr.lockASR("NaoTTS");
 
 		try {
 			log.debug("saying utterance: " + utterance);
@@ -101,7 +101,7 @@ public class NaoTTS implements Module {
 		catch (Exception e) {
 			log.warning("cannot use TTS: " + e.toString());
 		}
-		if (asr != null) asr.pause(false);
+		if (asr != null) asr.unlockASR("NaoTTS");
 	}
 
 	

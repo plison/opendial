@@ -346,7 +346,7 @@ public class GUIMenuBar extends JMenuBar {
 
 	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
-				frame.getSystem().attachModule(WizardControl.class);
+			frame.getSystem().attachModule(WizardControl.class);
 				frame.addComment("Switching interaction to Wizard-of-Oz mode");
 
 		}
@@ -381,14 +381,14 @@ public class GUIMenuBar extends JMenuBar {
 	protected void openDocumentation() {
 		if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("https://code.google.com/p/opendial/w/list"));
+                Desktop.getDesktop().browse(new URI("https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6"));
             } catch (Exception e1) {
                 e1.printStackTrace();
-            } 
+            }  
         }
 	}
-
-
+ 
+ 
 	protected void showAboutPanel(GUIFrame frame) {
 		try {
 			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
@@ -468,6 +468,11 @@ public class GUIMenuBar extends JMenuBar {
 	public static void importAction(DialogueSystem system, String file, String tag) throws DialException {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
+			for (String oldParam : system.getState().getParameterIds()) {
+				if (!parameters.hasChanceNode(oldParam)) {
+				parameters.addNode(system.getState().getChanceNode(oldParam));
+				}
+			}
 			system.getState().setParameters(parameters);
 		}
 		else {

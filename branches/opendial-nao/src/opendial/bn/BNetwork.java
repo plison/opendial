@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -462,7 +461,7 @@ public class BNetwork {
 	 * <p>This ordering is used in particular for various inference algorithms relying
 	 * on a topological ordering of the nodes (e.g. variable elimination).
 	 * 
-	 * @return
+	 * @return the ordered list of nodes
 	 */
 	public List<BNode> getSortedNodes() {
 		List<BNode> nodesList = new ArrayList<BNode>(nodes.values());
@@ -544,13 +543,7 @@ public class BNetwork {
 			for (BNode n : sorted) {
 				if (clique.contains(n.getId())) {
 					BNode copy = n.copy();
-					if (n instanceof ChanceNode 
-							&& ((ChanceNode)n).getDistrib() instanceof MarginalEmpiricalDistribution
-							&& !clique.containsAll(((MarginalEmpiricalDistribution)((ChanceNode)n).
-									getDistrib()).getFullSample().getVariables())) {
-						((ChanceNode)n).setDistrib(((MarginalEmpiricalDistribution)
-								((ChanceNode)n).getDistrib()).trim(clique));
-					}
+
 					for (String input : n.getInputNodeIds()) {
 						if (!subnetwork.hasNode(input)) {
 							log.warning("problem in the topological ordering of the nodes");
@@ -570,7 +563,7 @@ public class BNetwork {
 	 * Creates a unique identifier that is guaranteed not to exist in the current network.
 	 * 
 	 * @param base the base of the identifier
-	 * @return
+	 * @return the unique identifier
 	 */
 	public String getUniqueId(String base) {
 		if (!hasNode(base)) {

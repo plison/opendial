@@ -114,7 +114,7 @@ public class AnchoredRule {
 		groundings = new HashSet<Assignment>();
 		Set<Assignment> conditions = inputs.linearise();
 		for (Assignment input : conditions) {
-			groundings.addAll(rule.getGroundings(input.removePrimes()));
+			groundings.addAll(rule.getGroundings(input));
 		}
 		if (groundings.size() > 1) {
 			groundings.remove(new Assignment());
@@ -127,10 +127,9 @@ public class AnchoredRule {
 		parameters = new HashSet<String>();
 		
 		for (Assignment input : conditions) {
-			Assignment input2 = input.removePrimes();
 			Output output = new Output(rule.getRuleType());
 			for (Assignment grounding : groundings) {
-				Assignment fullInput = new Assignment(input2, grounding);
+				Assignment fullInput = new Assignment(input, grounding);
 				RuleCase matchingCase = rule.getMatchingCase(fullInput);
 				if (!matchingCase.equals(new RuleCase())) {
 					relevant = true;					
@@ -274,21 +273,20 @@ public class AnchoredRule {
 	 */
 	public Output getMatchingOutput(Assignment input) {
 
-		Assignment input2 = input.removePrimes();
-		input2.removeAll(parameters);
+		Assignment ruleInput = input.getTrimmed(inputs.getVariables());
 
-		if (cache.containsKey(input2)) {
-			return cache.get(input2);
+		if (cache.containsKey(ruleInput)) {
+			return cache.get(ruleInput);
 		}
 		
 		Output output = new Output(rule.getRuleType());
 		for (Assignment grounding :groundings) {
 			
-			Assignment fullInput = new Assignment(input2, grounding);
+			Assignment fullInput = new Assignment(ruleInput, grounding);
 			RuleCase matchingOutput = rule.getMatchingCase(fullInput);	
 			output.addCase(matchingOutput);
 		}
-		cache.put(input2, output);
+		cache.put(ruleInput, output);
 		return output;
 	}
 	

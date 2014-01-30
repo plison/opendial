@@ -136,7 +136,7 @@ public class DeterministicDistribution implements DiscreteDistribution {
 	 * 1.0 if head is the function output for condition, or 0.0 otherwise.
 	 * 
 	 * @param condition the conditional assignment
-	 * @param the head assignment
+	 * @param head the head assignment
 	 * @return the resulting probability
 	 */
 	@Override
@@ -154,7 +154,7 @@ public class DeterministicDistribution implements DiscreteDistribution {
 	 * Returns a categorical table with one unique element (with probability 1.0), namely 
 	 * the value associated with the conditional assignment for the deterministic function.
 	 * 
-	 * @param the conditional assignment
+	 * @param condition the conditional assignment
 	 * @return a categorical table with one unique value
 	 */
 	@Override

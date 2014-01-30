@@ -143,8 +143,8 @@ public class BasicCondition implements Condition {
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
 		
-		if (!input.getVariables().containsAll(variable.getSlots())
-				|| !input.getVariables().containsAll(expectedValue.getSlots())) {
+		if (!input.containsVars(variable.getSlots())
+				|| !input.containsVars(expectedValue.getSlots())) {
 			return false;
 		}
 

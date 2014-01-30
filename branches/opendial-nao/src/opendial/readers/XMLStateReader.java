@@ -88,7 +88,7 @@ public class XMLStateReader {
 	 * Returns the initial state or parameters from the XML document, for the given domain (where the
 	 * variable types are already declared)
 	 * 
-	 * @param doc the XML document
+	 * @param mainNode the main node for the XML document
 	 * @return the corresponding dialogue state
 	 * @throws DialException if XML document is ill-formatted
 	 */

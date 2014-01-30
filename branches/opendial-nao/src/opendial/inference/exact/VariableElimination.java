@@ -152,7 +152,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * Sums out the variable from the pointwise product of the factors, 
 	 * and returns the result
 	 * 
-	 * @param the Bayesian node corresponding to the variable
+	 * @param nodeId the Bayesian node corresponding to the variable
 	 * @param factors the factors to sum out
 	 * @return the summed out factor
 	 */

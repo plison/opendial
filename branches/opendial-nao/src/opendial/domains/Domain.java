@@ -77,7 +77,7 @@ public class Domain {
 	/**
 	 * Sets the initial dialogue state
 	 * 
-	 * @param network the initial state
+	 * @param initState the initial state
 	 */
 	public void setInitialState(DialogueState initState) {
 		this.initState = initState;
@@ -111,27 +111,59 @@ public class Domain {
 	}
 	
 	
+	/**
+	 * Replaces the domain-specific settings
+	 * 
+	 * @param settings the settings
+	 */
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
 	
+	
+	/**
+	 * Returns the domain-specific settings
+	 * 
+	 * @return the settings for the domain
+	 */
 	public Settings getSettings() {
 		return settings;
 	}
 	
+	
+	/**
+	 * Returns the domain name.
+	 */
 	@Override
 	public String toString() {
 		return domainName;
 	}
 
+	/**
+	 * Sets the prior distribution for the domain parameters
+	 * 
+	 * @param parameters the parameters
+	 */
 	public void setParameters(BNetwork parameters) {
 		this.parameters = parameters;
 	}
 
+	
+	/**
+	 * Returns the prior distribution for the domain parameters
+	 * 
+	 * @return the prior distribution for the parameters
+	 */
 	public BNetwork getParameters() {
 		return parameters;
 	}
 
+	
+	/**
+	 * Returns the domain name
+	 * 
+	 * @return the domain name
+	 */
 	public String getName() {
 		return domainName;
 	}

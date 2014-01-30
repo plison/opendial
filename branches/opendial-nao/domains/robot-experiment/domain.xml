@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+<settings>
+<nao_ip>193.157.229.207</nao_ip>
+<grammar>/home/nao/grammar.bnf</grammar>
+<settings>2500</settings>
+<timeout>400</timeout>
+<modules>opendial.nao.NaoASR,opendial.nao.NaoButton, opendial.nao.NaoPerception, opendial.nao.NaoBehaviour,opendial.nao.NaoTTS</modules>
+</settings>
+
+
+<initialstate>
+
+<variable id="completed-task">
+<value>true</value>
+</variable>
+
+<variable id="perceived"><value>[]</value></variable>
+<variable id="carried"><value>[]</value></variable>
+
+</initialstate>
+
+ <import href="../demo/tabletop_nlu.xml"/>
+ <import href="../demo/tabletop_nlu2.xml"/>
+ <import href="../demo/tabletop_nlg.xml"/>
+
+ <import href="domain_effects.xml"/>
+
+ <import href="domain_prior.xml"/>
+
+ <import href="domain_rewards.xml"/>
+
+<import href="domain_user.xml"/>
+
+<!-- <model type="decision" trigger="floor">
+ 
+<rule>
+	<case>
+			<condition>
+				<if var="a_m" value="None"/>
+				<if var="floor" value="start" />
+			</condition>
+			<effect util="1">
+				<set var="u_m" value="What can I do for you?" />
+			</effect>
+		</case>
+</rule>
+</model>  -->
+
+</domain>

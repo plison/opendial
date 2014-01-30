@@ -88,10 +88,10 @@ public class UtilityTable implements UtilityDistribution {
 	 */
 	public void incrementUtil(Assignment sample, double utility) {
 		if (!table.containsKey(sample)) {
-			table.put(sample, new UtilityEstimate(utility));
+			table.put(new Assignment(sample), new UtilityEstimate(utility));
 		}
 		else {
-			table.get(sample).update(utility);
+			table.get(new Assignment(sample)).update(utility);
 		}
 		variables.addAll(sample.getVariables());
 	}
@@ -261,7 +261,8 @@ public class UtilityTable implements UtilityDistribution {
 
 	/**
 	 * Returns a string representation for the distribution
-	 * @return
+	 * 
+	 * @return the string representation for the table.
 	 */
 	@Override
 	public String toString() {

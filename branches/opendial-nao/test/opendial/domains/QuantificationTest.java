@@ -71,7 +71,7 @@ public class QuantificationTest {
 	
 
 	@Test
-	public void testThesis() throws DialException {
+	public void test2() throws DialException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(domainFile2); 
@@ -94,6 +94,8 @@ public class QuantificationTest {
 		StatePruner.ENABLE_PRUNING = true;
 		
 	}	
+	
+
 
 }
 

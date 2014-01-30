@@ -45,6 +45,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
@@ -82,7 +83,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	/**
 	 * Start up the window
 	 * 
-	 * @param tester reference to the live-testing environment
+	 * @param system the dialogue system
 	 */
 	public ChatWindowTab (DialogueSystem system) 
 	{
@@ -285,8 +286,19 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		updateActivation();
 		if (updatedVars.contains(system.getSettings().userInput)
-				&& state.hasChanceNode(system.getSettings().userInput)) {
-			showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
+				&& state.hasChanceNode(system.getSettings().userInput)) {	
+			try {
+			DiscreteDistribution distrib = state.getChanceNode(system.getSettings().userInput).getDistrib().toDiscrete();
+			if (distrib instanceof CategoricalTable) {
+				showVariable((CategoricalTable)distrib);
+			}
+			else {
+				showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
+			}
+			}
+			catch (DialException e) {
+				log.warning("cannot add utterance: " + e);
+			}
 		}
 		if (updatedVars.contains(system.getSettings().systemOutput)
 				&& state.hasChanceNode(system.getSettings().systemOutput)) {

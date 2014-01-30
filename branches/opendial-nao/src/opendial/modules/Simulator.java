@@ -36,6 +36,7 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.utils.StringUtils;
 
 /**
  * Simulator for the user/environment.  The simulator generated new environment observations
@@ -72,7 +73,7 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param simDomain the dialogue domain for the simulator
+	 * @param domain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system, Domain domain) throws DialException {
@@ -114,6 +115,7 @@ public class Simulator implements Module {
 		else {
 			system.addContent(emptyAction);
 		}
+		system.attachModule(RewardLearner.class);
 	}
 
 
@@ -122,7 +124,7 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public boolean isRunning() {
-		return !system.isPaused();
+		return false;
 	}
 
 	@Override
@@ -133,8 +135,8 @@ public class Simulator implements Module {
 	 * Triggers the simulator by updating the simulator state and generating new observations
 	 * and user inputs.
 	 * 
-	 * @param the dialogue state of the main dialogue system
-	 * @param the updated variables in the dialogue system
+	 * @param systemState the dialogue state of the main dialogue system
+	 * @param updatedVars the updated variables in the dialogue system
 	 */
 	@Override
 	public void trigger(final DialogueState systemState, Collection<String> updatedVars) {
@@ -151,7 +153,11 @@ public class Simulator implements Module {
 									: Assignment.createDefault(outputVar);
 
 									log.debug("Simulator input: " + systemAction);
-									performTurn(systemAction);
+									boolean turnPerformed = performTurn(systemAction);
+									int repeat = 0 ;
+									while (!turnPerformed && repeat < 5) {
+										turnPerformed = performTurn(systemAction);
+									}
 						}
 					}
 					catch (DialException e) {
@@ -169,7 +175,7 @@ public class Simulator implements Module {
 	 * @param systemAction the last system action.
 	 * @throws DialException
 	 */
-	private synchronized void performTurn(Assignment systemAction) throws DialException {
+	private synchronized boolean performTurn(Assignment systemAction) throws DialException {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
@@ -186,23 +192,21 @@ public class Simulator implements Module {
 
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
 				double reward = simulatorState.queryUtil();
-				system.recordComment("Reward: " + reward);
-				log.debug("Reward: " + reward);
+				String comment = "Reward: " + StringUtils.getShortForm(reward);
+				system.recordComment(comment);
+				log.debug(comment);
+				system.getState().addEvidence(new Assignment(
+						"R(" + systemAction.addPrimes()+")", reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 
 			 if (addNewObservations()) {
-				 turnPerformed = true;
+				turnPerformed = true;
 			 }
 
 			simulatorState.addEvidence(simulatorState.getSample());
 		}
-
-		// if no user action is generated, repeat the process
-		if (!turnPerformed){
-		log.debug("repeating...");
-		performTurn(systemAction);
-		}
+		return turnPerformed;
 	}
 
 
@@ -230,13 +234,14 @@ public class Simulator implements Module {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}
 		if (!newObs.isEmpty()) {
-			system.addContent(newObs.copy());
 			if (newObs.getHeadVariables().contains(system.getSettings().userInput)) {
 				log.debug("Simulator output: " + newObs + "\n --------------");
+				system.addContent(newObs.copy());
 				return true;
 			}
 			else {
 				log.debug("Contextual variables: " + newObs);
+				system.addContent(newObs.copy());
 			}
 		}
 		}

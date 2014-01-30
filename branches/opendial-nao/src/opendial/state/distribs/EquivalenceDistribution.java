@@ -200,7 +200,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * Returns a set of two assignments: one with the value true, and one with the value
 	 * false.
 	 * 
-	 * @param inputValues the set of possible input values (is ignored)
+	 * @param range the set of possible input values (is ignored)
 	 * @return the set with the two possible assignments
 	 */
 	@Override

@@ -121,12 +121,13 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 */
 	@Override
 	public BNetwork reduce(ReductionQuery query) throws DialException {
+		
 		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds()) && query.getEvidence().isEmpty()) {	
 			BNetwork subnetwork = query.getNetwork();
 			return subnetwork;
 		}
 		
-		else if (query.getEvidence().getVariables().containsAll(query.getQueryVars())) {
+		else if (query.getEvidence().containsVars(query.getQueryVars())) {
 			BNetwork subnetwork = new BNetwork();
 			for (String qvar : query.getQueryVars()) {
 				ChanceNode newNode = new ChanceNode(qvar, new CategoricalTable

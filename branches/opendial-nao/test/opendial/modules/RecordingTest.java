@@ -31,7 +31,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
+import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
@@ -45,8 +45,9 @@ import org.junit.Test;
 public class RecordingTest {
 
 	public static final String domainFile = "test//domains//domain-demo.xml";
+	public static final String domainFile2 = "test//domains//domain-woz.xml";
 	public static final String importState = "test//domains//domain-demo-importstate.xml";
-	public static final String importParams = "test//domains//params-is.xml";
+	public static final String importParams = "test//domains//domain-demo-importparams.xml";
 	public static final String exportState = "test//domains//domain-demo-exportstate.xml";
 	public static final String exportParams = "test//domains//domain-demo-exportparams.xml";
 	public static String dialogueFile = "test/domains/woz-dialogue.xml";
@@ -91,17 +92,17 @@ public class RecordingTest {
 	@Test
 	public void testXML() throws DialException, InterruptedException, IOException {
 		
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		
 		GUIMenuBar.importAction(system, importState, "state");
-		assertEquals(7, system.getState().getChanceNodeIds().size());
+		assertEquals(12, system.getState().getChanceNodeIds().size());
 		assertEquals(0.7, system.getContent("aha").toDiscrete().getProb(new Assignment("aha", "ohoho")), 0.01);
 		
 		GUIMenuBar.importAction(system, importParams, "parameters");
-		assertEquals(21, system.getState().getChanceNodeIds().size());
-		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof DirichletDensityFunction);
+		assertEquals(14, system.getState().getChanceNodeIds().size());
+		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof UniformDensityFunction);
 		
 		Settings.nbSamples = Settings.nbSamples / 100;
 		DialogueImporter importer = new DialogueImporter(system, 
@@ -130,8 +131,8 @@ public class RecordingTest {
 			str += line;
 		}
 		br.close();
-		assertEquals(28, StringUtils.countOccurrences(str, "variable"));
-		assertEquals(14, StringUtils.countOccurrences(str, "gaussian"));
+		assertEquals(14, StringUtils.countOccurrences(str, "variable"));
+		assertEquals(5, StringUtils.countOccurrences(str, "gaussian"));
 		
 	}
 		

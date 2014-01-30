@@ -101,19 +101,6 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 		empirical.pruneValues(threshold);
 	}
 	
-	
-
-	public MarginalEmpiricalDistribution trim(Set<String> nodeIds) {
-		if (getHeadVariables().equals(nodeIds)) {
-			return this;
-		}
-		Set<String> newHeadVars = new HashSet<String>(headVars);
-		newHeadVars.retainAll(nodeIds);
-		Set<String> newCondVars = new HashSet<String>(condVars);
-		newCondVars.retainAll(nodeIds);
-		return new MarginalEmpiricalDistribution(newHeadVars, 
-				newCondVars, empirical.trim(nodeIds));	
-	}
 
 
 	// ===================================
@@ -125,7 +112,6 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	 * Samples from the distribution.  In this case, simply selects one
 	 * arbitrary sample out of the set defining the distribution
 	 * 
-	 * @param condition the conditional assignment (ignored here)
 	 * @return the selected sample
 	 * @throws DialException 
 	 */
@@ -152,6 +138,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 			return sample();
 		}
 		log.warning("sampling marginal distribution: is that necessary??");
+
 		Assignment a = new Assignment();
 		int nbLoops = 0;
 		while (!a.contains(condition) && nbLoops < empirical.size()) {
@@ -231,13 +218,12 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	
 	@Override
 	public ProbDistribution getPartialPosterior (Assignment condition) {
-		EmpiricalDistribution newEmpirical = empirical.getPartialPosterior(condition);
 		Set<String> newHeadVars = new HashSet<String>(headVars);
 		newHeadVars.removeAll(condition.getVariables());
 		Set<String> newCondVars = new HashSet<String>(condVars);
 		newCondVars.removeAll(condition.getVariables());
 		MarginalEmpiricalDistribution newDistrib = 
-				new MarginalEmpiricalDistribution(newHeadVars, newCondVars, newEmpirical);	
+				new MarginalEmpiricalDistribution(newHeadVars, newCondVars, empirical);	
 		return newDistrib;
 	}
 
@@ -323,7 +309,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	@Override
 	public MarginalEmpiricalDistribution copy() {
 		MarginalEmpiricalDistribution copy = new MarginalEmpiricalDistribution(
-				headVars, condVars, empirical.copy());
+				headVars, condVars, empirical);
 		return copy;
 	}
 

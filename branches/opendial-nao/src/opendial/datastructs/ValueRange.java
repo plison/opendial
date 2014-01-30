@@ -20,7 +20,6 @@
 package opendial.datastructs;
 
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -63,10 +62,6 @@ public class ValueRange {
 		return CombinatoricsUtils.getAllCombinations(range);
 	}
 
-	public Map<String, Set<Value>> getMap() {
-		return range;
-	}
-
 	public void addValues(String id, Set<Value> values) {
 		for (Value val : values) {
 			addValue(id, val);
@@ -84,21 +79,6 @@ public class ValueRange {
 	public void addAssign(Assignment assignment) {
 		for (String var : assignment.getVariables()) {
 			addValue(var, assignment.getValue(var));
-		}
-	}
-
-	public Set<Assignment> linearise(Set<String> slots) {
-		if (slots.isEmpty()) {
-			return new HashSet<Assignment>(Arrays.asList(new Assignment()));
-		}
-		else {
-			ValueRange subrange = new ValueRange();
-			for (String slot : slots) {
-				if (range.containsKey(slot)) {
-					subrange.addValues(slot, range.get(slot));
-				}
-			}
-			return subrange.linearise();
 		}
 	}
 
@@ -120,6 +100,17 @@ public class ValueRange {
 
 	public boolean isEmpty() {
 		return range.isEmpty();
+	}
+
+	public void intersectRange(ValueRange groundings) {
+		for (String id : groundings.getVariables()) {
+			if (range.containsKey(id)) {
+				range.get(id).retainAll(groundings.getValues(id));
+			}
+			else {
+				addValues(id, groundings.getValues(id));
+			}
+		}
 	}
 }
 

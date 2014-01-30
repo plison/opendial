@@ -61,7 +61,7 @@ public interface DensityFunction {
 	 * Returns the variance of the density function.  The size of the double array
 	 * corresponds to the dimensionality of the function.
 	 * 
-	 * @return
+	 * @return the density variance
 	 */
 	public Double[] getVariance();
 	

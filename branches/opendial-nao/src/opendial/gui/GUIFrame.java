@@ -114,7 +114,6 @@ public class GUIFrame implements Module {
 	@Override
 	public void pause(boolean pause) {
 		if (frame != null && frame.isVisible()) {
-		addComment((pause)? "system paused" : "system resumed");
 		chatTab.updateActivation();
 		}
 	}

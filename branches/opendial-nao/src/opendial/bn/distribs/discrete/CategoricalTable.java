@@ -169,10 +169,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	}
 
 	/**
-	 * Add a new set of rows to the probability table, given the conditional 
-	 * assignment and the mappings (head assignment, probability value).
+	 * Add a new set of rows to the probability table.
 	 * 
-	 * @param condition the conditional assignment for Y1...Yn
 	 * @param heads the mappings (head assignment, probability value)
 	 */
 	public void addRows(Map<Assignment,Double> heads) {
@@ -182,9 +180,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	}
 
 	/**
-	 * Removes a row from the table, given the condition and the head assignments.
+	 * Removes a row from the table.
 	 * 
-	 * @param condition conditional assignment
 	 * @param head head assignment
 	 */
 	public void removeRow(Assignment head) {
@@ -249,7 +246,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	/**
 	 * Prunes all table values that have a probability lower than the threshold.
 	 * 
-	 * @param the threshold
+	 * @param threshold the threshold
 	 */
 	@Override
 	public void pruneValues(double threshold) {
@@ -332,7 +329,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	/**
 	 * Returns the marginal distribution for a particular variable
 	 * 
-	 * @param head the partial assignment
+	 * @param var the variable label
 	 * @return the marginal probability
 	 */
 	public CategoricalTable getMarginalTable(String var) {
@@ -374,6 +371,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	/**
 	 * Samples from the distribution.  The conditional assignment is ignored.
 	 * 
+	 * @param condition the condition (ignored)
 	 * @return the sampled assignment.
 	 * @throws DialException if no assignment could be sampled
 	 */
@@ -470,7 +468,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	/**
 	 * Returns the head values for the table
 	 * 
-	 * @return
+	 * @return the head values
 	 */
 	public Set<Assignment> getHeadValues() {
 		return table.keySet();
@@ -538,6 +536,12 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	
 	
 
+	/**
+	 * Returns the most likely assignment of values in the table.  If none could
+	 * be found, returns an empty assignment.
+	 * 
+	 * @return the assignment with highest probability
+	 */
 	public Assignment getBest() {
 		if (table.size() > 0) {
 		CategoricalTable nbest = getNBest(1);
@@ -626,6 +630,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 
 	/**
 	 * Returns a string representation of the probability table
+	 * 
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() {
@@ -667,7 +673,6 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	/**
 	 * Returns the total accumulated probability for the distribution P(.|condition)
 	 * 
-	 * @param condition the conditional assignment
 	 * @return the total probability
 	 */
 	private double countTotalProb() {
@@ -706,6 +711,12 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		return DistribType.DISCRETE;
 	}
 
+	
+	/**
+	 * Generates the XML representation for the table, for the document doc.
+	 * 
+	 * @param doc the XML document for which to generate the XML.
+	 */
 	@Override
 	public Node generateXML(Document doc) throws DialException {
 		if (headVars.size() != 1) {

@@ -145,7 +145,7 @@ public class NaoBehaviour implements Module {
 
 
 
-
+ 
 
 	private final class BehaviourControl extends Thread {
 
@@ -153,17 +153,24 @@ public class NaoBehaviour implements Module {
 
 		public BehaviourControl (String behaviour) {
 			this.behaviour = behaviour;
-		}
-
+		}  
+  
 		@Override
 		public void run() {
 			try {
 				log.debug("starting behaviour " + behaviour);
-
+				NaoASR asr = system.getModule(NaoASR.class);
+			
+				if (asr != null) asr.lockASR("NaoBehaviour");
+				
 				system.addContent(new CategoricalTable(new Assignment("motion", true)));
 				
 				session.call("ALBehaviorManager","runBehavior", behaviour);
 				
+				if (asr != null) asr.unlockASR("NaoBehaviour");
+				
+				log.debug("behaviour " + behaviour + " successfully completed");
+
 				system.getState().removeNode("motion");
 
 				if (behaviour.contains("pickup")) {
@@ -178,7 +185,6 @@ public class NaoBehaviour implements Module {
 					session.call("ALMemory", "insertData", "carryObj", false); 
 				}
 				
-				log.debug("behaviour " + behaviour + " successfully completed");
 			}
 			catch (Exception e) {
 				log.info("Exception: " + e.toString());

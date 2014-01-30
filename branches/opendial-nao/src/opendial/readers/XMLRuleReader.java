@@ -209,7 +209,7 @@ public class XMLRuleReader {
 
 			if (node.getAttributes().getNamedItem("value") != null) {
 				String valueStr = node.getAttributes().getNamedItem("value").getNodeValue();
-				Relation relation = getRelation(node);			
+				Relation relation = getRelation(node);	
 				condition = new BasicCondition(new Template(variable), new Template(valueStr), relation);
 			}
 

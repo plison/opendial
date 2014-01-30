@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<interaction>
+<!--Module WizardControl successfully attached-->
+<userTurn>
+<variable id="u_u">
+<value prob="0.4">move left</value>
+<value prob="0.6">None</value>
+</variable>
+</userTurn>
+<wizard>a_m=AskRepeat</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value>please move left</value>
+</variable>
+</userTurn>
+<wizard>a_m=Move(Left)</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving Left</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.3">and turn left again</value>
+<value prob="0.25">turn right again</value>
+<value prob="0.45">None</value>
+</variable>
+</userTurn>
+<wizard>a_m=AskRepeat</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.9893">turn again left</value>
+</variable>
+</userTurn>
+<wizard>a_m=Move(Left)</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving Left</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.9">now move forward</value>
+<value prob="0.1">None</value>
+</variable>
+</userTurn>
+<wizard>a_m=Move(Forward)</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving Forward</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.4">move backward</value>
+<value prob="0.3">and go forward again</value>
+<value prob="0.3">None</value>
+</variable>
+</userTurn>
+<wizard>a_m=AskRepeat</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.472">move backward</value>
+<value prob="0.5107">please move forward</value>
+</variable>
+</userTurn>
+<wizard>a_m=AskRepeat</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.9887">move forward please</value>
+</variable>
+</userTurn>
+<wizard>a_m=Move(Forward)</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving Forward</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.3">turn left</value>
+<value prob="0.5">and now turn right</value>
+<value prob="0.2">None</value>
+</variable>
+</userTurn>
+<wizard>a_m=AskRepeat</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value>could you please turn right</value>
+</variable>
+</userTurn>
+<wizard>a_m=Move(Right)</wizard>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving Right</value>
+</variable>
+</systemTurn>
+</interaction>

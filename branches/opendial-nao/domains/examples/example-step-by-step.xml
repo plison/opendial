@@ -1,7 +1,26 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <domain>
 
-	<!-- A very simple NLU model for the example -->
+	<!-- Parameters -->
+	<parameters>
+
+		<variable id="theta_repeat">
+			<distrib type="gaussian">
+				<mean>0</mean>
+				<variance>1</variance>
+			</distrib>
+		</variable>
+
+		<variable id="theta_repeatpredict">
+			<distrib type="dirichlet">
+				<alpha>3</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+	</parameters>
+
+	<!-- NLU model -->
 	<model trigger="u_u">
 
 		<rule>
@@ -15,9 +34,6 @@
 					<set var="a_u" value="Request(Left)" />
 				</effect>
 			</case>
-		</rule>
-
-		<rule>
 			<case>
 				<condition operator="or">
 					<if var="u_u" value="turn * right" relation="in" />
@@ -28,9 +44,6 @@
 					<set var="a_u" value="Request(Right)" />
 				</effect>
 			</case>
-		</rule>
-
-		<rule>
 			<case>
 				<condition operator="or">
 					<if var="u_u" value="move * forward" relation="in" />
@@ -41,9 +54,6 @@
 					<set var="a_u" value="Request(Forward)" />
 				</effect>
 			</case>
-		</rule>
-
-		<rule>
 			<case>
 				<condition operator="or">
 					<if var="u_u" value="move * backward" relation="in" />
@@ -53,10 +63,6 @@
 					<set var="a_u" value="Request(Backward)" />
 				</effect>
 			</case>
-		</rule>
-
-
-		<rule>
 			<case>
 				<condition>
 					<if var="u_u" value="stop" relation="in" />
@@ -65,33 +71,40 @@
 					<set var="a_u" value="Request(Stop)" />
 				</effect>
 			</case>
+			<case>
+				<effect>
+					<set var="a_u" value="None" />
+				</effect>
+			</case>
 		</rule>
-
 	</model>
 
-
-	<!-- The action-selection model -->
+	<!-- Action selection model -->
 	<model trigger="a_u">
 
-		<rule>
+		<rule id="movement">
 			<case>
 				<condition>
 					<if var="a_u" value="Request({X})" />
 				</condition>
-				<effect util="2">
-					<set var="a_m" value="Move({X})" />
-				</effect>
-			</case>
-			<case>
-				<effect util="-2">
+				<effect util="1">
 					<set var="a_m" value="Move({X})" />
 				</effect>
 			</case>
 		</rule>
 
-		<rule>
+		<rule id ="negative">
 			<case>
-				<effect util="0.5">
+				<effect util="-0.5">
+					<set var="a_m" value="Move(*)" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule id="repeat">
+			<case>
+				<effect util="theta_repeat">
 					<set var="a_m" value="AskRepeat" />
 				</effect>
 			</case>
@@ -100,10 +113,17 @@
 	</model>
 
 
-	<!-- A very simple NLG model -->
+	<!-- NLG model -->
 	<model trigger="a_m">
-
 		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Move({X})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Ok, moving {X}" />
+				</effect>
+			</case>
 			<case>
 				<condition>
 					<if var="a_m" value="AskRepeat" />
@@ -112,28 +132,12 @@
 					<set var="u_m" value="Sorry, could you repeat?" />
 				</effect>
 			</case>
-			<case>
-				<condition>
-					<if var="a_m" value="Move(Stop)" />
-				</condition>
-				<effect util="1">
-					<set var="u_m" value="OK, stopping now" />
-				</effect>
-			</case>
-			<case>
-				<condition>
-					<if var="a_m" value="Move({X})" />
-				</condition>
-				<effect util="1">
-					<set var="u_m" value="OK, moving {X}" />
-				</effect>
-			</case>
 		</rule>
-
 	</model>
 
 
-	<!-- A prediction model for the next user dialogue act -->
+
+	<!-- Prediction model for the next user dialogue act -->
 	<model trigger="a_m">
 
 		<rule>
@@ -141,11 +145,12 @@
 				<condition>
 					<if var="a_m" value="AskRepeat" />
 				</condition>
-				<effect prob="0.9">
+				<effect prob="theta_repeatpredict[0]">
 					<set var="a_u^p" value="{a_u}" />
 				</effect>
 			</case>
 		</rule>
 	</model>
+
 
 </domain>

@@ -18,7 +18,7 @@
 // =================================================================                                                                   
 
 package opendial;
-
+ 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -44,9 +44,9 @@ import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
-
+   
 import org.apache.commons.collections15.ListUtils;
-
+  
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
  *  <li> the current dialogue state
@@ -126,7 +126,12 @@ public class DialogueSystem {
 		paused=false;
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
+				if (!module.isRunning()) {
 				module.start();
+				}
+				else {
+					module.pause(false);
+				}
 			}
 			catch (DialException e) {
 				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
@@ -152,14 +157,11 @@ public class DialogueSystem {
 		curState = domain.getInitialState().copy();
 		curState.setParameters(domain.getParameters());
 		if (!paused) {
-			synchronized (curState) {
-			curState.setAsNew();
-			update();
-			}
+			startSystem();
 		}
 	}
 
-
+  
 	/**
 	 * Attaches the module to the dialogue system.
 	 * 
@@ -205,12 +207,12 @@ public class DialogueSystem {
 		}
 	}
 
-
+ 
 	/**
 	 * Detaches the module of the dialogue system.  If the module is
 	 * not included in the system, does nothing.
 	 * 
-	 * @param module the module to detach
+	 * @param moduleClass the class of the module to detach.
 	 */
 	public void detachModule(Class<? extends Module> moduleClass) {
 		Module module = getModule(moduleClass);
@@ -219,21 +221,23 @@ public class DialogueSystem {
 		}
 	}
 
-
+  
 
 	/**
 	 * Pauses or resumes the dialogue system.
 	 * 
-	 * @param shouldBePaused whether the system should be paused or resumed.
+	 * @param toPause whether the system should be paused or resumed.
 	 */
-	public void pause(boolean shouldBePaused) {
-		paused = shouldBePaused;
+	public void pause(boolean toPause) {
+		paused = toPause;
+		recordComment((toPause)? "system paused" : "system resumed");
+
 		for (Module module : modules) {
-			module.pause(shouldBePaused);
+			module.pause(toPause);
 		}
-		if (!shouldBePaused && !curState.getNewVariables().isEmpty()) {
+		if (!toPause && !curState.getNewVariables().isEmpty()) {
 			 synchronized (curState) {
-						update();
+					update();
 				}
 			}
 	}
@@ -304,7 +308,7 @@ public class DialogueSystem {
 	 * Adds the content (expressed as a certain assignment over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
-	 * @param table the categorical table to add
+	 * @param assign the value assignment to add
 	 * @throws DialException if the state could not be updated.
 	 */
 	public void addContent(Assignment assign) throws DialException {
@@ -341,12 +345,11 @@ public class DialogueSystem {
 	protected void update() {
 		
 		while (!curState.getNewVariables().isEmpty()) {
-			
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
 			
 			for (Model model : domain.getModels()) {
-					model.trigger(curState, toProcess);
+				model.trigger(curState, toProcess);
 			}
 			
 			for (Module module : modules) {

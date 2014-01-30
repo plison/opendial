@@ -63,7 +63,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	protected List<Assignment> samples;
 
 	// whether to use KDE for continuous distributions
-	public static boolean USE_KDE = true;
+	public static boolean USE_KDE = false;
 
 	// random sampler
 	Random sampler;
@@ -164,27 +164,6 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		pruned = true;
 	}
 
-
-	public EmpiricalDistribution trim(Set<String> nodeIds) {
-		if (getHeadVariables().equals(nodeIds)) {
-			return this;
-		}
-		EmpiricalDistribution trimmedDistrib = new EmpiricalDistribution();
-		boolean isContained = false;
-		for (String var : nodeIds) {
-			if (variables.contains(var)) {
-				isContained = true;
-			}
-		}
-		if (isContained) {
-			for (Assignment sample : samples) {
-				Assignment trimmedSample = sample.getTrimmed(nodeIds);
-				trimmedDistrib.addSample(trimmedSample);
-			}
-		}
-		return trimmedDistrib;
-	}
-
 	
 
 	// ===================================
@@ -237,7 +216,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 	
 	
-	public Assignment consistentSample(Assignment evidence) throws DialException {
+	public Assignment getCompatibleSample(Assignment evidence) throws DialException {
 		for (int i = 0 ; i < 10 ; i++) {
 			Assignment sampled = sample();
 			if (sampled.consistentWith(evidence)) {
@@ -332,7 +311,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * reason, the input values are ignored, and the distribution simply outputs the head variable
 	 * values present in the samples.
 	 * 
-	 * @param inputValues the input values for the conditional variables (is ignored)
+	 * @param range the range of input values for the conditional variables (is ignored)
 	 * @return the possible values for the head variables
 	 */
 	@Override
@@ -529,6 +508,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		}
 		return toDiscrete().generateXML(document); 
 	}
+
 
 
 
