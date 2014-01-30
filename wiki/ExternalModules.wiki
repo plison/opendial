@@ -57,7 +57,7 @@ Other modules need to run independently of the dialogue state. Such asynchronous
 
 Asynchronous modules must run in a separate thread to avoid blocking the execution of other system components.
 
-An basic example of asynchronous module is shown in [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/ModuleExample2.java src/opendial/modules/ModuleExample2.java].  The module creates a small grid window with four arrow buttons that can be clicked to instruct the agent to move in a particular direction. The method `system.addContent(...)` is employed to update the dialogue state with new information.  The domain models and modules are then triggered after this operation. 
+An basic example of asynchronous module is shown in [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/ModuleExample2.java src/opendial/modules/ModuleExample2.java]. This example is also intended to work in conjunction with the [SimpleExample step-by-step example]. The module creates a small grid window with four arrow buttons that can be clicked to instruct the agent to move in a particular direction. The method `system.addContent(...)` is employed to update the dialogue state with new information.  The domain models and modules are then triggered after this operation. 
 
 Note that the `trigger` method is empty in this example, as the module runs independently of any state update.
 
