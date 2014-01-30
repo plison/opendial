@@ -4,7 +4,7 @@
 
 Assume you want to create a simple dialogue controller for a robot that can be instructed to move in four directions: left, right, forward, backward. When uncertain, the robot should ask the user to repeat the instruction. Probabilistic rules allow us to design such a dialogue controller in a straightforward manner.
 
-We focus in this example on the specification of the dialogue domain to process the user inputs and select the most relevant actions depending on the conversational situation.  Of course, a real robot will also need to include distinct modules for the actual speech recognition, speech synthesis and motor control.  The implementation of such modules is described in the section [BuildingDialogueSystem Building a complete dialogue system].
+We focus in this example on the specification of the dialogue domain to process the user inputs and select the most relevant actions depending on the conversational situation.  Of course, a real robot will also need to include distinct modules for the actual speech recognition, speech synthesis and motor control.  The implementation of such modules is described in the section [ExternalModules External Modules].
 
 == General skeleton == 
 
