@@ -68,7 +68,7 @@ public final class DoubleVal implements Value {
 	/**
 	 * Returns the double value
 	 * 
-	 * @return
+	 * @return the double value
 	 */
 	public Double getDouble() {return d; }
 
@@ -85,7 +85,7 @@ public final class DoubleVal implements Value {
 	/**
 	 * Returns a string representation of the double
 	 *
-	 * @return
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() { 

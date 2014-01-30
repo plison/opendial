@@ -83,7 +83,7 @@ public final class StringVal implements Value {
 	/**
 	 * Returns the string itself
 	 * 
-	 * @return
+	 * @return the string
 	 */
 	public String getString() {return str; }
 	

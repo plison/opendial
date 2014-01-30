@@ -64,8 +64,6 @@ public class Model {
 
 	/**
 	 * Creates a new model, with initially no trigger and an empty list of rules
-	 * 
-	 * @param cls the rule class
 	 */
 	public Model() {
 		triggers = new LinkedList<Template>();
@@ -143,13 +141,19 @@ public class Model {
 	/**
 	 * Returns the list of rules contained in the model
 	 * 
-	 * @return
+	 * @return the list of rules
 	 */
 	public Collection<Rule> getRules() {
 		return new ArrayList<Rule>(rules);
 	}
 
 
+	/**
+	 * Triggers the model with the given state and list of recently updated variables.
+	 * 
+	 * @param state the current dialogue state
+	 * @param updatedVars the list of updated variables
+	 */
 	public void trigger(DialogueState state, Set<String> updatedVars) {
 		if (isTriggered(updatedVars)) {
 			for (Rule r : rules) {
@@ -165,6 +169,12 @@ public class Model {
 
 	
 	
+	/**
+	 * Returns true if the model is triggered by the updated variables.
+	 * 
+	 * @param updatedVars the updated variables
+	 * @return true if triggered, false otherwise
+	 */
 	public boolean isTriggered(Collection<String> updatedVars) {
 		
 		if (rules.isEmpty()) {
@@ -181,6 +191,11 @@ public class Model {
 	}
 	
 
+	/**
+	 * Returns the model triggers
+	 * 
+	 * @return the model triggers
+	 */
 	public Collection<Template> getTriggers() {
 		return triggers;
 	}

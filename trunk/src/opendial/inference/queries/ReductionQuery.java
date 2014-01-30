@@ -68,7 +68,7 @@ public class ReductionQuery extends ProbQuery {
 	 * 
 	 * @param network the full Bayesian network
 	 * @param varsToRetain the subset of variables to retain in the network
-	 * @param the additional evidence
+	 * @param evidence the additional evidence
 	 */
 	public ReductionQuery (BNetwork network, Collection<String> varsToRetain, Assignment evidence) {
 		super(network, varsToRetain, evidence);
@@ -78,11 +78,11 @@ public class ReductionQuery extends ProbQuery {
 	 * Creates a new reduction query with the given network and the variables to retain
 	 * in the reduced network.
 	 * 
-	 * @param network the structured network
+	 * @param state the dialogue state
 	 * @param varsToRetain the subset of variables to retain in the network
 	 */
-	public ReductionQuery (DialogueState sn, Collection<String> varsToRetain) {
-		this(sn, varsToRetain, sn.getEvidence());
+	public ReductionQuery (DialogueState state, Collection<String> varsToRetain) {
+		this(state, varsToRetain, state.getEvidence());
 	}
 	
 	

@@ -172,7 +172,7 @@ public class DialogueState extends BNetwork {
 	 * to trigger such chain of updates, the method addContent(...) in DialogueSystem
 	 * should be used instead.
 	 * 
-	 * @param distrib a distribution over values for particular state variables
+	 * @param assign a assignment of values for particular state variables
 	 * @throws DialException if the content could not be added.
 	 */
 	public void addToState(Assignment assign) throws DialException {
@@ -481,7 +481,6 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Prunes the dialogue state (see Section 4.4 of Pierre Lison's PhD thesis).
 	 * 
-	 * @param settings the system settings (used to determine how to perform the pruning)
 	 */
 	public void reduce() {
 		if (!getNewVariables().isEmpty() || !evidence.isEmpty()) {

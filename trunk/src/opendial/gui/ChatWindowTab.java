@@ -44,7 +44,6 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.NoneVal;
@@ -84,7 +83,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	/**
 	 * Start up the window
 	 * 
-	 * @param tester reference to the live-testing environment
+	 * @param system the dialogue system
 	 */
 	public ChatWindowTab (DialogueSystem system) 
 	{

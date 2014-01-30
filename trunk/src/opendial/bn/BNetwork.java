@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -462,7 +461,7 @@ public class BNetwork {
 	 * <p>This ordering is used in particular for various inference algorithms relying
 	 * on a topological ordering of the nodes (e.g. variable elimination).
 	 * 
-	 * @return
+	 * @return the ordered list of nodes
 	 */
 	public List<BNode> getSortedNodes() {
 		List<BNode> nodesList = new ArrayList<BNode>(nodes.values());
@@ -564,7 +563,7 @@ public class BNetwork {
 	 * Creates a unique identifier that is guaranteed not to exist in the current network.
 	 * 
 	 * @param base the base of the identifier
-	 * @return
+	 * @return the unique identifier
 	 */
 	public String getUniqueId(String base) {
 		if (!hasNode(base)) {

@@ -63,14 +63,14 @@ package opendial.bn.values;
 	/**
 	 * Returns the boolean value 
 	 * 
-	 * @return
+	 * @return the boolean value
 	 */
 	public boolean getBoolean() {return b; }
 	
 	/**
 	 * Copies the boolean value
 	 *
-	 * @return
+	 * @return the copy
 	 */
 	@Override
 	public BooleanVal copy() { return new BooleanVal(b); }
@@ -78,7 +78,7 @@ package opendial.bn.values;
 	/**
 	 * Returns a string representation of the boolean value
 	 *
-	 * @return
+	 * @return the string representation
 	 */
 	@Override
 	public String toString() { return ""+b; }

@@ -203,7 +203,7 @@ public class Rule {
 	 * than the current rule.
 	 * 
 	 * @param o the object to compare
-	 * @ return true if the object is an identical rule, false otherwise.
+	 * @return true if the object is an identical rule, false otherwise.
 	 */
 	@Override
 	public boolean equals (Object o) {

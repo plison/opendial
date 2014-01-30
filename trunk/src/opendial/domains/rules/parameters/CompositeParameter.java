@@ -96,7 +96,7 @@ public class CompositeParameter implements Parameter {
 	/**
 	 * Sums the parameter with the other parameter and returns the result.
 	 * 
-	 * @param the other parameter 
+	 * @param otherParam the other parameter 
 	 * @return the parameter resulting from the addition of the two parameters
 	 */
 	@Override
@@ -116,7 +116,7 @@ public class CompositeParameter implements Parameter {
 	/**
 	 * Multiplies the parameter with the other parameter and returns the result.
 	 * 
-	 * @param the other parameter 
+	 * @param otherParam the other parameter 
 	 * @return the parameter resulting from the multiplication of the two parameters
 	 */
 	@Override

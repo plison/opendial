@@ -85,7 +85,7 @@ public class SimulatorTest {
 		system.getSettings().showGUI = false;
 		Settings.nbSamples = Settings.nbSamples * 2;
 		system.startSystem();
-		Thread.sleep(4000);
+		Thread.sleep(5000);
 		system.pause(true);
 		Thread.sleep(100);
 		
