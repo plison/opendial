@@ -74,7 +74,7 @@ Once it is implemented, a module can be attached to the dialogue system.  This c
  * Finally, you can also attach the module programmatically by creating the module instance and then calling the method `attachModule(...)` in the current `DialogueSystem`.
 
 
-Note that the three first options will only work for modules whose constructor includes the `DialogueSystem` instance as only argument (such as is the case for `ModuleExample1` and `ModuleExample2`). The fourth option will work for module with arbitrary constructors.
+The three first options will only work for modules whose constructor includes the `DialogueSystem` instance as only argument (such as is the case for `ModuleExample1` and `ModuleExample2`). The fourth option will work for module with arbitrary constructors.
 
 Modules can require some specific settings to be specified before initialisation. Such settings can be directly encoded as new properties in the `<settings>` element of the dialogue domain specification.  If a required parameter is missing, the module should throw a `MissingParameterException`. 
 
