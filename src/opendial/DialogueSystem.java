@@ -18,7 +18,7 @@
 // =================================================================                                                                   
 
 package opendial;
-
+ 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
    
 import org.apache.commons.collections15.ListUtils;
- 
+  
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
  *  <li> the current dialogue state
@@ -221,7 +221,7 @@ public class DialogueSystem {
 		}
 	}
 
-
+  
 
 	/**
 	 * Pauses or resumes the dialogue system.
