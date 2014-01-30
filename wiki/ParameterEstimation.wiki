@@ -98,7 +98,9 @@ An example of such simulator domain is provided in [http://opendial.googlecode.c
 
 Some state variables in this domain specification are labelled with an `^o` suffix.  This suffix indicates which variables are intended to be part of the generated output of the simulator (the remaining variables are internal to the simulator). In this particular example, the only output variable is the user dialogue act.  More complex domains may however include other contextual variables.  One should also note the use of a Dirichlet parameter called `error`.  This Dirichlet parameter is used for the simulator's error model.  The first dimension of this parameter determines the confidence probability for the dialogue act actually selected by the simulator, the second dimension the confidence probability for another, erroneous dialogue act, and the third dimension the probability of no dialogue act.  At runtime, the simulator samples a particular (multivariate) value from this Dirichlet and use it to construct the final N-best list for the dialogue act.
 
-In order to run the simulator, simply click on `Options > Load Modules`, activate the simulator module and stipulates the dialogue domain that should be used for the simulation. A simulated dialogue will then be triggered.  The simulation can be interrupted at any time by clicking on `Interactions > Pause/Resume`.
+In order to run the simulator, simply click on `Options > Load Modules`, activate the simulator module and stipulates the dialogue domain that should be used for the simulation. Alternatively, you can also start the simulator by adding a property `-Dsimulator=path/to/the/simulator/domain` on the command line.
+
+A simulated dialogue will then start.  The simulation can be interrupted at any time by clicking on `Interactions > Pause/Resume`.
 
 
 <p align="center"> 
