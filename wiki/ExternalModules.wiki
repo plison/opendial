@@ -1,4 +1,4 @@
-#summary How to implement new modules in !OpenDial
+#summary How to implement new modules in OpenDial
 
 = External modules ==
 
