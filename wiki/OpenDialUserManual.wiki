@@ -10,7 +10,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[AdvancedModelling Advanced modelling]* <br>Build-in functionalities for handling nested conditions, variable references, quantification<br> mechanisms, string matching, set-theoretic operations and predictive variables.
 
- * *[ParameterEstimation Parameter estimation]*<br>How to estimate rule parameters from data.
+ * *[ParameterEstimation Learning rule parameters from data]*<br>How to collect dialogue data and exploit it to estimate the parameters of probability or utility rules.
 
  * *[ExternalModules External modules]*<br>How to implement new modules with !OpenDial.
 
