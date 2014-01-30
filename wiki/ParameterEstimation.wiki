@@ -39,7 +39,7 @@ The order of user and system turns is arbitrary (user turns can follow other use
 
 === Recording Wizard-of-Oz interactions ===
 
-Wizard-of-Oz interactions can also be recorded through the !OpenDial interface. A Wizard-of-Oz interaction is an interaction in which a human user is asked to interact with a system that is remotely operated by a human agent.  A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  
+Wizard-of-Oz interactions can also be recorded through the !OpenDial interface. A Wizard-of-Oz interaction is an interaction in which a human user is asked to interact with a system that is remotely operated by an unseen human agent.  A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  
 
 The Wizard-of-Oz mode delegates to the Wizard the responsibility of selecting the system actions.  When a new user input is received, !OpenDial will therefore trigger the domain models as usual, but will not select the highest-utility actions.  Instead, the system will show a list of possible actions on the right side of the chat window.  The wizard is then expected to select the most appropriate action in this list. 
 
