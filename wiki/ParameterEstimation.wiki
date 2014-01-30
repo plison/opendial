@@ -29,6 +29,8 @@ The probabilities and utilities specified in the effects of probabilistic rules 
   </systemTurn>
 
   <!-- etc. -->
+
+</interaction>
 }}}
 
 The order of user and system turns is arbitrary (user turns can follow other user turns without any system utterance, and vice versa). The (domain-specific) contextual variables to include in each turn are specified in the [DialogueDomains#5._System_settings system settings].
