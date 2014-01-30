@@ -32,4 +32,4 @@
   * [ExternalModules#Synchronous_modules Synchronous modules]
   * [ExternalModules#Asynchronous_modules Asynchronous modules]
   * [ExternalModules#Attaching_a_module Attaching a module]
- * [Javadoc]
+ * [http://opendial.googlecode.com/svn/trunk/doc/javadoc Javadoc]
