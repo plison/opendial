@@ -226,16 +226,16 @@ public class DialogueSystem {
 	/**
 	 * Pauses or resumes the dialogue system.
 	 * 
-	 * @param shouldBePaused whether the system should be paused or resumed.
+	 * @param toPause whether the system should be paused or resumed.
 	 */
-	public void pause(boolean shouldBePaused) {
-		paused = shouldBePaused;
-		recordComment((shouldBePaused)? "system paused" : "system resumed");
+	public void pause(boolean toPause) {
+		paused = toPause;
+		recordComment((toPause)? "system paused" : "system resumed");
 
 		for (Module module : modules) {
-			module.pause(shouldBePaused);
+			module.pause(toPause);
 		}
-		if (!shouldBePaused && !curState.getNewVariables().isEmpty()) {
+		if (!toPause && !curState.getNewVariables().isEmpty()) {
 			 synchronized (curState) {
 					update();
 				}
@@ -345,7 +345,6 @@ public class DialogueSystem {
 	protected void update() {
 		
 		while (!curState.getNewVariables().isEmpty()) {
-			
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
 			

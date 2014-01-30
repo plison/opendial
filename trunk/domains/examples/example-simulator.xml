@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <domain>
 
-<settings>
-<user>a_u</user>
-<system>a_m</system>
-</settings>
-
+	<!-- Parameter used for the error model -->
 	<parameters>
 		<variable id="error">
 			<distrib type="dirichlet">
@@ -14,12 +10,39 @@
 				<alpha>1</alpha>
 			</distrib>
 		</variable>
-		
-		
 	</parameters>
 
 
-	<model name="nextaction" trigger="a_m">
+	<!--  Reward model -->
+	<model trigger="a_m">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" value="Request({X})" />
+					<if var="a_m" value="Move({X})" />
+				</condition>
+				<effect util="0.5" />
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="0.2" />
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" value="None" relation="!=" />
+				</condition>
+				<effect util="-0.5" />
+			</case>
+		</rule>
+
+	</model>
+
+
+	<!--  Simulator model for the next action -->
+	<model trigger="a_m">
 
 		<rule>
 			<case>
@@ -43,36 +66,34 @@
 				<effect prob="0.2">
 					<set var="a_u" value="Request(Backward)" />
 				</effect>
-				<effect prob="0.2">
-					<set var="a_u" value="Request(Stop)" />
-				</effect>
-			</case>
-		</rule>
-		
-		<rule>
-			<case>
-				<condition>
-					<if var="a_m" value="AskRepeat" />
-				</condition>
-				<effect util="0.5" />
 			</case>
 		</rule>
 
+
+		<!-- Pick up some other user act at random (used for the error model) -->
 		<rule>
 			<case>
-				<effect prob="0.2"><set var="a_uother" value="Request(Left)"/></effect>
-			<effect prob="0.2"><set var="a_uother" value="Request(Right)"/></effect>
-			<effect prob="0.2"><set var="a_uother" value="Request(Forward)"/></effect>
-			<effect prob="0.2"><set var="a_uother" value="Request(Backward)"/></effect>
-			<effect prob="0.2"><set var="a_uother" value="Request(Stop)"/></effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Left)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Right)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Forward)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Backward)" />
+				</effect>
 			</case>
 		</rule>
 
 
 	</model>
- 
 
-	<model trigger="a_u">
+
+	<!--  Error model -->
+	<model name="errormodel" trigger="a_u">
 		<rule>
 			<case>
 				<effect prob="error[0]">
@@ -85,5 +106,12 @@
 		</rule>
 
 	</model>
+	
+	
+	<!--  Changing the inputs and outputs for the simulation -->
+	<settings>
+		<user>a_u</user>
+		<system>a_m</system>
+	</settings>
 
 </domain>

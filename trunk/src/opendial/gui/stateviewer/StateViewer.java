@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Shape;
@@ -93,7 +94,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	DialogueState currentState;
 
 	// whether the viewer is currently being updated
-	boolean isUpdating = false;
+	volatile boolean isUpdating = false;
 	
 	// shown distribution charts
 	Map<Collection<String>, DistributionViewer> shownDistribs;
@@ -217,24 +218,50 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * 
 	 * @param state the Bayesian Network to display
 	 */
-	public void showBayesianNetwork(DialogueState state) {
+	public synchronized void showBayesianNetwork(DialogueState state) {
 		currentState = state;	
 		if (!isUpdating) {
 			new Thread(new Runnable() { 
 				@Override
 				public void run() { 
 					isUpdating = true;
-					synchronized (currentState) {
-						Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
-						setGraphLayout(layout);
-						updateDistributions();
-						isUpdating = false;
+					if (tab.getMainFrame().getSystem().isPaused()) {
+						update();
 					}
+					else {
+					synchronized (currentState) {
+						update();
+					}
+					}
+					isUpdating = false;
+					
+				}
+				
+				private void update() {
+					Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
+					setGraphLayout(layout);
+					updateDistributions();
 				}
 			}).start();
 		}
-		repaint();
 	} 
+	
+	
+	/**
+	 * Quick fix for a strange bung in JUNG
+	 */
+	@Override
+	public void paintComponent(Graphics g) {
+			try {
+			super.paintComponent(g);
+			}
+			catch (NullPointerException e) {
+				log.debug("cannot repaint state viewer, waiting for next update");
+				isUpdating = false;
+				tab.trigger(currentState, currentState.getChanceNodeIds());
+			}
+		
+	}
 
 
 	/**

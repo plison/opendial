@@ -36,6 +36,7 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+import opendial.utils.StringUtils;
 
 /**
  * Simulator for the user/environment.  The simulator generated new environment observations
@@ -191,10 +192,11 @@ public class Simulator implements Module {
 
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {
 				double reward = simulatorState.queryUtil();
-				system.recordComment("Reward: " + reward);
+				String comment = "Reward: " + StringUtils.getShortForm(reward);
+				system.recordComment(comment);
+				log.debug(comment);
 				system.getState().addEvidence(new Assignment(
 						"R(" + systemAction.addPrimes()+")", reward));
-				log.debug("Reward: " + reward);
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 

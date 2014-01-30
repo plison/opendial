@@ -123,7 +123,6 @@ public class KernelDensityFunction implements DensityFunction {
 	@Override
 	public Double[] sample() {
 		Double[] point = points.get(sampler.nextInt(points.size()));
-
 		Double[] newPoint = new Double[point.length];
 		
 		double total = 0.0;

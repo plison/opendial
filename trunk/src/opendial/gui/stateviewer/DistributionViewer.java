@@ -23,11 +23,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -71,7 +73,7 @@ public class DistributionViewer extends JDialog {
 	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
 
 	public DistributionViewer(final IndependentProbDistribution distrib, final StateViewer viewer) {
-		super(viewer.tab.getMainFrame(),Dialog.ModalityType.MODELESS);
+		super(viewer.tab.getMainFrame().getFrame(),Dialog.ModalityType.MODELESS);
 		setTitle("Distribution Viewer");
 		update(distrib);
 		
@@ -181,8 +183,14 @@ public class DistributionViewer extends JDialog {
 			log.warning("could not generate distribution viewer: " + e);
 		}
 		setContentPane(container);
-		pack();
-		setVisible(true);
+		if (getSize().height == 0 || getSize().width == 0) {
+			pack();
+			setLocation(new Random().nextInt(500), (new Random()).nextInt(500));
+			setVisible(true);
+		}
+		else {
+			validate();
+		}
 	}
 
 	

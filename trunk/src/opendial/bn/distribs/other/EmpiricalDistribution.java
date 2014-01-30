@@ -63,7 +63,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	protected List<Assignment> samples;
 
 	// whether to use KDE for continuous distributions
-	public static boolean USE_KDE = true;
+	public static boolean USE_KDE = false;
 
 	// random sampler
 	Random sampler;
