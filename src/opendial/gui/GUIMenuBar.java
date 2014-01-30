@@ -381,14 +381,14 @@ public class GUIMenuBar extends JMenuBar {
 	protected void openDocumentation() {
 		if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("https://code.google.com/p/opendial/w/list"));
+                Desktop.getDesktop().browse(new URI("https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6"));
             } catch (Exception e1) {
                 e1.printStackTrace();
-            } 
+            }  
         }
 	}
-
-
+ 
+ 
 	protected void showAboutPanel(GUIFrame frame) {
 		try {
 			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
