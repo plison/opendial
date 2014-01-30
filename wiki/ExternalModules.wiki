@@ -1,0 +1,14 @@
+#summary How to implement new modules in !OpenDial
+
+= Building a complete dialogue system ==
+
+== Creating new modules ==
+
+_synchronous and asynchronous_
+_parameters_
+_attaching_
+
+
+== Example of a synchronous module ==
+
+== Example of asynchronous module ==
