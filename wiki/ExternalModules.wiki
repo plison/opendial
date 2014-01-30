@@ -47,7 +47,7 @@ The `start` method corresponds to the initialisation of the module. The `pause` 
 
 Some modules operate in synchronous mode. Synchronous modules continuously monitor the dialogue state for relevant changes. Their activation is thus performed as part of the dialogue update loop.
 
-The core of a synchronous module is its implementation of the method `trigger(...)`. Given the current dialogue state and a list of recently updated variables, the method should trigger the internal module processing, and possibly re-update the dialogue state.^[1]^
+The core of a synchronous module is its implementation of the method `trigger(...)`. Given the current dialogue state and a list of recently updated variables, the method is expected to trigger the module's internal processing, and possibly re-update the dialogue state.^[1]^
 
 An basic example of synchronous module is shown in [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/ModuleExample1.java src/opendial/modules/ModuleExample1.java].  The module creates a small grid window with the location of the agent at its center.  When applied together with the [SimpleExample step-by-step example], the grid window is updated after each movement to reflect the new position.
 
