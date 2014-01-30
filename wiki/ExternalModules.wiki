@@ -63,7 +63,7 @@ An basic example of asynchronous module is shown in [http://opendial.googlecode.
 Attaching a module to the dialogue system can be done in several ways:
  * The first possibility is to click on `Options > Load Modules` and activate the module.  
 
- * The second possibility is to add the module's full classname (e.g. `opendial.modules.ModuleExample1`) in the [DialogueDomains#5._System_settings domain settings]. 
+ * The second possibility is to add the module's full classname (e.g. `opendial.modules.ModuleExample1`) in the [DialogueDomains#5._Settings domain settings]. 
 
  * The third possibility is to add the module classname to the command line as -Dmodules=classname
 
