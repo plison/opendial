@@ -7,7 +7,7 @@
 
 You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
 
- * *Release packages*: _TODO_
+ * *Release packages*: Go to the directory [http://opendial.googlecode.com/svn/downloads] and download the most recent release of !OpenDial.  
 
  * *SVN repository*: Enter the following to checkout the latest !OpenDial version from the SVN:
 {{{
