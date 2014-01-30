@@ -107,7 +107,7 @@ A simulated dialogue will then start.  The simulation can be interrupted at any 
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_simulation.png"><br><br>
 
 
-More advanced simulators can be constructed as separate modules. The section [BuildingDialogueSystem Building up a complete dialogue system] describes in more details the implementation of such modules.
+More advanced simulators can be constructed as separate modules. The section [ExternalModules External modules] describes in more details the implementation of such modules.
 
 <br><br>
 
