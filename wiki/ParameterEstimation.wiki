@@ -90,7 +90,7 @@ _(Notice that the `theta_repeat` distribution has narrowed down and that its mea
 
 Finally, the last possible method for parameter estimation is via simulation. A simulator automatically generates user inputs in accordance with an internal model of the user behaviour.  
 
-The easiest way to build a user simulator in !OpenDial is to use the `Simulator` module.  The simulator module takes as input a dialogue domain specification in the same format as a [DialogueDomains standard dialogue domain].  The simulator is triggered after each system action and automatically updates its internal state and generates new user inputs in accordance with the specified model.  
+The easiest way to build a user simulator in !OpenDial is to use the `Simulator` module.  The simulator module takes as parameter a dialogue domain specification in the same format as a [DialogueDomains standard dialogue domain].  The simulator is triggered after each system action and automatically updates its internal state and generates new user inputs in accordance with the specified model.  
 
 An example of such simulator domain is provided in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-simulator.xml domains/examples/example-simulator.xml].  As we can see, this simulator domain is composed of :
  * A reward model that determines the utility of the previous system action.
