@@ -53,7 +53,7 @@ An basic example of synchronous module is shown in [http://opendial.googlecode.c
 
 == Asynchronous modules ==
 
-Other modules need to run independently of the dialogue state. Such asynchronous modules typically relate to visual or speech perception tasks. Asynchronous modules update the dialogue state as soon as new observations are made available.
+Other modules run independently of the dialogue state. Such asynchronous modules typically relate to visual or speech perception tasks. Asynchronous modules update the dialogue state as soon as new observations are made available.
 
 Asynchronous modules must run in a separate thread to avoid blocking the execution of other system components.
 
