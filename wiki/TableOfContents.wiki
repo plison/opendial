@@ -31,4 +31,5 @@
  * [ExternalModules External modules]
   * [ExternalModules#Synchronous_modules Synchronous modules]
   * [ExternalModules#Asynchronous_modules Asynchronous modules]
+  * [ExternalModules#Attaching_a_module Attaching a module]
  * [Javadoc]
