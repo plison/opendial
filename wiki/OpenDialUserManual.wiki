@@ -12,7 +12,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[ParameterEstimation Parameter estimation]*<br>How to estimate rule parameters from data.
 
- * *[BuildingDialogueSystem Building up a complete dialogue system]*<br>How to implement new modules with !OpenDial.
+ * *[ExternalModules External modules]*<br>How to implement new modules with !OpenDial.
 
  * *[Javadoc]*<br>!OpenDial API.
 
