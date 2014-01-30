@@ -75,22 +75,22 @@ public class UtilQuery extends Query {
 	/**
 	 * Creates a new utility query with the given network and query variables
 	 * 
-	 * @param network the structured network for the query
+	 * @param state the dialogue state for the query
 	 * @param queryVars the query variables
 	 */
-	public UtilQuery (DialogueState sn, String... queryVars) {
-		this(sn, Arrays.asList(queryVars), sn.getEvidence());
+	public UtilQuery (DialogueState state, String... queryVars) {
+		this(state, Arrays.asList(queryVars), state.getEvidence());
 	}
 	
 	
 	/**
 	 * Creates a new utility query with the given network and query variables
 	 * 
-	 * @param network the structured network for the query
+	 * @param state the dialogue state for the query
 	 * @param queryVars the query variables
 	 */
-	public UtilQuery (DialogueState sn, Collection<String> queryVars) {
-		this(sn, queryVars, sn.getEvidence());
+	public UtilQuery (DialogueState state, Collection<String> queryVars) {
+		this(state, queryVars, state.getEvidence());
 	}
 
 

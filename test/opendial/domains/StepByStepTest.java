@@ -29,7 +29,6 @@ import org.junit.Test;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.modules.ForwardPlanner;

@@ -230,7 +230,6 @@ public class XMLUtils {
 	 * Returns the main node of the XML document
 	 * 
 	 * @param doc the XML document
-	 * @param topTag the expected top tag of the document
 	 * @return the main node
 	 * @throws DialException if node is ill-formatted
 	 */

@@ -149,7 +149,7 @@ public class CombinatoricsUtils {
 	/**
 	 * Get the power set of the given set
 	 * 
-	 * @param list the original set
+	 * @param originalSet the original set
 	 * @return its power set
 	 */
 	public static <T> Set<Set<T>> getPowerset(Set<T> originalSet) {

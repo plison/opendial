@@ -124,7 +124,7 @@ public class ComplexCondition implements Condition {
 	/**
 	 * Returns the logical operator for the complex condition
 	 * 
-	 * @return
+	 * @return the operator
 	 */
 	public BinaryOperator getOperator() {
 		return operator;

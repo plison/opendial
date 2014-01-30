@@ -62,7 +62,7 @@ public interface UtilityDistribution {
 	/**
 	 * Changes the variable label
 	 * 
-	 * @param nodeId the old variable label
+	 * @param oldId the old variable label
 	 * @param newId the new variable label
 	 */
 	public void modifyVarId(String oldId, String newId);

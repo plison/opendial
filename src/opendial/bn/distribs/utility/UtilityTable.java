@@ -261,7 +261,8 @@ public class UtilityTable implements UtilityDistribution {
 
 	/**
 	 * Returns a string representation for the distribution
-	 * @return
+	 * 
+	 * @return the string representation for the table.
 	 */
 	@Override
 	public String toString() {

@@ -84,7 +84,8 @@ public class AdditionFunction implements DeterministicFunction {
 
 	/**
 	 * Returns a constant.
-	 * @return
+	 * 
+	 * @return 456.
 	 */
 	public int hashcode() {
 		return 456;

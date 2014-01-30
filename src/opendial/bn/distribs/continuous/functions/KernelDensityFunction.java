@@ -183,7 +183,7 @@ public class KernelDensityFunction implements DensityFunction {
 	/**
 	 * Return a pretty print for the kernel density
 	 * 
-	 * @return
+	 * @return the KDE string representation
 	 */
 	@Override
 	public String toString() {

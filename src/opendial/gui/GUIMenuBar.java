@@ -55,7 +55,6 @@ import opendial.domains.Domain;
 import opendial.modules.DialogueImporter;
 import opendial.modules.DialogueRecorder;
 import opendial.modules.WizardControl;
-import opendial.modules.WizardLearner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;

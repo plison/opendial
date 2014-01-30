@@ -67,7 +67,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 * Creates a new rule-based utility distribution, based on an anchored rule
 	 * 
 	 * @param rule the anchored rule
-	 * @param the set of input vars to attach to the distribution
 	 * @throws DialException if the rule is not a decision rule
 	 */
 	public RuleUtilDistribution(AnchoredRule rule) throws DialException {
@@ -110,7 +109,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 * Returns the utility for Q(input), where input is the assignment
 	 * of values for both the chance nodes and the action nodes
 	 * 
-	 * @param input the value assignment
+	 * @param fullInput the value assignment
 	 * @return the corresponding utility
 	 */
 	@Override

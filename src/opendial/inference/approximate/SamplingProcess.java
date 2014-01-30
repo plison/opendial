@@ -3,9 +3,7 @@ package opendial.inference.approximate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import opendial.arch.AnytimeProcess;
@@ -21,8 +19,6 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.inference.SwitchingAlgorithm;
-import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.Query;
 
 /**
@@ -106,7 +102,6 @@ public class SamplingProcess extends AnytimeProcess {
 	 * or the collection of a number of samples = nbSamples).  The method loops until
 	 * terminate() is called, or enough samples have been collected. 
 	 * 
-	 * @return the collected samples
 	 */
 	@Override
 	public void run() {

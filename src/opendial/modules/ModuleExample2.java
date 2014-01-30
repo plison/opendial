@@ -57,11 +57,22 @@ public class ModuleExample2 implements Module {
 	boolean paused = true;
 	
 	
+	/**
+	 * Creates the example module.  The module must have access to the
+	 * dialogue system since it will periodically write new content to it. 
+	 * 
+	 * @param system the dialogue system
+	 */
 	public ModuleExample2(DialogueSystem system) {
 		this.system = system;
 	}
 	
 	
+	/**
+	 * Creates a small control window with 4 arrow buttons.  When clicked, each
+	 * button will create a new dialogue act corresponding to the instruction to
+	 * perform, and add it to the dialogue state.
+	 */
 	@Override
 	public void start() throws DialException {
 		frame = new JFrame();
@@ -119,8 +130,13 @@ public class ModuleExample2 implements Module {
 	}
 	
 	
+	
+	/**
+	 * Action listener for the arrow buttons.
+	 */
 	class CustomActionListener implements ActionListener {
 		
+		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (paused) {
 				return;

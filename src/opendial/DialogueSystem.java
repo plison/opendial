@@ -212,7 +212,7 @@ public class DialogueSystem {
 	 * Detaches the module of the dialogue system.  If the module is
 	 * not included in the system, does nothing.
 	 * 
-	 * @param module the module to detach
+	 * @param moduleClass the class of the module to detach.
 	 */
 	public void detachModule(Class<? extends Module> moduleClass) {
 		Module module = getModule(moduleClass);
@@ -308,7 +308,7 @@ public class DialogueSystem {
 	 * Adds the content (expressed as a certain assignment over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
-	 * @param table the categorical table to add
+	 * @param assign the value assignment to add
 	 * @throws DialException if the state could not be updated.
 	 */
 	public void addContent(Assignment assign) throws DialException {

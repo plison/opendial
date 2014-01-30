@@ -37,7 +37,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -489,6 +488,7 @@ public class StateViewerTab extends JComponent {
 
 final class CustomListModel extends DefaultListModel {
 	
+	@Override
 	public Object getElementAt(int index) {
 		if (index < super.size()) {
 			return super.getElementAt(index);

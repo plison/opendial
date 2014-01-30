@@ -132,7 +132,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Removes a relation between an input node and the current node.  
 	 * 
-	 * @param nodeId the identifier for the incoming node to remove
+	 * @param inputNodeId the identifier for the incoming node to remove
 	 * @return true if a relation between the nodes existed, false otherwise
 	 */
 	public boolean removeInputNode (String inputNodeId) {
@@ -154,18 +154,18 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Removes a relation between an output node and the current node.  
 	 * 
-	 * @param nodeId the identifier for the outgoing node to remove
+	 * @param outputNodeId the identifier for the outgoing node to remove
 	 * @return true if a relation between the nodes existed, false otherwise
 	 */
-	public boolean removeOutputNode (String outputNode) {
-		if (!outputNodes.containsKey(outputNode)) {
-			log.warning("node " + outputNode + " is not an input node for " + nodeId);
+	public boolean removeOutputNode (String outputNodeId) {
+		if (!outputNodes.containsKey(outputNodeId)) {
+			log.warning("node " + outputNodeId + " is not an input node for " + nodeId);
 		}
-		boolean removal1 = outputNodes.containsKey(outputNode) && 
-				outputNodes.get(outputNode).removeInputNode_internal(nodeId);
-		boolean removal2 = removeOutputNode_internal(outputNode);
+		boolean removal1 = outputNodes.containsKey(outputNodeId) && 
+				outputNodes.get(outputNodeId).removeInputNode_internal(nodeId);
+		boolean removal2 = removeOutputNode_internal(outputNodeId);
 		if (removal1!=removal2) {
-			log.warning("inconsistency between input and output links for " + outputNode + " and " + nodeId);
+			log.warning("inconsistency between input and output links for " + outputNodeId + " and " + nodeId);
 		}
 
 		return removal2;
@@ -187,7 +187,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Changes the identifier for the node
 	 * 
-	 * @param nodeId the new identifier
+	 * @param newNodeId the new identifier
 	 */
 	public void setId(String newNodeId) {
 		String oldNodeId = this.nodeId;
@@ -362,7 +362,6 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Returns the list of closest ancestors for the node among a set of possible 
 	 * variables.  The variables not mentioned are ignored.
 	 * 
-	 * @param var the variable for which to find dependencies
 	 * @param variablesToRetain the set of all variables from which to seek 
 	 *        possible ancestors
 	 * @return the set of dependencies for the given variable
@@ -466,7 +465,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Returns true if at there exists at least one descendant whose 
 	 * identifier matches the regular expression pattern, and false otherwise
 	 * 
-	 * @param the regular expression pattern to look for
+	 * @param pattern the regular expression pattern to look for
 	 * @return true if a descendant is found, false otherwise
 	 */
 	public boolean hasDescendant(Pattern pattern) {
@@ -523,7 +522,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Return the factor matrix associated with the node.  The factor matrix is
 	 * derived from the probability or utility distribution
 	 * 
-	 * @return
+	 * @return the factor matrix for the node
 	 */
 	public abstract Map<Assignment,Double> getFactor();
 
@@ -611,7 +610,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * <p>This ordering is used for various inference algorithms (e.g. variable elimination)
 	 * relying on a topological ordering of the nodes in the network.
 	 *
-	 * @param node the node to compare
+	 * @param otherNode the node to compare
 	 * @return the comparison result
 	 *
 	 */

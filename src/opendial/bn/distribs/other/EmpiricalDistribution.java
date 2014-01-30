@@ -311,7 +311,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * reason, the input values are ignored, and the distribution simply outputs the head variable
 	 * values present in the samples.
 	 * 
-	 * @param inputValues the input values for the conditional variables (is ignored)
+	 * @param range the range of input values for the conditional variables (is ignored)
 	 * @return the possible values for the head variables
 	 */
 	@Override
