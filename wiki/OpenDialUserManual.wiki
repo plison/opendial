@@ -14,7 +14,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[ExternalModules External modules]*<br>How to implement new modules with !OpenDial.
 
- * *[http://opendial.googlecode.com/svn/trunk/doc/javadoc Javadoc]*<br>!OpenDial API.
+ * *[http://opendial.googlecode.com/svn/trunk/doc/javadoc Javadoc]*<br>!OpenDial API (latest version).
 
 <br>
 
