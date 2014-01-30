@@ -83,21 +83,29 @@ In practice, you can simply import a previously recorded Wizard-of-Oz dialogue (
 <p align="center"> 
 *Parameter distributions after learning*:
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz2.png"><br>
-_(we can notice that the `theta_repeat` distribution has narrowed down and that its mean is now centered around 0.2-0.3)_ <br>
+_(Notice that the `theta_repeat` distribution has narrowed down and that its mean is now centered around 0.2-0.3)_ <br>
 
 === With simulated dialogues ===
 
 Finally, the last possible method for parameter estimation is via simulation. A simulator automatically generates user inputs in accordance with an internal model of the user behaviour.  
 
-The easiest way to build a user simulator in !OpenDial is to use the `Simulator` module.  The simulator module takes as input a dialogue domain specification in the same format as a [DialogueDomains standard dialogue domain].  After observing system actions, the simulator will automatically update its internal state and generate new user inputs in accordance with the specified model.  
+The easiest way to build a user simulator in !OpenDial is to use the `Simulator` module.  The simulator module takes as input a dialogue domain specification in the same format as a [DialogueDomains standard dialogue domain].  The simulator is triggered after each system action and automatically updates its internal state and generates new user inputs in accordance with the specified model.  
 
-An example of such simulator domain is provided in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-simulator.xml domains/examples/example-simulator.xml].  Two elements are worth noting in this specification:
- * Some state variables are labelled with an `^o` suffix.  This suffix is used to indicate which variables are intended to be part of the generated output of the simulator (the remaining variables are internal to the simulator). In the case of the simulator domain in `example-simulator.xml`, the only output variable is the user dialogue act.  More complex domains may however include other contextual variables.
- * Note the use of a Dirichlet parameter called `error`.  This parameter is employed as the _error model_ of the simulator.  At runtime, the simulator will sample a particular (multivariate) value from this Dirichlet and use it to determine the confidence score of the user input.
+An example of such simulator domain is provided in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-simulator.xml domains/examples/example-simulator.xml].  As we can see, this simulator domain is composed of :
+ * A reward model that determines the utility of the previous system action.
+ * A simulator model that determines the next dialogue act from the user.
+ * An error model that introduces noises and errors into the actual dialogue act perceived by the system.
 
-In order to run the simulator, one can simply click on `Options > Load Modules`, activate the simulator module and indicate the dialogue domain that should be used for the simulation. 
+Some state variables in this domain specification are labelled with an `^o` suffix.  This suffix indicates which variables are intended to be part of the generated output of the simulator (the remaining variables are internal to the simulator). In this particular example, the only output variable is the user dialogue act.  More complex domains may however include other contextual variables.  One should also note the use of a Dirichlet parameter called `error`.  This Dirichlet parameter is used for the simulator's error model.  The first dimension of this parameter determines the confidence probability for the dialogue act actually selected by the simulator, the second dimension the confidence probability for another, erroneous dialogue act, and the third dimension the probability of no dialogue act.  At runtime, the simulator samples a particular (multivariate) value from this Dirichlet and use it to construct the final N-best list for the dialogue act.
 
-More advanced simulators can be constructed as separate modules, as explained in [BuildingDialogueSystem Building up a complete dialogue system].
+In order to run the simulator, simply click on `Options > Load Modules`, activate the simulator module and stipulates the dialogue domain that should be used for the simulation. A simulated dialogue will then be triggered.  The simulation can be interrupted at any time by clicking on `Interactions > Pause/Resume`.
+
+
+<p align="center"> 
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_simulation.png"><br><br>
+
+
+More advanced simulators can be constructed as separate modules. The section [BuildingDialogueSystem Building up a complete dialogue system] describes in more details the implementation of such modules.
 
 <br><br>
 
