@@ -82,4 +82,4 @@ Modules can require some specific settings to be specified before initialisation
 
 ----
 
-^[1]^ If a module adds or updates elements to the dialogue state as part of the trigger operation, it must do so through the method `state.addToState(...)`.  The method `addContent` in `DialogueSystem` should _not_ be used in this context due to synchronisation locks in the state update loop.
+^[1]^ If a module adds or updates elements to the dialogue state as part of the trigger operation, it must do so through the method `addToState(...)` in `DialogueState`.  The method `addContent` in `DialogueSystem` should _not_ be used in this context due to synchronisation locks in the state update loop.
