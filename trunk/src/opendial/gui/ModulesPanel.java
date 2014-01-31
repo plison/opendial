@@ -64,7 +64,7 @@ import opendial.utils.ReflectionUtils;
 
 
 /**
- * Panel to modify the system preferences.
+ * Panel to load or unload modules.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2014-01-16 02:21:14 #$
