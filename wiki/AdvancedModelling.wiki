@@ -195,6 +195,8 @@ The following rule from the [SimpleExample step-by-step example] states for inst
 
 Note the reference to the existing dialogue act `a_u` in the effect. The above rule allows the system to prime the probability of a repeated dialogue act compared to other hypotheses.
 
+<br><br>
+
 ----
 
 ^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 67-68 and 74-76 for the theoretical foundations of such quantification mechanisms.
