@@ -460,6 +460,20 @@ public class DialogueSystem {
 	// ===================================
 
 
+	/**
+	 * Starts the dialogue system.  The content of the args array is ignored.  Command-line
+	 * parameters can however be specified through system properties via the -D flag. All
+	 * parameters are optional.
+	 * 
+	 * <p>Possible properties are:<ul>
+	 * <li>-Ddomain=path/to/domain/file: dialogue domain file
+	 * <li>-Dsettings=path/to/settings/file: settings file
+	 * <li>-Ddialogue=path/to/recorded/dialogue: dialogue file to import
+	 * <li>-Dsimulator=path/to/simulator/domain/file: dialogue domain file for the simulator
+	 * </ul>
+	 * 
+	 * @param args is ignored.
+	 */
 	public static void main(String[] args) {
 		try {
 			DialogueSystem system = new DialogueSystem();
