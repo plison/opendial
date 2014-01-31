@@ -31,7 +31,6 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
@@ -231,13 +230,13 @@ public class ParametersTest {
 		system.addContent(new Assignment("u_u", "brilliant"));
 		
 		assertEquals(1.0, system.getState(). 
-				queryProb("theta_6").toContinuous().getFunction().getMean()[0], 0.07);
+				queryProb("theta_6").toContinuous().getFunction().getMean()[0], 0.08);
 		
 		assertEquals(0.72, system.getContent("a_u").toDiscrete().
-				getProb(new Assignment("a_u", "Approval")), 0.07);
+				getProb(new Assignment("a_u", "Approval")), 0.08);
 		
 		assertEquals(0.28, system.getContent("a_u").toDiscrete().
-				getProb(new Assignment("a_u", "Irony")), 0.07);
+				getProb(new Assignment("a_u", "Irony")), 0.08);
 		
 }
 	
