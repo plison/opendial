@@ -7,7 +7,7 @@
 
 You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
 
- * *Release packages*: Go to the directory [http://opendial.googlecode.com/svn/downloads] and download the most recent release of !OpenDial.  
+ * *Release packages*: Go to the directory [http://opendial.googlecode.com/svn/downloads] and download the most recent release.  The standard version of !OpenDial is named `opendial-XXX.zip` (replace XXX by the version number).  If you happen to own a Nao robot, you can also download the version of !OpenDial with bindings to the robot library.
 
  * *SVN repository*: Enter the following to checkout the latest !OpenDial version from the SVN:
 {{{
