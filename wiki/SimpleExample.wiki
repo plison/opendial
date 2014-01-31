@@ -386,7 +386,7 @@ The parameters must then be optimised from dialogue data.  This will be covered 
 == Final domain ==
 The full XML specification for the dialogue domain can be found at [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml domains/examples/example-step-by-step.xml].
 
-
+<br><br>
 
 ----
 
