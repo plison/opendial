@@ -98,7 +98,7 @@ Probability distributions can also be defined for a continuous range, using the 
 
 <br>
 
-A couple of special characters should be avoided when choosing variable labels.  Variables should _*not*_ include primes ('), curly brackets ({,}) or square brackets (`[`,`]`), as these are used internally in !OpenDial. Furthermore, variables ending with `^p`, `^t` and `^o` have a special function (`^p` denotes [AdvancedModelling#Predictive predictive variables], `^t` denotes temporary variables that are deleted after each update loop, and `^o` denotes output variables for [ParameterEstimation#Learning_from_(real_or_simulated)_interactions user simulators]). 
+Generally speaking, variable can have arbitrary identifiers, but a couple of special characters should be avoided.  Variables should _*not*_ include primes ('), curly brackets ({,}) or square brackets (`[`,`]`), as these are used internally in !OpenDial. Furthermore, variables ending with `^p`, `^t` and `^o` have a special function (`^p` denotes [AdvancedModelling#Predictive predictive variables], `^t` denotes temporary variables that are deleted after each update loop, and `^o` denotes output variables for [ParameterEstimation#Learning_from_(real_or_simulated)_interactions user simulators]). 
 
 Similarly, some variable values have a special meaning in !OpenDial: "`None`" denotes an "empty" value, and values between square brackets `[` `]` denote sets of elements.
 
