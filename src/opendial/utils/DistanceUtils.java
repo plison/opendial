@@ -31,6 +31,12 @@ import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
+/**
+ * Utilities to calculate distance (between doubles and arrays).
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class DistanceUtils {
 
 	// logger
@@ -65,7 +71,8 @@ public class DistanceUtils {
 	 * @return the closest assignment, if any is found.
 	 * @throws DialException if no closest assignment could be found
 	 */
-	public static Assignment getClosestElement(Collection<Assignment> rows, Assignment toFind) throws DialException {
+	public static Assignment getClosestElement(Collection<Assignment> rows, 
+			Assignment toFind) throws DialException {
 			
 		Assignment closest = null;
 		double minDistance = Double.MAX_VALUE;

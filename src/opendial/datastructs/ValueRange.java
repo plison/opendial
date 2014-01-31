@@ -29,6 +29,13 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
 
+
+/**
+ * Representation of a range of alternative values for a set of variables.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class ValueRange {
 
 	// logger

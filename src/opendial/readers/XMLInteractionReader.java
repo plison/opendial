@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * 
+ * XML reader for previously recorded dialogues.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
