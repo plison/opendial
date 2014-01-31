@@ -66,7 +66,7 @@ import org.w3c.dom.Node;
 
 
 /**
- * 
+ * Menu bar for the GUI.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2014-01-16 02:21:14 #$
@@ -85,6 +85,11 @@ public class GUIMenuBar extends JMenuBar {
 	JMenuItem exportParams;
 	JMenuItem stateDisplayMenu;
 	
+	/**
+	 * Creates the menu bar for the frame.
+	 * 
+	 * @param frame the frame to which the menu bar is attached.
+	 */
 	public GUIMenuBar(final GUIFrame frame) {
 		this.frame = frame;
 		JMenu domainMenu = new JMenu("Domain");

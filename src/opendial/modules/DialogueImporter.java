@@ -27,28 +27,47 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.state.DialogueState;
  
+/**
+ * Functionality to import a previously recorded dialogue in the dialogue system.  The 
+ * import essentially "replays" the previous interaction, including all state update
+ * operations.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class DialogueImporter extends Thread {
 
 	// logger
 	public static Logger log = new Logger("DialogueImporter", Logger.Level.DEBUG);
 
+	
 	DialogueSystem system;
-	List<DialogueState> dialogue;
+	List<DialogueState> turns;
 
-	public DialogueImporter(DialogueSystem system, List<DialogueState> dialogue) {
+	/**
+	 * Creates a new dialogue importer attached to a particular dialogue system, and
+	 * with an ordered list of turns (encoded by their dialogue state).
+	 * 
+	 * @param system the dialogue system
+	 * @param turns the sequence of turns
+	 */
+	public DialogueImporter(DialogueSystem system, List<DialogueState> turns) {
 		this.system = system;
-		this.dialogue = dialogue;
+		this.turns = turns;
 	}
 	
+	/**
+	 * Runs the import operation.
+	 */
 	@Override
 	public void run() {
 		system.attachModule(WizardLearner.class);
-		for (final DialogueState state : dialogue) {
+		for (final DialogueState turn : turns) {
 			try {
 				while (system.isPaused() || !system.getModule(DialogueRecorder.class).isRunning()) {
 					try { Thread.sleep(100); } catch (Exception e) { }
 				}
-				system.addContent(state.copy()); 
+				system.addContent(turn.copy()); 
 			} 
 			catch (DialException e) {	
 				log.warning("could not add content: " + e);	

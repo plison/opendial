@@ -37,6 +37,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * Module used to systematically record all user inputs and outputs during the interaction.
+ * The recordings are stored in a XML element which can be written to a file at any time.
+ * 
+ * The module can also be used to record Wizard-of-Oz interactions.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class DialogueRecorder implements Module {
 
 	// logger
@@ -46,12 +55,19 @@ public class DialogueRecorder implements Module {
 	Document doc;
 	Settings settings;
 
-	
+	/**
+	 * Creates a new dialogue recorder for the dialogue system
+	 * 
+	 * @param system the dialogue system
+	 */
 	public DialogueRecorder(DialogueSystem system) {
 		this.settings = system.getSettings();				
 	}
 	
 	
+	/**
+	 * Starts the recorder.
+	 */
 	@Override
 	public void start() {
 		try {
@@ -64,10 +80,19 @@ public class DialogueRecorder implements Module {
 		}
 	}
 	
+	
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void pause(boolean shouldBePaused) { 	}
 
 
+	/**
+	 * Triggers the recorder with a particular dialogue state and a set of recently updated
+	 * variables.  If one of the updated variables is the user input or system output, the 
+	 * recorder stores a new turn.  Else, the module does nothing.
+	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!rootNode.getNodeName().equals("interaction")) {
@@ -104,12 +129,22 @@ public class DialogueRecorder implements Module {
 	}
 	
 	
+	/**
+	 * Adds a wizard action to the recordings.
+	 * 
+	 * @param action the assignment of action variables selected by the wizard
+	 */
 	public void addWizardAction (Assignment action) {
 			Node wizardNode =doc.createElement("wizard");
 			wizardNode.setTextContent(action.toString());
 			rootNode.appendChild(wizardNode);
 	}
 
+	
+	/**
+	 * Adds a comment in the XML recordiings.
+	 * @param comment
+	 */
 	public void addComment(String comment) {
 		try {
 			if (rootNode.getNodeName().equals("interaction")) {
@@ -127,6 +162,11 @@ public class DialogueRecorder implements Module {
 	}
 	
 
+	/**
+	 * Write the recorded dialogue to a file
+	 * 
+	 * @param recordFile the pathname for the file
+	 */
 	public void writeToFile(String recordFile) {
 		log.debug("recording interaction in file " + recordFile);
 		try {
@@ -137,19 +177,24 @@ public class DialogueRecorder implements Module {
 		}
 	}
 
+	
+	/**
+	 * Serialises the XML recordings and returns the output.
+	 * 
+	 * @return the serialised XML content.
+	 */
 	public String getRecord() {
 		return XMLUtils.serialise(rootNode);
 	}
 
 
+	/**
+	 * Returns true if the module is running, and false otherwise.
+	 */
 	@Override
 	public boolean isRunning() {
 		return doc != null;
 	}
-
-
-	
-
 
 
 }

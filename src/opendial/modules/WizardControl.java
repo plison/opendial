@@ -50,6 +50,18 @@ import opendial.gui.GUIFrame;
 import opendial.state.DialogueState;
 import opendial.state.nodes.UtilityRuleNode;
 
+
+/**
+ * Module employed in the "Wizard-of-Oz" interaction mode.  The module extracts
+ * all possible actions available for the current dialogue state and displays this
+ * list of actions on the right side of the GUI.  The Wizard must then select
+ * the action to perform. 
+ * 
+ * <p>The module only works if the GUI is activated.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class WizardControl implements Module {
 
 	// logger
@@ -59,6 +71,12 @@ public class WizardControl implements Module {
 	GUIFrame gui;
 	
 	
+	/**
+	 * Creates a new wizard control for the dialogue system.
+	 * 
+	 * @param system the dialogue system
+	 * @throws DialException if the GUI is not activated
+	 */
 	public WizardControl(DialogueSystem system) throws DialException {
 		this.system = system;
 		
@@ -70,17 +88,37 @@ public class WizardControl implements Module {
 		}
 	}
 	
+	
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void start()  {	}
 
-
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void pause(boolean shouldBePaused) { 	}
 
+	/**
+	 * Returns true.
+	 */
 	@Override
 	public boolean isRunning() {  return true;	}
 	
 	
+	
+	/**
+	 * Triggers the wizard control. The wizard control window is displayed whenever the dialogue
+	 * state contains at least one action node. 
+	 * 
+	 * <p>There is an exception: if the action selection is straightforward and does not contain
+	 * any parameters (i.e. there is only one possible action and its utility is well-defined), 
+	 * the wizard control directly selects this action.  This exception is there to allow for the 
+	 * NLG module to directly realise the system's communicative intention without the wizard 
+	 * intervention, if there is no doubt about how to realise the utterance.
+	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		
@@ -95,7 +133,7 @@ public class WizardControl implements Module {
 		try {
 				
 		for (ActionNode action : state.getActionNodes()) {
-			addActionSelection(action);
+			displayWizardBox(action);
 		}
 		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
 		state.removeNodes(state.getActionNodeIds());
@@ -107,8 +145,15 @@ public class WizardControl implements Module {
 	}
 	
 	
+	/**
+	 * Displays the Wizard-of-Oz window with the possible action values specified in the
+	 * action node.
+	 * 
+	 * @param actionNode the action node
+	 * @throws DialException if the action values could not be extracted
+	 */
 	@SuppressWarnings("serial")
-	public void addActionSelection(ActionNode actionNode) throws DialException {
+	private void displayWizardBox(ActionNode actionNode) throws DialException {
 		
 		DefaultListModel model = new DefaultListModel();
 		for (Value v : actionNode.getValues()) {
@@ -146,7 +191,9 @@ public class WizardControl implements Module {
 	
 	
 	
-	
+	/**
+	 * Action listener for the Wizard-of-Oz selection box.
+	 */
 	class WizardBoxListener implements ActionListener {
 
 		JList listBox;
