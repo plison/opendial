@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui;
@@ -75,7 +79,7 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class GUIMenuBar extends JMenuBar {
 
-	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/w/list";
+	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6";
 	
 	// logger
 	public static Logger log = new Logger("ToolkitMenu", Logger.Level.DEBUG);
@@ -110,7 +114,7 @@ public class GUIMenuBar extends JMenuBar {
 		importState.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e) {
-				importAction("state");
+				importContent("state");
 			}
 		});
 		importMenu.add(importState);
@@ -119,7 +123,7 @@ public class GUIMenuBar extends JMenuBar {
 		importParams.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e) {
-				importAction("parameters");				
+				importContent("parameters");				
 			}
 		});
 		importMenu.add(importParams);
@@ -130,7 +134,7 @@ public class GUIMenuBar extends JMenuBar {
 		exportState.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e) {
-				exportAction("state");
+				exportContent("state");
 			}
 		});
 		exportMenu.add(exportState);
@@ -139,7 +143,7 @@ public class GUIMenuBar extends JMenuBar {
 		exportParams.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e) {
-				exportAction("parameters");
+				exportContent("parameters");
 			}
 		});
 		exportMenu.add(exportParams);
@@ -155,8 +159,6 @@ public class GUIMenuBar extends JMenuBar {
 		
 		domainMenu.add(exit);
 		add(domainMenu);
-
-
 
 		JMenu traceMenu = new JMenu("Interaction");
 
@@ -319,10 +321,7 @@ public class GUIMenuBar extends JMenuBar {
 				new SettingsPanel(frame);
 			}
 		});
-		optionMenu.add(config);
-		
-
-	
+		optionMenu.add(config);	
 		
 		add(optionMenu);
 		JMenu helpMenu = new JMenu("Help");
@@ -348,7 +347,11 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 	
-
+	/**
+	 * Switches the interaction mode of the dialogue
+	 * 
+	 * @param isWozMode true if the interaction should be Wizard-of-Oz
+	 */
 	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
 			frame.getSystem().attachModule(WizardControl.class);
@@ -362,6 +365,9 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 
+	/**
+	 * Imports a previous interaction.
+	 */
 	protected void importInteraction() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
@@ -382,11 +388,13 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 	
-
+	/**
+	 * Opens the documentation on the project website
+	 */
 	protected void openDocumentation() {
 		if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6"));
+                Desktop.getDesktop().browse(new URI(OPENDIAL_DOC));
             } catch (Exception e1) {
                 e1.printStackTrace();
             }  
@@ -394,6 +402,10 @@ public class GUIMenuBar extends JMenuBar {
 	}
  
  
+	/**
+	 * Displays the "About" panel.
+	 * @param frame
+	 */
 	protected void showAboutPanel(GUIFrame frame) {
 		try {
 			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
@@ -409,9 +421,8 @@ public class GUIMenuBar extends JMenuBar {
 			JEditorPane ep = new JEditorPane("text/html","<html><body style=\"" + style 
 					+ "\"><b>OpenDial dialogue toolkit, version 0.9</b><br>"
 					+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
-					+ "OpenDial is free software; you can redistribute it and/or<br>" 
-					+ "modify it under the terms of the GNU Lesser General Public<br>"
-					+ "License as published by the Free Software Foundation.<br><br>"
+					+ "OpenDial is distributed as free software under<br>"
+					+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
 					+ "<i>Project website</i>: <a href=\"http://opendial.googlecode.com\">"
 					+ "http://opendial.googlecode.com</a><br>"
 					+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
@@ -442,6 +453,9 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 
+	/**
+	 * Records the interaction.
+	 */
 	protected void saveInteraction() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
@@ -453,7 +467,12 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 	
-	protected void importAction (String tag) {
+	/**
+	 * Imports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param tag the expected top XML tag.
+	 */
+	protected void importContent (String tag) {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showOpenDialog(frame.getFrame());
@@ -461,7 +480,7 @@ public class GUIMenuBar extends JMenuBar {
 			String stateFile = fc.getSelectedFile().getAbsolutePath();
 			frame.addComment("Importing " + tag + " from "  + stateFile);
 			try {
-				importAction(frame.getSystem(), stateFile, tag);
+				importContent(frame.getSystem(), stateFile, tag);
 			}
 			catch (Exception f) {
 				log.warning("could not extract interaction: " + f);
@@ -470,7 +489,15 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 	
-	public static void importAction(DialogueSystem system, String file, String tag) throws DialException {
+	
+	/**
+	 * Imports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param system the dialogue system
+	 * @param file the file that contains the state or parameter content
+	 * @param tag the expected top XML tag.
+	 */	
+	public static void importContent(DialogueSystem system, String file, String tag) throws DialException {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
@@ -486,14 +513,20 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 
-	protected void exportAction(String tag) {
+	
+	/**
+	 * Exports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param tag the expected top XML tag.
+	 */		
+	protected void exportContent(String tag) {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showSaveDialog(frame.getFrame());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			try {
 				String recordFile = fc.getSelectedFile().getAbsolutePath();
-				exportAction(frame.getSystem(), recordFile, tag);
+				exportContent(frame.getSystem(), recordFile, tag);
 				frame.addComment(tag.substring(0,1).toUpperCase() + tag.substring(1) + " saved to " + recordFile);
 			}
 			catch (DialException j) {
@@ -502,7 +535,15 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 	
-	public static void exportAction(DialogueSystem system, String file, String tag) throws DialException {
+	
+	/**
+	 * Exports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param system the dialogue system
+	 * @param file the file in which to write the state or parameter content
+	 * @param tag the expected top XML tag.
+	 */	
+	public static void exportContent(DialogueSystem system, String file, String tag) throws DialException {
 		Document doc = XMLUtils.newXMLDocument();
 		
 		Set<String> parameterIds = new HashSet<String>(system.getState().getParameterIds());
@@ -517,6 +558,9 @@ public class GUIMenuBar extends JMenuBar {
 
 
 
+	/**
+	 * Opens a new dialogue domain.
+	 */
 	protected void openDomain() {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
@@ -535,8 +579,10 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 
-
-	public void trigger() {
+	/**
+	 * Updates the menu bar.
+	 */
+	public void update() {
 		Set<String> parameterIds = new HashSet<String>(frame.getSystem().getState().getParameterIds());
 		Set<String> otherVarsIds = new HashSet<String>(frame.getSystem().getState().getChanceNodeIds());
 		otherVarsIds.removeAll(parameterIds);
