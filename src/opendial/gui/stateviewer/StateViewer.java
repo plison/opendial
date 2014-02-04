@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui.stateviewer;
@@ -240,7 +244,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 				private void update() {
 					Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
 					setGraphLayout(layout);
-					updateDistributions();
+					updateDistribs();
 				}
 			}).start();
 		}
@@ -330,7 +334,13 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	}
 	
 	
-	public void showDistribution(Collection<String> queryVars) {
+	
+	/**
+	 * Displays the probability distribution(s) for the selected variables.
+	 * 
+	 * @param queryVars the variable(s) to display
+	 */
+	public void displayDistrib(Collection<String> queryVars) {
 		if (!shownDistribs.containsKey(queryVars)) {
 			IndependentProbDistribution distrib = currentState.queryProb(queryVars);
 			DistributionViewer viewer = new DistributionViewer(distrib, this);
@@ -338,7 +348,11 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		}
 	}
 	
-	public void updateDistributions() {
+	
+	/**
+	 * Updates the windows displaying probability distributions.
+	 */
+	public void updateDistribs() {
 		for (Collection<String> queryVars : shownDistribs.keySet()) {
 			IndependentProbDistribution distrib = currentState.queryProb(queryVars);
 			shownDistribs.get(queryVars).update(distrib);
@@ -399,6 +413,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		}
 	}
 
+	
+	/**
+	 * Renderer for the vertice colour
+	 */
 	final class CustomVertexColourRenderer implements Transformer<String,Paint> {
 
 
@@ -459,6 +477,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	}
 
 
+	
+	/**
+	 * Custom layout manager for the state viewer.
+	 */
 	final class CustomLayoutTransformer implements Transformer<String,Point2D> {
 
 		Map<BNode,Point2D> positions;
