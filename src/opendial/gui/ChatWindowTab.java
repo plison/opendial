@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui;
@@ -65,6 +69,19 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public static final String TAB_TITLE = " Chat Window ";
 	public static final String TAB_TIP = "Chat window listing the user and system utterances";
+	public static final String TIP_TEXT = "<html><br>- To directly enter a user utterance, simply type it in the text field "
+			+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
+			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move to the left</i><br><br>"
+			+ "- To associate the utterance a recognition probability, simply enter the<br>"
+			+ "&nbsp;&nbsp;&nbsp;probability value in parenthesis after the utterance:<br>"
+			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55)</i><br><br>"
+			+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
+			+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
+			+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
+			+ "- Finally, to enter an N-best list of user utterances, separate each<br>"
+			+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
+			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
+			+ "do not move left (0.15)<br><br></html>";
 	
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
@@ -108,19 +125,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		final JButton helpButton = new JButton( "" );
 		helpButton.putClientProperty( "JButton.buttonType", "help" );
 		
-		final BalloonTip tip = new BalloonTip(helpButton, "<html><br>- To directly enter a user utterance, simply type it in the text field "
-				+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
-				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move to the left</i><br><br>"
-				+ "- To associate the utterance a recognition probability, simply enter the<br>"
-				+ "&nbsp;&nbsp;&nbsp;probability value in parenthesis after the utterance:<br>"
-				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55)</i><br><br>"
-				+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
-				+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
-				+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
-				+ "- Finally, to enter an N-best list of user utterances, separate each<br>"
-				+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
-				+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
-				+ "do not move left (0.15)<br><br></html>");
+		final BalloonTip tip = new BalloonTip(helpButton, TIP_TEXT);
 		tip.setVisible(false);
 		 
 		helpButton.addActionListener(new ActionListener() {
@@ -149,28 +154,40 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 
 
-
+	/**
+	 * If the action event originates from the text field, adds the entered utterance
+	 * to the dialogue state
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().getClass().equals(JTextField.class)) {
 			addUtteranceToState();
 		}
-		/** 	else if (e.getSource().getClass().equals(JButton.class)) {
-			addSelectedAction();
-		} */
 	}
 	
-	
+	/**
+	 * Sets the number of N-Best elements to display
+	 * 
+	 * @param nBestView
+	 */
 	public void setNBest(int nBestView) {
 		this.nBestView = nBestView;
 	}
 	
+	
+	/**
+	 * Returns the current number of displayed N-best elements
+	 * 
+	 * @return the number of N-best elements to display
+	 */
 	public int getNBest() {
 		return nBestView;
 	}
 
 
-
+	/**
+	 * Adds the utterance entered in the text field to the dialogue state
+	 */
 	private void addUtteranceToState()  {
 		String rawText= inputField.getText();
 		if (!rawText.equals("")) {
@@ -190,6 +207,11 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	}
 	
 
+	/**
+	 * Adds a comment in the chat window
+	 * 
+	 * @param comment the comment to display
+	 */
 	public void addComment(String comment) {
 		try {
 		    kit.insertHTML(doc, doc.getLength(),"[" +comment + "]\n", 0, 0, null);
@@ -227,7 +249,12 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	}
 	
 	
-
+	/**
+	 * Generates the HTML representation for the categorical table.
+	 * 
+	 * @param table the table
+	 * @return the HTML rendering of the table
+	 */
 	private String getHtmlRendering(CategoricalTable table) {
 
 		String htmlTable = "";
@@ -266,6 +293,9 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	}
 
 	
+	/**
+	 * Updates the activation status of the chat window.
+	 */
 	void updateActivation() {
 		if (system.getDomain() == null) {
 			inputField.setEnabled(false);
@@ -283,6 +313,14 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	}
 
 
+	/**
+	 * Triggers the update of the chat window.  The window is updated whenever the
+	 * updated variables contains the user input, system output, or other variables
+	 * to monitor.
+	 * 
+	 * @param state the dialogue state
+	 * @param updatedVars the list of recently updated variables
+	 */
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		updateActivation();
 		if (updatedVars.contains(system.getSettings().userInput)
@@ -311,6 +349,13 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		}
 	} 
 
+	
+	
+	/**
+	 * Displays the distribution in the chat window.
+	 * 
+	 * @param distrib the distribution to display
+	 */
 	private void showVariable(CategoricalTable distrib) {
 		distrib = (distrib.getBest().isDefault())? distrib.getNBest(nBestView+1) : distrib.getNBest(nBestView);
 		String text = getHtmlRendering(distrib);
@@ -323,22 +368,37 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	}
 
 	
-
+	/**
+	 * Returns the current text of the chat.
+	 * 
+	 * @return the current text
+	 */
 	public String getChat() {
 		return lines.getText();
 	}
 
 
+	/**
+	 * Thread employed to update the dialogue state
+	 */
 	final class StateUpdater extends Thread {
 		
 		DialogueSystem system;
 		CategoricalTable table;
 		
+		/**
+		 * Constructs a new state updater
+		 * @param system the dialogue system
+		 * @param table the categorical table to insert
+		 */
 		public StateUpdater(DialogueSystem system, CategoricalTable table) {
 			this.system = system;
 			this.table = table;
 		}
 		
+		/**
+		 * Updates the dialogue state with the table
+		 */
 		@Override
 		public void run() {
 			try {
