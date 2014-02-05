@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui;
@@ -37,7 +41,7 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Main GUI frame for the openDial toolkit, encompassing various tabs and
+ * Main GUI frame for the OpenDial toolkit, encompassing various tabs and
  * menus to control the application
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
@@ -64,11 +68,19 @@ public class GUIFrame implements Module {
 	GUIMenuBar menu;
 
 	
+	/**
+	 * Constructs (but does not yet display) a new GUI frame for OpenDial.
+	 * 
+	 * @param system the dialogue system for the GUI
+	 */
 	public GUIFrame(DialogueSystem system) {
 		this.system = system;
 	}
 	
 	
+	/**
+	 * Displays the GUI frame.
+	 */
 	@Override
 	public void start() {
  
@@ -111,6 +123,9 @@ public class GUIFrame implements Module {
 	}
 	
 	
+	/**
+	 * Pauses the GUI.
+	 */
 	@Override
 	public void pause(boolean pause) {
 		if (frame != null && frame.isVisible()) {
@@ -119,6 +134,11 @@ public class GUIFrame implements Module {
 	}
 	
 
+	/**
+	 * Returns the dialogue system connected to the GUI
+	 * 
+	 * @return the dialogue system
+	 */
 	public DialogueSystem getSystem() {
 		return system;
 	}
@@ -133,7 +153,7 @@ public class GUIFrame implements Module {
 		if (frame != null && frame.isVisible()) {
 		chatTab.trigger(state, updatedVars);
 		stateMonitorTab.trigger(state, updatedVars);
-		menu.trigger();
+		menu.update();
 		if (system.getDomain() == null) {
 			frame.setTitle("OpenDial toolkit");
 		}
@@ -159,26 +179,49 @@ public class GUIFrame implements Module {
  	}
 
 
+ 	/**
+ 	 * Adds a comment to the chat window
+ 	 * @param comment
+ 	 */
 	public void addComment(String comment) {
 		if (frame != null) {
 		chatTab.addComment(comment);
 		}
 	}
 	
+	/**
+	 * Returns the chat tab
+	 * 
+	 * @return the  chat tab
+	 */
 	public ChatWindowTab getChatTab() {
 		return chatTab;
 	}
 	
+	/**
+	 * Returns the state viewer tab
+	 * @return the state viewer
+	 */
 	public StateViewerTab getStateViewerTab() {
 		return stateMonitorTab;
 	}
 
 
+	/**
+	 * Returns the GUI frame itself.
+	 * 
+	 * @return the frame
+	 */
 	public JFrame getFrame() {
 		return frame;
 	}
 
 
+	/**
+	 * Returns true if the GUI is started and not paused, and false otherwise.
+	 * 
+	 * @return true if the GUI is running, false otherwise.
+	 */
 	@Override
 	public boolean isRunning() {
 		return (frame != null && frame.isVisible());

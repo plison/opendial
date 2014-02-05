@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.modules;
@@ -44,30 +48,65 @@ import opendial.inference.queries.UtilQuery;
 import opendial.state.DialogueState;
 
 
+/**
+ * Module employed during simulated dialogues to automatically estimate a utility model
+ * from rewards produced by the simulator.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class RewardLearner implements Module {
 
 	// logger
 	public static Logger log = new Logger("RewardLearner", Logger.Level.DEBUG);
 
+	// the dialogue system
 	DialogueSystem system;
 
+	// previous dialogue states with a decision network.  The states are indexed
+	// by the label of their action variables.
 	Map<Set<String>, DialogueState> previousStates;
 
 
+	/**
+	 * Creates the reward learner for the dialogue system.
+	 */
 	public RewardLearner(DialogueSystem system) {
 		this.system = system;
 		previousStates = new HashMap<Set<String>, DialogueState>();
 	}
 
+	
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void start() {	}
 
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void pause(boolean shouldBePaused) {	}
 
+	/**
+	 * Returns true.
+	 */
 	@Override
 	public boolean isRunning() {  return true;	}
 
+	
+	/**
+	 * Triggers the reward learner.  The module is only triggered whenever a variable
+	 * of the form R(assignment of action values) is included in the dialogue state by
+	 * the simulator. In such case, the module checks whether a past dialogue state 
+	 * contains a decision for these action variables, and if yes, update their parameters 
+	 * to reflect the actual received reward.
+	 * 
+	 * @param state the dialogue state
+	 * @param updatedVars the list of recently updated variables.
+	 * 
+	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
@@ -95,6 +134,16 @@ public class RewardLearner implements Module {
 		}
 	}
 
+	
+	/**
+	 * Re-estimate the posterior distribution for the domain parameters in the dialogue
+	 * state given the actual system decision and its resulting utility (provided by the
+	 * simulator).
+	 * 
+	 * @param state the dialogue state
+	 * @param actualAction the action that was selected
+	 * @param actualUtility the resulting utility for the action.
+	 */
 	private void learnFromFeedback(DialogueState state, Assignment actualAction, 
 			double actualUtility) {
 

@@ -1,20 +1,23 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui;
@@ -64,7 +67,7 @@ import opendial.utils.ReflectionUtils;
 
 
 /**
- * Panel to modify the system preferences.
+ * Panel to load or unload modules.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2014-01-16 02:21:14 #$
@@ -82,23 +85,29 @@ public class ModulesPanel extends JDialog {
 	JButton okButton;
 
 	protected Map<String,Class<Module>> classes;
-	
+
 	Properties shownParams = new Properties();
-	
+
+
+	/**
+	 * Creates a new module panel attached to the GUI frame.
+	 * 
+	 * @param frame the GUI frame.
+	 */
 	public ModulesPanel(final GUIFrame frame) {
 		super(frame.getFrame(),Dialog.ModalityType.DOCUMENT_MODAL);
 		this.frame = frame;
-				
+
 		setTitle("Module Settings");
-	//	shownParams.putAll(settings.params);
-		
+		//	shownParams.putAll(settings.params);
+
 		Container contentPane = getContentPane();
-		
+
 		contentPane.setLayout(new BorderLayout());
 
 		Container moduleOptions = new Container();
 		moduleOptions.setLayout(new BoxLayout(moduleOptions, BoxLayout.PAGE_AXIS));
-		
+
 		listBox = new CheckBoxList();
 		listBox.setLayoutOrientation(JList.VERTICAL_WRAP);
 		listBox.setVisibleRowCount(4);
@@ -107,12 +116,12 @@ public class ModulesPanel extends JDialog {
 		scrollPane.setBorder(BorderFactory.createTitledBorder("Loaded modules: " ));		
 		moduleOptions.add(scrollPane);
 
-	    table = new JTable();
-	    table.setPreferredScrollableViewportSize(new Dimension(500, 120));
-	    table.setFillsViewportHeight(true);
-	    JScrollPane scrollPane2 = new JScrollPane(table);
-	    scrollPane2.setBorder(BorderFactory.createTitledBorder("Module-specific parameters"));
-	    moduleOptions.add(scrollPane2);
+		table = new JTable();
+		table.setPreferredScrollableViewportSize(new Dimension(500, 120));
+		table.setFillsViewportHeight(true);
+		JScrollPane scrollPane2 = new JScrollPane(table);
+		scrollPane2.setBorder(BorderFactory.createTitledBorder("Module-specific parameters"));
+		moduleOptions.add(scrollPane2);
 
 		Container okcancelBox1 = new Container();
 		okcancelBox1.setLayout(new BorderLayout());
@@ -131,102 +140,113 @@ public class ModulesPanel extends JDialog {
 		contentPane.add(moduleOptions);
 
 		fillListBox();
-	    updateParamModel();
-	    updateButtonStatus();
-	    
+		updateParamModel();
+		updateButtonStatus();
+
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { setVisible(false); } });
-		
-		
+
+
 		table.addPropertyChangeListener(new PropertyChangeListener() {
-	        @Override
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-	            if ("tableCellEditor".equals(evt.getPropertyName())) {
-	            	updateButtonStatus(); 
-	            }
-	        }
-	    });
-		
+				if ("tableCellEditor".equals(evt.getPropertyName())) {
+					updateButtonStatus(); 
+				}
+			}
+		});
+
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { 
 				updateSettings();
-				 } 
-			});
-		
-		
+			} 
+		});
+
+
 		setLocation(new Point(250, 250));
 		setMinimumSize(new Dimension(500,350));
 		setPreferredSize(new Dimension(500,350));
 		pack();
 		setVisible(true);
 	}
-	
 
 
+	/**
+	 * Updates the activation status of the OK button.
+	 */
 	private void updateButtonStatus() {
 		if (table.isEditing()) {
 			okButton.setEnabled(false);
 			return;
 		}
-			for (int r = 0; r < table.getRowCount(); r++) {
-		        if (table.getValueAt(r, 0) == null || table.getValueAt(r, 1) == null
-		        		|| table.getValueAt(r, 0).toString().trim().equals("")
-		        		|| table.getValueAt(r, 1).toString().trim().equals("")) {
-		        	okButton.setEnabled(false);
-		        	return;
-		        }
-		    }
-			okButton.setEnabled(true);
+		for (int r = 0; r < table.getRowCount(); r++) {
+			if (table.getValueAt(r, 0) == null || table.getValueAt(r, 1) == null
+					|| table.getValueAt(r, 0).toString().trim().equals("")
+					|| table.getValueAt(r, 1).toString().trim().equals("")) {
+				okButton.setEnabled(false);
+				return;
+			}
+		}
+		okButton.setEnabled(true);
 	}
 
 
-
+	/**
+	 * Fills the list of modules for the dialogue system.
+	 */
 	private void fillListBox() {
 		classes = ReflectionUtils.findImplementingClasses(Module.class, Package.getPackage("opendial"));
-		
+
 		JCheckBox[] newList = new JCheckBox[classes.size()];
 		int i = 0;
-	    for (String className : classes.keySet()) {  
-	    	Class<Module> cls = classes.get(className);
-	    	newList[i] = new JCheckBox(cls.getSimpleName());
+		for (String className : classes.keySet()) {  
+			Class<Module> cls = classes.get(className);
+			newList[i] = new JCheckBox(cls.getSimpleName());
 			newList[i].setSelected(frame.getSystem().getModule(cls) != null);
 			newList[i].setEnabled(true);
 			if (cls.equals(GUIFrame.class) || cls.equals(DialogueRecorder.class) 
 					|| cls.equals(ForwardPlanner.class) || cls.equals(WizardLearner.class) 
 					|| cls.equals(RewardLearner.class)  || cls.equals(WizardControl.class)) {
-						newList[i].setEnabled(false);
+				newList[i].setEnabled(false);
 			}
 			i++;
-	    }
+		}
 
 		listBox.setListData(newList);
 	}
 
 
+	/**
+	 * Updates the table model for the module-specific parameters.
+	 */
 	private void updateParamModel() {
 		String[] columnNames = {"Parameter", "Value"};
-	    Object[][] data = new Object[shownParams.size()][2];
-	   int  i = 0;
-	    for (String param : shownParams.stringPropertyNames()) {
-	    	data[i][0] = param;
-	    	data[i][1] = shownParams.get(param);
-	    	i++;
-	    }
+		Object[][] data = new Object[shownParams.size()][2];
+		int  i = 0;
+		for (String param : shownParams.stringPropertyNames()) {
+			data[i][0] = param;
+			data[i][1] = shownParams.get(param);
+			i++;
+		}
 
-	    DefaultTableModel dataModel = new DefaultTableModel();
-	    for (int col = 0; col < columnNames.length; col++) {
-	        dataModel.addColumn(columnNames[col]);
-	    }
-	    for (int row = 0; row < shownParams.size(); row++) {
-	        dataModel.addRow(data[row]);
-	    }
-	    table.setModel(dataModel);
-	    updateButtonStatus();
+		DefaultTableModel dataModel = new DefaultTableModel();
+		for (int col = 0; col < columnNames.length; col++) {
+			dataModel.addColumn(columnNames[col]);
+		}
+		for (int row = 0; row < shownParams.size(); row++) {
+			dataModel.addRow(data[row]);
+		}
+		table.setModel(dataModel);
+		updateButtonStatus();
 	}
 
 
+	/**
+	 * Updates the system settings in accordance with the current content
+	 * of the panel.
+	 */
 	protected void updateSettings() {
 
 		Settings settings = frame.getSystem().getSettings().copy();
@@ -251,74 +271,83 @@ public class ModulesPanel extends JDialog {
 				log.debug("setting " + param + " = " + value);
 			}
 		}
-		
+
 		frame.getSystem().changeSettings(settings);
 		setVisible(false);
 	}
 
 
-class CheckBoxList extends JList {
-  
-   public CheckBoxList() {
-      setCellRenderer(new CellRenderer());
-      addMouseListener(new MouseAdapter() {
-            @Override
-			public void mousePressed(MouseEvent e) {
-               int index = locationToIndex(e.getPoint());
-               if (index != -1) {
-                  JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
-                  if (checkbox != null && checkbox.isEnabled()) {
-                  checkbox.setSelected(!checkbox.isSelected());
-                  
-                  try {
-      				Constructor<Module> constructor = classes.get(checkbox.getText()).getConstructor(DialogueSystem.class);
-      				constructor.newInstance(frame.getSystem());
-      			}
-      			catch (InvocationTargetException f) {
-      				if (f.getTargetException() instanceof Module.MissingParameterException) {
-      					for (String param : ((Module.MissingParameterException)f.getTargetException()).getMissingParameters()) {
-      						if (checkbox.isSelected()) {
-      							shownParams.put(param, "");
-      						}
-      						else {
-      							shownParams.remove(param);
-      						}
-      					}
-      					updateParamModel();
-      				}
-      			}
-      			catch (Exception f) {
-      				log.warning("no valid constructor for class " + checkbox.getText() + ": " + f);
-      				checkbox.setEnabled(false);
-      			}
-                  repaint();
-                  }
-               }
-               
-            }
-         }
-      );
-      setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-   }
+	/**
+	 * Checkbox list for the modules
+	 */
+	class CheckBoxList extends JList {
 
-   protected class CellRenderer implements ListCellRenderer  {
-      @Override
-	public Component getListCellRendererComponent(
-                    JList list, Object value, int index,
-                    boolean isSelected, boolean cellHasFocus) {
-         JCheckBox checkbox = (JCheckBox) value;
-         checkbox.setBackground(getBackground());
-         checkbox.setForeground(getForeground());
-     //    checkbox.setEnabled(isEnabled());
-         checkbox.setFont(getFont());
-         checkbox.setFocusPainted(false);
-         checkbox.setBorder(isSelected ?
-          UIManager.getBorder( "List.focusCellHighlightBorder") : new EmptyBorder(1, 1, 1, 1));
-         return checkbox;
-      }
-   }
+		public CheckBoxList() {
+			setCellRenderer(new CellRenderer());
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					int index = locationToIndex(e.getPoint());
+					if (index != -1) {
+						JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
+						if (checkbox != null && checkbox.isEnabled()) {
+							checkbox.setSelected(!checkbox.isSelected());
 
-}
+							try {
+								Constructor<Module> constructor = 
+										classes.get(checkbox.getText()).getConstructor(DialogueSystem.class);
+								constructor.newInstance(frame.getSystem());
+							}
+							catch (InvocationTargetException f) {
+								if (f.getTargetException() instanceof Module.MissingParameterException) {
+									for (String param : ((Module.MissingParameterException)f.
+											getTargetException()).getMissingParameters()) {
+										if (checkbox.isSelected()) {
+											shownParams.put(param, "");
+										}
+										else {
+											shownParams.remove(param);
+										}
+									}
+									updateParamModel();
+								}
+							}
+							catch (Exception f) {
+								log.warning("no valid constructor for class " + checkbox.getText() + ": " + f);
+								checkbox.setEnabled(false);
+							}
+							repaint();
+						}
+					}
+
+				}
+			}
+					);
+			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+
+		
+		/**
+		 * Cell renderer.
+		 */
+		protected class CellRenderer implements ListCellRenderer  {
+			@Override
+			public Component getListCellRendererComponent(
+					JList list, Object value, int index,
+					boolean isSelected, boolean cellHasFocus) {
+				JCheckBox checkbox = (JCheckBox) value;
+				checkbox.setBackground(getBackground());
+				checkbox.setForeground(getForeground());
+				//    checkbox.setEnabled(isEnabled());
+				checkbox.setFont(getFont());
+				checkbox.setFocusPainted(false);
+				checkbox.setBorder(isSelected ?
+						UIManager.getBorder( "List.focusCellHighlightBorder") : new EmptyBorder(1, 1, 1, 1));
+				return checkbox;
+			}
+		}
+
+	}
 
 
 }

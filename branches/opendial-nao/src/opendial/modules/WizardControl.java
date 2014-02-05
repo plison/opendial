@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.modules;
@@ -50,6 +54,18 @@ import opendial.gui.GUIFrame;
 import opendial.state.DialogueState;
 import opendial.state.nodes.UtilityRuleNode;
 
+
+/**
+ * Module employed in the "Wizard-of-Oz" interaction mode.  The module extracts
+ * all possible actions available for the current dialogue state and displays this
+ * list of actions on the right side of the GUI.  The Wizard must then select
+ * the action to perform. 
+ * 
+ * <p>The module only works if the GUI is activated.
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class WizardControl implements Module {
 
 	// logger
@@ -59,6 +75,12 @@ public class WizardControl implements Module {
 	GUIFrame gui;
 	
 	
+	/**
+	 * Creates a new wizard control for the dialogue system.
+	 * 
+	 * @param system the dialogue system
+	 * @throws DialException if the GUI is not activated
+	 */
 	public WizardControl(DialogueSystem system) throws DialException {
 		this.system = system;
 		
@@ -70,17 +92,37 @@ public class WizardControl implements Module {
 		}
 	}
 	
+	
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void start()  {	}
 
-
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void pause(boolean shouldBePaused) { 	}
 
+	/**
+	 * Returns true.
+	 */
 	@Override
 	public boolean isRunning() {  return true;	}
 	
 	
+	
+	/**
+	 * Triggers the wizard control. The wizard control window is displayed whenever the dialogue
+	 * state contains at least one action node. 
+	 * 
+	 * <p>There is an exception: if the action selection is straightforward and does not contain
+	 * any parameters (i.e. there is only one possible action and its utility is well-defined), 
+	 * the wizard control directly selects this action.  This exception is there to allow for the 
+	 * NLG module to directly realise the system's communicative intention without the wizard 
+	 * intervention, if there is no doubt about how to realise the utterance.
+	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		
@@ -95,7 +137,7 @@ public class WizardControl implements Module {
 		try {
 				
 		for (ActionNode action : state.getActionNodes()) {
-			addActionSelection(action);
+			displayWizardBox(action);
 		}
 		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
 		state.removeNodes(state.getActionNodeIds());
@@ -107,8 +149,15 @@ public class WizardControl implements Module {
 	}
 	
 	
+	/**
+	 * Displays the Wizard-of-Oz window with the possible action values specified in the
+	 * action node.
+	 * 
+	 * @param actionNode the action node
+	 * @throws DialException if the action values could not be extracted
+	 */
 	@SuppressWarnings("serial")
-	public void addActionSelection(ActionNode actionNode) throws DialException {
+	private void displayWizardBox(ActionNode actionNode) throws DialException {
 		
 		DefaultListModel model = new DefaultListModel();
 		for (Value v : actionNode.getValues()) {
@@ -146,7 +195,9 @@ public class WizardControl implements Module {
 	
 	
 	
-	
+	/**
+	 * Action listener for the Wizard-of-Oz selection box.
+	 */
 	class WizardBoxListener implements ActionListener {
 
 		JList listBox;

@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.modules;
@@ -36,38 +40,75 @@ import opendial.domains.Model;
 import opendial.state.DialogueState;
 
 
+/**
+ * Online forward planner for OpenDial. The planner constructs a lookahead tree (with a 
+ * depth corresponding to the planning horizon) that explores possible actions and their
+ * expected consequences on the future dialogue state. The final utility values for each
+ * action is then estimated, and the action with highest utility is selected.
+ * 
+ * <p>The planner is an anytime process.  It can be interrupted at any time and yield a 
+ * result. The quality of the utility estimates is of course improving over time.
+ * 
+ * <p>The planning algorithm is described in pages 121-123 of Pierre Lison's PhD thesis 
+ * [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
+ * 
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date::                      $
+ */
 public class ForwardPlanner implements Module {
 
 	// logger
 	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
 
 
+	/** Maximum number of actions to consider at each planning step */
 	public static int NB_BEST_ACTIONS = 100;
+	
+	/** Maximum number of alternative observations to consider at each planning step */
 	public static int NB_BEST_OBSERVATIONS = 3;
+	
+	/** Minimum probability for the generated observations */
 	public static double MIN_OBSERVATION_PROB = 0.1;
-
+	
 	DialogueSystem system;
 
 	boolean paused = false;
 
+	
+	/**
+	 * Constructs a forward planner for the dialogue system.
+	 * @param system
+	 */
 	public ForwardPlanner(DialogueSystem system) {
 		this.system = system;
 	}
 
+	/**
+	 * Pauses the forward planner
+	 */
 	@Override
 	public void pause(boolean shouldBePaused) {	
 		paused = shouldBePaused;
 	}
 
+	/**
+	 * Does nothing.
+	 */
 	@Override
 	public void start()  {	}
 
 
+	/**
+	 * Returns true if the planner is not paused.
+	 */
 	@Override
 	public boolean isRunning() {
 		return !paused;
 	}
 
+	/**
+	 * Triggers the planning process.
+	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
@@ -125,6 +166,14 @@ public class ForwardPlanner implements Module {
 
 
 
+		/**
+		 * Returns the Q-values for the dialogue state, assuming a particular horizon.
+		 * 
+		 * @param state the dialogue state
+		 * @param horizon the planning horizon
+		 * @return the estimated utility table for the Q-values
+		 * @throws DialException
+		 */
 		private UtilityTable getQValues (DialogueState state, int horizon) throws DialException {
 
 			Set<String> actionNodes = state.getActionNodeIds();
@@ -158,6 +207,12 @@ public class ForwardPlanner implements Module {
 		}
 
 
+		/**
+		 * Adds a particular content to the dialogue state
+		 * @param state the dialogue state
+		 * @param newContent the content to add
+		 * @throws DialException if the update operation could not be performed
+		 */
 		private void addContent(DialogueState state, CategoricalTable newContent) 
 				throws DialException {
 			state.addToState(newContent);
@@ -172,6 +227,13 @@ public class ForwardPlanner implements Module {
 		}
 
 
+		/**
+		 * Returns true if the dialogue domain specifies a transition model for 
+		 * the particular action assignment.
+		 * 
+		 * @param action the assignment of action values
+		 * @return true if a transition is defined, false otherwise.
+		 */
 		private boolean hasTransition(Assignment action) {
 			for (Model m : system.getDomain().getModels()) {
 				if (m.isTriggered(action.removePrimes().getVariables())) {
@@ -182,6 +244,15 @@ public class ForwardPlanner implements Module {
 		}
 
 
+		/**
+		 * Estimates the expected value (V) of the dialogue state in the current planning
+		 * horizon.
+		 * 
+		 * @param state the dialogue state
+		 * @param horizon the planning horizon
+		 * @return the expected value.
+		 * @throws DialException
+		 */
 		private double getExpectedValue(DialogueState state, int horizon) throws DialException {
 
 			CategoricalTable observations = getObservations(state);
@@ -207,7 +278,13 @@ public class ForwardPlanner implements Module {
 
 
 
-
+		/**
+		 * Returns the possible observations that are expected to be perceived
+		 * from the dialogue state
+		 * @param state the dialogue state from which to extract observations
+		 * @return the inferred observations
+		 * @throws DialException
+		 */
 		private CategoricalTable getObservations (DialogueState state) throws DialException {
 			Set<String> predictionNodes = new HashSet<String>();
 			for (String nodeId: state.getChanceNodeIds()) {
@@ -238,11 +315,17 @@ public class ForwardPlanner implements Module {
 		}
 
 
+		/**
+		 * Terminates the planning process
+		 */
 		@Override
 		public void terminate() {
 			isTerminated = true;
 		}
 
+		/**
+		 * Returns true if the planner is terminated, and false otherwise.
+		 */
 		@Override
 		public boolean isTerminated() {
 			return isTerminated;

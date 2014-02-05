@@ -1,20 +1,24 @@
 // =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)                                                                            
-//                                                                                                                                     
-// This library is free software; you can redistribute it and/or                                                                       
-// modify it under the terms of the GNU Lesser General Public License                                                                  
-// as published by the Free Software Foundation; either version 2.1 of                                                                 
-// the License, or (at your option) any later version.                                                                                 
-//                                                                                                                                     
-// This library is distributed in the hope that it will be useful, but                                                                 
-// WITHOUT ANY WARRANTY; without even the implied warranty of                                                                          
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU                                                                    
-// Lesser General Public License for more details.                                                                                     
-//                                                                                                                                     
-// You should have received a copy of the GNU Lesser General Public                                                                    
-// License along with this program; if not, write to the Free Software                                                                 
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA                                                                           
-// 02111-1307, USA.                                                                                                                    
+// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
+
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
 package opendial.gui;
@@ -93,7 +97,7 @@ public class StateViewerTab extends JComponent {
 
 	// the frame including the tab
 	GUIFrame mainFrame;
-	
+
 	// list model for the recorded networks
 	DefaultListModel listModel;
 	JList listBox;
@@ -106,12 +110,12 @@ public class StateViewerTab extends JComponent {
 
 	// the logging area at the bottom
 	JEditorPane logArea;
-	
+
 	public static String CURRENT_NAME = "<html><b>Current state</b></html>";
-	
-	
+
+
 	boolean showParameters = true;
-	
+
 
 	/**
 	 * Creates a new GUI component for displaying and controlling the dialogue state's
@@ -120,17 +124,17 @@ public class StateViewerTab extends JComponent {
 	 */
 	public StateViewerTab(GUIFrame mainFrame) {
 		setLayout(new BorderLayout());
-		
+
 		this.mainFrame = mainFrame;
 
 		states = new HashMap<String,DialogueState>();
-		
+
 		// create the left side of the window
 		JPanel leftPanel = createLeftSide();
-		
+
 		// create the main visualisation window
 		visualisation = new StateViewer(this);
-		
+
 		// create the logging area
 		logArea = createLogArea();
 		JScrollPane logScroll = new JScrollPane(logArea);
@@ -143,27 +147,38 @@ public class StateViewerTab extends JComponent {
 		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
 		fullPanel.setDividerLocation(600);
 		add(fullPanel);
-	
+
 		// configure the keyboard inputs for navigation
 		configureKeyInputs();
-		
+
 		recordState(new DialogueState(), CURRENT_NAME);
 		listModel.add(1, "separator-current");
 	}
 
 
+	/**
+	 * Sets whether to show the parameter variables in the state viewer or not.
+	 * 
+	 * @param showParameters whether to show or hide the parameters
+	 */
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
 		if (states.containsKey(CURRENT_NAME)) {
 			trigger(mainFrame.getSystem().getState(), mainFrame.getSystem().getState().getParameterIds());
 		}
 	}
-	
-	
+
+
+	/**
+	 * Returns true if the parameter variables are currently displayed in the state
+	 * viewer.  Returns false otherwise.
+	 * 
+	 * @return true if parameters are shown, false otherwise.
+	 */
 	public boolean showParameters() {
 		return showParameters;
 	}
-	
+
 	/**
 	 * Updates the current dialogue state displayed in the component.  The current
 	 * dialogue state is named "Current state" in the selection list.
@@ -171,7 +186,7 @@ public class StateViewerTab extends JComponent {
 	 * @param state the updated Bayesian Network
 	 */
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		
+
 		recordState(state, CURRENT_NAME);
 		listBox.setSelectedIndex(0);
 		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
@@ -195,10 +210,10 @@ public class StateViewerTab extends JComponent {
 				log.warning("cannot copy state : " + e);
 			}
 		}
-		
+
 		visualisation.showBayesianNetwork(state);
 	}
-	
+
 
 
 	/**
@@ -216,9 +231,9 @@ public class StateViewerTab extends JComponent {
 			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size()) ; 
 			listModel.add(position,name);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Writes the given text in the logging area at the bottom of the window
 	 * 
@@ -227,22 +242,21 @@ public class StateViewerTab extends JComponent {
 	public void writeToLogArea(String text) {
 		logArea.setText("<html><font face=\"helvetica\">"+ text + "</font></html>");
 	}
-	
+
 	public GUIFrame getMainFrame() {
 		return mainFrame;
 	}
 
-	
+
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
-	
-	
+
+
 
 	/**
 	 * Creates the panel on the left side of the window
 	 * 
-	 * TODO: functionality to delete sets of recorded states from the panel
 	 * @return the panel
 	 */
 	private JPanel createLeftSide() {
@@ -306,11 +320,11 @@ public class StateViewerTab extends JComponent {
 		controlPanel.setBorder(new CompoundBorder(
 				BorderFactory.createTitledBorder("Controls"), 
 				BorderFactory.createEmptyBorder(5,5,10,20)));
-		
+
 		return controlPanel;
 	}
-	
-	
+
+
 	/**
 	 * Configure the keyboard inputs for zooming and translating the network
 	 * in various directions.
@@ -319,20 +333,20 @@ public class StateViewerTab extends JComponent {
 	 */
 	private void configureKeyInputs() {
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(45,0,false), ZoomDirection.IN);
+		put(KeyStroke.getKeyStroke(45,0,false), ZoomDirection.IN);
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(47,0,false), ZoomDirection.OUT);
+		put(KeyStroke.getKeyStroke(47,0,false), ZoomDirection.OUT);
 
 		// NB: the translation actions are only made available when the graph is in focus, 
 		// to avoid conflicts with the navigation of the selection list
 		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(38,0,false), TranslationDirection.NORTH);
+		put(KeyStroke.getKeyStroke(38,0,false), TranslationDirection.NORTH);
 		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(40,0,false), TranslationDirection.SOUTH);
+		put(KeyStroke.getKeyStroke(40,0,false), TranslationDirection.SOUTH);
 		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(37,0,false), TranslationDirection.WEST);
+		put(KeyStroke.getKeyStroke(37,0,false), TranslationDirection.WEST);
 		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-			put(KeyStroke.getKeyStroke(39,0,false), TranslationDirection.EAST);
+		put(KeyStroke.getKeyStroke(39,0,false), TranslationDirection.EAST);
 
 		getActionMap().put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));		
 		getActionMap().put(ZoomDirection.IN, new ZoomAction(ZoomDirection.IN));
@@ -361,8 +375,8 @@ public class StateViewerTab extends JComponent {
 		return textArea;
 	}
 
-	
-	
+
+
 	/**
 	 * A listener for the list containing the Bayesian Networks.  Once
 	 * a network is selected, its graph is automatically displayed in the main 
@@ -376,15 +390,15 @@ public class StateViewerTab extends JComponent {
 		public void valueChanged(ListSelectionEvent e) {
 			JList jl = (JList)e.getSource();
 			if (jl.getMinSelectionIndex() >= 0) {
-			String selection = (String) listModel.getElementAt(jl.getMinSelectionIndex());
-			if (!selection.contains("separator")) {
-				visualisation.showBayesianNetwork(states.get(selection));
-			}
+				String selection = (String) listModel.getElementAt(jl.getMinSelectionIndex());
+				if (!selection.contains("separator")) {
+					visualisation.showBayesianNetwork(states.get(selection));
+				}
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Representation of a zooming action, which can be either IN or OUT:
 	 * 
@@ -392,12 +406,12 @@ public class StateViewerTab extends JComponent {
 	final class ZoomAction extends AbstractAction {
 
 		ZoomDirection direction ;
-		
-		
+
+
 		public ZoomAction(ZoomDirection direction) {
 			this.direction = direction;
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (direction) {
@@ -407,7 +421,7 @@ public class StateViewerTab extends JComponent {
 		}	
 	}
 
-	
+
 	/**
 	 * Representation of a translation action, which can navigate in the four
 	 * cardinal directions: NORTH, SOUTH, WEST and EAST.
@@ -416,11 +430,11 @@ public class StateViewerTab extends JComponent {
 	final class TranslationAction extends AbstractAction {
 
 		TranslationDirection direction ;
-		
+
 		public TranslationAction(TranslationDirection direction) {
 			this.direction = direction;
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (direction) {
@@ -431,7 +445,7 @@ public class StateViewerTab extends JComponent {
 			}
 		}	
 	}
-	
+
 
 	/**
 	 * Custom mouse listener for the control buttons.  The objective of this button
@@ -443,17 +457,17 @@ public class StateViewerTab extends JComponent {
 	final class CustomMouseListener implements MouseListener {
 
 		AbstractAction action;
-				Thread movement;
+		Thread movement;
 
 		public CustomMouseListener(AbstractAction action) {
 			this.action = action;
 			resetThread();
-			
+
 		}
-		
+
 		private void resetThread() {
 			movement = new Thread() { @Override
-			public void run() { 
+				public void run() { 
 				boolean continueProcess = true;
 				while (continueProcess) {
 					try {
@@ -484,52 +498,59 @@ public class StateViewerTab extends JComponent {
 			resetThread();
 		}
 	}
-	
 
-final class CustomListModel extends DefaultListModel {
-	
-	@Override
-	public Object getElementAt(int index) {
-		if (index < super.size()) {
-			return super.getElementAt(index);
-		}
-		else {
-			return "";
+
+	/**
+	 * Custom model for the list of dialogue states (employed to avoid
+	 * null pointer exceptions).
+	 */
+	final class CustomListModel extends DefaultListModel {
+
+		@Override
+		public Object getElementAt(int index) {
+			if (index < super.size()) {
+				return super.getElementAt(index);
+			}
+			else {
+				return "";
+			}
 		}
 	}
-}
-	
-	
- final class JlistRenderer extends JLabel implements ListCellRenderer {
-    JSeparator separator;
-    public JlistRenderer() {
-      setOpaque(true);
-      setBorder(new EmptyBorder(1, 1, 1, 1));
-      separator = new JSeparator(SwingConstants.HORIZONTAL);
-    }
-    
-    @Override
-	public Component getListCellRendererComponent(JList list, Object value,
-        int index, boolean isSelected, boolean cellHasFocus) {
-      String str = (value == null) ? "" : value.toString();
-      if (str.contains("separator")) {
-        return separator;
-      }
-      if (str.contains("[")) {
-    	  str = str.substring(0, str.indexOf("["));
-      }
-      if (isSelected) {
-        setBackground(list.getSelectionBackground());
-        setForeground(list.getSelectionForeground());
-      } else {
-        setBackground(list.getBackground());
-        setForeground(list.getForeground());
-      }
-      setFont(list.getFont());
-      setText(str);
-      return this;
-    }
-}
+
+
+	/**
+	 * Renderer for the list of dialogue states
+	 */
+	final class JlistRenderer extends JLabel implements ListCellRenderer {
+		JSeparator separator;
+		public JlistRenderer() {
+			setOpaque(true);
+			setBorder(new EmptyBorder(1, 1, 1, 1));
+			separator = new JSeparator(SwingConstants.HORIZONTAL);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			String str = (value == null) ? "" : value.toString();
+			if (str.contains("separator")) {
+				return separator;
+			}
+			if (str.contains("[")) {
+				str = str.substring(0, str.indexOf("["));
+			}
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+			setFont(list.getFont());
+			setText(str);
+			return this;
+		}
+	}
 
 
 }
