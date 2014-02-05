@@ -316,7 +316,7 @@ The curly brackets are employed to denote the free variable `X`. At runtime, !Op
 
 == Parameters ==
 
-The probabilities and utilities of the current domain are all handcrafted. Although this handcrafted approach may work well in specific cases, it remains vulnerable to human errors and inaccuracies.  For instance, the utility of the `AskRepeat` action (currently set to 0.2) or the probability of a user repetition after such a request (set to 0.95) are just informed guesses.  Actual interactions may very well deviate from these them.
+The probabilities and utilities of the current domain are all handcrafted. Although this handcrafted approach may work well in specific cases, it remains vulnerable to human errors and inaccuracies.  For instance, the utility of the `AskRepeat` action (currently set to 0.2) or the probability of a user repetition after such a request (set to 0.95) are just informed guesses, and actual interactions may very well deviate from these expected values.
 
 A more principle, data-driven approach is to associate these rules with parameters whose values must be estimated from data. Both effect probabilities and utilities can be replaced by parameters.
 
