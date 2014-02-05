@@ -48,7 +48,7 @@ A window similar to this one should pop up:
 
 
 <br><p align="center">
-<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png"><br>_Figure 1: !OpenDial start window_<br>
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_start.png"><br>_Figure 1: !OpenDial start window._<br>
 
 
 Additional properties can be included in the command line.  All these properties are optional (and can usually also be changed through the graphical interface):
@@ -75,7 +75,7 @@ You can try out !OpenDial by opening a dialogue domain such as the one specified
 The chat window displays the current conversation history.  
 
 <br><p align="center">
-<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_chat.png"><br><br>
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_chat.png"><br>_Figure 2: Example of dialogue in the chat window (with the domain in `domains/robot-experiment/domain.xml`).<br>
 
 At the bottom of the page, a text field can be used to enter new inputs (this feature is useful to test the system behaviour without a speech recognizer). N-best lists can be entered by specifying probabilities in parentheses and separating alternative hypotheses with a semicolon (;).  For instance, the user input:
 {{{
@@ -90,7 +90,7 @@ represents a N-best list with three alternative elements: "now move left" with p
 The state viewer displays the current dialogue state as a Bayesian network.  The user can click on each variable (or sets of variables) and derive their marginal probability distribution.  In addition, the distribution of individual variables can be represented graphically in a chart or density function:
 
 <br><p align="center">
-<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png"><br><br>
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png"><br>_Figure 3: state viewer interface in !OpenDial_<br>
 
 
 In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
