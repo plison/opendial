@@ -320,7 +320,7 @@ The probabilities and utilities of the current domain are all handcrafted. Altho
 
 A more principle, data-driven approach is to associate these rules with parameters whose values must be estimated from data. Both probabilities and utilities can be replaced by parameters in !OpenDial.
 
-Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with an prior distribution over its (usually continuous) range of values. Several types of parametric distributions are available to this end, such as uniform, Gaussian, and Dirichlet distributions.^[6]^
+Since !OpenDial adopts a Bayesian approach to parameter estimation, each parameter must be associated with a prior distribution over its (usually continuous) range of values. Several types of parametric distributions are available to this end, such as uniform, Gaussian, and Dirichlet distributions.^[6]^
 
 We can create two parameters for our domain: 
  * one parameter for the utility of the `AskRepeat` action.  A reasonable prior distribution for this parameter is a Gaussian centered on 0.  For the purpose of this example, we shall set this distribution to `~ N(0,5)`.
