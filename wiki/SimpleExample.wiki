@@ -312,7 +312,7 @@ The utility rule for the selection of the next system action can consequently be
     </rule>
 }}}
 
-Note the use of the curly brackets to mark the free variable `X`. At runtime, !OpenDial will determine the set of possible assignments (called _groundings_) for the free variables and duplicate the rule for each of these groundings. Note that free variable labels such as `X` must not conflict with the label of existing state variables.
+The curly brackets are employed to denote the free variable `X`. At runtime, !OpenDial will determine the set of possible assignments (called _groundings_) for the free variables and duplicate the rule for each of these groundings. Note that free variable labels such as `X` must not conflict with the label of existing state variables.
 
 == Parameters ==
 
