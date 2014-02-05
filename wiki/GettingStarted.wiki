@@ -68,7 +68,7 @@ ant run -Dproperty=value -Dproperty2=value2 ....
 
 == 4. Using !OpenDial == 
 
-You can try out !OpenDial by opening a dialogue domain such as [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml `domains/example/example-step-by-step.xml`] and typing a new user input such as: "please turn left".  You should then see in the chat window the system answer: "OK, turning Left".
+You can try out !OpenDial by opening a dialogue domain such as [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml domains/example/example-step-by-step.xml] and typing a new user input such as: "please turn left".  You should then see in the chat window the system answer: "OK, turning Left".
 
 === Chat Window ===
 
