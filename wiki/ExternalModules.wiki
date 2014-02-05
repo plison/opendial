@@ -45,7 +45,7 @@ The `start` method corresponds to the initialisation of the module. The `pause` 
 
 == Synchronous modules ==
 
-Some modules operate in synchronous mode. Synchronous modules continuously monitor the dialogue state for relevant changes. Their activation is thus performed as part of the dialogue update loop.
+Some modules operate in synchronous mode. Synchronous modules are triggered upon each update of the dialogue state.
 
 The core of a synchronous module is its implementation of the method `trigger(...)`. Given the current dialogue state and a list of recently updated variables, the method is expected to trigger the module's internal processing, and possibly re-update the dialogue state.^[1]^
 
