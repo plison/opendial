@@ -238,13 +238,14 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 					}
 					}
 					isUpdating = false;
-					
 				}
 				
 				private void update() {
 					Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
 					setGraphLayout(layout);
-					updateDistribs();
+					if (currentState == tab.getMainFrame().getSystem().getState()) {
+						updateDistribs();
+					}
 				}
 			}).start();
 		}
