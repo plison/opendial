@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -30,6 +30,7 @@ import java.awt.Dialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,6 +44,7 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 
 import org.jfree.chart.ChartFactory;
@@ -75,7 +77,8 @@ public class DistributionViewer extends JDialog {
 	// logger
 	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
 
-	
+	IndependentProbDistribution distrib;
+
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
 	 * 
@@ -86,25 +89,31 @@ public class DistributionViewer extends JDialog {
 		super(viewer.tab.getMainFrame().getFrame(),Dialog.ModalityType.MODELESS);
 		setTitle("Distribution Viewer");
 		update(distrib);
-		
-		addWindowListener( new WindowAdapter() {
-            @Override
-			public void windowClosing(WindowEvent e) {
-            	super.windowClosing(e);
-                viewer.shownDistribs.remove(distrib.getHeadVariables());
-            }
 
-        });
+		addWindowListener( new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				viewer.shownDistribs.remove(distrib.getHeadVariables());
+			}
+
+		});
 	}
 
-	
-	
+
+
 	/**
 	 * Constructs or update the current viewer with the distribution.
 	 * 
 	 * @param distrib the distribution to display
 	 */
 	protected void update(IndependentProbDistribution distrib) {
+		if (distrib == this.distrib) {
+			return;
+		}
+		else {
+			this.distrib = distrib;
+		}
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		container.add(new JLabel("        "), BorderLayout.NORTH);
@@ -134,7 +143,7 @@ public class DistributionViewer extends JDialog {
 		}
 	}
 
-	
+
 	/**
 	 * Generates a chart panel for the categorical table.
 	 * 
@@ -164,7 +173,7 @@ public class DistributionViewer extends JDialog {
 		BarRenderer renderer = (BarRenderer) plot.getRenderer(); 
 		renderer.setToolTipGenerator(new CategoryToolTipGenerator()
 		{ @Override
-		public String generateToolTip(CategoryDataset data, int series, int category) {
+			public String generateToolTip(CategoryDataset data, int series, int category) {
 			return "P("+variableName + "=" + data.getColumnKeys().get(category) + ") = "
 					+ data.getValue(series, category); 
 		} });
@@ -193,18 +202,32 @@ public class DistributionViewer extends JDialog {
 		for (int i = 0 ; i < distrib.getFunction().getDimensionality() ; i++) {
 			series.add(new Series("dimension " + i));
 		}
-		
-		Map<Double[],Double> points = distrib.getFunction().discretise(500);
+
+		Map<Double[],Double> points = distrib.getFunction().discretise(400);
 		for (Double[] point : points.keySet()) {
+			double density = distrib.getFunction().getDensity(point);
 			for (int k = 0 ; k < point.length ; k++) {
-				series.get(k).add(point[k].doubleValue(), distrib.getFunction().getDensity(point));
+				series.get(k).add(point[k].doubleValue(), density);
+			}
+		}
+		
+		for (int i = 0 ; i < 100 ; i++) {
+			Double[] point1 = distrib.getFunction().sample();
+			Double[] point2 = distrib.getFunction().sample();
+			Double[] midrange = new Double[point1.length];
+			for (int d = 0 ; d < point1.length ; d++) {
+				midrange[d] = (point1[d] + point2[d])/2.0;
+			}
+			double density = distrib.getFunction().getDensity(midrange);
+			for (int d = 0 ; d < point1.length ; d++) {
+				series.get(d).add(midrange[d].doubleValue(), density);		
 			}
 		}
 
 		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis("Value"));
 		for (Series serie : series) {
 			serie.smoothen();
-			
+
 			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title 
 					"Value", // domain axis label 
 					"Density", // range axis label
@@ -218,22 +241,23 @@ public class DistributionViewer extends JDialog {
 			combined.add(plot);
 			plot.setBackgroundPaint(Color.white); plot.setRangeGridlinePaint(Color.white);			
 		}		
-		return new ChartPanel(new JFreeChart("Probability distribution P(" + variableName + ")", JFreeChart.DEFAULT_TITLE_FONT, combined, true), false); 
+		return new ChartPanel(new JFreeChart("Probability distribution P(" + variableName + ")", 
+				JFreeChart.DEFAULT_TITLE_FONT, combined, true), false); 
 	}
 
 
-	
+
 	/**
 	 * Series of "smoothed" XYDataItem for continuous distributions.
 	 */
 	class Series extends XYSeries {
-		
-		static final int WINDOW = 10;
-		
+
+		static final int WINDOW = 5;
+
 		public Series(String key) {
 			super(key);
 		}
-			
+
 		public void smoothen() {
 			List<XYDataItem> newList = new ArrayList<XYDataItem>();
 			for (int i = 0 ; i < data.size() ; i++) {
