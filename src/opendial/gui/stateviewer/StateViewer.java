@@ -101,7 +101,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	volatile boolean isUpdating = false;
 	
 	// shown distribution charts
-	Map<Collection<String>, DistributionViewer> shownDistribs;
+	Map<String, DistributionViewer> shownDistribs;
 		
 
 	/**
@@ -134,7 +134,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		graphMouse.add(new PopupHandler(this));
 		setGraphMouse(graphMouse);
 		
-		shownDistribs = new HashMap<Collection<String>,DistributionViewer>();
+		shownDistribs = new HashMap<String,DistributionViewer>();
 	}
 
 
@@ -340,11 +340,11 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * 
 	 * @param queryVars the variable(s) to display
 	 */
-	public void displayDistrib(Collection<String> queryVars) {
-		if (!shownDistribs.containsKey(queryVars)) {
-			IndependentProbDistribution distrib = currentState.queryProb(queryVars);
-			DistributionViewer viewer = new DistributionViewer(distrib, this);
-			shownDistribs.put(distrib.getHeadVariables(), viewer);
+	public void displayDistrib(String queryVar) {
+		if (!shownDistribs.containsKey(queryVar)) {
+			IndependentProbDistribution distrib = currentState.queryProb(queryVar);
+			DistributionViewer viewer = new DistributionViewer(currentState, queryVar, this);
+			shownDistribs.put(distrib.getHeadVariables().iterator().next(), viewer);
 		}
 	}
 	
@@ -353,9 +353,8 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	 * Updates the windows displaying probability distributions.
 	 */
 	public void updateDistribs() {
-		for (Collection<String> queryVars : shownDistribs.keySet()) {
-			IndependentProbDistribution distrib = currentState.queryProb(queryVars);
-			shownDistribs.get(queryVars).update(distrib);
+		for (String queryVar : shownDistribs.keySet()) {
+			shownDistribs.get(queryVar).update(currentState);
 		}
 	}
 

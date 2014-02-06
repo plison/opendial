@@ -118,6 +118,26 @@ public class DistanceUtils {
 	}
 	
 	
+	
+	/**
+	 * Returns the distance between the two points on each dimension.
+	 * 
+	 * @param point1 the first point
+	 * @param point2 the second point
+	 * @return the array with the distance on each dimension
+	 */
+	public static Double[] getFullDistance(Double[] point1, Double[] point2) {
+		Double[] dist = new Double[point1.length];
+		if (point1 == null || point2 == null || point1.length != point2.length) {
+			return dist;
+		}
+		for (int i = 0 ; i < point1.length ; i++) {
+			dist[i] = Math.abs(point1[i] - point2[i]);
+		}
+		return dist;
+	}
+	
+	
 	/**
 	 * Returns the minimal Euclidian distance between any two pairs of points
 	 * in the collection of points provided as argument.

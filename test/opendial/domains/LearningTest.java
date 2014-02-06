@@ -55,7 +55,8 @@ public class LearningTest {
 	DialogueSystem system = new DialogueSystem(domain);
 	system.getSettings().showGUI = false;
 	system.detachModule(ForwardPlanner.class);
-	Settings.maxSamplingTime = Settings.maxSamplingTime*5;
+	Settings.nbSamples = Settings.nbSamples*3;
+	Settings.maxSamplingTime = Settings.maxSamplingTime*10;
 	system.startSystem(); 
 	
 	Double[] initMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
@@ -79,8 +80,8 @@ public class LearningTest {
 	assertTrue(afterMean[6] - initMean[6] < 0.04);
 	assertTrue(afterMean[7] - initMean[7] < 0.04);
 	
-	Settings.maxSamplingTime = Settings.maxSamplingTime/5;
-	
+	Settings.nbSamples = Settings.nbSamples/3;
+	Settings.maxSamplingTime = Settings.maxSamplingTime/10;	
 	}
 }
 
