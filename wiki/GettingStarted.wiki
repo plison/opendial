@@ -93,7 +93,7 @@ The state viewer displays the current dialogue state as a Bayesian network.  The
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_viewer.png"><br>_Figure 3: State viewer interface in !OpenDial._<br><br>
 
 
-In addition to the current dialogue state, denoted "*current*" in the list of available dialogue states on the left side of the window, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
+In addition to the current dialogue state, the system can also keep track and record past dialogue states.  This can be very useful for debugging, as it shows how the dialogue state evolves during processing.  The menu item _Options_ > _Record Intermediate States_ allows you to determine which states to record.
 
 === Toolbar ===
 
