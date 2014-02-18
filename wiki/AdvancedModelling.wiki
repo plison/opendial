@@ -199,6 +199,6 @@ Note the reference to the existing dialogue act `a_u` in the effect. The above r
 
 ----
 
-^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 67-68 and 74-76 for the theoretical foundations of such quantification mechanisms.
+^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 67-68 and 74-76 for the theoretical foundations of such quantification mechanisms.
 
-^[2]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 78-79 for details.
+^[2]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 78-79 for details.
