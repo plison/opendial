@@ -215,7 +215,7 @@ else
 
 In XML, these probability rules are expressed as (ordered) list of `case`s.  Each `case` has a (possibly empty) `condition` and a list of alternative `effect`s (each with a particular probability). 
 
-Here is one concrete example of probability rule (corresponding to the rule r,,1,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 65):
+Here is one concrete example of probability rule (corresponding to the rule r,,1,, in [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 65):
 {{{
 
 <rule id="r1">
@@ -339,7 +339,7 @@ Inside each `effect` is a list of basic assignment of values to variables.  Each
 
 === Utility rules ===
 
-Rule can also be employed to express utility models.  A utility rule defines the utility of particular actions (from the system perspective) depending on particular state variables.  The general skeleton remains similar to probability rules, with the difference that effects are this time associated to particular utilities instead of probabilities.  Here is an example of utility rule (rule r,,2,, of [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], p. 69):
+Rule can also be employed to express utility models.  A utility rule defines the utility of particular actions (from the system perspective) depending on particular state variables.  The general skeleton remains similar to probability rules, with the difference that effects are this time associated to particular utilities instead of probabilities.  Here is an example of utility rule (rule r,,2,, of [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 69):
 {{{
 <rule id="r2">
   <case>
