@@ -114,4 +114,4 @@ More advanced simulators can be constructed as separate modules. The section [Ex
 
 ----
 
-^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf Lison (2013)], chapter 5 for details.
+^[1]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], chapter 5 for details.
