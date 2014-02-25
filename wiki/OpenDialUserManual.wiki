@@ -29,7 +29,6 @@ If you are using !OpenDial for research purposes, please refer to my PhD thesis 
   school={University of Oslo}
 }
 }}}
-<br>
 
 
 ----
