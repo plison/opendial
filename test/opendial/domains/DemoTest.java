@@ -24,7 +24,7 @@
 package opendial.domains;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -95,7 +95,7 @@ public class DemoTest {
 	 	t.addRow(new Assignment("u_u", "move forward"), 0.06);
 		system.addContent(t);
 
-		assertEquals("Hi there", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertFalse(system.getState().hasChanceNode("u_m"));
 		
 		t = new CategoricalTable();
 	 	t.addRow(new Assignment("u_u", "move forward"), 0.45);
@@ -186,8 +186,7 @@ public class DemoTest {
 	 	t.addRow(new Assignment("u_u", "something unexpected"), 0.7);
 		system.addContent(t);
 		
-		assertEquals("OK, putting down the object", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
-
+		assertFalse(system.getState().hasChanceNode("u_m"));
 		
 		t = new CategoricalTable();
 	 	t.addRow(new Assignment("u_u", "goodbye"), 0.7);

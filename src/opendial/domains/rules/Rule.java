@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -28,11 +28,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.sun.xml.internal.ws.api.model.Parameter;
+
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.ComplexCondition;
+import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
+import opendial.domains.rules.effects.BasicEffect;
+import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
 /**
@@ -46,22 +56,22 @@ import opendial.domains.rules.conditions.VoidCondition;
 public class Rule {
 
 	static Logger log = new Logger("Rule", Logger.Level.DEBUG);
-	
+
 	// the rule identifier
 	String id;
-		
+
 	// ordered list of cases
 	List<RuleCase> cases;
-	
+
 	public enum RuleType {PROB, UTIL}
-	
+
 	RuleType ruleType;
-		
+
 	// ===================================
 	//  RULE CONSTRUCTION
 	// ===================================
-	
-	
+
+
 	/**
 	 * Creates a new rule, with the given identifier and type,
 	 * and an empty list of cases
@@ -75,7 +85,7 @@ public class Rule {
 		cases = new ArrayList<RuleCase>();	
 	}
 
-	
+
 
 	/**
 	 * Adds a new case to the abstract rule
@@ -90,14 +100,14 @@ public class Rule {
 		}
 		cases.add(newCase);
 	}
-	
-	
-	
+
+
+
 	// ===================================
 	//  GETTERS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns the rule identifier
 	 * 
@@ -106,9 +116,9 @@ public class Rule {
 	public String getRuleId() {
 		return id;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the input variables (possibly underspecified, with slots 
 	 * to fill) for the rule
@@ -122,8 +132,8 @@ public class Rule {
 		}
 		return new HashSet<Template>(variables);
 	}
-	
-	
+
+
 	/**
 	 * Returns the first case whose condition matches the input assignment
 	 * provided as argument.  The case contains the grounded list of effects
@@ -141,8 +151,8 @@ public class Rule {
 		}
 		return new RuleCase();
 	}
-	
-	
+
+
 	/**
 	 * Returns the rule type
 	 * 
@@ -151,7 +161,7 @@ public class Rule {
 	public RuleType getRuleType() {
 		return ruleType;
 	}
-	
+
 
 	/**
 	 * Returns the set of groundings that can be derived from the rule and the
@@ -161,18 +171,85 @@ public class Rule {
 	 * @return the possible groundings for the rule
 	 */
 	public Set<Assignment> getGroundings(Assignment input) {
+
 		ValueRange groundings = new ValueRange();
 		for (RuleCase thecase :cases) {
 			groundings.addRange(thecase.getGroundings(input));
+			if (ruleType == RuleType.UTIL) {
+				for (Effect e : thecase.getEffects()) {
+					Condition co = e.convertToCondition();
+					ValueRange effectGrounding = co.getGroundings(input);
+					effectGrounding.removeVariables(input.getVariables());
+					groundings.addRange(effectGrounding);
+				}
+			}
 		}
 		return groundings.linearise();
 	}
 
+
+	/**
+	 * Returns true if at least one effect is underspecified (with a variable
+	 * reference or free variable).
+	 * 
+	 * @return true if at least one effect is underspecified, and false otherwise
+	 */
+	public boolean hasUnderspecifiedEffects() {
+		for (RuleCase c : cases) {
+			for (Effect e : c.getEffects()) {
+				for (BasicEffect be : e.getSubEffects()) {
+					if (!be.isFullyGrounded()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Returns the set of all (templated) output variables defined inside
+	 * the rule
+	 * 
+	 * @return the set of all possible output variables
+	 */
+	public Set<Template> getOutputVariables() {
+		Set<Template> outputs = new HashSet<Template>();
+		for (RuleCase c : cases) {
+			for (Effect e : c.getEffects()) {
+				for (BasicEffect be : e.getSubEffects()) {
+					outputs.add(be.getVariable());
+				}
+			}
+		}
+		return outputs;
+	}
+	
+	
+	/**
+	 * Returns the set of all parameter identifiers employed in the rule
+	 * 
+	 * @return the set of parameter identifiers
+	 */
+	public Set<String> getParameterIds() {
+		Set<String> params = new HashSet<String>();
+		for (RuleCase c : cases) {
+			for (Effect e : c.getEffects()) {
+				params.addAll(c.getParameter(e).getParameterIds());
+			}
+		}
+		return params;
+	}
+
+
+
+
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
-	
-	
+
+
 	/**
 	 * Returns a string representation for the rule
 	 */
@@ -190,7 +267,7 @@ public class Rule {
 		}
 		return str;
 	}
-	
+
 	/**
 	 * Returns the hashcode for the rule
 	 *
@@ -200,8 +277,8 @@ public class Rule {
 	public int hashCode() {
 		return this.getClass().hashCode() - id.hashCode() + cases.hashCode();
 	}
-	
-	
+
+
 	/**
 	 * Returns true if o is a rule that has the same identifier, rule type and list of cases
 	 * than the current rule.
@@ -220,5 +297,10 @@ public class Rule {
 	}
 
 
-	
+
+
+
+
+
+
 }

@@ -89,6 +89,22 @@ public class StringUtils {
 	}
 	
 
+	/**
+	 * Returns the total number of occurrences of the character in the string.
+	 * 
+	 * @param s the string
+	 * @param c the character to search for
+	 * @return the number of occurrences
+	 */
+	public static int countNbOccurrences(String s, char c) {
+		int counter = 0;
+		for( int i=0; i<s.length(); i++ ) {
+		    if( s.charAt(i) == '$' ) {
+		        counter++;
+		    } 
+		}
+		return counter;
+	}
 
 	/**
 	 * Checks the form of the string to ensure that all parentheses, braces and brackets
@@ -98,24 +114,14 @@ public class StringUtils {
 	 */
 	public static void checkForm(String str) {
 
-		int nbParenthesisLeft = (str+" ").split("\\(").length - 1;
-		int nbParenthesisRight = (str+" ").split("\\)").length - 1;
-		if (nbParenthesisLeft != nbParenthesisRight) {
-			log.warning("Unequal number of parenthesis in string: " + str 
-					+ "(" + nbParenthesisLeft + " vs. " + nbParenthesisRight + ") Problems ahead!");
+		if (countNbOccurrences(str, '(') != countNbOccurrences(str, ')')) {
+			log.warning("Unequal number of parenthesis in string: " + str + ", Problems ahead!");
 		}
-		int nbBracesLeft = (str+" ").split("\\{").length - 1;
-		int nbBracesRight = (str+" ").split("\\}").length - 1;
-		if (nbBracesLeft != nbBracesRight) {
-			log.warning("Unequal number of braces in string: " + str + 
-					"(" + nbBracesLeft + " vs. " + nbBracesRight + "). Problems ahead!");
+		if (countNbOccurrences(str, '{') != countNbOccurrences(str, '}')) {
+			log.warning("Unequal number of braces in string: " + str + ", Problems ahead!");
 		}
-		
-		int nbBracketsLeft = (str+" ").split("\\{").length - 1;
-		int nbBracketsRight = (str+" ").split("\\}").length - 1;
-		if (nbBracketsLeft != nbBracketsRight) {
-			log.warning("Unequal number of brackets in string: " + str + 
-					"(" + nbBracketsLeft + " vs. " + nbBracketsRight + "). Problems ahead!");
+		if (countNbOccurrences(str, '[') != countNbOccurrences(str, ']')) {
+			log.warning("Unequal number of brackets in string: " + str + ", Problems ahead!");
 		}
 		
 	}

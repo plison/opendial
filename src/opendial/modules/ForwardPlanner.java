@@ -175,8 +175,8 @@ public class ForwardPlanner implements Module {
 		 * @throws DialException
 		 */
 		private UtilityTable getQValues (DialogueState state, int horizon) throws DialException {
-
 			Set<String> actionNodes = state.getActionNodeIds();
+
 			if (actionNodes.isEmpty()) {
 				return new UtilityTable();
 			}
