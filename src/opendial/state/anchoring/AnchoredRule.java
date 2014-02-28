@@ -37,6 +37,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
@@ -74,7 +75,7 @@ public class AnchoredRule {
 	// the set of associated parameters
 	Set<String> parameters;
 	
-	// the possible groundings for the rule
+	// generic groundings for the rule (only for utility rules)
 	Set<Assignment> groundings;
 	
 	// the relevant effects for the rule
@@ -114,15 +115,7 @@ public class AnchoredRule {
 			inputs.addValues(inputNode.getId(), inputNode.getValues());
 		}
 
-		// determines the set of groundings
-		groundings = new HashSet<Assignment>();
 		Set<Assignment> conditions = inputs.linearise();
-		for (Assignment input : conditions) {
-			groundings.addAll(rule.getGroundings(input));
-		}
-		if (groundings.size() > 1) {
-			groundings.remove(new Assignment());
-		}
 
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values and groundings)
@@ -132,7 +125,7 @@ public class AnchoredRule {
 		
 		for (Assignment input : conditions) {
 			Output output = new Output(rule.getRuleType());
-			for (Assignment grounding : groundings) {
+			for (Assignment grounding : extractGroundings(input)) {
 				Assignment fullInput = new Assignment(input, grounding);
 				RuleCase matchingCase = rule.getMatchingCase(fullInput);
 				if (!matchingCase.equals(new RuleCase())) {
@@ -232,15 +225,7 @@ public class AnchoredRule {
 		return effects;
 	}
 
-	
-	/**
-	 * Returns the set of possible grounding for the anchored rule
-	 * 
-	 * @return possible groundings
-	 */
-	public Set<Assignment> getGroundings() {
-		return groundings;
-	}
+
 
 	/**
 	 * Returns the rule
@@ -284,7 +269,8 @@ public class AnchoredRule {
 		}
 		
 		Output output = new Output(rule.getRuleType());
-		for (Assignment grounding :groundings) {
+		
+		for (Assignment grounding :extractGroundings(input)) {
 			
 			Assignment fullInput = new Assignment(ruleInput, grounding);
 			RuleCase matchingOutput = rule.getMatchingCase(fullInput);	
@@ -307,6 +293,36 @@ public class AnchoredRule {
 		}
 		else {
 			return rule + " (groundings:"+groundings+")";
+		}
+	}
+	
+	
+	
+	/**
+	 * Extracts the groundings  for the rule given the input assignment.  
+	 * For utility rules, extracts all possible groundings for the input
+	 * variables.  
+	 * 
+	 * @param input input assignment
+	 * @return the set of possible groundings
+	 */
+	private Set<Assignment> extractGroundings(Assignment input) {
+		if (rule.getRuleType() == RuleType.PROB) {
+			return rule.getGroundings(input);
+		}
+		else if (groundings != null) {
+			return groundings;
+		}
+		else {
+			// determines the set of groundings
+			groundings = new HashSet<Assignment>();
+			for (Assignment input2 : inputs.linearise()) {
+				groundings.addAll(rule.getGroundings(input2));
+			}
+			if (groundings.size() > 1) {
+				groundings.remove(new Assignment());
+			}
+			return groundings;
 		}
 	}
 

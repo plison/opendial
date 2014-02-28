@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -49,7 +49,7 @@ import opendial.datastructs.ValueRange;
  *
  */
 public class MarginalEmpiricalDistribution implements ProbDistribution {
-  
+
 	// logger
 	public static Logger log = new Logger("MarginalEmpiricalDistribution", Logger.Level.DEBUG);
 
@@ -95,8 +95,8 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 		this.empirical = empirical;
 	}
 
-	
-	
+
+
 	/**
 	 * Prunes the values of the underlying empirical distribution.
 	 */
@@ -104,7 +104,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	public void pruneValues(double threshold) {
 		empirical.pruneValues(threshold);
 	}
-	
+
 
 
 	// ===================================
@@ -218,8 +218,8 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 			return toDiscrete().getPosterior(condition);
 		}
 	}
-	
-	
+
+
 	@Override
 	public ProbDistribution getPartialPosterior (Assignment condition) {
 		Set<String> newHeadVars = new HashSet<String>(headVars);
@@ -247,8 +247,8 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	public Set<Assignment> getValues(ValueRange range) {
 		return empirical.getValues(range);
 	}
-	
-	
+
+
 
 
 	public EmpiricalDistribution getFullDistrib() {
@@ -317,6 +317,17 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 		return copy;
 	}
 
+
+	public boolean equals(Object o) {
+		if (o instanceof MarginalEmpiricalDistribution 
+				&& ((MarginalEmpiricalDistribution)o).getFullDistrib().equals(empirical)
+				&& ((MarginalEmpiricalDistribution)o).headVars.equals(headVars)
+				&& ((MarginalEmpiricalDistribution)o).condVars.equals(condVars)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Returns a pretty print representation of the distribution: here, 
 	 * tries to convert it to a discrete distribution, and displays its content.
@@ -360,7 +371,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 			condVars.remove(oldId);
 			condVars.add(newId);
 		}
-		
+
 		empirical.modifyVariableId(oldId, newId);
 
 		if (discreteCache != null) {
@@ -378,17 +389,17 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	@Override
 	public DistribType getPreferredType() {
 		try {
-		for (String var : getHeadVariables()) {
-			Assignment a = empirical.sample().getTrimmed(headVars);
-			if (a.containsVar(var) && a.containContinuousValues()) {
-				if (getHeadVariables().size() == 1) {
-					return DistribType.CONTINUOUS;
-				}
-				else {
-				return  DistribType.HYBRID;
-				}
-			}		
-		}
+			for (String var : getHeadVariables()) {
+				Assignment a = empirical.sample().getTrimmed(headVars);
+				if (a.containsVar(var) && a.containContinuousValues()) {
+					if (getHeadVariables().size() == 1) {
+						return DistribType.CONTINUOUS;
+					}
+					else {
+						return  DistribType.HYBRID;
+					}
+				}		
+			}
 		}
 		catch (DialException e) {
 			log.warning("problem extracting distribution type: " + e);
