@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -41,11 +42,16 @@ import javax.swing.JLabel;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.continuous.functions.DensityFunction;
+import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
+import opendial.state.DialogueState;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -77,24 +83,26 @@ public class DistributionViewer extends JDialog {
 	// logger
 	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
 
-	IndependentProbDistribution distrib;
-
+	String queryVar;
+	ProbDistribution lastDistrib;
+	
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
 	 * 
 	 * @param distrib the distribution to show
 	 * @param viewer the state viewer component
 	 */
-	public DistributionViewer(final IndependentProbDistribution distrib, final StateViewer viewer) {
+	public DistributionViewer(final DialogueState currentState, final String queryVar, final StateViewer viewer) {
 		super(viewer.tab.getMainFrame().getFrame(),Dialog.ModalityType.MODELESS);
 		setTitle("Distribution Viewer");
-		update(distrib);
+		this.queryVar = queryVar;
+		update(currentState);
 
 		addWindowListener( new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				super.windowClosing(e);
-				viewer.shownDistribs.remove(distrib.getHeadVariables());
+				viewer.shownDistribs.remove(queryVar);
 			}
 
 		});
@@ -107,13 +115,16 @@ public class DistributionViewer extends JDialog {
 	 * 
 	 * @param distrib the distribution to display
 	 */
-	protected void update(IndependentProbDistribution distrib) {
-		if (distrib == this.distrib) {
+	protected void update(DialogueState currentState) {
+
+		if (!currentState.hasChanceNode(queryVar)) {
 			return;
 		}
-		else {
-			this.distrib = distrib;
+		else if (lastDistrib != null && this.lastDistrib.equals(currentState.getChanceNode(queryVar).getDistrib())) {
+			return;
 		}
+		this.lastDistrib = currentState.getChanceNode(queryVar).getDistrib();
+		
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		container.add(new JLabel("        "), BorderLayout.NORTH);
@@ -122,11 +133,12 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
 		try {
-			if (distrib.getPreferredType() == DistribType.CONTINUOUS) {
-				container.add(generatePanel(distrib.toContinuous()), BorderLayout.CENTER);
+			IndependentProbDistribution indepDistrib = currentState.queryProb(queryVar);
+			if (indepDistrib.getPreferredType() == DistribType.CONTINUOUS) {
+				container.add(generatePanel(indepDistrib.toContinuous()), BorderLayout.CENTER);
 			}
 			else {
-				container.add(generatePanel(distrib.toDiscrete()), BorderLayout.CENTER);
+				container.add(generatePanel(indepDistrib.toDiscrete()), BorderLayout.CENTER);
 			}
 		}
 		catch (DialException e) {
@@ -197,32 +209,8 @@ public class DistributionViewer extends JDialog {
 	private ChartPanel generatePanel(ContinuousDistribution distrib) throws DialException {
 
 		final String variableName = distrib.getHeadVariables().toString().replace("[", "").replace("]", "");
-
-		List<Series> series = new ArrayList<Series>();
-		for (int i = 0 ; i < distrib.getFunction().getDimensionality() ; i++) {
-			series.add(new Series("dimension " + i));
-		}
-
-		Map<Double[],Double> points = distrib.getFunction().discretise(400);
-		for (Double[] point : points.keySet()) {
-			double density = distrib.getFunction().getDensity(point);
-			for (int k = 0 ; k < point.length ; k++) {
-				series.get(k).add(point[k].doubleValue(), density);
-			}
-		}
 		
-		for (int i = 0 ; i < 100 ; i++) {
-			Double[] point1 = distrib.getFunction().sample();
-			Double[] point2 = distrib.getFunction().sample();
-			Double[] midrange = new Double[point1.length];
-			for (int d = 0 ; d < point1.length ; d++) {
-				midrange[d] = (point1[d] + point2[d])/2.0;
-			}
-			double density = distrib.getFunction().getDensity(midrange);
-			for (int d = 0 ; d < point1.length ; d++) {
-				series.get(d).add(midrange[d].doubleValue(), density);		
-			}
-		}
+		List<Series> series = extractSeries(distrib.getFunction());
 
 		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis("Value"));
 		for (Series serie : series) {
@@ -240,9 +228,54 @@ public class DistributionViewer extends JDialog {
 			XYPlot plot = (XYPlot) chart.getPlot();
 			combined.add(plot);
 			plot.setBackgroundPaint(Color.white); plot.setRangeGridlinePaint(Color.white);			
-		}		
+		}	
+		
 		return new ChartPanel(new JFreeChart("Probability distribution P(" + variableName + ")", 
 				JFreeChart.DEFAULT_TITLE_FONT, combined, true), false); 
+	}
+	
+	
+	
+	private List<Series >extractSeries(DensityFunction function) throws DialException {
+
+		List<Series> series =new ArrayList<Series>();
+
+		for (int i = 0 ; i < function.getDimensionality() ; i++) {
+			series.add(new Series("dimension " + i));
+		}
+		
+		if (function instanceof KernelDensityFunction) {
+			((KernelDensityFunction)function).multiplyBandwidth(5);
+			for (int i = 0 ; i < 200 ; i++) {
+				Double[] point1 = function.sample();
+				double density1 = function.getDensity(point1);
+				Double[] point2 = function.sample();
+				double density2 = function.getDensity(point2);
+				Double[] midrange = new Double[point1.length];
+				for (int d = 0 ; d < point1.length ; d++) {
+					midrange[d] = (point1[d] + point2[d])/2.0;
+				}
+				double density_mid = function.getDensity(midrange);
+				for (int d = 0 ; d < point1.length ; d++) {
+					series.get(d).add(point1[d].doubleValue(), density1);		
+					series.get(d).add(point2[d].doubleValue(), density2);		
+					series.get(d).add(midrange[d].doubleValue(), density_mid);		
+				}
+			}
+			((KernelDensityFunction)function).multiplyBandwidth(0.2);
+		}
+		else {
+			Set<Double[]> points = function.discretise(200).keySet();
+			for (Double[] point : points) {
+				double density = function.getDensity(point);
+				for (int d = 0 ; d < point.length ; d++) {
+					series.get(d).add(point[d].doubleValue(), density);
+				}
+			}
+		}
+		
+
+		return series;
 	}
 
 
@@ -252,7 +285,7 @@ public class DistributionViewer extends JDialog {
 	 */
 	class Series extends XYSeries {
 
-		static final int WINDOW = 5;
+		static final int WINDOW = 2;
 
 		public Series(String key) {
 			super(key);

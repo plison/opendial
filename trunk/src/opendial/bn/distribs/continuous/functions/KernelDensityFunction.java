@@ -22,6 +22,7 @@ package opendial.bn.distribs.continuous.functions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,19 @@ public class KernelDensityFunction implements DensityFunction {
 			density += Math.exp(logsum);
 		}
 		density /= points.size() ;
-
+		
+		// bounded support (cf. Jones 1993)
+		if (isBounded) {
+			Double[] l = new Double[bandwidths.length];
+			Double[] u = new Double[bandwidths.length];
+			for (int i = 0 ; i < bandwidths.length ; i++) {
+				l[i] = (0 - x[i]) / bandwidths[i];
+				u[i] = (1 - x[i]) / bandwidths[i];
+			}
+			double factor = 1/(kernel.getCDF(u) - kernel.getCDF(l));
+			density = factor * density;
+		}
+		
 		return density;
 	}
 
@@ -154,7 +167,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public Map<Double[], Double> discretise(int nbBuckets) {
-
+		Collections.shuffle(points);
 		Map<List<Double>,Double> picked = new HashMap<List<Double>,Double>();
 		int nbToPick = Math.min(nbBuckets, points.size());
 		for (int i = 0 ; i < nbToPick ; i++) {
@@ -361,6 +374,21 @@ public class KernelDensityFunction implements DensityFunction {
 		GaussianDensityFunction gaussian = new GaussianDensityFunction(points);
 		return gaussian.generateXML(doc);
 	}
+
+
+
+	/**
+	 * Multiplies the bandwidth of the KDE by a specific factor
+	 * 
+	 * @param factor the factor
+	 */
+	public void multiplyBandwidth(double factor) {
+		for (int i = 0 ; i < bandwidths.length ; i++) {
+			bandwidths[i] = bandwidths[i] * factor;
+		}
+	}
+	
+
 	
 
 }

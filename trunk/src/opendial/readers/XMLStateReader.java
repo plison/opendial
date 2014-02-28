@@ -33,9 +33,11 @@ import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DirichletDensityFunction;
 import opendial.bn.distribs.continuous.functions.GaussianDensityFunction;
 import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
+import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -125,8 +127,10 @@ public class XMLStateReader {
 		}
 
 		String label = node.getAttributes().getNamedItem("id").getNodeValue();
-		ChanceNode variable = new ChanceNode(label);
 
+		CategoricalTable table = new CategoricalTable();
+		ContinuousDistribution distrib = null;
+		
 		for (int i = 0 ; i < node.getChildNodes().getLength() ; i++) {
 
 			Node subnode = node.getChildNodes().item(i);
@@ -140,7 +144,7 @@ public class XMLStateReader {
 				// extracting the probability
 				float prob = getProbability (subnode);
 
-				variable.addProb(ValueFactory.create(value),prob);
+				table.addRow(new Assignment(label, ValueFactory.create(value)),prob);
 			}
 
 			// second case: the chance node is described by a parametric continuous distribution
@@ -150,17 +154,14 @@ public class XMLStateReader {
 					String distribType = subnode.getAttributes().getNamedItem("type").getNodeValue().trim();
 
 					if (distribType.equalsIgnoreCase("gaussian")) {
-						ContinuousDistribution distrib = new ContinuousDistribution(label, getGaussian(subnode));
-						variable.setDistrib(distrib);
+						distrib = new ContinuousDistribution(label, getGaussian(subnode));
 					}
 
 					else if (distribType.equalsIgnoreCase("uniform")) {
-						ContinuousDistribution distrib = new ContinuousDistribution(label, getUniform(subnode));
-						variable.setDistrib(distrib);
+						distrib = new ContinuousDistribution(label, getUniform(subnode));
 					}
 					else if (distribType.equalsIgnoreCase("dirichlet")) {
-						ContinuousDistribution distrib = new ContinuousDistribution(label, getDirichlet(subnode));
-						variable.setDistrib(distrib);
+						distrib = new ContinuousDistribution(label, getDirichlet(subnode));
 					}
 					else {
 						throw new DialException("distribution is not recognised: " + distribType);
@@ -168,6 +169,14 @@ public class XMLStateReader {
 
 				}
 			}
+		}
+		
+		ChanceNode variable = new ChanceNode(label);
+		if (distrib != null)  {
+			variable.setDistrib(distrib);
+		}
+		else {
+			variable.setDistrib(table);
 		}
 		return variable;
 	}
