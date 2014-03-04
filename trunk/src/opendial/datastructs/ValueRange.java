@@ -203,5 +203,16 @@ public class ValueRange {
 			}
 		}
 	}
+
+	/**
+	 * Remove the variables from the value range
+	 * 
+	 * @param variables the variables to remove
+	 */
+	public void removeVariables(Set<String> variables) {
+		for (String var : variables) {
+			range.remove(var);
+		}
+	}
 }
 

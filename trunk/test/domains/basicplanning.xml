@@ -36,7 +36,7 @@
 
 	<model type="decision" trigger="i_u">
 
-		<rule>
+		<rule id="doright">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})" />
@@ -47,7 +47,7 @@
 			</case>
 		</rule>
 
-		<rule>
+		<rule id="dowrong">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})" relation="!=" />
@@ -58,7 +58,7 @@
 			</case>
 		</rule>
 
-		<rule>
+		<rule id="repeat">
 			<case>
 				<condition>
 					<if var="i_u" value="Want({X})" />

@@ -24,7 +24,9 @@
 package opendial.state.distribs;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -32,6 +34,8 @@ import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
+import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
@@ -193,42 +197,35 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	private double getUtil(Assignment input, Assignment actions) {
 
 		try {
-			Assignment formattedAction = actions.removePrimes();
-			Output fullCase = rule.getMatchingOutput(input);
+			Assignment ruleInput = input.getTrimmed(rule.getInputs().getVariables());
+			Assignment ruleAction = actions.removePrimes();
 			
 			double totalUtil = 0;
-			for (Effect effectOutput : fullCase.getEffects()) {
-				Condition condition = convertToCondition(effectOutput);
+			Set<Assignment> groundings = rule.getRule().getGroundings
+					(new Assignment(ruleInput, ruleAction));
+			for (Assignment grounding : groundings) {
 				
-				if (condition.isSatisfiedBy(formattedAction)) {
-					totalUtil += fullCase.getParameter(effectOutput).getParameterValue(input);
+				Assignment fullInput = new Assignment(ruleInput, grounding);
+				RuleCase matchingOutput = rule.getRule().getMatchingCase(fullInput);	
+							
+				for (Effect effectOutput : matchingOutput.getEffects()) {
+					Condition condition = effectOutput.convertToCondition();
+					
+					if (condition.isSatisfiedBy(ruleAction)) {
+						totalUtil += matchingOutput.getParameter(effectOutput).
+								getParameterValue(input);
+					}
 				}
-			}
+			}	
 			return totalUtil;
 		}
 		catch (DialException e) {
-			log.warning("error extracting utility: " + e);
+			log.warning("error extracting utility: " + e + " for rule " + rule);
 		}
 		return 0.0;	
 	}
 	
+
 	
-	/**
-	 * Returns a condition corresponding to the "translation" of the effect into a 
-	 * condition.
-	 * 
-	 * @param e the effect
-	 * @return the corresponding condition
-	 */
-	private Condition convertToCondition(Effect e) {
-		ComplexCondition condition = new ComplexCondition();
-		for (BasicEffect subeffect : e.getSubEffects()) {
-			Template variable = subeffect.getVariable();
-			Template value = subeffect.getTemplateValue();
-			Relation r = (subeffect.getType() == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
-			condition.addCondition(new BasicCondition(variable, value, r));
-		}
-		return condition;
-	}
 
 }
