@@ -86,7 +86,6 @@ public class PlanningTest {
 		system.getSettings().showGUI = false;
 
 		system.startSystem(); 
-		log.debug("nodes " + system.getState().getNodeIds());
 		assertEquals(2, system.getState().getNodeIds().size());
 		assertFalse(system.getState().hasChanceNode("a_m"));
 

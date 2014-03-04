@@ -25,7 +25,9 @@ package opendial.state.distribs;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -35,6 +37,8 @@ import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.Rule;
+import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.anchoring.AnchoredRule;
@@ -58,9 +62,10 @@ public class RuleDistribution implements DiscreteDistribution {
 
 	String id;
 	
-	AnchoredRule rule;
+	AnchoredRule arule;
 
 	ConditionalCategoricalTable cache;
+	Map<Assignment,Output> cache2;
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
@@ -75,7 +80,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	 */
 	public RuleDistribution(AnchoredRule rule) throws DialException {
 		if (rule.getRule().getRuleType() == RuleType.PROB) {
-			this.rule = rule;
+			this.arule = rule;
 		}
 		else {
 			throw new DialException("only probabilistic rules can define a " +
@@ -86,6 +91,7 @@ public class RuleDistribution implements DiscreteDistribution {
 		if (rule.getParameters().isEmpty()) {
 			cache = new ConditionalCategoricalTable();
 		}
+		cache2 = new HashMap<Assignment,Output>();
 
 	}
 
@@ -179,8 +185,8 @@ public class RuleDistribution implements DiscreteDistribution {
 	@Override
 	public Set<Assignment> getValues(ValueRange range) throws DialException {
 		Set<Assignment> vals = new HashSet<Assignment>();
-		for (Effect e : rule.getEffects()) {
-			vals.add(new Assignment(rule.getId(), e));
+		for (Effect e : arule.getEffects()) {
+			vals.add(new Assignment(arule.getId(), e));
 		}
 		return vals;
 	}
@@ -258,7 +264,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	@Override
 	public RuleDistribution copy() {
 		try { 
-			RuleDistribution distrib = new RuleDistribution (rule);
+			RuleDistribution distrib = new RuleDistribution (arule);
 			return distrib;
 		} 
 		catch (DialException e) { e.printStackTrace(); return null; }
@@ -273,7 +279,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	 */
 	@Override
 	public String toString() {
-		return rule.toString();
+		return arule.toString();
 	}
 
 
@@ -283,7 +289,7 @@ public class RuleDistribution implements DiscreteDistribution {
 	 */
 	@Override
 	public DistribType getPreferredType() {
-		if (rule.getParameters().isEmpty()) {
+		if (arule.getParameters().isEmpty()) {
 			return DistribType.DISCRETE;
 		}
 		else {
@@ -301,8 +307,10 @@ public class RuleDistribution implements DiscreteDistribution {
 	private CategoricalTable getOutputTable(Assignment input) {
 		try {
 			// search for the matching case	
-			Output output = rule.getMatchingOutput(input);
-
+			Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
+			Output output = (cache2.containsKey(ruleInput))? cache2.get(ruleInput) : getOutput(ruleInput);
+			
+			// creating the distribution
 			double totalMass = 	 output.getTotalMass(input);
 			CategoricalTable probTable = new CategoricalTable();
 			if (totalMass < 0.99) {
@@ -318,17 +326,32 @@ public class RuleDistribution implements DiscreteDistribution {
 
 			if (probTable.isEmpty()) {
 				log.warning("probability table is empty (no effects) for "
-						+ "input " +	input + " and rule " + rule.toString());
+						+ "input " +	input + " and rule " + arule.toString());
 			}
 			return probTable;
 		}
+		
 		catch (DialException e) {
 			log.warning("could not extract output table for condition " + input + ": " + e.toString());
-			log.debug("rule is " + rule);
+			log.debug("rule is " + arule);
 			CategoricalTable probTable = new CategoricalTable();
 			probTable.addRow(new Assignment(id, new Effect()), 1.0);
 			return probTable;
 		}
+	}
+	
+	
+	private Output getOutput(Assignment ruleInput) {
+		Output output = new Output(RuleType.PROB);
+		
+		Set<Assignment> groundings = arule.getRule().getGroundings(ruleInput);
+		for (Assignment grounding :groundings) {
+			Assignment fullInput = new Assignment(ruleInput, grounding);
+			RuleCase matchingOutput = arule.getRule().getMatchingCase(fullInput);	
+			output.addCase(matchingOutput);
+		}
+		cache2.put(ruleInput, output);
+		return output;
 	}
 
 

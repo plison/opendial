@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -34,7 +34,10 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
@@ -56,35 +59,29 @@ public class AnchoredRule {
 
 	// the rule
 	Rule rule;	
-	
+
 	// rule identifier
 	String id;
-	
+
 	// dialogue state in which the rule is anchored
 	DialogueState state;
 
 	// whether the rule is relevant
 	boolean relevant = false;
-	
+
 	// the range of possible input values for the rule
 	ValueRange inputs;
-	
+
 	// the range of possible output (or action) values
 	ValueRange outputs;
-	
+
 	// the set of associated parameters
 	Set<String> parameters;
-	
-	// generic groundings for the rule (only for utility rules)
-	Set<Assignment> groundings;
-	
+
 	// the relevant effects for the rule
 	Set<Effect> effects;
-	
-	// a cache between input assignment and its associated output
-	Map<Assignment,Output> cache;
 
-	
+
 	/**
 	 * Anchors the rule in the dialogue state.  The construction process leads to the
 	 * determination of: <ul>
@@ -103,7 +100,7 @@ public class AnchoredRule {
 		this.rule = rule;
 		id = rule.getRuleId();
 		this.state = state;
-		
+
 		if (state.hasNode(id)) {
 			log.debug("state: " + state);
 			log.warning("rule node " + id + " already exists in state");
@@ -122,10 +119,10 @@ public class AnchoredRule {
 		effects = new HashSet<Effect>();
 		outputs = new ValueRange();
 		parameters = new HashSet<String>();
-		
+
 		for (Assignment input : conditions) {
 			Output output = new Output(rule.getRuleType());
-			for (Assignment grounding : extractGroundings(input)) {
+			for (Assignment grounding : rule.getGroundings(input)) {
 				Assignment fullInput = new Assignment(input, grounding);
 				RuleCase matchingCase = rule.getMatchingCase(fullInput);
 				if (!matchingCase.equals(new RuleCase())) {
@@ -133,10 +130,9 @@ public class AnchoredRule {
 				}
 				output.addCase(matchingCase);
 			}
-			
 			for (Effect o : output.getEffects()) {
-				parameters.addAll(output.getParameter(o).getParameterIds());		
 				effects.add(o);
+				parameters.addAll(output.getParameter(o).getParameterIds());		
 				for (BasicEffect e : o.getSubEffects()) {
 					String outputVar = e.getVariable().getRawString()+"'";
 					outputs.addValue(outputVar, e.getValue());
@@ -144,9 +140,18 @@ public class AnchoredRule {
 			}
 			effects.add(new Effect());
 		}
-		
-		// initialises the output cache
-		cache = new HashMap<Assignment,Output>();
+
+		// special case for utility rules with templated action values
+		if (rule.getRuleType() == RuleType.UTIL && rule.hasUnderspecifiedEffects()) {
+			for (Template outputVar : rule.getOutputVariables()) {
+				if (!outputVar.isUnderspecified()) {
+					outputs.addValue(outputVar.getRawString() + "'", ValueFactory.none());
+					relevant = true;
+					parameters.addAll(rule.getParameterIds());
+				}
+			}
+		}
+
 	}
 
 
@@ -169,8 +174,8 @@ public class AnchoredRule {
 	public String getId() {
 		return id;
 	}
-	
-	
+
+
 
 	/**
 	 * Returns the value range for the input variables
@@ -196,7 +201,7 @@ public class AnchoredRule {
 		}
 		return nodes;
 	}
-	
+
 	/**
 	 * Returns the output variables for the rule
 	 * 
@@ -205,7 +210,7 @@ public class AnchoredRule {
 	public Set<String> getOutputVariables() {
 		return outputs.getVariables();
 	}
-	
+
 	/**
 	 * Returns the value range for the output variables
 	 * 
@@ -252,35 +257,7 @@ public class AnchoredRule {
 		return nodes;
 	}
 
-	
-	/**
-	 * Returns the output that is specified for the rule given the particular
-	 * assignment of input values. 
-	 * 
-	 * @param input the input assignment
-	 * @return the associated output
-	 */
-	public Output getMatchingOutput(Assignment input) {
 
-		Assignment ruleInput = input.getTrimmed(inputs.getVariables());
-
-		if (cache.containsKey(ruleInput)) {
-			return cache.get(ruleInput);
-		}
-		
-		Output output = new Output(rule.getRuleType());
-		
-		for (Assignment grounding :extractGroundings(input)) {
-			
-			Assignment fullInput = new Assignment(ruleInput, grounding);
-			RuleCase matchingOutput = rule.getMatchingCase(fullInput);	
-			output.addCase(matchingOutput);
-		}
-		cache.put(ruleInput, output);
-		return output;
-	}
-	
-	
 	/**
 	 * Returns the string representation of the anchored rule
 	 * 
@@ -288,43 +265,10 @@ public class AnchoredRule {
 	 */
 	@Override
 	public String toString() {
-		if (groundings.isEmpty() || groundings.iterator().next().isEmpty()) {
-			return rule.toString();
-		}
-		else {
-			return rule + " (groundings:"+groundings+")";
-		}
+		return rule.toString();
 	}
-	
-	
-	
-	/**
-	 * Extracts the groundings  for the rule given the input assignment.  
-	 * For utility rules, extracts all possible groundings for the input
-	 * variables.  
-	 * 
-	 * @param input input assignment
-	 * @return the set of possible groundings
-	 */
-	private Set<Assignment> extractGroundings(Assignment input) {
-		if (rule.getRuleType() == RuleType.PROB) {
-			return rule.getGroundings(input);
-		}
-		else if (groundings != null) {
-			return groundings;
-		}
-		else {
-			// determines the set of groundings
-			groundings = new HashSet<Assignment>();
-			for (Assignment input2 : inputs.linearise()) {
-				groundings.addAll(rule.getGroundings(input2));
-			}
-			if (groundings.size() > 1) {
-				groundings.remove(new Assignment());
-			}
-			return groundings;
-		}
-	}
+
+
 
 }
 
