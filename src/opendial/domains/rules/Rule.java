@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.xml.internal.ws.api.model.Parameter;
-
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
