@@ -1,0 +1,114 @@
+
+<parameters>
+
+	<variable id="theta_1">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_2">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>2</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_3">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>2</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_4">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>2</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_5">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>2</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_6">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_7">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_8">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_9">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_10">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_11">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_12">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_13">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+	<variable id="theta_14">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+
+</parameters>

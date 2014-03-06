@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+	<parameters>
+
+		<variable id="a_uother">
+			<value prob="0.04">Move(Left)</value>
+			<value prob="0.04">Move(Right)</value>
+			<value prob="0.04">Move(Forward)</value>
+			<value prob="0.04">Move(Backward)</value>
+			<value prob="0.04">Move(Turn)</value>
+			<value prob="0.04">Move(Left,Short)</value>
+			<value prob="0.04">Move(Right,Short)</value>
+			<value prob="0.04">Move(Forward,Short)</value>
+			<value prob="0.04">Move(Backward,Short)</value>
+			<value prob="0.04">PickUp(RedObj)</value>
+			<value prob="0.04">PickUp(BlueObj)</value>
+			<value prob="0.04">PickUp(AtFeet)</value>
+			<value prob="0.04">PickUp(Other)</value>
+			<value prob="0.04">Release</value>
+			<value prob="0.04">WhatDoYouSee</value>
+			<value prob="0.04">DoYouSee(RedObj)</value>
+			<value prob="0.04">DoYouSee(BlueObj)</value>
+			<value prob="0.04">Greeting</value>
+			<value prob="0.04">Closing</value>
+			<value prob="0.04">Ask(Name)</value>
+			<value prob="0.04">RepeatLast</value>
+			<value prob="0.04">Stop</value>
+			<value prob="0.04">Confirm</value>
+			<value prob="0.04">Disconfirm</value>
+			<value prob="0.04">Grounding</value>
+		</variable>
+
+		<variable id="theta_error">
+			<distrib type="dirichlet">
+				<alpha>5.42</alpha>
+				<alpha>0.515</alpha>
+				<alpha>1.597</alpha>
+			</distrib>
+		</variable>
+
+	</parameters>
+
+	<initialstate>
+
+		<variable id="completed-task">
+			<value>true</value>
+		</variable>
+
+		<variable id="perceived">
+			<value>[]</value>
+		</variable>
+		<variable id="carried">
+			<value>[]</value>
+		</variable>
+
+	</initialstate>
+
+	<settings>
+		<user>a_u</user>
+		<system>a_m</system>
+		<monitor>perceived,carried</monitor>
+	</settings>
+
+	<import href="domain_rewards-sim.xml" />
+
+	<import href="domain_effects-sim.xml" />
+
+	<import href="domain_prior-sim.xml" />
+
+	<import href="domain_user-sim.xml" />
+
+
+
+	<model trigger="perceived,carried">
+		<rule>
+			<case>
+				<effect>
+					<set var="perceived^o" value="{perceived}" />
+					<set var="carried^o" value="{carried}" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+	<model trigger="a_u">
+		<rule>
+			<case>
+				<effect prob="theta_error[0]">
+					<set var="a_u^o" value="{a_u}" />
+				</effect>
+				<effect prob="theta_error[1]">
+					<set var="a_u^o" value="{a_uother}" />
+				</effect>
+				<effect prob="theta_error[2]">
+					<set var="a_u^o" value="None" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+</domain>

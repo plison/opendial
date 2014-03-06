@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<interaction>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.3">None</value>
+			<value prob="0.7">hello</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Say(Greet)</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">Hi there</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.2">None</value>
+			<value prob="0.1">move right</value>
+			<value prob="0.7">move left</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Confirm(Move(Left))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">Should I move left?</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.1">None</value>
+			<value prob="0.9">yes</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Do(Move(Left))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">OK, moving Left</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.2">None</value>
+			<value prob="0.5">and now move forward a little bit</value>
+			<value prob="0.3">move backward</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=AskRepeat</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">Sorry, could you repeat?</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.3">None</value>
+			<value prob="0.7">move forward a little bit</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Do(Move(Forward,Short))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">OK, moving Forward a little bit</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.1">None</value>
+			<value prob="0.9">and turn right</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Do(Move(Right))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">OK, moving Right</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.2">None</value>
+			<value prob="0.8">move forward</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Do(Move(Forward))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">OK, moving Forward</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.25">None</value>
+			<value prob="0.75">and do that again</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Confirm(Move(Forward))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">Should I move forward?</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.1">None</value>
+			<value prob="0.9">yes</value>
+		</variable>
+	</userTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.1">None</value>
+			<value prob="0.9">move forward once more</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Do(Move(Forward))</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">OK, moving Forward</value>
+		</variable>
+	</systemTurn>
+	<userTurn>
+		<variable id="u_u">
+			<value prob="0.1">None</value>
+			<value prob="0.1">do you see it</value>
+			<value prob="0.8">what do you see</value>
+		</variable>
+	</userTurn>
+	<wizard>a_m=Describe([])</wizard>
+	<systemTurn>
+		<variable id="u_m">
+			<value prob="1.0">I do not see anything</value>
+		</variable>
+	</systemTurn>
+</interaction>

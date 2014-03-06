@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+
+	</initialstate>
+
+
+	<model type="update" trigger="a_u">
+
+		<rule id="intent">
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({X})" />
+				</condition>
+				<effect prob="0.95">
+					<set var="i_u" value="Want({X})" />
+				</effect>
+				<effect prob="0.05">
+					<clear var="i_u" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+
+
+
+	<model type="decision" trigger="i_u,success">
+
+		<rule id="wrongact">
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+					<if var="a_m" value="Do({X})" relation="!=" />
+				</condition>
+				<effect util="-0.3">
+					<set var="a_m" value="Do({X})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="change-success">
+			<case>
+				<condition>
+					<if var="a_m" value="Do({X})" />
+					<if var="i_u" value="Want({X})" />
+					<if var="success" value="true" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Finish" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Do({X})" />
+					<if var="i_u" value="Want({X})" />
+					<if var="success" value="false" />
+				</condition>
+				<effect util="-1">
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Do({X})" />
+					<if var="i_u" value="Want({X})" relation="!=" />
+				</condition>
+				<effect util="-3">
+				</effect>
+			</case>
+		</rule>
+
+
+
+		<rule>
+			<case>
+				<effect util="-0.2">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+
+	<model type="prediction" trigger="a_m">
+
+		<rule id="repeatrule">
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect prob="0.95">
+					<set var="a_u^p" var2="a_u" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="successrule">
+			<case>
+				<condition>
+					<if var="a_m" value="Do({X})" />
+				</condition>
+				<effect prob="0.9">
+					<set var="success^p" value="true" />
+				</effect>
+				<effect prob="0.1">
+					<set var="success^p" value="false" />
+				</effect>
+			</case>
+
+		</rule>
+
+
+	</model>
+
+
+
+	<model type="update" trigger="a_m">
+
+		<rule id="finishrule">
+			<case>
+				<condition>
+					<if var="a_m" value="Finish" />
+				</condition>
+				<effect>
+					<clear var="i_u" />
+				</effect>
+			</case>
+
+		</rule>
+
+	</model>
+
+</domain>

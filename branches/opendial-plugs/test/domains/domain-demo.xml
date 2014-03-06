@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+	<initialstate>
+
+		<variable id="completed-task">
+			<value>true</value>
+		</variable>
+
+		<variable id="perceived">
+			<value>[]</value>
+		</variable>
+		<variable id="carried">
+			<value>[]</value>
+		</variable>
+
+	</initialstate>
+
+
+	<import href="tabletop_nlu.xml" />
+	<import href="tabletop_nlu2.xml" />
+	<import href="tabletop_nlg.xml" />
+
+	<import href="domain_effects-demo.xml" />
+
+	<import href="domain_prior-demo.xml" />
+
+	<import href="domain_rewards-demo.xml" />
+
+	<import href="domain_user-demo.xml" />
+
+
+</domain>

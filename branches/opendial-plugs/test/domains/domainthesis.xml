@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+	<initialstate>
+
+		<variable id="shape(obj1)">
+			<value prob="0.9">sphere</value>
+		</variable>
+
+		<variable id="shape(obj2)">
+			<value prob="0.8">cone</value>
+		</variable>
+
+
+		<variable id="task">
+			<value prob="0.8">grasp(obj1)</value>
+			<value prob="0.1">grasp(obj3)</value>
+		</variable>
+	
+
+	</initialstate>
+
+	<model type="update" trigger="shape(*)">
+
+
+		<rule id="r3">
+			<case>
+				<condition>
+					<if var="shape({X})" value="sphere" />
+				</condition>
+				<effect prob="0.9">
+					<set var="graspable({X})" value="true" />
+				</effect>
+				<effect prob="0.1">
+					<set var="graspable({X})" value="false" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="shape({X})" value="cone" />
+				</condition>
+				<effect prob="0.2">
+					<set var="graspable({X})" value="true" />
+				</effect>
+				<effect prob="0.8">
+					<set var="graspable({X})" value="false" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+	<model trigger="graspable(*)">
+
+		<rule id="r4">
+			<case>
+				<condition>
+					<if var="task" value="grasp({X})" />
+					<if var="graspable({X})" value="true" />
+				</condition>
+				<effect util="2">
+					<set var="a_m" value="grasp({X})" />
+				</effect>
+			</case>
+			<case>
+				<effect util="-2">
+					<set var="a_m" value="grasp({X})" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+	
+	
+
+</domain>

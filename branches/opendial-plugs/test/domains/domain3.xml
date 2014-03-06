@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+
+		<variable id="i_u3">
+			<value prob="0.6">Want(A)</value>
+			<value prob="0.2">Want(B)</value>
+			<value prob="0.1">Want(C)</value>
+			<value prob="0.05">SayHi</value>
+		</variable>
+
+	</initialstate>
+
+
+	<model type="decision" trigger="i_u3">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u3" value="Want({X})" />
+				</condition>
+				<effect util="2">
+					<set var="a_m3" value="Do" />
+					<set var="obj(a_m3)" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule id="negrule">
+			<case>
+				<condition>
+					<if var="i_u3" value="Want({X})" />
+				</condition>
+				<effect util="-3">
+					<set var="a_m3" value="Do" />
+					<set var="obj(a_m3)" value="{X}" relation="!=" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u3" value="SayHi" />
+				</condition>
+				<effect util="1">
+					<set var="a_m3" value="SayHi" />
+				</effect>
+			</case>
+			<case>
+				<effect util="-1">
+					<set var="a_m3" value="SayHi" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+</domain>

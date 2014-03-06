@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameters>
+	<variable id="theta_blabla">
+		<distrib type="uniform">
+			<min>-1</min>
+			<max>2</max>
+		</distrib>
+	</variable>
+
+	<variable id="theta_bloblo">
+		<distrib type="dirichlet">
+			<alpha>1</alpha>
+			<alpha>3</alpha>
+		</distrib>
+	</variable>
+
+</parameters>

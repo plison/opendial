@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<parameters>
+
+	<variable id="theta">
+		<distrib type="dirichlet">
+			<alpha>2</alpha>
+			<alpha>1</alpha>
+		</distrib>
+	</variable>
+
+</parameters>

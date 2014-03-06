@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+	<initialstate>
+
+		<variable id="i_u">
+			<value prob="0.6">Take</value>
+			<feature id="obj">
+				<value prob="0.3">ball</value>
+				<value prob="0.5">box</value>
+				<value prob="0.2">mug</value>
+			</feature>
+			<feature id="place">
+				<value prob="0.3">kitchen</value>
+				<value prob="0.3">office</value>
+				<value prob="0.4">corridor</value>
+			</feature>
+		</variable>
+
+	</initialstate>
+
+	<model trigger="i_u" id="prediction" type="prediction">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Take" />
+				</condition>
+				<effect prob="0.9">
+					<set var="a_u^p" value="Take" />
+					<set var="a_u.obj^p" var2="i_u.obj" />
+					<set var="a_u.place^p" var2="i_u.place" />
+				</effect>
+			</case>
+
+		</rule>
+
+	</model>
+
+
+	<model trigger="i_u" id="actionselection" type="decision">
+
+		<rule>
+			<case>
+				<effect util="-0.5">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Take" />
+				</condition>
+				<effect util="1.0">
+					<set var="a_m" value="Take" />
+					<set var="a_m.obj" var2="i_u.obj" />
+					<set var="a_m.place" var2="i_u.place" />
+				</effect>
+				<effect util="-2.0">
+					<set var="a_m" value="Take" />
+					<set var="a_m.place" var2="i_u.place" relation="!=" />
+				</effect>
+				<effect util="-2.0">
+					<set var="a_m" value="Take" />
+					<set var="a_m.obj" var2="i_u.obj" relation="!=" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+
+	<model trigger="a_ms" id="transition" type="update">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_ms" value="Take" />
+				</condition>
+				<effect prob="1.0">
+					<set var="i_u" value="Done" />
+				</effect>
+			</case>
+
+		</rule>
+
+	</model>
+
+
+</domain>

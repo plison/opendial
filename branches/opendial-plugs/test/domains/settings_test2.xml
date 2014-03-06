@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings>
+
+	<showgui>false</showgui>
+	<userUtterance>a_u</userUtterance>
+	<systemUtterance>a_m</systemUtterance>
+	<toMonitor>p_m</toMonitor>
+	<toMonitor>i_u</toMonitor>
+	<toMonitor>carried</toMonitor>
+	<toMonitor>perceived</toMonitor>
+
+	<nbsamples>2000</nbsamples>
+	<timeout>800</timeout>
+
+</settings>

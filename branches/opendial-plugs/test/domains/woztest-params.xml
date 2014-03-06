@@ -1,0 +1,41 @@
+<parameters>
+
+	<variable id="theta_1">
+		<distrib type="uniform">
+			<min>-10</min>
+			<max>30</max>
+		</distrib>
+	</variable>
+
+
+	<variable id="theta_2">
+		<distrib type="uniform">
+			<min>-10</min>
+			<max>30</max>
+		</distrib>
+	</variable>
+
+	<variable id="theta_3">
+		<distrib type="uniform">
+			<min>-10</min>
+			<max>30</max>
+		</distrib>
+	</variable>
+
+
+	<variable id="theta_4">
+		<distrib type="uniform">
+			<min>-10</min>
+			<max>30</max>
+		</distrib>
+	</variable>
+
+
+	<variable id="theta_5">
+		<distrib type="uniform">
+			<min>-10</min>
+			<max>30</max>
+		</distrib>
+	</variable>
+
+</parameters>
