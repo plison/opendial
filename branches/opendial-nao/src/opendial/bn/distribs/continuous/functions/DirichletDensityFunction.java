@@ -123,6 +123,8 @@ public class DirichletDensityFunction implements DensityFunction {
 		return alphas.length;
 	}
 
+	int middle = 0;
+	int end = 0;
 	
 	/**
 	 * Returns a sampled value for the density function.

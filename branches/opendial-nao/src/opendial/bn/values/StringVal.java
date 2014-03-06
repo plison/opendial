@@ -74,6 +74,8 @@ public final class StringVal implements Value {
 			if (((StringVal)o).getString().equalsIgnoreCase(getString())) {
 				return true;
 			}
+			
+			// taking care of underspecification
 			else if (((StringVal)o).getString().contains("*")) {
 				return new Template(((StringVal)o).getString()).match(str, true).isMatching();
 			}

@@ -20,6 +20,7 @@
 package opendial.nao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,7 @@ import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -39,8 +41,6 @@ public class NaoPerception implements Module, Runnable {
 
 	public static Logger log = new Logger("NaoPerception", Logger.Level.DEBUG);
 
-	public static final int MEMORISATION_TIME = 5000;
-	public static final double INIT_PROB = 0.7;
 	
 	DialogueSystem system;
 	NaoSession session;
@@ -112,27 +112,28 @@ public class NaoPerception implements Module, Runnable {
 			
 		} 
 	}
-
 	
 	public void updateState(Set<String> perceivedObjects) throws DialException {
 		
-		CategoricalTable perception = system.getState().hasChanceNode("perceived")? 
-				system.getContent("perceived").toDiscrete().copy()
+		CategoricalTable oldPerception = system.getState().hasChanceNode("perceived")? 
+				system.getContent("perceived").toDiscrete()
 				: new CategoricalTable(new Assignment("perceived", ValueFactory.none()));
 
-		CategoricalTable newperception = perception.copy();
-		for (Assignment a : perception.getRows()) {
-			newperception.addRow(a, (1-INIT_PROB)*perception.getProb(a));
-		}
 		SetVal newVal = (SetVal)ValueFactory.create(perceivedObjects.toString());
-		newperception.incrementRow(new Assignment("perceived", newVal), INIT_PROB);
+		Assignment assign = new Assignment("perceived", newVal);
 	
-		if (newperception.getRows().size() != perception.getRows().size()) {
-			system.addContent(newperception);
-		}
-		else {
-			system.getState().getChanceNode("perceived").setDistrib(newperception);
-			
+		if (!oldPerception.getBest().equals(assign)) {
+			log.debug("previous perception: " + oldPerception + " vs " + assign);
+			if (!system.isPaused()) {
+				system.addContent(assign);
+			}
+			else {
+				system.getState().addToState(assign);
+				system.getState().reduce();
+				if (system.getModule(GUIFrame.class)!=null) {
+					system.getModule(GUIFrame.class).trigger(system.getState(), Arrays.asList("perceived"));
+				}
+			}
 		}
 	}
 

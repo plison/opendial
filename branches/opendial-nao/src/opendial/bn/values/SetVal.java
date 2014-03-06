@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
+ * Note that the set is not sorted.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)

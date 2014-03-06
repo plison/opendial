@@ -652,6 +652,7 @@ public class DialogueState extends BNetwork {
 
 		// adding the connection between the predicted and observed values
 		String predictEquiv = outputVar.replace("'", "") + "^p";
+
 		if (hasChanceNode(predictEquiv) && 
 				!outputVar.equals(predictEquiv) && !outputVar.contains("^p")) {
 			ChanceNode equalityNode = new ChanceNode("=_" + outputVar.replace("'", ""));

@@ -92,7 +92,7 @@ public class NaoASR  implements Module, Runnable {
 				asrGrammar.replace("bnf", "lcf"), "English");
 		session.call("ALSpeechRecognition", "removeAllContext");
 		session.call("ALSpeechRecognition", "addContext", asrGrammar.replace("bnf", "lcf"), "UserEval");
-		session.call("ALSpeechRecognition", "setParameter", "Sensitivity", 100);
+		session.call("ALSpeechRecognition", "setParameter", "Sensitivity", 1);
 		log.debug("ASR sensitivity: " + session.call("ALSpeechRecognition", "getParameter", "Sensitivity"));
 		session.call("ALSpeechRecognition", "subscribe", "naoASR");
 		session.call("ALMemory", "insertData", "WordRecognized", "");

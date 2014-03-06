@@ -145,7 +145,7 @@ implements MouseListener, ActionListener {
 			}
 
 			else if (((JMenuItem)e.getSource()).getText().equals(DISTRIB)) {
-				viewer.displayDistrib(pickedVertices);
+				viewer.displayDistrib(pickedVertices.iterator().next());
 			}
 
 			else if (((JMenuItem)e.getSource()).getText().equals(UTILITY)) {
