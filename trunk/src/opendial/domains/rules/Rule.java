@@ -24,23 +24,21 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.state.anchoring.Output;
 
 
 /**
@@ -64,6 +62,8 @@ public class Rule {
 	public enum RuleType {PROB, UTIL}
 
 	RuleType ruleType;
+	
+	Map<Assignment,Output> cache;
 
 	// ===================================
 	//  RULE CONSTRUCTION
@@ -81,6 +81,7 @@ public class Rule {
 		this.id = id;
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();	
+		cache = new HashMap<Assignment,Output>();
 	}
 
 
@@ -140,11 +141,28 @@ public class Rule {
 	 * @param input the input assignment
 	 * @return the matched rule case.
 	 */
-	public RuleCase getMatchingCase (Assignment input) {
-
+	public Output getOutput (Assignment input) {
+		if (cache.containsKey(input)) {
+			return cache.get(input);
+		}
+		Output output = new Output(ruleType);
+		for (Assignment grounding : getGroundings(input)) {
+			Assignment fullInput = new Assignment(input, grounding);
+			RuleCase match = getMatchingCase(fullInput);
+			if (!match.getEffects().isEmpty()) {
+				output.addCase(match);
+			}
+		}
+		cache.put(input, output);
+		return output;
+	}
+	
+	
+	private RuleCase getMatchingCase(Assignment input) {
 		for (RuleCase ruleCase : cases) {
 			if (ruleCase.getCondition().isSatisfiedBy(input)) {
-				return ruleCase.ground(input);
+				RuleCase groundedCase = ruleCase.ground(input);
+				return groundedCase;
 			}
 		}
 		return new RuleCase();
@@ -169,7 +187,7 @@ public class Rule {
 	 * @return the possible groundings for the rule
 	 */
 	public Set<Assignment> getGroundings(Assignment input) {
-
+		input = input.removePrimes();
 		ValueRange groundings = new ValueRange();
 		for (RuleCase thecase :cases) {
 			groundings.addRange(thecase.getGroundings(input));

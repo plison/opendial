@@ -39,11 +39,9 @@ import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
-import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
 import opendial.inference.approximate.WeightedSample;
-import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
 import opendial.state.DialogueState;
 

@@ -34,10 +34,10 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
@@ -106,6 +106,10 @@ public class Effect implements Value {
 	 * @return the resulting grounded effect
 	 */
 	public Effect ground(Assignment grounding) {
+		if (isFullyGrounded()) {
+			return this;
+		}
+	
 		Effect effect = new Effect();
 		for (BasicEffect e : subeffects) {
 			BasicEffect groundedE = e.ground(grounding);
@@ -114,6 +118,21 @@ public class Effect implements Value {
 			}
 		}
 		return effect;
+	}
+	
+	
+	/**
+	 * Returns true if the effect is fully grounded, and false otherwise
+	 * 
+	 * @return true if fully grounded, false otherwise
+	 */
+	public boolean isFullyGrounded() {
+		for (BasicEffect e : subeffects) {
+			if (!e.isFullyGrounded()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// ===================================
@@ -207,7 +226,7 @@ public class Effect implements Value {
 			Template variable = subeffect.getVariable();
 			Template value = subeffect.getTemplateValue();
 			Relation r = (subeffect.getType() == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
-			condition.addCondition(new BasicCondition(variable, value, r));
+			condition.addCondition(new TemplateCondition(variable, value, r));
 		}
 		return condition;
 	}

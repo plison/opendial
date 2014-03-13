@@ -26,22 +26,18 @@ package opendial.state.anchoring;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.DialogueState;
@@ -121,14 +117,9 @@ public class AnchoredRule {
 		parameters = new HashSet<String>();
 
 		for (Assignment input : conditions) {
-			Output output = new Output(rule.getRuleType());
-			for (Assignment grounding : rule.getGroundings(input)) {
-				Assignment fullInput = new Assignment(input, grounding);
-				RuleCase matchingCase = rule.getMatchingCase(fullInput);
-				if (!matchingCase.equals(new RuleCase())) {
-					relevant = true;					
-				}
-				output.addCase(matchingCase);
+			Output output = rule.getOutput(input);
+			if (!output.getEffects().isEmpty()) {
+				relevant = true;
 			}
 			for (Effect o : output.getEffects()) {
 				effects.add(o);

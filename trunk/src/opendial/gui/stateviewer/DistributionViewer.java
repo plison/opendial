@@ -30,9 +30,7 @@ import java.awt.Dialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -48,8 +46,6 @@ import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DensityFunction;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
-import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 

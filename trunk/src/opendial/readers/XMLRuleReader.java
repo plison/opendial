@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
@@ -40,6 +41,7 @@ import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.NegatedCondition;
+import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
@@ -207,20 +209,25 @@ public class XMLRuleReader {
 		if (node.getNodeName().equals("if") && node.hasAttributes() && 
 				node.getAttributes().getNamedItem("var")!= null) {
 
-			BasicCondition condition;
+			Condition condition;
 
 			String variable = node.getAttributes().getNamedItem("var").getNodeValue();
 
 			if (node.getAttributes().getNamedItem("value") != null) {
 				String valueStr = node.getAttributes().getNamedItem("value").getNodeValue();
-				Relation relation = getRelation(node);	
-				condition = new BasicCondition(new Template(variable), new Template(valueStr), relation);
+				Relation relation = getRelation(node);
+				if ((new Template(variable)).isUnderspecified() || (new Template(valueStr)).isUnderspecified()) {
+					condition = new TemplateCondition(new Template(variable), new Template(valueStr), relation);
+				}
+				else {
+					condition = new BasicCondition(variable, ValueFactory.create(valueStr), relation);
+				}
 			}
 
 			else if (node.getAttributes().getNamedItem("var2") !=null) {
 				String variable2 = node.getAttributes().getNamedItem("var2").getNodeValue();
 				Relation relation = getRelation(node);		
-				condition = new BasicCondition(new Template(variable), new Template("{"+variable2+"}"), relation);
+				condition = new TemplateCondition(new Template(variable), new Template("{"+variable2+"}"), relation);
 			}
 			else {
 				throw new DialException("unrecognized format for condition ");
