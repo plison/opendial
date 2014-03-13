@@ -41,7 +41,7 @@ import java.util.Set;
 public final class SetVal implements Value {
 	
 	// the set of values
-	Set<Value> set;
+	final Set<Value> set;
 	
 	/**
 	 * Creates the set of values

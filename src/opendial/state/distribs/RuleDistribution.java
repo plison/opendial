@@ -25,9 +25,7 @@ package opendial.state.distribs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -37,12 +35,10 @@ import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.Rule;
-import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.AnchoredRule;
-import opendial.state.anchoring.Output;
+import opendial.state.AnchoredRule;
 
 
 /**
@@ -65,7 +61,6 @@ public class RuleDistribution implements DiscreteDistribution {
 	AnchoredRule arule;
 
 	ConditionalCategoricalTable cache;
-	Map<Assignment,Output> cache2;
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
@@ -91,8 +86,6 @@ public class RuleDistribution implements DiscreteDistribution {
 		if (rule.getParameters().isEmpty()) {
 			cache = new ConditionalCategoricalTable();
 		}
-		cache2 = new HashMap<Assignment,Output>();
-
 	}
 
 
@@ -307,8 +300,8 @@ public class RuleDistribution implements DiscreteDistribution {
 	private CategoricalTable getOutputTable(Assignment input) {
 		try {
 			// search for the matching case	
-			Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
-			Output output = (cache2.containsKey(ruleInput))? cache2.get(ruleInput) : getOutput(ruleInput);
+			Assignment ruleInput = input.removePrimes().getTrimmed(arule.getInputs().getVariables());
+			RuleOutput output = arule.getRule().getOutput(ruleInput);
 			
 			// creating the distribution
 			double totalMass = 	 output.getTotalMass(input);
@@ -339,21 +332,6 @@ public class RuleDistribution implements DiscreteDistribution {
 			return probTable;
 		}
 	}
-	
-	
-	private Output getOutput(Assignment ruleInput) {
-		Output output = new Output(RuleType.PROB);
-		
-		Set<Assignment> groundings = arule.getRule().getGroundings(ruleInput);
-		for (Assignment grounding :groundings) {
-			Assignment fullInput = new Assignment(ruleInput, grounding);
-			RuleCase matchingOutput = arule.getRule().getMatchingCase(fullInput);	
-			output.addCase(matchingOutput);
-		}
-		cache2.put(ruleInput, output);
-		return output;
-	}
-
 
 
 }

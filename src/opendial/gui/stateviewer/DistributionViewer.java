@@ -30,9 +30,7 @@ import java.awt.Dialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -48,8 +46,6 @@ import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.DensityFunction;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
-import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 
@@ -89,7 +85,8 @@ public class DistributionViewer extends JDialog {
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
 	 * 
-	 * @param distrib the distribution to show
+	 * @param currentState the current dialogue state
+	 * @param queryVar the variable to display
 	 * @param viewer the state viewer component
 	 */
 	public DistributionViewer(final DialogueState currentState, final String queryVar, final StateViewer viewer) {
@@ -113,7 +110,7 @@ public class DistributionViewer extends JDialog {
 	/**
 	 * Constructs or update the current viewer with the distribution.
 	 * 
-	 * @param distrib the distribution to display
+	 * @param currentState the updated dialogue state
 	 */
 	protected void update(DialogueState currentState) {
 

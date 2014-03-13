@@ -95,6 +95,11 @@
 					<set var="a_u^p" var2="a_u" />
 				</effect>
 			</case>
+			<case>
+				<effect>
+					<clear var="a_u^p"/>
+				</effect>
+			</case>
 		</rule>
 
 		<rule id="successrule">
@@ -109,7 +114,11 @@
 					<set var="success^p" value="false" />
 				</effect>
 			</case>
-
+			<case>
+				<effect>
+					<clear var="success^p"/>
+				</effect>
+			</case>
 		</rule>
 
 

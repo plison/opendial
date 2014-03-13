@@ -31,6 +31,10 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.TemplateCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 /**
  * Representation of a basic effect of a rule.  A basic effect is formally
@@ -93,6 +97,9 @@ public class BasicEffect {
 	 * @return the grounded effect
 	 */
 	public BasicEffect ground(Assignment grounding) {
+		if (!variableLabel.isUnderspecified() && !variableValue.isUnderspecified()) {
+			return this;
+		}
 		Template newT = variableLabel.fillSlots(grounding);
 		Template newV = variableValue.fillSlots(grounding);
 		return new BasicEffect(newT, newV, type);
@@ -167,6 +174,24 @@ public class BasicEffect {
 	 */
 	public boolean isFullyGrounded() {
 		return (variableLabel.getSlots().isEmpty() && variableValue.getSlots().isEmpty());
+	}
+
+
+	
+	/**
+	 * Converts the basic effect into an equivalent condition.
+	 * 
+	 * @return the equivalent (basic or template-based) condition
+	 */
+	public Condition convertToCondition() {
+		Relation r = (type == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
+		if (!variableLabel.isUnderspecified() && !variableValue.isUnderspecified()) {
+			return new BasicCondition(variableLabel.getRawString(), 
+					ValueFactory.create(variableValue.getRawString()), r);
+		}
+		else {
+			return new TemplateCondition(variableLabel, variableValue, r);
+		}
 	}
 
 	

@@ -71,6 +71,9 @@ public class ForwardPlanner implements Module {
 	public static double MIN_OBSERVATION_PROB = 0.1;
 	
 	DialogueSystem system;
+	
+	/** Current planning process (if active) */
+	PlannerProcess currentProcess;
 
 	boolean paused = false;
 
@@ -89,6 +92,10 @@ public class ForwardPlanner implements Module {
 	@Override
 	public void pause(boolean shouldBePaused) {	
 		paused = shouldBePaused;
+		if (currentProcess != null && !currentProcess.isTerminated) {
+			log.debug("trying to terminate the process?");
+			currentProcess.terminate();
+		}
 	}
 
 	/**
@@ -111,11 +118,12 @@ public class ForwardPlanner implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		if (!paused && !state.getActionNodeIds().isEmpty()) {
+
+		if (!paused && !state.getActionNodeIds().isEmpty() && state.isCommitted()) {
 			try {
-				PlannerProcess process = new PlannerProcess(state);
-				process.start();
-				process.join();
+				currentProcess = new PlannerProcess(state);
+				currentProcess.start();
+				currentProcess.join();
 			} 
 			catch (InterruptedException e) { e.printStackTrace(); }
 		}
@@ -131,6 +139,8 @@ public class ForwardPlanner implements Module {
 
 		DialogueState initState;
 
+		boolean isTerminated = false;
+
 		/**
 		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
 		 */
@@ -138,8 +148,6 @@ public class ForwardPlanner implements Module {
 			super(Settings.maxSamplingTime * 2);
 			this.initState = initState;
 		}
-
-		boolean isTerminated = false;
 
 		/**
 		 * Runs the planner until the horizon has been reached, or the planner has run out
@@ -149,13 +157,16 @@ public class ForwardPlanner implements Module {
 		public void run() {
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
-				//		ForwardPlanner.log.debug("Q-values: " + evalActions);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 
+				initState.removeNodes(initState.getUtilityNodeIds());
+				initState.removeNodes(initState.getActionNodeIds());
+				
 				if (evalActions.getUtil(bestAction) < 0.001) {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
 				initState.addToState(new CategoricalTable(bestAction.removePrimes()));
+				
 				isTerminated = true;
 			}
 			catch (Exception e) {
@@ -181,7 +192,6 @@ public class ForwardPlanner implements Module {
 				return new UtilityTable();
 			}
 			UtilityTable rewards = state.queryUtil(actionNodes);
-
 			if (horizon ==1) {
 				return rewards;
 			}

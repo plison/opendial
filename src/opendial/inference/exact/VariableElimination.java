@@ -82,11 +82,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	@Override
 	public CategoricalTable queryProb(ProbQuery query) throws DialException {
-
 		DoubleFactor queryFactor = createQueryFactor(query);
-
 		queryFactor.normalise();
-
 		return new CategoricalTable(queryFactor.getProbMatrix());
 	}
 
@@ -101,12 +98,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	@Override
 	public UtilityTable queryUtil(UtilQuery query) throws DialException {
-
-		// normal case
 		DoubleFactor queryFactor = createQueryFactor(query);
-
 		queryFactor.normalise();
-
 		return new UtilityTable(queryFactor.getUtilityMatrix());
 	}
 
@@ -137,9 +130,7 @@ public class VariableElimination implements InferenceAlgorithm {
 				factors.add(basicFactor);
 				// if the variable is hidden, we sum it out
 				if (!queryVars.contains(n.getId())) {
-					// && !evidence.containsVar(n.getId() ??
 					factors = sumOut(n.getId(), factors);
-
 				}
 			}
 		}

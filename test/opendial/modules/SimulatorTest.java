@@ -28,7 +28,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.continuous.functions.DensityFunction;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
 
@@ -73,7 +73,6 @@ public class SimulatorTest {
 		}
 		
 		checkCondition(str);
-		log.debug("full interaction: " + str);
 		system.pause(true);
 		
 		Settings.nbSamples = nbSamples * 10 ;
@@ -88,20 +87,24 @@ public class SimulatorTest {
 		system.getSettings().showGUI = false;
 		Settings.nbSamples = Settings.nbSamples * 2 ;
 		system.startSystem();
-		Thread.sleep(5000);
-		system.pause(true);
-		Thread.sleep(100);
 		
-		IndependentProbDistribution theta_correct = system.getContent("theta_correct");
-		IndependentProbDistribution theta_incorrect = system.getContent("theta_incorrect");
-		IndependentProbDistribution theta_repeat = system.getContent("theta_repeat");
+		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
+			Thread.sleep(1000);
+			try {
+				checkCondition2(system);
+				system.pause(true);
+			}
+			catch (AssertionError e) {		}
+		}
+		
+		checkCondition2(system);
+		DensityFunction theta_correct, theta_incorrect, theta_repeat;
+		theta_correct = system.getContent("theta_correct").toContinuous().getFunction();
+		theta_incorrect = system.getContent("theta_incorrect").toContinuous().getFunction();
+		theta_repeat = system.getContent("theta_repeat").toContinuous().getFunction();
 		log.debug("theta_correct " + theta_correct);
 		log.debug("theta_incorrect " + theta_incorrect);
 		log.debug("theta_repeat " + theta_repeat);
-		assertEquals(2.0, theta_correct.toContinuous().getFunction().getMean()[0], 0.5);
-		assertEquals(-2.0, theta_incorrect.toContinuous().getFunction().getMean()[0], 1.5);
-		assertEquals(0.5, theta_repeat.toContinuous().getFunction().getMean()[0], 0.7);
-		
 		Settings.nbSamples = Settings.nbSamples  / 2;
 	}
 	
@@ -111,8 +114,16 @@ public class SimulatorTest {
 				assertTrue(str.contains("YouSee")); 
 						assertTrue(str.contains("Reward: 10.0"));
 								assertTrue(str.contains("Do(Pick"));
-								
-			
+	}
+	
+	private static void checkCondition2(DialogueSystem system) throws DialException {
+		DensityFunction theta_correct, theta_incorrect, theta_repeat;
+		theta_correct = system.getContent("theta_correct").toContinuous().getFunction();
+		theta_incorrect = system.getContent("theta_incorrect").toContinuous().getFunction();
+		theta_repeat = system.getContent("theta_repeat").toContinuous().getFunction();
+		assertEquals(2.0, theta_correct.getMean()[0], 0.5);
+		assertEquals(-2.0, theta_incorrect.getMean()[0], 1.5);
+		assertEquals(0.5, theta_repeat.getMean()[0], 0.7);
 	}
 	
 	

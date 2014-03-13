@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,28 +24,18 @@
 package opendial.state.distribs;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
-import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
-import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.AnchoredRule;
-import opendial.state.anchoring.Output;
+import opendial.state.AnchoredRule;
 
 
 /**
@@ -90,7 +80,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 		if (rule.getParameters().isEmpty()) {
 			cache = new HashMap<Assignment,UtilityTable>();
 		}
-		
+
 	}
 
 
@@ -102,7 +92,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	@Override
 	public void modifyVarId(String oldId, String newId) {
 		if (cache != null) {
-		cache.clear();
+			cache.clear();
 		}
 	}
 
@@ -129,16 +119,16 @@ public class RuleUtilDistribution implements UtilityDistribution {
 		if (cache != null && cache.containsKey(input) && cache.get(input).getRows().contains(actions)) {
 			return cache.get(input).getUtil(actions);
 		}
-		
+
 		double util = getUtil(input, actions);
-		
+
 		if (cache != null) {
 			if (!cache.containsKey(input)) {
 				cache.put(input, new UtilityTable());
 			}
 			cache.get(input).setUtil(actions, util);
 		}
-	
+
 		return util;
 	}
 
@@ -199,24 +189,20 @@ public class RuleUtilDistribution implements UtilityDistribution {
 		try {
 			Assignment ruleInput = input.getTrimmed(rule.getInputs().getVariables());
 			Assignment ruleAction = actions.removePrimes();
-			
+
 			double totalUtil = 0;
-			Set<Assignment> groundings = rule.getRule().getGroundings
-					(new Assignment(ruleInput, ruleAction));
-			for (Assignment grounding : groundings) {
-				
-				Assignment fullInput = new Assignment(ruleInput, grounding);
-				RuleCase matchingOutput = rule.getRule().getMatchingCase(fullInput);	
-							
-				for (Effect effectOutput : matchingOutput.getEffects()) {
-					Condition condition = effectOutput.convertToCondition();
-					
-					if (condition.isSatisfiedBy(ruleAction)) {
-						totalUtil += matchingOutput.getParameter(effectOutput).
-								getParameterValue(input);
-					}
+			Assignment fullInput = new Assignment(ruleInput, actions);
+			RuleOutput output = rule.getRule().getOutput(fullInput);	
+
+			for (Effect effectOutput : output.getEffects()) {
+				Condition condition = effectOutput.convertToCondition();
+
+				if (condition.isSatisfiedBy(ruleAction)) {
+					totalUtil += output.getParameter(effectOutput).
+							getParameterValue(input);
 				}
-			}	
+			}
+
 			return totalUtil;
 		}
 		catch (DialException e) {
@@ -224,8 +210,8 @@ public class RuleUtilDistribution implements UtilityDistribution {
 		}
 		return 0.0;	
 	}
-	
 
-	
+
+
 
 }

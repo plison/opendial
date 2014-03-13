@@ -38,7 +38,7 @@ import opendial.utils.StringUtils;
 public final class DoubleVal implements Value {
 
 	// the double
-	double d;
+	final double d;
 
 	/**
 	 * Creates the double value

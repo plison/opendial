@@ -179,7 +179,7 @@ public class InferenceUtils {
 	 */
 	public static Map<Assignment,Double> getNBest (Map<Assignment,Double> initTable, int nbest) {
 		if (nbest < 1) {
-			log.warning("nbest should be >= 1");
+			log.warning("nbest should be >= 1, but is " + nbest);
 			nbest = 1;
 		}
 

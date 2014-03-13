@@ -160,4 +160,20 @@ public class ValueFactory {
 	public static NoneVal none() {
 		return noneValue;
 	}
+
+	public static Value concatenate(Value value, Value value2) {
+		if (value instanceof StringVal && value2 instanceof StringVal) {
+			return new StringVal(((StringVal)value).getString() + " " + ((StringVal)value2).getString());
+		}
+		else if (value instanceof NoneVal) {
+			return value2;
+		}
+		else if (value2 instanceof NoneVal) {
+			return value;
+		}
+		else {
+			log.warning("concatenation not implemented for " + value + "+" + value2);
+			return noneValue;
+		}
+	}
 }

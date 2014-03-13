@@ -113,7 +113,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
 		if (variable.equals(oldId)) {
-			variable = newId;
+			variable = newId.replace("'", "");
 		}
 	}
 
@@ -244,7 +244,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 		}
 		else {
 			throw new DialException("equivalence distribution with variable " + 
-					variable + " cannot handle condition " + trimmed);
+					variable + " cannot handle condition " + condition);
 		}
 	}
 

@@ -21,36 +21,32 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state.anchoring;
+package opendial.state;
 
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.DialogueState;
 
 /**
  * Representation of a probabilistic rule anchored in a particular dialogue state.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-13 21:38:32 #$
  */
 public class AnchoredRule {
 
@@ -101,11 +97,6 @@ public class AnchoredRule {
 		id = rule.getRuleId();
 		this.state = state;
 
-		if (state.hasNode(id)) {
-			log.debug("state: " + state);
-			log.warning("rule node " + id + " already exists in state");
-		}
-
 		// determines the input range
 		inputs = new ValueRange();
 		for (ChanceNode inputNode : state.getMatchingNodes(rule.getInputVariables())) {
@@ -121,14 +112,9 @@ public class AnchoredRule {
 		parameters = new HashSet<String>();
 
 		for (Assignment input : conditions) {
-			Output output = new Output(rule.getRuleType());
-			for (Assignment grounding : rule.getGroundings(input)) {
-				Assignment fullInput = new Assignment(input, grounding);
-				RuleCase matchingCase = rule.getMatchingCase(fullInput);
-				if (!matchingCase.equals(new RuleCase())) {
-					relevant = true;					
-				}
-				output.addCase(matchingCase);
+			RuleOutput output = rule.getOutput(input);
+			if (!output.getEffects().isEmpty()) {
+				relevant = true;
 			}
 			for (Effect o : output.getEffects()) {
 				effects.add(o);
@@ -138,8 +124,8 @@ public class AnchoredRule {
 					outputs.addValue(outputVar, e.getValue());
 				}
 			}
-			effects.add(new Effect());
 		}
+		effects.add(new Effect());
 
 		// special case for utility rules with templated action values
 		if (rule.getRuleType() == RuleType.UTIL && rule.hasUnderspecifiedEffects()) {

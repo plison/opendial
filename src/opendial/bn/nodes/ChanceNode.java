@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -36,6 +36,7 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
+import opendial.bn.distribs.incremental.IncrementalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -258,7 +259,7 @@ public class ChanceNode extends BNode {
 	 */
 	public double getProb(Assignment condition, Value nodeValue) {
 		try {
-		return distrib.toDiscrete().getProb(condition, new Assignment(nodeId, nodeValue));
+			return distrib.toDiscrete().getProb(condition, new Assignment(nodeId, nodeValue));
 		}
 		catch (DialException e) {
 			log.warning("exception: " + e);
@@ -287,7 +288,6 @@ public class ChanceNode extends BNode {
 			}
 		}
 		return sample(inputSample);
-
 	}
 
 	/**
@@ -297,12 +297,12 @@ public class ChanceNode extends BNode {
 	 * @param condition the value assignment on conditional nodes
 	 * @return the sample value
 	 * @throws DialException if no sample can be selected
-	 */
+	 */ 
 	public Value sample(Assignment condition) throws DialException {
 		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 		if (!result.containsVar(nodeId)) {
-					log.warning("result of sampling does not contain " + nodeId +": " + 
-							result + " distrib is " + distrib.getClass().getSimpleName());
+			log.warning("result of sampling does not contain " + nodeId +": " + 
+					result + " distrib is " + distrib.getClass().getSimpleName());
 			return ValueFactory.none();
 		}
 		return result.getValue(nodeId);
@@ -318,7 +318,6 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public Set<Value> getValues() {
-		
 		if (cachedValues == null) {
 			cachedValues = new HashSet<Value>();
 			ValueRange inputValues = new ValueRange();
@@ -326,23 +325,22 @@ public class ChanceNode extends BNode {
 				inputValues.addValues(inputNode.getId(), inputNode.getValues());
 			}
 			try {
-			Set<Assignment> outputs = distrib.getValues(inputValues);
-			for (Assignment output : outputs) {
-				if (output.containsVar(nodeId)) {
-					cachedValues.add(output.getValue(nodeId));
+				Set<Assignment> outputs = distrib.getValues(inputValues);
+				for (Assignment output : outputs) {
+					if (output.containsVar(nodeId)) {
+						cachedValues.add(output.getValue(nodeId));
+					}
 				}
-			}
 			}
 			catch (DialException e) {
 				log.warning("could not extract values for " + nodeId);
 				cachedValues = new HashSet<Value>();
 			}
 		}
-
 		return new HashSet<Value>(cachedValues);
 	}
-	
-	
+
+
 	/**
 	 * Returns the number of values for the node
 	 * 
@@ -367,6 +365,28 @@ public class ChanceNode extends BNode {
 	}
 
 
+
+	/**
+	 * Return true if the distribution of the current node is committed (that is, whether
+	 * itself and its ancestors are all committed).  An uncommitted distribution is for 
+	 * instance a partial word lattice.
+	 * 
+	 * @return true if the node and its ancestors are fully committed, and false otherwise
+	 */
+	public boolean isCommitted() {
+		if (distrib instanceof IncrementalDistribution && !((IncrementalDistribution)distrib).isCommitted()) {
+			return false;
+		}
+		for (BNode n : inputNodes.values()) {
+			if (n instanceof ChanceNode && !((ChanceNode)n).isCommitted()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
 	/**
 	 * Returns the "factor matrix" mapping assignments of conditional variables
 	 * + the node variable to a probability value.
@@ -377,11 +397,11 @@ public class ChanceNode extends BNode {
 	public Map<Assignment,Double> getFactor() {
 
 		Map<Assignment,Double> factor = new HashMap<Assignment,Double>();
-		
+
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-				CategoricalTable condTable;
-				try {
+			CategoricalTable condTable;
+			try {
 				if (distrib instanceof IndependentProbDistribution) {
 					condTable = ((IndependentProbDistribution)distrib).toDiscrete();
 				}
@@ -391,15 +411,16 @@ public class ChanceNode extends BNode {
 				for (Assignment head : condTable.getRows()) {
 					factor.put(new Assignment(combination, head), condTable.getProb(head));
 				}
-				}
-				catch (DialException e) {
-					log.warning("calculation of factor failed: " + e.toString());
-				}
+			}
+			catch (DialException e) {
+				log.warning("calculation of factor failed: " + e.toString());
+			}
 		}
 		return factor;
 	}
-	
-	
+
+
+
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -418,7 +439,7 @@ public class ChanceNode extends BNode {
 		return new ChanceNode(nodeId, distrib.copy());
 	}
 
-	
+
 	/**
 	 * Returns the hashcode for the node (based on the hashcode of the identifier
 	 * and the distribution).
@@ -448,6 +469,7 @@ public class ChanceNode extends BNode {
 		super.modifyVariableId(oldId, newId);
 		distrib.modifyVariableId(oldId, newId);
 	}
+
 
 
 }

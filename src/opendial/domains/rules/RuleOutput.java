@@ -21,17 +21,15 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state.anchoring;
+package opendial.domains.rules;
 
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
@@ -44,12 +42,10 @@ import opendial.domains.rules.parameters.Parameter;
  * case for every possible groundings.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-13 21:38:32 #$
  */
-public class Output {
+public class RuleOutput extends RuleCase {
 
-	// the rule effects
-	Map<Effect, Parameter> effects;
 	
 	// the rule type
 	RuleType type;
@@ -59,8 +55,8 @@ public class Output {
 	 * 
 	 * @param type the rule type
 	 */
-	public Output(RuleType type) {
-		effects = new HashMap<Effect, Parameter>();
+	public RuleOutput(RuleType type) {
+		super();
 		this.type = type;
 	}
 
@@ -106,26 +102,6 @@ public class Output {
 	}
 	
 	
-	/**
-	 * Returns the effects in the output
-	 * 
-	 * @return the possible effects
-	 */
-	public Set<Effect> getEffects() {
-		return effects.keySet();
-	}
-
-	/**
-	 * Returns the parameters employed in the output for the effect
-	 * 
-	 * @param effect the effect
-	 * @return the associated parameter
-	 */
-	public Parameter getParameter(Effect effect) {
-		return effects.get(effect);
-	}
-	
-	
 	
 	/**
 	 * Returns the total probability mass specified by the output (possibly given
@@ -146,34 +122,5 @@ public class Output {
 		return mass;
 	}
 	
-
-
-	/**
-	 * Returns a string representation of the output
-	 * 
-	 * @return the string representation
-	 */
-	@Override
-	public String toString() {
-		String str = "";
-		for (Effect e : effects.keySet()) {
-			str += e.toString();
-			str += " [" + effects.get(e) + "]";
-			str += ",";
-		}
-		if (!effects.isEmpty()) {
-			str = str.substring(0, str.length()-1);
-		}
-		return str;
-	}
-	
-	/**
-	 * Returns the hashcode for the output
-	 */
-	@Override
-	public int hashCode() {
-		return effects.hashCode();
-	}
-
 
 }

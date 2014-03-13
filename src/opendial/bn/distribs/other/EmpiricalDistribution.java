@@ -301,7 +301,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @return the possible values for the head variables
 	 */
 	@Override
-	public Set<Assignment> getPossibleValues() {
+	public Set<Assignment> getValues() {
 		Set<Assignment> possible = new HashSet<Assignment>();
 		for (Assignment sample : samples) {
 			possible.add(sample);
@@ -320,7 +320,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 */
 	@Override
 	public Set<Assignment> getValues(ValueRange range) {
-		return getPossibleValues();
+		return getValues();
 	}
 
 	// ===================================

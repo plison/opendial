@@ -29,7 +29,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.nodes.UtilityNode;
 import opendial.datastructs.Assignment;
-import opendial.state.anchoring.AnchoredRule;
+import opendial.state.AnchoredRule;
 import opendial.state.distribs.RuleUtilDistribution;
 
 /**

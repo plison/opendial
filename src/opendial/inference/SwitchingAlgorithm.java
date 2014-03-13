@@ -127,7 +127,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public BNetwork reduce(ReductionQuery query) throws DialException {
 		
 		// if the current network can be returned as such, do it
-		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds()) && query.getEvidence().isEmpty()) {	
+		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds())) {	
 			BNetwork subnetwork = query.getNetwork();
 			return subnetwork;
 		}
@@ -142,6 +142,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 			}
 			return subnetwork;
 		}
+		
 		
 		// if the network can be divided into cliques, extract the cliques
 		// and do a separate reduction for each

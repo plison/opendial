@@ -35,7 +35,7 @@ package opendial.bn.values;
  public final class BooleanVal implements Value {
 	
 	 // the boolean
-	boolean b;
+	final boolean b;
 	
 	/**
 	 * Creates the boolean value

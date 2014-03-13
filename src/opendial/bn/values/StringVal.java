@@ -39,7 +39,8 @@ public final class StringVal implements Value {
 	public static Logger log = new Logger("StringVal", Logger.Level.DEBUG);
 
 	// the string
-	String str;
+	final String str;
+	Template template;
 	
 	/**
 	 * Creates a new string value
@@ -47,7 +48,7 @@ public final class StringVal implements Value {
 	 * 
 	 * @param str the string
 	 */
-	protected StringVal(String str) { 
+	public StringVal(String str) { 
 		this.str = str.trim(); 
 	//	StringUtils.checkForm(str); 
 	};
@@ -62,6 +63,7 @@ public final class StringVal implements Value {
 	public int hashCode() { return str.hashCode(); }
 	
 	
+	
 	/**
 	 * Returns true if the strings are equals, false otherwise
 	 *
@@ -71,14 +73,9 @@ public final class StringVal implements Value {
 	@Override
 	public boolean equals (Object o) {
 		if (o instanceof StringVal) {
-			if (((StringVal)o).getString().equalsIgnoreCase(getString())) {
+			StringVal stringval = (StringVal)o;
+			if (stringval.str.equalsIgnoreCase(str)) {
 				return true;
-			}
-			else if (((StringVal)o).getString().contains("*")) {
-				return new Template(((StringVal)o).getString()).match(str, true).isMatching();
-			}
-			else if (str.contains("*")) {
-				return new Template(str).match(((StringVal)o).getString(), true).isMatching();
 			}
 		}
 		return false;
@@ -116,7 +113,7 @@ public final class StringVal implements Value {
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof StringVal) {
-			return str.compareTo(((StringVal)o).getString());
+			return str.compareTo(((StringVal)o).str);
 		}
 		else {
 			return hashCode() - o.hashCode();
@@ -133,7 +130,11 @@ public final class StringVal implements Value {
 	@Override
 	public boolean contains(Value subvalue) {
 		if (subvalue instanceof StringVal) {
-			return (new Template(((StringVal)subvalue).getString()).match(str,false)).isMatching();
+			StringVal stringval = (StringVal)subvalue;
+			if (stringval.template == null) {
+				stringval.template = new Template(stringval.str);
+			}
+			return stringval.template.match(str,false).isMatching();
 		}
 		return false;
 	}

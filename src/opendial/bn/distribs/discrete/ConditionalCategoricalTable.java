@@ -270,19 +270,6 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	}
 
 
-	/**
-	 * Returns whether the distribution has a well-defined probability for the
-	 * given assignment (assuming no conditional variables)
-	 * 
-	 * @param head the head assignment
-	 * @return true if the distribution defines a probability for the value, and
-	 *         false otherwise
-	 */
-	public boolean hasProb(Assignment head) {
-		return (table.containsKey(new Assignment()) && table.get(new Assignment()).hasProb(head));
-	}
-
-
 
 	/**
 	 * Returns a flat table mapping complete variable assignments (for both the

@@ -43,6 +43,8 @@ public class VoidCondition implements Condition {
 	// logger
 	static Logger log = new Logger("VoidCondition", Logger.Level.NORMAL);
 
+	static VoidCondition instance;
+	
 	/**
 	 * Return an empty set 
 	 * 

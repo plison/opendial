@@ -36,7 +36,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -338,7 +337,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	/**
 	 * Displays the probability distribution(s) for the selected variables.
 	 * 
-	 * @param queryVars the variable(s) to display
+	 * @param queryVar the variable to display
 	 */
 	public void displayDistrib(String queryVar) {
 		if (!shownDistribs.containsKey(queryVar)) {

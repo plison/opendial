@@ -318,6 +318,7 @@ public class MarginalEmpiricalDistribution implements ProbDistribution {
 	}
 
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof MarginalEmpiricalDistribution 
 				&& ((MarginalEmpiricalDistribution)o).getFullDistrib().equals(empirical)
