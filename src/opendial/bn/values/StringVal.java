@@ -40,6 +40,7 @@ public final class StringVal implements Value {
 
 	// the string
 	String str;
+	Template template;
 	
 	/**
 	 * Creates a new string value
@@ -62,6 +63,7 @@ public final class StringVal implements Value {
 	public int hashCode() { return str.hashCode(); }
 	
 	
+	
 	/**
 	 * Returns true if the strings are equals, false otherwise
 	 *
@@ -75,10 +77,17 @@ public final class StringVal implements Value {
 				return true;
 			}
 			else if (((StringVal)o).getString().contains("*")) {
-				return new Template(((StringVal)o).getString()).match(str, true).isMatching();
+				StringVal stringval = (StringVal)o;
+				if (stringval.template == null) {
+					stringval.template = new Template(stringval.str);
+				}
+				return stringval.template.match(str, true).isMatching();
 			}
 			else if (str.contains("*")) {
-				return new Template(str).match(((StringVal)o).getString(), true).isMatching();
+				if (template == null) {
+					template = new Template(str);
+				}
+				return template.match(((StringVal)o).getString(), true).isMatching();
 			}
 		}
 		return false;
@@ -133,7 +142,11 @@ public final class StringVal implements Value {
 	@Override
 	public boolean contains(Value subvalue) {
 		if (subvalue instanceof StringVal) {
-			return (new Template(((StringVal)subvalue).getString()).match(str,false)).isMatching();
+			StringVal stringval = (StringVal)subvalue;
+			if (stringval.template == null) {
+				stringval.template = new Template(stringval.str);
+			}
+			return stringval.template.match(str,false).isMatching();
 		}
 		return false;
 	}

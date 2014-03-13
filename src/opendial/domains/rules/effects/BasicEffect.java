@@ -93,6 +93,9 @@ public class BasicEffect {
 	 * @return the grounded effect
 	 */
 	public BasicEffect ground(Assignment grounding) {
+		if (!variableLabel.isUnderspecified() && !variableValue.isUnderspecified()) {
+			return this;
+		}
 		Template newT = variableLabel.fillSlots(grounding);
 		Template newV = variableValue.fillSlots(grounding);
 		return new BasicEffect(newT, newV, type);

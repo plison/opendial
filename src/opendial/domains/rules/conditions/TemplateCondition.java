@@ -27,32 +27,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.bn.values.SetVal;
+import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
+import opendial.datastructs.Template.MatchResult;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 
 /**
  * Basic condition between a variable and a value
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-02-04 09:51:48 #$
  *
  */
-public class BasicCondition implements Condition {
+public class TemplateCondition implements Condition {
 
 	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
 
-	// possible relations used in a basic condition
-	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
-		GREATER_THAN, LOWER_THAN}
-
 	// variable label (can include slots to fill)
-	String variable;
+	Template variable;
 
 	// expected variable value (can include slots to fill)
-	Value expectedValue;
+	Template expectedValue;
 
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
@@ -71,7 +72,7 @@ public class BasicCondition implements Condition {
 	 * @param value the value
 	 * @param relation the relation to hold
 	 */
-	public BasicCondition(String variable, Value value, Relation relation) {
+	public TemplateCondition(Template variable, Template value, Relation relation) {
 		this.variable = variable;
 		this.expectedValue = value;
 		this.relation = relation;
@@ -98,7 +99,7 @@ public class BasicCondition implements Condition {
 	 * 
 	 * @return the variable label
 	 */
-	public String getVariable() {
+	public Template getVariable() {
 		return variable;
 	}
 
@@ -108,7 +109,7 @@ public class BasicCondition implements Condition {
 	 * 
 	 * @return the expected variable value
 	 */
-	public Value getValue() {
+	public Template getValue() {
 		return expectedValue;
 	}
 
@@ -123,7 +124,7 @@ public class BasicCondition implements Condition {
 	@Override
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVariables = new HashSet<Template>();
-		inputVariables.add(new Template(variable));
+		inputVariables.add(variable);
 		return inputVariables;
 	}
 
@@ -142,15 +143,24 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-	
-		Value actualValue = input.getValue(variable);
+		
+		if (!input.containsVars(variable.getSlots())
+				|| !input.containsVars(expectedValue.getSlots())) {
+			return false;
+		}
+
+		String filledVar = variable.fillSlots(input).getRawString();
+		Value filledValue = ValueFactory.create(expectedValue.fillSlots(input).getRawString());
+
+
+		Value actualValue = input.getValue(filledVar);
 		switch (relation) {	
-		case EQUAL: return actualValue.equals(expectedValue);
-		case UNEQUAL: return !actualValue.equals(expectedValue); 
-		case GREATER_THAN: return (actualValue.compareTo(expectedValue) > 0); 
-		case LOWER_THAN: return (actualValue.compareTo(expectedValue) < 0);
-		case CONTAINS: return actualValue.contains(expectedValue); 
-		case NOT_CONTAINS: return !actualValue.contains(expectedValue); 
+		case EQUAL: return actualValue.equals(filledValue);
+		case UNEQUAL: return !actualValue.equals(filledValue); 
+		case GREATER_THAN: return (actualValue.compareTo(filledValue) > 0); 
+		case LOWER_THAN: return (actualValue.compareTo(filledValue) < 0);
+		case CONTAINS: return actualValue.contains(filledValue); 
+		case NOT_CONTAINS: return !actualValue.contains(filledValue); 
 		}
 		return false;
 	}
@@ -164,7 +174,51 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public ValueRange getGroundings(Assignment input) {	
-		return new ValueRange();
+
+		ValueRange groundings = new ValueRange();
+
+		if (variable.fillSlots(input).isUnderspecified()) {
+			for (String inputVar : input.getVariables()) {
+				MatchResult m = variable.match(inputVar, false);
+				if (m.isMatching()) {
+					groundings.addAssign(m.getFilledSlots());
+					Assignment newInput = new Assignment(input, m.getFilledSlots());
+					groundings.addRange(getGroundings(newInput));
+				}
+			}
+			return groundings;
+		}
+
+		Template expectedValue2 = expectedValue.fillSlots(input);
+		if (expectedValue2.isUnderspecified()) {
+
+				String filledVar = variable.fillSlots(input).getRawString();
+				Value actualValue = input.getValue(filledVar);
+
+				if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
+					MatchResult m = expectedValue2.match(actualValue.toString(), true);
+					if (m.isMatching()) {
+						Assignment possGrounding = m.getFilledSlots().removeValues
+								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+						groundings.addAssign(possGrounding);
+					}
+				}
+				else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
+					for (Value subval : ((SetVal)actualValue).getSet()) {
+						MatchResult m2 = expectedValue2.match(subval.toString(), true);
+						Assignment possGrounding = m2.getFilledSlots().removeValues
+								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+						groundings.addAssign(possGrounding);
+					}
+				}
+				else if (relation == Relation.CONTAINS && actualValue instanceof StringVal) {
+					MatchResult m2 = expectedValue2.match(actualValue.toString(), false);
+					Assignment possGrounding = m2.getFilledSlots().removeValues
+							(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+					groundings.addAssign(possGrounding);
+				}
+		}
+		return groundings;
 	}
 
 
@@ -211,10 +265,10 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		if (o instanceof BasicCondition) {
-			return (((BasicCondition)o).getVariable().equals(variable) && 
-					((BasicCondition)o).getValue().equals(expectedValue) && 
-					relation == ((BasicCondition)o).getRelation());
+		if (o instanceof TemplateCondition) {
+			return (((TemplateCondition)o).getVariable().equals(variable) && 
+					((TemplateCondition)o).getValue().equals(expectedValue) && 
+					relation == ((TemplateCondition)o).getRelation());
 		}
 		return false;
 	}

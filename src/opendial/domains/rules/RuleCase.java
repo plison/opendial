@@ -58,7 +58,7 @@ public class RuleCase {
 	Condition condition;
 	
 	// the list of alternative effects, together with their probability/utility
-	Map<Effect,Parameter> effects;
+	protected Map<Effect,Parameter> effects;
 	
 	
 	// ===================================

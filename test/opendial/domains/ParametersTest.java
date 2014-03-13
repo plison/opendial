@@ -41,7 +41,6 @@ import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
@@ -53,6 +52,7 @@ import opendial.inference.queries.UtilQuery;
 import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
+import opendial.state.anchoring.Output;
 
 import org.junit.Test;
 
@@ -155,7 +155,7 @@ public class ParametersTest {
 		system.startSystem();
 		
 		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0).getRules());
-		RuleCase outputs = rules.get(1).getMatchingCase(new Assignment("u_u", "no no"));
+		Output outputs = rules.get(1).getOutput(new Assignment("u_u", "no no"));
 		Effect o = new Effect();
 		o.addSubEffect(new BasicEffect(new Template("a_u"), new Template("Disapproval"), EffectType.SET));
 		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
@@ -183,7 +183,7 @@ public class ParametersTest {
 		system.startSystem();
 	
 		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1).getRules());
-		RuleCase outputs = rules.get(0).getMatchingCase(new Assignment("u_u", "my name is"));
+		Output outputs = rules.get(0).getOutput(new Assignment("u_u", "my name is"));
 		Effect o = new Effect();
 		o.addSubEffect(new BasicEffect(new Template("u_u^p"), new Template("Pierre"), EffectType.SET));		
 		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
@@ -221,7 +221,7 @@ public class ParametersTest {
 		system.startSystem();
 
 		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0).getRules());
-		RuleCase outputs = rules.get(0).getMatchingCase(new Assignment("u_u", "brilliant"));
+		Output outputs = rules.get(0).getOutput(new Assignment("u_u", "brilliant"));
 		Effect o = new Effect();
 		o.addSubEffect(new BasicEffect(new Template("a_u"), new Template("Approval"), EffectType.SET));
 		
