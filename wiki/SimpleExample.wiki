@@ -394,7 +394,7 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ^[2]^ Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
 
-^[3]^ See the section [DialogueDomains#String_matching String matching] for more details on the string matching functionalities implemented in !OpenDial.
+^[3]^ See the section [Advanced_modelling#String_matching String matching] for more details on the string matching functionalities implemented in !OpenDial.
 
 ^[4]^ See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 78-79 for details.
 
