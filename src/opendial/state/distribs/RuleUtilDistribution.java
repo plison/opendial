@@ -25,16 +25,17 @@ package opendial.state.distribs;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.utility.UtilityDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.AnchoredRule;
-import opendial.state.anchoring.Output;
+import opendial.state.AnchoredRule;
 
 
 /**
@@ -191,7 +192,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 
 			double totalUtil = 0;
 			Assignment fullInput = new Assignment(ruleInput, actions);
-			Output output = rule.getRule().getOutput(fullInput);	
+			RuleOutput output = rule.getRule().getOutput(fullInput);	
 
 			for (Effect effectOutput : output.getEffects()) {
 				Condition condition = effectOutput.convertToCondition();

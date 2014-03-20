@@ -13,18 +13,13 @@
 			<value prob="0.1">Want(C)</value>
 		</variable>
 
-		<variable id="a_u">
-			<value>None</value>
+		<variable id="start">
+			<value>true</value>
 		</variable>
-
-		<variable id="a_u2">
-			<value>None</value>
-		</variable>
-
 
 	</initialstate>
 
-	<model type="prediction" trigger="a_u">
+	<model type="prediction" trigger="start,a_u">
 		<rule id="predictrule1">
 			<case>
 				<condition>
@@ -41,7 +36,7 @@
 	</model>
 
 
-	<model type="prediction" trigger="a_u2">
+	<model type="prediction" trigger="start, a_u2">
 		<rule id="predictrule2">
 			<case>
 				<condition>
@@ -81,7 +76,7 @@
 	</model>
 
 
-	<model type="decision" trigger="a_u">
+	<model type="decision" trigger="start,a_u">
 
 		<rule id="decide1">
 			<case>

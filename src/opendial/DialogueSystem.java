@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -22,10 +22,11 @@
 // =================================================================                                                                   
 
 package opendial;
- 
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,7 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.incremental.IncrementalUnit;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
@@ -48,9 +50,9 @@ import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
-   
+
 import org.apache.commons.collections15.ListUtils;
-  
+
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
  *  <li> the current dialogue state
@@ -101,7 +103,7 @@ public class DialogueSystem {
 	public DialogueSystem() throws DialException {
 		settings = new Settings();
 		curState = new DialogueState();
-		
+
 		// inserting standard modules
 		modules = new ArrayList<Module>();
 		modules.add(new GUIFrame(this));
@@ -120,8 +122,8 @@ public class DialogueSystem {
 		this();
 		changeDomain(domain);
 	}
-	
-	
+
+
 
 	/**
 	 * Starts the dialogue system and its modules.
@@ -131,7 +133,7 @@ public class DialogueSystem {
 		for (Module module :new ArrayList<Module>(modules)) {
 			try {
 				if (!module.isRunning()) {
-				module.start();
+					module.start();
 				}
 				else {
 					module.pause(false);
@@ -165,7 +167,7 @@ public class DialogueSystem {
 		}
 	}
 
-  
+
 	/**
 	 * Attaches the module to the dialogue system.
 	 * 
@@ -188,8 +190,8 @@ public class DialogueSystem {
 			}
 		}
 	}
-	
-	
+
+
 
 	/**
 	 * Attaches the module to the dialogue system.
@@ -202,16 +204,16 @@ public class DialogueSystem {
 			attachModule(constructor.newInstance(this));
 			recordComment("Module " + module.getSimpleName() + " successfully attached");
 		} 
-		 catch (InvocationTargetException e) {
-			 log.warning("cannot attach module: " + e.getTargetException());
-			 recordComment("cannot attach module: " + e.getTargetException());
-			}
+		catch (InvocationTargetException e) {
+			log.warning("cannot attach module: " + e.getTargetException());
+			recordComment("cannot attach module: " + e.getTargetException());
+		}
 		catch (Exception e) {
 			log.warning("cannot attach module of class " + module.getCanonicalName() + ": " + e);
 		}
 	}
 
- 
+
 	/**
 	 * Detaches the module of the dialogue system.  If the module is
 	 * not included in the system, does nothing.
@@ -225,7 +227,7 @@ public class DialogueSystem {
 		}
 	}
 
-  
+
 
 	/**
 	 * Pauses or resumes the dialogue system.
@@ -234,16 +236,15 @@ public class DialogueSystem {
 	 */
 	public void pause(boolean toPause) {
 		paused = toPause;
-		recordComment((toPause)? "system paused" : "system resumed");
 
 		for (Module module : modules) {
 			module.pause(toPause);
 		}
 		if (!toPause && !curState.getNewVariables().isEmpty()) {
-			 synchronized (curState) {
-					update();
-				}
+			synchronized (curState) {
+				update();
 			}
+		}
 	}
 
 
@@ -260,7 +261,7 @@ public class DialogueSystem {
 			getModule(DialogueRecorder.class).addComment(comment);
 		}
 	}
-	
+
 
 	/**
 	 * Changes the settings of the system
@@ -268,10 +269,10 @@ public class DialogueSystem {
 	 * @param settings the new settings
 	 */
 	public void changeSettings(Settings settings) {
-		
+
 		List<Class<Module>> modsToDetach = ListUtils.subtract(this.settings.modules, settings.modules);
 		List<Class<Module>> modsToAttach = ListUtils.subtract(settings.modules, this.settings.modules);
-		
+
 		for (Class<Module> toDetach : modsToDetach) {
 			detachModule(toDetach);
 		}
@@ -283,7 +284,7 @@ public class DialogueSystem {
 		}	
 	}
 
-	
+
 	// ===================================
 	//  STATE UPDATE
 	// ===================================
@@ -293,18 +294,61 @@ public class DialogueSystem {
 	 * Adds the content (expressed as a categorical table over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
-	 * @param table the categorical table to add
+	 * @param distrib the categorical table to add
 	 * @throws DialException if the state could not be updated.
 	 */
-	public void addContent(CategoricalTable table) throws DialException {
+	public void addContent(IndependentProbDistribution distrib) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
-				curState.addToState(table);
+				curState.addToState(distrib);
 				update();
 			}
 		}
 		else {
-			log.info("system is currently paused -- ignoring content " + table );
+			log.info("system is currently paused -- ignoring content " + distrib);
+		}
+	}
+	
+	
+	/**
+	 * Adds the incremental unit to the current dialogue state, 
+	 * and subsequently updates the dialogue state.
+	 * 
+	 * @param unit the incremental unit to add
+	 * @throws DialException if the state could not be updated.
+	 */
+	public void addContent(IncrementalUnit unit) throws DialException {
+		if (!paused) {
+			synchronized (curState) {
+				curState.addToState(unit);
+				update();
+			}
+		}
+		else {
+			log.info("system is currently paused -- ignoring content " + unit);
+		}
+	}
+	
+
+	/**
+	 * Sets an incremental variable as being committed
+	 * 
+	 * @param incrementalVariable the label for the incremental variable
+	 * @param commit whether the variable is committed or not
+	 */
+	public void setAsCommitted(String incrementalVariable, boolean commit) {
+		if (!paused) {
+			synchronized (curState) {
+				curState.setAsCommitted(incrementalVariable, commit);
+				curState.reduce();
+				for (Module module : modules) {
+					module.trigger(curState, Arrays.asList(incrementalVariable));
+				}
+				update();
+			}
+		}
+		else {
+			log.info("system is currently paused -- ignoring committment to " + incrementalVariable);
 		}
 	}
 
@@ -339,7 +383,6 @@ public class DialogueSystem {
 		}
 	}
 
-	
 
 	/**
 	 * Performs an update loop on the current dialogue state, by triggering 
@@ -351,18 +394,17 @@ public class DialogueSystem {
 		while (!curState.getNewVariables().isEmpty()) {
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
-			
+
 			for (Model model : domain.getModels()) {
 				model.trigger(curState, toProcess);
 			}
-			
+
 			for (Module module : modules) {
 				module.trigger(curState, toProcess);
 			}
 		}
 	}
-	
-	
+
 
 
 	// ===================================
@@ -378,7 +420,7 @@ public class DialogueSystem {
 	public DialogueState getState() {
 		return curState;
 	}
-	
+
 	/**
 	 * Returns the probability distribution associated with the variables in the
 	 * current dialogue state.
@@ -389,7 +431,7 @@ public class DialogueSystem {
 	public IndependentProbDistribution getContent(String... variables) {
 		return curState.queryProb(variables);
 	}
-	
+
 	/**
 	 * Returns the probability distribution associated with the variables in the
 	 * current dialogue state.
@@ -485,7 +527,7 @@ public class DialogueSystem {
 			String settingsFile = System.getProperty("settings");
 			String dialogueFile = System.getProperty("dialogue");
 			String simulatorFile = System.getProperty("simulator");
-			
+
 			if (domainFile != null) {
 				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
 				log.info("Domain from " + domainFile + " successfully extracted");
@@ -512,6 +554,7 @@ public class DialogueSystem {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
+
 
 
 

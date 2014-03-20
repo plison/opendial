@@ -21,15 +21,15 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state.anchoring;
+package opendial.domains.rules;
 
 
 import java.util.HashMap;
 import java.util.Map;
+
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.RuleCase;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
@@ -42,9 +42,9 @@ import opendial.domains.rules.parameters.Parameter;
  * case for every possible groundings.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-13 21:38:32 #$
  */
-public class Output extends RuleCase {
+public class RuleOutput extends RuleCase {
 
 	
 	// the rule type
@@ -55,7 +55,7 @@ public class Output extends RuleCase {
 	 * 
 	 * @param type the rule type
 	 */
-	public Output(RuleType type) {
+	public RuleOutput(RuleType type) {
 		super();
 		this.type = type;
 	}

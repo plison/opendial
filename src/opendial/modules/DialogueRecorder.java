@@ -104,6 +104,9 @@ public class DialogueRecorder implements Module {
 					+ rootNode.getNodeName() + " or first value is null");
 			return;
 		}
+		if (!state.isCommitted()) {
+			return;
+		}
 
 		try {
 			if (updatedVars.contains(settings.userInput)) {

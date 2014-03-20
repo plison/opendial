@@ -149,10 +149,11 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	@Override
 	public Assignment sample(Assignment condition) throws DialException {
 
-		Assignment trimmed = condition.getTrimmed(conditionalVars);
+		Assignment trimmed = (conditionalVars.containsAll(condition.getVariables()))?
+				condition : condition.getTrimmed(conditionalVars);
 		
 		if (table.containsKey(trimmed)) {
-			return table.get(trimmed).sample(new Assignment());
+			return table.get(trimmed).sample();
 		}
 
 		log.debug("could not find the corresponding condition for " + condition + 
@@ -258,7 +259,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	public Set<Assignment> getValues(ValueRange range) {
 		Set<Assignment> headRows = new HashSet<Assignment>();
 		for (Assignment condition : table.keySet()) {
-			headRows.addAll(table.get(condition).getPossibleValues());
+			headRows.addAll(table.get(condition).getValues());
 		}
 		return headRows;
 	}

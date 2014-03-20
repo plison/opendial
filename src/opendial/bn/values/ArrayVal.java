@@ -36,14 +36,14 @@ import opendial.utils.StringUtils;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class ArrayVal implements Value {
+public final class ArrayVal implements Value {
 
 	// logger
 	public static Logger log = new Logger("DoubleVectorVal",
 			Logger.Level.DEBUG);
 	
 	// the array of doubles
-	Double[] array;
+	final Double[] array;
 	
 	/**
 	 * Creates a new array of doubles
@@ -141,7 +141,7 @@ public class ArrayVal implements Value {
 	 */
 	@Override
 	public int hashCode() {
-		return 2* getVector().hashCode();
+		return 2* array.hashCode();
 	}
 	
 	

@@ -61,7 +61,7 @@ public class PredictionTest {
 
 		system.startSystem();
 		system.addContent(new Assignment("a_u", "None"));
-		assertEquals(0, system.getState().getNodeIds().size());
+		assertEquals(1, system.getState().getNodeIds().size());
 
 		system.addContent(new Assignment("a_u", "bloblo"));
 

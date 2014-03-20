@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -513,9 +512,10 @@ public class Assignment {
 	public Assignment removePrimes() {
 		Assignment a = new Assignment();
 		
-		for (String var : new HashSet<String>(map.keySet())) {
+		for (String var : map.keySet()) {
 			if (!map.containsKey(var+"'")) {
-				a.addPair(var.replace("'", ""), map.get(var));
+				String newVar = (var.indexOf('\'') >0)? var.replace("'", "") : var;
+				a.addPair(newVar, map.get(var));
 			}
 		}
 		
@@ -615,7 +615,7 @@ public class Assignment {
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
 		Assignment a = new Assignment();
-		for (String var : new ArrayList<String>(variables)) {
+		for (String var : variables) {
 			if (map.containsKey(var)) {
 				a.addPair(var, map.get(var));
 			}
@@ -920,7 +920,7 @@ public class Assignment {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Assignment) {
-			return map.equals(((Assignment)o).getPairs());
+			return map.equals(((Assignment)o).map);
 		}
 		return false;
 	}

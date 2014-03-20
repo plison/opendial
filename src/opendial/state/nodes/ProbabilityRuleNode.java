@@ -31,7 +31,7 @@ import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.AnchoredRule;
+import opendial.state.AnchoredRule;
 import opendial.state.distribs.RuleDistribution;
 
 
@@ -101,6 +101,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 	public AnchoredRule getAnchor() {
 		return rule;
 	}
+
 
 
 

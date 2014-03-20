@@ -28,6 +28,7 @@ import java.awt.Container;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.StringReader;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
@@ -92,7 +93,14 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	// input field
 	JTextField inputField;
 	JTextPane lines;
-		
+	
+	// last updated variable in the chat
+	String lastUpdatedVariable = "";
+	
+	// negative offset for the next update of "lastUpdatedVariable"
+	// (used to display incremental inputs)
+	int negativeOffset = 0;
+			
 	DialogueSystem system;
 	
 	int nBestView = 20;
@@ -359,8 +367,15 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	private void showVariable(CategoricalTable distrib) {
 		distrib = (distrib.getBest().isDefault())? distrib.getNBest(nBestView+1) : distrib.getNBest(nBestView);
 		String text = getHtmlRendering(distrib);
+		String variable = distrib.getHeadVariables().iterator().next();
 		try {
-	    kit.insertHTML(doc, doc.getLength(),text, 0, 0, null);
+			if (variable.equals(lastUpdatedVariable) && negativeOffset > 0) {
+				doc.remove(doc.getLength() - negativeOffset, negativeOffset);
+			}
+			int initLength = doc.getLength();
+		    kit.read(new StringReader(text), doc, doc.getLength());
+		    lastUpdatedVariable = variable;
+		    negativeOffset = (system.getState().isCommitted())? 0 : doc.getLength() - initLength;
 		}
 		catch (Exception e) {
 			log.warning("text area exception: " + e);
