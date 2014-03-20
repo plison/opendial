@@ -38,7 +38,6 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.Output;
 
 
 /**
@@ -63,7 +62,7 @@ public class Rule {
 
 	RuleType ruleType;
 	
-	Map<Assignment,Output> cache;
+	Map<Assignment,RuleOutput> cache;
 
 	// ===================================
 	//  RULE CONSTRUCTION
@@ -81,7 +80,7 @@ public class Rule {
 		this.id = id;
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();	
-		cache = new HashMap<Assignment,Output>();
+		cache = new HashMap<Assignment,RuleOutput>();
 	}
 
 
@@ -141,11 +140,11 @@ public class Rule {
 	 * @param input the input assignment
 	 * @return the matched rule case.
 	 */
-	public Output getOutput (Assignment input) {
+	public RuleOutput getOutput (Assignment input) {
 		if (cache.containsKey(input)) {
 			return cache.get(input);
 		}
-		Output output = new Output(ruleType);
+		RuleOutput output = new RuleOutput(ruleType);
 		for (Assignment grounding : getGroundings(input)) {
 			Assignment fullInput = new Assignment(input, grounding);
 			RuleCase match = getMatchingCase(fullInput);

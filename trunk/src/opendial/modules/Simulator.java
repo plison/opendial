@@ -80,13 +80,11 @@ public class Simulator implements Module {
 	 * @throws DialException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system, Domain domain) throws DialException {
-
 		this.system = system;
 		this.domain = domain;
 		simulatorState = domain.getInitialState().copy();
 		simulatorState.setParameters(domain.getParameters());
 		this.system.changeSettings(domain.getSettings());
-
 	}
 
 
@@ -183,7 +181,7 @@ public class Simulator implements Module {
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
 		simulatorState.addToState(systemAction);
-
+	
 		while (!simulatorState.getNewVariables().isEmpty()) {
 
 			Set<String> toProcess = simulatorState.getNewVariables();

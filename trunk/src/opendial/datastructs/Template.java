@@ -211,11 +211,16 @@ public class Template {
 	 * Returns true if the provided variables cover all of the slots in the 
 	 * template. Otherwise, returns false.
 	 * 
-	 * @param variables the variables
+	 * @param input the input
 	 * @return true if all slots can be filled, and false otherwise.
 	 */
-	public boolean isFilledBy(Collection<String> variables) {
-		return variables.containsAll(this.slots.keySet());
+	public boolean isFilledBy(Assignment input) {
+		for (String slot : slots.keySet()) {
+			if (!input.containsVar(slot) || input.getValue(slot).equals(ValueFactory.none())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 

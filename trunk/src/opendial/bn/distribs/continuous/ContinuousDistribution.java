@@ -285,7 +285,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 */
 	@Override
 	public Set<Assignment> getValues(ValueRange range) {
-		return getPossibleValues();
+		return getValues();
 	}
 	
 	
@@ -295,8 +295,8 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @return the set of discretised values for the variable
 	 */
 	@Override
-	public Set<Assignment> getPossibleValues() {
-		return toDiscrete().getPossibleValues();
+	public Set<Assignment> getValues() {
+		return toDiscrete().getValues();
 	}
 	
 	// ===================================

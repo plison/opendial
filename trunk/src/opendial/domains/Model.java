@@ -59,7 +59,7 @@ public class Model {
 
 	// collection of rules for the model
 	Collection<Rule> rules;
-	
+		
 
 	// ===================================
 	//  MODEL CONSTRUCTION
@@ -159,7 +159,7 @@ public class Model {
 	 * @param updatedVars the list of updated variables
 	 */
 	public void trigger(DialogueState state, Set<String> updatedVars) {
-		if (isTriggered(updatedVars)) {
+		if (isTriggered(state, updatedVars)) {
 			for (Rule r : rules) {
 				try {
 					state.applyRule(r); 
@@ -173,6 +173,29 @@ public class Model {
 
 	
 	
+	/**
+	 * Returns true if the model is triggered by the updated variables.
+	 * 
+	 * @param updatedVars the updated variables
+	 * @return true if triggered, false otherwise
+	 */
+	public boolean isTriggered(DialogueState state, Collection<String> updatedVars) {
+		
+		if (rules.isEmpty()) {
+			return false;
+		}
+			for (Template trigger : triggers) {
+				for (String updatedVar : updatedVars) {
+					if (trigger.match(updatedVar, true).isMatching()) {
+						return true;
+					}
+				}
+			}
+		return false;
+	}
+	
+	
+
 	/**
 	 * Returns true if the model is triggered by the updated variables.
 	 * 

@@ -48,7 +48,7 @@ public class DoubleFactor {
 
 	// the matrix, mapping each assignment to two double values
 	// (the probability and the utility)
-	Map<Assignment, Double[]> matrix;
+	Map<Assignment, double[]> matrix;
 
 	// ===================================
 	//  CONSTRUCTION METHODS
@@ -60,7 +60,7 @@ public class DoubleFactor {
 	 * Creates a new, empty factor, and a set of head variables
 	 */
 	public DoubleFactor() {
-		matrix = new HashMap<Assignment,Double[]>();
+		matrix = new HashMap<Assignment,double[]>();
 	}
 	
 
@@ -69,7 +69,7 @@ public class DoubleFactor {
 	 * @param existingFactor
 	 */
 	public DoubleFactor(DoubleFactor existingFactor) {
-		matrix = new HashMap<Assignment,Double[]>(existingFactor.getMatrix());
+		matrix = new HashMap<Assignment,double[]>(existingFactor.getMatrix());
 	}
 
 
@@ -81,10 +81,10 @@ public class DoubleFactor {
 	 */
 	public void addProbEntry (Assignment a, double value) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new Double[]{value, matrix.get(a)[1]});
+			matrix.put(a, new double[]{value, matrix.get(a)[1]});
 		}
 		else {
-			matrix.put(a, new Double[]{value, 0.0});
+			matrix.put(a, new double[]{value, 0.0});
 		}
 	}
 
@@ -97,15 +97,15 @@ public class DoubleFactor {
 	 */
 	public void addUtilityEntry (Assignment a, double value) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new Double[]{matrix.get(a)[0], value});
+			matrix.put(a, new double[]{matrix.get(a)[0], value});
 		}
 		else {
-			matrix.put(a, new Double[]{1.0, value});
+			matrix.put(a, new double[]{1.0, value});
 		}
 	}
 
 	public void addEntry(Assignment a, double probValue, double utilityValue) {
-		matrix.put(a, new Double[]{probValue, utilityValue});
+		matrix.put(a, new double[]{probValue, utilityValue});
 	}
 
 
@@ -119,10 +119,10 @@ public class DoubleFactor {
 	public void incrementEntry(Assignment a, double probIncr,
 			double utilIncr) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new Double[]{getProbEntry(a) + probIncr, getUtilityEntry(a) + utilIncr});
+			matrix.put(a, new double[]{getProbEntry(a) + probIncr, getUtilityEntry(a) + utilIncr});
 		}
 		else {
-			matrix.put(a, new Double[]{probIncr, utilIncr});
+			matrix.put(a, new double[]{probIncr, utilIncr});
 		}
 	}
 	
@@ -136,12 +136,12 @@ public class DoubleFactor {
 		Map<Assignment,Double> probMatrix = InferenceUtils.normalise(getProbMatrix());
 		Map<Assignment,Double> utilityMatrix = getUtilityMatrix();
 		
-		matrix = new HashMap<Assignment,Double[]>(probMatrix.size());
+		matrix = new HashMap<Assignment,double[]>(probMatrix.size());
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
 		}
 		for (Assignment a : probMatrix.keySet()) {
-			matrix.put(a, new Double[]{probMatrix.get(a), utilityMatrix.get(a)});
+			matrix.put(a, new double[]{probMatrix.get(a), utilityMatrix.get(a)});
 		}
 	}
 	
@@ -155,17 +155,17 @@ public class DoubleFactor {
 		Map<Assignment,Double> probMatrix = InferenceUtils.normalise(getProbMatrix(), condVars);
 		Map<Assignment,Double> utilityMatrix = getUtilityMatrix();
 		
-		matrix = new HashMap<Assignment,Double[]>(probMatrix.size());
+		matrix = new HashMap<Assignment,double[]>(probMatrix.size());
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
 		}
 		for (Assignment a : probMatrix.keySet()) {
-			matrix.put(a, new Double[]{probMatrix.get(a), utilityMatrix.get(a)});
+			matrix.put(a, new double[]{probMatrix.get(a), utilityMatrix.get(a)});
 		}
 	}
 	
 	public void trim(Collection<String> headVars) {
-		Map<Assignment,Double[]> newMatrix = new HashMap<Assignment,Double[]>(matrix.size());		
+		Map<Assignment,double[]> newMatrix = new HashMap<Assignment,double[]>(matrix.size());		
 		for (Assignment a : matrix.keySet()) {
 			newMatrix.put(a.getTrimmed(headVars), matrix.get(a));
 		}
@@ -237,7 +237,7 @@ public class DoubleFactor {
 	 * 
 	 * @return the matrix
 	 */
-	public Map<Assignment, Double[]> getMatrix() {
+	public Map<Assignment, double[]> getMatrix() {
 		return matrix;
 	}
 

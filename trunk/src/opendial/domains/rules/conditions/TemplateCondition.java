@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -28,7 +28,6 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 import opendial.bn.values.SetVal;
-import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -143,17 +142,26 @@ public class TemplateCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-		
-		if (!input.containsVars(variable.getSlots())
-				|| !input.containsVars(expectedValue.getSlots())) {
+
+		if (!variable.isFilledBy(input) || !expectedValue.isFilledBy(input)) {
 			return false;
 		}
 
 		String filledVar = variable.fillSlots(input).getRawString();
-		Value filledValue = ValueFactory.create(expectedValue.fillSlots(input).getRawString());
-
-
+		Template expectedValue2 = expectedValue.fillSlots(input);
 		Value actualValue = input.getValue(filledVar);
+
+		if (expectedValue2.isUnderspecified()) {
+			switch (relation) {	
+			case EQUAL: return expectedValue2.match(actualValue.toString(), true).isMatching();
+			case UNEQUAL: return !expectedValue2.match(actualValue.toString(), true).isMatching(); 
+			case CONTAINS: return expectedValue2.match(actualValue.toString(), false).isMatching();
+			case NOT_CONTAINS: return !expectedValue2.match(actualValue.toString(), false).isMatching();
+			default: return false;
+			}
+		}
+		
+		Value filledValue = ValueFactory.create(expectedValue2.getRawString());
 		switch (relation) {	
 		case EQUAL: return actualValue.equals(filledValue);
 		case UNEQUAL: return !actualValue.equals(filledValue); 
@@ -177,9 +185,9 @@ public class TemplateCondition implements Condition {
 
 		ValueRange groundings = new ValueRange();
 
-		if (variable.fillSlots(input).isUnderspecified()) {
+		if (variable.isUnderspecified() && variable.fillSlots(input).isUnderspecified()) {
 			for (String inputVar : input.getVariables()) {
-				MatchResult m = variable.match(inputVar, false);
+				MatchResult m = variable.match(inputVar, true);
 				if (m.isMatching()) {
 					groundings.addAssign(m.getFilledSlots());
 					Assignment newInput = new Assignment(input, m.getFilledSlots());
@@ -192,31 +200,38 @@ public class TemplateCondition implements Condition {
 		Template expectedValue2 = expectedValue.fillSlots(input);
 		if (expectedValue2.isUnderspecified()) {
 
-				String filledVar = variable.fillSlots(input).getRawString();
-				Value actualValue = input.getValue(filledVar);
+			String filledVar = variable.fillSlots(input).getRawString();
+			Value actualValue = input.getValue(filledVar);
 
-				if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
-					MatchResult m = expectedValue2.match(actualValue.toString(), true);
-					if (m.isMatching()) {
-						Assignment possGrounding = m.getFilledSlots().removeValues
-								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
-						groundings.addAssign(possGrounding);
-					}
-				}
-				else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
-					for (Value subval : ((SetVal)actualValue).getSet()) {
-						MatchResult m2 = expectedValue2.match(subval.toString(), true);
-						Assignment possGrounding = m2.getFilledSlots().removeValues
-								(ValueFactory.none()).getTrimmedInverse(input.getVariables());
-						groundings.addAssign(possGrounding);
-					}
-				}
-				else if (relation == Relation.CONTAINS && actualValue instanceof StringVal) {
-					MatchResult m2 = expectedValue2.match(actualValue.toString(), false);
-					Assignment possGrounding = m2.getFilledSlots().removeValues
-							(ValueFactory.none()).getTrimmedInverse(input.getVariables());
+			if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
+				MatchResult m = expectedValue2.match(actualValue.toString(), true);
+				if (m.isMatching()) {
+					Assignment possGrounding = m.getFilledSlots();
+					possGrounding.removeAll(input.getVariables());
+					possGrounding.removeValues(ValueFactory.none());
 					groundings.addAssign(possGrounding);
 				}
+			}
+			else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
+				for (Value subval : ((SetVal)actualValue).getSet()) {
+					MatchResult m2 = expectedValue2.match(subval.toString(), true);
+					if (m2.isMatching()) {
+						Assignment possGrounding = m2.getFilledSlots();
+						possGrounding.removeAll(input.getVariables());
+						possGrounding.removeValues(ValueFactory.none());
+						groundings.addAssign(possGrounding);
+					}
+				}
+			}
+			else if (relation == Relation.CONTAINS) {
+				MatchResult m2 = expectedValue2.match(actualValue.toString(), false);
+				if (m2.isMatching()) {
+					Assignment possGrounding = m2.getFilledSlots();
+					possGrounding.removeAll(input.getVariables());
+					possGrounding.removeValues(ValueFactory.none());
+					groundings.addAssign(possGrounding);
+				}
+			}
 		}
 		return groundings;
 	}

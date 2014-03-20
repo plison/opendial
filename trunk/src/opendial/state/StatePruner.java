@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -56,9 +56,9 @@ public class StatePruner {
 	public static Logger log = new Logger("StatePruner", Logger.Level.DEBUG);
 
 	public static double VALUE_PRUNING_THRESHOLD = 0.03;
-			
+
 	public static boolean ENABLE_PRUNING = true;
-	
+
 	/**
 	 * Prunes the state of all the non-necessary nodes.  the operation selects a subset 
 	 * of relevant nodes to keep, prunes the irrelevant ones,
@@ -68,31 +68,37 @@ public class StatePruner {
 	 * @param state the state to prune
 	 */
 	public static void prune(DialogueState state) {
-	
+
 		if (!ENABLE_PRUNING) {
-			 pruneSimplified(state);
-			 return;
+			pruneSimplified(state);
+			return;
 		}
-		
+
 		try {
 			// step 1 : selection of nodes to keep
-			Set<String> nodesToKeep = getNodesToKeep(state);			
+			Set<String> nodesToKeep = getNodesToKeep(state);
+
 			// step 2: reduction
-			ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
-			BNetwork reduced = new SwitchingAlgorithm().reduce(reductionQuery);
-			
-			// step 3: reinsert action and utility nodes (if necessary)
-			reinsertActionAndUtilityNodes(reduced, state);
-			
-			// step 4: remove the primes from the identifiers
-			removePrimes(reduced);
-			
-			// step 5: filter the distribution and remove and empty nodes
-			removeSpuriousNodes(reduced);
-			// step 6: and final reset the state to the reduced form		
-			
-			state.reset(reduced);
-		
+			if (!nodesToKeep.isEmpty()) {
+				ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
+				BNetwork reduced = new SwitchingAlgorithm().reduce(reductionQuery);
+
+				// step 3: reinsert action and utility nodes (if necessary)
+				reinsertActionAndUtilityNodes(reduced, state);
+
+				// step 4: remove the primes from the identifiers
+				removePrimes(reduced);
+
+				// step 5: filter the distribution and remove and empty nodes
+				removeSpuriousNodes(reduced);
+
+				// step 6: and final reset the state to the reduced form		
+				state.reset(reduced);
+			}
+			else {
+				state.reset(new BNetwork());
+			}
+
 		}
 		catch (DialException e) {
 			log.warning("cannot prune state: " + e);
@@ -109,23 +115,26 @@ public class StatePruner {
 	 */
 	private static void pruneSimplified(DialogueState state) {
 
-		Set<String> toKeep = getNodesToKeep(state);
-		Set<String> nodeIds = new HashSet<String>(state.getChanceNodeIds());
-		for (String id : nodeIds) {
-			if (!toKeep.contains(id) && !id.contains("^t")) {
-				state.getNode(id).setId(state.getUniqueId(id)+"^t");
+		for (ChanceNode cn : new HashSet<ChanceNode>(state.getChanceNodes())) {
+			if (state.hasNode(cn.getId()+"'")) {
+				cn.setId(state.getUniqueId(cn.getId()+"-old"));
 			}
 		}
-		for (String id : nodeIds) {
-			if (id.contains("'")) {
-				state.getNode(id).setId(id.replace("'", ""));
+		for (ChanceNode cn : new HashSet<ChanceNode>(state.getChanceNodes())) {
+			if (cn.getId().contains("'")) {
+				if (cn.getInputNodeIds().size() < 3 && cn.getNbValues() == 1 
+						&& cn.getValues().iterator().next().equals(ValueFactory.none())) {
+					state.removeNode(cn.getId());
+				}
+				else {
+					cn.setId(cn.getId().replace("'", ""));
+				}
 			}
 		}
-
 	}
 
 
-	
+
 	/**
 	 * Selects the set of variables to retain in the dialogue state.
 	 * 
@@ -135,32 +144,38 @@ public class StatePruner {
 	public static Set<String> getNodesToKeep(DialogueState state) {
 
 		Set<String> nodesToKeep = new HashSet<String>();
-		Set<String> nodesToRemove = new HashSet<String>();
 
 		for (BNode node : state.getNodes()) {
 
 			if (node instanceof ActionNode || node instanceof UtilityNode  || (node instanceof ChanceNode 
 					&& ((ChanceNode)node).getDistrib() instanceof EquivalenceDistribution)) {
-				nodesToRemove.add(node.getId());
+				continue;
 			}
 
 			// removing the prediction nodes once they have been used
-			else if (node.getId().contains("^p") && 
+			/** 	else if (node.getId().contains("^p") && 
 					node.hasDescendant(state.getEvidence().getVariables())) {
-				nodesToRemove.add(node.getId());
-			} 
+				continue;
+			}  */
 			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o")) {
-				nodesToRemove.add(node.getId());
+				continue;
 			}
-
+			else if (node instanceof ChanceNode && node.getInputNodeIds().size() < 3 && ((ChanceNode)node).getNbValues() == 1 
+					&& node.getValues().iterator().next().equals(ValueFactory.none())) {
+				continue;
+			}
 			// keeping the newest nodes
 			else if (!(state.hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {
 				nodesToKeep.add(node.getId());
 			}
-			else {
-				nodesToRemove.add(node.getId());
+
+			if (node instanceof ChanceNode && !((ChanceNode)node).isCommitted()) {
+				nodesToKeep.addAll(node.getClique());
 			}
 		}
+
+
+
 
 		//	log.debug("keeping : " + nodesToKeep);
 
@@ -175,6 +190,12 @@ public class StatePruner {
 	 * @param reduced the reduced state
 	 */
 	private static void removePrimes(BNetwork reduced) {
+
+		for (ChanceNode cn : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
+			if (reduced.hasChanceNode(cn.getId()+"'")) {
+				cn.setId(reduced.getUniqueId(cn.getId()+"-old"));
+			}
+		}
 
 		for (String nodeId: new HashSet<String>(reduced.getChanceNodeIds())) {
 			if (nodeId.contains("'")) {
@@ -191,7 +212,7 @@ public class StatePruner {
 
 
 
-	
+
 	/**
 	 * Removes all non-necessary nodes from the dialogue state.
 	 * 
@@ -202,21 +223,22 @@ public class StatePruner {
 
 		// looping on every chance node
 		for (ChanceNode node: new HashSet<ChanceNode>(reduced.getChanceNodes())) {
-			
+
 			// if the node only contain a None value, prunes it
 			if (node.getInputNodes().isEmpty() && node.getOutputNodes().isEmpty() 
 					&& node.getDistrib() instanceof CategoricalTable 
 					&& node.getProb(ValueFactory.none())> 0.99) {
-					reduced.removeNode(node.getId());
-					continue;
+				reduced.removeNode(node.getId());
+				continue;
 			}
 			// prune values with a probability below the threshold
 			node.getDistrib().pruneValues(VALUE_PRUNING_THRESHOLD);
-		
+
 			// if the node only contains a single (non-none) value, remove outgoing dependency
 			// edges (as the dependency relation is in this case superfluous)
 			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
-					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty()) {
+					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty() 
+					&& (node.isCommitted())) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				node.setDistrib(new CategoricalTable(onlyAssign));
 				for (BNode outputNode : node.getOutputNodes()) {
@@ -227,8 +249,8 @@ public class StatePruner {
 			} 
 		}
 	}
-	
-	
+
+
 	/**
 	 * Reinserts the action and utility nodes in the reduced dialogue state.
 	 * 
@@ -238,18 +260,22 @@ public class StatePruner {
 	 */
 	private static void reinsertActionAndUtilityNodes(BNetwork reduced, BNetwork original) 
 			throws DialException {
-		
+
 		// action nodes
 		for (ActionNode n : original.getActionNodes()) {
-			reduced.addNode(n.copy());
+			if (!reduced.hasActionNode(n.getId())){
+				reduced.addNode(n.copy());
+			}
 		}
-		
+
 		// utility nodes
 		for (UtilityNode n : original.getUtilityNodes()) {
-			reduced.addNode(n.copy());
-			for (String input : n.getInputNodeIds()) {
-				if (reduced.hasNode(input)) {
-					reduced.getUtilityNode(n.getId()).addInputNode(reduced.getNode(input));
+			if (!reduced.hasUtilityNode(n.getId())){
+				reduced.addNode(n.copy());
+				for (String input : n.getInputNodeIds()) {
+					if (reduced.hasNode(input)) {
+						reduced.getUtilityNode(n.getId()).addInputNode(reduced.getNode(input));
+					}
 				}
 			}
 		}

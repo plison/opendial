@@ -156,6 +156,17 @@ public abstract class BNode implements Comparable<BNode> {
 
 
 	/**
+	 * Removes all input nodes.
+	 */
+	public void removeInputNodes() {
+		for (BNode inputNode: new LinkedList<BNode>(inputNodes.values())) {
+			removeInputNode(inputNode.getId());
+		}
+	}
+
+	
+
+	/**
 	 * Removes a relation between an output node and the current node.  
 	 * 
 	 * @param outputNodeId the identifier for the outgoing node to remove
@@ -583,11 +594,7 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 	}
 
-	
-	public BNetwork getNetwork() {
-		return network;
-	}
-	
+
 	
 	// ===================================
 	//  UTILITIES
@@ -796,6 +803,7 @@ public abstract class BNode implements Comparable<BNode> {
 		}
 		return false;
 	}
+
 
 
 

@@ -6,6 +6,7 @@ opendial.bn.distribs.continuous
 opendial.bn.distribs.continuous.functions
 opendial.bn.distribs.discrete
 opendial.bn.distribs.discrete.functions
+opendial.bn.distribs.incremental
 opendial.bn.distribs.other
 opendial.bn.distribs.utility
 opendial.bn.nodes
@@ -25,7 +26,6 @@ opendial.inference.queries
 opendial.modules
 opendial.readers
 opendial.state
-opendial.state.anchoring
 opendial.state.distribs
 opendial.state.nodes
 opendial.utils

@@ -9,5 +9,5 @@
 	<user>u_u</user>
 	<discretisation>50</discretisation>
 	<recording>last</recording>
-	<timeout>300</timeout>
+	<timeout>250</timeout>
 </settings>

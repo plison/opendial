@@ -95,7 +95,7 @@ public class StepByStepTest {
 		o1.addRow(new Assignment("u_u", "turn left"), 0.32);
 		o1.addRow(new Assignment("u_u", "move left again"), 0.3);
 		system.addContent(o1);	
-		
+
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
 		assertEquals(0.1, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "Move(Left)")), 0.15);
 
@@ -105,8 +105,8 @@ public class StepByStepTest {
 		o1 = new CategoricalTable();
 		o1.addRow(new Assignment("u_u", "and do that again"), 0.0);
 		system.addContent(o1);	
-		
-		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
+
+	//	assertFalse(system.getState().hasActionNode("a_m'"));
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
@@ -114,7 +114,7 @@ public class StepByStepTest {
 		o1 = new CategoricalTable();
 		o1.addRow(new Assignment("u_u", "turn left"), 1.0);
 		system.addContent(o1);	
-		
+
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
 		assertEquals(0.5, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "Move(Left)")), 0.15);
 

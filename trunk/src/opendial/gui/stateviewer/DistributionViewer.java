@@ -85,7 +85,8 @@ public class DistributionViewer extends JDialog {
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
 	 * 
-	 * @param distrib the distribution to show
+	 * @param currentState the current dialogue state
+	 * @param queryVar the variable to display
 	 * @param viewer the state viewer component
 	 */
 	public DistributionViewer(final DialogueState currentState, final String queryVar, final StateViewer viewer) {
@@ -109,7 +110,7 @@ public class DistributionViewer extends JDialog {
 	/**
 	 * Constructs or update the current viewer with the distribution.
 	 * 
-	 * @param distrib the distribution to display
+	 * @param currentState the updated dialogue state
 	 */
 	protected void update(DialogueState currentState) {
 

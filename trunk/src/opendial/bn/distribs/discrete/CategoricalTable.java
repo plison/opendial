@@ -566,7 +566,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 */
 	@Override
 	public Set<Assignment> getValues(ValueRange range) {
-		return getPossibleValues();
+		return getValues();
 	}
 	
 	
@@ -576,7 +576,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @return the table rows
 	 */
 	@Override
-	public Set<Assignment> getPossibleValues() {
+	public Set<Assignment> getValues() {
 		return getRows();
 	}
 
@@ -640,7 +640,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	@Override
 	public String toString() {
 
-		Map<Assignment,Double> sortedTable = InferenceUtils.getNBest(table, table.size());
+		Map<Assignment,Double> sortedTable = InferenceUtils.getNBest(table, Math.max(table.size(), 1));
 
 		String str = "";		
 		for (Entry<Assignment,Double> entry : sortedTable.entrySet()) {

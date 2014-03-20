@@ -35,10 +35,10 @@ import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.Effect;
-import opendial.state.anchoring.AnchoredRule;
-import opendial.state.anchoring.Output;
+import opendial.state.AnchoredRule;
 
 
 /**
@@ -300,8 +300,8 @@ public class RuleDistribution implements DiscreteDistribution {
 	private CategoricalTable getOutputTable(Assignment input) {
 		try {
 			// search for the matching case	
-			Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
-			Output output = arule.getRule().getOutput(ruleInput);
+			Assignment ruleInput = input.removePrimes().getTrimmed(arule.getInputs().getVariables());
+			RuleOutput output = arule.getRule().getOutput(ruleInput);
 			
 			// creating the distribution
 			double totalMass = 	 output.getTotalMass(input);

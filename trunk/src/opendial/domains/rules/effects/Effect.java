@@ -35,9 +35,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.ComplexCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
@@ -223,10 +221,7 @@ public class Effect implements Value {
 	public Condition convertToCondition() {
 		ComplexCondition condition = new ComplexCondition();
 		for (BasicEffect subeffect : getSubEffects()) {
-			Template variable = subeffect.getVariable();
-			Template value = subeffect.getTemplateValue();
-			Relation r = (subeffect.getType() == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
-			condition.addCondition(new TemplateCondition(variable, value, r));
+			condition.addCondition(subeffect.convertToCondition());
 		}
 		return condition;
 	}

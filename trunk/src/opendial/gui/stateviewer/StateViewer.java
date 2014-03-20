@@ -337,7 +337,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	/**
 	 * Displays the probability distribution(s) for the selected variables.
 	 * 
-	 * @param queryVars the variable(s) to display
+	 * @param queryVar the variable to display
 	 */
 	public void displayDistrib(String queryVar) {
 		if (!shownDistribs.containsKey(queryVar)) {

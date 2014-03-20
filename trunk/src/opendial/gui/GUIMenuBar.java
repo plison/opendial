@@ -166,7 +166,9 @@ public class GUIMenuBar extends JMenuBar {
 		freezeItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e) {
-				frame.getSystem().pause(!frame.getSystem().isPaused());
+				boolean toPause = !frame.getSystem().isPaused();
+				frame.getSystem().pause(toPause);
+				frame.getSystem().recordComment((toPause)? "system paused" : "system resumed");
 			}
 		});
 		traceMenu.add(freezeItem);

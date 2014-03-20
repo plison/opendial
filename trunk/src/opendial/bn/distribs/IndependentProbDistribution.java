@@ -82,7 +82,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @return the possible values for the distribution
 	 */
-	public abstract Set<Assignment> getPossibleValues();
+	public abstract Set<Assignment> getValues();
 
 	/**
 	 * Generates a XML node that represents the distribution.

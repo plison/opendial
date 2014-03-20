@@ -77,10 +77,11 @@ public class DemoTest {
 	
 	
 	@Test
-	public void testDemo() throws DialException {
+	public void testDemo() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile2);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
+	//	system.getSettings().recording = Recording.ALL;
 
 		system.startSystem();
 
@@ -94,13 +95,13 @@ public class DemoTest {
 		t = new CategoricalTable();
 	 	t.addRow(new Assignment("u_u", "move forward"), 0.06);
 		system.addContent(t);
-
+		
 		assertFalse(system.getState().hasChanceNode("u_m"));
 		
 		t = new CategoricalTable();
 	 	t.addRow(new Assignment("u_u", "move forward"), 0.45);
 		system.addContent(t);
-		
+	//	Thread.sleep(1000000);
 		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
 		
 		t = new CategoricalTable();
