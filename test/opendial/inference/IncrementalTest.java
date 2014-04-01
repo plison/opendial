@@ -79,7 +79,7 @@ public class IncrementalTest {
 		assertEquals(0.25, table.getProb(new Assignment("u_u", "einen wettbewerbsbedingten preis sturz")), 0.01);
 		
 		Map<Assignment, Integer> samples = new HashMap<Assignment, Integer>();
-		for (int i = 0 ; i < 1000 ; i++) {
+		for (int i = 0 ; i < 2000 ; i++) {
 			Assignment sample = lattice.sample();
 			if (!samples.containsKey(sample)) {
 				samples.put(sample, 0);
@@ -87,7 +87,7 @@ public class IncrementalTest {
 			samples.put(sample, samples.get(sample) + 1);
 		}
 		assertEquals(6, samples.size());
-		assertEquals(250, samples.get(new Assignment("u_u", "einen wettbewerbsbedingten preis sturz")), 100);	
+		assertEquals(500, samples.get(new Assignment("u_u", "einen wettbewerbsbedingten preis sturz")), 200);	
 	}
 	
 	
@@ -129,7 +129,7 @@ public class IncrementalTest {
 
 		
 		Map<Assignment, Integer> samples = new HashMap<Assignment, Integer>();
-		for (int i = 0 ; i < 1000 ; i++) {
+		for (int i = 0 ; i < 2000 ; i++) {
 			Assignment sample = lattice.sample();
 			if (!samples.containsKey(sample)) {
 				samples.put(sample, 0);
@@ -137,7 +137,7 @@ public class IncrementalTest {
 			samples.put(sample, samples.get(sample) + 1);
 		}
 		assertEquals(6, samples.size());
-		assertEquals(250, samples.get(new Assignment("u_u", "einen wettbewerbsbedingten preis sturz")), 100);	
+		assertEquals(500, samples.get(new Assignment("u_u", "einen wettbewerbsbedingten preis sturz")), 200);	
 	}
 	
 	
