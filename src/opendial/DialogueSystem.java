@@ -526,7 +526,7 @@ public class DialogueSystem {
 			String domainFile = System.getProperty("domain");
 			String settingsFile = System.getProperty("settings");
 			String dialogueFile = System.getProperty("dialogue");
-			String simulatorFile = System.getProperty("simulator");
+			String simulator = System.getProperty("simulator");
 
 			if (domainFile != null) {
 				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
@@ -541,13 +541,14 @@ public class DialogueSystem {
 				log.info("Interaction from " + dialogueFile + " successfully extracted");		
 				(new DialogueImporter(system, dialogue)).start();
 			}
-			if (simulatorFile != null) {
-				Simulator simulator = new Simulator(system, XMLDomainReader.extractDomain(simulatorFile));
-				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
-				system.attachModule(simulator);
+			if (simulator != null) {
+				Simulator simulator2 = new Simulator(system, XMLDomainReader.extractDomain(simulator));
+				log.info("Simulator with domain " + simulator + " successfully extracted");		
+				system.attachModule(simulator2);
 			}
-			system.getSettings().fillSettings(System.getProperties());
-			system.changeSettings(system.getSettings());
+			Settings settings = new Settings();
+			settings.fillSettings(System.getProperties());
+			system.changeSettings(settings);
 			system.startSystem();
 		}
 		catch (DialException e) {
