@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.core;
 
 
 import java.util.Collection;
@@ -33,6 +33,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.datastructs.Assignment;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
@@ -48,7 +49,7 @@ import org.w3c.dom.Node;
  * The module can also be used to record Wizard-of-Oz interactions.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class DialogueRecorder implements Module {
 

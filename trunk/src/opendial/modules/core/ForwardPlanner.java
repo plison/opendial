@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.core;
 
 
 import java.util.Collection;
@@ -37,6 +37,7 @@ import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 
@@ -53,7 +54,7 @@ import opendial.state.DialogueState;
  * [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class ForwardPlanner implements Module {
 
@@ -133,7 +134,7 @@ public class ForwardPlanner implements Module {
 	/**
 	 * Planner process, which can be terminated before the end of the horizon
 	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
+	 * @version $Date:: 2014-03-06 10:49:41 #$
 	 */
 	public class PlannerProcess extends AnytimeProcess {
 

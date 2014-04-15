@@ -38,14 +38,16 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.incremental.IncrementalUnit;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.SpeechStream;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
-import opendial.modules.DialogueImporter;
-import opendial.modules.DialogueRecorder;
-import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
-import opendial.modules.Simulator;
+import opendial.modules.core.DialogueImporter;
+import opendial.modules.core.DialogueRecorder;
+import opendial.modules.core.ForwardPlanner;
+import opendial.modules.simulation.Simulator;
+import opendial.modules.speech.SpeechRecogniser;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
@@ -140,7 +142,7 @@ public class DialogueSystem {
 				}
 			}
 			catch (DialException e) {
-				log.warning("could not start module " + module.getClass().getCanonicalName());
+				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
 			}
 		}
@@ -269,7 +271,6 @@ public class DialogueSystem {
 	 * @param settings the new settings
 	 */
 	public void changeSettings(Settings settings) {
-
 		List<Class<Module>> modsToDetach = ListUtils.subtract(this.settings.modules, settings.modules);
 		List<Class<Module>> modsToAttach = ListUtils.subtract(settings.modules, this.settings.modules);
 
@@ -382,6 +383,24 @@ public class DialogueSystem {
 			log.info("system is currently paused -- ignoring content " + newState);
 		}
 	}
+	
+	
+	/**
+	 * Feed the input speech stream to the dialogue system.  Provided that a speech 
+	 * recogniser is present in the system modules, the stream will be processed 
+	 * and its recognition results employed to update the dialogue state.
+	 * 
+	 * @param stream the speech stream
+	 */
+	public void addContent(SpeechStream stream) {
+		for (Module module : modules) {
+			if (module instanceof SpeechRecogniser) {
+				((SpeechRecogniser)module).processInput(stream);
+			}
+		}
+	}
+
+	
 
 
 	/**
@@ -454,7 +473,7 @@ public class DialogueSystem {
 	@SuppressWarnings("unchecked")
 	public <T extends Module> T getModule(Class<T> cls) {
 		for (Module mod : new ArrayList<Module>(modules)) {
-			if (mod.getClass().equals(cls)) {
+			if (cls.isAssignableFrom(mod.getClass())) {
 				return (T)mod;
 			}
 		}
@@ -526,7 +545,7 @@ public class DialogueSystem {
 			String domainFile = System.getProperty("domain");
 			String settingsFile = System.getProperty("settings");
 			String dialogueFile = System.getProperty("dialogue");
-			String simulator = System.getProperty("simulator");
+			String simulatorFile = System.getProperty("simulator");
 
 			if (domainFile != null) {
 				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
@@ -541,21 +560,20 @@ public class DialogueSystem {
 				log.info("Interaction from " + dialogueFile + " successfully extracted");		
 				(new DialogueImporter(system, dialogue)).start();
 			}
-			if (simulator != null) {
-				Simulator simulator2 = new Simulator(system, XMLDomainReader.extractDomain(simulator));
-				log.info("Simulator with domain " + simulator + " successfully extracted");		
-				system.attachModule(simulator2);
+			if (simulatorFile != null) {
+				Simulator simulator = new Simulator(system, XMLDomainReader.extractDomain(simulatorFile));
+				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
+				system.attachModule(simulator);
 			}
-			Settings settings = new Settings();
-			settings.fillSettings(System.getProperties());
-			system.changeSettings(settings);
+			system.getSettings().fillSettings(System.getProperties());
+			system.changeSettings(system.getSettings());
 			system.startSystem();
+			log.info("Dialogue system started!");
 		}
 		catch (DialException e) {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
-
 
 
 

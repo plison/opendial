@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.core;
 
 
 import java.util.Arrays;
@@ -43,6 +43,7 @@ import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
 import opendial.inference.approximate.WeightedSample;
 import opendial.inference.queries.UtilQuery;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
@@ -50,7 +51,7 @@ import opendial.state.DialogueState;
  * actions from Wizard-of-Oz data.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class WizardLearner implements Module {
 

@@ -30,6 +30,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
+import opendial.modules.core.DialogueImporter;
+import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;

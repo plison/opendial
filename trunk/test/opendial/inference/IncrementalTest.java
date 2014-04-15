@@ -25,20 +25,19 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.arch.Settings.Recording;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.incremental.IncrementalUnit;
 import opendial.bn.distribs.incremental.IncrementalDistribution;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
-import opendial.modules.DialogueRecorder;
+import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 
 public class IncrementalTest {

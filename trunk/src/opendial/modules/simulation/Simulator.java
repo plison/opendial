@@ -20,7 +20,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.simulation;
 
 
 import java.util.ArrayList;
@@ -37,6 +37,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
+import opendial.modules.Module;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
@@ -46,7 +47,7 @@ import opendial.utils.StringUtils;
  * and user utterances based on a dialogue domain.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class Simulator implements Module {
 
