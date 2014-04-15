@@ -32,7 +32,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
-import opendial.modules.ForwardPlanner;
+import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
 

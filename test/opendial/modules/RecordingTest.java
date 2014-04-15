@@ -39,6 +39,8 @@ import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.gui.GUIMenuBar;
+import opendial.modules.core.DialogueImporter;
+import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;

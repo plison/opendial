@@ -30,6 +30,8 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.continuous.functions.DensityFunction;
 import opendial.domains.Domain;
+import opendial.modules.core.DialogueRecorder;
+import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 
 import org.junit.Test;

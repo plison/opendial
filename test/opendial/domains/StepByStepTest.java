@@ -22,7 +22,6 @@
 
 package opendial.domains;
 
-
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -34,7 +33,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
-import opendial.modules.ForwardPlanner;
+import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 
 public class StepByStepTest {

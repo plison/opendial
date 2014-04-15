@@ -38,6 +38,7 @@ import javax.swing.JTabbedPane;
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.modules.Module;
+import opendial.modules.speech.SpeechRecogniser;
 import opendial.state.DialogueState;
 
 /**
@@ -160,6 +161,7 @@ public class GUIFrame implements Module {
 		else if (!frame.getTitle().contains(system.getDomain().getName())){
 			frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
 		}
+		chatTab.enableSpeechInput(system.getModule(SpeechRecogniser.class) != null);
 		}
 	}
 	
