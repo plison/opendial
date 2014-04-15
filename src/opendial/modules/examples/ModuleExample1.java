@@ -20,7 +20,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.examples;
 
 
 import java.awt.Color;
@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**

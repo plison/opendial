@@ -54,6 +54,7 @@ import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.gui.audio.SpeechInputPanel;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
@@ -91,6 +92,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
     HTMLDocument doc;
 
 	// input field
+    Container inputContainer;
 	JTextField inputField;
 	JTextPane lines;
 	
@@ -124,7 +126,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		JScrollPane utterancesScrollPane = new JScrollPane(lines);
 
 
-		Container inputContainer = new Container();
+		inputContainer = new Container();
 		inputContainer.setLayout(new BorderLayout());
 
 		inputField = new JTextField(60);		
@@ -159,7 +161,22 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	    lines.setFocusable(false);
 	    updateActivation();
 	} 
-
+	
+	
+	/**
+	 * Enables or disables the speech input panel in the tab 
+	 */
+	public void enableSpeechInput(boolean toEnable) {
+		if (inputContainer.getComponentCount() == 3 && toEnable) {
+			SpeechInputPanel panel = new SpeechInputPanel(system);
+			inputContainer.add(panel, BorderLayout.SOUTH);
+			repaint();
+		}
+		else if (inputContainer.getComponentCount() == 4 && !toEnable) {
+			inputContainer.remove(3);
+			repaint();
+		}
+	}
 
 
 	/**

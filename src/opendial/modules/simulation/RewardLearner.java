@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.simulation;
 
 
 import java.util.Arrays;
@@ -45,6 +45,7 @@ import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
 import opendial.inference.approximate.WeightedSample;
 import opendial.inference.queries.UtilQuery;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 

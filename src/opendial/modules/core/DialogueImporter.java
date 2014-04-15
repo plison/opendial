@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.core;
 
 
 import java.util.List;
@@ -37,7 +37,7 @@ import opendial.state.DialogueState;
  * operations.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class DialogueImporter extends Thread {
 

@@ -37,7 +37,7 @@ import java.util.TimerTask;
 public abstract class AnytimeProcess extends Thread {
 
 
-	public Logger log = new Logger("AnytimeProcess", Logger.Level.DEBUG);
+	public Logger log = new Logger("AnytimeProcess", Logger.Level.NORMAL);
 
 	/**
 	 * Creates a new anytime process with the given timeout (in milliseconds)

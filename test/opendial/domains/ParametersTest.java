@@ -50,7 +50,7 @@ import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.modules.ForwardPlanner;
+import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
 

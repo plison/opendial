@@ -34,7 +34,7 @@ import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
 import opendial.inference.queries.ProbQuery;
 import opendial.inference.queries.UtilQuery;
-import opendial.modules.ForwardPlanner;
+import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 import opendial.state.distribs.EquivalenceDistribution;

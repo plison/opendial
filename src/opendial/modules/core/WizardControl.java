@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules;
+package opendial.modules.core;
 
 
 import java.awt.BorderLayout;
@@ -51,6 +51,7 @@ import opendial.bn.nodes.ActionNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
+import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.state.nodes.UtilityRuleNode;
 
@@ -64,7 +65,7 @@ import opendial.state.nodes.UtilityRuleNode;
  * <p>The module only works if the GUI is activated.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-06 10:49:41 #$
  */
 public class WizardControl implements Module {
 

@@ -27,9 +27,11 @@ package opendial.arch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import opendial.modules.Module;
 import opendial.readers.XMLSettingsReader;
+import opendial.utils.AudioUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,6 +84,12 @@ public class Settings {
 	/** Whether to record intermediate dialogue state */
 	public Recording recording = Recording.LAST_INPUT;
 	
+	/** (When relevant) Which audio mixer to use for speech recognition */
+	public String inputMixer;
+	
+	/** (When relevant) Which audio mixer to use for speech synthesis */
+	public String outputMixer;
+	
 	/** Other parameters */
 	public Properties params = new Properties();
 
@@ -94,8 +102,10 @@ public class Settings {
 	 */
 	public Settings() {
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
+		selectAudioMixers();
 	}
 	
+
 	/**
 	 * Creates a new settings with the values provided as argument.  Values
 	 * that are not explicitly specified in the mapping are set to their
@@ -106,6 +116,7 @@ public class Settings {
 	public Settings(Properties mapping) {
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
 		fillSettings(mapping);	
+		selectAudioMixers();
 	}
 		
 	
@@ -152,6 +163,12 @@ public class Settings {
 			else if (key.equalsIgnoreCase("discretisation")) {
 				discretisationBuckets = Integer.parseInt(mapping.getProperty(key));
 			}
+			else if (key.equalsIgnoreCase("inputmixer")) {
+				inputMixer = mapping.getProperty(key);
+			}
+			else if (key.equalsIgnoreCase("outputmixer")) {
+				outputMixer = mapping.getProperty(key);
+			}
 			else if (key.equalsIgnoreCase("recording")) {
 				if (mapping.getProperty(key).trim().equalsIgnoreCase("last") ) {
 					recording = Recording.LAST_INPUT;
@@ -171,7 +188,7 @@ public class Settings {
 						try {
 							clazz = Class.forName(split[i].trim());
 							for (int j = 0 ; j < clazz.getInterfaces().length ; j++) {
-								if (clazz.getInterfaces()[j].equals(Module.class) && !modules.contains(clazz)) {
+								if (clazz.getInterfaces()[j].isAssignableFrom(Module.class) && !modules.contains(clazz)) {
 									modules.add((Class<Module>)clazz);
 								}
 							}
@@ -202,6 +219,8 @@ public class Settings {
 		mapping.setProperty("gui", ""+showGUI);
 		mapping.setProperty("user", ""+userInput);
 		mapping.setProperty("system", ""+systemOutput);
+		mapping.setProperty("inputmixer", ""+inputMixer);
+		mapping.setProperty("outputmixer", ""+outputMixer);
 		mapping.setProperty("monitor", varsToMonitor.toString().replace("[", "").replace("]", ""));
 		mapping.setProperty("samples", ""+nbSamples);
 		mapping.setProperty("timeout", ""+maxSamplingTime);
@@ -211,6 +230,7 @@ public class Settings {
 		mapping.setProperty("modules", ""+moduleNames.toString().replace("[", "").replace("]", ""));
 		return mapping;
 	}
+	
 
 
 	/**
@@ -256,5 +276,20 @@ public class Settings {
 	}
 
 	
-	
+	private void selectAudioMixers() {
+		Set<String> mixers = AudioUtils.getInputMixers().keySet();
+		if (!mixers.contains(inputMixer)) {
+			if (inputMixer != null && !inputMixer.isEmpty()) {
+				log.warning("input mixer " + inputMixer + " is not available");				
+			}
+			inputMixer = mixers.iterator().next();
+		}
+		List<String> mixers2 = AudioUtils.getOutputMixers();
+		if (!mixers2.contains(outputMixer)) {
+			if (outputMixer != null && !outputMixer.isEmpty()) {
+				log.warning("output mixer " + outputMixer + " is not available");				
+			}
+			outputMixer = mixers2.iterator().next();
+		}
+	}
 }

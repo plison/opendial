@@ -23,6 +23,7 @@
 
 package opendial.gui;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -56,13 +58,16 @@ import opendial.arch.Logger;
 import opendial.arch.Settings.Recording;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
-import opendial.modules.DialogueImporter;
-import opendial.modules.DialogueRecorder;
-import opendial.modules.WizardControl;
+import opendial.modules.core.DialogueImporter;
+import opendial.modules.core.DialogueRecorder;
+import opendial.modules.core.WizardControl;
+import opendial.modules.speech.SpeechRecogniser;
+import opendial.modules.speech.SpeechSynthesiser;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
+import opendial.utils.AudioUtils;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -87,6 +92,8 @@ public class GUIMenuBar extends JMenuBar {
 	GUIFrame frame;
 	JMenuItem exportState;
 	JMenuItem exportParams;
+	JMenuItem inputMenu;
+	JMenuItem outputMenu;
 	JMenuItem stateDisplayMenu;
 	
 	/**
@@ -218,7 +225,57 @@ public class GUIMenuBar extends JMenuBar {
 		traceMenu.add(saveInteraction);
 	
 		add(traceMenu);
-		JMenu optionMenu = new JMenu("Options"); 
+		JMenu optionMenu = new JMenu("Options");
+		
+		inputMenu = new JMenu("Audio input");
+		ButtonGroup inputGroup = new ButtonGroup();
+		if (frame.getSystem().getModule(SpeechRecogniser.class) != null) {
+			Map<String,Float> mixers = AudioUtils.getInputMixers();
+			for (final String mixer : mixers.keySet()) {
+				JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer 
+						+ " (" + (int)(mixers.get(mixer)/1000) + " kHz)");
+				mixerButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed (ActionEvent e) {
+						frame.getSystem().getSettings().inputMixer = mixer;
+					}
+				});
+				inputGroup.add(mixerButton);
+				inputMenu.add(mixerButton);
+				if (mixer.equals(frame.getSystem().getSettings().inputMixer)) {
+					mixerButton.setSelected(true);
+				}
+			}
+		}
+		else {
+			inputMenu.setEnabled(false);
+		}
+		optionMenu.add(inputMenu);
+		
+		outputMenu = new JMenu("Audio output");
+		ButtonGroup outputGroup = new ButtonGroup();
+		if (frame.getSystem().getModule(SpeechSynthesiser.class) != null) {
+			List<String> mixers = AudioUtils.getOutputMixers();
+			for (final String mixer : mixers) {
+				JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer);
+				mixerButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed (ActionEvent e) {
+						frame.getSystem().getSettings().outputMixer = mixer;
+					}
+				});
+				outputGroup.add(mixerButton);
+				outputMenu.add(mixerButton);
+				if (mixer.equals(frame.getSystem().getSettings().outputMixer)) {
+					mixerButton.setSelected(true);
+				}
+			}
+		}
+		else {
+			outputMenu.setEnabled(false);
+		}
+		optionMenu.add(outputMenu);
+		
 		JMenu interactionMenu = new JMenu("View Utterances");
 		ButtonGroup group = new ButtonGroup();
 		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem("Single-best");
@@ -591,6 +648,21 @@ public class GUIMenuBar extends JMenuBar {
 		exportState.setEnabled(!otherVarsIds.isEmpty());		
 		exportParams.setEnabled(!parameterIds.isEmpty());
 		stateDisplayMenu.setEnabled(!parameterIds.isEmpty());
+		
+		inputMenu.setEnabled(frame.getSystem().getModule(SpeechRecogniser.class) != null);
+		for (Component c: inputMenu.getComponents()) {
+			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
+					.startsWith(frame.getSystem().getSettings().inputMixer)) {
+				((JRadioButtonMenuItem)c).setSelected(true);
+			}
+		}
+		outputMenu.setEnabled(frame.getSystem().getModule(SpeechSynthesiser.class) != null);
+		for (Component c: outputMenu.getComponents()) {
+			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
+					.startsWith(frame.getSystem().getSettings().outputMixer)) {
+				((JRadioButtonMenuItem)c).setSelected(true);
+			}
+		}
 	}
 
 
