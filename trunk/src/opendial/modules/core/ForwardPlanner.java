@@ -54,7 +54,7 @@ import opendial.state.DialogueState;
  * [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-06 10:49:41 #$
+ * @version $Date::                      $
  */
 public class ForwardPlanner implements Module {
 
@@ -134,7 +134,7 @@ public class ForwardPlanner implements Module {
 	/**
 	 * Planner process, which can be terminated before the end of the horizon
 	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date:: 2014-03-06 10:49:41 #$
+	 * @version $Date::                      $
 	 */
 	public class PlannerProcess extends AnytimeProcess {
 

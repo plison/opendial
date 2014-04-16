@@ -47,7 +47,7 @@ import opendial.utils.StringUtils;
  * and user utterances based on a dialogue domain.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-06 10:49:41 #$
+ * @version $Date::                      $
  */
 public class Simulator implements Module {
 
