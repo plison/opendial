@@ -41,7 +41,7 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  * Basic condition between a variable and a value
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-02-04 09:51:48 #$
+ * @version $Date::                      $
  *
  */
 public class TemplateCondition implements Condition {
