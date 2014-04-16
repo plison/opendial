@@ -65,7 +65,7 @@ import opendial.state.nodes.UtilityRuleNode;
  * <p>The module only works if the GUI is activated.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-06 10:49:41 #$
+ * @version $Date::                      $
  */
 public class WizardControl implements Module {
 

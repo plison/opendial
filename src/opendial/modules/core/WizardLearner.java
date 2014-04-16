@@ -51,7 +51,7 @@ import opendial.state.DialogueState;
  * actions from Wizard-of-Oz data.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-06 10:49:41 #$
+ * @version $Date::                      $
  */
 public class WizardLearner implements Module {
 

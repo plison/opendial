@@ -46,7 +46,7 @@ import opendial.domains.rules.effects.Effect;
  * Representation of a probabilistic rule anchored in a particular dialogue state.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-13 21:38:32 #$
+ * @version $Date::                      $
  */
 public class AnchoredRule {
 
