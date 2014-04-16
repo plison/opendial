@@ -160,8 +160,8 @@ public class DialogueSystem {
 	 * @throws DialException if the system could not be created
 	 */
 	public void changeDomain(Domain domain) throws DialException {
-		changeSettings(domain.getSettings());
 		this.domain = domain;
+		changeSettings(domain.getSettings());
 		curState = domain.getInitialState().copy();
 		curState.setParameters(domain.getParameters());
 		if (!paused) {
@@ -271,17 +271,17 @@ public class DialogueSystem {
 	 * @param settings the new settings
 	 */
 	public void changeSettings(Settings settings) {
-		List<Class<Module>> modsToDetach = ListUtils.subtract(this.settings.modules, settings.modules);
-		List<Class<Module>> modsToAttach = ListUtils.subtract(settings.modules, this.settings.modules);
 
-		for (Class<Module> toDetach : modsToDetach) {
+		for (Class<Module> toDetach : ListUtils.subtract(this.settings.modules, settings.modules)) {
 			detachModule(toDetach);
 		}
 		this.settings.fillSettings(settings.getFullMapping());
 
-		for (Class<Module> toAttach : modsToAttach) {
+		for (Class<Module> toAttach : settings.modules) {
+			if (getModule(toAttach) == null) {
 			log.info("Attaching module: " + toAttach.getCanonicalName());
 			attachModule(toAttach);
+			}
 		}	
 	}
 
@@ -547,6 +547,7 @@ public class DialogueSystem {
 			String dialogueFile = System.getProperty("dialogue");
 			String simulatorFile = System.getProperty("simulator");
 
+			system.getSettings().fillSettings(System.getProperties());
 			if (domainFile != null) {
 				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
 				log.info("Domain from " + domainFile + " successfully extracted");
@@ -565,7 +566,6 @@ public class DialogueSystem {
 				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
 				system.attachModule(simulator);
 			}
-			system.getSettings().fillSettings(System.getProperties());
 			system.changeSettings(system.getSettings());
 			system.startSystem();
 			log.info("Dialogue system started!");
