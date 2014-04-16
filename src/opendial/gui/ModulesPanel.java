@@ -36,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -270,6 +271,7 @@ public class ModulesPanel extends JDialog {
 		}
 
 		frame.getSystem().changeSettings(settings);
+		frame.trigger(frame.getSystem().getState(), new ArrayList<String>());
 		setVisible(false);
 	}
 

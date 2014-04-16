@@ -73,6 +73,9 @@ public class ReflectionUtils {
 	                    else if (!interfaceClass.isAssignableFrom(aTarget)) {
 	                        continue;
 	                    }
+	                    else if (aTarget.isInterface()) {
+	                    	continue;
+	                    }
 	                    else {
 	                        rVal.put(aTarget.getSimpleName(),(Class<T>)aTarget);
 	                    }

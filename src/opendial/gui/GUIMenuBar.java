@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -85,7 +85,7 @@ import org.w3c.dom.Node;
 public class GUIMenuBar extends JMenuBar {
 
 	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6";
-	
+
 	// logger
 	public static Logger log = new Logger("ToolkitMenu", Logger.Level.DEBUG);
 
@@ -95,7 +95,7 @@ public class GUIMenuBar extends JMenuBar {
 	JMenuItem inputMenu;
 	JMenuItem outputMenu;
 	JMenuItem stateDisplayMenu;
-	
+
 	/**
 	 * Creates the menu bar for the frame.
 	 * 
@@ -112,7 +112,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		domainMenu.add(openDomain);
-		
+
 		domainMenu.add(new JSeparator());
 
 		JMenu importMenu = new JMenu("Import");
@@ -125,7 +125,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		importMenu.add(importState);
-		
+
 		final JMenuItem importParams = new JMenuItem("Parameters");
 		importParams.addActionListener(new ActionListener() {
 			@Override
@@ -134,7 +134,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		importMenu.add(importParams);
-		
+
 		JMenu exportMenu = new JMenu("Export");
 		domainMenu.add(exportMenu);
 		exportState = new JMenuItem("Dialogue State");
@@ -145,7 +145,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		exportMenu.add(exportState);
-		
+
 		exportParams = new JMenuItem("Parameters");
 		exportParams.addActionListener(new ActionListener() {
 			@Override
@@ -154,7 +154,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		exportMenu.add(exportParams);
-				
+
 		domainMenu.add(new JSeparator());
 		final JMenuItem exit = new JMenuItem("Close OpenDial");
 		exit.addActionListener(new ActionListener() {
@@ -163,7 +163,7 @@ public class GUIMenuBar extends JMenuBar {
 				System.exit(0);
 			}
 		});
-		
+
 		domainMenu.add(exit);
 		add(domainMenu);
 
@@ -180,7 +180,7 @@ public class GUIMenuBar extends JMenuBar {
 		});
 		traceMenu.add(freezeItem);
 
-		
+
 		JMenu modeMenu = new JMenu("Interaction mode");
 		ButtonGroup modeGroup = new ButtonGroup();
 		JRadioButtonMenuItem normalMode = new JRadioButtonMenuItem("Normal mode");
@@ -214,8 +214,8 @@ public class GUIMenuBar extends JMenuBar {
 				importInteraction();
 			}});
 		traceMenu.add(runThrough);
-		
-		
+
+
 		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
 		saveInteraction.addActionListener(new ActionListener() {
 			@Override
@@ -223,59 +223,56 @@ public class GUIMenuBar extends JMenuBar {
 				saveInteraction();
 			}});
 		traceMenu.add(saveInteraction);
-	
+
 		add(traceMenu);
 		JMenu optionMenu = new JMenu("Options");
-		
+
 		inputMenu = new JMenu("Audio input");
 		ButtonGroup inputGroup = new ButtonGroup();
-		if (frame.getSystem().getModule(SpeechRecogniser.class) != null) {
-			Map<String,Float> mixers = AudioUtils.getInputMixers();
-			for (final String mixer : mixers.keySet()) {
-				JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer 
-						+ " (" + (int)(mixers.get(mixer)/1000) + " kHz)");
-				mixerButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed (ActionEvent e) {
-						frame.getSystem().getSettings().inputMixer = mixer;
-					}
-				});
-				inputGroup.add(mixerButton);
-				inputMenu.add(mixerButton);
-				if (mixer.equals(frame.getSystem().getSettings().inputMixer)) {
-					mixerButton.setSelected(true);
+		Map<String,Float> mixers = AudioUtils.getInputMixers();
+		for (final String mixer : mixers.keySet()) {
+			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer 
+					+ " (" + (int)(mixers.get(mixer)/1000) + " kHz)");
+			mixerButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed (ActionEvent e) {
+					frame.getSystem().getSettings().inputMixer = mixer;
 				}
+			});
+			inputGroup.add(mixerButton);
+			inputMenu.add(mixerButton);
+			if (mixer.equals(frame.getSystem().getSettings().inputMixer)) {
+				mixerButton.setSelected(true);
 			}
 		}
-		else {
+
+		if (frame.getSystem().getModule(SpeechRecogniser.class) == null) {
 			inputMenu.setEnabled(false);
 		}
 		optionMenu.add(inputMenu);
-		
+
 		outputMenu = new JMenu("Audio output");
 		ButtonGroup outputGroup = new ButtonGroup();
-		if (frame.getSystem().getModule(SpeechSynthesiser.class) != null) {
-			List<String> mixers = AudioUtils.getOutputMixers();
-			for (final String mixer : mixers) {
-				JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer);
-				mixerButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed (ActionEvent e) {
-						frame.getSystem().getSettings().outputMixer = mixer;
-					}
-				});
-				outputGroup.add(mixerButton);
-				outputMenu.add(mixerButton);
-				if (mixer.equals(frame.getSystem().getSettings().outputMixer)) {
-					mixerButton.setSelected(true);
+		for (final String mixer : AudioUtils.getOutputMixers()) {
+			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer);
+			mixerButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed (ActionEvent e) {
+					frame.getSystem().getSettings().outputMixer = mixer;
 				}
+			});
+			outputGroup.add(mixerButton);
+			outputMenu.add(mixerButton);
+			if (mixer.equals(frame.getSystem().getSettings().outputMixer)) {
+				mixerButton.setSelected(true);
 			}
 		}
-		else {
+
+		if (frame.getSystem().getModule(SpeechSynthesiser.class) == null) {
 			outputMenu.setEnabled(false);
 		}
 		optionMenu.add(outputMenu);
-		
+
 		JMenu interactionMenu = new JMenu("View Utterances");
 		ButtonGroup group = new ButtonGroup();
 		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem("Single-best");
@@ -310,7 +307,7 @@ public class GUIMenuBar extends JMenuBar {
 		interactionMenu.add(threeBest);
 		interactionMenu.add(allBest);
 		optionMenu.add(interactionMenu);
-		
+
 		JMenu recording = new JMenu("Record Intermediate States");
 		ButtonGroup group2 = new ButtonGroup();
 		JRadioButtonMenuItem none = new JRadioButtonMenuItem("None");
@@ -349,7 +346,7 @@ public class GUIMenuBar extends JMenuBar {
 		recording.add(last);
 		recording.add(all);
 		optionMenu.add(recording);
-		
+
 		stateDisplayMenu = new JMenuItem("Show/Hide parameters");
 		stateDisplayMenu.addActionListener(new ActionListener() {
 			@Override
@@ -361,7 +358,7 @@ public class GUIMenuBar extends JMenuBar {
 		optionMenu.add(stateDisplayMenu);
 		optionMenu.add(new JSeparator());
 
-		
+
 		JMenuItem modules = new JMenuItem("Load Modules");
 		modules.addActionListener(new ActionListener() {
 			@Override
@@ -372,7 +369,7 @@ public class GUIMenuBar extends JMenuBar {
 		optionMenu.add(modules);
 
 		optionMenu.add(new JSeparator());
-		
+
 		JMenuItem config = new JMenuItem("Settings");
 		config.addActionListener(new ActionListener() {
 			@Override
@@ -381,7 +378,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		optionMenu.add(config);	
-		
+
 		add(optionMenu);
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About");
@@ -391,8 +388,8 @@ public class GUIMenuBar extends JMenuBar {
 				showAboutPanel(frame);
 			}
 		});
-		
-		
+
+
 		JMenuItem docItem = new JMenuItem("Documentation");
 		docItem.addActionListener(new ActionListener() {
 			@Override
@@ -405,7 +402,7 @@ public class GUIMenuBar extends JMenuBar {
 		add(helpMenu);
 	}
 
-	
+
 	/**
 	 * Switches the interaction mode of the dialogue
 	 * 
@@ -414,7 +411,7 @@ public class GUIMenuBar extends JMenuBar {
 	protected void switchMode(boolean isWozMode) {
 		if (isWozMode) {
 			frame.getSystem().attachModule(WizardControl.class);
-				frame.addComment("Switching interaction to Wizard-of-Oz mode");
+			frame.addComment("Switching interaction to Wizard-of-Oz mode");
 
 		}
 		else {
@@ -435,9 +432,9 @@ public class GUIMenuBar extends JMenuBar {
 			String interactionFile = fc.getSelectedFile().getAbsolutePath();
 			frame.addComment("Importing interaction " + interactionFile);
 			try {
-			List<DialogueState> interaction = XMLInteractionReader.extractInteraction(interactionFile);
-			DialogueImporter importer = new DialogueImporter(frame.getSystem(), interaction);
-			importer.start();
+				List<DialogueState> interaction = XMLInteractionReader.extractInteraction(interactionFile);
+				DialogueImporter importer = new DialogueImporter(frame.getSystem(), interaction);
+				importer.start();
 			}
 			catch (Exception f) {
 				log.warning("could not extract interaction: " + f);
@@ -446,21 +443,21 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 
-	
+
 	/**
 	 * Opens the documentation on the project website
 	 */
 	protected void openDocumentation() {
 		if (Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().browse(new URI(OPENDIAL_DOC));
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }  
-        }
+			try {
+				Desktop.getDesktop().browse(new URI(OPENDIAL_DOC));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}  
+		}
 	}
- 
- 
+
+
 	/**
 	 * Displays the "About" panel.
 	 * @param frame
@@ -468,15 +465,15 @@ public class GUIMenuBar extends JMenuBar {
 	protected void showAboutPanel(GUIFrame frame) {
 		try {
 			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
-			
+
 			JLabel label = new JLabel();
 			Font font = label.getFont();
 
-		    // create some css from the label's font
-		    StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
-		    style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
-		    style.append("font-size:" + font.getSize() + "pt;");
-		    
+			// create some css from the label's font
+			StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+			style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+			style.append("font-size:" + font.getSize() + "pt;");
+
 			JEditorPane ep = new JEditorPane("text/html","<html><body style=\"" + style 
 					+ "\"><b>OpenDial dialogue toolkit, version 0.9</b><br>"
 					+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
@@ -486,26 +483,26 @@ public class GUIMenuBar extends JMenuBar {
 					+ "http://opendial.googlecode.com</a><br>"
 					+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
 					+ "plison@ifi.uio.no</a>)</body></html>");
-			
-			 // handle link events
-		    ep.addHyperlinkListener(new HyperlinkListener()
-		    {
-		        @Override
-				public void hyperlinkUpdate(HyperlinkEvent e)  {
-		            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
-		                    try {
-		                        Desktop.getDesktop().browse(e.getURL().toURI());
-		                    } catch (Exception e1) {
-		                        e1.printStackTrace();
-		                    } 
-		                }
-		        }
-		    });
-		    ep.setEditable(false);
-		    ep.setBackground(label.getBackground());
 
-		JOptionPane.showMessageDialog(frame.getFrame(), ep ,
-				"About OpenDial", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(original));
+			// handle link events
+			ep.addHyperlinkListener(new HyperlinkListener()
+			{
+				@Override
+				public void hyperlinkUpdate(HyperlinkEvent e)  {
+					if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
+						try {
+							Desktop.getDesktop().browse(e.getURL().toURI());
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						} 
+					}
+				}
+			});
+			ep.setEditable(false);
+			ep.setBackground(label.getBackground());
+
+			JOptionPane.showMessageDialog(frame.getFrame(), ep ,
+					"About OpenDial", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(original));
 		}
 		catch (Exception f) {
 			log.warning("could not show about box: " + f);
@@ -525,7 +522,7 @@ public class GUIMenuBar extends JMenuBar {
 			frame.addComment("Interaction saved to " + recordFile);
 		}
 	}
-	
+
 	/**
 	 * Imports a dialogue state or prior parameter distributions.
 	 * 
@@ -547,8 +544,8 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Imports a dialogue state or prior parameter distributions.
 	 * 
@@ -561,7 +558,7 @@ public class GUIMenuBar extends JMenuBar {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
 				if (!parameters.hasChanceNode(oldParam)) {
-				parameters.addNode(system.getState().getChanceNode(oldParam));
+					parameters.addNode(system.getState().getChanceNode(oldParam));
 				}
 			}
 			system.getState().setParameters(parameters);
@@ -572,7 +569,7 @@ public class GUIMenuBar extends JMenuBar {
 		}
 	}
 
-	
+
 	/**
 	 * Exports a dialogue state or prior parameter distributions.
 	 * 
@@ -593,8 +590,8 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Exports a dialogue state or prior parameter distributions.
 	 * 
@@ -604,7 +601,7 @@ public class GUIMenuBar extends JMenuBar {
 	 */	
 	public static void exportContent(DialogueSystem system, String file, String tag) throws DialException {
 		Document doc = XMLUtils.newXMLDocument();
-		
+
 		Set<String> parameterIds = new HashSet<String>(system.getState().getParameterIds());
 		Set<String> otherVarsIds = new HashSet<String>(system.getState().getChanceNodeIds());
 		otherVarsIds.removeAll(parameterIds);
@@ -648,7 +645,7 @@ public class GUIMenuBar extends JMenuBar {
 		exportState.setEnabled(!otherVarsIds.isEmpty());		
 		exportParams.setEnabled(!parameterIds.isEmpty());
 		stateDisplayMenu.setEnabled(!parameterIds.isEmpty());
-		
+
 		inputMenu.setEnabled(frame.getSystem().getModule(SpeechRecogniser.class) != null);
 		for (Component c: inputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
