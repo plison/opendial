@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<settings>
+		<user>a_u</user>
+		<system>a_m</system>
+	</settings>
+
+	<parameters>
+		<variable id="error">
+			<distrib type="dirichlet">
+				<alpha>4</alpha>
+				<alpha>2</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+
+	</parameters>
+
+
+	<model name="nextaction" trigger="a_m">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect prob="0.9">
+					<set var="a_u" value="{a_u}" />
+				</effect>
+			</case>
+			<case>
+				<effect prob="0.2">
+					<set var="a_u" value="Request(Left)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_u" value="Request(Right)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_u" value="Request(Forward)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_u" value="Request(Backward)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_u" value="Request(Stop)" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Left)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Right)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Forward)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Backward)" />
+				</effect>
+				<effect prob="0.2">
+					<set var="a_uother" value="Request(Stop)" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="0.5" />
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" value="Request({X})" />
+					<if var="a_m" value="Move({X})" />
+				</condition>
+				<effect util="2" />
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Move(*)" />
+				</condition>
+				<effect util="-2" />
+			</case>
+		</rule>
+
+
+	</model>
+
+
+	<model trigger="a_u">
+		<rule>
+			<case>
+				<effect prob="error[0]">
+					<set var="a_u^o" value="{a_u}" />
+				</effect>
+				<effect prob="error[1]">
+					<set var="a_u^o" value="{a_uother}" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+</domain>

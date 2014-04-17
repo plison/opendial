@@ -33,10 +33,10 @@ import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.Mixer;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
@@ -229,10 +229,9 @@ public class GUIMenuBar extends JMenuBar {
 
 		inputMenu = new JMenu("Audio input");
 		ButtonGroup inputGroup = new ButtonGroup();
-		Map<String,Float> mixers = AudioUtils.getInputMixers();
-		for (final String mixer : mixers.keySet()) {
-			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer 
-					+ " (" + (int)(mixers.get(mixer)/1000) + " kHz)");
+		List<Mixer.Info> mixers = AudioUtils.getInputMixers();
+		for (final Mixer.Info mixer : mixers) {
+			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer.getName());
 			mixerButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed (ActionEvent e) {
@@ -253,8 +252,8 @@ public class GUIMenuBar extends JMenuBar {
 
 		outputMenu = new JMenu("Audio output");
 		ButtonGroup outputGroup = new ButtonGroup();
-		for (final String mixer : AudioUtils.getOutputMixers()) {
-			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer);
+		for (final Mixer.Info mixer : AudioUtils.getOutputMixers()) {
+			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(mixer.getName());
 			mixerButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed (ActionEvent e) {
@@ -649,14 +648,14 @@ public class GUIMenuBar extends JMenuBar {
 		inputMenu.setEnabled(frame.getSystem().getModule(SpeechRecogniser.class) != null);
 		for (Component c: inputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
-					.startsWith(frame.getSystem().getSettings().inputMixer)) {
+					.startsWith(frame.getSystem().getSettings().inputMixer.getName())) {
 				((JRadioButtonMenuItem)c).setSelected(true);
 			}
 		}
 		outputMenu.setEnabled(frame.getSystem().getModule(SpeechSynthesiser.class) != null);
 		for (Component c: outputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
-					.startsWith(frame.getSystem().getSettings().outputMixer)) {
+					.startsWith(frame.getSystem().getSettings().outputMixer.getName())) {
 				((JRadioButtonMenuItem)c).setSelected(true);
 			}
 		}

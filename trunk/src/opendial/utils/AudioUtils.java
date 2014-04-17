@@ -38,7 +38,6 @@ package opendial.utils;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +46,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
@@ -77,39 +75,27 @@ public class AudioUtils {
 
 
 	/**
-	 * Selects an audio line of a certain type (source or target) for a particular
-	 * audio mixer.
+	 * Selects an target data line for a particular audio mixer.
 	 * 
-	 * @param type the type of line to select
 	 * @param mixer the name of the audio mixer
 	 * @return the selected line
 	 * @throws DialException if no line could be selected
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Line> T selectAudioLine(Class<T> type, String mixer) throws DialException {
+	public static TargetDataLine selectAudioLine(Mixer.Info mixer) throws DialException {
 
-		List<AudioFormat> formats = (type.equals(TargetDataLine.class))? 
-				Arrays.asList(IN_HIGH, IN_LOW) : Arrays.asList(OUT);
-				
-		Info[] mixers = AudioSystem.getMixerInfo();
-		try {
-			for (int i = 0 ; i < mixers.length ; i++) {
-				if (mixers[i].getName().contains(mixer)) {
-					Mixer mixerO = AudioSystem.getMixer(mixers[i]);
-					for (AudioFormat format : formats) {
-						DataLine.Info lineVariant = new DataLine.Info(type, format);
-						if (mixerO.isLineSupported(lineVariant)) {
-							return (T) mixerO.getLine(lineVariant);
-						}
-					}
-				}
+		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
+			try {
+			DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class, format);
+			if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
+				return AudioSystem.getTargetDataLine(format, mixer);
+			}
+			}
+			catch (LineUnavailableException e) {
+				log.warning(" line for mixer " + mixer + " is not available");
+				log.info("Available audio mixers: " + getMixers());
 			}
 		}
-		catch (LineUnavailableException e) {
-			log.warning(" line for mixer " + mixer + " is not available");
-			log.info("Available audio mixers: " + getMixers());
-		}
-		throw new DialException("Cannot obtain audio line for formats " + formats + " and mixer " + mixer);
+		throw new DialException("Cannot obtain audio line for mixer " + mixer);
 	}
 
 
@@ -119,9 +105,8 @@ public class AudioUtils {
 	 * 
 	 * @param stream the stream to play
 	 */
-	public static void playAudio(final InputStream stream) {
-		(new Thread(new AudioPlayer(stream))).start();
-
+	public static void playAudio(final InputStream stream, Mixer.Info outputMixer) {
+		(new Thread(new AudioPlayer(stream, outputMixer))).start();
 	}
 
 	/**
@@ -141,16 +126,15 @@ public class AudioUtils {
 	}
 
 	/**
-	 * Returns a map with all audio mixers whose input are compatible with the
-	 * two audio format IN_HIGH or IN_LOW.  The map values specify the frame rate
-	 * allowed by each mixer.
+	 * Returns a list with all audio mixers whose input are compatible with the
+	 * two audio format IN_HIGH or IN_LOW.  
 	 * 
-	 * @return the map with all input mixers and their frame rate
+	 * @return the list of all input mixers
 	 */
-	public static LinkedHashMap<String,Float> getInputMixers() {
+	public static List<Mixer.Info> getInputMixers() {
 
-		LinkedHashMap<String,Float> mixers = new LinkedHashMap<String,Float>();
-		String defaultMixer = null;
+		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
+		Mixer.Info defaultMixer = null;
 
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
 		for (int i = 0 ; i < mixerInfos.length ; i++) {
@@ -158,11 +142,11 @@ public class AudioUtils {
 				if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
 						new DataLine.Info(TargetDataLine.class, format))) {
 
-					mixers.put(mixerInfos[i].getName(), format.getFrameRate());
+					mixers.add(mixerInfos[i]);
 
 					try { if (AudioSystem.getTargetDataLine(format).getLineInfo().matches(
 							AudioSystem.getTargetDataLine(format, mixerInfos[i]).getLineInfo())) {
-						defaultMixer = mixerInfos[i].getName();
+						defaultMixer = mixerInfos[i];
 					} }
 					catch (Exception e) { e.printStackTrace(); }
 
@@ -171,10 +155,8 @@ public class AudioUtils {
 			}
 		}
 		if (defaultMixer != null) {
-			LinkedHashMap<String,Float> mixers2 = new LinkedHashMap<String,Float>();
-			mixers2.put(defaultMixer, mixers.get(defaultMixer));
-			mixers2.putAll(mixers);
-			mixers = mixers2;		
+			mixers.remove(defaultMixer);
+			mixers.add(0, defaultMixer);
 		}
 		return mixers;
 	}
@@ -186,20 +168,20 @@ public class AudioUtils {
 	 * 
 	 * @return the list of all compatible output mixers
 	 */
-	public static List<String> getOutputMixers() {
+	public static List<Mixer.Info> getOutputMixers() {
 
-		List<String> mixers = new ArrayList<String>();
-		String defaultMixer = null;
+		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
+		Mixer.Info defaultMixer = null;
 
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
 		for (int i = 0 ; i < mixerInfos.length ; i++) {
 			if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
 						new DataLine.Info(SourceDataLine.class, OUT))) {
 
-					mixers.add(mixerInfos[i].getName());
+					mixers.add(mixerInfos[i]);
 					try { if (AudioSystem.getSourceDataLine(OUT).getLineInfo().matches(
 							AudioSystem.getSourceDataLine(OUT, mixerInfos[i]).getLineInfo())) {
-						defaultMixer = mixerInfos[i].getName();
+						defaultMixer = mixerInfos[i];
 					} }
 					catch (Exception e) { e.printStackTrace(); }
 				}
@@ -219,16 +201,20 @@ public class AudioUtils {
 	final static class AudioPlayer implements Runnable {
 
 		InputStream stream;
+		Mixer.Info outputMixer;
 
-		public AudioPlayer(InputStream stream) {
+		public AudioPlayer(InputStream stream, Mixer.Info outputMixer) {
 			this.stream = stream;
+			this.outputMixer = outputMixer;
 		}
 
 		@Override
 		public void run() {
 			try {
-				AudioInputStream input = AudioSystem.getAudioInputStream(stream);
-		        Clip clip = AudioSystem.getClip();
+				AudioInputStream input = (stream instanceof AudioInputStream)? 
+						(AudioInputStream) stream: 
+					AudioSystem.getAudioInputStream(stream);
+		        Clip clip = (outputMixer != null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
 		        clip.open(input);
 			    clip.start();
 			}

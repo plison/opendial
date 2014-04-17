@@ -24,11 +24,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
 import opendial.arch.DialException;
@@ -54,7 +56,7 @@ public class SpeechStream extends InputStream {
 	
 	/** The recorded data */
 	byte[] data;
-
+	
 	/** Whether the stream has been closed or not */
 	boolean isClosed = false;
 
@@ -65,10 +67,11 @@ public class SpeechStream extends InputStream {
 	 * @param inputMixer the audio mixer to use
 	 * @throws DialException if the stream could not be captured from the mixer
 	 */
-	public SpeechStream(String inputMixer) throws DialException {
-		audioLine = AudioUtils.selectAudioLine(TargetDataLine.class, inputMixer);
-		log.debug("start recording...\t");
+	public SpeechStream(Mixer.Info inputMixer) throws DialException {
+		audioLine = AudioUtils.selectAudioLine(inputMixer);
+		log.debug("start recording on " + inputMixer.getName() + "...\t");
 		(new Thread(new StreamRecorder())).start();
+		data = new byte[0];
 	}
 
 
@@ -79,19 +82,46 @@ public class SpeechStream extends InputStream {
 	 */
 	@Override
 	public int read() {
-		if (currentPos > data.length) {
+		if (currentPos < data.length) {
 			return data[currentPos++];
 		}
 		else {
 			return -1;
 		}
 	}
+	
+	/**
+	 * Reads a buffer from the stream.
+	 * 
+	 * @param the buffer
+	 * @param offset the offset in buffer from which the data should be written
+	 * @param length the maximum number of bytes to read 
+	 * @return the number of bytes written into the buffer
+	 */
+	@Override
+	public int read(byte[] buffer, int offset, int length) {
+		if (currentPos >= data.length) {
+			if (!isClosed) {
+				try {Thread.sleep(100); }
+				catch (InterruptedException e) { }
+				return read(buffer, offset, length);
+			}
+			return -1;
+		}
+		int i = 0;
+		for (i = 0 ; i < length & (currentPos+i) < data.length ; i++) {
+			buffer[offset+i] = data[currentPos+i];
+		}
+		currentPos += i;
+		return i;
+	}
  
 	/**
 	 * Closes the stream, and notifies all waiting threads.
+	 * @throws IOException 
 	 */
 	@Override
-	public synchronized void close() {
+	public synchronized void close() throws IOException {
 		log.debug("stopped...\t");
 		isClosed = true;
 		notifyAll();
@@ -157,7 +187,7 @@ public class SpeechStream extends InputStream {
 				audioLine.flush();
 				// we limit the stream buffer to a maximum of 20 seconds
 				ByteArrayOutputStream stream = new ByteArrayOutputStream(320000);
-				byte[] buffer = new byte[audioLine.getBufferSize()/5];
+				byte[] buffer = new byte[audioLine.getBufferSize()/20];
 				while (!isClosed) {
 					// Read the next chunk of data from the TargetDataLine.
 					int numBytesRead =  audioLine.read(buffer, 0, buffer.length);
@@ -169,6 +199,7 @@ public class SpeechStream extends InputStream {
 				}
 				audioLine.stop();
 				audioLine.close();
+				stream.close();
 			}
 			catch (Exception e) {
 				e.printStackTrace();

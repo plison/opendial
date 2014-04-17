@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Basic example of a slot-filling application. The system first asks the 
+	user for the departure, then the destination, and finally the day. The system 
+	accumulates evidence by re-asking the question until enough evidence is provided 
+	to ground the answer. Obviously, this example is extremely simplistic (no 
+	natural language understanding, no feedback mechanism, no possibility to 
+	"backtrack" to a previous slot, and very limited types of slots), but it 
+	demonstrates how probabilistic rules can be employed for slot-filling. -->
+
+<domain>
+
+	<initialstate>
+
+		<variable id="departure">
+			<value prob="0.2">brussels</value>
+			<value prob="0.2">antwerp</value>
+			<value prob="0.2">liege</value>
+			<value prob="0.2">ghent</value>
+			<value prob="0.2">leuven</value>
+		</variable>
+
+		<variable id="destination">
+			<value prob="0.2">oslo</value>
+			<value prob="0.2">bergen</value>
+			<value prob="0.2">trondheim</value>
+			<value prob="0.2">stavanger</value>
+			<value prob="0.2">tromso</value>
+		</variable>
+
+		<variable id="day">
+			<value prob="0.14">monday</value>
+			<value prob="0.14">tuesday</value>
+			<value prob="0.14">wednesday</value>
+			<value prob="0.14">thursday</value>
+			<value prob="0.14">friday</value>
+			<value prob="0.14">saturday</value>
+			<value prob="0.14">sunday</value>
+		</variable>
+
+
+		<variable id="current_question">
+			<value>departure</value>
+		</variable>
+
+	</initialstate>
+
+
+	<!-- Action selection -->
+	<model trigger="u_u,current_question">
+
+		<!-- The utility of asking the current question is 0.5 -->
+		<rule>
+			<case>
+				<effect util="0.5">
+					<set var="a_m" value="Ask({current_question})" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<!-- The utility of grounding a given answer Y for the current question 
+			is 1 if it is the correct and -2 if it is incorrect -->
+		<rule>
+			<case>
+				<condition>
+					<if var="{current_question}" value="{Y}" />
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="Ground({current_question},{Y})" />
+				</effect>
+			</case>
+			<case>
+				<condition />
+
+				<effect util="-2">
+					<set var="a_m" value="Ground({current_question},{Y})" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+
+	<model trigger="a_m">
+
+		<!-- Rule to change the current question when a given slot is confirmed -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(departure,*)" />
+				</condition>
+				<effect>
+					<set var="current_question" value="destination" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(destination,*)" />
+				</condition>
+				<effect>
+					<set var="current_question" value="day" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(day,*)" />
+				</condition>
+				<effect>
+					<set var="a_m" value="Conclude" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<!-- Very basic NLG model -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ask(day)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Which day do you want to travel?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ask({X})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="What is your {X}?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground({X},{Y})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, {Y} registered for the {X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Conclude" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="I will now book a trip from {departure} to {destination} on {day}. Bon voyage!" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<!-- Prediction of next user utterance -->
+		<rule>
+			<case>
+				<condition>
+					<if var="{current_question}" value="{Y}" />
+				</condition>
+				<effect prob="0.7">
+					<set var="u_u^p" value="{Y}" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+
+</domain>

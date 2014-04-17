@@ -25,9 +25,11 @@ package opendial.arch;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
+
+import javax.sound.sampled.Mixer;
 
 import opendial.modules.Module;
 import opendial.readers.XMLSettingsReader;
@@ -85,10 +87,10 @@ public class Settings {
 	public Recording recording = Recording.LAST_INPUT;
 	
 	/** (When relevant) Which audio mixer to use for speech recognition */
-	public String inputMixer;
+	public Mixer.Info inputMixer;
 	
 	/** (When relevant) Which audio mixer to use for speech synthesis */
-	public String outputMixer;
+	public Mixer.Info outputMixer;
 	
 	/** Other parameters */
 	public Properties params = new Properties();
@@ -105,6 +107,14 @@ public class Settings {
 		selectAudioMixers();
 	}
 	
+
+	private void selectAudioMixers() {
+		List<Mixer.Info> inputMixers = AudioUtils.getInputMixers();
+		inputMixer = (!inputMixers.isEmpty())? inputMixers.get(0) : null;
+		List<Mixer.Info> outputMixers = AudioUtils.getOutputMixers();
+		outputMixer = (!outputMixers.isEmpty())? outputMixers.get(0) : null;
+	}
+
 
 	/**
 	 * Creates a new settings with the values provided as argument.  Values
@@ -163,12 +173,6 @@ public class Settings {
 			else if (key.equalsIgnoreCase("discretisation")) {
 				discretisationBuckets = Integer.parseInt(mapping.getProperty(key));
 			}
-			else if (key.equalsIgnoreCase("inputmixer")) {
-				inputMixer = mapping.getProperty(key);
-			}
-			else if (key.equalsIgnoreCase("outputmixer")) {
-				outputMixer = mapping.getProperty(key);
-			}
 			else if (key.equalsIgnoreCase("recording")) {
 				if (mapping.getProperty(key).trim().equalsIgnoreCase("last") ) {
 					recording = Recording.LAST_INPUT;
@@ -188,9 +192,13 @@ public class Settings {
 						try {
 							clazz = Class.forName(split[i].trim());
 							for (int j = 0 ; j < clazz.getInterfaces().length ; j++) {
-								if (clazz.getInterfaces()[j].isAssignableFrom(Module.class) && !modules.contains(clazz)) {
+								if (Module.class.isAssignableFrom(clazz.getInterfaces()[j]) && !modules.contains(clazz)) {
 									modules.add((Class<Module>)clazz);
 								}
+							}
+							if (!modules.contains(clazz)) {
+								log.warning("class " + split[i].trim() + " is not a module");
+								log.debug("interfaces " + Arrays.asList(clazz.getInterfaces()));
 							}
 						} catch (ClassNotFoundException e) {
 							log.warning("class not found: " + split[i].trim());
@@ -275,21 +283,5 @@ public class Settings {
 		return getFullMapping().toString();
 	}
 
-	
-	private void selectAudioMixers() {
-		Set<String> mixers = AudioUtils.getInputMixers().keySet();
-		if (!mixers.contains(inputMixer)) {
-			if (inputMixer != null && !inputMixer.isEmpty()) {
-				log.warning("input mixer " + inputMixer + " is not available");				
-			}
-			inputMixer = mixers.iterator().next();
-		}
-		List<String> mixers2 = AudioUtils.getOutputMixers();
-		if (!mixers2.contains(outputMixer)) {
-			if (outputMixer != null && !outputMixer.isEmpty()) {
-				log.warning("output mixer " + outputMixer + " is not available");				
-			}
-			outputMixer = mixers2.iterator().next();
-		}
-	}
+
 }

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model trigger="completed-task,perceived,carried" type="update">
+
+	<rule id="clearorcontinue">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect>
+				<clear var="i_u" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="completed-task" value="false" />
+			</condition>
+			<effect>
+				<set var="i_u" value="{i_u}" />
+			</effect>
+		</case>
+	</rule>
+
+	<rule id="moveprior">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.1216">
+				<set var="i_u" value="Move(Left)" />
+			</effect>
+			<effect prob="0.2391">
+				<set var="i_u" value="Move(Forward)" />
+			</effect>
+			<effect prob="0.0575">
+				<set var="i_u" value="Move(Backward)" />
+			</effect>
+			<effect prob="0.0975">
+				<set var="i_u" value="Move(Right)" />
+			</effect>
+			<effect prob="0.0422">
+				<set var="i_u" value="Move(Left,Short)" />
+			</effect>
+			<effect prob="0.1045">
+				<set var="i_u" value="Move(Forward,Short)" />
+			</effect>
+			<effect prob="0.0852">
+				<set var="i_u" value="Move(Backward,Short)" />
+			</effect>
+			<effect prob="0.1214">
+				<set var="i_u" value="Move(Right,Short)" />
+			</effect>
+			<effect prob="0.0737">
+				<set var="i_u" value="Move(Turn)" />
+			</effect>
+			<effect prob="0.0574" />
+		</case>
+	</rule>
+
+	<rule id="perceptionprior_see">
+		<case>
+			<condition>
+				<if var="perceived" value="{X}" relation="contains" />
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.0015">
+				<set var="i_u" value="DoYouSee({X})" />
+			</effect>
+			<effect prob="0.2291">
+				<set var="i_u" value="WhatDoYouSee" />
+			</effect>
+			<effect prob="0.7694" />
+		</case>
+	</rule>
+
+	<rule id="perceptionprior_nosee">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.0273">
+				<set var="i_u" value="DoYouSee(RedObj)" />
+			</effect>
+			<effect prob="0.2152">
+				<set var="i_u" value="DoYouSee(BlueObj)" />
+			</effect>
+			<effect prob="0.0689">
+				<set var="i_u" value="WhatDoYouSee" />
+			</effect>
+			<effect prob="0.6886" />
+		</case>
+	</rule>
+
+
+	<rule id="chitchatprior">
+		<case>
+			<condition>
+				<if var="lastMove" value="None" />
+				<if var="completed-task" value="true" />
+			</condition>
+			<effect prob="0.0537">
+				<set var="i_u" value="Ask(Name)" />
+			</effect>
+			<effect prob="0.3709">
+				<set var="i_u" value="Greeting" />
+			</effect>
+			<effect prob="0.5754" />
+		</case>
+		<case>
+			<condition>
+				<if var="lastMove" value="Release" />
+			</condition>
+			<effect prob="0.0643">
+				<set var="i_u" value="Closing" />
+			</effect>
+			<effect prob="0.9357" />
+		</case>
+	</rule>
+
+
+	<rule id="releaseprior">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" relation="!=" />
+				<if var="carried" value="None" relation="!=" />
+			</condition>
+			<effect prob="0.0407">
+				<set var="i_u" value="Release" />
+			</effect>
+			<effect prob="0.9593" />
+		</case>
+	</rule>
+
+
+	<rule id="pickupprior_see">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" />
+				<if var="perceived" value="{X}" relation="contains" />
+			</condition>
+			<effect prob="0.3718">
+				<set var="i_u" value="PickUp({X})" />
+			</effect>
+			<effect prob="0.6282" />
+		</case>
+	</rule>
+
+	<rule id="pickupprior_nosee">
+		<case>
+			<condition>
+				<if var="completed-task" value="true" />
+				<if var="carried" value="[]" />
+			</condition>
+			<effect prob="0.0379">
+				<set var="i_u" value="PickUp(RedObj)" />
+			</effect>
+			<effect prob="0.0917">
+				<set var="i_u" value="PickUp(BlueObj)" />
+			</effect>
+			<effect prob="0.0183">
+				<set var="i_u" value="PickUp(AtFeet)" />
+			</effect>
+			<effect prob="0.8522" />
+		</case>
+	</rule>
+
+
+</model>
