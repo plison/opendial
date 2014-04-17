@@ -208,6 +208,7 @@ public class DialogueSystem {
 		} 
 		catch (InvocationTargetException e) {
 			log.warning("cannot attach module: " + e.getTargetException());
+			e.printStackTrace();
 			recordComment("cannot attach module: " + e.getTargetException());
 		}
 		catch (Exception e) {

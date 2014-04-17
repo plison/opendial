@@ -111,7 +111,12 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		try {
 		currentRecording.close(); 
+		}
+		catch (Exception f) {
+			f.printStackTrace();
+		}
 	}
 	
 	@Override
