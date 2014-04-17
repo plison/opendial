@@ -32,5 +32,5 @@
   * [ExternalModules#Synchronous_modules Synchronous modules]
   * [ExternalModules#Asynchronous_modules Asynchronous modules]
   * [ExternalModules#Attaching_a_module Attaching a module]
- * [Plugins Plugins for !OpenDial]
+ * [Plugins Plugins for OpenDial]
  * [http://opendial.googlecode.com/svn/trunk/doc/javadoc/index.html Javadoc]
