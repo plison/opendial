@@ -93,7 +93,7 @@ public class SpeechStream extends InputStream {
 	/**
 	 * Reads a buffer from the stream.
 	 * 
-	 * @param the buffer
+	 * @param buffer the buffer in which to write
 	 * @param offset the offset in buffer from which the data should be written
 	 * @param length the maximum number of bytes to read 
 	 * @return the number of bytes written into the buffer
@@ -163,7 +163,8 @@ public class SpeechStream extends InputStream {
 
 	/**
 	 * Returns the byte array for the stream
-	 * @return
+	 * 
+	 * @return the byte array
 	 */
 	public byte[] toByteArray() {
 		return data;
