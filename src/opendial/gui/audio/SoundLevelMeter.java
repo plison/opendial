@@ -41,7 +41,7 @@ public class SoundLevelMeter extends JPanel {
 	public static Logger log = new Logger("AudioStream", Logger.Level.DEBUG);
 
 	// size of the buffer to calculate the volume
-	public static final int BUFFER_SIZE = 1024;
+	public static final int BUFFER_SIZE = 256;
 
 	// the current volume
 	private int volume = 0;
@@ -49,7 +49,7 @@ public class SoundLevelMeter extends JPanel {
 	/**
 	 * Monitors the volume on the sound line, updating it regularly.
 	 * 
-	 * @param m_line the sound line to monitor
+	 * @param recording the speech stream to record
 	 */
 	public void monitorVolume(final SpeechStream recording) { 
 		(new Thread(new VolumeMonitor(recording))).start();
@@ -69,7 +69,7 @@ public class SoundLevelMeter extends JPanel {
 	/**
 	 * Repaint
 	 *
-	 * @param gg
+	 * @param gg the graphics
 	 */
 	@Override
 	public void paintComponent(Graphics gg) {
@@ -106,9 +106,6 @@ public class SoundLevelMeter extends JPanel {
 
 	/**
 	 * Thread employed to update the sound level meter as the stream is evolving.
-	 * 
-	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
 	 */
 	final class VolumeMonitor implements Runnable {
 		
