@@ -6,7 +6,7 @@ This section details how to practically encode dialogue domains for !OpenDial us
 
 == 1. General structure ==
 
-A well-formed !OpenDial dialogue domain follows the skeleton below:
+A dialogue domain in !OpenDial follows the skeleton below:
 {{{
 <domain>
 
