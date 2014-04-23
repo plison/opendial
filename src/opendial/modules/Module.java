@@ -92,7 +92,6 @@ public interface Module {
 	 */
 	public boolean isRunning();
 
-
 	
 	/**
 	 * Exception thrown when a parameter is missing for the module initialisation.

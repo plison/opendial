@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
@@ -169,13 +170,20 @@ public class SpeechStream extends InputStream {
 	public byte[] toByteArray() {
 		return data;
 	}
+	
+
+	/**
+	 * Returns the audio format that encodes the stream
+	 * 
+	 * @return the audio format
+	 */
+	public AudioFormat getFormat() {
+		return audioLine.getFormat();
+	}
 
 	
 	/**
 	 * Recorder for the stream, based on the captured audio data.
-	 * 
-	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
 	 */
 	final class StreamRecorder implements Runnable {
 		
@@ -207,5 +215,7 @@ public class SpeechStream extends InputStream {
 			}
 		}
 	}
+
+
 }
 
