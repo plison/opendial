@@ -193,7 +193,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		table.remove(head);
 
 		double totalProb = countTotalProb();
-		if (totalProb < 0.99999) {
+		if (totalProb < 0.99999 && !head.isDefault()) {
 			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 
@@ -542,13 +542,16 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 
 	/**
 	 * Returns the most likely assignment of values in the table.  If none could
-	 * be found, returns an empty assignment.
+	 * be found, returns an empty assignment.  
 	 * 
 	 * @return the assignment with highest probability
 	 */
 	public Assignment getBest() {
 		if (table.size() > 0) {
 		CategoricalTable nbest = getNBest(1);
+		if (nbest.getRows().size() > 1) {
+			nbest.removeRow(Assignment.createDefault(nbest.getHeadVariables()));
+		}
 		return nbest.getRows().iterator().next();
 		}
 		else {
