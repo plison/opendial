@@ -30,7 +30,7 @@ For instance, assuming two state variables `firstvar` and `secondvar`, the condi
 
 The condition will therefore be true if e.g. `firstvar=foo` and `secondvar=foo`.  The curly brackets are important: without them, the condition states that the firstvar must have as value the string `secondvar` (instead of the value denoted by the variable).
 
-More complex conditions must be constructed:
+More complex conditions can be constructed:
 {{{
 <if var="firstvar" relation="=" value="something({secondvar},{thirdvar})"/>
 }}}
