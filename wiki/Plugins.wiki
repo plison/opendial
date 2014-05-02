@@ -1,4 +1,4 @@
-#summary How to install plugins to !OpenDial.
+#summary How to install plugins to OpenDial.
 
 = Plugins for !OpenDial =
 
