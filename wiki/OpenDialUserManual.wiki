@@ -16,8 +16,6 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[ExternalModules External modules]*<br>How to implement new modules with !OpenDial.
 
- * *[Plugins Plugins]*<br>Links to download plugins to connect !OpenDial to the AT&T Speech API, the Mary text-to-speech<br> engine, the Sphinx4 speech recogniser, or control libraries for the Nao robot. 
-
  * *[http://opendial.googlecode.com/svn/trunk/doc/javadoc/index.html Javadoc]*<br>!OpenDial API (latest version).
 
 <br>
