@@ -1,4 +1,5 @@
 #summary A first, step-by-step example of dialogue domain
+#sidebar TableOfContents
 
 = Step-by-step example =
 
