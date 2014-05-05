@@ -6,7 +6,7 @@
 
 == 1. Downloading !OpenDial ==
 
-See [DownloadPackages Download packages].
+Click on the "Downloads" tab on the project page to download the release packages.  
 
 == 2. Compiling !OpenDial ==
 
