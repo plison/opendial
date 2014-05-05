@@ -4,7 +4,7 @@
 
 == 1. !OpenDial toolkit ==
 
-We suggest you to download the release packages of the toolkit, as the bleeding-edge code on the SVN may contain unstable elements that have not yet been thoroughly tested.
+You have the choice between downloading stable release packages or the development version on the SVN repository.
 
 
 === Stable release packages:===
