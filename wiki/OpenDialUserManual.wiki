@@ -1,10 +1,9 @@
+#summary User (and developer) manual for the OpenDial toolkit
 #sidebar TableOfContents
 
 = !OpenDial User Guide =
 
 This user guide explains how to practically employ the !OpenDial toolkit to develop dialogue systems.
-
- * *[DownloadPackages Download packages]*<br>Download links for the !OpenDial toolkit and various plugins (e.g. for AT&T Speech API, Mary <br>TTS, Sphinx ASR, etc.). 
 
  * *[GettingStarted Getting started]*<br>How to compile and start !OpenDial.
 
