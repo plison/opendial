@@ -22,34 +22,6 @@ If you prefer to work with the code on the SVN development trunk, simply enter t
 
 See the [OpenDialUserManual user manual] for more instructions on how to use !OpenDial.
 
-{{{
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}}}
-
 
 == 2. !OpenDial plugins==
 
