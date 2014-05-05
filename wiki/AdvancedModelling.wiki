@@ -1,4 +1,5 @@
 #summary Advanced modelling aspects when specifying dialogue domains
+#sidebar TableOfContents
 
 = Advanced modelling =
 
