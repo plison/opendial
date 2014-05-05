@@ -450,4 +450,15 @@ public class DistributionsTest {
 		
 	}
 	
+	@Test
+	public void nbestTest() {
+		
+		CategoricalTable table = new CategoricalTable();
+		table.addRow(new Assignment("test", "bla"), 0.5);
+		table.addRow(new Assignment("test", "blo"), 0.1);
+		for (int i = 0; i < 10 ; i++) {
+		assertEquals(table.getBest().getValue("test").toString(), "bla");
+		}
+	}
+	
 }
