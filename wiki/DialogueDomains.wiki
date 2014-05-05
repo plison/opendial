@@ -1,4 +1,5 @@
 #summary Specifying rule-structured dialogue domains in XML
+#sidebar TableOfContents
 
 = Dialogue domains =
 
