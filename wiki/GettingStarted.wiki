@@ -5,18 +5,7 @@
 
 == 1. Downloading !OpenDial ==
 
-You can either download a release package or directly checkout the latest, bleeding edge version of the toolkit on the SVN repository.
-
- * *Release packages*: Go to the directory [http://opendial.googlecode.com/svn/downloads] and download the most recent release.  The standard version of !OpenDial is named `opendial-XXX.zip` (replace XXX by the version number). 
-
- * *SVN repository*: Enter the following to checkout the latest !OpenDial version from the SVN:
-{{{
- svn checkout http://opendial.googlecode.com/svn/trunk/ opendial
-}}}
-
-_NB: the checkout operation above is read-only. If you want to commit your own changes (either to the trunk or to a separate branch), feel free to contact me, I will simply add you as a project contributor._
-
-<br>
+See [DownloadPackages Download packages].
 
 == 2. Compiling !OpenDial ==
 
