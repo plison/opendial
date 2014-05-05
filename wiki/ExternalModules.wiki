@@ -1,4 +1,5 @@
 #summary How to implement new modules in OpenDial
+#sidebar TableOfContents
 
 = External modules ==
 
