@@ -2,6 +2,8 @@
 
 This user guide explains how to practically employ the !OpenDial toolkit to develop dialogue systems.
 
+ * *[DownloadPackages Download packages]*<br>Download links for the !OpenDial toolkit, as well as plugins to connect OpenDial to the AT&T Speech API, the Mary text-to-speech engine, the Sphinx4 speech recogniser, and control libraries for the Nao robot. 
+
  * *[GettingStarted Getting started]*<br>How to compile and start !OpenDial.
 
  * *[SimpleExample Step-by-step example]*<br>A detailed, step-by-step example of dialogue domain specification for !OpenDial
