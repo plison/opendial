@@ -1,4 +1,5 @@
 #summary Quick start guide to OpenDial
+#sidebar TableOfContents
 
 = Getting started =
 
