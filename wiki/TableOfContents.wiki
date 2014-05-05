@@ -1,6 +1,3 @@
- * [DownloadPackages Download packages]
-  * [DownloadPackages#1._OpenDial_toolkit OpenDial toolkit]
-  * [DownloadPackages#2._OpenDial_plugins OpenDial plugins]
  * [GettingStarted Getting started]
   * [GettingStarted#1._Downloading_OpenDial 1. Downloading OpenDial] 
   * [GettingStarted#2._Compiling_OpenDial 2. Compiling OpenDial]
