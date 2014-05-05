@@ -1,5 +1,4 @@
 #summary Quick start guide to OpenDial
-#labels Featured
 
 = Getting started =
 
