@@ -51,7 +51,7 @@ See the [OpenDialUserManual user manual] for more instructions on how to use !Op
 }}}
 
 
-== 2. !OpenDial plugins ==
+== 2. !OpenDial plugins==
 
 A series of plugins have been developed to extend !OpenDial with new modules. The plugins currently available are:
  * [http://opendial.googlecode.com/svn/downloads/plugins/attspeech.zip AT&T Speech]: Cloud-based speech recognition and synthesis using the [http://developer.att.com/apis/speech speech API] developed by AT&T.
