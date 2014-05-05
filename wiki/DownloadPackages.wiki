@@ -1,4 +1,6 @@
 #summary How to download the OpenDial toolkit
+#labels Featured
+
 = Downloads =
 
 == 1. !OpenDial toolkit ==
