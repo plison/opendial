@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -245,8 +245,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			log.warning("could not reset intervals: " + e);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Prunes all table values that have a probability lower than the threshold.
 	 * 
@@ -295,7 +295,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		if (table.containsKey(trimmedHead)) {
 			return table.get(trimmedHead);
 		}
-		
+
 		// if the distribution has continuous values, search for the closest element
 		else if (getPreferredType() != DistribType.DISCRETE && !trimmedHead.isDefault()) {
 			try {
@@ -310,8 +310,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 
 		return 0.0f;
 	}
-	
-	
+
+
 	/**
 	 * Returns the marginal probability of the partial assignment.
 	 * 
@@ -328,8 +328,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		}
 		return totalProb;
 	}
-	
-	
+
+
 	/**
 	 * Returns the marginal distribution for a particular variable
 	 * 
@@ -341,12 +341,12 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		for (Assignment row : getRows()) {
 			Value val = row.getValue(var);
 			marginalTable.incrementRow(new Assignment(var, val), table.get(row));
-			
+
 		}
 		return marginalTable;
 	}
-	
-	
+
+
 	/**
 	 * Returns the probability for P(head), ignoring the conditional assignment.
 	 * 
@@ -432,7 +432,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			DiscreteDensityFunction fun = new DiscreteDensityFunction(points);
 			return new ContinuousDistribution(headVar, fun);
 		}
-		
+
 		throw new DialException("Distribution could not be converted to a " +
 				"continuous distribution: " + headVars);
 	}
@@ -458,8 +458,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	public CategoricalTable getPosterior(Assignment condition) {
 		return this;
 	}
- 
-	 
+
+
 
 	/**
 	 * Returns the distribution.
@@ -468,7 +468,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	public CategoricalTable getPartialPosterior(Assignment condition) {
 		return this;
 	}
-	
+
 	/**
 	 * Returns the head values for the table
 	 * 
@@ -537,8 +537,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		}
 		return nbestTable;
 	}
-	
-	
+
+
 
 	/**
 	 * Returns the most likely assignment of values in the table.  If none could
@@ -548,19 +548,19 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 */
 	public Assignment getBest() {
 		if (table.size() > 0) {
-		CategoricalTable nbest = getNBest(1);
-		if (nbest.getRows().size() > 1) {
-			nbest.removeRow(Assignment.createDefault(nbest.getHeadVariables()));
-		}
-		return nbest.getRows().iterator().next();
+			CategoricalTable nbest = getNBest(1);
+			if (nbest.getRows().size() > 1) {
+				nbest.removeRow(Assignment.createDefault(nbest.getHeadVariables()));
+			}
+			return nbest.getRows().iterator().next();
 		}
 		else {
 			log.warning("table is empty, cannot extract best value");
 			return new Assignment();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Returns the rows of the table.
 	 * 
@@ -571,8 +571,8 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	public Set<Assignment> getValues(ValueRange range) {
 		return getValues();
 	}
-	
-	
+
+
 	/**
 	 * Returns the rows of the table.
 	 * 
@@ -584,7 +584,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	}
 
 
-	
+
 	// ===================================
 	//  UTILITIES
 	// ===================================
@@ -609,7 +609,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	@Override
 	public boolean isWellFormed() {
 		// checks that all possible conditional assignments are covered in the table
-	/**	Map<String,Set<Value>> possibleHeadPairs = 
+		/**	Map<String,Set<Value>> possibleHeadPairs = 
 				CombinatoricsUtils.extractPossiblePairs(table.keySet());
 		Set<Assignment> possibleHeadAssignments = 
 				CombinatoricsUtils.getAllCombinations(possibleHeadPairs);
@@ -718,7 +718,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		return DistribType.DISCRETE;
 	}
 
-	
+
 	/**
 	 * Generates the XML representation for the table, for the document doc.
 	 * 
@@ -739,9 +739,9 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		for (Assignment a : table.keySet()) {
 			Element valueNode = doc.createElement("value");
 			if (table.get(a) < 0.99) {
-			Attr prob = doc.createAttribute("prob");
-			prob.setValue(""+StringUtils.getShortForm(table.get(a)));
-			valueNode.setAttributeNode(prob);
+				Attr prob = doc.createAttribute("prob");
+				prob.setValue(""+StringUtils.getShortForm(table.get(a)));
+				valueNode.setAttributeNode(prob);
 			}
 			valueNode.setTextContent(""+a.getValue(headVars.iterator().next()));
 			var.appendChild(valueNode);	
