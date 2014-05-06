@@ -1,3 +1,4 @@
+#sidebar TableOfContents
 
 = !OpenDial User Guide =
 
