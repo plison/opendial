@@ -1,5 +1,4 @@
 #summary User (and developer) manual for the OpenDial toolkit
-#sidebar TableOfContents
 
 = !OpenDial User Guide =
 
