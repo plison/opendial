@@ -12,7 +12,7 @@ Click on the "Downloads" tab on the project page to download the toolkit.
 
 If you have downloaded !OpenDial, you'll need to compile the Java source code.  The easiest way to do it is via [http://ant.apache.org Ant]. First check whether ant is installed on your machine (simply type `ant` on the command line and see the result).
 
-To compile the !OpenDial source code, simply go to the main opendial directory (containing the `build.xml`file) and type:
+To compile !OpenDial, go to the main directory (containing the `build.xml` file) and type:
 {{{
 ant
 }}}
