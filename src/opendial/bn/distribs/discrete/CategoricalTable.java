@@ -736,7 +736,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		id.setValue(headVars.iterator().next().replace("'", ""));
 		var.setAttributeNode(id);
 
-		for (Assignment a : table.keySet()) {
+		for (Assignment a : InferenceUtils.getNBest(table, table.size()).keySet()) {
 			Element valueNode = doc.createElement("value");
 			if (table.get(a) < 0.99) {
 				Attr prob = doc.createAttribute("prob");
