@@ -165,7 +165,7 @@ public class IncrementalTest {
 		iu3.connectTo(iu2, 0.5);
 		system.addContent(iu3);
 		IncrementalUnit iu4 = new IncrementalUnit("u_u", "right");
-		iu4.connectTo(iu3, 0.8);
+		iu4.connectTo(iu3, 0.85);
 		system.addContent(iu4);	
 		IncrementalUnit iu5 = new IncrementalUnit("u_u", "please");
 		iu5.connectTo(iu4, 0.7);
@@ -175,9 +175,9 @@ public class IncrementalTest {
 		assertEquals(system.getContent("a_m").toDiscrete().getBest().getValue("a_m"), ValueFactory.create("Confirm(Move(Left))"));
 		String record = system.getModule(DialogueRecorder.class).getRecord();
 		assertTrue(record.length() > 340 && record.length() < 350);
-		assertTrue(record.contains("<interaction><userTurn><variable id=\"u_u\"><value prob=\"0.1"));
-		assertTrue(record.contains("now turn left please</value><value prob=\"0.4"));
-		assertTrue(record.contains(">now turn left right please</value><value prob=\"0."));
+		assertTrue(record.contains("<interaction><userTurn><variable id=\"u_u\"><value prob=\"0.4"));
+		assertTrue(record.contains("now turn left right please</value><value prob=\"0.1"));
+		assertTrue(record.contains(">now turn left please</value><value prob=\"0."));
 		assertTrue(record.contains("None</value></variable></userTurn><systemTurn>"
 				+ "<variable id=\"u_m\"><value>Should I move left?</value></variable>"
 				+ "</systemTurn></interaction>"));

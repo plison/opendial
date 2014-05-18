@@ -27,7 +27,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -323,14 +328,14 @@ public class BNetworkStructureTest {
 		assertEquals(8, bn.getCliques().get(0).size());
 		bn.getNode("JohnCalls").removeInputNode("Alarm");
 		assertEquals(2, bn.getCliques().size());
-		assertEquals(7, bn.getCliques().get(0).size());
-		assertEquals(1, bn.getCliques().get(1).size());
+		assertEquals(7, bn.getCliques().get(1).size());
+		assertEquals(1, bn.getCliques().get(0).size());
 		bn.getNode("Alarm").removeInputNode("Burglary");
 		bn.getNode("Alarm").removeInputNode("Earthquake");
 		assertEquals(4, bn.getCliques().size());
-		assertEquals(2, bn.getCliques().get(0).size());
-		assertEquals(4, bn.getCliques().get(1).size());
-		assertEquals(1, bn.getCliques().get(2).size());
-		assertEquals(1, bn.getCliques().get(3).size());		
+		assertEquals(2, bn.getCliques().get(3).size());
+		assertEquals(4, bn.getCliques().get(2).size());
+		assertEquals(1, bn.getCliques().get(1).size());
+		assertEquals(1, bn.getCliques().get(0).size());		
 	}
 }

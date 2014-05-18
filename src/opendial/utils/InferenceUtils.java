@@ -177,7 +177,7 @@ public class InferenceUtils {
 	 * @param nbest the number of elements to retain
 	 * @return the resulting subset of the table
 	 */
-	public static Map<Assignment,Double> getNBest (Map<Assignment,Double> initTable, int nbest) {
+	public static LinkedHashMap<Assignment,Double> getNBest (Map<Assignment,Double> initTable, int nbest) {
 		if (nbest < 1) {
 			log.warning("nbest should be >= 1, but is " + nbest);
 			nbest = 1;
@@ -189,12 +189,18 @@ public class InferenceUtils {
 		Collections.sort(entries, new AssignComparator());
 		Collections.reverse(entries);
 
-		Map<Assignment,Double> newTable = new LinkedHashMap<Assignment,Double>();
+		LinkedHashMap<Assignment,Double> newTable = new LinkedHashMap<Assignment,Double>();
 		int nb = 0;
 		for (Map.Entry<Assignment,Double> entry : entries) {
 			if (nb < nbest) {
 				newTable.put(entry.getKey(), entry.getValue());
 				nb++;
+			}
+		}
+		for (Assignment key : new ArrayList<Assignment>(newTable.keySet())) {
+			if (key.isDefault()) {
+				double val = newTable.remove(key);
+				newTable.put(key, val);
 			}
 		}
 		return newTable;
