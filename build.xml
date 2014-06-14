@@ -52,7 +52,7 @@
 
 	<target name="test-run" depends="compile">
 		<mkdir dir="${testreports}" />
-		<junit printsummary="yes" haltonfailure="no" showoutput="no">
+		<junit printsummary="yes" haltonfailure="no" haltonerror="yes" showoutput="no">
 			<classpath refid="compile.classpath" />
 			<batchtest fork="yes" todir="${testreports}">
 				<formatter type="xml" />
