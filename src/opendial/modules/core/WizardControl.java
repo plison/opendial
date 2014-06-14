@@ -126,11 +126,11 @@ public class WizardControl implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		
 		// if the action selection is straightforward and parameter-less, directly select the action
 		if (state.getUtilityNodeIds().size() == 1 
 				&& state.getUtilityNodes().iterator().next() instanceof UtilityRuleNode) {
-			if (((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getInputConditions().size() == 1) {
+			if (((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getInputConditions().size() == 1 &&
+					((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getAnchor().getParameters().isEmpty()) {
 				system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
 			}
 		}
@@ -138,6 +138,7 @@ public class WizardControl implements Module {
 		try {
 				
 		for (ActionNode action : state.getActionNodes()) {
+			log.debug("ah!" + action.getId());
 			displayWizardBox(action);
 		}
 		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
