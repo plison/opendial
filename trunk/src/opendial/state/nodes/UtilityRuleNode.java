@@ -81,6 +81,7 @@ public class UtilityRuleNode extends UtilityNode {
 		return rule.getInputs().linearise();
 	}
 
+	
 
 
 	/**
