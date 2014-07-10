@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
  * is more exactly a Product KDE (a multivariate extension of classical KDE).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-05-07 14:40:41 #$
  *
  */
 public class KernelDensityFunction implements DensityFunction {

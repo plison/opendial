@@ -232,6 +232,7 @@ public abstract class BNode implements Comparable<BNode> {
 		this.network = network;
 	}
 	
+	
 	// ===================================
 	//  GETTERS
 	// ===================================
@@ -593,7 +594,7 @@ public abstract class BNode implements Comparable<BNode> {
 			throw e;
 		}
 	}
-
+	
 
 	
 	// ===================================

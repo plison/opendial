@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
  * The probability distribution may be continuous or discrete.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-20 21:16:08 #$
  */
 public interface IndependentProbDistribution extends ProbDistribution {
 	

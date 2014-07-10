@@ -36,7 +36,6 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.incremental.IncrementalUnit;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechStream;
 import opendial.domains.Domain;
@@ -280,8 +279,8 @@ public class DialogueSystem {
 
 		for (Class<Module> toAttach : settings.modules) {
 			if (getModule(toAttach) == null) {
-			log.info("Attaching module: " + toAttach.getCanonicalName());
-			attachModule(toAttach);
+				log.info("Attaching module: " + toAttach.getCanonicalName());
+				attachModule(toAttach);
 			}
 		}	
 	}
@@ -310,49 +309,32 @@ public class DialogueSystem {
 			log.info("system is currently paused -- ignoring content " + distrib);
 		}
 	}
-	
-	
-	/**
-	 * Adds the incremental unit to the current dialogue state, 
-	 * and subsequently updates the dialogue state.
-	 * 
-	 * @param unit the incremental unit to add
-	 * @throws DialException if the state could not be updated.
-	 */
-	public void addContent(IncrementalUnit unit) throws DialException {
-		if (!paused) {
-			synchronized (curState) {
-				curState.addToState(unit);
-				update();
-			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + unit);
-		}
-	}
-	
 
+	
 	/**
-	 * Sets an incremental variable as being committed
+	 * Adds the content (expressed as a distribution over variables) to the current dialogue
+	 * state, and subsequently updates it.  If the dialogue state already contains the variables
+	 * and have been updated recently (with a maximum duration of maxDurationGap), the new content
+	 * is concatenated to the existing values for the variables.  This allows for incremental updates
+	 * of e.g. user utterances.
 	 * 
-	 * @param incrementalVariable the label for the incremental variable
-	 * @param commit whether the variable is committed or not
+	 * @param content the content to add / concatenate
+	 * @param maximumDurationGap the maximum gap (in milliseconds) to allow a variable to be concatenated
+	 * @throws DialException if the incremental update failed
 	 */
-	public void setAsCommitted(String incrementalVariable, boolean commit) {
+	public void incrementContent(CategoricalTable content, long maxDurationGap) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
-				curState.setAsCommitted(incrementalVariable, commit);
-				curState.reduce();
-				for (Module module : modules) {
-					module.trigger(curState, Arrays.asList(incrementalVariable));
-				}
+				curState.incrementState(content, maxDurationGap);
 				update();
 			}
 		}
 		else {
-			log.info("system is currently paused -- ignoring committment to " + incrementalVariable);
+			log.info("system is currently paused -- ignoring content " + content);
 		}
 	}
+
+
 
 	/**
 	 * Adds the content (expressed as a certain assignment over variables) to the
@@ -384,8 +366,8 @@ public class DialogueSystem {
 			log.info("system is currently paused -- ignoring content " + newState);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Feed the input speech stream to the dialogue system.  Provided that a speech 
 	 * recogniser is present in the system modules, the stream will be processed 
@@ -401,7 +383,7 @@ public class DialogueSystem {
 		}
 	}
 
-	
+
 
 
 	/**
@@ -410,7 +392,7 @@ public class DialogueSystem {
 	 * updates have been performed.  The dialogue state is pruned.
 	 */
 	protected void update() {
-		
+
 		while (!curState.getNewVariables().isEmpty()) {
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	

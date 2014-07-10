@@ -224,7 +224,7 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	private double getProb(Assignment condition) throws DialException {
 
 	
-		Assignment trimmed = condition.getTrimmed(variable+"^p");
+		Assignment trimmed = condition.getTrimmed(variable+"^p", variable+"^p-old");
 		if (condition.containsVar(variable+"'")) {
 			trimmed.addPair(variable+"'", condition.getValue(variable+"'"));
 		}

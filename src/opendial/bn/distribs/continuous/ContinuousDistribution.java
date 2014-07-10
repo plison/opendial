@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  * variable. The distribution does not take any conditional assignment.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-20 21:16:08 #$
  *
  */
 public class ContinuousDistribution implements  IndependentProbDistribution {

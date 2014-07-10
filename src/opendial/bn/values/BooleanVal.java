@@ -23,6 +23,8 @@
 
 package opendial.bn.values;
 
+import opendial.arch.Logger;
+
 
 /**
  * Representation of a boolean value.
@@ -34,6 +36,9 @@ package opendial.bn.values;
  */
  public final class BooleanVal implements Value {
 	
+	 // logger
+	 public static Logger log = new Logger("BooleanVal", Logger.Level.DEBUG);
+
 	 // the boolean
 	final boolean b;
 	
@@ -87,6 +92,22 @@ package opendial.bn.values;
 	@Override
 	public String toString() { return ""+b; }
 
+	
+	/**
+	 * If v is a BooleanVal, returns the conjunction of the two values.  Else, returns none.
+	 */
+	public Value concatenate(Value v) {
+		if (v instanceof BooleanVal) {
+			return new BooleanVal(b & ((BooleanVal)v).getBoolean());
+		}
+		else if (v instanceof NoneVal) {
+			return this;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " and " + v);
+			return ValueFactory.noneValue;
+		}
+	}
 	 
 	/**
 	 * Compares the boolean to another value

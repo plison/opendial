@@ -69,6 +69,12 @@ public final class NoneVal implements Value {
 	@Override
 	public NoneVal copy() { return this; }
 	
+	/**
+	 * Returns the value v provided as argument.
+	 */
+	public Value concatenate(Value v) {
+		return v;
+	}
 	
 	/**
 	 * Returns the string "None

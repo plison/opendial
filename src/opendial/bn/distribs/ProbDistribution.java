@@ -36,7 +36,7 @@ import opendial.datastructs.ValueRange;
  * may be discrete or continuous.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-03-20 21:16:08 #$
  *
  */
 public interface ProbDistribution  {

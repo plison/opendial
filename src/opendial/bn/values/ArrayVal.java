@@ -39,8 +39,7 @@ import opendial.utils.StringUtils;
 public final class ArrayVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("DoubleVectorVal",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("ArrayVal", Logger.Level.DEBUG);
 	
 	// the array of doubles
 	final Double[] array;
@@ -134,6 +133,32 @@ public final class ArrayVal implements Value {
 	 */
 	public Double[] getArray() {
 		return array;
+	}
+	
+	/**
+	 * If v is an ArrayVal, returns the combined array value.  Else, returns none.
+	 * 
+	 * @param v the value to concatenate
+	 * @return the concatenated result
+	 */
+	public Value concatenate(Value v) {
+		if (v instanceof ArrayVal) {
+			Double[] newvals = new Double[array.length + ((ArrayVal)v).getArray().length];
+			for (int i = 0 ; i < array.length ; i++) {
+				newvals[i] = array[i];
+			}
+			for (int i = 0 ; i < ((ArrayVal)v).getArray().length ; i++) {
+				newvals[array.length+i] = ((ArrayVal)v).getArray()[i];
+			}
+			return new ArrayVal(newvals);
+		}
+		else if (v instanceof NoneVal) {
+			return this;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " with " + v);
+			return ValueFactory.noneValue;
+		}
 	}
 	
 	/**
