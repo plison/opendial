@@ -1,0 +1,154 @@
+
+<domain>
+
+	<!-- NLU model -->
+	<model trigger="u_u">
+
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="turn * left" relation="in" />
+					<if var="u_u" value="move * left" relation="in" />
+					<if var="u_u" value="go * left" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Left)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="turn * right" relation="in" />
+					<if var="u_u" value="move * right" relation="in" />
+					<if var="u_u" value="go * right" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Right)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="move * forward" relation="in" />
+					<if var="u_u" value="go * forward" relation="in" />
+					<if var="u_u" value="move * forwards" relation="in" />
+					<if var="u_u" value="go * forwards" relation="in" />
+					<if var="u_u" value="go * straight" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Forward)" />
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" value="move * backward" relation="in" />
+					<if var="u_u" value="go * backward" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Backward)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="u_u" value="stop" relation="in" />
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Request(Stop)" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<clear var="a_u"/>
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+	<!-- Action selection model -->
+	<model trigger="a_u">
+
+		<rule id="movement">
+			<case>
+				<condition>
+					<if var="a_u" value="Request({X})" />
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="Move({X})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id ="negative">
+			<case>
+				<effect util="-0.5">
+					<set var="a_m" value="Move(*)" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule id="repeat">
+			<case>
+				<effect util="0.3">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule id="wait">
+			<case>
+				<condition>
+				<if var="floor" value="free" relation="!="/>
+				</condition>
+				<effect util="-3">
+					<set var="a_m" value="*"/>
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+
+	<!-- NLG model -->
+	<model trigger="a_m">
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Move({X})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Ok, moving {X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Sorry, could you repeat?" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+
+
+	<!-- Prediction model for the next user dialogue act -->
+	<model trigger="a_m">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect prob="0.9">
+					<set var="a_u^p" value="{a_u}" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<clear var="a_u^p"/>
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+</domain>
