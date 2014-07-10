@@ -370,8 +370,9 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 
 		@Override
 		public String transform(String nodeGraphId) {
-			String nodeId2 = getBNode(nodeGraphId).getId();
-			String prettyPrintNode = getBNode(nodeId2).toString();
+			BNode node = getBNode(nodeGraphId);
+			if (node != null) {
+			String prettyPrintNode = node.toString();
 			String htmlDistrib = "<html>&nbsp;&nbsp;" + 
 					prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
 							+ "<br>&nbsp;&nbsp;") + "<br></html>";
@@ -381,6 +382,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 					.replace("else", "<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
 					.replace("<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>", "<b>else if</b>");
 			return StringUtils.getHtmlRendering(htmlDistrib);
+			}
+			else {
+				return "";
+			}
 		}
 
 	}

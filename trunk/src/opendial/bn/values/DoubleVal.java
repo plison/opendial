@@ -23,6 +23,7 @@
 
 package opendial.bn.values;
 
+import opendial.arch.Logger;
 import opendial.utils.StringUtils;
 
 
@@ -37,6 +38,10 @@ import opendial.utils.StringUtils;
 
 public final class DoubleVal implements Value {
 
+	 // logger
+	 public static Logger log = new Logger("DoubleVal", Logger.Level.DEBUG);
+
+	 
 	// the double
 	final double d;
 
@@ -97,6 +102,26 @@ public final class DoubleVal implements Value {
 	}
 
 
+	/**
+	 * If v is a DoubleVal, returns the addition of the two values.  If v is a StringVal,
+	 * returns the string concatenation of the two.  Else, returns none.
+	 */
+	public Value concatenate(Value v) {
+		if (v instanceof DoubleVal) {
+			return new DoubleVal(d + ((DoubleVal)v).getDouble());
+		}
+		else if (v instanceof StringVal) {
+			return ValueFactory.create(toString() + " " + v.toString());
+		}
+		else if (v instanceof NoneVal) {
+			return this;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " and " + v);
+			return ValueFactory.noneValue;
+		}
+	}
+	
 	/**
 	 * Compares the double value to another value
 	 * 

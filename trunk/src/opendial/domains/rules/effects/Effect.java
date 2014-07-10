@@ -132,6 +132,18 @@ public class Effect implements Value {
 		}
 		return true;
 	}
+	
+	public Value concatenate (Value v) {
+		if (v instanceof Effect) {
+			Effect newEffect = copy();
+			newEffect.addSubEffects(((Effect)v).getSubEffects());
+			return newEffect;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " and " + v);
+			return ValueFactory.none();
+		}
+	}
 
 	// ===================================
 	//  GETTERS

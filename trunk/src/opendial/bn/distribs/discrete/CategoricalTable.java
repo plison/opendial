@@ -39,6 +39,7 @@ import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
+import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
@@ -196,8 +197,34 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 		if (totalProb < 0.99999 && !head.isDefault()) {
 			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
-
 	}
+	
+	
+	/**
+	 * Concatenate the values for the two tables (assuming the two tables
+	 * share the same head variables).
+	 * 
+	 * @param newTable
+	 */
+	public CategoricalTable concatenate (CategoricalTable other) {
+		
+		if (!headVars.equals(other.getHeadVariables())) {
+			log.warning("can only concatenate tables with same variables");
+		}
+		
+		CategoricalTable newtable = new CategoricalTable();
+		for (Assignment thisA : new HashSet<Assignment>(getRows())) {
+			for (Assignment otherA : other.getRows()) {
+				Assignment concat = new Assignment();
+				for (String var : headVars) {
+					concat.addPair(var, thisA.getValue(var).concatenate(otherA.getValue(var)));
+				}
+				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
+			}
+		}
+		return newtable;
+	}
+	
 
 
 	/**
@@ -337,6 +364,10 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 	 * @return the marginal probability
 	 */
 	public CategoricalTable getMarginalTable(String var) {
+	
+		if (headVars.size() == 1 && headVars.contains(var)) {
+			return this;
+		}
 		CategoricalTable marginalTable = new CategoricalTable();
 		for (Assignment row : getRows()) {
 			Value val = row.getValue(var);

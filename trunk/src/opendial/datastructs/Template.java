@@ -381,7 +381,7 @@ public class Template {
 	        else if (charArr[i] == '?') { builder.append("\\?"); }
 	        else if (charArr[i] == '!') { builder.append("\\!"); }
 	        else if (charArr[i] == '^') { builder.append("\\^"); }
-	        else if (charArr[i] == '*' && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
+	        else if (charArr[i] == '*' && i < (charArr.length-1) && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
 	        else if (charArr[i] == '*') { builder.append("(?:.*)"); }
 	        else if (charArr[i] == '{' && charArr[i+1]=='}') { builder.append("\\{\\}"); i++; }
 	        else {

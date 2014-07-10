@@ -62,6 +62,9 @@ public class Settings {
 	/** Number of discretisation buckets to convert continuous distributions */
 	public static int discretisationBuckets = 50;
 
+	/** Maximum gap (in milliseconds) beteen incremental input for an utterance */
+	public static long incrementalGap = 500;
+
 	/** Whether to show the GUI */
 	public boolean showGUI;
 
@@ -70,7 +73,7 @@ public class Settings {
 	
 	/** Variable label for the system output */
 	public String systemOutput;
-		
+	
 	/** Other variables to monitor in the chat window */
 	public List<String> varsToMonitor = new ArrayList<String>();
 

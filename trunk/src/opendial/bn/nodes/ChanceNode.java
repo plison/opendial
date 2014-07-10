@@ -36,7 +36,6 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.incremental.IncrementalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -65,6 +64,8 @@ public class ChanceNode extends BNode {
 	// a discretisation procedure defined by the distribution
 	protected Set<Value> cachedValues;
 
+	// commitment of the node content (for incremental processing)
+	boolean isCommitted = true;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -204,7 +205,14 @@ public class ChanceNode extends BNode {
 		super.setId(newId);
 		distrib.modifyVariableId(oldId, newId);
 	}
-
+	
+	
+	/**
+	 * Sets the distribution for the node as committed (for incremental processing)
+	 */
+	public void setAsCommitted(boolean commit) {
+		isCommitted = commit;
+	}
 
 
 	// ===================================
@@ -374,7 +382,7 @@ public class ChanceNode extends BNode {
 	 * @return true if the node and its ancestors are fully committed, and false otherwise
 	 */
 	public boolean isCommitted() {
-		if (distrib instanceof IncrementalDistribution && !((IncrementalDistribution)distrib).isCommitted()) {
+		if (!isCommitted) {
 			return false;
 		}
 		for (BNode n : inputNodes.values()) {
@@ -400,7 +408,7 @@ public class ChanceNode extends BNode {
 
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-			CategoricalTable condTable;
+			CategoricalTable condTable = null;
 			try {
 				if (distrib instanceof IndependentProbDistribution) {
 					condTable = ((IndependentProbDistribution)distrib).toDiscrete();
@@ -436,7 +444,9 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public ChanceNode copy() throws DialException {
-		return new ChanceNode(nodeId, distrib.copy());
+		ChanceNode cn = new ChanceNode(nodeId, distrib.copy());
+		cn.isCommitted = isCommitted;
+		return cn;
 	}
 
 
@@ -456,7 +466,11 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public String toString() {
-		return distrib.toString();
+		String str = distrib.toString();
+		if (!isCommitted) {
+			str += " (uncommitted)";
+		}
+		return str;
 	}
 
 	// ===================================
@@ -469,6 +483,7 @@ public class ChanceNode extends BNode {
 		super.modifyVariableId(oldId, newId);
 		distrib.modifyVariableId(oldId, newId);
 	}
+
 
 
 

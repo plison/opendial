@@ -29,5 +29,14 @@
 
 	<import href="domain_user.xml" />
 
+<settings>
+<grammar>/Users/plison/code/opendial/trunk/domains/demo/demo.gram</grammar>
+</settings>
+
+<!-- <settings>
+<nao_ip>193.157.229.207</nao_ip>
+<grammar>/home/nao/grammar.bnf</grammar>
+<modules>opendial.plugins.NaoASR,opendial.plugins.NaoButton, opendial.plugins.NaoPerception, opendial.plugins.NaoBehaviour,opendial.plugins.NaoTTS</modules>
+</settings> -->
 
 </domain>
