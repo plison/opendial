@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import opendial.arch.Logger;
+
 
 /**
  * Value that is defined as a set of values (with no duplicate elements).
@@ -40,6 +42,10 @@ import java.util.Set;
  */
 public final class SetVal implements Value {
 	
+	 // logger
+	 public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
+
+	 
 	// the set of values
 	final Set<Value> set;
 	
@@ -106,6 +112,20 @@ public final class SetVal implements Value {
 		return ""+set.toString();
 	}
 
+	public Value concatenate (Value v) {
+		if (v instanceof SetVal) {
+			Set<Value> newSet = new HashSet<Value>(set);
+			newSet.addAll(((SetVal)v).getSet());
+			return new SetVal(newSet);
+		}
+		else if (v instanceof NoneVal) {
+			return this;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " and " +  v);
+			return ValueFactory.noneValue;
+		}
+	}
 	
 	/**
 	 * Adds all the values in the given SetVal to this value

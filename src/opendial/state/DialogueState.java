@@ -35,15 +35,15 @@ import java.util.TreeSet;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.incremental.IncrementalDistribution;
-import opendial.bn.distribs.incremental.IncrementalUnit;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -58,6 +58,7 @@ import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
 import opendial.state.nodes.UtilityRuleNode;
+import opendial.utils.IncrementalUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -206,14 +207,13 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if the content could not be added.
 	 */
 	public void addToState(IndependentProbDistribution distrib) throws DialException {
-
+		
 		for (String headVar : distrib.getHeadVariables()) {
 			distrib.modifyVariableId(headVar, headVar + "'");
 			headVar = headVar + "'";
 
-			IndependentProbDistribution marginal = (distrib.getHeadVariables().size() > 1)? 
-					distrib.toDiscrete().getMarginalTable(headVar) : distrib;
-					ChanceNode newNode = new ChanceNode(headVar, marginal);
+			IndependentProbDistribution marginal = distrib.toDiscrete().getMarginalTable(headVar);
+			ChanceNode newNode = new ChanceNode(headVar, marginal);
 
 			if (hasNode(headVar)) {
 				BNode toRemove = getNode(headVar);
@@ -226,47 +226,34 @@ public class DialogueState extends BNetwork {
 		}
 	}
 
-
-
+	
 	/**
-	 * Adds an incremental unit to the dialogue state.
+	 * Concatenates the current value for the new content onto the current content, provided
+	 * the duration gap between the two is now larger than the specified maxDurationGap. Otherwise,
+	 * simply overwrite with the new content.
 	 * 
-	 * @param unit the incremental unit
-	 * @throws DialException
+	 * @param distrib the distribution to add as incremental unit of content
+	 * @param maxDurationGap the maximum duration gap between the two contents
+	 * @throws DialException if the incremental operation could not be performed
 	 */
-	public void addToState(IncrementalUnit unit) throws DialException {
-
-		if (!hasChanceNode(unit.getVariable()) || getChanceNode(unit.getVariable()).isCommitted()) {
-			IncrementalDistribution distrib = new IncrementalDistribution(unit);
-			ChanceNode newNode = new ChanceNode(unit.getVariable(), distrib);
-			newNode.setId(unit.getVariable() + "'");
-			addNode(newNode);
+	public void incrementState(CategoricalTable distrib, long maxDurationGap) throws DialException {
+		
+		if (distrib.getHeadVariables().size() != 1) {
+			throw new DialException("increment only available for univariate distributions, but is " + distrib.getHeadVariables());
+		}
+		String headVar = distrib.getHeadVariables().iterator().next();
+		if (hasChanceNode(headVar) && !getChanceNode(headVar).isCommitted()) {
+			CategoricalTable newtable = queryProb(headVar).toDiscrete().concatenate(distrib);
+			getChanceNode(headVar).setDistrib(newtable);
+			getChanceNode(headVar).setId(headVar + "'");
 		}
 		else {
-			ChanceNode cn = getChanceNode(unit.getVariable());
-			IncrementalDistribution prevDistrib = (IncrementalDistribution) cn.getDistrib();
-			prevDistrib.addUnit(unit);
-			cn.setDistrib(prevDistrib);
-			cn.setId(cn.getId() + "'");
+			addToState(distrib);
 		}
+		getChanceNode(headVar+"'").setAsCommitted(false);
+		IncrementalUtils.createDaemon(headVar, maxDurationGap, this);
 	}
 
-
-	/**
-	 * Sets an incremental variable as being committed
-	 * 
-	 * @param incrementalVariable the label for the incremental variable
-	 * @param commit whether the variable is committed or not
-	 */
-	public void setAsCommitted(String incrementalVariable, boolean commit) {
-		if (hasChanceNode(incrementalVariable) && getChanceNode(incrementalVariable).getDistrib()
-				instanceof IncrementalDistribution) {
-			((IncrementalDistribution)getChanceNode(incrementalVariable).getDistrib()).setAsCommitted(commit);
-		}
-		else {
-			log.warning("variable "+ incrementalVariable + " does not exist or is not incremental");
-		}
-	}
 
 
 	/**

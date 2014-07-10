@@ -50,5 +50,14 @@ public interface Value extends Comparable<Value> {
 	 * @return true if the value is contained, false otherwise
 	 */
 	public abstract boolean contains(Value subvalue);
+
+
+	/**
+	 * Returns a value that is the concatenation of the two values
+	 * 
+	 * @param value the value to concatenate with the current one
+	 * @return the concatenated result
+	 */
+	public abstract Value concatenate(Value value);
 	
 }

@@ -131,7 +131,9 @@ implements MouseListener, ActionListener {
 		DialogueState state = viewer.getState();
 		Set<String> pickedVertices = new HashSet<String>();
 		for (String vertice : viewer.getPickedVertexState().getPicked()) {
+			if (viewer.getBNode(vertice) != null) {
 			pickedVertices.add(viewer.getBNode(vertice).getId());
+			}
 		}
 		pickedVertices.removeAll(state.getUtilityNodeIds());
 

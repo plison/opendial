@@ -120,7 +120,7 @@ public class ForwardPlanner implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
-		if (!paused && !state.getActionNodeIds().isEmpty() && state.isCommitted()) {
+		if (!paused && !state.getActionNodeIds().isEmpty()) {
 			try {
 				currentProcess = new PlannerProcess(state);
 				currentProcess.start();
@@ -159,7 +159,6 @@ public class ForwardPlanner implements Module {
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
 				Assignment bestAction =  evalActions.getBest().getKey(); 
-
 				initState.removeNodes(initState.getUtilityNodeIds());
 				initState.removeNodes(initState.getActionNodeIds());
 				

@@ -87,6 +87,12 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
+	/** whether to use the chat window in incremental mode (in such cases, two lines that occur within
+	 * a duration of less than incremental_delay are considered to be from the same utterance)
+	 */
+	public static boolean incremental = false;
+	public static long incremental_delay = 500;
+	
 	// main chat window
 	HTMLEditorKit kit;
     HTMLDocument doc;
@@ -434,7 +440,12 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		@Override
 		public void run() {
 			try {
+				if (incremental) {
 			system.addContent(table);
+				}
+				else {
+					system.incrementContent(table, incremental_delay);
+				}
 			}
 			catch (DialException e) {
 				log.warning("cannot update state with user utterance");

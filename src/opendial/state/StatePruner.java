@@ -157,7 +157,7 @@ public class StatePruner {
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				continue;
 			}  */
-			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o")) {
+			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o") || (node.getId().endsWith("-old") && node.getOutputNodes().isEmpty())) {
 				continue;
 			}
 			else if (node instanceof ChanceNode && node.getInputNodeIds().size() < 3 && ((ChanceNode)node).getNbValues() == 1 
@@ -240,11 +240,14 @@ public class StatePruner {
 					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty() 
 					&& (node.isCommitted())) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
+				
 				node.setDistrib(new CategoricalTable(onlyAssign));
 				for (BNode outputNode : node.getOutputNodes()) {
+					if (!(outputNode instanceof ProbabilityRuleNode)) {
 					outputNode.removeInputNode(node.getId());
 					((ChanceNode)outputNode).setDistrib(((ChanceNode)
 							outputNode).getDistrib().getPartialPosterior(onlyAssign));
+					}
 				}
 			} 
 		}
@@ -280,6 +283,7 @@ public class StatePruner {
 			}
 		}
 	}
+
 
 }
 

@@ -119,6 +119,26 @@ public final class StringVal implements Value {
 			return hashCode() - o.hashCode();
 		}
 	}
+	
+	
+	/**
+	 * Returns the concatenation of the two values.  
+	 */
+	public Value concatenate (Value v) {
+		if (v instanceof StringVal) {
+			return ValueFactory.create(str + " " + v.toString());
+		}
+		else if (v instanceof DoubleVal) {
+			return ValueFactory.create(str + " " + v.toString());			
+		}
+		else if (v instanceof NoneVal) {
+			return this;
+		}
+		else {
+			log.warning("cannot concatenate " + this + " and " + v);
+			return ValueFactory.noneValue;
+		}
+	}
 
 
 	/**

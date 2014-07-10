@@ -138,7 +138,6 @@ public class WizardControl implements Module {
 		try {
 				
 		for (ActionNode action : state.getActionNodes()) {
-			log.debug("ah!" + action.getId());
 			displayWizardBox(action);
 		}
 		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
