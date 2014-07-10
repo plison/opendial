@@ -39,7 +39,6 @@ import opendial.bn.distribs.continuous.functions.DiscreteDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
-import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
@@ -217,7 +216,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			for (Assignment otherA : other.getRows()) {
 				Assignment concat = new Assignment();
 				for (String var : headVars) {
-					concat.addPair(var, thisA.getValue(var).concatenate(otherA.getValue(var)));
+					concat.addPair(var, thisA.getValue(var) + " " + otherA.getValue(var));
 				}
 				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
 			}
