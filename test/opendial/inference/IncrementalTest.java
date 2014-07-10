@@ -36,7 +36,7 @@ import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
 
-public class IncrementalTest2 {
+public class IncrementalTest {
 
 	// logger
 	public static Logger log = new Logger("IncrementalTest2",
