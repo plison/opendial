@@ -61,8 +61,6 @@ import opendial.domains.Domain;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.modules.core.WizardControl;
-import opendial.modules.speech.SpeechRecogniser;
-import opendial.modules.speech.SpeechSynthesiser;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
@@ -175,7 +173,7 @@ public class GUIMenuBar extends JMenuBar {
 			public void actionPerformed (ActionEvent e) {
 				boolean toPause = !frame.getSystem().isPaused();
 				frame.getSystem().pause(toPause);
-				frame.getSystem().recordComment((toPause)? "system paused" : "system resumed");
+				frame.getSystem().displayComment((toPause)? "system paused" : "system resumed");
 			}
 		});
 		traceMenu.add(freezeItem);
@@ -244,12 +242,10 @@ public class GUIMenuBar extends JMenuBar {
 				mixerButton.setSelected(true);
 			}
 		}
-
-		if (frame.getSystem().getModule(SpeechRecogniser.class) == null) {
-			inputMenu.setEnabled(false);
-		}
+		
+		inputMenu.setEnabled(frame.isSpeechEnabled);
 		optionMenu.add(inputMenu);
-
+		
 		outputMenu = new JMenu("Audio output");
 		ButtonGroup outputGroup = new ButtonGroup();
 		for (final Mixer.Info mixer : AudioUtils.getOutputMixers()) {
@@ -267,9 +263,7 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		}
 
-		if (frame.getSystem().getModule(SpeechSynthesiser.class) == null) {
-			outputMenu.setEnabled(false);
-		}
+		outputMenu.setEnabled(true);
 		optionMenu.add(outputMenu);
 
 		JMenu interactionMenu = new JMenu("View Utterances");
@@ -417,6 +411,14 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getSystem().detachModule(WizardControl.class);
 			frame.addComment("Switching interaction to normal mode");
 		}
+	}
+	
+	
+	/**
+	 * Enables or disables the speech option menu 
+	 */
+	protected void enableSpeech(boolean toEnable) {
+		inputMenu.setEnabled(toEnable);
 	}
 
 
@@ -645,14 +647,13 @@ public class GUIMenuBar extends JMenuBar {
 		exportParams.setEnabled(!parameterIds.isEmpty());
 		stateDisplayMenu.setEnabled(!parameterIds.isEmpty());
 
-		inputMenu.setEnabled(frame.getSystem().getModule(SpeechRecogniser.class) != null);
+		inputMenu.setEnabled(frame.isSpeechEnabled());
 		for (Component c: inputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
 					.startsWith(frame.getSystem().getSettings().inputMixer.getName())) {
 				((JRadioButtonMenuItem)c).setSelected(true);
 			}
 		}
-		outputMenu.setEnabled(frame.getSystem().getModule(SpeechSynthesiser.class) != null);
 		for (Component c: outputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem && ((JRadioButtonMenuItem)c).getText()
 					.startsWith(frame.getSystem().getSettings().outputMixer.getName())) {

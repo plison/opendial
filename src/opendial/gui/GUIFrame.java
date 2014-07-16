@@ -38,7 +38,6 @@ import javax.swing.JTabbedPane;
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.modules.Module;
-import opendial.modules.speech.SpeechRecogniser;
 import opendial.state.DialogueState;
 
 /**
@@ -67,6 +66,8 @@ public class GUIFrame implements Module {
 	DialogueSystem system;		
 	
 	GUIMenuBar menu;
+	
+	boolean isSpeechEnabled = false;
 
 	
 	/**
@@ -161,7 +162,6 @@ public class GUIFrame implements Module {
 		else if (!frame.getTitle().contains(system.getDomain().getName())){
 			frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
 		}
-		chatTab.enableSpeechInput(system.getModule(SpeechRecogniser.class) != null);
 		}
 	}
 	
@@ -227,6 +227,27 @@ public class GUIFrame implements Module {
 	@Override
 	public boolean isRunning() {
 		return (frame != null && frame.isVisible());
+	}
+
+
+	/**
+	 * Returns whether the speech recording functionality if enabled in the GUI
+	 */
+	public boolean isSpeechEnabled() {
+		return isSpeechEnabled;
+	}
+	
+	/**
+	 * Enables or disables the speech recording functionality in the GUI
+	 */
+	public void enableSpeech(boolean toEnable) {
+		isSpeechEnabled = toEnable;
+		if (chatTab != null) {
+		chatTab.enableSpeech(toEnable);
+		}
+		if (menu != null) {
+		menu.enableSpeech(toEnable);
+		}
 	}
 
 }

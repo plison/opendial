@@ -4,7 +4,7 @@
 	<!-- NLU model -->
 	<model trigger="u_u">
 
-		<rule>
+		<rule id="nlu">
 			<case>
 				<condition operator="or">
 					<if var="u_u" value="turn * left" relation="in" />
@@ -89,17 +89,6 @@
 			<case>
 				<effect util="0.3">
 					<set var="a_m" value="AskRepeat" />
-				</effect>
-			</case>
-		</rule>
-		
-		<rule id="wait">
-			<case>
-				<condition>
-				<if var="floor" value="free" relation="!="/>
-				</condition>
-				<effect util="-3">
-					<set var="a_m" value="*"/>
 				</effect>
 			</case>
 		</rule>

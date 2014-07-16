@@ -38,6 +38,7 @@ import javax.swing.border.BevelBorder;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechStream;
 
 
@@ -100,7 +101,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		try {
 		currentRecording = new SpeechStream(system.getSettings().inputMixer);
 		slm.monitorVolume(currentRecording);
-		system.addContent(currentRecording);
+		system.addContent(new Assignment(system.getSettings().userSpeech, currentRecording));
 		}
 		catch (DialException ex) {
 			log.warning(ex.toString());
@@ -117,6 +118,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		try {
 		currentRecording.close(); 
+		system.getState().removeNode(system.getSettings().userSpeech);
 		}
 		catch (Exception f) {
 			f.printStackTrace();

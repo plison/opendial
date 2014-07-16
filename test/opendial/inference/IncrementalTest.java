@@ -25,6 +25,8 @@
 package opendial.inference;
 
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import opendial.DialogueSystem;
@@ -32,6 +34,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
@@ -39,8 +42,7 @@ import opendial.readers.XMLDomainReader;
 public class IncrementalTest {
 
 	// logger
-	public static Logger log = new Logger("IncrementalTest2",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("IncrementalTest", Logger.Level.DEBUG);
 	
 	
 	public static final String domainFile = "test//domains//incremental-domain.xml";
@@ -54,14 +56,32 @@ public class IncrementalTest {
 		system.getSettings().recording = Settings.Recording.ALL;
 		system.startSystem();
 		system.addContent(new Assignment("floor", "user"));
-		system.incrementContent(new CategoricalTable(new Assignment("u_u", "go")), 5000);
+		system.incrementContent(new CategoricalTable(new Assignment("u_u", "go")), false);
+		Thread.sleep(100);
+		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "go")));
+		assertTrue(system.getState().hasChanceNode("nlu"));
 		CategoricalTable t = new CategoricalTable();
 		t.addRow(new Assignment("u_u", "forward"), 0.7);
 		t.addRow(new Assignment("u_u", "backward"), 0.2);
-		system.incrementContent(t, 5000);
+		system.incrementContent(t, true);
+		Thread.sleep(100);
+		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "go forward")));
+		assertEquals(system.getContent("u_u").toDiscrete().getProb(new Assignment("u_u", "go backward")), 0.2, 0.001);
+		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.addContent(new Assignment("floor", "free"));
-		system.incrementContent(new CategoricalTable(new Assignment("u_u", "please")), 500);
-		
+		system.incrementContent(new CategoricalTable(new Assignment("u_u", "please")), true);
+		assertEquals(system.getContent("u_u").toDiscrete().getProb(new Assignment("u_u", "go please")), 0.1, 0.001);
+		assertTrue(system.getState().hasChanceNode("nlu"));
+		Thread.sleep(Settings.incrementalTimeOut + 100);
+		assertFalse(system.getState().hasChanceNode("nlu"));
+		system.incrementContent(new CategoricalTable(new Assignment("u_u", "turn left")), true);
+		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "turn left")));
+		assertTrue(system.getState().hasChanceNode("nlu"));
+		system.getState().setAsCommitted("u_u");
+		assertFalse(system.getState().hasChanceNode("nlu"));
+		system.incrementContent(new CategoricalTable(new Assignment("u_u", "yes that is right")), false);
+		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "yes that is right")));
+		assertTrue(system.getState().hasChanceNode("nlu"));
 	}
 
 }

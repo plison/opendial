@@ -165,7 +165,12 @@ public class ForwardPlanner implements Module {
 				if (evalActions.getUtil(bestAction) < 0.001) {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
-				initState.addToState(new CategoricalTable(bestAction.removePrimes()));
+				
+				// only executes action if the user is not currently speaking 
+				// (simplifying assumption, could be corrected afterwards)
+				if (!initState.hasChanceNode(system.getSettings().userSpeech)) {
+					initState.addToState(bestAction.removePrimes());
+				}
 				
 				isTerminated = true;
 			}
@@ -342,6 +347,21 @@ public class ForwardPlanner implements Module {
 		}
 
 	}
+	
+	/**
+	public class IncrementalPlannerProcess extends AnytimeProcess {
+
+		public IncrementalPlannerProcess(long timeout) {
+			super(timeout);
+		}
+		
+		
+		public void run() {
+			
+		}
+
+	} */
+	
 
 
 }

@@ -56,7 +56,7 @@ public class IncrementalUtils {
 	 * @param maxDurationGap the maximum duration to wait before commitment
 	 * @param state the dialogue state
 	 */
-	public static void createDaemon (String var, long maxDurationGap, DialogueState state) {
+	public static void createDaemon (String var, int maxDurationGap, DialogueState state) {
 		if (daemons.containsKey(var)) {
 			daemons.get(var).maxDurationGap = Long.MAX_VALUE;
 		}
@@ -92,9 +92,8 @@ public class IncrementalUtils {
 				return;
 			}
 			synchronized (state) {
-			if (state.hasChanceNode(var) && !state.getChanceNode(var).isCommitted()) {
-				state.getChanceNode(var).setAsCommitted(true);
-				StatePruner.prune(state);
+			if (!state.isCommitted(var)) {
+				state.setAsCommitted(var);
 			}
 			}
 		}
