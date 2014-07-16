@@ -28,7 +28,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -37,7 +39,6 @@ import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.SpeechStream;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
@@ -46,7 +47,6 @@ import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.modules.core.ForwardPlanner;
 import opendial.modules.simulation.Simulator;
-import opendial.modules.speech.SpeechRecogniser;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
@@ -203,12 +203,12 @@ public class DialogueSystem {
 		try {
 			Constructor<T> constructor = module.getConstructor(DialogueSystem.class);
 			attachModule(constructor.newInstance(this));
-			recordComment("Module " + module.getSimpleName() + " successfully attached");
+			displayComment("Module " + module.getSimpleName() + " successfully attached");
 		} 
 		catch (InvocationTargetException e) {
 			log.warning("cannot attach module: " + e.getTargetException());
 			e.printStackTrace();
-			recordComment("cannot attach module: " + e.getTargetException());
+			displayComment("cannot attach module: " + e.getTargetException());
 		}
 		catch (Exception e) {
 			log.warning("cannot attach module of class " + module.getCanonicalName() + ": " + e);
@@ -253,9 +253,9 @@ public class DialogueSystem {
 	/**
 	 * Adds a comment on the GUI and the dialogue recorder.
 	 * 
-	 * @param comment the comment to record
+	 * @param comment the comment to display
 	 */
-	public void recordComment(String comment) {
+	public void displayComment(String comment) {
 		if (getModule(GUIFrame.class)!= null && getModule(GUIFrame.class).isRunning()) {
 			getModule(GUIFrame.class).addComment(comment);
 		}
@@ -290,47 +290,82 @@ public class DialogueSystem {
 	//  STATE UPDATE
 	// ===================================
 
+	
+	/**
+	 * Adds the user input (assuming a perfect confidence score) to the dialogue state
+	 * and subsequently updates it.
+	 * 
+	 * @param userInput the user input as a string
+	 * @return the variables that were updated in the process
+	 * @throws DialException if the state could not be updated
+	 */
+	public Set<String> addUserInput(String userInput) throws DialException {
+		Assignment a = new Assignment(settings.userInput, userInput);
+		return addContent(a);
+	}
+	
+	
+	/**
+	 * Adds the user input (as a N-best list, where each hypothesis is associated with a 
+	 * probability) to the dialogue state and subsequently updates it.
+	 * 
+	 * @param userInput the user input as an N-best list
+	 * @return the variables that were updated in the process
+	 * @throws DialException if the state could not be updated
+	 */
+	public Set<String> addUserInput(Map<String,Double> userInput) throws DialException {
+		CategoricalTable table = new CategoricalTable();
+		for (String input : userInput.keySet()) {
+			table.addRow(new Assignment(settings.userInput, input), userInput.get(input));
+		}
+		return addContent(table);
+	}
 
+
+	
 	/**
 	 * Adds the content (expressed as a categorical table over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param distrib the categorical table to add
+	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated.
 	 */
-	public void addContent(IndependentProbDistribution distrib) throws DialException {
+	public Set<String> addContent(IndependentProbDistribution distrib) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(distrib);
-				update();
+				return update();
 			}
 		}
 		else {
 			log.info("system is currently paused -- ignoring content " + distrib);
+			return new HashSet<String>();
 		}
 	}
 
 	
 	/**
 	 * Adds the content (expressed as a distribution over variables) to the current dialogue
-	 * state, and subsequently updates it.  If the dialogue state already contains the variables
-	 * and have been updated recently (with a maximum duration of maxDurationGap), the new content
-	 * is concatenated to the existing values for the variables.  This allows for incremental updates
-	 * of e.g. user utterances.
+	 * state, and subsequently updates it.  This allows (for instance) to perform incremental
+	 * updates of user utterances.
+	 * 
 	 * 
 	 * @param content the content to add / concatenate
-	 * @param maximumDurationGap the maximum gap (in milliseconds) to allow a variable to be concatenated
+	 * @param followPrevious whether the results should be concatenated to the previous values,
+	 *        or reset the content (e.g. when starting a new utterance)
 	 * @throws DialException if the incremental update failed
 	 */
-	public void incrementContent(CategoricalTable content, long maxDurationGap) throws DialException {
+	public Set<String> incrementContent(CategoricalTable content, boolean followPrevious) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
-				curState.incrementState(content, maxDurationGap);
-				update();
+				curState.incrementState(content, followPrevious);
+				return update();
 			}
 		}
 		else {
 			log.info("system is currently paused -- ignoring content " + content);
+			return new HashSet<String>();
 		}
 	}
 
@@ -341,10 +376,11 @@ public class DialogueSystem {
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param assign the value assignment to add
+	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated.
 	 */
-	public void addContent(Assignment assign) throws DialException {
-		addContent(new CategoricalTable(assign));
+	public Set<String> addContent(Assignment assign) throws DialException {
+		return addContent(new CategoricalTable(assign));
 	}
 
 
@@ -355,44 +391,36 @@ public class DialogueSystem {
 	 * @param newState the state to merge into the current state
 	 * @throws DialException if the 
 	 */
-	public void addContent(DialogueState newState) throws DialException {
+	public Set<String> addContent(DialogueState newState) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(newState);
-				update();
+				return update();
 			}
 		}
 		else {
 			log.info("system is currently paused -- ignoring content " + newState);
+			return new HashSet<String>();
 		}
 	}
-
-
-	/**
-	 * Feed the input speech stream to the dialogue system.  Provided that a speech 
-	 * recogniser is present in the system modules, the stream will be processed 
-	 * and its recognition results employed to update the dialogue state.
-	 * 
-	 * @param stream the speech stream
-	 */
-	public void addContent(SpeechStream stream) {
-		for (Module module : modules) {
-			if (module instanceof SpeechRecogniser) {
-				((SpeechRecogniser)module).processInput(stream);
-			}
-		}
-	}
-
 
 
 
 	/**
 	 * Performs an update loop on the current dialogue state, by triggering 
 	 * all the models and modules attached to the system until all possible 
-	 * updates have been performed.  The dialogue state is pruned.
+	 * updates have been performed.  The dialogue state is pruned at the
+	 * end of the operation. 
+	 * 
+	 * <p>The method returns the set of variables that have been updated during
+	 * the process.
+	 * 
+	 * @return the set of updated variables
 	 */
-	protected void update() {
+	protected Set<String> update() {
 
+		Set<String> updatedVars = new HashSet<String>();
+		
 		while (!curState.getNewVariables().isEmpty()) {
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
@@ -404,7 +432,10 @@ public class DialogueSystem {
 			for (Module module : modules) {
 				module.trigger(curState, toProcess);
 			}
+			updatedVars.addAll(toProcess);
 		}
+		
+		return updatedVars;
 	}
 
 
