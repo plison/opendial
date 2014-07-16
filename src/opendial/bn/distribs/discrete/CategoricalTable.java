@@ -216,7 +216,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			for (Assignment otherA : other.getRows()) {
 				Assignment concat = new Assignment();
 				for (String var : headVars) {
-					concat.addPair(var, thisA.getValue(var) + " " + otherA.getValue(var));
+					concat.addPair(var, thisA.getValue(var).concatenate(otherA.getValue(var)));
 				}
 				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
 			}

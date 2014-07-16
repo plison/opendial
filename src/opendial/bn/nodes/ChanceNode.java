@@ -64,9 +64,6 @@ public class ChanceNode extends BNode {
 	// a discretisation procedure defined by the distribution
 	protected Set<Value> cachedValues;
 
-	// commitment of the node content (for incremental processing)
-	boolean isCommitted = true;
-
 	// ===================================
 	//  NODE CONSTRUCTION
 	// ===================================
@@ -206,13 +203,7 @@ public class ChanceNode extends BNode {
 		distrib.modifyVariableId(oldId, newId);
 	}
 	
-	
-	/**
-	 * Sets the distribution for the node as committed (for incremental processing)
-	 */
-	public void setAsCommitted(boolean commit) {
-		isCommitted = commit;
-	}
+
 
 
 	// ===================================
@@ -374,25 +365,6 @@ public class ChanceNode extends BNode {
 
 
 
-	/**
-	 * Return true if the distribution of the current node is committed (that is, whether
-	 * itself and its ancestors are all committed).  An uncommitted distribution is for 
-	 * instance a partial word lattice.
-	 * 
-	 * @return true if the node and its ancestors are fully committed, and false otherwise
-	 */
-	public boolean isCommitted() {
-		if (!isCommitted) {
-			return false;
-		}
-		for (BNode n : inputNodes.values()) {
-			if (n instanceof ChanceNode && !((ChanceNode)n).isCommitted()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 
 	/**
@@ -445,7 +417,6 @@ public class ChanceNode extends BNode {
 	@Override
 	public ChanceNode copy() throws DialException {
 		ChanceNode cn = new ChanceNode(nodeId, distrib.copy());
-		cn.isCommitted = isCommitted;
 		return cn;
 	}
 
@@ -467,9 +438,6 @@ public class ChanceNode extends BNode {
 	@Override
 	public String toString() {
 		String str = distrib.toString();
-		if (!isCommitted) {
-			str += " (uncommitted)";
-		}
 		return str;
 	}
 

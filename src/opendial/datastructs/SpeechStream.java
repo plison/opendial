@@ -40,6 +40,8 @@ import javax.sound.sampled.TargetDataLine;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.utils.AudioUtils;
 
 /**
@@ -48,7 +50,7 @@ import opendial.utils.AudioUtils;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class SpeechStream extends InputStream {
+public class SpeechStream extends InputStream implements Value {
 
 	// logger
 	public static Logger log = new Logger("SpeechStream", Logger.Level.NORMAL);
@@ -77,6 +79,19 @@ public class SpeechStream extends InputStream {
 		log.debug("start recording on " + inputMixer.getName() + "...\t");
 		(new Thread(new StreamRecorder())).start();
 		data = new byte[0];
+	}
+	
+	/**
+	 * Creates a speech stream copied from another one
+	 * 
+	 * @param stream the speech stream to copy
+
+	 */
+	private SpeechStream(SpeechStream stream) {
+		this.audioLine = stream.audioLine;
+		this.currentPos = stream.currentPos;
+		this.data = stream.data;
+		this.isClosed = stream.isClosed;
 	}
 
 
@@ -218,6 +233,42 @@ public class SpeechStream extends InputStream {
 				e.printStackTrace();
 			}
 		}
+	}
+
+
+	/**
+	 * Returns the hashcode difference.
+	 */
+	@Override
+	public int compareTo(Value o) {
+		return hashCode() - o.hashCode();
+	}
+
+
+	/**
+	 * Returns a copy of the stream
+	 */
+	@Override
+	public Value copy() {
+		return new SpeechStream(this);
+	}
+
+
+	/**
+	 * Returns false
+	 */
+	@Override
+	public boolean contains(Value subvalue) {
+		return false;
+	}
+
+
+	/**
+	 * Returns a none value.
+	 */
+	@Override
+	public Value concatenate(Value value) {
+		return ValueFactory.none();
 	}
 
 

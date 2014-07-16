@@ -169,15 +169,10 @@ public class StatePruner {
 				nodesToKeep.add(node.getId());
 			}
 
-			if (node instanceof ChanceNode && !((ChanceNode)node).isCommitted()) {
+			if (!state.isCommitted(node.getId())) {
 				nodesToKeep.addAll(node.getClique());
 			}
 		}
-
-
-
-
-		//	log.debug("keeping : " + nodesToKeep);
 
 		return nodesToKeep;
 	}
@@ -237,8 +232,7 @@ public class StatePruner {
 			// if the node only contains a single (non-none) value, remove outgoing dependency
 			// edges (as the dependency relation is in this case superfluous)
 			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
-					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty() 
-					&& (node.isCommitted())) {
+					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty()) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				
 				node.setDistrib(new CategoricalTable(onlyAssign));

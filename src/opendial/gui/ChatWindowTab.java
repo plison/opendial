@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -49,6 +49,7 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.NoneVal;
@@ -84,35 +85,30 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
 			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
 			+ "do not move left (0.15)<br><br></html>";
-	
+
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
-	/** whether to use the chat window in incremental mode (in such cases, two lines that occur within
-	 * a duration of less than incremental_delay are considered to be from the same utterance)
-	 */
-	public static boolean incremental = false;
-	public static long incremental_delay = 500;
-	
+	/** whether to use the chat window in incremental mode */
+	public static boolean incremental = true;
+
 	// main chat window
 	HTMLEditorKit kit;
-    HTMLDocument doc;
+	HTMLDocument doc;
 
 	// input field
-    Container inputContainer;
+	Container inputContainer;
 	JTextField inputField;
 	JTextPane lines;
-	
+
 	// last updated variable in the chat
 	String lastUpdatedVariable = "";
-	
-	// negative offset for the next update of "lastUpdatedVariable"
-	// (used to display incremental inputs)
+	long lastUpdate = System.currentTimeMillis();
 	int negativeOffset = 0;
-			
+
 	DialogueSystem system;
-	
+
 	int nBestView = 20;
-		
+
 	/**
 	 * Start up the window
 	 * 
@@ -121,7 +117,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	public ChatWindowTab (DialogueSystem system) 
 	{
 		this.system = system;
-		
+
 		setLayout(new BorderLayout());
 		// Create the area where the utterances appear
 		lines = new JTextPane();
@@ -140,10 +136,10 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		inputContainer.add(inputField, BorderLayout.CENTER);
 		final JButton helpButton = new JButton( "" );
 		helpButton.putClientProperty( "JButton.buttonType", "help" );
-		
+
 		final BalloonTip tip = new BalloonTip(helpButton, TIP_TEXT);
 		tip.setVisible(false);
-		 
+
 		helpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -151,7 +147,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			}
 		});
 		helpButton.setFocusable(false);
-		
+
 		inputContainer.add(helpButton, BorderLayout.EAST);
 		// Add the text field and the utterances
 		add (inputContainer, BorderLayout.SOUTH);
@@ -159,20 +155,24 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		//	setPreferredSize(new Dimension(380,380));
 
 		inputField.addActionListener(this);	
-				
+
 		kit = new HTMLEditorKit();
-	    doc = new HTMLDocument();
-	    lines.setEditorKit(kit);
-	    lines.setDocument(doc);
-	    lines.setFocusable(false);
-	    updateActivation();
+		doc = new HTMLDocument();
+		lines.setEditorKit(kit);
+		lines.setDocument(doc);
+		lines.setFocusable(false);
+		updateActivation();
+
+		if (system.getModule(GUIFrame.class).isSpeechEnabled) {
+			enableSpeech(true);
+		}
 	} 
-	
-	
+
+
 	/**
 	 * Enables or disables the speech input panel in the tab 
 	 */
-	public void enableSpeechInput(boolean toEnable) {
+	public void enableSpeech(boolean toEnable) {
 		if (inputContainer.getComponentCount() == 3 && toEnable) {
 			SpeechInputPanel panel = new SpeechInputPanel(system);
 			inputContainer.add(panel, BorderLayout.SOUTH);
@@ -195,7 +195,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			addUtteranceToState();
 		}
 	}
-	
+
 	/**
 	 * Sets the number of N-Best elements to display
 	 * 
@@ -204,8 +204,8 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	public void setNBest(int nBestView) {
 		this.nBestView = nBestView;
 	}
-	
-	
+
+
 	/**
 	 * Returns the current number of displayed N-best elements
 	 * 
@@ -225,7 +225,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			String[] splitText = rawText.split(";");
 
 			CategoricalTable table = new CategoricalTable();
-			
+
 			for (String split : Arrays.asList(splitText)) {				
 				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
 				table.addRow(new Assignment(system.getSettings().userInput, split2.getKey()), split2.getValue());
@@ -233,10 +233,10 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 			inputField.setText("");
 			(new StateUpdater(system, table)).start();
-			
+
 		}
 	}
-	
+
 
 	/**
 	 * Adds a comment in the chat window
@@ -245,11 +245,11 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	 */
 	public void addComment(String comment) {
 		try {
-		    kit.insertHTML(doc, doc.getLength(),"[" +comment + "]\n", 0, 0, null);
-			}
-			catch (Exception e) {
-				log.warning("text area exception: " + e);
-			}
+			kit.insertHTML(doc, doc.getLength(),"[" +comment + "]\n", 0, 0, null);
+		}
+		catch (Exception e) {
+			log.warning("text area exception: " + e);
+		}
 	}
 
 
@@ -278,8 +278,8 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Generates the HTML representation for the categorical table.
 	 * 
@@ -292,7 +292,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		for (String var : table.getHeadVariables()) {
 			String baseVar = var.replace("'", "");
 			htmlTable += "<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
-			
+
 			if (baseVar.equals(system.getSettings().userInput)) {
 				htmlTable += "<b>[user]</b>";
 			}
@@ -323,7 +323,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		return htmlTable;		
 	}
 
-	
+
 	/**
 	 * Updates the activation status of the chat window.
 	 */
@@ -337,8 +337,8 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		}
 		else {
 			if (inputField.isEnabled() == system.isPaused()) {
-			inputField.setEnabled(!system.isPaused());
-			lines.setEnabled(!system.isPaused());
+				inputField.setEnabled(!system.isPaused());
+				lines.setEnabled(!system.isPaused());
 			}
 		}
 	}
@@ -357,13 +357,13 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		if (updatedVars.contains(system.getSettings().userInput)
 				&& state.hasChanceNode(system.getSettings().userInput)) {	
 			try {
-			DiscreteDistribution distrib = state.getChanceNode(system.getSettings().userInput).getDistrib().toDiscrete();
-			if (distrib instanceof CategoricalTable) {
-				showVariable((CategoricalTable)distrib);
-			}
-			else {
-				showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
-			}
+				DiscreteDistribution distrib = state.getChanceNode(system.getSettings().userInput).getDistrib().toDiscrete();
+				if (distrib instanceof CategoricalTable) {
+					showVariable((CategoricalTable)distrib);
+				}
+				else {
+					showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
+				}
 			}
 			catch (DialException e) {
 				log.warning("cannot add utterance: " + e);
@@ -380,8 +380,8 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		}
 	} 
 
-	
-	
+
+
 	/**
 	 * Displays the distribution in the chat window.
 	 * 
@@ -392,20 +392,23 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		String text = getHtmlRendering(distrib);
 		String variable = distrib.getHeadVariables().iterator().next();
 		try {
-			if (variable.equals(lastUpdatedVariable) && negativeOffset > 0) {
+			if (variable.equals(lastUpdatedVariable) 
+					&& (system.getState().isIncremental(variable))
+					&& System.currentTimeMillis() - lastUpdate < Settings.incrementalTimeOut) {
 				doc.remove(doc.getLength() - negativeOffset, negativeOffset);
 			}
 			int initLength = doc.getLength();
-		    kit.read(new StringReader(text), doc, doc.getLength());
-		    lastUpdatedVariable = variable;
-		    negativeOffset = (system.getState().isCommitted())? 0 : doc.getLength() - initLength;
+			kit.read(new StringReader(text), doc, doc.getLength());
+			lastUpdatedVariable = variable;
+			lastUpdate = System.currentTimeMillis();
+			negativeOffset = doc.getLength() - initLength;
 		}
 		catch (Exception e) {
 			log.warning("text area exception: " + e);
 		}
 	}
 
-	
+
 	/**
 	 * Returns the current text of the chat.
 	 * 
@@ -420,10 +423,10 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	 * Thread employed to update the dialogue state
 	 */
 	final class StateUpdater extends Thread {
-		
+
 		DialogueSystem system;
 		CategoricalTable table;
-		
+
 		/**
 		 * Constructs a new state updater
 		 * @param system the dialogue system
@@ -433,18 +436,18 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			this.system = system;
 			this.table = table;
 		}
-		
+
 		/**
 		 * Updates the dialogue state with the table
 		 */
 		@Override
 		public void run() {
 			try {
-				if (incremental) {
-			system.addContent(table);
+				if (!incremental) {
+					system.addContent(table);
 				}
 				else {
-					system.incrementContent(table, incremental_delay);
+					system.incrementContent(table, true);
 				}
 			}
 			catch (DialException e) {
@@ -452,6 +455,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 			}
 		}
 	}
+
 
 
 }

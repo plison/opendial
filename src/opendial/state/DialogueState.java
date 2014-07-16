@@ -89,6 +89,9 @@ public class DialogueState extends BNetwork {
 
 	/** Subset of variables that denote parameters */
 	Set<String> parameterVars;
+	
+	/** Subset of variables that are currently incrementally constructed */
+	Set<String> incrementalVars;
 
 	// ===================================
 	//  DIALOGUE STATE CONSTRUCTION
@@ -113,6 +116,7 @@ public class DialogueState extends BNetwork {
 		super.reset(network);
 		evidence = new Assignment();
 		parameterVars = new HashSet<String>();
+		incrementalVars = new HashSet<String>();
 	}
 
 
@@ -224,6 +228,7 @@ public class DialogueState extends BNetwork {
 			addNode(newNode);
 			connectToPredictions(newNode);
 		}
+		incrementalVars.remove(distrib.getHeadVariables());
 	}
 
 	
@@ -233,16 +238,17 @@ public class DialogueState extends BNetwork {
 	 * simply overwrite with the new content.
 	 * 
 	 * @param distrib the distribution to add as incremental unit of content
-	 * @param maxDurationGap the maximum duration gap between the two contents
+	 * @param followPrevious whether the results should be concatenated to the previous values,
+	 *        or reset the content (e.g. when starting a new utterance)
 	 * @throws DialException if the incremental operation could not be performed
 	 */
-	public void incrementState(CategoricalTable distrib, long maxDurationGap) throws DialException {
+	public void incrementState(CategoricalTable distrib, boolean followPrevious) throws DialException {
 		
 		if (distrib.getHeadVariables().size() != 1) {
 			throw new DialException("increment only available for univariate distributions, but is " + distrib.getHeadVariables());
 		}
 		String headVar = distrib.getHeadVariables().iterator().next();
-		if (hasChanceNode(headVar) && !getChanceNode(headVar).isCommitted()) {
+		if (hasChanceNode(headVar) && isIncremental(headVar) & followPrevious) {
 			CategoricalTable newtable = queryProb(headVar).toDiscrete().concatenate(distrib);
 			getChanceNode(headVar).setDistrib(newtable);
 			getChanceNode(headVar).setId(headVar + "'");
@@ -250,12 +256,12 @@ public class DialogueState extends BNetwork {
 		else {
 			addToState(distrib);
 		}
-		getChanceNode(headVar+"'").setAsCommitted(false);
-		IncrementalUtils.createDaemon(headVar, maxDurationGap, this);
+		incrementalVars.add(headVar);
+		IncrementalUtils.createDaemon(headVar, Settings.incrementalTimeOut, this);
 	}
 
 
-
+	
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
@@ -529,11 +535,21 @@ public class DialogueState extends BNetwork {
 		}
 		return newVars;
 	}
+	
+	
+	public boolean isIncremental(String var) {
+		return incrementalVars.contains(var.replace("'", ""));
+	}
 
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
 
+	
+	public void setAsCommitted(String var) {
+		incrementalVars.remove(var.replace("'", ""));
+		StatePruner.prune(this);
+	}
 
 
 	/**
@@ -557,6 +573,7 @@ public class DialogueState extends BNetwork {
 		DialogueState sn= new DialogueState(super.copy());
 		sn.addEvidence(evidence.copy());
 		sn.parameterVars = new HashSet<String>(parameterVars);
+		sn.incrementalVars = new HashSet<String>(incrementalVars);
 		return sn;
 	}
 
@@ -737,22 +754,6 @@ public class DialogueState extends BNetwork {
 		}
 		return variables2;
 	}
-
-
-	/**
-	 * Returns true if all variables in the dialogue state are committed.
-	 * 
-	 * @return true if all variables are committed, and false otherwise
-	 */
-	public boolean isCommitted() {
-		for (ChanceNode cn : getChanceNodes()) {
-			if (!cn.isCommitted()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 
 

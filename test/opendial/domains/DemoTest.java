@@ -25,6 +25,12 @@ package opendial.domains;
 
 
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -88,19 +94,21 @@ public class DemoTest {
 		CategoricalTable t = new CategoricalTable();
 	 	t.addRow(new Assignment("u_u", "hello there"), 0.7);
 	 	t.addRow(new Assignment("u_u", "hello"), 0.2);
-		system.addContent(t);
+		Set<String> updates = system.addContent(t);
+		assertTrue(updates.containsAll(Arrays.asList("a_u", "a_m", "u_m")));
 		
 		assertEquals("Hi there", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "move forward"), 0.06);
-		system.addContent(t);
+		Map<String,Double> t2 = new HashMap<String,Double>();
+	 	t2.put("move forward", 0.06);
+		system.addUserInput(t2);
 		
 		assertFalse(system.getState().hasChanceNode("u_m"));
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "move forward"), 0.45);
-		system.addContent(t);
+		t2 = new HashMap<String,Double>();
+	 	t2.put("move forward", 0.45);
+		system.addUserInput(t2);
+		
 	//	Thread.sleep(1000000);
 		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
 		

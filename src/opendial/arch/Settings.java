@@ -62,17 +62,20 @@ public class Settings {
 	/** Number of discretisation buckets to convert continuous distributions */
 	public static int discretisationBuckets = 50;
 
-	/** Maximum gap (in milliseconds) beteen incremental input for an utterance */
-	public static long incrementalGap = 500;
-
 	/** Whether to show the GUI */
 	public boolean showGUI;
+	
+	/** Variable label for the user speech signal */
+	public String userSpeech;
 
 	/** Variable label for the user input */
 	public String userInput;
 	
 	/** Variable label for the system output */
 	public String systemOutput;
+	
+	/** Timeout (in milliseconds) after which incremental variables are considered "committed" */
+	public static int incrementalTimeOut = 500;
 	
 	/** Other variables to monitor in the chat window */
 	public List<String> varsToMonitor = new ArrayList<String>();
@@ -156,6 +159,9 @@ public class Settings {
 			else if (key.equalsIgnoreCase("user")) {
 				userInput = mapping.getProperty(key);
 			}
+			else if (key.equalsIgnoreCase("speech")) {
+				userSpeech = mapping.getProperty(key);
+			}
 			else if (key.equalsIgnoreCase("system")) {
 				systemOutput = mapping.getProperty(key);
 			}
@@ -228,6 +234,7 @@ public class Settings {
 		mapping.setProperty("horizon", ""+horizon);
 		mapping.setProperty("discount", ""+discountFactor);
 		mapping.setProperty("gui", ""+showGUI);
+		mapping.setProperty("speech", ""+userSpeech);
 		mapping.setProperty("user", ""+userInput);
 		mapping.setProperty("system", ""+systemOutput);
 		mapping.setProperty("inputmixer", ""+inputMixer);
