@@ -2,7 +2,7 @@
 <settings>
 	<gui>true</gui>
 	<horizon>1</horizon>
-	<samples>2000</samples>
+	<samples>3000</samples>
 	<discount>1.0</discount>
 	<gui>true</gui>
 	<system>u_m</system>

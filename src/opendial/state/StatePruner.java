@@ -169,7 +169,7 @@ public class StatePruner {
 				nodesToKeep.add(node.getId());
 			}
 
-			if (!state.isCommitted(node.getId())) {
+			if (state.isIncremental(node.getId())) {
 				nodesToKeep.addAll(node.getClique());
 			}
 		}
