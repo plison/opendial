@@ -248,7 +248,7 @@ public class DialogueState extends BNetwork {
 			throw new DialException("increment only available for univariate distributions, but is " + distrib.getHeadVariables());
 		}
 		String headVar = distrib.getHeadVariables().iterator().next();
-		if (hasChanceNode(headVar) && !isCommitted(headVar) & followPrevious) {
+		if (hasChanceNode(headVar) && isIncremental(headVar) & followPrevious) {
 			CategoricalTable newtable = queryProb(headVar).toDiscrete().concatenate(distrib);
 			getChanceNode(headVar).setDistrib(newtable);
 			getChanceNode(headVar).setId(headVar + "'");
@@ -537,8 +537,8 @@ public class DialogueState extends BNetwork {
 	}
 	
 	
-	public boolean isCommitted(String var) {
-		return !incrementalVars.contains(var.replace("'", ""));
+	public boolean isIncremental(String var) {
+		return incrementalVars.contains(var.replace("'", ""));
 	}
 
 	// ===================================

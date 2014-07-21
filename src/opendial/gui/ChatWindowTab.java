@@ -49,6 +49,7 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.NoneVal;
@@ -87,9 +88,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
-	/** whether to use the chat window in incremental mode (in such cases, two lines that occur within
-	 * a duration of less than incremental_delay are considered to be from the same utterance)
-	 */
+	/** whether to use the chat window in incremental mode */
 	public static boolean incremental = true;
 
 	// main chat window
@@ -103,9 +102,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	// last updated variable in the chat
 	String lastUpdatedVariable = "";
-
-	// negative offset for the next update of "lastUpdatedVariable"
-	// (used to display incremental inputs)
+	long lastUpdate = System.currentTimeMillis();
 	int negativeOffset = 0;
 
 	DialogueSystem system;
@@ -395,13 +392,16 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		String text = getHtmlRendering(distrib);
 		String variable = distrib.getHeadVariables().iterator().next();
 		try {
-			if (variable.equals(lastUpdatedVariable) && negativeOffset > 0) {
+			if (variable.equals(lastUpdatedVariable) 
+					&& (system.getState().isIncremental(variable))
+					&& System.currentTimeMillis() - lastUpdate < Settings.incrementalTimeOut) {
 				doc.remove(doc.getLength() - negativeOffset, negativeOffset);
 			}
 			int initLength = doc.getLength();
 			kit.read(new StringReader(text), doc, doc.getLength());
 			lastUpdatedVariable = variable;
-			negativeOffset = (system.getState().isCommitted(system.getSettings().userInput))? 0 : doc.getLength() - initLength;
+			lastUpdate = System.currentTimeMillis();
+			negativeOffset = doc.getLength() - initLength;
 		}
 		catch (Exception e) {
 			log.warning("text area exception: " + e);
