@@ -92,7 +92,7 @@ public class IncrementalUtils {
 				return;
 			}
 			synchronized (state) {
-			if (!state.isCommitted(var)) {
+			if (state.isIncremental(var)) {
 				state.setAsCommitted(var);
 			}
 			}

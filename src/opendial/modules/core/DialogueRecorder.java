@@ -105,7 +105,7 @@ public class DialogueRecorder implements Module {
 					+ rootNode.getNodeName() + " or first value is null");
 			return;
 		}
-		if (!state.isCommitted(settings.userInput)) {
+		if (state.isIncremental(settings.userInput)) {
 			return;
 		}
 

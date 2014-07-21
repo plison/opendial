@@ -243,7 +243,13 @@ public class InferenceUtils {
 
 		@Override
 		public int compare(Entry<Assignment, Double> arg0, Entry<Assignment, Double> arg1) {
-			return (int)((arg0.getValue() - arg1.getValue())*1000);
+			int result = (int)((arg0.getValue() - arg1.getValue())*10000000);
+			if (result != 0) {
+				return result;
+			}
+			else {
+				return (sampler.nextBoolean())? -1 : +1 ;
+			}
 		}
 
 	}
