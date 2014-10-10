@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+
+		<variable id="a_m">
+			<value prob="0.9">start</value>
+			<value prob="0.1">None</value>
+		</variable>
+
+		<variable id="i_u">
+			<value>init</value>
+		</variable>
+
+		<variable id="detected">
+			<value prob="0.3">yes</value>
+			<value prob="0.7">no</value>
+		</variable>
+
+	</initialstate>
+
+	<parameters>
+
+		<variable id="theta_moves">
+			<distrib type="dirichlet">
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+		<variable id="theta_pickup">
+			<distrib type="dirichlet">
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+		<variable id="theta_comply">
+			<distrib type="dirichlet">
+				<alpha>3</alpha>
+				<alpha>1</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+		
+			<variable id="theta_sayit">
+			<distrib type="dirichlet">
+				<alpha>3</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+	</parameters>
+
+	<model trigger="a_m">
+
+		<rule id="continuation">
+			<case>
+				<condition operator="or">
+					<if var="a_m" value="clarify" />
+					<if var="a_m" value="None" />
+				</condition>
+				<effect>
+					<set var="i_u" value="{i_u}" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="movements">
+			<case>
+				<condition>
+					<if var="a_m" value="clarify" relation="!=" />
+					<if var="a_m" value="None" relation="!=" />
+				</condition>
+				<effect prob="theta_moves[0]">
+					<set var="i_u" value="left" />
+				</effect>
+				<effect prob="theta_moves[1]">
+					<set var="i_u" value="right" />
+				</effect>
+				<effect prob="theta_moves[2]">
+					<set var="i_u" value="forward" />
+				</effect>
+				<effect prob="theta_moves[3]">
+					<set var="i_u" value="backward" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="pickup">
+			<case>
+				<condition>
+					<if var="a_m" value="clarify" relation="!=" />
+					<if var="a_m" value="None" relation="!=" />
+					<if var="detected" value="yes" />
+				</condition>
+				<effect prob="theta_pickup[0]">
+					<set var="i_u" value="pickup" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+	<model trigger="i_u">
+
+		<rule id="das">
+			<case>
+				<condition>
+					<if var="a_m" value="clarify" />
+				</condition>
+				<effect prob="theta_comply[0]">
+					<set var="a_u^p" value="I said I wanted {i_u}" />
+				</effect>
+				<effect prob="theta_comply[1]">
+					<set var="a_u^p" value="yes do {i_u}" />
+				</effect>
+			</case>
+			<case>
+				<effect prob="theta_sayit[0]">
+					<set var="a_u^p" value="I want {i_u}" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+</domain>

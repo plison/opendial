@@ -336,7 +336,7 @@ public class NetworkReductionTest {
 		UtilityTable table3 = ve.queryUtil(query3);
 		
 		for (Assignment a : table1.getTable().keySet()) {
-			assertEquals(table1.getUtil(a), table3.getUtil(a), 0.6);
+			assertEquals(table1.getUtil(a), table3.getUtil(a), 0.8);
 		}
 	}
 	

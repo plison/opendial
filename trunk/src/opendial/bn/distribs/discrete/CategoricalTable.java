@@ -110,7 +110,7 @@ public class CategoricalTable implements DiscreteDistribution, IndependentProbDi
 			totalProb += headTable.get(a);
 		}
 		if (totalProb < 0.99999) {
-			addRow(Assignment.createDefault(headVars), 1.0 - totalProb);
+			incrementRow(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 	}
 

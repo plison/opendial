@@ -24,12 +24,15 @@
 package opendial.state;
 
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -37,9 +40,11 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.inference.InferenceAlgorithm;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.queries.ReductionQuery;
 import opendial.state.distribs.EquivalenceDistribution;
+import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
 
 
@@ -80,8 +85,8 @@ public class StatePruner {
 
 			// step 2: reduction
 			if (!nodesToKeep.isEmpty()) {
-				ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
-				BNetwork reduced = new SwitchingAlgorithm().reduce(reductionQuery);
+
+				DialogueState reduced = reduce(state, nodesToKeep);
 
 				// step 3: reinsert action and utility nodes (if necessary)
 				reinsertActionAndUtilityNodes(reduced, state);
@@ -117,7 +122,7 @@ public class StatePruner {
 
 		for (ChanceNode cn : new HashSet<ChanceNode>(state.getChanceNodes())) {
 			if (state.hasNode(cn.getId()+"'")) {
-				cn.setId(state.getUniqueId(cn.getId()+"-old"));
+				cn.setId(state.getUniqueId(cn.getId()+"^old"));
 			}
 		}
 		for (ChanceNode cn : new HashSet<ChanceNode>(state.getChanceNodes())) {
@@ -147,34 +152,110 @@ public class StatePruner {
 
 		for (BNode node : state.getNodes()) {
 
-			if (node instanceof ActionNode || node instanceof UtilityNode  || (node instanceof ChanceNode 
-					&& ((ChanceNode)node).getDistrib() instanceof EquivalenceDistribution)) {
+			if (node instanceof ActionNode || node instanceof UtilityNode) {
+				continue;
+			}
+			else if (node instanceof ChanceNode && ((ChanceNode)node).getDistrib()
+					instanceof EquivalenceDistribution) {
 				continue;
 			}
 
 			// removing the prediction nodes once they have been used
-			/** 	else if (node.getId().contains("^p") && 
+			/** else if (node.getId().contains("^p") && 
 					node.hasDescendant(state.getEvidence().getVariables())) {
 				continue;
-			}  */
-			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o") || (node.getId().endsWith("-old") && node.getOutputNodes().isEmpty())) {
+			}   */
+			else if (node.getId().endsWith("^t") || node.getId().endsWith("^o") 
+					|| (node.getId().endsWith("^old") && node.getOutputNodes().isEmpty())) {
 				continue;
 			}
-			else if (node instanceof ChanceNode && node.getInputNodeIds().size() < 3 && ((ChanceNode)node).getNbValues() == 1 
+			else if (node instanceof ChanceNode && node.getInputNodeIds().size() < 3 
+					&& ((ChanceNode)node).getNbValues() == 1 
 					&& node.getValues().iterator().next().equals(ValueFactory.none())) {
 				continue;
 			}
 			// keeping the newest nodes
-			else if (!(state.hasChanceNode(node.getId()+"'")) && !(node instanceof ProbabilityRuleNode)) {
+			else if (!(state.hasChanceNode(node.getId()+"'")) 
+					&& !(node instanceof ProbabilityRuleNode)) {
 				nodesToKeep.add(node.getId());
 			}
 
 			if (state.isIncremental(node.getId())) {
 				nodesToKeep.addAll(node.getClique());
 			}
+			
+			else if (state.getParameterIds().contains(node.getId())
+					&& !node.hasDescendant(state.getEvidence().getVariables())
+					&& node.getClique().size() < 20) {
+				nodesToKeep.addAll(node.getClique());				
+			} 
+		} 
+		return nodesToKeep;
+	}
+
+
+	/**
+	 * Reduces a Bayesian network to a subset of variables.  The method is divided in 
+	 * three steps: <ul>
+	 * <li> The method first checks whether inference is necessary at all or whether 
+	 * the current network can be returned as it is.  
+	 * <li> If inference is necessary, the algorithm divides the network into cliques
+	 * and performs inference on each clique separately.
+	 * <li> Finally, if only one clique is present, the reduction selects the best
+	 * algorithm and return the result of the reduction process.
+	 * </ul>
+	 * 
+	 * @param state the dialogue state to reduce
+	 * @param nodesToKeep the nodes to preserve in the reduction
+	 * 
+	 * @return the reduced dialogue state
+	 * @throws DialException 
+	 */
+	private static DialogueState reduce(DialogueState state, 
+			Set<String> nodesToKeep) throws DialException {
+
+		Assignment evidence = state.getEvidence();
+
+		// if the current network can be returned as such, do it
+		if (nodesToKeep.containsAll(state.getNodeIds())) {
+			return state;
 		}
 
-		return nodesToKeep;
+
+		// if all nodes to keep are included in the evidence, no inference is needed
+		else if (evidence.containsVars(nodesToKeep)) {
+			DialogueState newState = new DialogueState();
+			for (String toKeep : nodesToKeep) {
+				ChanceNode newNode = new ChanceNode(toKeep, new CategoricalTable
+						(new Assignment(toKeep, evidence.getValue(toKeep))));
+				newState.addNode(newNode);
+			}
+			return newState;
+		}
+
+		// if the network can be divided into cliques, extract the cliques
+		// and do a separate reduction for each
+		else if (state.getCliques().size() > 1) {
+			DialogueState fullState = new DialogueState();
+			for (BNetwork clique : state.createCliques()) {
+				Set<String> subNodesToKeep = new HashSet<String>(nodesToKeep);
+				subNodesToKeep.retainAll(clique.getNodeIds());
+				if (!subNodesToKeep.isEmpty()) {
+					Assignment subEvidence = evidence.getTrimmed(clique.getNodeIds());
+					DialogueState substate = new DialogueState(clique, subEvidence);
+					substate = reduce(substate, subNodesToKeep);
+					fullState.addNetwork(substate);			
+					fullState.addEvidence(substate.evidence);			
+				}
+			}
+			return fullState;
+		}
+
+		// else, select the best reduction algorithm and performs the reduction
+		ReductionQuery reductionQuery = new ReductionQuery(state, nodesToKeep);
+		BNetwork result =new SwitchingAlgorithm().reduce(reductionQuery);
+		return new DialogueState(result);
+
 	}
 
 
@@ -188,7 +269,7 @@ public class StatePruner {
 
 		for (ChanceNode cn : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 			if (reduced.hasChanceNode(cn.getId()+"'")) {
-				cn.setId(reduced.getUniqueId(cn.getId()+"-old"));
+				cn.setId(reduced.getUniqueId(cn.getId()+"^old"));
 			}
 		}
 
@@ -233,14 +314,21 @@ public class StatePruner {
 			// edges (as the dependency relation is in this case superfluous)
 			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
 					&& !node.getOutputNodes().isEmpty() && reduced.getUtilityNodeIds().isEmpty()) {
-				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				
+				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
+
 				node.setDistrib(new CategoricalTable(onlyAssign));
 				for (BNode outputNode : node.getOutputNodes()) {
-					if (!(outputNode instanceof ProbabilityRuleNode)) {
-					outputNode.removeInputNode(node.getId());
-					((ChanceNode)outputNode).setDistrib(((ChanceNode)
-							outputNode).getDistrib().getPartialPosterior(onlyAssign));
+					
+					// UGLY!! Find a more suitable way
+					// (for instance, an interface for distributions that are "fully specified"
+					// and can therefore implement getPartialPosterior) 
+					if (!(outputNode instanceof ProbabilityRuleNode) && 
+							!(((ChanceNode)outputNode).getDistrib() instanceof OutputDistribution)) {
+						outputNode.removeInputNode(node.getId());
+						ProbDistribution curDistrib = ((ChanceNode)outputNode).getDistrib();
+						ProbDistribution newDistrib = curDistrib.getPartialPosterior(onlyAssign);
+						((ChanceNode)outputNode).setDistrib(newDistrib);
 					}
 				}
 			} 

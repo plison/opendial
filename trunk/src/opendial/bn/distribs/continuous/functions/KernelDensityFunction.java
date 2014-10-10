@@ -143,22 +143,22 @@ public class KernelDensityFunction implements DensityFunction {
 		Double[] newPoint = new Double[point.length];
 		
 		for (int i = 0 ; i < newPoint.length ; i++) {
-			newPoint[i] = new GaussianDensityFunction(point[i], bandwidths[i] / bandwidths.length).sample()[0];
+			newPoint[i] = new GaussianDensityFunction(point[i], 
+					bandwidths[i] /Math.pow(bandwidths.length,3)).sample()[0];
 		}
 		
 		if (isBounded) {
-			double total = 0.0, shift = 0.0;
+			double total = 0.0, negShift = 0.0;
 			for (int i = 0 ; i < newPoint.length ; i++) {
 				total += newPoint[i];
-				if (newPoint[i] < shift) {
-					shift = newPoint[i];
+				if (newPoint[i] < negShift) {
+					negShift = newPoint[i];
 				}
 			}
 			for (int i = 0 ; i < newPoint.length ; i++) {
-				newPoint[i] = (newPoint[i] - shift) / (total - shift*getDimensionality());
+				newPoint[i] = (newPoint[i] - negShift) / (total - negShift*newPoint.length);
 			}
 		}
-		
 		return newPoint;
 	}
 

@@ -75,7 +75,7 @@ public class Settings {
 	public String systemOutput;
 	
 	/** Timeout (in milliseconds) after which incremental variables are considered "committed" */
-	public static int incrementalTimeOut = 500;
+	public static int incrementalTimeOut = 2000;
 	
 	/** Other variables to monitor in the chat window */
 	public List<String> varsToMonitor = new ArrayList<String>();

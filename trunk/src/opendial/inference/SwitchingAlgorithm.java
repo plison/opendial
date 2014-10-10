@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,18 +24,14 @@
 package opendial.inference;
 
 
-import java.util.Collection;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.discrete.CategoricalTable;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.datastructs.Assignment;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.exact.VariableElimination;
 import opendial.inference.queries.ProbQuery;
@@ -64,24 +60,24 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	// logger
 	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
-	
+
 	// maximum branching factor (in-degree)
 	public static int MAX_BRANCHING_FACTOR = 4;
-	
+
 	// maximum number of query variables
 	public static int MAX_QUERYVARS = 6;
-	
+
 	// maximum number of continuous variables
 	public static int MAX_CONTINUOUS = 0;
-	
+
 	VariableElimination ve;
 	LikelihoodWeighting lw;
-	
+
 	public SwitchingAlgorithm() {
 		this.ve = new VariableElimination();
 		this.lw = new LikelihoodWeighting();
 	}
-	
+
 	/**
 	 * Selects the best algorithm for performing the inference on the provided
 	 * probability query and return its result.
@@ -94,7 +90,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
-	
+
 	/**
 	 * Selects the best algorithm for performing the inference on the provided
 	 * utility query and return its result.
@@ -108,7 +104,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		return algo.queryUtil(query);
 	}
 
-	
+
 	/**
 	 * Reduces a Bayesian network to a subset of variables.  The method is divided in 
 	 * three steps: <ul>
@@ -125,53 +121,17 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 */
 	@Override
 	public BNetwork reduce(ReductionQuery query) throws DialException {
-		
-		// if the current network can be returned as such, do it
-		if (query.getQueryVars().containsAll(query.getNetwork().getNodeIds())) {	
-			BNetwork subnetwork = query.getNetwork();
-			return subnetwork;
-		}
-		
-		// if all query variables are included in the evidence, no inference is needed
-		else if (query.getEvidence().containsVars(query.getQueryVars())) {
-			BNetwork subnetwork = new BNetwork();
-			for (String qvar : query.getQueryVars()) {
-				ChanceNode newNode = new ChanceNode(qvar, new CategoricalTable
-						(new Assignment(qvar, query.getEvidence().getValue(qvar))));
-				subnetwork.addNode(newNode);
-			}
-			return subnetwork;
-		}
-		
-		
-		// if the network can be divided into cliques, extract the cliques
-		// and do a separate reduction for each
-		else if (query.getNetwork().getCliques().size() > 1) {
-			BNetwork fullNetwork = new BNetwork();
-			for (BNetwork clique : query.getNetwork().createCliques()) {
-				Collection<String> subQueryVars = query.getQueryVars();
-				subQueryVars.retainAll(clique.getNodeIds());
-				if (!subQueryVars.isEmpty()) {
-				Assignment evidence = query.getEvidence().getTrimmed(clique.getNodeIds());
-				ReductionQuery subQuery = new ReductionQuery(clique, subQueryVars, evidence);
-				BNetwork subnetwork = reduce(subQuery);
-				fullNetwork.addNetwork(subnetwork);			
-				}
-			}
-			return fullNetwork;
-		}
-		
-		// else, select the best reduction algorithm and performs the reduction
+		// select the best reduction algorithm and performs the reduction
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		BNetwork result = algo.reduce(query);	
 		return result;
 	}
-	
 
-	
-	
+
+
+
 	public InferenceAlgorithm selectBestAlgorithm (Query query) {
-			
+
 		int nbQueries = query.getQueryVars().size();
 		int branchingFactor = 0;
 		int nbContinuous = 0;
@@ -188,7 +148,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 				branchingFactor > MAX_BRANCHING_FACTOR || 
 				nbQueries > MAX_QUERYVARS) {	
 			return lw;
-		
+
 		}
 		else {
 			return ve;

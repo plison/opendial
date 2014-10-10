@@ -88,9 +88,6 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
-	/** whether to use the chat window in incremental mode */
-	public static boolean incremental = true;
-
 	// main chat window
 	HTMLEditorKit kit;
 	HTMLDocument doc;
@@ -443,12 +440,11 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		@Override
 		public void run() {
 			try {
-				if (!incremental) {
 					system.addContent(table);
-				}
-				else {
-					system.incrementContent(table, true);
-				}
+			
+					// TODO: add a notation mechanism to add incremental content
+					// (no need to document, internal functionality)
+					// system.addIncrementalContent(table, true);
 			}
 			catch (DialException e) {
 				log.warning("cannot update state with user utterance");

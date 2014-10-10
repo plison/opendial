@@ -12,7 +12,6 @@ import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -112,7 +111,6 @@ public class SamplingProcess extends AnytimeProcess {
 		while (!isTerminated) {
 			try {
 				WeightedSample sample = new WeightedSample();
-				addReadySample(sample);
 
 				for (BNode n : sortedNodes) {
 
@@ -198,7 +196,7 @@ public class SamplingProcess extends AnytimeProcess {
 	 * 
 	 * @throws DialException
 	 */
-	private void addReadySample(WeightedSample sample) throws DialException {
+/**	private void addReadySample(WeightedSample sample) throws DialException {
 		try {
 			for (ChanceNode cn : query.getNetwork().getChanceNodes()) {
 				if (sample.containsVar(cn.getId())) {
@@ -224,7 +222,7 @@ public class SamplingProcess extends AnytimeProcess {
 			log.debug("exception : " +e);
 			addReadySample(sample);
 		}
-	}
+	} */
 
 	/**
 	 * Samples the given chance node and add it to the sample.  If the variable is part

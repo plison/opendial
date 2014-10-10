@@ -24,6 +24,7 @@
 package opendial.bn.distribs.other;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,9 +37,12 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.ProbDistribution.DistribType;
 import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
 import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.distribs.discrete.DiscreteDistribution;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -67,7 +71,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	protected List<Assignment> samples;
 
 	// whether to use KDE for continuous distributions
-	public static boolean USE_KDE = false;
+	public static boolean USE_KDE = true;
 
 	// random sampler
 	Random sampler;
@@ -169,6 +173,19 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	}
 
 	
+	/**
+	 * Removes a particular variable from the sampled assignments
+	 * 
+	 * @param varId the id of the variable to remove
+	 */
+	public void removeVariable(String varId) {
+		variables.remove(varId);
+		discreteCache = null;
+		continuousCache = null;
+		for (Assignment s : samples) {
+			s.removePair(varId);
+		}
+	}
 
 	// ===================================
 	//  GETTERS
@@ -188,7 +205,6 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		if (preferredType == null) {
 			preferredType = getPreferredType();
 		}
-
 		if (USE_KDE && preferredType == DistribType.CONTINUOUS) {
 			return toContinuous().sample();
 		}
@@ -354,6 +370,24 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		}
 		return continuousCache;
 	}
+	
+	
+	public ProbDistribution getMarginalDistrib(String var, Set<String> condVars) 
+			throws DialException {
+		
+		if (condVars.isEmpty()) {
+			if (sample().getTrimmed(var).containContinuousValues()) {
+				return this.createContinuousDistribution(var);
+			}
+			else {
+				return this.createSimpleTable(Arrays.asList(var));
+			}
+		}
+		else {
+			return this.createConditionalTable(Arrays.asList(var), condVars);
+		}
+	}
+	
 
 
 	/**
@@ -362,9 +396,8 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @param headVars the subset of variables to include in the table
 	 * @return the resulting table
 	 */
-	protected CategoricalTable createSimpleTable(Set<String> headVars) {
+	protected CategoricalTable createSimpleTable(Collection<String> headVars) {
 
-		CategoricalTable table = new CategoricalTable();
 
 		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
 
@@ -377,10 +410,14 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 				counts.put(trimmed,1);
 			}
 		}
+	
+		Map<Assignment, Double> probs = new HashMap<Assignment,Double>();
 		for (Assignment value : counts.keySet()) {
-			table.addRow(value, 1.0 * counts.get(value) / samples.size());
+			probs.put(value, 1.0 * counts.get(value) / samples.size());
 		}
-		
+		CategoricalTable table = new CategoricalTable(probs);
+
+
 		if (!table.isWellFormed()) {
 			log.warning("table created by discretising samples is not well-formed");
 		}
@@ -409,6 +446,38 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 		return new ContinuousDistribution(variable, new KernelDensityFunction(values));
 	}
+	
+	/**
+	 * Creates a conditional categorical table derived from the samples.  This method 
+	 * should be called in the presence of conditional variables.
+	 * 
+	 * @return the conditional categorical table 
+	 */
+	public ConditionalCategoricalTable createConditionalTable(Collection<String> headVars, 
+			Collection<String> condVars) {
+
+		ConditionalCategoricalTable table = new ConditionalCategoricalTable();
+
+		Map<Assignment,EmpiricalDistribution> temp = 
+				new HashMap<Assignment,EmpiricalDistribution>();
+
+		for (Assignment sample: samples) {
+			Assignment condition = sample.getTrimmed(condVars);
+			Assignment head = sample.getTrimmed(headVars);
+			if (!temp.containsKey(condition)) {
+				temp.put(condition, new EmpiricalDistribution());
+			}
+
+			temp.get(condition).addSample(head);
+		}
+
+		for (Assignment condition : temp.keySet()) {
+			table.addRows(condition, (temp.get(condition).toDiscrete()));
+		}
+		table.fillConditionalHoles();
+		return table;
+	}
+
 
 	// ===================================
 	//  UTILITY METHODS
@@ -498,6 +567,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 		return DistribType.DISCRETE;
 	}
+	
 
 	
 	@Override
