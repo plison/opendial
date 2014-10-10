@@ -131,15 +131,14 @@ public class AudioUtils {
 			for (AudioFormat format: Arrays.asList(IN_HIGH, IN_LOW)) {
 				if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
 						new DataLine.Info(TargetDataLine.class, format))) {
-
 					mixers.add(mixerInfos[i]);
 
 					try { if (AudioSystem.getTargetDataLine(format).getLineInfo().matches(
 							AudioSystem.getTargetDataLine(format, mixerInfos[i]).getLineInfo())) {
 						defaultMixer = mixerInfos[i];
 					} }
-					catch (Exception e) { e.printStackTrace(); }
-
+					catch (Exception e) { 
+						e.printStackTrace(); }
 					break;
 				}
 			}

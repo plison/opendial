@@ -236,8 +236,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 						update();
 					}
 					}
-					isUpdating = false;
-					
+					isUpdating = false;				
 				}
 				
 				private void update() {

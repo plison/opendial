@@ -70,7 +70,7 @@ public class InferenceChecks {
 
 		ve = new VariableElimination();
 		is = new LikelihoodWeighting();
-		is2 = new LikelihoodWeighting(4000, 500);
+		is2 = new LikelihoodWeighting(5000, 500);
 		naive = new NaiveInference();
 	
 		timings = new HashMap<InferenceAlgorithm, Long>();

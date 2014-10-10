@@ -26,7 +26,6 @@ package opendial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -346,9 +345,10 @@ public class DialogueSystem {
 
 	
 	/**
-	 * Adds the content (expressed as a distribution over variables) to the current dialogue
-	 * state, and subsequently updates it.  This allows (for instance) to perform incremental
-	 * updates of user utterances.
+	 * Adds the incremental content (expressed as a distribution over variables) to the current 
+	 * dialogue state, and subsequently updates it.  If followPrevious is set to true, the content
+	 * is concatenated with the current distribution for the variable. This allows (for instance) 
+	 * to perform incremental updates of user utterances.
 	 * 
 	 * 
 	 * @param content the content to add / concatenate
@@ -356,10 +356,11 @@ public class DialogueSystem {
 	 *        or reset the content (e.g. when starting a new utterance)
 	 * @throws DialException if the incremental update failed
 	 */
-	public Set<String> incrementContent(CategoricalTable content, boolean followPrevious) throws DialException {
+	public Set<String> addIncrementalContent(CategoricalTable content, 
+			boolean followPrevious) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
-				curState.incrementState(content, followPrevious);
+				curState.addToState_incremental(content, followPrevious);
 				return update();
 			}
 		}

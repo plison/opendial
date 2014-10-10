@@ -36,8 +36,8 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.datastructs.Assignment;
@@ -182,8 +182,8 @@ public class RewardLearner implements Module {
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = system.getState().getChanceNode(param);
-					MarginalEmpiricalDistribution newDistrib = new MarginalEmpiricalDistribution
-							(Arrays.asList(param), paramNode.getInputNodeIds(), empiricalDistrib);
+					ProbDistribution newDistrib = empiricalDistrib.getMarginalDistrib(param, 
+							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
