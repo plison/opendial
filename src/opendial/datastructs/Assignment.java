@@ -515,6 +515,7 @@ public class Assignment {
 		for (String var : map.keySet()) {
 			if (!map.containsKey(var+"'")) {
 				String newVar = (var.indexOf('\'') >0)? var.replace("'", "") : var;
+				newVar = (newVar.indexOf("^old") >0)? newVar.replace("^old", "") : newVar;
 				a.addPair(newVar, map.get(var));
 			}
 		}

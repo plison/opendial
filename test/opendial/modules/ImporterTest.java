@@ -29,7 +29,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
@@ -60,8 +60,8 @@ public class ImporterTest {
 		}
 		assertEquals(20, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(22, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		assertTrue(((MarginalEmpiricalDistribution)system.getState().getChanceNode
-				("theta_1").getDistrib()).toContinuous().getFunction().getMean()[0] > 12.0);
+		assertTrue(((ContinuousDistribution)system.getState().getChanceNode
+				("theta_1").getDistrib()).getFunction().getMean()[0] > 12.0);
 		Settings.nbSamples = Settings.nbSamples * 5;
 
 	}

@@ -37,7 +37,7 @@ import javax.swing.JViewport;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.core.DialogueRecorder;
@@ -69,14 +69,14 @@ public class WizardTest {
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
 		}
-		log.debug("theta 1: " + ((MarginalEmpiricalDistribution)system.getState().getChanceNode
-				("theta_1").getDistrib()).toContinuous().getFunction().getMean()[0]);
-		assertTrue(((MarginalEmpiricalDistribution)system.getState().getChanceNode
-				("theta_1").getDistrib()).toContinuous().getFunction().getMean()[0] > 16.0);
-		log.debug("theta 2: " + ((MarginalEmpiricalDistribution)system.getState().getChanceNode
-				("theta_2").getDistrib()).toContinuous().getFunction().getMean()[0]);
-		assertTrue(((MarginalEmpiricalDistribution)system.getState().getChanceNode("theta_2").getDistrib())
-				.toContinuous().getFunction().getMean()[0] < 9.0);
+		log.debug("theta 1: " + ((ContinuousDistribution)system.getState().getChanceNode
+				("theta_1").getDistrib()).getFunction().getMean()[0]);
+		assertTrue(((ContinuousDistribution)system.getState().getChanceNode
+				("theta_1").getDistrib()).getFunction().getMean()[0] > 16.0);
+		log.debug("theta 2: " + ((ContinuousDistribution)system.getState().getChanceNode
+				("theta_2").getDistrib()).getFunction().getMean()[0]);
+		assertTrue(((ContinuousDistribution)system.getState().getChanceNode("theta_2").getDistrib())
+				.getFunction().getMean()[0] < 9.0);
 		
 	}
 	

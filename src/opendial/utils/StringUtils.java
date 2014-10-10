@@ -80,7 +80,7 @@ public class StringUtils {
 			String subscript = matcher3.group(1);
 			str = str.replace("^{"+subscript+"}", "<sup>"+subscript+"</sup>");
 		}
-		Matcher matcher4 = Pattern.compile("\\^(\\S)").matcher(str);
+		Matcher matcher4 = Pattern.compile("\\^([\\w\\-\\^]+)").matcher(str);
 		while (matcher4.find()) {
 			String subscript = matcher4.group(1);
 			str = str.replace("^"+subscript, "<sup>"+subscript+"</sup>");

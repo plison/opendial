@@ -401,6 +401,33 @@ public abstract class BNode implements Comparable<BNode> {
 	
 	
 	/**
+	 * Returns the list of closest descendants for the node among a set of possible 
+	 * variables.  The variables not mentioned are ignored.
+	 * 
+	 * @param variablesToRetain the set of all variables from which to seek 
+	 *        possible descendants
+	 * @return the set of relevant descendatns for the given variable
+	 */
+	public Set<String> getDescendantsIds(Collection<String> variablesToRetain) {
+		Set<String> descendants = new HashSet<String>();
+
+		Stack<BNode> nodesToProcess = new Stack<BNode>();
+		nodesToProcess.addAll(getOutputNodes());
+		while (!nodesToProcess.isEmpty()) {
+			BNode outputNode = nodesToProcess.pop();
+			if (variablesToRetain.contains(outputNode.getId())) {
+				descendants.add(outputNode.getId());
+			}
+			else {
+				nodesToProcess.addAll(outputNode.getOutputNodes());
+			}
+		}
+		return descendants;
+	}
+		
+	
+	
+	/**
 	 * Returns an ordered list of nodes which are the descendants
 	 * (via the relations) of the current node.  The ordering
 	 * puts the closest descendants at the beginning of the list, 
@@ -476,6 +503,34 @@ public abstract class BNode implements Comparable<BNode> {
 		return false;
 	}
 	
+	/**
+	 * Returns true if at least one of the variables given as argument is an ancestor
+	 * of this node, and false otherwise
+	 * 
+	 * @param variables the node identifiers of potential descendants
+	 * @return true if a descendant is found, false otherwise
+	 */
+	public boolean hasAncestor(Set<String> variables) {
+
+		Queue<BNode> nodesToProcess = new LinkedList<BNode>();
+		nodesToProcess.add(this);
+
+		// NB: we try to avoid recursion for efficiency reasons, and
+		// use a while loop instead
+		while (!nodesToProcess.isEmpty()) {
+			BNode currentNode = nodesToProcess.poll();
+			for (BNode ancestorNode : currentNode.getInputNodes()) {
+				if (variables.contains(ancestorNode.getId())) {
+					return true;
+				}
+				if (!nodesToProcess.contains(ancestorNode)) {
+					nodesToProcess.add(ancestorNode);
+				}
+			}
+		}
+		
+		return false;
+	}
 	
 	/**
 	 * Returns true if at there exists at least one descendant whose 

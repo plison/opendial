@@ -118,6 +118,21 @@ public class DialogueState extends BNetwork {
 		parameterVars = new HashSet<String>();
 		incrementalVars = new HashSet<String>();
 	}
+	
+	/**
+	 * Creates a new dialogue state that contains the Bayesian network provided
+	 * as argument.
+	 * 
+	 * @param network the Bayesian network to include
+	 * @param evidence the additional evidence
+	 */
+	public DialogueState(BNetwork network, Assignment evidence) {
+		super();
+		super.reset(network);
+		this.evidence = new Assignment(evidence);
+		parameterVars = new HashSet<String>();
+		incrementalVars = new HashSet<String>();
+	}
 
 
 	/**
@@ -125,14 +140,14 @@ public class DialogueState extends BNetwork {
 	 * contained as argument (and deletes the rest).
 	 * 
 	 */
-	@Override
 	public void reset(BNetwork network) {
+		if (this == network) {
+			return;
+		}
 		evidence.removePairs(getChanceNodeIds());
 		super.reset(network);
-		for (ChanceNode cn : getChanceNodes()) {
-			if (cn.getDistrib() instanceof EquivalenceDistribution) {
-				evidence.addPair(cn.getId(), ValueFactory.create(true));
-			}
+		if (network instanceof DialogueState) {
+			evidence.addAssignment(((DialogueState)network).getEvidence());
 		}
 	}
 
@@ -233,19 +248,18 @@ public class DialogueState extends BNetwork {
 
 	
 	/**
-	 * Concatenates the current value for the new content onto the current content, provided
-	 * the duration gap between the two is now larger than the specified maxDurationGap. Otherwise,
-	 * simply overwrite with the new content.
+	 * Concatenates the current value for the new content onto the current content, if followPrevious
+	 * is true.  Else, simply overwrites the current content of the variable.
 	 * 
 	 * @param distrib the distribution to add as incremental unit of content
 	 * @param followPrevious whether the results should be concatenated to the previous values,
 	 *        or reset the content (e.g. when starting a new utterance)
 	 * @throws DialException if the incremental operation could not be performed
 	 */
-	public void incrementState(CategoricalTable distrib, boolean followPrevious) throws DialException {
+	public void addToState_incremental(CategoricalTable distrib, boolean followPrevious) throws DialException {
 		
 		if (distrib.getHeadVariables().size() != 1) {
-			throw new DialException("increment only available for univariate distributions, but is " + distrib.getHeadVariables());
+			throw new DialException("increment only available for univariate distributions");
 		}
 		String headVar = distrib.getHeadVariables().iterator().next();
 		if (hasChanceNode(headVar) && isIncremental(headVar) & followPrevious) {

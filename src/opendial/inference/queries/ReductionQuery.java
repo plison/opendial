@@ -90,7 +90,6 @@ public class ReductionQuery extends ProbQuery {
 	}
 	
 	
-	
 	/**
 	 * Returns the query variables in sorted order (from the base to the leaves)
 	 * 
@@ -119,6 +118,17 @@ public class ReductionQuery extends ProbQuery {
 		return ancestors;
 	}
 	
+
+	/**
+	 * Returns the output nodes of the variable in the reduced network
+	 * 
+	 * @param var the variable
+	 * @return the output nodes of the variable in the reduced network
+	 */
+	public Set<String> getOutputNodes(String var) {
+		Set<String> ancestors = network.getNode(var).getDescendantsIds(queryVars);
+		return ancestors;
+	}
 	
 	@Override
 	public String toString() {

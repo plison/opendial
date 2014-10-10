@@ -23,7 +23,7 @@
 
 package opendial.inference.approximate;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.Stack;
 
@@ -32,8 +32,8 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.continuous.ContinuousDistribution;
 import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.other.MarginalEmpiricalDistribution;
 import opendial.bn.distribs.utility.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
@@ -230,17 +230,25 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 		// create the reduced network
 		BNetwork network = new BNetwork();
 		for (String var: query.getSortedQueryVars()) {
-			Set<String> directAncestors = query.getInputNodes(var);
-
-			// creating the empirical distribution
-			ProbDistribution distrib = new MarginalEmpiricalDistribution
-					(Arrays.asList(var), directAncestors, fullDistrib);
+			
+			Set<String> inputNodesIds = query.getInputNodes(var);
+			for (String inputNodeId : new ArrayList<String>(inputNodesIds)) {
+				
+				// remove the continuous nodes from the inputs (as a conditional probability
+				// distribution with a continuous dependent variable is hard to construct)
+				ChanceNode inputNode = network.getChanceNode(inputNodeId);
+				if (inputNode.getDistrib() instanceof ContinuousDistribution) {
+					inputNodesIds.remove(inputNodeId);
+				}
+			}
+			
+			ProbDistribution distrib = fullDistrib.getMarginalDistrib(var, inputNodesIds);
 
 			// creating the node
 			ChanceNode node = new ChanceNode(var);
 			node.setDistrib(distrib);
-			for (String ancestor : directAncestors) {
-				node.addInputNode(network.getNode(ancestor));
+			for (String inputId : inputNodesIds) {
+				node.addInputNode(network.getNode(inputId));
 			}
 			network.addNode(node);
 		}
@@ -264,7 +272,8 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @return the redrawn samples given their weight
 	 * @throws DialException
 	 */
-	public static Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples) throws DialException {
+	public static Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples)
+			throws DialException {
 
 		int sampleSize = samples.size();
 		WeightedSample[] sampleArray = new WeightedSample[sampleSize];
@@ -286,6 +295,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	}
 
 
+	
 
 
 }
