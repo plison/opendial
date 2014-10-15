@@ -96,6 +96,7 @@ import opendial.arch.Logger;
 	/**
 	 * If v is a BooleanVal, returns the conjunction of the two values.  Else, returns none.
 	 */
+	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof BooleanVal) {
 			return new BooleanVal(b & ((BooleanVal)v).getBoolean());

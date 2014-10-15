@@ -28,12 +28,10 @@ import java.util.Arrays;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
@@ -85,31 +83,28 @@ public class BasicRuleTest2 {
 		system.detachModule(ForwardPlanner.class);
 		system.startSystem(); 
 		
-		ProbQuery query = new ProbQuery(system.getState(),"a_u^p");
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.63);
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.27);
-	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
+	 	inference.checkProb(system.getState(), "a_u^p", "Ask(A)", 0.63);
+	 	inference.checkProb(system.getState(), "a_u^p", "Ask(B)", 0.27);
+	 	inference.checkProb(system.getState(), "a_u^p", "None", 0.1);
 	 			
-		CategoricalTable table = new CategoricalTable();
-		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
-		table.addRow(new Assignment("a_u", "None"), 0.2); 
+		CategoricalTable table = new CategoricalTable("a_u");
+		table.addRow("Ask(B)", 0.8);
+		table.addRow("None", 0.2); 
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
 		system.addContent(table);
 
-		ProbQuery query2 = new ProbQuery(system.getState(),"i_u");
-	 	inference.checkProb(query2, new Assignment("i_u", "Want(A)"), 0.090);
-	 	inference.checkProb(query2, new Assignment("i_u", "Want(B)"), 0.91);
+	 	inference.checkProb(system.getState(), "i_u", "Want(A)", 0.090);
+	 	inference.checkProb(system.getState(), "i_u", "Want(B)", 0.91);
 
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(B)"), 0.91*0.9);
-	 	inference.checkProb(query, new Assignment("a_u^p", "Ask(A)"), 0.09*0.9);
-	 	inference.checkProb(query, new Assignment("a_u^p", "None"), 0.1);
+	 	inference.checkProb(system.getState(), "a_u^p", "Ask(B)", 0.91*0.9);
+	 	inference.checkProb(system.getState(), "a_u^p", "Ask(A)", 0.09*0.9);
+	 	inference.checkProb(system.getState(), "a_u^p", "None", 0.1);
 
-	 	ProbQuery query3 = new ProbQuery(system.getState(),"a_u");
-	 	inference.checkProb(query3, new Assignment("a_u", "Ask(B)"), 0.918);
-	 	inference.checkProb(query3, new Assignment("a_u", "None"), 0.081);
+	 	inference.checkProb(system.getState(), "a_u", "Ask(B)", 0.918);
+	 	inference.checkProb(system.getState(), "a_u", "None", 0.081);
 	 	
 	 	EquivalenceDistribution.NONE_PROB = eqFactor;
 		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
@@ -129,27 +124,25 @@ public class BasicRuleTest2 {
 		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
 		system.startSystem(); 
 
-		ProbQuery query = new ProbQuery(system.getState(),"u_u2^p");
-	 	inference.checkProb(query, new Assignment("u_u2^p", "Do A"), 0.216);
-	 	inference.checkProb(query, new Assignment("u_u2^p", "Please do C"), 0.027);
-	 	inference.checkProb(query, new Assignment("u_u2^p", "Could you do B?"), 0.054);
-	 	inference.checkProb(query, new Assignment("u_u2^p", "Could you do A?"), 0.162);
-	 	inference.checkProb(query, new Assignment("u_u2^p", "none"), 0.19);
+	 	inference.checkProb(system.getState(), "u_u2^p", "Do A", 0.216);
+	 	inference.checkProb(system.getState(), "u_u2^p", "Please do C", 0.027);
+	 	inference.checkProb(system.getState(), "u_u2^p", "Could you do B?", 0.054);
+	 	inference.checkProb(system.getState(), "u_u2^p", "Could you do A?", 0.162);
+	 	inference.checkProb(system.getState(), "u_u2^p", "none", 0.19);
 	 			
 	
-		CategoricalTable table = new CategoricalTable();
-		table.addRow(new Assignment("u_u2", "Please do B"), 0.4);
-		table.addRow(new Assignment("u_u2", "Do B"), 0.4); 
+		CategoricalTable table = new CategoricalTable("u_u2");
+		table.addRow("Please do B", 0.4);
+		table.addRow("Do B", 0.4); 
 		 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		system.addContent(table);
 		
-		query = new ProbQuery(system.getState(),"i_u2");
-	 	inference.checkProb(query, new Assignment("i_u2", "Want(B)"), 0.654);
-	 	inference.checkProb(query, new Assignment("i_u2", "Want(A)"), 0.1963);
-	 	inference.checkProb(query, new Assignment("i_u2", "Want(C)"), 0.0327);
-	 	inference.checkProb(query, new Assignment("i_u2", "none"), 0.1168);
+	 	inference.checkProb(system.getState(), "i_u2", "Want(B)", 0.654);
+	 	inference.checkProb(system.getState(), "i_u2", "Want(A)", 0.1963);
+	 	inference.checkProb(system.getState(), "i_u2", "Want(C)", 0.0327);
+	 	inference.checkProb(system.getState(), "i_u2", "none", 0.1168);
 	 	
 	 	EquivalenceDistribution.NONE_PROB = eqFactor;
 		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
@@ -168,20 +161,18 @@ public class BasicRuleTest2 {
 		StatePruner.VALUE_PRUNING_THRESHOLD = 0.0;
 		system.startSystem(); 
 
-		UtilQuery query = new UtilQuery(system.getState(),"a_m'");
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), 0.6);
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), -2.6);
+	 	inference.checkUtil(system.getState(), "a_m'","Do(A)", 0.6);
+	 	inference.checkUtil(system.getState(), "a_m'", "Do(B)", -2.6);
 	 
-		CategoricalTable table = new CategoricalTable();
-		table.addRow(new Assignment("a_u", "Ask(B)"), 0.8);
-		table.addRow(new Assignment("a_u", "None"), 0.2); 
+		CategoricalTable table = new CategoricalTable("a_u");
+		table.addRow("Ask(B)", 0.8);
+		table.addRow("None", 0.2); 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		system.addContent(table);
 		
-		query = new UtilQuery(system.getState(),"a_m'");
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(A)"), -4.35);
-	 	inference.checkUtil(query, new Assignment("a_m'", "Do(B)"), 2.357);	
+	 	inference.checkUtil(system.getState(), "a_m'", "Do(A)", -4.35);
+	 	inference.checkUtil(system.getState(), "a_m'", "Do(B)", 2.357);	
 
 	 	EquivalenceDistribution.NONE_PROB = eqFactor;
 		StatePruner.VALUE_PRUNING_THRESHOLD = oldPruneThreshold;
@@ -197,14 +188,15 @@ public class BasicRuleTest2 {
 		system2.getSettings().showGUI = false;
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
-
-		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_m3'", "obj(a_m3)'"));
 		
-		inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+				new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "A")), 0.3);
-	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "Do"),
+	 	inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+	 			new Assignment(new Assignment("a_m3'", "Do"),
 	 			new Assignment("obj(a_m3)'", "B")), -1.7);
-	 	inference.checkUtil(query, new Assignment(new Assignment("a_m3'", "SayHi"),
+	 	inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+	 			new Assignment(new Assignment("a_m3'", "SayHi"),
 	 			new Assignment("obj(a_m3)'", "None")), -0.9);
 	// 	assertEquals(5, (new LikelihoodWeighting()).queryUtil(query).getTable().size()); 
 	 //	assertEquals(6, (new LikelihoodWeighting()).queryUtil(query).getTable().size()); 
@@ -222,15 +214,16 @@ public class BasicRuleTest2 {
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
 
-		UtilQuery query = new UtilQuery(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"));
-
 	//	log.debug((new VariableElimination()).queryUtility(query));
 
-		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+		inference.checkUtil(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "None")), 2.4);
-		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+		inference.checkUtil(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "DanceAround")), -0.6);
-		inference.checkUtil(query, new Assignment(new Assignment("a_ml'", "SayYes"),
+		inference.checkUtil(system2.getState(),Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
 	 			new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")), 1.6);
 	 	
 	}
@@ -244,11 +237,9 @@ public class BasicRuleTest2 {
 		system2.getSettings().showGUI = false;
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
-		ProbQuery query = new ProbQuery(system2.getState(),"A");
-		inference.checkProb(query, new Assignment("A", ValueFactory.create("[a2]")), 1.0);
+		inference.checkProb(system2.getState(), "A", ValueFactory.create("[a2]"), 1.0);
 
-		query = new ProbQuery(system2.getState(),"a_u");
-		inference.checkProb(query, new Assignment("a_u", "Request(ball)"), 0.5);
+		inference.checkProb(system2.getState(), "a_u", "Request(ball)", 0.5);
 	}
 	
 	

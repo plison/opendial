@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,18 +24,15 @@
 
 package opendial.state.distribs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.values.BooleanVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -54,13 +51,13 @@ import opendial.datastructs.ValueRange;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class EquivalenceDistribution implements DiscreteDistribution {
+public class EquivalenceDistribution implements ProbDistribution {
 
 	// logger
 	public static Logger log = new Logger("EquivalenceDistribution", Logger.Level.DEBUG);
 
 	// the variable label
-	String variable;
+	String baseVar;
 
 	// sampler
 	Random sampler;
@@ -75,11 +72,12 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @param variable the variable label
 	 */
 	public EquivalenceDistribution(String variable) {
-		this.variable = variable;
-		sampler = new Random(); 
+		this.baseVar = variable;
+		sampler = new Random();	
 	}
 
-	
+
+
 	/**
 	 * Does nothing
 	 */
@@ -93,43 +91,44 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 */
 	@Override
 	public EquivalenceDistribution copy() {
-		return new EquivalenceDistribution(variable);
+		return new EquivalenceDistribution(baseVar);
 	}
 
-	
+
 	/**
 	 * Returns a string representation of the distribution
 	 */
 	@Override
 	public String toString() {
-		return "Equivalence(" + variable + ", " + variable+"^p)";
+		String str= "Equivalence(" + baseVar + ", " + baseVar+"^p)";
+		return str;
 	}
 
-	
+
 	/**
 	 * Replaces occurrences of the old variable identifier oldId with the new identifier
 	 * newId.
 	 */
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
-		if (variable.equals(oldId)) {
-			variable = newId.replace("'", "");
+		if (baseVar.equals(oldId)) {
+			baseVar = newId.replace("'", "");
 		}
 	}
 
-	
+
 	/**
 	 * Generates a sample from the distribution given the conditional assignment.
 	 */
 	@Override
-	public Assignment sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws DialException {
 		double prob = getProb(condition);
 
 		if (sampler.nextDouble() < prob) {
-			return new Assignment(createLabel(), true);
+			return ValueFactory.create(true);
 		}
 		else {
-			return new Assignment(createLabel(), false);
+			return  ValueFactory.create(false);
 		}
 	}
 
@@ -140,9 +139,8 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @return a singleton set with the equality identifier
 	 */
 	@Override
-	public Collection<String> getHeadVariables() {
-		Set<String> headVars = new HashSet<String>(Arrays.asList(createLabel()));
-		return headVars;
+	public String getVariable() {
+		return "=_" + baseVar;
 	}
 
 
@@ -154,12 +152,12 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @return the resulting probability 
 	 */
 	@Override
-	public double getProb(Assignment condition, Assignment head) {
+	public double getProb(Assignment condition, Value head) {
+
 		try {
 			double prob = getProb(condition);
-			if (head.containsVar(createLabel()) && 
-					head.getValue(createLabel()) instanceof BooleanVal) {
-				boolean val = ((BooleanVal) head.getValue(createLabel())).getBoolean();
+			if (head instanceof BooleanVal) {
+				boolean val = ((BooleanVal)head).getBoolean();
 				if (val) { 
 					return prob;
 				}
@@ -175,31 +173,23 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 
 
 	/**
-	 * Creates a categorical table for the posterior distribution P(head) given the
-	 * conditional assignment in the argument.
-	 * 
-	 * @param condition the conditional assignment
-	 * @return the posterior distribution
+	 * Returns a new equivalence distribution with the conditional assignment as
+	 * fixed input.
 	 */
 	@Override
-	public CategoricalTable getPosterior(Assignment condition) throws DialException {
-		double prob = getProb(condition);
-		CategoricalTable table = new CategoricalTable();
-		if (prob > 0) {
-			table.addRow(new Assignment(createLabel(), true), prob);
-		}
-		if (prob < 1) {
-			table.addRow(new Assignment(createLabel(), false), 1 - prob);
-		}
+	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+		return new MarginalDistribution(this, condition);
+	}
+
+	@Override
+	public CategoricalTable getProbDistrib(Assignment condition) throws DialException {
+		double positiveProb = getProb(condition);
+		CategoricalTable table = new CategoricalTable(getVariable());
+		table.addRow(true, positiveProb);
+		table.addRow(false, 1- positiveProb);
 		return table;
 	}
-	
-	@Override
-	public CategoricalTable getPartialPosterior(Assignment condition) throws DialException {
-		return getPosterior(condition);
-	}
-	
-	
+
 	/**
 	 * Returns a set of two assignments: one with the value true, and one with the value
 	 * false.
@@ -208,12 +198,35 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 * @return the set with the two possible assignments
 	 */
 	@Override
-	public Set<Assignment> getValues(ValueRange range) {
-		Set<Assignment> vals = new HashSet<Assignment>();
-		vals.add(new Assignment(createLabel(), ValueFactory.create(true)));
-		vals.add(new Assignment(createLabel(), ValueFactory.create(false)));
+	public Set<Value> getValues(ValueRange range) {
+		Set<Value> vals = new HashSet<Value>();
+		vals.add(ValueFactory.create(true));
+		vals.add(ValueFactory.create(false));
 		return vals;
 	}
+
+
+	private Value[] getCoupledValues(Assignment initialInput) throws DialException {
+
+		Value[] coupledValues = new Value[2];
+		for (String inputVar : initialInput.getVariables()) {
+			if (inputVar.equals(baseVar+"^p")) {
+				coupledValues[0] = initialInput.getValue(inputVar);
+			}
+			else if (inputVar.equals(baseVar+"'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);				
+			}
+			else if (inputVar.equals(baseVar) && !inputVar.contains(baseVar+"'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);								
+			}
+		}
+		if (coupledValues[0]==null || coupledValues[1]==null) {
+			throw new DialException("equivalence distribution with variable " + 
+					baseVar + " cannot handle condition " + initialInput);
+		}
+		return coupledValues;
+	}
+
 
 	/**
 	 * Returns the probability of eq=true given the condition
@@ -223,41 +236,20 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	 */
 	private double getProb(Assignment condition) throws DialException {
 
-	
-		Assignment trimmed = condition.getTrimmed(variable+"^p");
-		trimmed = (trimmed.isEmpty())? condition.getTrimmed(variable+"^p^old") : trimmed;
-		if (condition.containsVar(variable+"'")) {
-			trimmed.addPair(variable+"'", condition.getValue(variable+"'"));
-		}
-		else if (condition.containsVar(variable)) {
-			trimmed.addPair(variable, condition.getValue(variable));
-		}
-		if (trimmed.size() == 2) {	
-			List<Value> valList = new ArrayList<Value>(trimmed.getValues());
+		Value[] coupledValues = getCoupledValues(condition);
 
-			if (valList.get(0).equals(ValueFactory.none()) || 
-					valList.get(1).equals(ValueFactory.none())) {	
-				return NONE_PROB;
-			}
-			else {
-				return (valList.get(0).equals(valList.get(1)))? 1.0 : 0.0;		
-			}			
+		if (coupledValues[0].equals(ValueFactory.none()) || 
+				coupledValues[1].equals(ValueFactory.none())) {	
+			return NONE_PROB;
 		}
-		else {
-			throw new DialException("equivalence distribution with variable " + 
-					variable + " cannot handle condition " + condition);
+		else if (coupledValues[0].equals(coupledValues[1])) {
+			return 1.0;
 		}
+		else{
+			return 0.0;		
+		}			
+
 	}
-
-
-	/**
-	 * Returns DISCRETE
-	 */
-	@Override
-	public DistribType getPreferredType() {
-		return DistribType.DISCRETE;
-	}
-
 
 
 	/**
@@ -269,23 +261,5 @@ public class EquivalenceDistribution implements DiscreteDistribution {
 	}
 
 
-	/**
-	 * Returns itself
-	 */
-	@Override
-	public DiscreteDistribution toDiscrete() throws DialException {
-		return this;
-	}
-
-
-
-	/**
-	 * Create a label for the equivalence variable
-	 * 
-	 * @return the label
-	 */
-	private String createLabel() {
-		return "=_" + variable;
-	}
 
 }

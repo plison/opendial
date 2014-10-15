@@ -33,7 +33,6 @@ import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 
 /**
  * Utilities to calculate distance (between doubles and arrays).
@@ -67,29 +66,28 @@ public class DistanceUtils {
 	}
 
 	/**
-	 * Find the assignment whose values are closest to the assignment toFind, assuming the values
+	 * Find the assignment whose values are closest to the value toFind, assuming the values
 	 * contained in the assignment are composed of only DoubleVal or ArrayVal.
 	 * 
-	 * @param rows the assignments in which to search for the closest element
-	 * @param toFind the reference assignment
-	 * @return the closest assignment, if any is found.
+	 * @param rows the values in which to search for the closest element
+	 * @param toFind the reference value
+	 * @return the closest value, if any is found.
 	 * @throws DialException if no closest assignment could be found
 	 */
-	public static Assignment getClosestElement(Collection<Assignment> rows, 
-			Assignment toFind) throws DialException {
+	public static Value getClosestElement(Collection<Value> rows, 
+			Value toFind) throws DialException {
 			
-		Assignment closest = null;
+		Value closest = null;
 		double minDistance = Double.MAX_VALUE;
-		for (Assignment a : rows) {
+		for (Value v : rows) {
 			double totalDistance = 0;
-			for (String var : toFind.getVariables()) {
-				Double[] val1 = convertToDouble(toFind.getValue(var));
-				Double[] val2 = convertToDouble(a.getValue(var));
-				totalDistance += getDistance(val1, val2);
-			}	
+			Double[] val1 = convertToDouble(toFind);
+			Double[] val2 = convertToDouble(v);
+			totalDistance += getDistance(val1, val2);
+			
 			if (totalDistance < minDistance) {
 				minDistance = totalDistance;
-				closest = a;
+				closest = v;
 			}
 		}	
 		if (closest == null) {

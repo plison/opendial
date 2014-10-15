@@ -36,7 +36,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.MultivariateDistribution;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
@@ -204,13 +205,11 @@ public class DialogueSystem {
 			attachModule(constructor.newInstance(this));
 			displayComment("Module " + module.getSimpleName() + " successfully attached");
 		} 
-		catch (InvocationTargetException e) {
-			log.warning("cannot attach module: " + e.getTargetException());
-			e.printStackTrace();
-			displayComment("cannot attach module: " + e.getTargetException());
-		}
-		catch (Exception e) {
-			log.warning("cannot attach module of class " + module.getCanonicalName() + ": " + e);
+		catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException 
+				| NoSuchMethodException | SecurityException e) {
+			log.warning("cannot attach module " + module.getSimpleName() + ": " + e.getCause());
+			displayComment("cannot attach module " + module.getSimpleName() + ": " +  e.getCause());
 		}
 	}
 
@@ -313,9 +312,9 @@ public class DialogueSystem {
 	 * @throws DialException if the state could not be updated
 	 */
 	public Set<String> addUserInput(Map<String,Double> userInput) throws DialException {
-		CategoricalTable table = new CategoricalTable();
+		CategoricalTable table = new CategoricalTable(settings.userInput);
 		for (String input : userInput.keySet()) {
-			table.addRow(new Assignment(settings.userInput, input), userInput.get(input));
+			table.addRow(input, userInput.get(input));
 		}
 		return addContent(table);
 	}
@@ -326,7 +325,7 @@ public class DialogueSystem {
 	 * Adds the content (expressed as a categorical table over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
-	 * @param distrib the categorical table to add
+	 * @param distrib the (independent) probability distribution to add
 	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated.
 	 */
@@ -381,8 +380,33 @@ public class DialogueSystem {
 	 * @throws DialException if the state could not be updated.
 	 */
 	public Set<String> addContent(Assignment assign) throws DialException {
-		return addContent(new CategoricalTable(assign));
+		if (!paused) {
+			synchronized (curState) {
+				curState.addToState(assign);
+				return update();
+			}
+		}
+		else {
+			log.info("system is currently paused -- ignoring content " + assign);
+			return new HashSet<String>();
+		}
 	}
+	
+
+	public Set<String> addContent(MultivariateDistribution distrib) throws DialException {
+		if (!paused) {
+			synchronized (curState) {
+				curState.addToState(distrib);
+				return update();
+			}
+		}
+		else {
+			log.info("system is currently paused -- ignoring content " + distrib);
+			return new HashSet<String>();
+		}
+	}
+
+
 
 
 	/**
@@ -429,7 +453,6 @@ public class DialogueSystem {
 			for (Model model : domain.getModels()) {
 				model.trigger(curState, toProcess);
 			}
-
 			for (Module module : modules) {
 				module.trigger(curState, toProcess);
 			}
@@ -459,11 +482,11 @@ public class DialogueSystem {
 	 * Returns the probability distribution associated with the variables in the
 	 * current dialogue state.
 	 * 
-	 * @param variables the variables to query
+	 * @param variable the variable to query
 	 * @return the resulting probability distribution for these variables
 	 */
-	public IndependentProbDistribution getContent(String... variables) {
-		return curState.queryProb(variables);
+	public IndependentProbDistribution getContent(String variable) {
+		return curState.queryProb(variable);
 	}
 
 	/**
@@ -473,7 +496,7 @@ public class DialogueSystem {
 	 * @param variables the variables to query
 	 * @return the resulting probability distribution for these variables
 	 */
-	public IndependentProbDistribution getContent(Collection<String> variables) {
+	public MultivariateDistribution getContent(Collection<String> variables) {
 		return curState.queryProb(variables);
 	}
 

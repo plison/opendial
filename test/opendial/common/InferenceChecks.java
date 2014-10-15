@@ -25,24 +25,24 @@ package opendial.common;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
-import opendial.bn.distribs.utility.UtilityDistribution;
+import opendial.bn.BNetwork;
+import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
+import opendial.inference.Query;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 
 public class InferenceChecks {
 
@@ -69,7 +69,7 @@ public class InferenceChecks {
 	public InferenceChecks() {
 
 		ve = new VariableElimination();
-		is = new LikelihoodWeighting();
+		is = new LikelihoodWeighting(2000,200);
 		is2 = new LikelihoodWeighting(5000, 500);
 		naive = new NaiveInference();
 	
@@ -90,94 +90,115 @@ public class InferenceChecks {
 	}
 
 
-	public void checkProb (ProbQuery query) throws DialException {
+	public void checkProb (BNetwork network, Collection<String> queryVars, Assignment evidence) throws DialException {
 		
-		DiscreteDistribution distrib1 = compute(query, ve).toDiscrete();
-		DiscreteDistribution distrib2 = compute(query, is).toDiscrete();
+		Query.ProbQuery query = new Query.ProbQuery(network, queryVars, new Assignment());
+		MultivariateDistribution distrib1 = computeProb(query, ve);
+		MultivariateDistribution distrib2 = computeProb(query, is);
 	
 		try { compareDistributions(distrib1, distrib2, 0.1); }
 		catch (AssertionError e) {
-			distrib2 = compute(query, is2).toDiscrete();
-			log.debug("resampling for query " + query);
+			distrib2 = computeProb(query, is2);
+			log.debug("resampling for query " + new Query.ProbQuery(
+					network, queryVars, evidence));
 			compareDistributions(distrib1, distrib2, 0.1); 
 		}
 		if (includeNaive) {
-			DiscreteDistribution distrib3 = compute(query, naive).toDiscrete();	
+			MultivariateDistribution distrib3 = computeProb(query, naive);	
 			compareDistributions(distrib1, distrib3, 0.01); 
 		}
 	}
 	
+	public void checkProb (BNetwork network, String queryVar, String a, 
+			double expected) throws DialException {
+		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a), expected);
+	}
+
+	public void checkProb (BNetwork network, String queryVar, Value a, 
+			double expected) throws DialException {
+		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a), expected);
+	}
 	
+	public void checkProb (BNetwork network, Collection<String> queryVars, 
+			Assignment a, double expected) throws DialException {
 
-	public void checkProb (ProbQuery query, Assignment a, double expected) throws DialException {
+		Query.ProbQuery query = new Query.ProbQuery(network, queryVars, new Assignment());
 
-		CategoricalTable distrib1 = compute(query, ve).toDiscrete();
-		CategoricalTable distrib2 = compute(query, is).toDiscrete();
+		MultivariateDistribution distrib1 = computeProb(query, ve);
+		MultivariateDistribution distrib2 = computeProb(query, is);
 
 		assertEquals(expected, distrib1.getProb(a), EXACT_THRESHOLD);
 		
 			try { assertEquals(expected, distrib2.getProb(a), SAMPLING_THRESHOLD);	}
 			catch (AssertionError e) {
-				distrib2 = compute(query, is2).toDiscrete();
+				distrib2 = computeProb(query, is2);
 				assertEquals(expected, distrib2.getProb(a), SAMPLING_THRESHOLD);
 			}
 
 			if (includeNaive) {
-				CategoricalTable distrib3 = compute(query, naive).toDiscrete();
-				assertEquals(expected, distrib3.toDiscrete().getProb(a), EXACT_THRESHOLD);
+				MultivariateDistribution distrib3 = computeProb(query, naive);
+				assertEquals(expected, distrib3.getProb(a), EXACT_THRESHOLD);
 			}
 	}
 
 
 	
-	public void checkCDF (ProbQuery query, Assignment a, double expected) throws DialException {
+	public void checkCDF (BNetwork network, String variable, double value,double expected) throws DialException {
 
-		ContinuousDistribution distrib1 = compute(query, ve).toContinuous();
-		ContinuousDistribution distrib2 = compute(query, is).toContinuous();
+		Query.ProbQuery query = new Query.ProbQuery(network, Arrays.asList(variable), new Assignment());
+		ContinuousDistribution distrib1 = computeProb(query, ve).getMarginal(variable).toContinuous();
+		ContinuousDistribution distrib2 = computeProb(query, is).getMarginal(variable).toContinuous();
 
-		assertEquals(expected, distrib1.getCumulativeProb(a), EXACT_THRESHOLD);
+		assertEquals(expected, distrib1.getCumulativeProb(value), EXACT_THRESHOLD);
 		
-			try { assertEquals(expected, distrib2.getCumulativeProb(a), SAMPLING_THRESHOLD);	}
+			try { assertEquals(expected, distrib2.getCumulativeProb(value), SAMPLING_THRESHOLD);	}
 			catch (AssertionError e) {
-				distrib2 = compute(query, is2).toContinuous();
-				assertEquals(expected, distrib2.getCumulativeProb(a), SAMPLING_THRESHOLD);
+				distrib2 = computeProb(query, is2).
+						getMarginal(variable).toContinuous();
+				assertEquals(expected, distrib2.getCumulativeProb(value), SAMPLING_THRESHOLD);
 			}
 
 			if (includeNaive) {
-				ContinuousDistribution distrib3 = compute(query, naive).toContinuous();
-				assertEquals(expected, distrib3.toDiscrete().getProb(new Assignment(), a), EXACT_THRESHOLD);
+				ContinuousDistribution distrib3 = computeProb(query,naive).getMarginal(variable).toContinuous();
+				assertEquals(expected, distrib3.toDiscrete().getProb(value), EXACT_THRESHOLD);
 			}
 	} 
 
 	
 
-	public void checkUtil(UtilQuery query, Assignment a, double expected) throws DialException {
+	public void checkUtil(BNetwork network, String queryVar, String a, 
+			double expected) throws DialException {
+		checkUtil(network, Arrays.asList(queryVar), new Assignment(queryVar, a), expected);
+		
+	}
+	public void checkUtil(BNetwork network, Collection<String> queryVars, 
+			Assignment a, double expected) throws DialException {
 			
-		UtilityDistribution distrib1 = compute(query, ve);
-		UtilityDistribution distrib2 = compute(query, is);
+		Query.UtilQuery query = new Query.UtilQuery(network, queryVars, new Assignment());
+		UtilityDistribution distrib1 = computeUtil(query, ve);
+		UtilityDistribution distrib2 = computeUtil(query, is);
 
 			assertEquals(expected, distrib1.getUtil(a), EXACT_THRESHOLD);
 			try { assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);	}
 			catch (AssertionError e) {
-				distrib2 = compute(query, is2);
+				distrib2 = computeUtil(query, is2);
 				assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);
 			}
 
 			if (includeNaive) {
-				UtilityDistribution distrib3 = compute(query, naive);
+				UtilityDistribution distrib3 = computeUtil(query, naive);
 				assertEquals(expected, distrib3.getUtil(a), EXACT_THRESHOLD);
 			}
 		}
 	
 	
-
 	
-	private IndependentProbDistribution compute(ProbQuery query, 
+	private MultivariateDistribution computeProb(Query.ProbQuery query, 
 			InferenceAlgorithm algo) throws DialException {
 		
 
 			long time1 = System.nanoTime();
-			IndependentProbDistribution distrib = algo.queryProb(query);
+			MultivariateDistribution distrib = algo.queryProb(query);
 			long inferenceTime = System.nanoTime() - time1;
 			numbers.put(algo, numbers.get(algo) + 1);
 			timings.put(algo, timings.get(algo) + inferenceTime);
@@ -185,7 +206,7 @@ public class InferenceChecks {
 	}
 	
 	
-	private UtilityDistribution compute(UtilQuery query, InferenceAlgorithm algo) throws DialException {
+	private UtilityDistribution computeUtil(Query.UtilQuery query, InferenceAlgorithm algo) throws DialException {
 		
 			long time1 = System.nanoTime();
 			UtilityDistribution distrib = algo.queryUtil(query);
@@ -199,13 +220,13 @@ public class InferenceChecks {
 	
 
 	
-	private void compareDistributions(DiscreteDistribution distrib1, 
-			DiscreteDistribution distrib2, double margin) throws DialException {
+	private void compareDistributions(MultivariateDistribution distrib1, 
+			MultivariateDistribution distrib2, double margin) throws DialException {
 		
-		Collection<Assignment> rows = distrib1.getPosterior(new Assignment()).getRows();
+		Collection<Assignment> rows = distrib1.getValues();
 		for (Assignment value : rows) {
-			assertEquals(distrib1.getProb(new Assignment(), value), 
-					distrib2.getProb(new Assignment(), value), margin);
+			assertEquals(distrib1.getProb(value), 
+					distrib2.getProb(value), margin);
 		}
 	}
 

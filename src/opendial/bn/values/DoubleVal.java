@@ -106,6 +106,7 @@ public final class DoubleVal implements Value {
 	 * If v is a DoubleVal, returns the addition of the two values.  If v is a StringVal,
 	 * returns the string concatenation of the two.  Else, returns none.
 	 */
+	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof DoubleVal) {
 			return new DoubleVal(d + ((DoubleVal)v).getDouble());

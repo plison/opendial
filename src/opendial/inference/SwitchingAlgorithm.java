@@ -27,17 +27,13 @@ package opendial.inference;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.exact.VariableElimination;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.Query;
-import opendial.inference.queries.ReductionQuery;
-import opendial.inference.queries.UtilQuery;
 
 
 /**
@@ -86,7 +82,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public IndependentProbDistribution queryProb(ProbQuery query) throws DialException {
+	public MultivariateDistribution queryProb(Query.ProbQuery query) throws DialException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
@@ -99,7 +95,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public UtilityTable queryUtil(UtilQuery query) throws DialException {
+	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryUtil(query);
 	}
@@ -120,10 +116,10 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(ReductionQuery query) throws DialException {
+	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
 		// select the best reduction algorithm and performs the reduction
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
-		BNetwork result = algo.reduce(query);	
+		BNetwork result = algo.reduce(query);
 		return result;
 	}
 
@@ -139,8 +135,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 			if (node.getInputNodeIds().size() > branchingFactor) {
 				branchingFactor = node.getInputNodeIds().size();
 			}
-			if (node instanceof ChanceNode && ((ChanceNode)node).getDistrib().
-					getPreferredType() != DistribType.DISCRETE) {
+			if (node instanceof ChanceNode && ((ChanceNode)node).getDistrib()
+					instanceof ContinuousDistribution) {
 				nbContinuous++;
 			}
 		}		

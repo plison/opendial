@@ -33,8 +33,9 @@ import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
 import opendial.modules.Module;
@@ -158,6 +159,7 @@ public class ForwardPlanner implements Module {
 		public void run() {
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
+
 				Assignment bestAction =  evalActions.getBest().getKey(); 
 				initState.removeNodes(initState.getUtilityNodeIds());
 				initState.removeNodes(initState.getActionNodeIds());
@@ -210,8 +212,9 @@ public class ForwardPlanner implements Module {
 				if (horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
 
 					DialogueState copy = state.copy();
-					addContent(copy, new CategoricalTable(action.removePrimes()));
-
+					copy.addToState(action.removePrimes());
+					updateState(copy);
+					
 					if (!action.isDefault()) {
 						double expected = system.getSettings().discountFactor * getExpectedValue(copy, horizon - 1);
 						qValues.setUtil(action, qValues.getUtil(action) + expected);
@@ -228,9 +231,7 @@ public class ForwardPlanner implements Module {
 		 * @param newContent the content to add
 		 * @throws DialException if the update operation could not be performed
 		 */
-		private void addContent(DialogueState state, CategoricalTable newContent) 
-				throws DialException {
-			state.addToState(newContent);
+		private void updateState(DialogueState state) throws DialException {
 			
 			while (!state.getNewVariables().isEmpty()) {
 				Set<String> toProcess = state.getNewVariables();
@@ -270,14 +271,15 @@ public class ForwardPlanner implements Module {
 		 */
 		private double getExpectedValue(DialogueState state, int horizon) throws DialException {
 
-			CategoricalTable observations = getObservations(state);
-			CategoricalTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
+			MultivariateTable observations = getObservations(state);
+			MultivariateTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
 			double expectedValue = 0.0;
-			for (Assignment obs : nbestObs.getRows()) {
+			for (Assignment obs : nbestObs.getValues()) {
 				double obsProb = nbestObs.getProb(obs);
 				if (obsProb > MIN_OBSERVATION_PROB) {
 					DialogueState copy = state.copy();
-					addContent(copy, new CategoricalTable(obs));
+					copy.addToState(obs);
+					updateState(copy);
 
 					UtilityTable qValues = getQValues(copy, horizon);
 					if (!qValues.getRows().isEmpty()) {
@@ -300,7 +302,7 @@ public class ForwardPlanner implements Module {
 		 * @return the inferred observations
 		 * @throws DialException
 		 */
-		private CategoricalTable getObservations (DialogueState state) throws DialException {
+		private MultivariateTable getObservations (DialogueState state) throws DialException {
 			Set<String> predictionNodes = new HashSet<String>();
 			for (String nodeId: state.getChanceNodeIds()) {
 				if (nodeId.contains("^p")) {
@@ -314,11 +316,11 @@ public class ForwardPlanner implements Module {
 				}
 			}
 
-			CategoricalTable modified = new CategoricalTable();
+			MultivariateTable modified = new MultivariateTable();
 			if (!predictionNodes.isEmpty()) {
-				CategoricalTable observations = state.queryProb(predictionNodes).toDiscrete();
+				MultivariateDistribution observations = state.queryProb(predictionNodes);
 
-				for (Assignment a : observations.getRows()) {
+				for (Assignment a : observations.getValues()) {
 					Assignment newA = new Assignment();
 					for (String var : a.getVariables()) {
 						newA.addPair(var.replace("^p", ""), a.getValue(var));

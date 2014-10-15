@@ -28,9 +28,6 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.common.InferenceChecks;
-import opendial.datastructs.Assignment;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
@@ -63,12 +60,10 @@ public class QuantificationTest {
 			system.startSystem(); 
 		
 
-		ProbQuery query = new ProbQuery(system.getState(),"found");
-		inference.checkProb(query, new Assignment("found", "A"), 0.7);
+		inference.checkProb(system.getState(), "found", "A", 0.7);
 
-		query = new ProbQuery(system.getState(),"found2");
-		inference.checkProb(query, new Assignment("found2", "D"), 0.3);
-		inference.checkProb(query, new Assignment("found2", "C"), 0.5);
+		inference.checkProb(system.getState(), "found2", "D", 0.3);
+		inference.checkProb(system.getState(), "found2", "C", 0.5);
 		
 		StatePruner.ENABLE_PRUNING = true;
 }
@@ -85,15 +80,12 @@ public class QuantificationTest {
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.startSystem(); 
-		ProbQuery query = new ProbQuery(system.getState(),"graspable(obj1)");
-		inference.checkProb(query, new Assignment("graspable(obj1)", "true"), 0.81);
+		inference.checkProb(system.getState(), "graspable(obj1)", "true", 0.81);
 
-		query = new ProbQuery(system.getState(),"graspable(obj2)");
-		inference.checkProb(query, new Assignment("graspable(obj2)", "true"), 0.16);
-		UtilQuery query2 = new UtilQuery(system.getState(),"a_m'");
-		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj1)"), 0.592);
-		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj2)"), -2.0);
-		inference.checkUtil(query2, new Assignment("a_m'", "grasp(obj3)"), -2.0);
+		inference.checkProb(system.getState(), "graspable(obj2)", "true", 0.16);
+		inference.checkUtil(system.getState(), "a_m'", "grasp(obj1)", 0.592);
+		inference.checkUtil(system.getState(), "a_m'", "grasp(obj2)", -2.0);
+		inference.checkUtil(system.getState(), "a_m'", "grasp(obj3)", -2.0);
 		
 		StatePruner.ENABLE_PRUNING = true;
 		

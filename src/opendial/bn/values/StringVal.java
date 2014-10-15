@@ -124,6 +124,7 @@ public final class StringVal implements Value {
 	/**
 	 * Returns the concatenation of the two values.  
 	 */
+	@Override
 	public Value concatenate (Value v) {
 		if (v instanceof StringVal) {
 			return ValueFactory.create(str + " " + v.toString());

@@ -25,8 +25,8 @@ package opendial.bn;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -290,6 +290,43 @@ public class BNetwork {
 	public Collection<BNode> getNodes() {
 		return nodes.values();
 	}
+	
+	
+
+	/**
+	 * Returns the set of nodes belonging to a certain class
+	 * (extending BNode)
+	 * 
+	 * @param cls the class
+	 * @return the resulting set of nodes
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends BNode> Collection<T> getNodes(Class<T> cls) {
+		Set<T> nodesOfClass = new HashSet<T>();
+		for (BNode n : nodes.values()) {
+			if (cls.isInstance(n)) {
+				nodesOfClass.add((T)n);
+			}
+		}
+		return nodesOfClass;
+	}
+
+	/**
+	 * Returns the set of nodes belonging to a certain class
+	 * (extending BNode)
+	 * 
+	 * @param cls the class
+	 * @return the resulting set of node identifiers
+	 */
+	public <T extends BNode> Collection<String> getNodesIds(Class<T> cls) {
+		Set<String> nodesOfClass = new HashSet<String>();
+		for (BNode n : nodes.values()) {
+			if (cls.isInstance(n)) {
+				nodesOfClass.add(n.getId());
+			}
+		}
+		return nodesOfClass;
+	}
 
 
 	/**
@@ -475,6 +512,21 @@ public class BNetwork {
 	
 	
 	/**
+	 * Returns the ordered list of node identifiers (see method above).
+	 * 
+	 * @return the ordered list of node identifiers.
+	 */
+	public List<String> getSortedNodesIds() {
+		List<String> sorted = new ArrayList<String>();
+		for (BNode n : getSortedNodes()) {
+			sorted.add(n.getId());
+		}
+		return sorted;
+	}
+	
+
+	
+	/**
 	 * Returns the set of maximal cliques that compose this network.  The cliques are collections
 	 * of nodes such that each node in the clique is connect to all the other nodes in the clique 
 	 * but to no nodes outside the clique.
@@ -501,7 +553,7 @@ public class BNetwork {
 				if (!cluster1.equals(cluster2)) {
 					for (String elInCluster1 : cluster1) {
 						if (cluster2.contains(elInCluster1)) {
-							log.warning("cluster 1 = " + cluster1 + " and cluster 2 = " + cluster2);
+							log.warning("cluster 1:" + cluster1 + ", cluster 2:" + cluster2);
 							log.warning("network to cluster: " + getNodeIds());
 							log.warning("network to cluster2: " + nodes.keySet());
 						}
@@ -509,8 +561,8 @@ public class BNetwork {
 				}
 			}
 		}
-		Collections.sort(cliques, new Comparator<Set<String>>() { 
-			public int compare (Set<String> s1, Set<String> s2) { return s1.hashCode() - s2.hashCode(); } });
+		Collections.sort(cliques, (s1,s2) -> s1.hashCode() - s2.hashCode());
+				
 		return cliques;
 	}
 	
@@ -562,24 +614,6 @@ public class BNetwork {
 			result.add(subnetwork);
 		}
 		return result;
-	}
-	
-	
-	/**
-	 * Creates a unique identifier that is guaranteed not to exist in the current network.
-	 * 
-	 * @param base the base of the identifier
-	 * @return the unique identifier
-	 */
-	public String getUniqueId(String base) {
-		if (!hasNode(base)) {
-			return base;
-		}
-		int incr = 1;
-		while(hasNode(base+incr)) {
-			incr++;
-		}
-		return base+incr;
 	}
 	
 	

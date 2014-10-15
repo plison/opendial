@@ -21,78 +21,56 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.discrete.functions;
+package opendial.bn.distribs;
 
-import opendial.arch.Logger;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
+
 import opendial.datastructs.Assignment;
 
 /**
- * Deterministic function that outputs the sum of 
- * all double values in the input assignment.
+ * Generic interface for an utility distribution (also called value distribution),
+ * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).  
  * 
+ * <p>Typically, at least one of these X1, ..., Xn variables consist of a decision variable.
+ *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
+ * @version $Date::                      $
+ *
  */
-public class AdditionFunction implements DeterministicFunction {
-
-	// logger
-	public static Logger log = new Logger("AdditionFunction", Logger.Level.NORMAL);
+public interface UtilityDistribution {
 
 	/**
-	 * Returns the sum of all double values in the input
+	 * Returns the utility associated with the specific assignment of values for
+	 * the input nodes.  If none exists, returns 0.0f.
 	 * 
-	 * @return the sum of all values.
+	 * @param input the value assignment for the input chance nodes
+	 * @return the associated utility
 	 */
-	@Override
-	public Value getValue(Assignment input) {
-		double total = 0.0;
-		for (Value val : input.getValues()) {
-			if (val instanceof DoubleVal) {
-				total += ((DoubleVal)val).getDouble();
-			}
-		}
-		return ValueFactory.create(total);
-	}
-
+	public double getUtil(Assignment input);
 	
 	/**
-	 * Returns "addition function".
+	 * Checks that the utility distribution is well-formed (all assignments are covered)
 	 * 
+	 * @return true is the distribution is well-formed, false otherwise
 	 */
-	@Override
-	public String toString() {
-		return "addition function";
-	}
-
+	
+	public boolean isWellFormed();
 	
 	/**
-	 * Returns a copy of the function.
-	 */
-	@Override
-	public DeterministicFunction copy() {
-		return new AdditionFunction();
-	}
-
-	
-	/**
-	 * Does nothing.
-	 */
-	@Override
-	public void modifyVarId(String oldId, String newId) {
-		return;
-	}
-	
-
-	/**
-	 * Returns a constant.
+	 * Creates a copy of the utility distribution
 	 * 
-	 * @return 456.
+	 * @return the copy
 	 */
-	public int hashcode() {
-		return 456;
-	}
+	public UtilityDistribution copy();
+
+
+	/**
+	 * Changes the variable label
+	 * 
+	 * @param oldId the old variable label
+	 * @param newId the new variable label
+	 */
+	public void modifyVarId(String oldId, String newId);
+	
+	
+	
 }
-

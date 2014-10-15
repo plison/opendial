@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.utility;
+package opendial.bn.distribs;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -35,7 +35,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ArrayVal;
 import opendial.datastructs.Assignment;
 import opendial.modules.core.ForwardPlanner;
@@ -69,10 +69,10 @@ public class DemoTest {
 		system.startSystem();
 	 	system.addContent(new Assignment("a_m", "AskRepeat"));
 	 	
-	 	CategoricalTable t = new CategoricalTable();
-	 	t.addRow(new Assignment("a_u", "DoA"), 0.7);
-	 	t.addRow(new Assignment("a_u", "DoC"), 0.2);
-	 	t.addRow(new Assignment("a_u", "DoB"), 0.1);
+	 	CategoricalTable t = new CategoricalTable("a_u");
+	 	t.addRow("DoA", 0.7);
+	 	t.addRow("a_u", 0.2);
+	 	t.addRow("a_u", 0.1);
 		system.addContent(t);
 		for (int i = 0 ; i < 3000 ; i++) {
 			System.out.println(((ArrayVal)system.getState().getChanceNode("theta").sample()).getArray()[0]);
@@ -91,13 +91,13 @@ public class DemoTest {
 
 		system.startSystem();
 
-		CategoricalTable t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "hello there"), 0.7);
-	 	t.addRow(new Assignment("u_u", "hello"), 0.2);
+		CategoricalTable t = new CategoricalTable("u_u");
+	 	t.addRow("hello there", 0.7);
+	 	t.addRow("hello", 0.2);
 		Set<String> updates = system.addContent(t);
 		assertTrue(updates.containsAll(Arrays.asList("a_u", "a_m", "u_m")));
 		
-		assertEquals("Hi there", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Hi there", system.getContent("u_m").toDiscrete().getBest().toString());
 		
 		Map<String,Double> t2 = new HashMap<String,Double>();
 	 	t2.put("move forward", 0.06);
@@ -110,98 +110,98 @@ public class DemoTest {
 		system.addUserInput(t2);
 		
 	//	Thread.sleep(1000000);
-		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "now do that again"), 0.3);
-	 	t.addRow(new Assignment("u_u", "move backward"), 0.22);
-	 	t.addRow(new Assignment("u_u", "move a bit to the left"), 0.22);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("now do that again", 0.3);
+	 	t.addRow("move backward", 0.22);
+	 	t.addRow("move a bit to the left", 0.22);
 		system.addContent(t);
 		
-		assertEquals("Sorry, could you repeat?", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Sorry, could you repeat?", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "do that one more time"), 0.65);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("do that one more time", 0.65);
 		system.addContent(t);
 		
-		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		system.addContent(new CategoricalTable(new Assignment("perceived", "[BlueObj]")));
+		system.addContent(new CategoricalTable("perceived", "[BlueObj]"));
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "what do you see"), 0.6);
-	 	t.addRow(new Assignment("u_u", "do you see it"), 0.3);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("what do you see", 0.6);
+	 	t.addRow("do you see it", 0.3);
 		system.addContent(t);
 		
-		assertEquals("I see a blue cylinder", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("I see a blue cylinder", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "pick up the blue object"), 0.75);
-	 	t.addRow(new Assignment("u_u", "turn left"), 0.12);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("pick up the blue object", 0.75);
+	 	t.addRow("turn left", 0.12);
 		system.addContent(t);
 		
-		assertEquals("OK, picking up the blue object", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, picking up the blue object", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		system.addContent(new CategoricalTable(new Assignment("perceived", "[]")));
-		system.addContent(new CategoricalTable(new Assignment("carried", "[BlueObj]")));
+		system.addContent(new CategoricalTable("perceived", "[]"));
+		system.addContent(new CategoricalTable("carried", "[BlueObj]"));
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "now please move a bit forward"), 0.21);
-	 	t.addRow(new Assignment("u_u", "move backward a little bit"), 0.13);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("now please move a bit forward", 0.21);
+	 	t.addRow("move backward a little bit", 0.13);
 		system.addContent(t);
 		
-		assertEquals("Should I move a bit forward?", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Should I move a bit forward?", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "yes"), 0.8);
-	 	t.addRow(new Assignment("u_u", "move backward"), 0.1);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("yes", 0.8);
+	 	t.addRow("move backward", 0.1);
 		system.addContent(t);
 		
-		assertEquals("OK, moving Forward a little bit", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, moving Forward a little bit", system.getContent("u_m").toDiscrete().getBest().toString());
 
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "and now move forward"), 0.21);
-	 	t.addRow(new Assignment("u_u", "move backward"), 0.09);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("and now move forward", 0.21);
+	 	t.addRow("move backward", 0.09);
 		system.addContent(t);
 		
-		assertEquals("Should I move forward?", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Should I move forward?", system.getContent("u_m").toDiscrete().getBest().toString());
 
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "no"), 0.6);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("no", 0.6);
 		system.addContent(t);
 
-		assertEquals("Should I move backward?", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Should I move backward?", system.getContent("u_m").toDiscrete().getBest().toString());
 
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "yes"), 0.5);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("yes", 0.5);
 		system.addContent(t);
 		
-		assertEquals("OK, moving Backward", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, moving Backward", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "now what can you see now?"), 0.7);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("now what can you see now?", 0.7);
 		system.addContent(t);
 		
-		assertEquals("I do not see anything", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("I do not see anything", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "please release the object"), 0.5);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("please release the object", 0.5);
 		system.addContent(t);
 		
-		assertEquals("OK, putting down the object", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("OK, putting down the object", system.getContent("u_m").toDiscrete().getBest().toString());
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "something unexpected"), 0.7);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("something unexpected", 0.7);
 		system.addContent(t);
 		
 		assertFalse(system.getState().hasChanceNode("u_m"));
 		
-		t = new CategoricalTable();
-	 	t.addRow(new Assignment("u_u", "goodbye"), 0.7);
+		t = new CategoricalTable("u_u");
+	 	t.addRow("goodbye", 0.7);
 		system.addContent(t);
 		
-		assertEquals("Bye, see you next time", system.getContent("u_m").toDiscrete().getBest().getValue("u_m").toString());
+		assertEquals("Bye, see you next time", system.getContent("u_m").toDiscrete().getBest().toString());
 		
 	}
 	

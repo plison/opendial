@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.discrete;
+package opendial.bn.distribs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +29,6 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.other.ConditionalDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -39,23 +37,22 @@ import opendial.utils.StringUtils;
 
 /**
  * Traditional probability distribution represented as a discrete probability table.  
- * The table expresses a generic distribution of type P(X1, ..., Xn | Y1, ..., Yn), 
- * where X1, ..., Xn is called the "head" part of the distribution, and Y1, ..., Yn 
- * the conditional part.
+ * The table expresses a generic distribution of type P(X | Y1, ..., Yn), 
+ * where X is called the "head" random variable, and Y1, ..., Yn the conditional 
+ * random variables.
  * 
  * <p>Technically, the table is expressed as a double mapping, where each assignment for
- * Y1, ..., Yn is mapped to a table where the assignments for X1...Xn are associated with 
- * a given probability value. 
+ * Y1, ..., Yn is mapped to a categorical table where the assignments for X are associated 
+ * with a given probability value. 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class ConditionalCategoricalTable extends ConditionalDistribution<CategoricalTable> 
-	implements DiscreteDistribution  {
+public class ConditionalTable extends ConditionalDistribution<CategoricalTable> {
 
 	// logger
-	public static Logger log = new Logger("ConditionalCategoricalTable", Logger.Level.DEBUG);
+	public static Logger log = new Logger("ConditionalTable", Logger.Level.DEBUG);
 
 	// ===================================
 	//  TABLE CONSTRUCTION
@@ -63,15 +60,27 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 
 
 	/**
+	 * Constructs a new conditional categorical table with the given variable name.
+	 * 
+	 * @param headVar the variable name
+	 */
+	public ConditionalTable(String headVar) {
+		super(headVar);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+
+	/**
 	 * Adds a new row to the probability table, given the conditional assignment,
 	 * the head assignment and the probability value.
 	 * If the table already contains a probability, it is erased.
 
 	 * @param condition the conditional assignment for Y1...Yn
-	 * @param head the head assignment for X1...Xn
+	 * @param head the value for the head variable
 	 * @param prob the associated probability
 	 */
-	public void addRow(Assignment condition, Assignment head, double prob) {
+	public void addRow(Assignment condition, Value head, double prob) {
 
 		if (prob < 0.0f || prob > 1.05f) {
 			log.warning("probability is not well-formed: " + prob);
@@ -79,26 +88,56 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 		}
 
 		if (!table.containsKey(condition)) {
-			table.put(condition, new CategoricalTable());
+			table.put(condition, new CategoricalTable(headVar));
 		}
 
 		conditionalVars.addAll(condition.getVariables());
 
 		table.get(condition).addRow(head, prob);
-
 	}
+	
 
 	/**
-	 * Increments the probability specified in the table for the given head 
-	 * assignment.  If none exists, simply assign the probability.
-	 * 
-	 * @param head the head assignment
-	 * @param prob the probability increment
-	 */
-	public void incrementRow(Assignment head, double prob) {
-		incrementRow(new Assignment(), head, prob);
-	}
+	 * Adds a new row to the probability table, given the conditional assignment,
+	 * the head assignment and the probability value.
+	 * If the table already contains a probability, it is erased.
 
+	 * @param condition the conditional assignment for Y1...Yn
+	 * @param head the value for the head variable (as a string)
+	 * @param prob the associated probability
+	 */
+	public void addRow(Assignment condition, String head, double prob) {
+		addRow(condition, ValueFactory.create(head), prob);
+	}
+	
+
+	/**
+	 * Adds a new row to the probability table, given the conditional assignment,
+	 * the head assignment and the probability value.
+	 * If the table already contains a probability, it is erased.
+
+	 * @param condition the conditional assignment for Y1...Yn
+	 * @param head the value for the head variable (as a double)
+	 * @param prob the associated probability
+	 */
+	public void addRow(Assignment condition, double head, double prob) {
+		addRow(condition, ValueFactory.create(head), prob);
+	}
+	
+
+	/**
+	 * Adds a new row to the probability table, given the conditional assignment,
+	 * the head assignment and the probability value.
+	 * If the table already contains a probability, it is erased.
+
+	 * @param condition the conditional assignment for Y1...Yn
+	 * @param head the value for the head variable (as a boolean)
+	 * @param prob the associated probability
+	 */
+	public void addRow(Assignment condition, boolean head, double prob) {
+		addRow(condition, ValueFactory.create(head), prob);
+	}
+	
 
 	/**
 	 * Increments the probability specified in the table for the given condition and
@@ -108,7 +147,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @param head the head assignment
 	 * @param prob the probability increment
 	 */
-	public void incrementRow(Assignment condition, Assignment head, double prob) {
+	public void incrementRow(Assignment condition, Value head, double prob) {
 		if (table.containsKey(condition) && table.get(condition).hasProb(head)) {
 			addRow(condition,head, table.get(condition).getProb(head) + prob);
 		}
@@ -126,7 +165,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @param heads the simple table with (head assignment, probability value)
 	 */
 	public void addRows(Assignment condition, CategoricalTable heads) {
-		for (Assignment head : heads.getRows()) {
+		for (Value head : heads.getValues()) {
 			addRow(condition, head, heads.getProb(head));
 		}
 	}
@@ -138,9 +177,9 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * 
 	 * @param fullTable the full probability table to insert
 	 */
-	public void addRows (Map<Assignment, Map<Assignment,Double>> fullTable) {
+	public void addRows (Map<Assignment, Map<Value,Double>> fullTable) {
 		for (Assignment cond : fullTable.keySet()) {
-			for (Assignment head : fullTable.get(cond).keySet()) {
+			for (Value head : fullTable.get(cond).keySet()) {
 				addRow(cond, head, fullTable.get(cond).get(head));
 			}
 		}
@@ -152,7 +191,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @param condition conditional assignment
 	 * @param head head assignment
 	 */
-	public void removeRow(Assignment condition, Assignment head) {
+	public void removeRow(Assignment condition, Value head) {
 		if (table.containsKey(condition)) {
 			table.get(condition).removeRow(head);
 		}
@@ -176,13 +215,9 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 			possibleCondAssignments.remove(new Assignment());
 
-			Assignment defaultA = new Assignment();
-			if (!table.isEmpty()) {
-				defaultA = Assignment.createDefault(table.values().iterator().next().getHeadVariables());
-			}
 			for (Assignment possibleCond: possibleCondAssignments) {
 				if (!table.containsKey(possibleCond)) {
-					addRow(possibleCond, defaultA, 1.0);
+					addRow(possibleCond, ValueFactory.none(), 1.0);
 				}
 			}
 		}
@@ -204,7 +239,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @return the associated probability, if one exists.
 	 */
 	@Override
-	public double getProb(Assignment condition, Assignment head) {
+	public double getProb(Assignment condition, Value head) {
 
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
@@ -232,7 +267,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @param head the head assignment
 	 * @return the associated probability, if one exists.
 	 */
-	public double getProb(Assignment head) {
+	public double getMarginalProb(Value head) {
 		double totalProb = 0.0f;
 		for (Assignment condition : table.keySet()) {
 			totalProb = getProb(condition, head);
@@ -250,7 +285,7 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	 * @return true if the distribution defines a probability for the value, and
 	 *         false otherwise
 	 */
-	public boolean hasProb(Assignment condition, Assignment head) {
+	public boolean hasProb(Assignment condition, Value head) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		boolean result = (table.containsKey(trimmed) && table.get(trimmed).hasProb(head));
 		return result;
@@ -283,8 +318,8 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	public Map<Assignment,Double> getFlatTable() {
 		Map<Assignment,Double> flatTable = new HashMap<Assignment,Double>();
 		for (Assignment condition : table.keySet()) {
-			for (Assignment head : table.get(condition).getRows()) {
-				Assignment flatValue = new Assignment(condition, head);
+			for (Value head : table.get(condition).getValues()) {
+				Assignment flatValue = new Assignment(condition, headVar, head);
 				flatTable.put(flatValue, table.get(condition).getProb(head));
 			}
 		}
@@ -292,15 +327,21 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	}
 	
 	
-
+	/**
+	 * Returns the posterior distribution obtained by integrating the (possibly
+	 * partial) conditional assignment.
+	 * 
+	 * @param condition assignment on a subset of the conditional variables
+	 * @return the resulting probability distribution.
+	 */
 	@Override
-	public ProbDistribution getPartialPosterior (Assignment condition) {
+	public ProbDistribution getPosterior (Assignment condition) throws DialException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
 		}
 		
-		ConditionalCategoricalTable newDistrib = new ConditionalCategoricalTable();
+		ConditionalTable newDistrib = new ConditionalTable(headVar);
 		for (Assignment a : table.keySet()) {
 			if (a.consistentWith(condition)) {
 				Assignment remaining = a.getTrimmedInverse(condition.getVariables());
@@ -328,14 +369,14 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	public String toString() {
 		String str = "";
 		for (Assignment cond: table.keySet()) {
-			for (Assignment head: table.get(cond).getRows()) {
+			for (Value head: table.get(cond).getValues()) {
 				String prob = StringUtils.getShortForm(table.get(cond).getProb(head));
 				if (cond.size() > 0) {
-					str += "P(" + head + " | " + cond 
+					str += "P(" + headVar + "=" + head + " | " + cond 
 							+ "):="  + prob + "\n";
 				}
 				else {
-					str += "P(" + head + "):="  + prob + "\n";
+					str += "P("  + headVar + "="+ head + "):="  + prob + "\n";
 				}
 			}
 		}
@@ -354,27 +395,13 @@ public class ConditionalCategoricalTable extends ConditionalDistribution<Categor
 	}
 
 	/**
-	 * Returns the distribution
-	 */
-	@Override
-	public ConditionalCategoricalTable toDiscrete() {
-		return this;
-	}
-		
-	
-	/**
 	 * Copies the distribution
 	 */
 	@Override
-	public ConditionalCategoricalTable copy() {
-		ConditionalCategoricalTable newC = new ConditionalCategoricalTable();
-		try {
-		for (Assignment a : table.keySet()) {
-			newC.addRows(a, getPosterior(a));
-		}
-		}
-		catch (DialException e) {
-			log.warning("copy problem: " + e);
+	public ConditionalTable copy() {
+		ConditionalTable newC = new ConditionalTable(headVar);
+		for (Assignment cond : table.keySet()) {
+			newC.addRows(cond, table.get(cond));
 		}
 		return newC;
 	}

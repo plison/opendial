@@ -514,13 +514,30 @@ public class Assignment {
 		
 		for (String var : map.keySet()) {
 			if (!map.containsKey(var+"'")) {
-				String newVar = (var.indexOf('\'') >0)? var.replace("'", "") : var;
-				newVar = (newVar.indexOf("^old") >0)? newVar.replace("^old", "") : newVar;
+				boolean hasPrime = (var.charAt(var.length()-1)=='\'');
+				String newVar = (hasPrime)? var.substring(0, var.length()-1) : var;
 				a.addPair(newVar, map.get(var));
 			}
 		}
 		
 		return a;
+	}
+	
+
+	/**
+	 * Returns a new assignment where the variable name is replaced.
+	 * 
+	 * @param oldVar old variable name
+	 * @param newVar new variable name
+	 * @return the new assignment with the renamed variable
+	 */
+	public Assignment renameVar(String oldVar, String newVar) {
+		Assignment newAssign = copy();
+		if (containsVar(oldVar)) {
+			Value condVal = newAssign.removePair(oldVar);
+			newAssign.addPair(newVar, condVal);
+		}
+		return newAssign;
 	}
 	
 	
@@ -976,6 +993,8 @@ public class Assignment {
 		return str;
 		
 	}
+
+
 
 	
 }

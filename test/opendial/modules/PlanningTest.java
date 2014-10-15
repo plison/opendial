@@ -26,14 +26,13 @@ package opendial.modules;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.common.InferenceChecks;
-import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
-import opendial.inference.queries.ProbQuery;
 import opendial.readers.XMLDomainReader;
 
 import org.junit.Test;
@@ -75,8 +74,8 @@ public class PlanningTest {
 		assertEquals(3, system.getState().getNodes().size());
 		assertEquals(3, system.getState().getChanceNodes().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
-		inference.checkProb(new ProbQuery(system.getState(), "a_m3"), new Assignment("a_m3", "Do"), 1.0);
-		inference.checkProb(new ProbQuery(system.getState(), "obj(a_m3)"), new Assignment("obj(a_m3)", "A"), 1.0);
+		inference.checkProb(system.getState(), "a_m3", "Do", 1.0);
+		inference.checkProb(system.getState(), "obj(a_m3)", "A", 1.0);
 	}
 
 	@Test
@@ -99,7 +98,7 @@ public class PlanningTest {
 
 		system.getSettings().horizon = 2;
 		system.startSystem(); 
-		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
+		inference.checkProb(system.getState(), "a_m", "AskRepeat", 1.0);
 	}
 	
 	
@@ -112,12 +111,12 @@ public class PlanningTest {
 		system.getSettings().horizon = 3;
 		system.startSystem(); 
 		
-		CategoricalTable t1 = new CategoricalTable();
-		t1.addRow(new Assignment("a_u", "Ask(Coffee)"), 0.95);
-		t1.addRow(new Assignment("a_u", "Ask(Tea)"), 0.02);
+		CategoricalTable t1 = new CategoricalTable("a_u");
+		t1.addRow("Ask(Coffee)", 0.95);
+		t1.addRow("Ask(Tea)", 0.02);
 		system.addContent(t1);
 
-		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "Do(Coffee)"), 1.0);
+		inference.checkProb(system.getState(), "a_m", "Do(Coffee)", 1.0);
 				
 	}
 	
@@ -132,12 +131,12 @@ public class PlanningTest {
 		system.getSettings().horizon = 3;
 		system.startSystem(); 
 		
-		CategoricalTable t1 = new CategoricalTable();
-		t1.addRow(new Assignment("a_u", "Ask(Coffee)"), 0.3);
-		t1.addRow(new Assignment("a_u", "Ask(Tea)"), 0.3);
+		CategoricalTable t1 = new CategoricalTable("a_u");
+		t1.addRow("Ask(Coffee)", 0.3);
+		t1.addRow("Ask(Tea)", 0.3);
 		system.addContent(t1);
 
-		inference.checkProb(new ProbQuery(system.getState(), "a_m"), new Assignment("a_m", "AskRepeat"), 1.0);
+		inference.checkProb(system.getState(), "a_m", "AskRepeat", 1.0);
 		
 	}
 

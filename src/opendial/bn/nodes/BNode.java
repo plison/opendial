@@ -276,6 +276,25 @@ public abstract class BNode implements Comparable<BNode> {
 	public Set<BNode> getInputNodes() {
 		return new HashSet<BNode>(inputNodes.values());
 	}
+	
+
+	/**
+	 * Returns the set of input nodes of a certain class
+	 * 
+	 * @return the input nodes
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends BNode> Set<T> getInputNodes(Class<T> cls) {
+		Set<T> result = new HashSet<T>();
+		for (BNode inputNode : inputNodes.values()) {
+			if (cls.isInstance(inputNode)) {
+				result.add((T) inputNode);
+			}
+		}
+		return result;
+	}
+	
+	
 
 	/**
 	 * Returns the identifiers for the set of input nodes
@@ -298,6 +317,41 @@ public abstract class BNode implements Comparable<BNode> {
 		result.addAll(outputNodes.values());
 		return result;
 	}
+	
+
+	/**
+	 * Returns the set of output nodes of a certain class
+	 * 
+	 * @return the input nodes
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends BNode> Set<T> getOutputNodes(Class<T> cls) {
+		Set<T> result = new HashSet<T>();
+		for (BNode outputNode : outputNodes.values()) {
+			if (cls.isInstance(outputNode)) {
+				result.add((T) outputNode);
+			}
+		}
+		return result;
+	}
+	
+	
+
+	/**
+	 * Returns the set of output nodes of a certain class
+	 * 
+	 * @return the input node identifiers
+	 */
+	public <T extends BNode> Set<String> getOutputNodesIds(Class<T> cls) {
+		Set<String> result = new HashSet<String>();
+		for (BNode outputNode : outputNodes.values()) {
+			if (cls.isInstance(outputNode)) {
+				result.add(outputNode.getId());
+			}
+		}
+		return result;
+	}
+	
 
 	/**
 	 * Returns the identifiers for the set of output nodes
@@ -802,7 +856,8 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	protected void addInputNode_internal(BNode inputNode) {
 		if (inputNodes.containsKey(inputNode.getId())) {
-			log.warning("node " + inputNode.getId() + " already included in the input nodes of " + nodeId);
+			log.warning("node " + inputNode.getId() +
+					" already included in the input nodes of " + nodeId);
 		}
 		inputNodes.put(inputNode.getId(), inputNode);
 	}
@@ -817,7 +872,8 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	protected void addOutputNode_internal(BNode outputNode) {
 		if (outputNodes.containsKey(outputNode.getId())) {
-			log.debug("node " + outputNode.getId() + " already included in the output nodes of " + nodeId);
+			log.debug("node " + outputNode.getId() + 
+					" already included in the output nodes of " + nodeId);
 		}
 		else {
 			outputNodes.put(outputNode.getId(), outputNode);

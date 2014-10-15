@@ -34,9 +34,8 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.continuous.functions.UniformDensityFunction;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.datastructs.Assignment;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.gui.GUIFrame;
 import opendial.gui.GUIMenuBar;
 import opendial.modules.core.DialogueImporter;
@@ -67,20 +66,20 @@ public class RecordingTest {
 		system.getSettings().showGUI = true;
 		system.startSystem();
 		
-		CategoricalTable table = new CategoricalTable();
-		table.addRow(new Assignment("u_u", "move left"), 0.3);
-		table.addRow(new Assignment("u_u", "move a bit to the left"), 0.05);
+		CategoricalTable table = new CategoricalTable("u_u");
+		table.addRow("move left", 0.3);
+		table.addRow("move a bit to the left", 0.05);
 		system.addContent(table);
 
-		table = new CategoricalTable();
-		table.addRow(new Assignment("u_u", "no"), 0.5);
+		table = new CategoricalTable("u_u");
+		table.addRow("no", 0.5);
 		system.addContent(table);
 		system.pause(true);
-		table.addRow(new Assignment("u_u", "now you should not hear anything"), 0.8);
+		table.addRow("now you should not hear anything", 0.8);
 		system.pause(false);
-		table = new CategoricalTable();
-		table.addRow(new Assignment("u_u", "move left"), 0.2);
-		table.addRow(new Assignment("u_u", "move a bit to the left"), 0.65);	
+		table = new CategoricalTable("u_u");
+		table.addRow("move left", 0.2);
+		table.addRow("move a bit to the left", 0.65);	
 		system.addContent(table);
 		
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
@@ -103,7 +102,7 @@ public class RecordingTest {
 		
 		GUIMenuBar.importContent(system, importState, "state");
 		assertEquals(12, system.getState().getChanceNodeIds().size());
-		assertEquals(0.7, system.getContent("aha").toDiscrete().getProb(new Assignment("aha", "ohoho")), 0.01);
+		assertEquals(0.7, system.getContent("aha").getProb("ohoho"), 0.01);
 		
 		GUIMenuBar.importContent(system, importParams, "parameters");
 		assertEquals(14, system.getState().getChanceNodeIds().size());

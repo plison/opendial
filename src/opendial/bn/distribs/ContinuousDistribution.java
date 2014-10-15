@@ -21,26 +21,19 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.continuous;
+package opendial.bn.distribs;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.continuous.functions.DensityFunction;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -100,17 +93,6 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	//  GETTERS
 	// ===================================
 
-
-
-	/**
-	 * Samples from the distribution (conditional assignment is ignored).
-	 * 
-	 * @return the sample (variable,value) pair.
-	 */
-	@Override
-	public Assignment sample(Assignment condition) throws DialException {
-		return sample();
-	}
 	
 	
 	/**
@@ -119,23 +101,27 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @return the sampled (variable, value) pair
 	 */
 	@Override
-	public Assignment sample() {
+	public Value sample() {
 		Value v = (function.getDimensionality() > 1)? 
 				ValueFactory.create(function.sample()) 
 				: ValueFactory.create(function.sample()[0]);
-		return new Assignment (variable, v);
+		return v;
 	}
-
-
+	
+	
+	
 	/**
-	 * Returns the distribution
+	 * Returns the probability of the particular value, based on a discretised
+	 * representation of the continuous distribution.
 	 * 
-	 * @return the distribution
+	 * @return the probability value for the discretised table.
+	 * 
 	 */
 	@Override
-	public ContinuousDistribution toContinuous() {
-		return this;
+	public double getProb(Value value) {
+		return toDiscrete().getProb(value);
 	}
+
 
 
 	/**
@@ -149,44 +135,80 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 
 		if (discreteCache == null) {
 			Map<Double[],Double> discretisation = function.discretise(Settings.discretisationBuckets);
-			discreteCache = new CategoricalTable();
+			discreteCache = new CategoricalTable(variable);
 			for (Double[] value : discretisation.keySet()) {
 				Value val = (value.length > 1)? new ArrayVal(value) : ValueFactory.create(value[0]);
-				discreteCache.addRow(new Assignment(variable, val), discretisation.get(value));
+				discreteCache.addRow(val, discretisation.get(value));
 			}
 		}
 		return discreteCache;
+	}
+	
+	
+	/**
+	 * Returns itself.
+	 */
+	@Override
+	public ContinuousDistribution toContinuous() {
+		return this;
 	}
 
 
 
 	/**
-	 * Returns the probability density for the given head assignment
+	 * Returns the probability density for the given value
 	 * 
-	 * @param head the head assignment (must contain the distribution variable, and have a double value)
+	 * @param value the value (must be a DoubleVal or ArrayVal)
 	 * @return the resulting density
 	 */
-	public double getProbDensity(Assignment head) {
+	public double getProbDensity(Value val) {
 		try {
-			if (head.containsVar(variable)) {
-				if (head.getValue(variable) instanceof ArrayVal) {
-					return function.getDensity(((ArrayVal)head.getValue(variable)).getArray());
-				}
-				if (head.getValue(variable) instanceof DoubleVal) {
-					return function.getDensity(((DoubleVal)head.getValue(variable)).getDouble());
-				}
+			if (val instanceof ArrayVal) {
+				return function.getDensity(((ArrayVal)val).getArray());
 			}
-			else {
-				log.warning("head does not contain variable " + variable + ", or has a wrong-typed value: " + head);
+			if (val instanceof DoubleVal) {
+				return function.getDensity(((DoubleVal)val).getDouble());
 			}
+			
 		}
 		catch (DialException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
 	}
+	
 
-
+	/**
+	 * Returns the probability density for the given value
+	 * 
+	 * @param value (as a Double array)
+	 * @return the resulting density
+	 */
+	public double getProbDensity(double val) {
+		try {
+		return function.getDensity(val);
+		}
+		catch (DialException e) {
+			log.warning("exception: " + e);
+		}
+		return 0.0;
+	}
+	
+	/**
+	 * Returns the probability density for the given value
+	 * 
+	 * @param value (as a Double array)
+	 * @return the resulting density
+	 */
+	public double getProbDensity(Double[] val) {
+		try {
+		return function.getDensity(val);
+		}
+		catch (DialException e) {
+			log.warning("exception: " + e);
+		}
+		return 0.0;
+	}
 
 	/**
 	 * Returns the density function
@@ -203,61 +225,21 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * 
 	 * @return the variable label
 	 */
+	@Override
 	public String getVariable() {
 		return variable;
 	}
 
 
 	/**
-	 * Returns a singleton set with the variable label
-	 * 
-	 * @return a singleton set with the variable label
-	 */
-	@Override
-	public Collection<String> getHeadVariables() {
-		Set<String> headVars = new HashSet<String>(Arrays.asList(variable));
-		return headVars;
-	}
-
-
-	/**
-	 * Returns the distribution.
-	 */
-	@Override
-	public ContinuousDistribution getPosterior(Assignment condition) {
-		return this;
-	}
-	
-
-	/**
-	 * Returns the distribution.
-	 */
-	@Override
-	public ContinuousDistribution getPartialPosterior(Assignment condition) {
-		return this;
-	}
-
-
-	/**
-	 * Returns continuous
-	 */
-	@Override
-	public DistribType getPreferredType() {
-		return DistribType.CONTINUOUS;
-	}
-
-	
-	/**
 	 * Returns the cumulative probability from 0 up to a given point provided in the
 	 * argument.
 	 * 
-	 * @param head the point up to which the cumulative probability must be estimated.
+	 * @param val the value up to which the cumulative probability must be estimated.
 	 * @return the cumulative probability
 	 */
-	public double getCumulativeProb(Assignment head) {
-		try {
-		if (head.containsVar(variable)) {
-			Value val = head.getValue(variable);
+	public double getCumulativeProb(Value val) {
+		try {	
 			if (val instanceof ArrayVal) {
 				return function.getCDF(((ArrayVal)val).getArray());
 			}
@@ -265,9 +247,24 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 				return function.getCDF(new Double[]{((DoubleVal)val).getDouble()});
 			}
 		}
-		else {
-			log.warning("head does not contain variable " + variable + ", or has a wrong-typed value: " + head);
+		catch (DialException e) {
+			log.warning("exception: " + e);
 		}
+		return 0.0;
+	} 
+
+
+	/**
+	 * Returns the cumulative probability from 0 up to a given point provided in the
+	 * argument.
+	 * 
+	 * @param val value up to which the cumulative probability must be estimated 
+	 * 		(as a double)
+	 * @return the cumulative probability
+	 */
+	public double getCumulativeProb(double val) {
+		try {	
+			return function.getCDF(val);
 		}
 		catch (DialException e) {
 			log.warning("exception: " + e);
@@ -275,27 +272,31 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 		return 0.0;
 	} 
 	
+	/**
+	 * Returns the cumulative probability from 0 up to a given point provided in the
+	 * argument.
+	 * 
+	 * @param val value up to which the cumulative probability must be estimated
+	 * 		(as an array of Doubles)
+	 * @return the cumulative probability
+	 */
+	public double getCumulativeProb(Double[] val) {
+		try {	
+			return function.getCDF(val);
+		}
+		catch (DialException e) {
+			log.warning("exception: " + e);
+		}
+		return 0.0;
+	} 
 	
 	/**
-	 * 
 	 * Discretises the distribution and returns a set of possible values for it.
 	 * 
-	 * @param range the input values (is ignored)
 	 * @return the set of discretised values for the variable
 	 */
 	@Override
-	public Set<Assignment> getValues(ValueRange range) {
-		return getValues();
-	}
-	
-	
-	/**
-	 * Discretises the distribution and returns a set of possible values for it.
-	 * 
-	 * @return the set of discretised values for the variable
-	 */
-	@Override
-	public Set<Assignment> getValues() {
+	public Set<Value> getValues() {
 		return toDiscrete().getValues();
 	}
 	

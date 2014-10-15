@@ -29,7 +29,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;

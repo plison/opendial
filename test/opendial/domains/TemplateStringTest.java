@@ -202,9 +202,7 @@ public class TemplateStringTest {
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
-		assertEquals(system.getContent("caught").
-				toDiscrete().getProb(new Assignment(), new Assignment("caught", false)), 1.0, 0.01);
-		assertEquals(system.getContent("caught2").
-				toDiscrete().getProb(new Assignment(), new Assignment("caught2", true)), 1.0, 0.01);
+		assertEquals(system.getContent("caught").getProb(false), 1.0, 0.01);
+		assertEquals(system.getContent("caught2").getProb(true), 1.0, 0.01);
 	}
 }

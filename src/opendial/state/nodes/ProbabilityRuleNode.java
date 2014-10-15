@@ -53,7 +53,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 
 	
 	/**
-	 * Creates the probability rule nod
+	 * Creates the probability rule node
 	 * 
 	 * @param rule the anchored rule
 	 * @throws DialException if the anchored rule does not specify a probability rule
@@ -90,6 +90,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 	public ProbabilityRuleNode copy() throws DialException {
 		ProbabilityRuleNode rn = new ProbabilityRuleNode(rule);
 		rn.setId(nodeId);
+		rn.distrib = distrib.copy();
 		return rn;
 	}
 

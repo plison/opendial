@@ -1,24 +1,19 @@
 package opendial.inference.approximate;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Stack;
 
 import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.other.EmpiricalDistribution;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
-import opendial.inference.queries.Query;
+import opendial.inference.Query;
 
 /**
  * Sampling process for a particular query
@@ -191,40 +186,6 @@ public class SamplingProcess extends AnytimeProcess {
 
 
 	/**
-	 * Extracts the samples that are already available from a previous 
-	 * sampling operation and adds them to the new sample.
-	 * 
-	 * @throws DialException
-	 */
-/**	private void addReadySample(WeightedSample sample) throws DialException {
-		try {
-			for (ChanceNode cn : query.getNetwork().getChanceNodes()) {
-				if (sample.containsVar(cn.getId())) {
-					continue;
-				}
-				if (cn.getDistrib() instanceof MarginalEmpiricalDistribution) {
-					EmpiricalDistribution fullDistrib = ((MarginalEmpiricalDistribution)cn.getDistrib()).getFullDistrib();				
-					Assignment a = new Assignment(fullDistrib.getCompatibleSample(query.getEvidence()));
-					for (String var : new ArrayList<String>(a.getVariables())) {
-						if (!query.getNetwork().hasChanceNode(var)
-							|| !(query.getNetwork().getChanceNode(var).getDistrib() 
-								instanceof MarginalEmpiricalDistribution)
-							|| ((MarginalEmpiricalDistribution)query.getNetwork().getChanceNode(var)
-								.getDistrib()).getFullDistrib() != fullDistrib) {
-							a.removePair(var);
-						}
-					}
-					sample.addAssignment(a);
-				}
-			}
-		}
-		catch (ConcurrentModificationException e) {
-			log.debug("exception : " +e);
-			addReadySample(sample);
-		}
-	} */
-
-	/**
 	 * Samples the given chance node and add it to the sample.  If the variable is part
 	 * of the evidence, updates the weight.
 	 * 
@@ -244,9 +205,8 @@ public class SamplingProcess extends AnytimeProcess {
 		else {
 			Value evidenceValue = query.getEvidence().getValue(n.getId());
 			double evidenceProb = 1.0;
-			if (n.getDistrib().getPreferredType() == DistribType.CONTINUOUS) {
-				evidenceProb = ((IndependentProbDistribution)n.getDistrib()).
-						toContinuous().getProbDensity(query.getEvidence());
+			if (n.getDistrib() instanceof ContinuousDistribution) {
+				evidenceProb = ((ContinuousDistribution)n.getDistrib()).getProbDensity(evidenceValue);
 			}
 			else {
 				evidenceProb = n.getProb(sample, evidenceValue);	

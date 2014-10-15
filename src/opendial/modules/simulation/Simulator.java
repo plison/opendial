@@ -31,8 +31,8 @@ import java.util.Set;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
@@ -68,8 +68,8 @@ public class Simulator implements Module {
 	 * @param system the main dialogue system to which the simulator should connect
 	 * @throws DialException if the simulator could not be created
 	 */
-	public Simulator(DialogueSystem system) throws DialException  {
-		this(system, extractDomain(system.getSettings()));
+	public Simulator(DialogueSystem system, String simulatorDomain) throws DialException  {
+		this(system, extractDomain(simulatorDomain));
 	}
 
 
@@ -89,20 +89,6 @@ public class Simulator implements Module {
 	}
 
 
-	/**
-	 * Extracts the simulator domain from the parameter "simulator-domain" in the
-	 * settings, if it is mentioned.  Else, throw an exception.
-	 * 
-	 * @param settings the system settings
-	 * @return the dialogue domain for the simulator
-	 * @throws DialException if the simulator domain is not specified or ill-formatted.
-	 */
-	private static Domain extractDomain(Settings settings) throws DialException {
-		if (!settings.params.containsKey("simulator-domain")) {
-			throw new MissingParameterException("simulator-domain");
-		}
-		return XMLDomainReader.extractDomain(settings.params.getProperty("simulator-domain"));
-	}
 
 
 	/**
@@ -150,16 +136,18 @@ public class Simulator implements Module {
 					try {
 						synchronized (systemState) {
 
-							Assignment systemAction = (systemState.hasChanceNode(outputVar))? 
-									systemState.queryProb(outputVar).toDiscrete().getBest()
-									: Assignment.createDefault(outputVar);
+							Value systemAction = ValueFactory.none();
+							if (systemState.hasChanceNode(outputVar)) {
+								systemAction = systemState.queryProb(outputVar).toDiscrete().getBest();
+							}
 
-									log.debug("Simulator input: " + systemAction);
-									boolean turnPerformed = performTurn(systemAction);
-									int repeat = 0 ;
-									while (!turnPerformed && repeat < 5) {
-										turnPerformed = performTurn(systemAction);
-									}
+
+							log.debug("Simulator input: " + systemAction);
+							boolean turnPerformed = performTurn(systemAction);
+							int repeat = 0 ;
+							while (!turnPerformed && repeat < 5) {
+								turnPerformed = performTurn(systemAction);
+							}
 						}
 					}
 					catch (DialException e) {
@@ -177,12 +165,13 @@ public class Simulator implements Module {
 	 * @param systemAction the last system action.
 	 * @throws DialException
 	 */
-	private synchronized boolean performTurn(Assignment systemAction) throws DialException {
+	private synchronized boolean performTurn(Value systemAction) throws DialException {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
-		simulatorState.addToState(systemAction);
-	
+		Assignment systemAssign = new Assignment(system.getSettings().systemOutput, systemAction);
+		simulatorState.addToState(systemAssign);
+
 		while (!simulatorState.getNewVariables().isEmpty()) {
 
 			Set<String> toProcess = simulatorState.getNewVariables();
@@ -198,13 +187,13 @@ public class Simulator implements Module {
 				system.displayComment(comment);
 				log.debug(comment);
 				system.getState().addEvidence(new Assignment(
-						"R(" + systemAction.addPrimes()+")", reward));
+						"R(" + systemAssign.addPrimes()+")", reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 
-			 if (addNewObservations()) {
+			if (addNewObservations()) {
 				turnPerformed = true;
-			 }
+			}
 
 			simulatorState.addEvidence(simulatorState.getSample());
 		}
@@ -226,30 +215,37 @@ public class Simulator implements Module {
 			if (var.contains("^o'")){
 				newObsVars.add(var);
 			}
-		}
+		}		
 		if (!newObsVars.isEmpty()) {
-		CategoricalTable newObs = simulatorState.queryProb(newObsVars).toDiscrete().copy();
-		for (String newObsVar : newObsVars) {
-			newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
-		}
-		while (system.isPaused()) {
-			try { Thread.sleep(50); } catch (InterruptedException e) { }
-		}
-		if (!newObs.isEmpty()) {
-			if (newObs.getHeadVariables().contains(system.getSettings().userInput)) {
-				log.debug("Simulator output: " + newObs + "\n --------------");
-				system.addContent(newObs.copy());
-				return true;
+			MultivariateDistribution newObs = simulatorState.queryProb(newObsVars);
+			for (String newObsVar : newObsVars) {
+				newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
 			}
-			else {
-				log.debug("Contextual variables: " + newObs);
-				system.addContent(newObs.copy());
+			while (system.isPaused()) {
+				try { Thread.sleep(50); } catch (InterruptedException e) { }
 			}
-		}
+			if (!newObs.getValues().isEmpty()) {
+				if (newObs.getVariables().contains(system.getSettings().userInput)) {
+					log.debug("Simulator output: " + newObs + "\n --------------");
+					system.addContent(newObs);
+					return true;
+				}
+				else {
+					log.debug("Contextual variables: " + newObs);
+					system.addContent(newObs);
+				}
+			}
 		}
 		return false;
 	}
 
+	
+	private static Domain extractDomain(String simulatorDomain) throws DialException {
+		if (simulatorDomain == null) {
+			throw new DialException("Required parameter: simulatorDomain");
+		}
+		return XMLDomainReader.extractDomain(simulatorDomain);
+	}
 
 }
 

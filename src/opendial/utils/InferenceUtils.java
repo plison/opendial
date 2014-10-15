@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -35,6 +35,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import opendial.arch.Logger;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 
 /**
@@ -57,9 +59,9 @@ public class InferenceUtils {
 	 * @param distrib the distribution to normalise
 	 * @return the normalised distribution
 	 */
-	public static Map<Assignment, Double> normalise (Map<Assignment, Double> distrib) {
+	public static <T> Map<T, Double> normalise (Map<T, Double> distrib) {
 		double total = 0.0f;
-		for (Assignment a : distrib.keySet()) {
+		for (T a : distrib.keySet()) {
 			total += distrib.get(a);
 		}
 		if (total == 0.0f) {
@@ -69,12 +71,12 @@ public class InferenceUtils {
 			total = 1.0f;
 		}
 
-		Map<Assignment,Double> normalisedDistrib = new HashMap<Assignment,Double>();
-		for (Assignment a: distrib.keySet()) {
+		Map<T,Double> normalisedDistrib = new HashMap<T,Double>();
+		for (T a: distrib.keySet()) {
 			double prob = distrib.get(a)/ total;
-			//	if (prob > 0.0) {
+				if (prob > 0.0) {
 			normalisedDistrib.put(a, prob);
-			//	}
+				}
 		}
 		return normalisedDistrib;
 	}
@@ -112,7 +114,6 @@ public class InferenceUtils {
 		}
 		return normalisedDistrib;
 	}
-
 
 
 
@@ -177,36 +178,37 @@ public class InferenceUtils {
 	 * @param nbest the number of elements to retain
 	 * @return the resulting subset of the table
 	 */
-	public static LinkedHashMap<Assignment,Double> getNBest (Map<Assignment,Double> initTable, int nbest) {
+	public static <T> LinkedHashMap<T,Double> getNBest (Map<T,Double> initTable, int nbest) {
 		if (nbest < 1) {
 			log.warning("nbest should be >= 1, but is " + nbest);
 			nbest = 1;
 		}
 
-		List<Map.Entry<Assignment,Double>> entries = 
-				new ArrayList<Map.Entry<Assignment,Double>>(initTable.entrySet());
+		List<Map.Entry<T,Double>> entries = 
+				new ArrayList<Map.Entry<T,Double>>(initTable.entrySet());
 
-		Collections.sort(entries, new AssignComparator());
+		Collections.sort(entries, new EntryComparator<T>());
 		Collections.reverse(entries);
 
-		LinkedHashMap<Assignment,Double> newTable = new LinkedHashMap<Assignment,Double>();
+		LinkedHashMap<T,Double> newTable = new LinkedHashMap<T,Double>();
 		int nb = 0;
-		for (Map.Entry<Assignment,Double> entry : entries) {
+		for (Map.Entry<T,Double> entry : entries) {
 			if (nb < nbest) {
 				newTable.put(entry.getKey(), entry.getValue());
 				nb++;
 			}
 		}
-		for (Assignment key : new ArrayList<Assignment>(newTable.keySet())) {
-			if (key.isDefault()) {
+		for (T key : new ArrayList<T>(newTable.keySet())) {
+			if (key instanceof Assignment && ((Assignment)key).isDefault()
+					|| key instanceof Value && ((Value)key)==ValueFactory.none()) {
 				double val = newTable.remove(key);
 				newTable.put(key, val);
 			}
 		}
 		return newTable;
 	}
-	
-	
+
+
 	/**
 	 * Returns the ranking of the given assignment in the table, assuming an ordering of the
 	 * table in descending order.
@@ -215,15 +217,15 @@ public class InferenceUtils {
 	 * @param assign the assignment to find
 	 * @return the index in the ordered table, or -1 if the element is not in the table
 	 */
-	public static int getRanking(Map<Assignment,Double> initTable, Assignment assign) {
-	
-		List<Map.Entry<Assignment,Double>> entries = 
-				new ArrayList<Map.Entry<Assignment,Double>>(initTable.entrySet());
+	public static <T> int getRanking(Map<T,Double> initTable, T assign) {
 
-		Collections.sort(entries, new AssignComparator());
+		List<Map.Entry<T,Double>> entries = 
+				new ArrayList<Map.Entry<T,Double>>(initTable.entrySet());
+
+		Collections.sort(entries, new EntryComparator<T>());
 		Collections.reverse(entries);
 
-		for (Map.Entry<Assignment,Double> entry : entries) {
+		for (Map.Entry<T,Double> entry : entries) {
 			if (entry.getKey().equals(assign)) {
 				return entries.indexOf(entry);
 			}
@@ -239,10 +241,10 @@ public class InferenceUtils {
 	 * @author  Pierre Lison (plison@ifi.uio.no)
 	 * @version $Date::                      $
 	 */
-	static final class AssignComparator implements Comparator<Map.Entry<Assignment,Double>> {
+	static final class EntryComparator<T> implements Comparator<Map.Entry<T,Double>> {
 
 		@Override
-		public int compare(Entry<Assignment, Double> arg0, Entry<Assignment, Double> arg1) {
+		public int compare(Entry<T, Double> arg0, Entry<T, Double> arg1) {
 			int result = (int)((arg0.getValue() - arg1.getValue())*10000000);
 			if (result != 0) {
 				return result;
