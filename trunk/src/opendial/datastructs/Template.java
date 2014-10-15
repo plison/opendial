@@ -76,7 +76,7 @@ public class Template {
 	 * argument.  The raw string must signal its slots by surrounding its 
 	 * slots labels with { ... $}.
 	 * 
-	 * @param value
+	 * @param value the string value.
 	 */
 	public Template(String value) {
 
@@ -226,8 +226,8 @@ public class Template {
 
 	/**
 	 * Fills the template with the given content, and returns the filled string.
-	 * The content provided in the form of a slot --> filler mapping.  For
-	 * instance, given a template: "my name is {name}" and a filler "name --> Pierre",
+	 * The content provided in the form of a slot:filler mapping.  For
+	 * instance, given a template: "my name is {name}" and a filler "name:Pierre",
 	 * the method will return "my name is Pierre".
 	 * 
 	 * <p>In addition, the slot {random} is associated with a random integer number.

@@ -141,7 +141,6 @@ public class GaussianDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the density at the point
-	 * @throws DialException 
 	 */
 	@Override
 	public double getDensity(Double... x)  {
@@ -192,6 +191,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * from the Gaussian.  The number of values is derived from 
 	 * Settings.NB_DISCRETISATION_BUCKETS
 	 *
+	 * @param nbBuckets the number of buckets to employ
 	 * @return the set of extracted values
 	 */
 	@Override
@@ -213,14 +213,9 @@ public class GaussianDensityFunction implements DensityFunction {
 			for (int j = 0 ; j < mean.length ; j++) {
 				newVal[j] = minima[j]  + i*step[j] + step[j]/2.0f;
 			}
-			try {
 				Double curCdf = getCDF(newVal);
 				values.put(newVal, curCdf - prevCdf);
 				prevCdf = curCdf;
-			}
-			catch (DialException e) {
-				e.printStackTrace();
-			}
 		}
 
 		return values;
@@ -232,10 +227,9 @@ public class GaussianDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative density function up to the point
-	 * @throws DialException 
 	 */
 	@Override
-	public Double getCDF (Double... x) throws DialException {
+	public Double getCDF (Double... x)  {
 		double product = 1;
 		for (int i = 0 ; i < mean.length ; i++) {
 			double z = (x[i]-mean[i]) /stdDev[i];

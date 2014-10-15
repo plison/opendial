@@ -158,7 +158,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	/**
 	 * Returns the probability density for the given value
 	 * 
-	 * @param value the value (must be a DoubleVal or ArrayVal)
+	 * @param val the value (must be a DoubleVal or ArrayVal)
 	 * @return the resulting density
 	 */
 	public double getProbDensity(Value val) {
@@ -181,7 +181,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	/**
 	 * Returns the probability density for the given value
 	 * 
-	 * @param value (as a Double array)
+	 * @param val (as a Double array)
 	 * @return the resulting density
 	 */
 	public double getProbDensity(double val) {
@@ -197,7 +197,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	/**
 	 * Returns the probability density for the given value
 	 * 
-	 * @param value (as a Double array)
+	 * @param val (as a Double array)
 	 * @return the resulting density
 	 */
 	public double getProbDensity(Double[] val) {
@@ -363,7 +363,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * 
 	 * @param doc the document to which the XML node belongs
 	 * @return the corresponding node
-	 * @throws DialException 
+	 * @throws DialException if the XML representation could not be generated.
 	 */
 	@Override
 	public Node generateXML(Document doc) throws DialException {

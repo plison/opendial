@@ -72,6 +72,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 
 	/**
 	 * Constructs a new probability table, with no values
+	 * 
+	 * @param headVar the name of the random variable
 	 */
 	public ConditionalDistribution(String headVar) {
 		table = new HashMap<Assignment,T>();
@@ -120,7 +122,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based representation)
-	 * @throws DialException 
+	 * @throws DialException if distrib relates to a different random variable
 	 */
 	public void addDistrib (Assignment condition, T distrib) throws DialException {
 		table.put(condition, distrib);
@@ -131,6 +133,11 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	}
 
 	
+	/**
+	 * Prunes from the table all values whose probability falls below the threshold
+	 * 
+	 * @param threshold the threshold to apply
+	 */
 	@Override
 	public void pruneValues(double threshold) {
 		for (Assignment condition : table.keySet()) {
@@ -160,7 +167,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the condition
 	 * @return the sampled assignment
-	 * @throws DialException 
+	 * @throws DialException if the sample could not be extracted given the condition
 	 */
 	@Override
 	public Value sample(Assignment condition) throws DialException {

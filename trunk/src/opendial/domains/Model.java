@@ -176,6 +176,7 @@ public class Model {
 	/**
 	 * Returns true if the model is triggered by the updated variables.
 	 * 
+	 * @param state the dialogue state
 	 * @param updatedVars the updated variables
 	 * @return true if triggered, false otherwise
 	 */

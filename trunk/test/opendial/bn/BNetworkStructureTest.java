@@ -257,14 +257,6 @@ public class BNetworkStructureTest {
 						"HouseSize", ValueFactory.create("None")), ValueFactory.create(true)), 0.0001f);
 	}
 	
-	/** @Test
-	public void marginalisation() throws DialException {
-		BNetwork bn = CommonTestUtils.constructBasicNetwork();
-		ChanceNode node = bn.getChanceNode("Alarm");
-		assertEquals(node.getProb(ValueFactory.create(true)), (new VariableElimination()).queryProb(bn, Arrays.asList("Alarm"), 
-				new Assignment()).getDiscreteDistrib().getProb(new Assignment("Alarm", true)), 0.0001);
-	} */
-	
 	
 	@Test
 	public void testDefaultValue() throws DialException {

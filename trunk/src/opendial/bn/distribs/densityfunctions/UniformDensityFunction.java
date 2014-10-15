@@ -104,6 +104,7 @@ public class UniformDensityFunction implements DensityFunction {
 	/**
 	 * Returns a set of discrete values for the distribution
 	 * 
+	 * @param nbBuckets the number of buckets to employ
 	 * @return the discretised values and their probability mass.
 	 */
 	@Override
@@ -123,7 +124,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative probability 
-	 * @throws DialException 
+	 * @throws DialException if the dimensionality of the point is greater than 1
 	 */
 	@Override
 	public Double getCDF(Double... x) throws DialException {

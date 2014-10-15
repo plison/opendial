@@ -47,7 +47,7 @@ public interface DensityFunction {
 	 * 
 	 * @param x the (possibly multivariate) point
 	 * @return the density value for the point
-	 * @throws DialException 
+	 * @throws DialException if the density of x could not be calculated.
 	 */
 	public double getDensity(Double ...x) throws DialException;
 	
@@ -123,6 +123,7 @@ public interface DensityFunction {
 	 * 
 	 * @param doc the XML document for the node
 	 * @return the corresponding XML elements
+	 * @throws DialException if the XML representation could not be generated.
 	 */
 	public List<Element> generateXML(Document doc) throws DialException;
 	

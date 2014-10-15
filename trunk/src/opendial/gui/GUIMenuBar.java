@@ -452,8 +452,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file that contains the state or parameter content
 	 * @param tag the expected top XML tag.
+	 * @throws DialException if the content could not be imported into the system
 	 */	
-	public static void importContent(DialogueSystem system, String file, String tag) throws DialException {
+	public static void importContent(DialogueSystem system, String file, 
+			String tag) throws DialException {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
@@ -498,8 +500,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file in which to write the state or parameter content
 	 * @param tag the expected top XML tag.
+	 * @throws DialException if the content could not be exported from the system
 	 */	
-	public static void exportContent(DialogueSystem system, String file, String tag) throws DialException {
+	public static void exportContent(DialogueSystem system, String file, 
+			String tag) throws DialException {
 		Document doc = XMLUtils.newXMLDocument();
 
 		Set<String> parameterIds = new HashSet<String>(system.getState().getParameterIds());

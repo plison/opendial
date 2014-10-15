@@ -100,7 +100,8 @@ public interface MultivariateDistribution {
 
 	/**
 	 * Returns a copy of the distribution.
-	 * @return
+	 * 
+	 * @return the copy.
 	 */
 	public MultivariateDistribution copy();
 

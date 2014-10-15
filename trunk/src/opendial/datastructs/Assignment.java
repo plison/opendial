@@ -94,7 +94,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Creates an assignment with a single <var,value> pair
+	 * Creates an assignment with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value
@@ -105,7 +105,7 @@ public class Assignment {
 	}
 	
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a string)
@@ -116,7 +116,7 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a double)
@@ -127,7 +127,7 @@ public class Assignment {
 	}
 	
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a boolean)
@@ -138,7 +138,7 @@ public class Assignment {
 	}
 	
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a double array)
@@ -191,7 +191,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Creates an assignment with a map of <var,Object pairs
+	 * Creates an assignment with a map of (var,value) pairs
 	 * 
 	 * @param pairs the pairs
 	 */
@@ -202,7 +202,7 @@ public class Assignment {
 	
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -216,7 +216,7 @@ public class Assignment {
 	
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -230,7 +230,7 @@ public class Assignment {
 	
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -245,7 +245,7 @@ public class Assignment {
 	
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var, val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -285,7 +285,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Creates a new assignment with two pairs of <variable,value>
+	 * Creates a new assignment with two pairs of (variable,value)
 	 * 
 	 * @param var1 label of first variable
 	 * @param val1 value of first variable
@@ -355,7 +355,7 @@ public class Assignment {
 
 	
 	/**
-	 * Adds a new <var,value> pair to the assignment
+	 * Adds a new (var,value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value
@@ -366,7 +366,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a string
@@ -376,7 +376,7 @@ public class Assignment {
 	}
 	
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a double
@@ -386,7 +386,7 @@ public class Assignment {
 	}
 	
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a boolean
@@ -397,7 +397,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a double array
@@ -408,7 +408,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Adds a new <var,Object pair as determined by the form of the argument.  
+	 * Adds a new (var,value) pair as determined by the form of the argument.  
 	 * If the argument starts with an exclamation mark, the value is set to
 	 * False, else the value is set to True.
 	 * 
@@ -425,7 +425,7 @@ public class Assignment {
 	
 	
 	/**
-	 * Adds a set of <var,Object pairs to the assignment
+	 * Adds a set of (var,value) pairs to the assignment
 	 * 
 	 * @param pairs the pairs to add
 	 */
@@ -452,6 +452,7 @@ public class Assignment {
 	 * Removes the pair associated with the var label
 	 * 
 	 * @param var the variable to remove
+	 * @return the removed value
 	 */
 	public Value removePair(String var) {
 		return map.remove(var);
@@ -553,7 +554,9 @@ public class Assignment {
 	
 	 
 	/**
-	 * Returns whether the assignment is empty
+	 * Returns whether the assignment is empty.
+	 * 
+	 * @return true if the assignment is empty, else false.
 	 */
 	public boolean isEmpty() {
 		return map.isEmpty();

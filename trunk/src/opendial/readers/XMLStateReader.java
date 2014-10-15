@@ -66,6 +66,8 @@ public class XMLStateReader {
 	 * variable types are already declared)
 	 * 
 	 * @param file the file to process
+	 * @param tag the XML tag to search for
+	 * @return the specified Bayesian network
 	 * @throws DialException if XML document is ill-formatted
 	 */
 	public static BNetwork extractBayesianNetwork(String file, String tag) throws DialException {

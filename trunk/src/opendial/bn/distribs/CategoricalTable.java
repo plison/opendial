@@ -81,6 +81,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 	/**
 	 * Constructs a new probability table, with no values
+	 * 
+	 * @param variable the name of the random variable
 	 */
 	public CategoricalTable(String variable) {
 		table = new HashMap<Value,Double>(5);
@@ -94,6 +96,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * assumes that the distribution does not have any conditional
 	 * variables.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param headTable the mapping to fill the table
 	 */
 	public CategoricalTable(String variable, Map<Value,Double> headTable) {
@@ -112,6 +115,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param uniqueValue the unique value for the table
 	 */
 	public CategoricalTable(String variable, Value uniqueValue) {
@@ -123,6 +127,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param uniqueValue the unique value for the table (as a string)
 	 */
 	public CategoricalTable(String variable, String uniqueValue) {
@@ -243,7 +248,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * share the same variable).
 	 * 
 	 * @param other the table to concatenate
-	 * @return 
+	 * @return the table resulting from the concatenation
 	 */
 	public CategoricalTable concatenate (CategoricalTable other) {
 

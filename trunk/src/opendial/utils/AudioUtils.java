@@ -94,6 +94,7 @@ public class AudioUtils {
 	 * Plays the input stream on the standard audio input.
 	 * 
 	 * @param stream the stream to play
+	 * @param outputMixer the output mixer to employ
 	 */
 	public static void playAudio(final InputStream stream, Mixer.Info outputMixer) {
 		(new Thread(new AudioPlayer(stream, outputMixer))).start();

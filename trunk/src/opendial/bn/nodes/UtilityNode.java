@@ -185,10 +185,10 @@ public class UtilityNode extends BNode {
 	 * not its connection with other nodes.
 	 * 
 	 * @return the copy
-	 * @throws DialException 
+	 * @throws DialException if the node could not be copied
 	 */
 	@Override
-	public UtilityNode copy() throws DialException {
+	public UtilityNode copy() throws DialException  {
 		UtilityNode copy = new UtilityNode(nodeId, distrib.copy());
 		return copy;
 	}

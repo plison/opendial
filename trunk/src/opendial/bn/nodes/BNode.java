@@ -240,6 +240,8 @@ public abstract class BNode implements Comparable<BNode> {
 
 	/**
 	 * Returns the identifier for the node
+	 * 
+	 * @return the node identifier
 	 */
 	public String getId() {
 		return nodeId;
@@ -281,6 +283,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Returns the set of input nodes of a certain class
 	 * 
+	 * @param cls the class
 	 * @return the input nodes
 	 */
 	@SuppressWarnings("unchecked")
@@ -322,6 +325,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Returns the set of output nodes of a certain class
 	 * 
+	 * @param cls the class
 	 * @return the input nodes
 	 */
 	@SuppressWarnings("unchecked")
@@ -715,6 +719,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Creates a copy of the current node.  Needs to be instantiated
 	 * by the concrete subclasses.
 	 * 
+	 * @return the copy of the node
 	 * @throws DialException if the copy operation failed
 	 */
 	public abstract BNode copy() throws DialException;

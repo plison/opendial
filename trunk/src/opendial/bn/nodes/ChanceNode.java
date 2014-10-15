@@ -72,7 +72,6 @@ public class ChanceNode extends BNode {
 	 * distribution is then a probability table.
 	 * 
 	 * @param nodeId the node identifier
-	 * @throws DialException if the distribution is not well-formed
 	 */
 	public ChanceNode(String nodeId)  {
 		this(nodeId, new ConditionalTable(nodeId));
@@ -84,7 +83,6 @@ public class ChanceNode extends BNode {
 	 * 
 	 * @param nodeId the unique node identifier
 	 * @param distrib the probability distribution for the node
-	 * @throws DialException if the distribution is not well-formed
 	 */
 	public ChanceNode(String nodeId, ProbDistribution distrib) {
 		super(nodeId);
@@ -231,9 +229,8 @@ public class ChanceNode extends BNode {
 	 * 
 	 * @param nodeValue the value for the node
 	 * @return its probability
-	 * @throws DialException 
 	 */
-	public double getProb(Value nodeValue) throws DialException {
+	public double getProb(Value nodeValue)  {
 
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution)distrib).getProb(nodeValue);
@@ -266,7 +263,6 @@ public class ChanceNode extends BNode {
 	 * @param condition the condition
 	 * @param nodeValue the value
 	 * @return the associated probability
-	 * @throws DialException 
 	 */
 	public double getProb(Assignment condition, Value nodeValue) {
 		try {
@@ -417,12 +413,11 @@ public class ChanceNode extends BNode {
 	 * not its connection with other nodes.
 	 *
 	 * @return the copy
-	 * @throws DialException 
+	 * @throws DialException if the node could not be copied.
 	 */
 	@Override
 	public ChanceNode copy() throws DialException {
-		ChanceNode cn = new ChanceNode(nodeId, distrib.copy());
-		return cn;
+		return new ChanceNode(nodeId, distrib.copy());
 	}
 
 

@@ -57,6 +57,7 @@ public class InferenceUtils {
 	 * Normalise the given probability distribution (assuming no conditional variables).
 	 * 
 	 * @param distrib the distribution to normalise
+	 * @param <T> the type of the elements in the distribution
 	 * @return the normalised distribution
 	 */
 	public static <T> Map<T, Double> normalise (Map<T, Double> distrib) {
@@ -176,6 +177,7 @@ public class InferenceUtils {
 	 * 
 	 * @param initTable the full initial table
 	 * @param nbest the number of elements to retain
+	 * @param <T> the type of the elements in the table
 	 * @return the resulting subset of the table
 	 */
 	public static <T> LinkedHashMap<T,Double> getNBest (Map<T,Double> initTable, int nbest) {
@@ -215,6 +217,7 @@ public class InferenceUtils {
 	 * 
 	 * @param initTable the table 
 	 * @param assign the assignment to find
+	 * @param <T> the type of the elements in the table
 	 * @return the index in the ordered table, or -1 if the element is not in the table
 	 */
 	public static <T> int getRanking(Map<T,Double> initTable, T assign) {

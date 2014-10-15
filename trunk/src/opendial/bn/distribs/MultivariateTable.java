@@ -191,7 +191,6 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * Extend all rows in the table with the given value assignment
 	 * 
 	 * @param assign the value assignment
-	 * @return
 	 */
 	public void extendRows(Assignment assign) {
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
