@@ -57,7 +57,7 @@ public class Rule {
 
 	// ordered list of cases
 	List<RuleCase> cases;
-
+	
 	public enum RuleType {PROB, UTIL}
 
 	RuleType ruleType;
@@ -99,6 +99,21 @@ public class Rule {
 		cases.add(newCase);
 	}
 
+
+	/**
+	 * Sets the priority level of the rule (1 being the highest)
+	 * 
+	 * @param priority the priority level
+	 */
+	public void setPriority(int priority) {
+		for (RuleCase c : cases) {
+		for (Effect e : c.getEffects()) {
+			for (BasicEffect e2: e.getSubEffects()) {
+				e2.setPriority(priority);
+			}
+		}
+		}
+	}
 
 
 	// ===================================
@@ -258,6 +273,18 @@ public class Rule {
 	}
 
 
+	/**
+	 * Returns the set of all possible effects in the rule.
+	 * 
+	 * @return the set of all possible effects
+	 */
+	public Set<Effect> getEffects() {
+		Set<Effect> effects = new HashSet<Effect>();
+		for (RuleCase c : cases) {
+			effects.addAll(c.getEffects());
+		}
+		return effects;
+	}
 
 
 	// ===================================
@@ -310,7 +337,6 @@ public class Rule {
 		}
 		return false;
 	}
-
 
 
 

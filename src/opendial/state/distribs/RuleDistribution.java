@@ -124,7 +124,7 @@ public class RuleDistribution implements ProbDistribution {
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
 	 * @return the probability
-	 * @throws DialException 
+	 * @throws DialException if the probability could not be calculated.
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) throws DialException {
@@ -143,7 +143,7 @@ public class RuleDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the associated probability table (as a CategoricalTable)
-	 * @throws DialException 
+	 * @throws DialException if the distribution could not be calculated.
 	 */
 	@Override
 	public ProbDistribution getPosterior(Assignment condition) throws DialException {
@@ -157,7 +157,11 @@ public class RuleDistribution implements ProbDistribution {
 	}
 
 
-
+	/**
+	 * Returns the possible values for the rule.
+	 * 
+	 * @param range the range of input values (is ignored).
+	 */
 	@Override
 	public Set<Value> getValues(ValueRange range) throws DialException {
 		return new HashSet<Value>(arule.getEffects());

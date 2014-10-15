@@ -81,7 +81,7 @@ public class DialogueStateTest {
 
 		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
 		inference.checkProb(initialState, "a_u2", "[HowAreYou, Greet]", 0.7);
-		inference.checkProb(initialState, "a_u2", "None", 0.1); 	
+		inference.checkProb(initialState, "a_u2", "[]", 0.1); 	
 		
 		StatePruner.ENABLE_PRUNING = true;
 	}
@@ -101,7 +101,7 @@ public class DialogueStateTest {
 
 		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
 		inference.checkProb(initialState, "a_u2", "[HowAreYou, Greet]", 0.7);
-		inference.checkProb(initialState, "a_u2", "None", 0.1); 
+		inference.checkProb(initialState, "a_u2", "[]", 0.1); 
 		
 		
 	}

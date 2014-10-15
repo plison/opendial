@@ -49,7 +49,7 @@ import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.inference.SwitchingAlgorithm;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
@@ -407,7 +407,6 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @param variable the variable label to query
 	 * @return the corresponding probability distribution
-	 * @throws DialException 
 	 */
 	public IndependentProbDistribution queryProb(String variable) {
 		return queryProb(variable, true);
@@ -418,8 +417,8 @@ public class DialogueState extends BNetwork {
 	 * of the state variable provided as argument.
 	 * 
 	 * @param variable the variable label to query
+	 * @param includeEvidence whether to include or ignore the evidence in the dialogue state
 	 * @return the corresponding probability distribution
-	 * @throws DialException 
 	 */
 	public IndependentProbDistribution queryProb(String variable, boolean includeEvidence)  {
 
@@ -505,7 +504,7 @@ public class DialogueState extends BNetwork {
 	 */
 	public double queryUtil() {
 		try {
-			return (new LikelihoodWeighting()).queryUtil(this);
+			return (new SamplingAlgorithm()).queryUtil(this);
 		} 
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
@@ -559,7 +558,7 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if no sample could be extracted
 	 */
 	public Assignment getSample() throws DialException {
-		return LikelihoodWeighting.extractSample(this, getChanceNodeIds());
+		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
 	}
 
 
@@ -687,6 +686,7 @@ public class DialogueState extends BNetwork {
 		// looping on each output variable
 		for (String updatedVar : ruleNode.getAnchor().getOutputVariables()) {
 
+			String baseVar = updatedVar.replaceFirst("'", "");
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
 				ChanceNode outputNode = new ChanceNode(updatedVar, 
@@ -694,8 +694,8 @@ public class DialogueState extends BNetwork {
 				addNode(outputNode);
 
 				// adding the connection to the previous version of the variable (if any)
-				if (hasChanceNode(updatedVar.replaceFirst("'", "")) && !(updatedVar.contains("^p"))) {
-					outputNode.addInputNode(getChanceNode(updatedVar.replaceFirst("'", "")));
+				if (hasChanceNode(baseVar) && !(updatedVar.contains("^p")) && ruleNode.hasAddRemoveEffects(baseVar)) {
+					outputNode.addInputNode(getChanceNode(baseVar));
 				}
 
 				// connecting to prior predictions

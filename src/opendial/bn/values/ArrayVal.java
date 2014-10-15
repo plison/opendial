@@ -42,15 +42,15 @@ public final class ArrayVal implements Value {
 	public static Logger log = new Logger("ArrayVal", Logger.Level.DEBUG);
 	
 	// the array of doubles
-	final Double[] array;
+	final double[] array;
 	
 	/**
 	 * Creates a new array of doubles
 	 * 
 	 * @param values the array
 	 */
-	public ArrayVal(Double[] values) {
-		this.array = new Double[values.length];
+	public ArrayVal(double[] values) {
+		this.array = new double[values.length];
 		for (int i = 0 ; i < array.length ; i++) {
 			array[i] = values[i];
 		}
@@ -62,7 +62,7 @@ public final class ArrayVal implements Value {
 	 * @param values the array (as a collection)
 	 */
 	public ArrayVal(Collection<Double> values) {
-		array = values.toArray(new Double[values.size()]);
+		array = values.stream().mapToDouble(d -> d).toArray();
 	}
 
 	
@@ -72,7 +72,7 @@ public final class ArrayVal implements Value {
 	@Override
 	public int compareTo(Value arg0) {
 		if (arg0 instanceof ArrayVal) {
-			Double[] otherVector = ((ArrayVal)arg0).getArray();
+			double[] otherVector = ((ArrayVal)arg0).getArray();
 			if (array.length != otherVector.length) {
 				return array.length - otherVector.length;
 			}
@@ -131,7 +131,7 @@ public final class ArrayVal implements Value {
 	 * 
 	 * @return the array
 	 */
-	public Double[] getArray() {
+	public double[] getArray() {
 		return array;
 	}
 	
@@ -144,7 +144,7 @@ public final class ArrayVal implements Value {
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof ArrayVal) {
-			Double[] newvals = new Double[array.length + ((ArrayVal)v).getArray().length];
+			double[] newvals = new double[array.length + ((ArrayVal)v).getArray().length];
 			for (int i = 0 ; i < array.length ; i++) {
 				newvals[i] = array[i];
 			}

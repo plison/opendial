@@ -24,7 +24,6 @@
 package opendial.readers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -61,7 +60,6 @@ public class XMLDomainReader {
 	 * 
 	 * @param topDomainFile the filename of the top XML file
 	 * @return the extracted dialogue domain
-	 * @throws IOException if the file cannot be found/opened
 	 * @throws DialException if a format error occurs
 	 */
 	public static Domain extractDomain(String topDomainFile) throws DialException {

@@ -169,6 +169,10 @@ public final class SetVal implements Value {
 		return set.contains(subvalue);
 	}
 
+	public boolean isEmpty() {
+		return set.isEmpty();
+	}
+
 
 	
 }

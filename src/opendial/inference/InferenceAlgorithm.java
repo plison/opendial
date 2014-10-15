@@ -66,6 +66,7 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 * @return the resulting probability distribution
+	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	public MultivariateDistribution queryProb (Query.ProbQuery query) throws DialException;
 	
@@ -142,6 +143,7 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 * @return the resulting utility table
+	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	public UtilityTable queryUtil (Query.UtilQuery query) throws DialException;
 

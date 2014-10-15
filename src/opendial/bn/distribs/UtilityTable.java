@@ -202,18 +202,6 @@ public class UtilityTable implements UtilityDistribution {
 	}
 
 	
-	/**
-	 * Returns the set of possible actions for the table
-	 */
-	public Set<Assignment> getPossibleActions(Map<String,Set<Value>> inputs) {
-		Set<Assignment> possibleActions = new HashSet<Assignment>();
-		for (Assignment a : table.keySet()) {
-			Assignment subset = a.getTrimmedInverse(inputs.keySet());
-			possibleActions.add(subset);
-		}
-		return possibleActions;
-	}
-
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================

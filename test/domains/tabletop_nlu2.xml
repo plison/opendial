@@ -144,10 +144,10 @@
 		</case>
 	</rule>
 
-	<rule>
+	<rule priority="2">
 		<case>
 			<effect>
-				<clear var="a_u" />
+				<set var="a_u" value="None"/>
 			</effect>
 		</case>
 	</rule>

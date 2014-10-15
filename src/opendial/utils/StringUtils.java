@@ -23,10 +23,10 @@
 
 package opendial.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 
@@ -148,15 +148,26 @@ public class StringUtils {
 	}
 
 	
-	public static List<String> addPrimes (List<String> original) {
-		List<String> newSet = new ArrayList<String>();
-		for (String var : original) {
-			newSet.add(var+"'");
-		}
-		return newSet;
+	/**
+	 * Joins the string elements into a single string where the elements
+	 * are joined by a specific string.
+	 * 
+	 * @param elements the string elements
+	 * @param jointure the string used to join the elements
+	 * @return the concatenated string.
+	 */
+	public static String join(Collection<String> elements, String jointure) {
+		return elements.stream().collect(Collectors.joining(jointure));
 	}
 
 
+	/**
+	 * Counts the occurrences of a particular pattern in the string.
+	 * 
+	 * @param fullString the string to use
+	 * @param pattern the pattern to search for
+	 * @return the number of occurrences.
+	 */
 	public static int countOccurrences(String fullString, String pattern) {
 		int lastIndex = 0;
 		int count =0;
@@ -172,5 +183,7 @@ public class StringUtils {
 		}
 		return count;
 	}
+
+
 	
 }

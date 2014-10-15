@@ -138,7 +138,7 @@ public class SpeechStream extends InputStream implements Value {
  
 	/**
 	 * Closes the stream, and notifies all waiting threads.
-	 * @throws IOException 
+	 * @throws IOException if the stream could not be closed
 	 */
 	@Override
 	public synchronized void close() throws IOException {
@@ -268,7 +268,7 @@ public class SpeechStream extends InputStream implements Value {
 	 */
 	@Override
 	public Value concatenate(Value value) {
-		return ValueFactory.none();
+		return copy();
 	}
 
 

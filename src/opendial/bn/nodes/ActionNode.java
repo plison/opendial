@@ -145,7 +145,7 @@ public class ActionNode extends BNode {
 	
 	/**
 	 * Returns a probability uniformly distributed on the alternative values.
-	 * @param actionValue
+	 * @param actionValue the value to check
 	 * @return 1/|values|
 	 */
 	public double getProb(Value actionValue) {

@@ -42,7 +42,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ValueFactory;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
 
@@ -181,7 +181,7 @@ public class InferenceTest {
 	@Test
 	public void testNetwork3bis() throws DialException {
 		
-		LikelihoodWeighting is = new LikelihoodWeighting(5000, 300);
+		SamplingAlgorithm is = new SamplingAlgorithm(5000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		
 		MultivariateDistribution query = is.queryProb(bn, Arrays.asList("Burglary"), 
@@ -234,7 +234,7 @@ public class InferenceTest {
 
 		VariableElimination ve = new VariableElimination();
 		NaiveInference naive = new NaiveInference();
-		LikelihoodWeighting is = new LikelihoodWeighting(4000, 300);
+		SamplingAlgorithm is = new SamplingAlgorithm(4000, 300);
 
 		assertEquals(-0.680, ve.queryUtil(network, Arrays.asList("Action"),
 				new Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls"))).

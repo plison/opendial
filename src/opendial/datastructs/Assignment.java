@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
@@ -61,13 +62,13 @@ public class Assignment {
 
 	// logger
 	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
-	
+
 	// the hashmap encoding the assignment
 	Map<String,Value> map;
-	
+
 	// the initial size of the hash
 	public static final int MAP_SIZE = 3;
-			
+
 	// ===================================
 	//  CONSTRUCTORS
 	// ===================================
@@ -79,9 +80,9 @@ public class Assignment {
 	public Assignment() {
 		map = new HashMap<String,Value>(MAP_SIZE);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Creates a copy of the assignment
 	 * 
@@ -89,66 +90,66 @@ public class Assignment {
 	 */
 	public Assignment(Assignment a) {
 		this();
-		addPairs(a.getPairs());
+		addAssignment(a);
 	}
-	
-	
+
+
 	/**
-	 * Creates an assignment with a single <var,value> pair
+	 * Creates an assignment with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value
 	 */
 	public Assignment(String var, Value val) {
 		this();
-		addPair(var,val);
+		map.put(var, val);
 	}
-	
+
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a string)
 	 */
 	public Assignment(String var, String val) {
 		this();
-		addPair(var, val);
+		map.put(var, ValueFactory.create(val));
 	}
 
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a double)
 	 */
 	public Assignment(String var, double val) {
 		this();
-		addPair(var, val);
+		map.put(var, ValueFactory.create(val));
 	}
-	
+
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a boolean)
 	 */
 	public Assignment(String var, boolean val) {
 		this();
-		addPair(var, val);
+		map.put(var, ValueFactory.create(val));
 	}
-	
+
 	/**
-	 * Creates a new assignment, with a single <var,value> pair
+	 * Creates a new assignment, with a single (var,value) pair
 	 * 
 	 * @param var the variable label
 	 * @param val the value (as a double array)
 	 */
-	public Assignment(String var, Double[] val) {
+	public Assignment(String var, double[] val) {
 		this();
-		addPair(var, val);
+		map.put(var, ValueFactory.create(val));
 	}
-	
-	
+
+
 	/**
 	 * Creates an assignment with a list of sub assignments
 	 * 
@@ -156,13 +157,11 @@ public class Assignment {
 	 */
 	public Assignment(Assignment... assignments) {
 		this();
-		for (Assignment a : assignments) {
-			addAssignment(a);
-		}
+		Arrays.asList(assignments).stream().forEach(a -> addAssignment(a));
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Creates an assignment with a single pair, given a boolean assignment 
 	 * such as "Variable" or "!Variable".  If booleanAssign start with an
@@ -175,7 +174,7 @@ public class Assignment {
 		this();
 		addPair(booleanAssign);
 	}
-	
+
 	/**
 	 * Creates an assignment with a list of boolean assignments (cf. method
 	 * above).  
@@ -184,14 +183,12 @@ public class Assignment {
 	 */
 	public Assignment(List<String> booleanAssigns) {
 		this();
-		for (String ba: booleanAssigns) {
-			addPair(ba);
-		}
+		booleanAssigns.stream().forEach(b -> addPair(b));
 	}
-	
-	
+
+
 	/**
-	 * Creates an assignment with a map of <var,Object pairs
+	 * Creates an assignment with a map of (var,value) pairs
 	 * 
 	 * @param pairs the pairs
 	 */
@@ -199,10 +196,10 @@ public class Assignment {
 		this();
 		map.putAll(pairs);
 	}
-	
+
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -210,13 +207,13 @@ public class Assignment {
 	 */
 	public Assignment(Assignment ass, String var, Value val) {
 		this();
-		addPairs(ass.getPairs());
+		addAssignment(ass);
 		addPair(var, val);
 	}
-	
+
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -224,13 +221,13 @@ public class Assignment {
 	 */
 	public Assignment(Assignment ass, String var, String val) {
 		this();
-		addPairs(ass.getPairs());
+		addAssignment(ass);
 		addPair(var, val);
 	}
-	
+
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var,val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -238,14 +235,14 @@ public class Assignment {
 	 */
 	public Assignment(Assignment ass, String var, double val) {
 		this();
-		addPairs(ass.getPairs());
+		addAssignment(ass);
 		addPair(var, val);
 	}
-	
-	
+
+
 	/**
 	 * Creates an assignment from an existing one (which is copied),
-	 * plus a single <var, Object pair
+	 * plus a single (var, val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -253,21 +250,8 @@ public class Assignment {
 	 */
 	public Assignment(Assignment ass, String var, boolean val) {
 		this();
-		addPairs(ass.getPairs());
+		addAssignment(ass);
 		addPair(var, val);
-	}
-	
-	/**
-	 * Creates an assignment by concatenating two existing assignments
-	 * (which are copied)
-	 * 
-	 * @param ass1 the first assignment
-	 * @param ass2 the second assignment
-	 */
-	public Assignment(Assignment ass1, Assignment ass2) {
-		this();
-		addPairs(ass1.getPairs()); 
-		addPairs(ass2.getPairs());
 	}
 
 
@@ -282,10 +266,10 @@ public class Assignment {
 			addPair(entry.getKey(), entry.getValue());
 		}
 	}
-	
-	
+
+
 	/**
-	 * Creates a new assignment with two pairs of <variable,value>
+	 * Creates a new assignment with two pairs of (variable,value)
 	 * 
 	 * @param var1 label of first variable
 	 * @param val1 value of first variable
@@ -294,11 +278,11 @@ public class Assignment {
 	 */
 	public Assignment(String var1, Value val1, String var2, Value val2) {
 		this();
-		addPair(var1, val1);
-		addPair(var2, val2);
+		map.put(var1, val1);
+		map.put(var2, val2);	
 	}
-	
-	
+
+
 	/**
 	 * Creates an assignment with only none values for the variable labels
 	 * given as argument.
@@ -307,14 +291,12 @@ public class Assignment {
 	 * @return the resulting default assignment
 	 */
 	public static Assignment createDefault (Collection<String> variables) {
-		Assignment a = new Assignment();
-		for (String var : variables) {
-			a.addPair(var, ValueFactory.none());
-		}
-		return a;
+		Map<String,Value> noneMap = variables.stream()
+				.collect(Collectors.toMap(v -> v, v -> ValueFactory.none()));
+		return new Assignment(noneMap);
 	}
-	
-	
+
+
 
 	/**
 	 * Creates an assignment with only none values for the variable labels
@@ -327,20 +309,20 @@ public class Assignment {
 		return createDefault(Arrays.asList(variables));
 	}
 
-	
+
 
 	public static Assignment createFromString(String str) {
 		Assignment a = new Assignment();
 		for (int i = 0 ; i < str.split("\\^").length ; i++) {
 			String substr = str.split("\\^")[i];
 			if (substr.contains("=")) {
-			String var = substr.split("=")[0].trim();
-			String value = substr.split("=")[1].trim();
-			a.addPair(var, ValueFactory.create(value));
+				String var = substr.split("=")[0].trim();
+				String value = substr.split("=")[1].trim();
+				a.addPair(var, ValueFactory.create(value));
 			}
 			else if (substr.contains("!")) {
-					String woNeg = substr.replace("!", "").trim();
-					a.addPair(woNeg, ValueFactory.create(false));				
+				String woNeg = substr.replace("!", "").trim();
+				a.addPair(woNeg, ValueFactory.create(false));				
 			}
 			else {
 				a.addPair(substr.trim(), ValueFactory.create(true));
@@ -348,14 +330,14 @@ public class Assignment {
 		}
 		return a;
 	}
-	
+
 	// ===================================
 	//  SETTERS
 	// ===================================
 
-	
+
 	/**
-	 * Adds a new <var,value> pair to the assignment
+	 * Adds a new (var,value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value
@@ -363,10 +345,10 @@ public class Assignment {
 	public void addPair(String var, Value val) {
 		map.put(var, val);
 	}
-	
-	
+
+
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a string
@@ -374,9 +356,9 @@ public class Assignment {
 	public void addPair(String var, String val) {
 		map.put(var, ValueFactory.create(val));
 	}
-	
+
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a double
@@ -384,9 +366,9 @@ public class Assignment {
 	public void addPair(String var, double val) {
 		map.put(var, ValueFactory.create(val));
 	}
-	
+
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a boolean
@@ -394,21 +376,21 @@ public class Assignment {
 	public void addPair(String var, boolean val) {
 		map.put(var, ValueFactory.create(val));
 	}
-	
-	
+
+
 	/**
-	 * Adds a new <var, value> pair to the assignment
+	 * Adds a new (var, value) pair to the assignment
 	 * 
 	 * @param var the variable
 	 * @param val the value, as a double array
 	 */
-	public void addPair(String var, Double[] val) {
+	public void addPair(String var, double[] val) {
 		map.put(var, ValueFactory.create(val));
 	}
-	
-	
+
+
 	/**
-	 * Adds a new <var,Object pair as determined by the form of the argument.  
+	 * Adds a new (var,value) pair as determined by the form of the argument.  
 	 * If the argument starts with an exclamation mark, the value is set to
 	 * False, else the value is set to True.
 	 * 
@@ -422,20 +404,18 @@ public class Assignment {
 			addPair(booleanAssign.substring(1,booleanAssign.length()), ValueFactory.create(false));
 		}
 	}
-	
-	
+
+
 	/**
-	 * Adds a set of <var,Object pairs to the assignment
+	 * Adds a set of (var,value) pairs to the assignment
 	 * 
 	 * @param pairs the pairs to add
 	 */
 	public void addPairs (Map<String,Value> pairs) {
-		for (String var : pairs.keySet()) {
-			addPair(var, pairs.get(var));
-		}
+		pairs.keySet().stream().forEach(v -> map.put(v, pairs.get(v)));
 	}
-	
-	
+
+
 
 	/**
 	 * Add a new set of pairs defined in the assignment given as argument
@@ -452,32 +432,30 @@ public class Assignment {
 	 * Removes the pair associated with the var label
 	 * 
 	 * @param var the variable to remove
+	 * @return the removed value
 	 */
 	public Value removePair(String var) {
 		return map.remove(var);
 	}
-	
-	
+
+
 	/**
 	 * Remove the pairs associated with the labels
 	 * 
 	 * @param vars the variable labels to remove
 	 */
 	public void removePairs(Collection<String> vars) {
-		for (String var: vars) {
-			removePair(var);
-		}
+		vars.stream().forEach(v -> map.remove(v));
 	}
-	
-	public void removePairs(Template template) {
-		for (String var : new ArrayList<String>(map.keySet())) {
-			if (template.match(var, false).isMatching) {
-				removePair(var);
-			}
-		}
-	}
-	
 
+
+
+	/**
+	 * Remove all pairs whose value equals toRemove
+	 * 
+	 * @param toRemove the value to remove
+	 * @return the resulting assignment
+	 */
 	public Assignment removeValues(Value toRemove) {
 		Assignment a = new Assignment();
 		for (String var : map.keySet()) {
@@ -488,14 +466,14 @@ public class Assignment {
 		}
 		return a;
 	}
-	
-	
+
+
 
 
 	public void clear() {
 		map.clear();
 	}
-	
+
 
 
 	// ===================================
@@ -503,7 +481,7 @@ public class Assignment {
 	// ===================================
 
 
-	
+
 	/**
 	 * Returns a new assignment with the primes removed.
 	 * 
@@ -511,7 +489,6 @@ public class Assignment {
 	 */
 	public Assignment removePrimes() {
 		Assignment a = new Assignment();
-		
 		for (String var : map.keySet()) {
 			if (!map.containsKey(var+"'")) {
 				boolean hasPrime = (var.charAt(var.length()-1)=='\'');
@@ -519,10 +496,10 @@ public class Assignment {
 				a.addPair(newVar, map.get(var));
 			}
 		}
-		
+
 		return a;
 	}
-	
+
 
 	/**
 	 * Returns a new assignment where the variable name is replaced.
@@ -539,26 +516,25 @@ public class Assignment {
 		}
 		return newAssign;
 	}
-	
-	
+
+
 
 	public Assignment addPrimes() {
-		Assignment a = new Assignment();
-		for (String var : map.keySet()) {
-			String newVar = var + "'";
-			a.addPair(newVar, map.get(var));
-		}
-		return a;
+		Map<String,Value> newMap = map.keySet().stream()
+				.collect(Collectors.toMap(var -> var + "'", var -> map.get(var)));
+		return new Assignment(newMap);
 	}
-	
-	 
+
+
 	/**
-	 * Returns whether the assignment is empty
+	 * Returns whether the assignment is empty.
+	 * 
+	 * @return true if the assignment is empty, else false.
 	 */
 	public boolean isEmpty() {
 		return map.isEmpty();
 	}
-	
+
 	/**
 	 * Returns the pairs of the assignment
 	 * 
@@ -577,8 +553,8 @@ public class Assignment {
 	public int size() {
 		return map.size();
 	}
-	
-	
+
+
 	/**
 	 * Returns true if the assignment contains the given variable,
 	 * and false otherwise
@@ -589,8 +565,8 @@ public class Assignment {
 	public boolean containsVar(String var) {
 		return map.containsKey(var);
 	}
-	
-	
+
+
 
 	/**
 	 * Returns true if the assignment contains all of the given variables,
@@ -602,28 +578,9 @@ public class Assignment {
 	public boolean containsVars(Collection<String> vars) {
 		return map.keySet().containsAll(vars);
 	}
-	
-	
-	public boolean containsOneVar(Collection<String> vars) {
-		for (String var : vars) {
-			if (map.containsKey(var)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
-	public boolean containsContinuousValues() {
-		for (Value v : map.values()) {
-			if (v instanceof DoubleVal || v instanceof ArrayVal) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
+
+
+
 	/**
 	 * Returns a trimmed version of the assignment, where only the
 	 * variables given as parameters are considered
@@ -632,16 +589,13 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
-		Assignment a = new Assignment();
-		for (String var : variables) {
-			if (map.containsKey(var)) {
-				a.addPair(var, map.get(var));
-			}
-		}
-		return a;
+		Map<String,Value> newMap = variables.stream()
+				.filter(var -> map.containsKey(var))
+				.collect(Collectors.toMap(var -> var, var -> map.get(var)));
+		return new Assignment(newMap);
 	}
-	
-	
+
+
 
 	/**
 	 * Trims the assignment, where only the variables given as 
@@ -652,7 +606,7 @@ public class Assignment {
 	public void trim(Collection<String> variables) {
 		map.keySet().retainAll(variables);
 	}
-	
+
 	/**
 	 * Trims the assignment, where only the variables given as 
 	 * parameters are considered
@@ -662,8 +616,8 @@ public class Assignment {
 	public void removeAll(Collection<String> variables) {
 		map.keySet().removeAll(variables);
 	}
-	
-	
+
+
 	/**
 	 * Returns a trimmed version of the assignment, where only the
 	 * variables NOT given as parameters are considered
@@ -671,13 +625,13 @@ public class Assignment {
 	 * @param variables the variables to remove
 	 * @return a new, trimmed assignment
 	 */
-	
+
 	public Assignment getTrimmedInverse (Collection<String> variables) {
 		Assignment a = copy();
 		a.removePairs(variables);
 		return a;
 	}
-	
+
 	/**
 	 * Returns a trimmed version of the assignment, where only the
 	 * variables given as parameters are considered
@@ -686,15 +640,9 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(String... variables) {
-		Assignment a = new Assignment();
-		for (String var : variables) {
-			if (map.containsKey(var)) {
-				a.addPair(var, map.get(var));
-			}
-		}
-		return a;
+		return getTrimmed(Arrays.asList(variables));
 	}
-	
+
 	/**
 	 * Returns a trimmed version of the assignment, where only the
 	 * variables NOT given as parameters are considered
@@ -709,8 +657,8 @@ public class Assignment {
 		}
 		return a;
 	}
-	
-	
+
+
 	/**
 	 * Returns a copy of the assignment
 	 * 
@@ -719,8 +667,8 @@ public class Assignment {
 	public Assignment copy() {
 		return new Assignment(this);
 	}
-	
-	
+
+
 	/**
 	 * Returns the list of variables used 
 	 * 
@@ -729,7 +677,7 @@ public class Assignment {
 	public Set<String> getVariables() {
 		return map.keySet();
 	} 
-	
+
 
 	/**
 	 * Returns the entry set for the assignment
@@ -739,28 +687,7 @@ public class Assignment {
 	public Set<Entry<String,Value>> getEntrySet() {
 		return map.entrySet();
 	}
-	
-	
-	/**
-	 * Get the entry at the given position in the hash, according
-	 * to the alphabetical ordering of the keys
-	 * 
-	 * @param index the given position
-	 * @return the corresponding entry
-	 */
-	public Entry<String,Value> getEntry(int index) {
-		int count = 0;
-		Iterator<Entry<String,Value>> it = new TreeSet<Entry<String,Value>>(map.entrySet()).iterator();
-		while (count < index && it.hasNext()) {
-			it.next();
-			count++;
-		}
-		if (it.hasNext()) {
-			return it.next();
-		}
-		return null;
-	}
-	
+
 	/**
 	 * Returns the value associated with the variable in the assignment,
 	 * if one is specified.  Else, returns the none value.
@@ -776,24 +703,9 @@ public class Assignment {
 			return ValueFactory.none();
 		}
 	}
-	
-	
-	/**
-	 * Returns the values corresponding to the variable labels given as argument.
-	 * If the variable is not in the assignment, the value is null.
-	 * 
-	 * @param vars the variable labels
-	 * @return the corresponding values
-	 */
-	public List<Value> getValues(Iterable<String> vars) {
-		List<Value> values = new ArrayList<Value>();
-		for (String var : vars) {
-			values.add(map.get(var));
-		}
-		return values;
-	}
-	
-	
+
+
+
 
 	/**
 	 * Returns all the values contained in the assignment
@@ -803,8 +715,8 @@ public class Assignment {
 	public Collection<Value> getValues() {
 		return map.values();
 	}
-	
-	
+
+
 	/**
 	 * Returns true if the assignment contains all pairs specified
 	 * in the assignment given as parameter (both the label and its
@@ -832,8 +744,8 @@ public class Assignment {
 		}
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Returns true if the two assignments are mutually consistent,
 	 * i.e. if there is a label l which appears in both assignment, 
@@ -847,7 +759,7 @@ public class Assignment {
 			if (map.containsKey(evidenceVar)) {
 				if (map.get(evidenceVar) == null) {
 					if (a.getValue(evidenceVar) != null) {
-					return false;
+						return false;
 					}
 				}
 				else if (!map.get(evidenceVar).equals(a.getValue(evidenceVar))) {
@@ -858,7 +770,7 @@ public class Assignment {
 		return true;
 	}
 
-	
+
 	/**
 	 * Returns true if the assignment only contains none values for all variables,
 	 * and false if at least one has a different value.
@@ -876,30 +788,6 @@ public class Assignment {
 
 
 
-	public boolean isDiscrete() {
-		for (String var : map.keySet()) {
-			Value val = map.get(var);
-			if (val instanceof DoubleVal || val instanceof ArrayVal) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-
-
-	public Assignment getDiscrete() {
-		Assignment discrete = new Assignment();
-		for (String var : map.keySet()) {
-			Value val = map.get(var);
-			if (!(val instanceof DoubleVal) && !(val instanceof ArrayVal)) {
-				discrete.addPair(var, val);
-			}
-		}
-		return discrete;
-	}
-
-	
 	public boolean containContinuousValues() {
 		for (String var : map.keySet()) {
 			if (map.get(var) instanceof DoubleVal || map.get(var) instanceof ArrayVal) {
@@ -908,14 +796,14 @@ public class Assignment {
 		}
 		return false;
 	}
-	
-	
+
+
 	// ===================================
 	//  UTILITY FUNCTIONS
 	// ===================================
 
-	
-	
+
+
 	/**
 	 * Returns the hashcode associated with the assignment.  The hashcode is
 	 * calculated from the hashmap corresponding to the assignment.
@@ -926,8 +814,8 @@ public class Assignment {
 	public int hashCode() {
 		return map.hashCode();
 	} 
-	
-	
+
+
 	/**
 	 * Returns true if the object given as argument is an assignment identical
 	 * to the present one
@@ -942,11 +830,11 @@ public class Assignment {
 		}
 		return false;
 	}
-	
-	
+
+
 
 	public Element generateXML(Document doc) {
-		
+
 		Element root = doc.createElement("assignment");
 
 		for (String varId: map.keySet()) {
@@ -961,8 +849,8 @@ public class Assignment {
 		}
 		return root;
 	}
-	
-	
+
+
 	/**
 	 * Returns a string representation of the assignment
 	 */
@@ -991,10 +879,10 @@ public class Assignment {
 			}
 		}
 		return str;
-		
+
 	}
 
 
 
-	
+
 }

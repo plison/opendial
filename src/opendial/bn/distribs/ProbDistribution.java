@@ -36,7 +36,7 @@ import opendial.datastructs.ValueRange;
  * are the conditional variables
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$
+ * @version $Date::                      $
  *
  */
 public interface ProbDistribution  {
@@ -68,7 +68,7 @@ public interface ProbDistribution  {
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
 	 * @return the independent probability distribution on X.
-	 * @throws DialException 
+	 * @throws DialException if the unconditional distribution could not be extracted
 	 */
 	public IndependentProbDistribution getProbDistrib(Assignment condition) throws DialException;
 
@@ -92,7 +92,7 @@ public interface ProbDistribution  {
 	 * 
 	 * @param range possible values for the conditional variables
 	 * @return a set of possible values for the variable
-	 * @throws DialException 
+	 * @throws DialException if the values could not be extracted
 	 */
 	public Set<Value> getValues(ValueRange range) throws DialException;
 	
@@ -103,7 +103,7 @@ public interface ProbDistribution  {
 	 * 
 	 * @param condition an assignment of values to the conditional variables
 	 * @return the posterior distribution
-	 * @throws DialException 
+	 * @throws DialException if the posterior could not be computed.
 	 */	
 	public abstract ProbDistribution getPosterior(Assignment condition) throws DialException;
 	

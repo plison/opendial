@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  * (Univariate) uniform density function, with a minimum and maximum.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$
+ * @version $Date::                      $
  *
  */
 public class UniformDensityFunction implements DensityFunction {
@@ -79,7 +79,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the density at the point
 	 */
 	@Override
-	public double getDensity(Double... x) {
+	public double getDensity(double... x) {
 		if (x[0] >= minimum && x[0] <= maximum) {
 			return 1.0f/(maximum-minimum);
 		}
@@ -95,24 +95,25 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the sampled point
 	 */
 	@Override
-	public Double[] sample() {
+	public double[] sample() {
 		double length = maximum - minimum;
-		return new Double[]{sampler.nextFloat()*length + minimum};
+		return new double[]{sampler.nextFloat()*length + minimum};
 	}
 
 	
 	/**
 	 * Returns a set of discrete values for the distribution
 	 * 
+	 * @param nbBuckets the number of buckets to employ
 	 * @return the discretised values and their probability mass.
 	 */
 	@Override
-	public Map<Double[],Double> discretise(int nbBuckets) {
-		Map<Double[], Double> values = new HashMap<Double[],Double>(nbBuckets);
+	public Map<double[],Double> discretise(int nbBuckets) {
+		Map<double[], Double> values = new HashMap<double[],Double>(nbBuckets);
 		double step = (maximum-minimum)/nbBuckets;
 		for (int i = 0 ; i < nbBuckets ; i++) {
 			double value = minimum  + i*step + step/2.0f;
-			values.put(new Double[]{value}, 1.0/nbBuckets);
+			values.put(new double[]{value}, 1.0/nbBuckets);
 		}
 		return values;
 	}
@@ -123,10 +124,10 @@ public class UniformDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative probability 
-	 * @throws DialException 
+	 * @throws DialException if the dimensionality of the point is greater than 1
 	 */
 	@Override
-	public Double getCDF(Double... x) throws DialException {
+	public double getCDF(double... x) throws DialException {
 		if (x.length != 1) {
 			throw new DialException("Uniform distribution currently only accepts a dimensionality == 1");
 		}
@@ -182,8 +183,8 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the mean
 	 */
 	@Override
-	public Double[] getMean() {
-		return new Double[]{(minimum + maximum)/2.0};
+	public double[] getMean() {
+		return new double[]{(minimum + maximum)/2.0};
 	}
 
 	/**
@@ -192,8 +193,8 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the variance
 	 */
 	@Override
-	public Double[] getVariance() {
-		return new Double[]{Math.pow(maximum - minimum, 2) / 12.0};
+	public double[] getVariance() {
+		return new double[]{Math.pow(maximum - minimum, 2) / 12.0};
 	}
 
 

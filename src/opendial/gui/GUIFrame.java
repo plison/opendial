@@ -100,13 +100,11 @@ public class GUIFrame implements Module {
 
 		frame.setLocation(new Point(200, 200));
 
-		frame.addWindowListener(new WindowAdapter() 
-		{
+		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) 
 			{ System.exit(0); }
-		}
-		); 
+		}); 
 		
 		menu = new GUIMenuBar(this);
 		frame.setJMenuBar(menu);
@@ -183,7 +181,8 @@ public class GUIFrame implements Module {
 
  	/**
  	 * Adds a comment to the chat window
- 	 * @param comment
+ 	 * 
+ 	 * @param comment the comment to add
  	 */
 	public void addComment(String comment) {
 		if (frame != null) {
@@ -194,7 +193,7 @@ public class GUIFrame implements Module {
 	/**
 	 * Returns the chat tab
 	 * 
-	 * @return the  chat tab
+	 * @return the chat tab
 	 */
 	public ChatWindowTab getChatTab() {
 		return chatTab;
@@ -232,6 +231,8 @@ public class GUIFrame implements Module {
 
 	/**
 	 * Returns whether the speech recording functionality if enabled in the GUI
+	 * 
+	 * @return true if the speech recording function is activated, else false.
 	 */
 	public boolean isSpeechEnabled() {
 		return isSpeechEnabled;
@@ -239,6 +240,8 @@ public class GUIFrame implements Module {
 	
 	/**
 	 * Enables or disables the speech recording functionality in the GUI
+	 * 
+	 * @param toEnable true if the speech functionality should be enabled, else false.
 	 */
 	public void enableSpeech(boolean toEnable) {
 		isSpeechEnabled = toEnable;

@@ -59,7 +59,6 @@ public class IncrementalTest {
 		system.addIncrementalContent(new CategoricalTable("u_u", "go"), false);
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("go")));
-		assertTrue(system.getState().hasChanceNode("nlu"));
 	CategoricalTable t = new CategoricalTable("u_u");
 		t.addRow("forward", 0.7);
 		t.addRow("backward", 0.2);
@@ -84,7 +83,6 @@ public class IncrementalTest {
 		assertFalse(system.getState().hasChanceNode("nlu"));
 		system.addIncrementalContent(new CategoricalTable("u_u", "yes that is right"), false);
 		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("yes that is right")));
-		assertTrue(system.getState().hasChanceNode("nlu"));
 	}
 
 }

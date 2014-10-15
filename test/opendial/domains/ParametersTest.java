@@ -47,7 +47,7 @@ import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.StochasticParameter;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
@@ -106,7 +106,7 @@ public class ParametersTest {
 		
 		system.startSystem();
 		system.addContent(new Assignment("u_u", "hello there"));
-		UtilityTable utils = ((new LikelihoodWeighting()).queryUtil(system.getState(), "u_m'"));
+		UtilityTable utils = ((new SamplingAlgorithm()).queryUtil(system.getState(), "u_m'"));
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) > 0);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < 

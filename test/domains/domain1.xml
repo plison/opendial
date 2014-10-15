@@ -211,7 +211,7 @@
 		<rule>
 			<case>
 				<effect>
-					<clear var="a_u2" />
+					<set var="a_u2" value="[]" />
 				</effect>
 			</case>
 		</rule>

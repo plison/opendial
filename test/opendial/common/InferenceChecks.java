@@ -40,7 +40,7 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
 
@@ -52,8 +52,8 @@ public class InferenceChecks {
 	
 	
 	VariableElimination ve;
-	LikelihoodWeighting is;
-	LikelihoodWeighting is2;
+	SamplingAlgorithm is;
+	SamplingAlgorithm is2;
 	NaiveInference naive;
 
 	boolean includeNaive = false;
@@ -69,8 +69,8 @@ public class InferenceChecks {
 	public InferenceChecks() {
 
 		ve = new VariableElimination();
-		is = new LikelihoodWeighting(2000,200);
-		is2 = new LikelihoodWeighting(5000, 500);
+		is = new SamplingAlgorithm(2000,200);
+		is2 = new SamplingAlgorithm(5000, 500);
 		naive = new NaiveInference();
 	
 		timings = new HashMap<InferenceAlgorithm, Long>();

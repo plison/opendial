@@ -24,6 +24,7 @@
 package opendial.bn.distribs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -133,7 +135,6 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * arbitrary sample out of the set defining the distribution
 	 * 
 	 * @return the selected sample
-	 * @throws DialException 
 	 */
 	@Override
 	public Assignment sample() {
@@ -197,7 +198,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 
 	/**
 	 * Returns the number of samples.
-	 * @return
+	 * 
+	 * @return the number of samples.
 	 */
 	public int size() {
 		return samples.size();
@@ -252,6 +254,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * variables in the distribution).
 	 * 
 	 * @return the corresponding continuous distribution.
+	 * @throws DialException if the distribution content is discrete.
 	 */
 	public ContinuousDistribution toContinuous() throws DialException {
 		if (continuousCache == null) {
@@ -269,6 +272,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns an independent probability distribution on a single random
 	 * variable based on the samples. This distribution may be a categorical
 	 * table or a continuous distribution.
+	 * 
+	 * @return the probability distribution resulting from the marginalisation.
 	 */
 	@Override
 	public IndependentProbDistribution getMarginal(String var) {
@@ -376,16 +381,19 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 */
 	protected ContinuousDistribution createContinuousDistribution(String variable) {
 
-		List<Double[]> values = new ArrayList<Double[]>();
-		for (Assignment a : samples) {
-			Value v = a.getValue(variable);
-			if (v instanceof ArrayVal) {
-				values.add(((ArrayVal)v).getArray());
-			}
-			else if (v instanceof DoubleVal) {
-				values.add(new Double[]{((DoubleVal)v).getDouble()});
-			}
-		}
+		
+		List<double[]> values = samples.stream()
+				.map(a -> a.getValue(variable))
+				.filter(v -> (v instanceof ArrayVal) || (v instanceof DoubleVal))
+				.map( v -> {
+					if (v instanceof ArrayVal) {
+						return ((ArrayVal)v).getArray();
+					}
+					else {
+						return new double[]{((DoubleVal)v).getDouble()};
+					}
+				})
+				.collect(Collectors.toList());
 
 		KernelDensityFunction function = new KernelDensityFunction(values);
 		return new ContinuousDistribution(variable, function);
@@ -395,6 +403,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Creates a conditional categorical table derived from the samples.  This method 
 	 * should be called in the presence of conditional variables.
 	 * 
+	 * @param headVar the name of the head variable
+	 * @param condVars the conditional variables.
 	 * @return the conditional categorical table 
 	 */
 	public ConditionalTable createConditionalTable(String headVar, 
@@ -404,31 +414,31 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 
 		Map<Assignment,Map<Value,Integer>> temp = 
 				new HashMap<Assignment,Map<Value,Integer>>();
-
+	
 		for (Assignment sample: samples) {
 			Assignment condition = sample.getTrimmed(condVars);
 			Value val = sample.getValue(headVar);
 			if (!temp.containsKey(condition)) {
-				temp.put(condition, new HashMap<Value,Integer>());
-			}
-			Map<Value,Integer> counts = temp.get(condition);
-			if (!counts.containsKey(val)) {
+				Map<Value,Integer> counts = new HashMap<Value,Integer>();
 				counts.put(val, 1);
+				temp.put(condition, counts);
 			}
 			else {
-				counts.put(val, counts.get(val) +1);
+				Map<Value,Integer> counts = temp.get(condition);
+				if (!counts.containsKey(val)) {
+					counts.put(val, 1);
+				}
+				else {
+					counts.put(val, counts.get(val) +1);
+				}				
 			}
 		}
 
 		for (Assignment condition : temp.keySet()) {
-			double totalCounts = 0.0;
 			Map<Value,Integer> counts = temp.get(condition);
-			for (Integer i : counts.values()) {
-				totalCounts += i;
-			}
-			for (Value v : counts.keySet()) {
-				table.addRow(condition, v, counts.get(v) / totalCounts);
-			}
+			double totalCounts =counts.values().stream().mapToInt(i->i).sum();
+			counts.keySet().stream()
+				.forEach(v -> table.addRow(condition, v, counts.get(v)/totalCounts));
 		}
 		table.fillConditionalHoles();
 		return table;

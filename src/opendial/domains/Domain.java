@@ -45,7 +45,7 @@ public class Domain {
 	static Logger log = new Logger("Domain", Logger.Level.NORMAL);
 	
 	// domain name
-	String domainName;	
+	String domainName = "";	
 	
 	// initial dialogue state
 	DialogueState initState;

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,10 +24,14 @@
 package opendial.modules.core;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -39,9 +43,9 @@ import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.inference.Query;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.approximate.LikelihoodWeighting;
-import opendial.inference.approximate.SamplingProcess;
-import opendial.inference.approximate.WeightedSample;
+import opendial.inference.approximate.Sample;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -58,7 +62,9 @@ public class WizardLearner implements Module {
 	public static Logger log = new Logger("WizardLearner", Logger.Level.DEBUG);
 
 	DialogueSystem system;
-	
+
+	SamplingAlgorithm sampler;
+
 	/** geometric factor used in supervised learning from Wizard-of-Oz data */
 	public static final double GEOMETRIC_FACTOR = 0.5;
 
@@ -66,8 +72,9 @@ public class WizardLearner implements Module {
 
 	public WizardLearner(DialogueSystem system) {
 		this.system = system;
+		sampler = new SamplingAlgorithm();
 	}
-	
+
 	@Override
 	public void start() {	}
 
@@ -77,25 +84,26 @@ public class WizardLearner implements Module {
 	@Override
 	public boolean isRunning() {  return true;	}
 
-	
+
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (!state.getActionNodeIds().isEmpty()) {
 			if (state.getEvidence().containsVars(state.getActionNodeIds())) {
-			try {
-				Assignment wizardAction = state.getEvidence().getTrimmed(state.getActionNodeIds());
-				state.clearEvidence(wizardAction.getVariables());
-				learnFromWizardAction(state, wizardAction);
-				state.addToState(wizardAction.removePrimes());
-			}
-			catch (DialException e) {
-				log.warning("could not learn from wizard actions: " + e);
-			}
+				try {
+					Assignment wizardAction = state.getEvidence().getTrimmed(state.getActionNodeIds());
+					state.clearEvidence(wizardAction.getVariables());
+					learnFromWizardAction(wizardAction);
+					state.addToState(wizardAction.removePrimes());
+				}
+				catch (DialException e) {
+					log.warning("could not learn from wizard actions: " + e);
+				}
 			}
 			else {
 				state.removeNodes(state.getActionNodeIds());
 				state.removeNodes(state.getUtilityNodeIds());
 			}
+
 		}
 	}
 
@@ -109,56 +117,47 @@ public class WizardLearner implements Module {
 	 * @return the list of updated parameters
 	 * @throws DialException if the update fails
 	 */
-	protected static Set<String> learnFromWizardAction(DialogueState state, 
-			Assignment wizardAction) throws DialException {
-			
-			// determine the relevant parameters (discard the isolated ones)
-			Set<String> relevantParams = new HashSet<String>();
-			for (String param : state.getParameterIds()) {
-				if (!state.getChanceNode(param).getOutputNodesIds().isEmpty()) {
-					relevantParams.add(param);
-				}
-			}			
-			if (!relevantParams.isEmpty()) {
-				// creates a new query thread
-				SamplingProcess isquery = new SamplingProcess
-						(new Query.UtilQuery(state, relevantParams, new Assignment()), 
-								Settings.nbSamples, Settings.maxSamplingTime);
-						
-				// extract and redraw the samples according to their weight.
-				Stack<WeightedSample> samples = isquery.getSamples();
-				reweightSamples(samples, wizardAction);
-				samples = LikelihoodWeighting.redrawSamples(samples);
+	protected Set<String> learnFromWizardAction(Assignment wizardAction) {
 
-				// creates an empirical distribution from the samples
-				EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
-				for (WeightedSample sample : samples) {
-					sample.trim(relevantParams);
-					empiricalDistrib.addSample(sample);
-				}
-							
+		DialogueState state = system.getState();
+		// determine the relevant parameters (discard the isolated ones)
+		Set<String> relevantParams = state.getParameterIds().stream()
+				.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
+				.collect(Collectors.toSet());
+
+		if (!relevantParams.isEmpty()) {
+			try {
+				List<String> queryVars = new ArrayList<String>(relevantParams);
+				queryVars.addAll(wizardAction.getVariables());
+
+				Query query = new Query.UtilQuery(state, queryVars, new Assignment());
+				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(query, 
+						cs -> reweightSamples(cs, wizardAction));
+
 				for (String param : relevantParams) {
 					ChanceNode paramNode = state.getChanceNode(param);
-					
+
 					ProbDistribution newDistrib = empiricalDistrib.getMarginal(param,
 							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
-			
-			return relevantParams;
+			catch (DialException e) {
+				log.warning("cannot update parameters based on wizard action: " + e);
+			}
+		}
+
+		return relevantParams;
 	}
 
-	
 
 
-	private static void reweightSamples(Stack<WeightedSample> samples,
-			Assignment wizardAction) {
-
-		UtilityTable averages = new UtilityTable();
+	private static void reweightSamples(Collection<Sample> samples, Assignment wizardAction) {
 
 		Set<String> actionVars = wizardAction.getVariables();
-		for (WeightedSample sample : samples) {
+
+		UtilityTable averages = new UtilityTable();
+		for (Sample sample : samples) {
 			Assignment action = sample.getTrimmed(actionVars);
 			averages.incrementUtil(action, sample.getUtility());
 		}
@@ -166,10 +165,7 @@ public class WizardLearner implements Module {
 			return;
 		}
 
-	/**	log.debug("Utilities : " + averages.toString().replace("\n", ", ") 
-				+ " ==> gold action = " + wizardAction); */
-
-		for (WeightedSample sample : samples) {
+		for (Sample sample : samples) {
 
 			UtilityTable copy = averages.copy();
 			Assignment sampleAssign = sample.getTrimmed(actionVars);
@@ -182,7 +178,7 @@ public class WizardLearner implements Module {
 			}				
 		}
 	}
-	
+
 
 
 }

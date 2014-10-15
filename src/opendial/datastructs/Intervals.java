@@ -24,16 +24,19 @@
 package opendial.datastructs;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.inference.approximate.Sample;
 
 
 /**
  * Representation of a collection of intervals, each of which is associated with
- * a content object, and start & end values. The difference between the start & 
+ * a content object, and start and end values. The difference between the start and
  * end values of an interval can for instance represent the object probability.
  * 
  * <p>The intervals can then be used for sampling a content object according to 
@@ -62,7 +65,7 @@ public class Intervals<T> {
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
 	 * @param table the tables from which to create the intervals
-	 * @throws DialException 
+	 * @throws DialException  if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Map<T,Double> table) throws DialException {
@@ -86,39 +89,37 @@ public class Intervals<T> {
 		sampler = new Random();
 	}
 	
-	
+
 	/**
-	 * Creates an interval with an array of elements and their associated probability
+	 * Creates a new interval collection with a collection of values and a function
+	 * specifying the probability of each value
 	 * 
-	 * @param elements the elements
-	 * @param probs their probability
-	 * @throws DialException 
+	 * @param content the collection of content objects
+	 * @param probs the function associating a weight to each object
+	 * @throws DialException  if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(T[] elements, double[] probs) throws DialException {
-		
-		if (elements.length != probs.length) {
-			throw new DialException("array lenghts are not identical");
-		}
-		
-		intervals = new Interval[elements.length];
+	public Intervals(Collection<T> content, Function<T,Double> probs) throws DialException {
+
+		intervals = new Interval[content.size()];
+		int i = 0;
 		totalProb = 0.0f;
 
-		for (int i = 0 ; i < elements.length ; i++) {
-			double prob = probs[i];
+		for (T a : content) {
+			double prob = probs.apply(a);
 			if (prob == Double.NaN) {
-				throw new DialException("probability is NaN: " +  prob);
+				throw new DialException("probability is NaN: " + a);
 			}
-			intervals[i] = new Interval<T>(elements[i],totalProb, totalProb+prob);
+			intervals[i++] = new Interval<T>(a,totalProb, totalProb+prob);
 			totalProb += prob;
 		}
 
 		if (totalProb < 0.0001) {
-			throw new DialException("total prob is null: ");
+			throw new DialException("total prob is null: " + content);
 		}
 		sampler = new Random();
-
 	}
+	
 	
 	/**
 	 * Samples an object from the interval collection, using a simple
@@ -146,7 +147,7 @@ public class Intervals<T> {
 			int mid = min + (max - min) / 2;
 			if (mid < 0 || mid > intervals.length -1) {
 				throw new DialException("could not sample: (min=" + min + ", max=" + max +
-						", length=" + intervals.length+") -- intervals = " + Arrays.asList(intervals));
+						") -- intervals = " + Arrays.asList(intervals));
 			}
 			switch (intervals[mid].compareTo(rand)) {
 			case +1: max = mid - 1; break;

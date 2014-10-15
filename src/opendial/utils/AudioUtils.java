@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -25,7 +25,10 @@
 package opendial.utils;
 
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -41,6 +44,7 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.Mixer.Info;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -59,7 +63,7 @@ public class AudioUtils {
 
 	/** Audio format for lower-quality speech recognition (frame rate: 8 kHz) */
 	static AudioFormat IN_LOW = new AudioFormat(8000.0F, 16, 1, true, false);
-	
+
 	/** Audio format for the speech synthesis */
 	static AudioFormat OUT = new AudioFormat(16000.0F, 16, 1, true, false);
 
@@ -75,10 +79,10 @@ public class AudioUtils {
 
 		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 			try {
-			DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class, format);
-			if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
-				return AudioSystem.getTargetDataLine(format, mixer);
-			}
+				DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class, format);
+				if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
+					return AudioSystem.getTargetDataLine(format, mixer);
+				}
 			}
 			catch (LineUnavailableException e) {
 				log.warning(" line for mixer " + mixer + " is not available");
@@ -93,10 +97,32 @@ public class AudioUtils {
 	/**
 	 * Plays the input stream on the standard audio input.
 	 * 
-	 * @param stream the stream to play
+	 * @param audioData the audio data to play
+	 * @param outputMixer the output mixer to employ
 	 */
-	public static void playAudio(final InputStream stream, Mixer.Info outputMixer) {
-		(new Thread(new AudioPlayer(stream, outputMixer))).start();
+	public static void playAudio(byte[] audioData, Mixer.Info outputMixer) {
+		try {
+			(new Thread(new AudioPlayer(audioData, outputMixer))).start();
+		}
+		catch (Exception e) {
+			log.warning("cannot play audio: " + e);
+		}
+	}
+	
+
+	/**
+	 * Plays the input stream on the standard audio input.
+	 * 
+	 * @param stream the stream to play
+	 * @param outputMixer the output mixer to employ
+	 */
+	public static void playAudio(AudioInputStream stream, Mixer.Info outputMixer) {
+		try {
+			(new Thread(new AudioPlayer(stream, outputMixer))).start();
+		}
+		catch (Exception e) {
+			log.warning("cannot play audio: " + e);
+		}
 	}
 
 	/**
@@ -124,12 +150,13 @@ public class AudioUtils {
 	public static List<Mixer.Info> getInputMixers() {
 
 		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
-		
+
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
 		for (int i = 0 ; i < mixerInfos.length ; i++) {
 			for (AudioFormat format: Arrays.asList(IN_HIGH, IN_LOW)) {
-				if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
-						new DataLine.Info(TargetDataLine.class, format))) {
+				if (!mixers.contains(mixerInfos[i]) && 
+						AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
+								new DataLine.Info(TargetDataLine.class, format))) {
 					mixers.add(mixerInfos[i]);
 				}
 			}
@@ -137,8 +164,8 @@ public class AudioUtils {
 
 		return mixers;
 	}
-	
-	
+
+
 	/**
 	 * Returns the list of all audio mixers whose output is compatible with the audio
 	 * format OUT.
@@ -153,16 +180,16 @@ public class AudioUtils {
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
 		for (int i = 0 ; i < mixerInfos.length ; i++) {
 			if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
-						new DataLine.Info(SourceDataLine.class, OUT))) {
+					new DataLine.Info(SourceDataLine.class, OUT))) {
 
-					mixers.add(mixerInfos[i]);
-					try { if (AudioSystem.getSourceDataLine(OUT).getLineInfo().matches(
-							AudioSystem.getSourceDataLine(OUT, mixerInfos[i]).getLineInfo())) {
-						defaultMixer = mixerInfos[i];
-					} }
-					catch (Exception e) { e.printStackTrace(); }
-				}
-			
+				mixers.add(mixerInfos[i]);
+				try { if (AudioSystem.getSourceDataLine(OUT).getLineInfo().matches(
+						AudioSystem.getSourceDataLine(OUT, mixerInfos[i]).getLineInfo())) {
+					defaultMixer = mixerInfos[i];
+				} }
+				catch (Exception e) { e.printStackTrace(); }
+			}
+
 		}
 		if (defaultMixer != null) {
 			mixers.remove(defaultMixer);
@@ -177,31 +204,70 @@ public class AudioUtils {
 	 */
 	final static class AudioPlayer implements Runnable {
 
-		InputStream stream;
-		Mixer.Info outputMixer;
+		AudioInputStream stream;
+		Clip clip;
 
-		public AudioPlayer(InputStream stream, Mixer.Info outputMixer) {
+		public AudioPlayer(AudioInputStream stream, Mixer.Info outputMixer) 
+				throws LineUnavailableException {
 			this.stream = stream;
-			this.outputMixer = outputMixer;
+			clip = (outputMixer!=null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
+		}
+
+		public AudioPlayer(byte[] bytes, Mixer.Info outputMixer) 
+				throws LineUnavailableException, UnsupportedAudioFileException, IOException {
+			this(getAudioStream(bytes), outputMixer);
+		}
+
+
+
+		private static AudioInputStream getAudioStream(byte[] bytes) 
+				throws IOException, UnsupportedAudioFileException {
+			try {
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				return AudioSystem.getAudioInputStream(byteStream);
+			}
+			catch (UnsupportedAudioFileException e) {
+				bytes = addWavHeader(bytes);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				return AudioSystem.getAudioInputStream(byteStream);
+			}
+		}
+
+
+		private static byte[] addWavHeader(byte[] bytes) throws IOException {
+
+			ByteBuffer bufferWithHeader = ByteBuffer.allocate(bytes.length+44);
+			bufferWithHeader.order(ByteOrder.LITTLE_ENDIAN);
+			bufferWithHeader.put("RIFF".getBytes());
+			bufferWithHeader.putInt(bytes.length+36);
+			bufferWithHeader.put("WAVE".getBytes());
+			bufferWithHeader.put("fmt ".getBytes());
+			bufferWithHeader.putInt(16);
+			bufferWithHeader.putShort((short)1);
+			bufferWithHeader.putShort((short)1);
+			bufferWithHeader.putInt(16000);
+			bufferWithHeader.putInt(32000);
+			bufferWithHeader.putShort((short)2);
+			bufferWithHeader.putShort((short)16);
+			bufferWithHeader.put("data".getBytes());
+			bufferWithHeader.putInt(bytes.length);
+			bufferWithHeader.put(bytes);
+			return bufferWithHeader.array();
 		}
 
 		@Override
 		public void run() {
 			try {
-				AudioInputStream input = (stream instanceof AudioInputStream)? 
-						(AudioInputStream) stream: 
-					AudioSystem.getAudioInputStream(stream);
-		        Clip clip = (outputMixer != null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
-		        clip.open(input);
-			    clip.start();
-			    while (!clip.isActive()) {
-			      	Thread.sleep(50);
-			    }
-			    while (clip.isActive()) {
-			    	Thread.sleep(50);
-			    }
-			    clip.close();
-		}
+				clip.open(stream);
+				clip.start();
+				while (!clip.isActive()) {
+					Thread.sleep(50);
+				}
+				while (clip.isActive()) {
+					Thread.sleep(50);
+				}
+				clip.close();
+			}
 			catch (Exception e) {
 				log.severe("unable to play sound file, aborting.  Error: " + e.toString());
 			} 

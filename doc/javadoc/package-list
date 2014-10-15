@@ -2,13 +2,7 @@ opendial
 opendial.arch
 opendial.bn
 opendial.bn.distribs
-opendial.bn.distribs.continuous
-opendial.bn.distribs.continuous.functions
-opendial.bn.distribs.discrete
-opendial.bn.distribs.discrete.functions
-opendial.bn.distribs.incremental
-opendial.bn.distribs.other
-opendial.bn.distribs.utility
+opendial.bn.distribs.densityfunctions
 opendial.bn.nodes
 opendial.bn.values
 opendial.datastructs
@@ -23,12 +17,10 @@ opendial.gui.stateviewer
 opendial.inference
 opendial.inference.approximate
 opendial.inference.exact
-opendial.inference.queries
 opendial.modules
 opendial.modules.core
 opendial.modules.examples
 opendial.modules.simulation
-opendial.modules.speech
 opendial.plugins
 opendial.readers
 opendial.state

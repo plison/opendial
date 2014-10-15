@@ -46,7 +46,7 @@ import org.w3c.dom.Element;
  * by a constant volume (used for normalisation).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$
+ * @version $Date::                      $
  *
  */
 public class DiscreteDensityFunction implements DensityFunction {
@@ -55,7 +55,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	public static Logger log = new Logger("DiscreteDensityFunction", Logger.Level.DEBUG);
 
 	// the set of points for the density function
-	Map<Double[],Double> points;
+	Map<double[],Double> points;
 
 	// the sampler
 	Random sampler;
@@ -72,8 +72,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * 
 	 * @param points a set of (value,prob) pairs
 	 */
-	public DiscreteDensityFunction(Map<Double[],Double> points) {
-		this.points = new HashMap<Double[],Double>();
+	public DiscreteDensityFunction(Map<double[],Double> points) {
+		this.points = new HashMap<double[],Double>();
 		this.points.putAll(points);
 		sampler = new Random();
 		
@@ -100,10 +100,10 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * @return the density at the point
 	 */
 	@Override
-	public double getDensity(Double... x) {		
-		Double[] closest = null;
+	public double getDensity(double... x) {		
+		double[] closest = null;
 		double closestDist = - Double.MAX_VALUE;
-		for (Double[] point : points.keySet()) {
+		for (double[] point : points.keySet()) {
 			double curDist = DistanceUtils.getDistance(point, x);
 			if (closest == null || curDist < closestDist) {
 				closest = point;
@@ -126,17 +126,17 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * @return the resulting sample
 	 */
 	@Override
-	public Double[] sample() {
+	public double[] sample() {
 		double sampled = sampler.nextFloat();
 		double sum = 0.0;
-		for (Double[] point : points.keySet()) {
+		for (double[] point : points.keySet()) {
 			sum += points.get(point);
 			if (sampled < sum) {
 				return point;
 			}
 		}
 		log.warning("discrete density function could not be sampled");
-		return new Double[0];
+		return new double[0];
 	}
 
 
@@ -145,7 +145,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public Map<Double[], Double> discretise(int nbBuckets) {
+	public Map<double[], Double> discretise(int nbBuckets) {
 		return points;
 	}
 
@@ -169,7 +169,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	@Override
 	public String toString() {
 		String s = "Discrete(";
-		for (Double[] point : points.keySet()) {
+		for (double[] point : points.keySet()) {
 			s += "(";
 			for (int i = 0 ; i < point.length; i++) {
 				s += StringUtils.getShortForm(point[i]) + ",";
@@ -204,11 +204,11 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * Returns the means of the distribution (calculated like for a categorical distribution).
 	 */
 	@Override
-	public Double[] getMean() {
-		Double[] mean = new Double[getDimensionality()];
+	public double[] getMean() {
+		double[] mean = new double[getDimensionality()];
 		for (int i = 0 ; i < getDimensionality(); i++) {
 			mean[i] = 0.0;
-			for (Double[] point : points.keySet()) {
+			for (double[] point : points.keySet()) {
 				mean[i] += (point[i] * points.get(point));
 			}
 		}
@@ -220,12 +220,12 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public Double[] getVariance() {
-		Double[] variance = new Double[getDimensionality()];
-		Double[] mean = getMean();
+	public double[] getVariance() {
+		double[] variance = new double[getDimensionality()];
+		double[] mean = getMean();
 		for (int i = 0 ; i < getDimensionality(); i++) {
 			variance[i] = 0.0;
-			for (Double[] point : points.keySet()) {
+			for (double[] point : points.keySet()) {
 				variance[i] += Math.pow(point[i] - mean[i], 2) * points.get(point);
 			}
 		}
@@ -238,13 +238,13 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * with a value that is lower than x). 
 	 */
 	@Override
-	public Double getCDF(Double... x) throws DialException {
+	public double getCDF(double... x) throws DialException {
 		if (x.length != getDimensionality()) {
 			throw new DialException("Illegal dimensionality: " + x.length + "!=" + getDimensionality());
 		}
 
 		double cdf = 0.0f;
-		for (Double[] point : points.keySet()) {
+		for (double[] point : points.keySet()) {
 			if (DistanceUtils.isLower(point, x)) {
 				cdf += points.get(point);
 			}
@@ -257,7 +257,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	public List<Element> generateXML(Document doc) {
 		List<Element> elList = new ArrayList<Element>();
 		
-		for (Double[] a : points.keySet()) {
+		for (double[] a : points.keySet()) {
 			Element valueNode = doc.createElement("value");
 			Attr prob = doc.createAttribute("prob");
 			prob.setValue(""+StringUtils.getShortForm(points.get(a)));

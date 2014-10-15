@@ -68,7 +68,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * a set of query variables, and some evidence.
 	 * 
 	 * @param query the full query
-	 * @throws DialException 
+	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	@Override
 	public MultivariateTable queryProb (Query.ProbQuery query) throws DialException {

@@ -33,7 +33,7 @@ import opendial.datastructs.Assignment;
  * where X1,...Xn are random variables.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$ *
+ * @version $Date::                      $ *
  *
  */
 public interface MultivariateDistribution {
@@ -100,7 +100,8 @@ public interface MultivariateDistribution {
 
 	/**
 	 * Returns a copy of the distribution.
-	 * @return
+	 * 
+	 * @return the copy.
 	 */
 	public MultivariateDistribution copy();
 

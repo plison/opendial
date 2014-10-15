@@ -92,7 +92,7 @@ public class ComplexCondition implements Condition {
 	/**
 	 * Sets the logical operator for the complex condition
 	 * 
-	 * @param operator
+	 * @param operator the binary operator for the condition.
 	 */
 	public void setOperator (BinaryOperator operator) {
 		this.operator = operator;

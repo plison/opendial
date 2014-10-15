@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -102,7 +101,6 @@ public class RuleCase {
 	 * 
 	 * @param effect the effect
 	 * @param param the effect's probability or utility
-	 * @throws DialException 
 	 */
 	public void addEffect(Effect effect, double param) {
 		addEffect(effect, new FixedParameter(param));
@@ -131,7 +129,7 @@ public class RuleCase {
 	public RuleCase ground(Assignment grounding) {
 		RuleCase groundCase = new RuleCase();
 		for (Effect e : effects.keySet()) {
-			Effect groundedEffect = e.ground(grounding);
+			Effect groundedEffect = e.getGrounded(grounding);
 			if (!groundedEffect.getSubEffects().isEmpty() || e.getSubEffects().isEmpty()) {
 				groundCase.addEffect(groundedEffect, effects.get(e));
 			}
@@ -228,7 +226,7 @@ public class RuleCase {
 	/**
 	 * Returns the mapping between effects and parameters for the case.
 	 * 
-	 * @return the mapping effects -> parameters
+	 * @return the mapping effects: parameters
 	 */
 	public Map<Effect,Parameter> getEffectMap() {
 		return effects;

@@ -52,10 +52,7 @@ public class OutputsTest {
 		
 		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val3"), EffectType.DISCARD));
 		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
-		
-		o.addSubEffect(new BasicEffect(new Template("v3"), null, EffectType.CLEAR));
-		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3 ^ v3:={}"));
-		
+				
 	}
 }
 

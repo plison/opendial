@@ -71,8 +71,6 @@
 				</effect>
 			</case>
 			<case>
-				<condition />
-
 				<effect util="-2">
 					<set var="a_m" value="Ground({current_question},{Y})" />
 				</effect>

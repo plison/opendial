@@ -66,6 +66,8 @@ public class XMLStateReader {
 	 * variable types are already declared)
 	 * 
 	 * @param file the file to process
+	 * @param tag the XML tag to search for
+	 * @return the specified Bayesian network
 	 * @throws DialException if XML document is ill-formatted
 	 */
 	public static BNetwork extractBayesianNetwork(String file, String tag) throws DialException {
@@ -215,8 +217,8 @@ public class XMLStateReader {
 	 * @throws DialException if the density function is not properly encoded
 	 */
 	private static GaussianDensityFunction getGaussian(Node node) throws DialException {
-		Double[] mean = null;
-		Double[] variance = null;
+		double[] mean = null;
+		double[] variance = null;
 		for (int j = 0 ; j < node.getChildNodes().getLength() ; j++) {
 			Node subsubnode = node.getChildNodes().item(j);
 			if (subsubnode.getNodeName().equals("mean")) {
@@ -225,7 +227,7 @@ public class XMLStateReader {
 					mean = ((ArrayVal)ValueFactory.create(meanStr)).getArray();
 				}
 				else {
-					mean = new Double[]{Double.parseDouble(meanStr)};
+					mean = new double[]{Double.parseDouble(meanStr)};
 				}
 			}
 			if (subsubnode.getNodeName().equals("variance")) {
@@ -234,7 +236,7 @@ public class XMLStateReader {
 					variance = ((ArrayVal)ValueFactory.create(varianceStr)).getArray();
 				}
 				else {
-					variance = new Double[]{Double.parseDouble(varianceStr)};
+					variance = new double[]{Double.parseDouble(varianceStr)};
 				}	
 			}
 		}

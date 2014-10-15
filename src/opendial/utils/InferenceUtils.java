@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
@@ -57,27 +59,20 @@ public class InferenceUtils {
 	 * Normalise the given probability distribution (assuming no conditional variables).
 	 * 
 	 * @param distrib the distribution to normalise
+	 * @param <T> the type of the elements in the distribution
 	 * @return the normalised distribution
 	 */
 	public static <T> Map<T, Double> normalise (Map<T, Double> distrib) {
-		double total = 0.0f;
-		for (T a : distrib.keySet()) {
-			total += distrib.get(a);
-		}
+		double total = distrib.values().stream().mapToDouble(i->i).sum();
 		if (total == 0.0f) {
-			//		log.debug("distribution: " + distrib);
 			log.warning("all assignments in the distribution have a zero " +
 					"probability, cannot be normalised");
-			total = 1.0f;
+			return distrib;
 		}
 
-		Map<T,Double> normalisedDistrib = new HashMap<T,Double>();
-		for (T a: distrib.keySet()) {
-			double prob = distrib.get(a)/ total;
-				if (prob > 0.0) {
-			normalisedDistrib.put(a, prob);
-				}
-		}
+		Map<T,Double> normalisedDistrib = distrib.keySet().stream()
+			.collect(Collectors.toMap(a -> a, a -> distrib.get(a)/total));
+		
 		return normalisedDistrib;
 	}
 
@@ -142,7 +137,7 @@ public class InferenceUtils {
 	 * @param initProbs the unnormalised values
 	 * @return the normalised values
 	 */
-	public static Double[] normalise(Double[] initProbs) {
+	public static double[] normalise(double[] initProbs) {
 		for (int i = 0 ; i < initProbs.length; i++) {
 			if (initProbs[i] < 0) {
 				initProbs[i] = 0.0;
@@ -153,7 +148,7 @@ public class InferenceUtils {
 			sum += prob;
 		}
 
-		Double[] result = new Double[initProbs.length];
+		double[] result = new double[initProbs.length];
 
 		if (sum > 0.001) {
 			for (int i = 0 ; i < initProbs.length; i++) {
@@ -176,6 +171,7 @@ public class InferenceUtils {
 	 * 
 	 * @param initTable the full initial table
 	 * @param nbest the number of elements to retain
+	 * @param <T> the type of the elements in the table
 	 * @return the resulting subset of the table
 	 */
 	public static <T> LinkedHashMap<T,Double> getNBest (Map<T,Double> initTable, int nbest) {
@@ -215,6 +211,7 @@ public class InferenceUtils {
 	 * 
 	 * @param initTable the table 
 	 * @param assign the assignment to find
+	 * @param <T> the type of the elements in the table
 	 * @return the index in the ordered table, or -1 if the element is not in the table
 	 */
 	public static <T> int getRanking(Map<T,Double> initTable, T assign) {

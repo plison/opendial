@@ -53,7 +53,7 @@ import opendial.utils.StringUtils;
  * is a random variable.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$
+ * @version $Date::                      $
  *
  */
 public class CategoricalTable implements IndependentProbDistribution {
@@ -81,6 +81,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 	/**
 	 * Constructs a new probability table, with no values
+	 * 
+	 * @param variable the name of the random variable
 	 */
 	public CategoricalTable(String variable) {
 		table = new HashMap<Value,Double>(5);
@@ -94,6 +96,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * assumes that the distribution does not have any conditional
 	 * variables.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param headTable the mapping to fill the table
 	 */
 	public CategoricalTable(String variable, Map<Value,Double> headTable) {
@@ -112,6 +115,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param uniqueValue the unique value for the table
 	 */
 	public CategoricalTable(String variable, Value uniqueValue) {
@@ -123,6 +127,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
+	 * @param variable the name of the random variable
 	 * @param uniqueValue the unique value for the table (as a string)
 	 */
 	public CategoricalTable(String variable, String uniqueValue) {
@@ -243,7 +248,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * share the same variable).
 	 * 
 	 * @param other the table to concatenate
-	 * @return 
+	 * @return the table resulting from the concatenation
 	 */
 	public CategoricalTable concatenate (CategoricalTable other) {
 
@@ -254,8 +259,14 @@ public class CategoricalTable implements IndependentProbDistribution {
 		CategoricalTable newtable = new CategoricalTable(variable);
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
+				try {
 				Value concat = thisA.concatenate(otherA);
 				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
+				}
+				catch (DialException e) {
+					log.warning("could not concatenated the tables " + this + " and " + other);
+					return this.copy();
+				}
 			}
 		}
 		return newtable;
@@ -389,13 +400,13 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public ContinuousDistribution toContinuous() throws DialException {
 
 		if (isContinuous()) {
-			Map<Double[],Double> points = new HashMap<Double[],Double>();
+			Map<double[],Double> points = new HashMap<double[],Double>();
 			for (Value v : getValues()) {
 				if (v instanceof ArrayVal) {
 					points.put(((ArrayVal)v).getArray(), getProb(v));
 				}
 				else if (v instanceof DoubleVal) {
-					points.put(new Double[]{((DoubleVal)v).getDouble()}, getProb(v));
+					points.put(new double[]{((DoubleVal)v).getDouble()}, getProb(v));
 				}
 			}
 			DiscreteDensityFunction fun = new DiscreteDensityFunction(points);

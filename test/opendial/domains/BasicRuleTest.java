@@ -176,7 +176,7 @@ public class BasicRuleTest {
 		system.startSystem(); 
 		
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou, Greet]", 0.7);
-		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
+		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 		
 		StatePruner.ENABLE_PRUNING = true;

@@ -1,304 +1,279 @@
-// =================================================================                                                                   
-// Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
-// Permission is hereby granted, free of charge, to any person 
-// obtaining a copy of this software and associated documentation 
-// files (the "Software"), to deal in the Software without restriction, 
-// including without limitation the rights to use, copy, modify, merge, 
-// publish, distribute, sublicense, and/or sell copies of the Software, 
-// and to permit persons to whom the Software is furnished to do so, 
-// subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be 
-// included in all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// =================================================================                                                                   
-
 package opendial.inference.approximate;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
+import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.bn.distribs.EmpiricalDistribution;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.UtilityTable;
+import opendial.bn.nodes.ActionNode;
+import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.datastructs.Assignment;
+import opendial.bn.nodes.UtilityNode;
+import opendial.bn.values.Value;
 import opendial.datastructs.Intervals;
-import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 
 /**
- * Inference algorithm for Bayesian networks based on normalised importance sampling 
- * (likelihood weighting).  The algorithm relies on the selection of samples from the
- * network, which are weighted according to the specified evidence.
+ * Sampling process (based on likelihood weighting) for a particular query.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
- *
  */
-public class LikelihoodWeighting implements InferenceAlgorithm {
+public class LikelihoodWeighting implements AnytimeProcess {
 
 	// logger
-	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
 
-	int nbSamples = Settings.nbSamples;
+	// actual number of samples for the algorithm
+	int nbSamples;
 
-	long maxSamplingTime = Settings.maxSamplingTime;
+	public static double WEIGHT_THRESHOLD = 0.00001f;
 
+	// the stack of weighted samples which have been collected so far
+	Stack<Sample> samples;
 
-	// ===================================
-	//  CONSTRUCTORS
-	// ===================================
-	
-	/**
-	 * Creates a new likelihood weighting algorithm with the specified number of 
-	 * samples and sampling time
-	 * 
-	 * @param nbSamples the maximum number of samples to collect
-	 * @param maxSamplingTime the maximum sampling time
-	 */
-	public LikelihoodWeighting(int nbSamples, long maxSamplingTime) {
-		this.nbSamples = nbSamples;
-		this.maxSamplingTime = maxSamplingTime;
-	}
+	// the total weight accumulated by the samples
+	double totalWeight = 0.0f;
 
+	// the query
+	Query query;
 
-	/**
-	 * Creates a new likelihood weighting algorithm with the specified number of 
-	 * samples and sampling time
-	 * 
-	 */
-	public LikelihoodWeighting() { }
+	// termination status
+	boolean isTerminated = false; 
 
-	
 
 	// ===================================
 	//  PUBLIC METHODS
 	// ===================================
-	
+
 
 	/**
-	 * Queries for the probability distribution of the set of random variables in 
-	 * the Bayesian network, given the provided evidence
+	 * Creates a new sampling query with the given arguments
 	 * 
-	 * @param query the full query
-	 * @return the resulting probability distribution
-	 * @throws DialException if the inference operation failed
+	 * @param query the query to answer
+	 * @param nbSamples the number of samples to collect
+	 * @param maxSamplingTime maximum sampling time (in milliseconds)
+	 */
+	public LikelihoodWeighting(Query query,int nbSamples, long maxSamplingTime) {
+		setTimeout(maxSamplingTime);
+		this.query = query;
+		samples = new Stack<Sample>();
+		this.nbSamples = nbSamples;
+	}
+
+
+	/**
+	 * Terminates all sampling threads, compile their results, and notifies
+	 * the sampling algorithm.
 	 */
 	@Override
-	public EmpiricalDistribution queryProb(Query.ProbQuery query) throws DialException {
-
-		// creates a new query thread
-		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
-		// extract and redraw the samples according to their weight.
-		Stack<WeightedSample> samples = isquery.getSamples();
-		samples = redrawSamples(samples);
-
-		// creates an empirical distribution from the samples
-		EmpiricalDistribution empiricalDistrib = new EmpiricalDistribution();
-		for (WeightedSample sample : samples) {
-			sample.trim(query.getQueryVars());
-			empiricalDistrib.addSample(sample);
-		}
-
-		return empiricalDistrib;
-	}
-
-	
-	/**
-	 * Extracts a unique (non reweighted) sample for the query.
-	 * 
-	 * @param query the query
-	 * @return the extracted sample
-	 * @throws DialException
-	 */
-	public static Assignment extractSample(BNetwork network, Collection<String> queryVars) 
-			throws DialException {
-		// creates a new query thread
-		Query query = new Query.ProbQuery(network, queryVars, new Assignment());
-		SamplingProcess isquery = new SamplingProcess(query, 1, Settings.maxSamplingTime);
-		
-		// extract and redraw the samples according to their weight.
-		Stack<WeightedSample> samples = isquery.getSamples();
-		if (samples.isEmpty()) {
-			throw new DialException("could not extract sample");
-		}
-		else {
-			return samples.get(0).getTrimmed(query.getQueryVars());
+	public void terminate() {
+		if (!isTerminated) {
+			if (samples.size() == 0) {
+				log.debug("no samples for query: " + query);
+				query.getEvidence().clear();
+			}
+			else {
+				isTerminated = true;
+			}
 		}
 	}
 
+
 	/**
-	 * Queries for the utility of a particular set of (action) variables, given the
-	 * provided evidence
-	 * 
-	 * @param query the full query
-	 * @return the utility distribution
-	 * @throws DialException if the inference operation failed
+	 * Returns a string representation of the query and number of collected samples
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
-
-		// creates a new query thread
-		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
-		// extract and redraw the samples
-		Stack<WeightedSample> samples = isquery.getSamples();
-		samples = redrawSamples(samples);
-
-		// creates the utility table from the samples
-		UtilityTable utilityTable = new UtilityTable();
-
-		for (WeightedSample sample : samples) {
-			sample.trim(query.getQueryVars());
-			utilityTable.incrementUtil(sample, sample.getUtility());
-		} 
-
-		return utilityTable;
-	}
-
-	
-	/**
-	 * Queries for the utility without any particular query variable
-	 * 
-	 * @param network the graphical model
-	 * @return the utility
-	 * @throws DialException if the inference operation failed
-	 */
-	
-	public double queryUtil(BNetwork network) throws DialException {
-
-		// creates a new query thread
-		Query query = new Query.UtilQuery(network, network.getChanceNodeIds(), new Assignment());
-		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
-		
-		// extract and redraw the samples
-		Stack<WeightedSample> samples = isquery.getSamples();
-
-		samples = redrawSamples(samples);
-
-		double total = 0.0;
-		for (WeightedSample sample : samples) {
-			total += sample.getUtility();
-		} 
-
-		return total / samples.size();
+	public String toString() {
+		return query.toString() + " (" + samples.size() + " samples already collected)";
 	}
 
 
+
 	/**
-	 * Reduces the Bayesian network to a subset of its variables and returns the result.
+	 * Runs the sample collection procedure until termination (either due to a time-out 
+	 * or the collection of a number of samples = nbSamples).  The method loops until
+	 * terminate() is called, or enough samples have been collected. 
 	 * 
-	 * <p>NB: the equivalent "reduce" method includes additional speed-up methods to
-	 * simplify the reduction process.
-	 * 
-	 * @param query the reduction query
-	 * @return the reduced Bayesian network
 	 */
-	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
+	public void run() {
+		List<BNode> sortedNodes = query.getFilteredSortedNodes();
+		Collections.reverse(sortedNodes);
 
-		BNetwork network = query.getNetwork();
-		Collection<String> queryVars = query.getQueryVars();
-		
-		// creates a new query thread
-		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
-		// extract and redraw the samples
-		Stack<WeightedSample> samples = isquery.getSamples();
-		samples = redrawSamples(samples);
-		EmpiricalDistribution fullDistrib = new EmpiricalDistribution();
-		for (WeightedSample sample : samples) {
-			sample.trim(query.getQueryVars());
-			fullDistrib.addSample(sample);
-		}
+		// continue until the thread is marked as finished
+		while (!isTerminated) {
+			try {
+				Sample sample = new Sample();
 
-		// create the reduced network
-		BNetwork reduced = new BNetwork();
-		for (String var: query.getSortedQueryVars()) {
-			
-			Set<String> inputNodesIds = network.getNode(var).getAncestorsIds(queryVars);
-			for (String inputNodeId : new ArrayList<String>(inputNodesIds)) {
-				
-				// remove the continuous nodes from the inputs (as a conditional probability
-				// distribution with a continuous dependent variable is hard to construct)
-				ChanceNode inputNode = reduced.getChanceNode(inputNodeId);
-				if (inputNode.getDistrib() instanceof ContinuousDistribution) {
-					inputNodesIds.remove(inputNodeId);
+				for (BNode n : sortedNodes) {
+
+					// if the value is already part of the sample, skip to next one
+					if (sample.containsVar(n.getId())) {
+						continue;
+					}
+
+					// if the node is an evidence node and has no input nodes
+					else if (n.getInputNodeIds().isEmpty() 
+							&& query.getEvidence().containsVar(n.getId())) {
+						sample.addPair(n.getId(), query.getEvidence().getValue(n.getId()));
+					}
+					else if (n instanceof ChanceNode) {
+						sampleChanceNode((ChanceNode)n, sample);
+					}
+
+					// if the node is an action node
+					else if (n instanceof ActionNode) {
+						sampleActionNode((ActionNode)n, sample);
+					}
+
+					// finally, if the node is a utility node, calculate the utility
+					else if (n instanceof UtilityNode) {
+						double newUtil = ((UtilityNode)n).getUtility(sample);
+						sample.addUtility(newUtil);
+					}
 				}
-			}
-			
-			ProbDistribution distrib = fullDistrib.getMarginal(var, inputNodesIds);
 
-			// creating the node
-			ChanceNode node = new ChanceNode(var);
-			node.setDistrib(distrib);
-			for (String inputId : inputNodesIds) {
-				node.addInputNode(reduced.getNode(inputId));
+				// we only add the sample if the weight is larger than a given threshold
+				if (sample.getWeight() > WEIGHT_THRESHOLD) {
+					sample.trim(query.getQueryVars());
+					addSample(sample);
+				}
+
 			}
-			reduced.addNode(node);
+			catch (DialException e) {
+				log.info("exception caught: " + e);
+			}
 		}
-
-		return reduced;
 	}
 
+
+	/**
+	 * Returns the collected samples
+	 * 
+	 * @return the collected samples
+	 */
+	public Stack<Sample> getSamples() {
+		run();
+		redrawSamples();
+		return samples;
+	}
 	
+	
+	@Override
+	public boolean isTerminated() {
+		return isTerminated;
+	}
+
 
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
+
+
+	/**
+	 * Adds a sample to the stack of collected samples.  If the desired
+	 * number of samples is achieved, terminate the sample collection.
+	 * 
+	 * @param sample the sample to add
+	 */
+	private void addSample (Sample sample) {
+		if (samples.size() < nbSamples) {
+			if (!isTerminated) {
+				samples.add(sample);
+				totalWeight += sample.getWeight();
+			}
+		}
+		else {
+			terminate();
+		}
+	}
+
+
+	/**
+	 * Samples the given chance node and add it to the sample.  If the variable is part
+	 * of the evidence, updates the weight.
+	 * 
+	 * @param n the chance node to sample
+	 * @param sample to weighted sample to extend
+	 * @throws DialException if the sampling operation failed
+	 */
+	private void sampleChanceNode(ChanceNode n, Sample sample) throws DialException {
+
+		// if the node is a chance node and is not evidence, sample from the values
+		if (!query.getEvidence().containsVar(n.getId())) {
+			Value newVal = n.sample(sample);
+			sample.addPair(n.getId(), newVal);				
+		}
+
+		// if the node is an evidence node, update the weights
+		else {
+			Value evidenceValue = query.getEvidence().getValue(n.getId());
+			double evidenceProb = 1.0;
+			if (n.getDistrib() instanceof ContinuousDistribution) {
+				evidenceProb = ((ContinuousDistribution)n.getDistrib()).
+						getProbDensity(evidenceValue);
+			}
+			else {
+				evidenceProb = n.getProb(sample, evidenceValue);	
+			}
+			sample.addLogWeight(Math.log(evidenceProb));						
+			sample.addPair(n.getId(), evidenceValue);
+		}
+	}
+
+
+	/**
+	 * Samples the action node.  If the node is part of the evidence, simply add it to 
+	 * the sample. Else, samples an action at random.
+	 * 
+	 * @param n the action node 
+	 * @param sample the weighted sample to extend
+	 */
+	private void sampleActionNode(ActionNode n, Sample sample) {
+
+		if (!query.getEvidence().containsVar(n.getId()) && 
+				n.getInputNodeIds().isEmpty()) {
+			Value newVal = n.sample(sample);
+			sample.addPair(n.getId(), newVal);
+		}
+		else {
+			Value evidenceValue = query.getEvidence().getValue(n.getId());
+			double evidenceProb = n.getProb(evidenceValue);
+			sample.addLogWeight(Math.log(evidenceProb));						
+			sample.addPair(n.getId(), evidenceValue);
+		}
+	}
+
 	
-
-
 	/**
 	 * Redraw the samples according to their weight.  The number of redrawn samples is the same 
 	 * as the one given as argument.
 	 * 
 	 * @param samples the initial samples (with their weight)
 	 * @return the redrawn samples given their weight
-	 * @throws DialException
+	 * @throws DialException if the samples could not be redrawn.
 	 */
-	public static Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples)
-			throws DialException {
+	private void redrawSamples() {
 
+		try {
+		Intervals<Sample> intervals = new Intervals<Sample>(samples, s -> s.getWeight());
+		
+		Stack<Sample> newSamples = new Stack<Sample>();
 		int sampleSize = samples.size();
-		WeightedSample[] sampleArray = new WeightedSample[sampleSize];
-		double[] weightArray = new double[sampleSize];
-		for (int i = 0 ; i < sampleSize ; i++) {
-			WeightedSample sample = samples.pop();
-			sampleArray[i] = sample;
-			weightArray[i] = sample.getWeight();
-		}
-
-		Intervals<WeightedSample> intervals = new Intervals<WeightedSample>(sampleArray, weightArray);
-		Stack<WeightedSample> reweightedSamples = new Stack<WeightedSample>();
-
 		for (int j = 0 ; j < sampleSize; j++) {
-			WeightedSample sample = intervals.sample();
-			reweightedSamples.add(sample);
+			newSamples.add(intervals.sample());
 		}
-		return reweightedSamples;
+		samples = newSamples;
+		}
+		catch (DialException e) {
+			log.warning("could not redraw samples: "  +e );
+		}
 	}
 
 
-	
 
 
 }

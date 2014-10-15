@@ -57,7 +57,7 @@ public class StatePruner {
 	// logger
 	public static Logger log = new Logger("StatePruner", Logger.Level.DEBUG);
 
-	public static double VALUE_PRUNING_THRESHOLD = 0.03;
+	public static double VALUE_PRUNING_THRESHOLD = 0.01;
 
 	public static boolean ENABLE_PRUNING = true;
 

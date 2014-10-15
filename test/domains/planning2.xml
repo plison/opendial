@@ -16,9 +16,6 @@
 				<effect prob="0.95">
 					<set var="i_u" value="Want({X})" />
 				</effect>
-				<effect prob="0.05">
-					<clear var="i_u" />
-				</effect>
 			</case>
 		</rule>
 
@@ -134,7 +131,7 @@
 					<if var="a_m" value="Finish" />
 				</condition>
 				<effect>
-					<clear var="i_u" />
+					<set var="i_u" value="None" />
 				</effect>
 			</case>
 

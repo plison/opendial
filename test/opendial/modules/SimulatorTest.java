@@ -43,13 +43,13 @@ public class SimulatorTest {
 
 	public static String mainDomain = "test//domains//domain-demo.xml";
 	public static String simDomain = "test//domains//domain-simulator.xml";
-	
+
 	public static String mainDomain2 = "test//domains//example-domain-params.xml";
 	public static String simDomain2 = "test//domains//example-simulator.xml";
-	
+
 	@Test
 	public void testSimulator() throws DialException, InterruptedException {
-		
+
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
 		system.getDomain().getModels().remove(0);
 		system.getDomain().getModels().remove(0);
@@ -60,9 +60,9 @@ public class SimulatorTest {
 		Settings.nbSamples = nbSamples / 10;
 		system.attachModule(sim);
 		system.getSettings().showGUI = false;
-		
+
 		system.startSystem();
-		
+
 		String str = "";
 		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
 			Thread.sleep(1000);
@@ -73,33 +73,39 @@ public class SimulatorTest {
 			}
 			catch (AssertionError e) {		}
 		}
-		
+
 		checkCondition(str);
 		system.pause(true);
-		
+
 		Settings.nbSamples = nbSamples * 10 ;
 	}
-	
+
 	@Test
 	public void testRewardLearner() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain2));
-		Domain simDomain3 = XMLDomainReader.extractDomain(simDomain2);
-		Simulator sim = new Simulator(system, simDomain3);
-		system.attachModule(sim);
-		system.getSettings().showGUI = false;
-		Settings.nbSamples = Settings.nbSamples * 2 ;
-		system.startSystem();
-		
-		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
-			Thread.sleep(1000);
-			try {
-				checkCondition2(system);
-				system.pause(true);
+		DialogueSystem system = null;
+		outloop: for (int k = 0 ; k < 2 ; k++) {
+			system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain2));
+
+			Domain simDomain3 = XMLDomainReader.extractDomain(simDomain2);
+			Simulator sim = new Simulator(system, simDomain3);
+			system.attachModule(sim);
+			system.getSettings().showGUI = false;
+			Settings.nbSamples = Settings.nbSamples * 2 ;
+			system.startSystem();
+
+			for (int i = 0 ; i < 10 && !system.isPaused() ; i++) {
+				Thread.sleep(500);
+				try {
+					checkCondition2(system);
+					system.pause(true);
+					break outloop;
+				}
+				catch (AssertionError e) {		}
 			}
-			catch (AssertionError e) {		}
+
 		}
-		
 		checkCondition2(system);
+		system.pause(true);
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct = system.getContent("theta_correct").toContinuous().getFunction();
 		theta_incorrect = system.getContent("theta_incorrect").toContinuous().getFunction();
@@ -109,15 +115,15 @@ public class SimulatorTest {
 		log.debug("theta_repeat " + theta_repeat);
 		Settings.nbSamples = Settings.nbSamples  / 2;
 	}
-	
+
 	private static void checkCondition(String str) {
 		assertTrue(str.contains("AskRepeat"));
 		assertTrue(str.contains("Do(Move"));
-				assertTrue(str.contains("YouSee")); 
-						assertTrue(str.contains("Reward: 10.0"));
-								assertTrue(str.contains("Do(Pick"));
+		assertTrue(str.contains("YouSee")); 
+		assertTrue(str.contains("Reward: 10.0"));
+		assertTrue(str.contains("Do(Pick"));
 	}
-	
+
 	private static void checkCondition2(DialogueSystem system) throws DialException {
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct = system.getContent("theta_correct").toContinuous().getFunction();
@@ -127,7 +133,7 @@ public class SimulatorTest {
 		assertEquals(-2.0, theta_incorrect.getMean()[0], 1.5);
 		assertEquals(0.5, theta_repeat.getMean()[0], 0.7);
 	}
-	
-	
+
+
 }
 
