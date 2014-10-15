@@ -60,8 +60,11 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings.Recording;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.UtilityDistribution;
 import opendial.gui.stateviewer.StateViewer;
 import opendial.state.DialogueState;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -99,8 +102,8 @@ public class StateViewerTab extends JComponent {
 	GUIFrame mainFrame;
 
 	// list model for the recorded networks
-	DefaultListModel listModel;
-	JList listBox;
+	DefaultListModel<String> listModel;
+	JList<String> listBox;
 
 	// states available for visualisation
 	Map<String,DialogueState> states;
@@ -195,7 +198,7 @@ public class StateViewerTab extends JComponent {
 			}
 			else {
 				while (listModel.size() > 2) {
-					String name = (String)listModel.remove(2);
+					String name = listModel.remove(2);
 					states.remove(name);
 				}
 			}
@@ -235,12 +238,25 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Writes the given text in the logging area at the bottom of the window
+	 * Writes the given distribution in the logging area at the bottom of the window
 	 * 
-	 * @param text the text to write (can be HTML code)
+	 * @param the distribution to write
 	 */
-	public void writeToLogArea(String text) {
-		logArea.setText("<html><font face=\"helvetica\">"+ text + "</font></html>");
+	public void writeToLogArea(MultivariateDistribution distrib) {
+		String distribStr = distrib.toString().replace("\n", "\n<br>");
+		distribStr = StringUtils.getHtmlRendering(distribStr);
+		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");
+	}
+	
+	/**
+	 * Writes the given distribution in the logging area at the bottom of the window
+	 * 
+	 * @param the distribution to write
+	 */
+	public void writeToLogArea(UtilityDistribution distrib) {
+		String distribStr = distrib.toString().replace("\n", "\n<br>");
+		distribStr = StringUtils.getHtmlRendering(distribStr);
+		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");
 	}
 
 	public GUIFrame getMainFrame() {
@@ -263,7 +279,7 @@ public class StateViewerTab extends JComponent {
 		JPanel leftPanel = new JPanel();
 		listModel = new CustomListModel();
 		leftPanel.setLayout(new BorderLayout());
-		listBox = new JList(listModel);
+		listBox = new JList<String>(listModel);
 		listBox.setCellRenderer(new JlistRenderer());
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listBox.addListSelectionListener(new CustomListSelectionListener());
@@ -388,9 +404,10 @@ public class StateViewerTab extends JComponent {
 
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			JList jl = (JList)e.getSource();
+			@SuppressWarnings("unchecked")
+			JList<String> jl = (JList<String>)e.getSource();
 			if (jl.getMinSelectionIndex() >= 0) {
-				String selection = (String) listModel.getElementAt(jl.getMinSelectionIndex());
+				String selection = listModel.getElementAt(jl.getMinSelectionIndex());
 				if (!selection.contains("separator")) {
 					visualisation.showBayesianNetwork(states.get(selection));
 				}
@@ -504,10 +521,10 @@ public class StateViewerTab extends JComponent {
 	 * Custom model for the list of dialogue states (employed to avoid
 	 * null pointer exceptions).
 	 */
-	final class CustomListModel extends DefaultListModel {
+	final class CustomListModel extends DefaultListModel<String> {
 
 		@Override
-		public Object getElementAt(int index) {
+		public String getElementAt(int index) {
 			if (index < super.size()) {
 				return super.getElementAt(index);
 			}
@@ -521,7 +538,7 @@ public class StateViewerTab extends JComponent {
 	/**
 	 * Renderer for the list of dialogue states
 	 */
-	final class JlistRenderer extends JLabel implements ListCellRenderer {
+	final class JlistRenderer extends JLabel implements ListCellRenderer<String> {
 		JSeparator separator;
 		public JlistRenderer() {
 			setOpaque(true);
@@ -530,7 +547,7 @@ public class StateViewerTab extends JComponent {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
+		public Component getListCellRendererComponent(JList<? extends String> list, String value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			String str = (value == null) ? "" : value.toString();
 			if (str.contains("separator")) {

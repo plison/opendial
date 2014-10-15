@@ -29,8 +29,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.datastructs.Assignment;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
@@ -61,10 +60,10 @@ public class LearningTest {
 	
 	Double[] initMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
 
-	CategoricalTable table = new CategoricalTable();
-	table.addRow(new Assignment("a_u", "Move(Left)"), 1.0);
-	table.addRow(new Assignment("a_u", "Move(Right)"), 0.0);
-	table.addRow(new Assignment("a_u", "None"), 0.0);
+	CategoricalTable table = new CategoricalTable("a_u");
+	table.addRow("Move(Left)", 1.0);
+	table.addRow("Move(Right)", 0.0);
+	table.addRow("None", 0.0);
 	system.addContent(table);
 	system.getState().removeNodes(system.getState().getUtilityNodeIds());
 	system.getState().removeNodes(system.getState().getActionNodeIds());

@@ -30,8 +30,8 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.utility.UtilityDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 

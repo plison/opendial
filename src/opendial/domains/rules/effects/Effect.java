@@ -133,6 +133,7 @@ public class Effect implements Value {
 		return true;
 	}
 	
+	@Override
 	public Value concatenate (Value v) {
 		if (v instanceof Effect) {
 			Effect newEffect = copy();
@@ -209,6 +210,22 @@ public class Effect implements Value {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Returns the effect types associated with the given variable name
+	 * 
+	 * @param variable the variable name
+	 * @return the set of effect types used on the variable
+	 */
+	public Set<EffectType> getEffectTypes(String variable) {
+		Set<EffectType> effectTypes = new HashSet<EffectType>();
+		for (BasicEffect e : subeffects) {
+			if (e.getVariable().getRawString().equals(variable)) {
+				effectTypes.add(e.getType());
+			}
+		}
+		return effectTypes;
 	}
 	
 	/**

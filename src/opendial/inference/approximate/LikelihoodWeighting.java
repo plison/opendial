@@ -24,6 +24,7 @@
 package opendial.inference.approximate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.Stack;
 
@@ -31,17 +32,15 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
 import opendial.inference.InferenceAlgorithm;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.ReductionQuery;
-import opendial.inference.queries.UtilQuery;
+import opendial.inference.Query;
 
 /**
  * Inference algorithm for Bayesian networks based on normalised importance sampling 
@@ -102,11 +101,10 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @throws DialException if the inference operation failed
 	 */
 	@Override
-	public EmpiricalDistribution queryProb(ProbQuery query) throws DialException {
+	public EmpiricalDistribution queryProb(Query.ProbQuery query) throws DialException {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
-		
 		
 		// extract and redraw the samples according to their weight.
 		Stack<WeightedSample> samples = isquery.getSamples();
@@ -130,8 +128,10 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @return the extracted sample
 	 * @throws DialException
 	 */
-	public static Assignment extractSample(ProbQuery query) throws DialException {
+	public static Assignment extractSample(BNetwork network, Collection<String> queryVars) 
+			throws DialException {
 		// creates a new query thread
+		Query query = new Query.ProbQuery(network, queryVars, new Assignment());
 		SamplingProcess isquery = new SamplingProcess(query, 1, Settings.maxSamplingTime);
 		
 		// extract and redraw the samples according to their weight.
@@ -153,7 +153,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @throws DialException if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtil(UtilQuery query) throws DialException {
+	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
 
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
@@ -185,8 +185,8 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	public double queryUtil(BNetwork network) throws DialException {
 
 		// creates a new query thread
-		SamplingProcess isquery = new SamplingProcess(new UtilQuery(
-				network, network.getChanceNodeIds()), nbSamples, maxSamplingTime);
+		Query query = new Query.UtilQuery(network, network.getChanceNodeIds(), new Assignment());
+		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
 		
 		
 		// extract and redraw the samples
@@ -213,8 +213,11 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * @return the reduced Bayesian network
 	 */
 	@Override
-	public BNetwork reduce(ReductionQuery query) throws DialException {
+	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
 
+		BNetwork network = query.getNetwork();
+		Collection<String> queryVars = query.getQueryVars();
+		
 		// creates a new query thread
 		SamplingProcess isquery = new SamplingProcess(query, nbSamples, maxSamplingTime);
 		
@@ -228,32 +231,32 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 		}
 
 		// create the reduced network
-		BNetwork network = new BNetwork();
+		BNetwork reduced = new BNetwork();
 		for (String var: query.getSortedQueryVars()) {
 			
-			Set<String> inputNodesIds = query.getInputNodes(var);
+			Set<String> inputNodesIds = network.getNode(var).getAncestorsIds(queryVars);
 			for (String inputNodeId : new ArrayList<String>(inputNodesIds)) {
 				
 				// remove the continuous nodes from the inputs (as a conditional probability
 				// distribution with a continuous dependent variable is hard to construct)
-				ChanceNode inputNode = network.getChanceNode(inputNodeId);
+				ChanceNode inputNode = reduced.getChanceNode(inputNodeId);
 				if (inputNode.getDistrib() instanceof ContinuousDistribution) {
 					inputNodesIds.remove(inputNodeId);
 				}
 			}
 			
-			ProbDistribution distrib = fullDistrib.getMarginalDistrib(var, inputNodesIds);
+			ProbDistribution distrib = fullDistrib.getMarginal(var, inputNodesIds);
 
 			// creating the node
 			ChanceNode node = new ChanceNode(var);
 			node.setDistrib(distrib);
 			for (String inputId : inputNodesIds) {
-				node.addInputNode(network.getNode(inputId));
+				node.addInputNode(reduced.getNode(inputId));
 			}
-			network.addNode(node);
+			reduced.addNode(node);
 		}
 
-		return network;
+		return reduced;
 	}
 
 	

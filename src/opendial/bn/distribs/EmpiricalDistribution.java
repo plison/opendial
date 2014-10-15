@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -21,10 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.other;
+package opendial.bn.distribs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,33 +35,23 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import opendial.utils.CombinatoricsUtils;
 
 /**
- * Distribution defined "empirically" in terms of a set of samples on the relevant 
- * variables.  This distribution can then be explicitly converted into a table 
+ * Distribution defined "empirically" in terms of a set of samples on a collection of
+ * random variables.  This distribution can then be explicitly converted into a table 
  * or a continuous distribution (depending on the variable type).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class EmpiricalDistribution implements IndependentProbDistribution {
+public class EmpiricalDistribution implements MultivariateDistribution {
 
 	// logger
 	public static Logger log = new Logger("EmpiricalDistribution", Logger.Level.DEBUG);
@@ -70,20 +59,15 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	// list of samples for the empirical distribution
 	protected List<Assignment> samples;
 
-	// whether to use KDE for continuous distributions
-	public static boolean USE_KDE = true;
-
 	// random sampler
 	Random sampler;
 
 	// cache for the discrete and continuous distributions
-	DiscreteDistribution discreteCache;
+	MultivariateTable discreteCache;
 	ContinuousDistribution continuousCache;
 
+	// the names of the random variables
 	Set<String> variables;
-
-	DistribType preferredType;
-	boolean pruned = false;
 
 	// ===================================
 	//  CONSTRUCTION METHODS
@@ -122,57 +106,9 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		discreteCache = null;
 		continuousCache = null;	
 		variables.addAll(sample.getVariables());
-		pruned = false;
 	}
 
 
-	/**
-	 * Prunes all samples that contain a value whose relative frequency is below the
-	 * threshold specified as argument.  DoubleVal and ArrayVal are ignored.
-	 * 
-	 * @param threshold the frequency threshold
-	 */
-	@Override
-	public void pruneValues(double threshold) {
-		if (pruned) {
-			return;
-		}
-		Map<String,Map<Value, Integer>> frequencies = new HashMap<String,Map<Value,Integer>>();
-		for (Assignment sample : samples) {
-			for (String var : sample.getVariables()) {
-				Value val = sample.getValue(var);
-				if (!(val instanceof DoubleVal) && !(val instanceof ArrayVal)) {
-					if (!frequencies.containsKey(var)) {
-						frequencies.put(var, new HashMap<Value,Integer>());
-					}
-					Map<Value,Integer> valFreq = frequencies.get(var);
-					if (!valFreq.containsKey(val)) {
-						valFreq.put(val, 1);
-					}
-					else {
-						valFreq.put(val, valFreq.get(val) + 1);
-					}
-				}
-			}
-		}
-		List<Assignment> newSamples = new ArrayList<Assignment>();
-		sampleLoop : 
-			for (Assignment sample : samples) {
-				for (String var : sample.getVariables()) {
-					if (frequencies.containsKey(var) && 
-							frequencies.get(var).get(sample.getValue(var)) < samples.size()*threshold) {
-						continue sampleLoop;
-					}
-				}
-				newSamples.add(sample);
-			}
-		samples = newSamples;
-		discreteCache = null;
-		continuousCache = null;
-		pruned = true;
-	}
-
-	
 	/**
 	 * Removes a particular variable from the sampled assignments
 	 * 
@@ -200,14 +136,7 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @throws DialException 
 	 */
 	@Override
-	public Assignment sample() throws DialException {
-
-		if (preferredType == null) {
-			preferredType = getPreferredType();
-		}
-		if (USE_KDE && preferredType == DistribType.CONTINUOUS) {
-			return toContinuous().sample();
-		}
+	public Assignment sample() {
 
 		if (!samples.isEmpty()) {
 			int selection = sampler.nextInt(samples.size());
@@ -222,20 +151,12 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 
 	/**
-	 * Samples from the distribution.  In this case, simply selects one
-	 * arbitrary sample out of the set defining the distribution
+	 * Returns a sample that is compatible with the provided evidence.
 	 * 
-	 * @param condition the conditional assignment (ignored here)
-	 * @return the selected sample
-	 * @throws DialException 
+	 * @param evidence the evidence.
+	 * @return the compatible sample
+	 * @throws DialException if no samples are consistent with the evidence.
 	 */
-	@Override
-	public Assignment sample(Assignment condition) throws DialException {
-		return sample();
-	}
-
-	
-	
 	public Assignment getCompatibleSample(Assignment evidence) throws DialException {
 		for (int i = 0 ; i < 10 ; i++) {
 			Assignment sampled = sample();
@@ -252,20 +173,13 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		throw new DialException("no sample consistent with " + evidence + " for " + toString());
 	}
 
-	/**
-	 * Returns true is the collection of samples is not empty
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return !samples.isEmpty();
-	}
 
 
 	/**
 	 * Returns the head variables for the distribution.
 	 */
 	@Override
-	public Collection<String> getHeadVariables() {
+	public Set<String> getVariables() {
 		return new HashSet<String>(variables);
 	}
 
@@ -282,39 +196,18 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 
 	/**
-	 * Returns the posterior distribution associated with the empirical distribution given
-	 * the conditional assignment provided as argument.  This posterior distribution
-	 * is either discrete or continuous (depending on the preferred format for the
-	 * head variables).
+	 * Returns the number of samples.
+	 * @return
 	 */
-	@Override
-	public EmpiricalDistribution getPosterior(Assignment condition)  {
-		EmpiricalDistribution newDistrib = new EmpiricalDistribution();
-		Set<String> conditionVars = condition.getVariables();
-		for (Assignment sample : samples) {
-			if (sample.consistentWith(condition)) {
-				newDistrib.addSample(sample.getTrimmedInverse(conditionVars));
-			}
-		}
-		return newDistrib;
-	}
-	
-	
-	@Override
-	public EmpiricalDistribution getPartialPosterior(Assignment condition) {
-		return getPosterior(condition);
-	}
-
-
 	public int size() {
 		return samples.size();
 	}
 
 
 	/**
-	 * Returns the possible values for the head variables of the distribution.  
+	 * Returns the possible values for the variables of the distribution.  
 	 * 
-	 * @return the possible values for the head variables
+	 * @return the possible values for the variables
 	 */
 	@Override
 	public Set<Assignment> getValues() {
@@ -327,17 +220,14 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 
 
 	/**
-	 * Returns the possible values for the head variables of the distribution.  For efficiency
-	 * reason, the input values are ignored, and the distribution simply outputs the head variable
-	 * values present in the samples.
-	 * 
-	 * @param range the range of input values for the conditional variables (is ignored)
-	 * @return the possible values for the head variables
+	 * Returns the probability of a particular assignment
 	 */
 	@Override
-	public Set<Assignment> getValues(ValueRange range) {
-		return getValues();
+	public double getProb(Assignment head) {
+		return toDiscrete().getProb(head);
 	}
+
+
 
 	// ===================================
 	//  CONVERSION METHODS
@@ -348,8 +238,12 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * Returns a discrete representation of the empirical distribution.
 	 */
 	@Override
-	public CategoricalTable toDiscrete() {
-		return createSimpleTable(variables);
+	public MultivariateTable toDiscrete() {
+		if (discreteCache == null) {
+			discreteCache = createMultivariateTable(variables);		
+		}
+		return discreteCache;
+
 	}
 
 
@@ -359,7 +253,6 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * 
 	 * @return the corresponding continuous distribution.
 	 */
-	@Override
 	public ContinuousDistribution toContinuous() throws DialException {
 		if (continuousCache == null) {
 			if (variables.size() != 1) {
@@ -370,24 +263,43 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		}
 		return continuousCache;
 	}
-	
-	
-	public ProbDistribution getMarginalDistrib(String var, Set<String> condVars) 
-			throws DialException {
-		
-		if (condVars.isEmpty()) {
-			if (sample().getTrimmed(var).containContinuousValues()) {
-				return this.createContinuousDistribution(var);
-			}
-			else {
-				return this.createSimpleTable(Arrays.asList(var));
-			}
+
+
+	/**
+	 * Returns an independent probability distribution on a single random
+	 * variable based on the samples. This distribution may be a categorical
+	 * table or a continuous distribution.
+	 */
+	@Override
+	public IndependentProbDistribution getMarginal(String var) {
+		if (sample().getTrimmed(var).containContinuousValues()) {
+			return this.createContinuousDistribution(var);
 		}
 		else {
-			return this.createConditionalTable(Arrays.asList(var), condVars);
+			return createUnivariateTable(var);
 		}
 	}
-	
+
+	/**
+	 * Returns a distribution P(var|condvars) based on the samples. If the
+	 * conditional variables are empty, returns an independent probability
+	 * distribution.
+	 * 
+	 * @param var the head variable
+	 * @param condVars the conditional variables
+	 * @return the resulting probability distribution
+	 * @throws DialException if the distribution could not be generated.
+	 */
+	public ProbDistribution getMarginal(String var, Set<String> condVars) 
+			throws DialException {
+
+		if (condVars.isEmpty()) {
+			return getMarginal(var);
+		}
+		else {
+			return this.createConditionalTable(var, condVars);
+		}
+	}
 
 
 	/**
@@ -396,8 +308,39 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	 * @param headVars the subset of variables to include in the table
 	 * @return the resulting table
 	 */
-	protected CategoricalTable createSimpleTable(Collection<String> headVars) {
+	protected CategoricalTable createUnivariateTable(String headVar) {
 
+		Map<Value, Integer> counts = new HashMap<Value,Integer>();
+
+		for (Assignment sample : samples) {
+			Value val = sample.getValue(headVar);
+			if (counts.containsKey(val)) {
+				counts.put(val, counts.get(val) + 1);
+			}
+			else {
+				counts.put(val,1);
+			}
+		}
+
+		Map<Value, Double> probs = new HashMap<Value,Double>();
+		for (Value value : counts.keySet()) {
+			probs.put(value, 1.0 * counts.get(value) / samples.size());
+		}
+		CategoricalTable table = new CategoricalTable(headVar, probs);
+
+		if (!table.isWellFormed()) {
+			log.warning("table created by discretising samples is not well-formed");
+		}
+		return table;
+	}
+
+	/**
+	 * Creates a categorical table with the define subset of variables
+	 * 
+	 * @param headVars the subset of variables to include in the table
+	 * @return the resulting table
+	 */
+	protected MultivariateTable createMultivariateTable(Collection<String> headVars) {
 
 		Map<Assignment, Integer> counts = new HashMap<Assignment,Integer>();
 
@@ -410,12 +353,12 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 				counts.put(trimmed,1);
 			}
 		}
-	
+
 		Map<Assignment, Double> probs = new HashMap<Assignment,Double>();
 		for (Assignment value : counts.keySet()) {
 			probs.put(value, 1.0 * counts.get(value) / samples.size());
 		}
-		CategoricalTable table = new CategoricalTable(probs);
+		MultivariateTable table = new MultivariateTable(probs);
 
 
 		if (!table.isWellFormed()) {
@@ -444,35 +387,48 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 			}
 		}
 
-		return new ContinuousDistribution(variable, new KernelDensityFunction(values));
+		KernelDensityFunction function = new KernelDensityFunction(values);
+		return new ContinuousDistribution(variable, function);
 	}
-	
+
 	/**
 	 * Creates a conditional categorical table derived from the samples.  This method 
 	 * should be called in the presence of conditional variables.
 	 * 
 	 * @return the conditional categorical table 
 	 */
-	public ConditionalCategoricalTable createConditionalTable(Collection<String> headVars, 
+	public ConditionalTable createConditionalTable(String headVar, 
 			Collection<String> condVars) {
 
-		ConditionalCategoricalTable table = new ConditionalCategoricalTable();
+		ConditionalTable table = new ConditionalTable(headVar);
 
-		Map<Assignment,EmpiricalDistribution> temp = 
-				new HashMap<Assignment,EmpiricalDistribution>();
+		Map<Assignment,Map<Value,Integer>> temp = 
+				new HashMap<Assignment,Map<Value,Integer>>();
 
 		for (Assignment sample: samples) {
 			Assignment condition = sample.getTrimmed(condVars);
-			Assignment head = sample.getTrimmed(headVars);
+			Value val = sample.getValue(headVar);
 			if (!temp.containsKey(condition)) {
-				temp.put(condition, new EmpiricalDistribution());
+				temp.put(condition, new HashMap<Value,Integer>());
 			}
-
-			temp.get(condition).addSample(head);
+			Map<Value,Integer> counts = temp.get(condition);
+			if (!counts.containsKey(val)) {
+				counts.put(val, 1);
+			}
+			else {
+				counts.put(val, counts.get(val) +1);
+			}
 		}
 
 		for (Assignment condition : temp.keySet()) {
-			table.addRows(condition, (temp.get(condition).toDiscrete()));
+			double totalCounts = 0.0;
+			Map<Value,Integer> counts = temp.get(condition);
+			for (Integer i : counts.values()) {
+				totalCounts += i;
+			}
+			for (Value v : counts.keySet()) {
+				table.addRow(condition, v, counts.get(v) / totalCounts);
+			}
 		}
 		table.fillConditionalHoles();
 		return table;
@@ -484,35 +440,40 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 	// ===================================
 
 
+
 	/**
-	 * Returns a copy of the distribution
+	 * Prunes all samples that contain a value whose relative frequency is below the
+	 * threshold specified as argument.  DoubleVal and ArrayVal are ignored.
 	 * 
-	 * @return the copy
+	 * @param threshold the frequency threshold
 	 */
 	@Override
-	public EmpiricalDistribution copy() {
-		EmpiricalDistribution copy = new EmpiricalDistribution(samples);
-		return copy;
+	public void pruneValues(double threshold) {
+		
+		Map<String,Map<Value, Integer>> frequencies = 
+				CombinatoricsUtils.getFrequencies(samples);
+		
+		int minNumber = (int) (samples.size()*threshold);
+		for (int i= 0; i < samples.size() ; i++) {
+			Assignment sample = samples.get(i);
+			for (String var : sample.getVariables()) {
+				if (frequencies.get(var).get(sample.getValue(var)) < minNumber) {
+					samples.remove(i);
+					continue;
+				}
+			}
+		}
+		discreteCache = null;
+		continuousCache = null;
 	}
 
 
 	/**
-	 * Returns a pretty print representation of the distribution: here, 
-	 * tries to convert it to a discrete distribution, and displays its content.
-	 * 
-	 * @return the pretty print
+	 * Returns true if the set of samples is not empty.
 	 */
 	@Override
-	public String toString() {	
-		if (getPreferredType() == DistribType.CONTINUOUS) {
-			try {
-				return toContinuous().toString();
-			}
-			catch (DialException e) {
-				log.debug("could not convert distribution to a continuous format: " + e);
-			}
-		}
-		return toDiscrete().toString(); 
+	public boolean isWellFormed() {
+		return !samples.isEmpty();
 	}
 
 
@@ -545,46 +506,55 @@ public class EmpiricalDistribution implements IndependentProbDistribution {
 		}
 	}
 
-
 	/**
-	 * Returns the preferred representation format for the head variables (discrete or continuous).
+	 * Returns a copy of the distribution
+	 * 
+	 * @return the copy
 	 */
 	@Override
-	public DistribType getPreferredType() {
-
-		for (String var : getHeadVariables()) {
-			Assignment a = samples.get(0);
-			if (a.containsVar(var) && a.containContinuousValues()) {
-				if (getHeadVariables().size() == 1) {
-					return DistribType.CONTINUOUS;
-				}
-				else {
-				return  DistribType.HYBRID;
-				}
-			}		
-		}
-
-
-		return DistribType.DISCRETE;
+	public EmpiricalDistribution copy() {
+		EmpiricalDistribution copy = new EmpiricalDistribution(samples);
+		return copy;
 	}
-	
 
-	
+
+	/**
+	 * Returns a pretty print representation of the distribution: here, 
+	 * tries to convert it to a discrete distribution, and displays its content.
+	 * 
+	 * @return the pretty print
+	 */
 	@Override
-	public Node generateXML(Document document) throws DialException {
-		if (getPreferredType() == DistribType.CONTINUOUS) {
+	public String toString() {	
+
+		if (isContinuous()) {
 			try {
-				return toContinuous().generateXML(document);
+				return toContinuous().toString();
 			}
 			catch (DialException e) {
 				log.debug("could not convert distribution to a continuous format: " + e);
 			}
 		}
-		return toDiscrete().generateXML(document); 
+		return toDiscrete().toString(); 
 	}
 
 
 
+	private boolean isContinuous() {
+
+		for (String var : getVariables()) {
+			Assignment a = samples.get(0);
+			if (a.containsVar(var) && a.containContinuousValues()) {
+				if (getVariables().size() == 1) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}		
+		}
+		return false;
+	}
 
 
 }

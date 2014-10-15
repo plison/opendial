@@ -63,7 +63,7 @@ public class BasicEffect {
 		SET, 		// for variable := value
 		DISCARD, 	// for variable != value
 		ADD, 		// for variable += value (add the value to the set)
-		CLEAR,  	// clearing the variable (NB: variableValue is then ignored)
+		CLEAR, 	// clearing the variable (NB: variableValue is then ignored)
 	}
 	
 	// effect type for the basic effect

@@ -28,7 +28,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.continuous.functions.DensityFunction;
+import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.domains.Domain;
 import opendial.modules.core.DialogueRecorder;
 import opendial.modules.simulation.Simulator;

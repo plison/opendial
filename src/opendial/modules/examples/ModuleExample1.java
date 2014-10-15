@@ -94,7 +94,7 @@ public class ModuleExample1 implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m") && !paused) {
-			String actionValue = state.queryProb("a_m").toDiscrete().getBest().getValue("a_m").toString();
+			String actionValue = state.queryProb("a_m").toDiscrete().getBest().toString();
 			if (actionValue.startsWith("Move(")) {
 				String direction = actionValue.substring(5, actionValue.length()-1);
 				changePosition(direction);

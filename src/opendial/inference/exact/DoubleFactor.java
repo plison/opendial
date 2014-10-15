@@ -44,7 +44,7 @@ import opendial.utils.InferenceUtils;
 public class DoubleFactor {
 
 	// logger
-	public static Logger log = new Logger("DoubleFactor", Logger.Level.NORMAL);
+	public static Logger log = new Logger("DoubleFactor", Logger.Level.DEBUG);
 
 	// the matrix, mapping each assignment to two double values
 	// (the probability and the utility)
@@ -127,6 +127,15 @@ public class DoubleFactor {
 	}
 	
 	
+	/**
+	 * Removes an entry from the matrix
+	 * 
+	 * @param a the entry to remove
+	 */
+	public void removeEntry(Assignment a) {
+		matrix.remove(a);
+	}
+	
 	
 	/**
 	 * Normalises the factor, assuming no conditional variables in the factor.
@@ -139,12 +148,27 @@ public class DoubleFactor {
 		matrix = new HashMap<Assignment,double[]>(probMatrix.size());
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
+			log.debug("prob matrix: " + probMatrix);
+			log.debug("utility matrix: " + utilityMatrix);
 		}
 		for (Assignment a : probMatrix.keySet()) {
 			matrix.put(a, new double[]{probMatrix.get(a), utilityMatrix.get(a)});
 		}
 	}
 	
+	/**
+	 * Normalise the utilities with respect to the probabilities in the double factor.
+	 */
+	public void normaliseUtil() {
+		Map<Assignment,double[]> newMatrix = new HashMap<Assignment, double[]>();
+		for (Assignment a : matrix.keySet()) {
+			double[] entries = matrix.get(a);
+			if (entries[0] > 0.0) {
+				newMatrix.put(a, new double[]{entries[0], entries[1] / entries[0]});
+			}
+		}
+		matrix = newMatrix;
+	}
 	
 	/**
 	 * Normalises the factor, with the conditional variables as argument.
@@ -329,7 +353,7 @@ public class DoubleFactor {
 		for (Assignment a : matrix.keySet()) {
 			str += "P(" + a + ")=" + matrix.get(a)[0];
 			if (matrix.get(a)[1]!=0) {
-				str += " and Q(" + a + ")=" + matrix.get(a)[1];				
+				str += " and U(" + a + ")=" + matrix.get(a)[1];				
 			}
 			str +="\n";
 		}
@@ -346,6 +370,8 @@ public class DoubleFactor {
 	public int size() {
 		return matrix.size();
 	}
+
+
 
 
 }

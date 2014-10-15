@@ -54,7 +54,7 @@ public class Settings {
 	public static final String SETTINGS_FILE = "resources//settings.xml";
 
 	/** maximum number of samples to use for likelihood weighting */
-	public static int nbSamples = 1000;
+	public static int nbSamples = 3000;
 	
 	/** maximum sampling time (in milliseconds) */
 	public static long maxSamplingTime = 250 ;
@@ -73,9 +73,6 @@ public class Settings {
 	
 	/** Variable label for the system output */
 	public String systemOutput;
-	
-	/** Timeout (in milliseconds) after which incremental variables are considered "committed" */
-	public static int incrementalTimeOut = 2000;
 	
 	/** Other variables to monitor in the chat window */
 	public List<String> varsToMonitor = new ArrayList<String>();

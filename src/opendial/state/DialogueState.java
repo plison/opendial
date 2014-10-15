@@ -25,26 +25,24 @@ package opendial.state;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
@@ -52,13 +50,10 @@ import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.LikelihoodWeighting;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
 import opendial.state.nodes.UtilityRuleNode;
-import opendial.utils.IncrementalUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,7 +84,7 @@ public class DialogueState extends BNetwork {
 
 	/** Subset of variables that denote parameters */
 	Set<String> parameterVars;
-	
+
 	/** Subset of variables that are currently incrementally constructed */
 	Set<String> incrementalVars;
 
@@ -118,7 +113,7 @@ public class DialogueState extends BNetwork {
 		parameterVars = new HashSet<String>();
 		incrementalVars = new HashSet<String>();
 	}
-	
+
 	/**
 	 * Creates a new dialogue state that contains the Bayesian network provided
 	 * as argument.
@@ -140,6 +135,7 @@ public class DialogueState extends BNetwork {
 	 * contained as argument (and deletes the rest).
 	 * 
 	 */
+	@Override
 	public void reset(BNetwork network) {
 		if (this == network) {
 			return;
@@ -198,20 +194,35 @@ public class DialogueState extends BNetwork {
 
 
 	/**
-	 * Adds the assignment provided as argument to the dialogue state.  If the
-	 * state variables in the categorical table already exist, they are erased.
+	 * Adds the content provided as argument to the dialogue state.  If the
+	 * state variables in the assignment already exist, they are erased.
 	 * 
-	 * <p>It should be noted that the method only adds the content to the dialogue
-	 * state but does not trigger models or modules following this change.  In order
-	 * to trigger such chain of updates, the method addContent(...) in DialogueSystem
-	 * should be used instead.
 	 * 
-	 * @param assign a assignment of values for particular state variables
+	 * @param assign the value assignment to add
 	 * @throws DialException if the content could not be added.
 	 */
 	public void addToState(Assignment assign) throws DialException {
-		addToState(new CategoricalTable(assign));
+		for (String var : assign.getVariables()) {
+			addToState(new CategoricalTable(var, assign.getValue(var)));
+		}
 	}
+	
+	
+	/**
+	 * Adds the content provided as argument to the dialogue state.  If the
+	 * state variables in the assignment already exist, they are erased.
+	 * 
+	 * 
+	 * @param distrib the multivariate distribution to add
+	 * @throws DialException if the content could not be added.
+	 */
+	public void addToState(MultivariateDistribution distrib) throws DialException {
+		for (String var : distrib.getVariables()) {
+			addToState(distrib.getMarginal(var));
+		}
+	}
+
+
 
 	/**
 	 * Adds the content provided as argument to the dialogue state.  If the
@@ -226,27 +237,25 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if the content could not be added.
 	 */
 	public void addToState(IndependentProbDistribution distrib) throws DialException {
-		
-		for (String headVar : distrib.getHeadVariables()) {
-			distrib.modifyVariableId(headVar, headVar + "'");
-			headVar = headVar + "'";
 
-			IndependentProbDistribution marginal = distrib.toDiscrete().getMarginalTable(headVar);
-			ChanceNode newNode = new ChanceNode(headVar, marginal);
+		String variable = distrib.getVariable() + "'";
+		distrib.modifyVariableId(distrib.getVariable(),variable);
 
-			if (hasNode(headVar)) {
-				BNode toRemove = getNode(headVar);
-				removeNodes(toRemove.getDescendantIds());
-				removeNode(toRemove.getId());
-			}
+		ChanceNode newNode = new ChanceNode(variable, distrib);
 
-			addNode(newNode);
-			connectToPredictions(newNode);
+		if (hasNode(variable)) {
+			BNode toRemove = getNode(variable);
+			removeNodes(toRemove.getDescendantIds());
+			removeNode(toRemove.getId());
 		}
-		incrementalVars.remove(distrib.getHeadVariables());
+
+		addNode(newNode);
+		connectToPredictions(newNode);
+
+		incrementalVars.remove(variable);
 	}
 
-	
+
 	/**
 	 * Concatenates the current value for the new content onto the current content, if followPrevious
 	 * is true.  Else, simply overwrites the current content of the variable.
@@ -257,25 +266,22 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if the incremental operation could not be performed
 	 */
 	public void addToState_incremental(CategoricalTable distrib, boolean followPrevious) throws DialException {
-		
-		if (distrib.getHeadVariables().size() != 1) {
-			throw new DialException("increment only available for univariate distributions");
-		}
-		String headVar = distrib.getHeadVariables().iterator().next();
-		if (hasChanceNode(headVar) && isIncremental(headVar) & followPrevious) {
-			CategoricalTable newtable = queryProb(headVar).toDiscrete().concatenate(distrib);
-			getChanceNode(headVar).setDistrib(newtable);
-			getChanceNode(headVar).setId(headVar + "'");
+
+		String var = distrib.getVariable();
+		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
+			CategoricalTable newtable = ((CategoricalTable)queryProb(var)
+					.getMarginal(var)).concatenate(distrib);
+			getChanceNode(var).setDistrib(newtable);
+			getChanceNode(var).setId(var + "'");
 		}
 		else {
 			addToState(distrib);
 		}
-		incrementalVars.add(headVar);
-		IncrementalUtils.createDaemon(headVar, Settings.incrementalTimeOut, this);
+		incrementalVars.add(var);
 	}
 
 
-	
+
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
@@ -397,14 +403,53 @@ public class DialogueState extends BNetwork {
 
 	/**
 	 * Returns the probability distribution corresponding to the values
-	 * of the state variables provided as argument.
+	 * of the state variable provided as argument.
 	 * 
-	 * @param variables the variable labels to query
+	 * @param variable the variable label to query
 	 * @return the corresponding probability distribution
+	 * @throws DialException 
 	 */
-	public IndependentProbDistribution queryProb(String... variables) {
-		return queryProb(Arrays.asList(variables));
+	public IndependentProbDistribution queryProb(String variable) {
+		return queryProb(variable, true);
 	}
+
+	/**
+	 * Returns the probability distribution corresponding to the values
+	 * of the state variable provided as argument.
+	 * 
+	 * @param variable the variable label to query
+	 * @return the corresponding probability distribution
+	 * @throws DialException 
+	 */
+	public IndependentProbDistribution queryProb(String variable, boolean includeEvidence)  {
+
+		if (hasChanceNode(variable)) {
+			ChanceNode cn = getChanceNode(variable);
+
+			// if the distribution can be retrieved without inference, we simply return it
+			if (cn.getDistrib() instanceof IndependentProbDistribution
+					&& Collections.disjoint(cn.getClique(), evidence.getVariables())) {
+				return (IndependentProbDistribution)cn.getDistrib();
+			}
+
+			else {
+				try {
+					Assignment queryEvidence = (includeEvidence)? evidence : new Assignment();
+					return new SwitchingAlgorithm().queryProb(this, variable, queryEvidence);
+				}
+				catch (DialException e) {
+					log.warning("Error querying variable " + variable + " : " + e);
+					return new CategoricalTable(variable);
+				}
+			}
+		}
+		else {
+			log.warning("Variable " + variable + " not included in the dialogue state");
+			return new CategoricalTable(variable);
+		}
+	}
+
+
 
 
 	/**
@@ -414,38 +459,22 @@ public class DialogueState extends BNetwork {
 	 * @param variables the variable labels to query
 	 * @return the corresponding probability distribution
 	 */
-	public IndependentProbDistribution queryProb(Collection<String> variables)  {
+	public MultivariateDistribution queryProb(Collection<String> variables)  {
 
-		// we first ensure that the variable labels are correctly referenced
-		TreeSet<String> matchVariables = getMatchingVariables(variables);
-
-		// if the distribution can be retrieved without inference, we simply return it
-		if (matchVariables.size() == 1 && hasChanceNode(matchVariables.first()) 
-				&& getChanceNode(matchVariables.first()).getDistrib() instanceof IndependentProbDistribution
-				&& (evidence.isEmpty() || Collections.disjoint(
-						getChanceNode(matchVariables.first()).getClique(), 
-						evidence.getVariables()))) {
-			IndependentProbDistribution result =  (IndependentProbDistribution)
-					getChanceNode(matchVariables.first()).getDistrib();
-			return result;
-		}
-
-		if (!getNodeIds().containsAll(matchVariables)) {
-			log.warning(matchVariables + " not contained in " + getNodeIds());
+		if (!getNodeIds().containsAll(variables)) {
+			log.warning(variables + " not contained in " + getNodeIds());
 		}
 
 		// else, perform the inference operation
 		try {
-			ProbQuery query = new ProbQuery(this, matchVariables);
-			IndependentProbDistribution result = new SwitchingAlgorithm().queryProb(query);
-			return result;
+			return new SwitchingAlgorithm().queryProb(this, variables, evidence);
 		}
 
 		// if everything fails, returns an empty table
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
 			e.printStackTrace();
-			return new CategoricalTable();
+			return new MultivariateTable();
 		}
 	}
 
@@ -458,9 +487,8 @@ public class DialogueState extends BNetwork {
 	 * @return the corresponding utility table
 	 */
 	public UtilityTable queryUtil(Collection<String> variables) {
-		UtilQuery query = new UtilQuery(this, variables);
 		try {
-			return new SwitchingAlgorithm().queryUtil(query);
+			return new SwitchingAlgorithm().queryUtil(this, variables, evidence);
 		} 
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
@@ -501,7 +529,8 @@ public class DialogueState extends BNetwork {
 		for (Template t : templates) {
 			for (String slot : t.getSlots()) {
 				if (hasChanceNode(slot)) {
-					t = t.fillSlots(queryProb(slot).toDiscrete().getBest());
+					Value bestValue = queryProb(slot).toDiscrete().getBest();
+					t = t.fillSlots(new Assignment(slot,bestValue));
 				}
 			}
 			for (String currentVar : getChanceNodeIds()) {
@@ -530,7 +559,7 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if no sample could be extracted
 	 */
 	public Assignment getSample() throws DialException {
-		return LikelihoodWeighting.extractSample(new ProbQuery(this, getChanceNodeIds()));
+		return LikelihoodWeighting.extractSample(this, getChanceNodeIds());
 	}
 
 
@@ -549,8 +578,8 @@ public class DialogueState extends BNetwork {
 		}
 		return newVars;
 	}
-	
-	
+
+
 	public boolean isIncremental(String var) {
 		return incrementalVars.contains(var.replace("'", ""));
 	}
@@ -559,7 +588,7 @@ public class DialogueState extends BNetwork {
 	//  UTILITY FUNCTIONS
 	// ===================================
 
-	
+
 	public void setAsCommitted(String var) {
 		incrementalVars.remove(var.replace("'", ""));
 		StatePruner.prune(this);
@@ -747,28 +776,6 @@ public class DialogueState extends BNetwork {
 			addNode(equalityNode);
 		}
 	}
-
-
-	/**
-	 * Returns the variable labels that are matching the ones provided as argument,
-	 * modulo the removal of prime characters.
-	 * 
-	 * @param variables the initial variable labels
-	 * @return the edited labels
-	 */
-	private TreeSet<String> getMatchingVariables(Collection<String> variables) {
-		TreeSet<String> variables2 = new TreeSet<String>();
-		for (String variable : variables) {
-			if (!hasChanceNode(variable) && hasChanceNode(variable.replace("'", ""))) {
-				variables2.add(variable.replace("'", ""));
-			}
-			else {
-				variables2.add(variable);
-			}
-		}
-		return variables2;
-	}
-
 
 
 

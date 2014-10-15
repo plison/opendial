@@ -31,7 +31,7 @@ import org.junit.Test;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
@@ -49,9 +49,9 @@ public class StepByStepTest {
 	//	Settings.nbSamples = Settings.nbSamples / 2;
 		system.startSystem();
 		
-		CategoricalTable o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "move a little bit left"), 0.4);
-		o1.addRow(new Assignment("u_u", "please move a little right"), 0.3);
+		CategoricalTable o1 = new CategoricalTable("u_u");
+		o1.addRow("move a little bit left", 0.4);
+		o1.addRow("please move a little right", 0.3);
 		system.addContent(o1);
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
 		assertEquals(-0.1, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "Move(Left)")), 0.15);
@@ -59,9 +59,9 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "move a little bit left"), 0.5);
-		o1.addRow(new Assignment("u_u", "please move a little left"), 0.2);
+		o1 = new CategoricalTable("u_u");
+		o1.addRow("move a little bit left", 0.5);
+		o1.addRow("please move a little left", 0.2);
 		system.addContent(o1);		
 
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -70,8 +70,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "now move right please"), 0.8);
+		o1 = new CategoricalTable("u_u");
+		o1.addRow("now move right please", 0.8);
 		system.addContent(o1);	
 		
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -80,8 +80,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "move left"), 0.7);
+		o1 = new CategoricalTable("u_u");
+		o1.addRow("move left", 0.7);
 		system.addContent(o1);	
 		
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -90,9 +90,9 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "turn left"), 0.32);
-		o1.addRow(new Assignment("u_u", "move left again"), 0.3);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("turn left", 0.32);
+		o1.addRow("move left again", 0.3);
 		system.addContent(o1);	
 
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -101,8 +101,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "and do that again"), 0.0);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("and do that again", 0.0);
 		system.addContent(o1);	
 
 	//	assertFalse(system.getState().hasActionNode("a_m'"));
@@ -110,8 +110,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "turn left"), 1.0);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("turn left", 1.0);
 		system.addContent(o1);	
 
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -120,8 +120,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "turn right"), 0.4);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("turn right", 0.4);
 		system.addContent(o1);	
 		
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -130,8 +130,8 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "please turn right"), 0.8);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("please turn right", 0.8);
 		system.addContent(o1);	
 		
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);
@@ -140,9 +140,9 @@ public class StepByStepTest {
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		
-		o1 = new CategoricalTable();
-		o1.addRow(new Assignment("u_u", "and turn a bit left"), 0.3);
-		o1.addRow(new Assignment("u_u", "move a bit left"), 0.3);
+		o1 =  new CategoricalTable("u_u");
+		o1.addRow("and turn a bit left", 0.3);
+		o1.addRow("move a bit left", 0.3);
 		system.addContent(o1);	
 		
 		assertEquals(0.0, system.getState().queryUtil(Arrays.asList("a_m'")).getUtil(new Assignment("a_m'", "AskRepeat")), 0.3);

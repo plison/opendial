@@ -36,15 +36,15 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.other.EmpiricalDistribution;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.datastructs.Assignment;
+import opendial.inference.Query;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
 import opendial.inference.approximate.WeightedSample;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -161,7 +161,7 @@ public class RewardLearner implements Module {
 
 				// creates a new query thread
 				SamplingProcess isquery = new SamplingProcess
-						(new UtilQuery(state, relevantParams, actualAction), 
+						(new Query.UtilQuery(state, relevantParams, actualAction), 
 								Settings.nbSamples, Settings.maxSamplingTime);
 
 				// extract and redraw the samples according to their weight.
@@ -182,7 +182,7 @@ public class RewardLearner implements Module {
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = system.getState().getChanceNode(param);
-					ProbDistribution newDistrib = empiricalDistrib.getMarginalDistrib(param, 
+					ProbDistribution newDistrib = empiricalDistrib.getMarginal(param, 
 							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}

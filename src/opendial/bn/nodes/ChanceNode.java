@@ -32,12 +32,10 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.ConditionalTable;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
 import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 
@@ -77,7 +75,7 @@ public class ChanceNode extends BNode {
 	 * @throws DialException if the distribution is not well-formed
 	 */
 	public ChanceNode(String nodeId)  {
-		this(nodeId, new ConditionalCategoricalTable());
+		this(nodeId, new ConditionalTable(nodeId));
 	}
 
 	/**
@@ -90,6 +88,9 @@ public class ChanceNode extends BNode {
 	 */
 	public ChanceNode(String nodeId, ProbDistribution distrib) {
 		super(nodeId);
+		if (!distrib.getVariable().equals(nodeId)) {
+			log.warning(nodeId + "  != " + distrib.getVariable());
+		}
 		this.distrib = distrib;		
 	}
 
@@ -102,11 +103,8 @@ public class ChanceNode extends BNode {
 	 */
 	public void setDistrib(ProbDistribution distrib) throws DialException {
 		this.distrib = distrib;
-		if (distrib.getHeadVariables().size() != 1) {
-
-			log.debug("Distribution for " + nodeId + 
-					"should have only one head variable, but it has: " + distrib.getHeadVariables() +
-					" (distrib type=" + distrib.getClass().getCanonicalName()+")");
+		if (!distrib.getVariable().equals(nodeId)) {
+			log.warning(nodeId + "  != " + distrib.getVariable());
 		}
 		if (!distrib.isWellFormed()) {
 			throw new DialException("Distribution for node " + nodeId + " (type " +
@@ -151,8 +149,8 @@ public class ChanceNode extends BNode {
 	 * @param prob the associated probability
 	 */
 	public void addProb(Assignment condition, Value nodeValue, double prob) {
-		if (distrib instanceof ConditionalCategoricalTable) {
-			((ConditionalCategoricalTable)distrib).addRow(condition, new Assignment(nodeId, nodeValue), prob);
+		if (distrib instanceof ConditionalTable) {
+			((ConditionalTable)distrib).addRow(condition, nodeValue, prob);
 		}
 		else {
 			log.warning("distribution is not defined as a dependent table table, " +
@@ -179,8 +177,8 @@ public class ChanceNode extends BNode {
 	 * @param nodeValue the value for the node variable
 	 */
 	public void removeProb(Assignment condition, Value nodeValue) {
-		if (distrib instanceof ConditionalCategoricalTable) {
-			((ConditionalCategoricalTable)distrib).removeRow(condition, new Assignment(nodeId, nodeValue));
+		if (distrib instanceof ConditionalTable) {
+			((ConditionalTable)distrib).removeRow(condition, nodeValue);
 		}
 		else {
 			log.warning("distribution is not defined as a table, impossible " +
@@ -202,8 +200,17 @@ public class ChanceNode extends BNode {
 		super.setId(newId);
 		distrib.modifyVariableId(oldId, newId);
 	}
-	
 
+
+	/**
+	 * Prune the values with a probability below a given threshold
+	 * 
+	 * @param threshold the probability threshold
+	 */
+	public void pruneValues(double threshold) {
+		distrib.pruneValues(threshold);
+		cachedValues = null;
+	}
 
 
 	// ===================================
@@ -227,6 +234,11 @@ public class ChanceNode extends BNode {
 	 * @throws DialException 
 	 */
 	public double getProb(Value nodeValue) throws DialException {
+
+		if (distrib instanceof IndependentProbDistribution) {
+			return ((IndependentProbDistribution)distrib).getProb(nodeValue);
+		}
+
 		Set<Assignment> combinations = getPossibleConditions();
 		double totalProb = 0.0;
 		if (combinations.size() > 1) {
@@ -258,7 +270,7 @@ public class ChanceNode extends BNode {
 	 */
 	public double getProb(Assignment condition, Value nodeValue) {
 		try {
-			return distrib.toDiscrete().getProb(condition, new Assignment(nodeId, nodeValue));
+			return distrib.getProb(condition, nodeValue);
 		}
 		catch (DialException e) {
 			log.warning("exception: " + e);
@@ -277,6 +289,10 @@ public class ChanceNode extends BNode {
 	 * @throws DialException if no sample can be selected
 	 */
 	public Value sample() throws DialException {
+
+		if (distrib instanceof IndependentProbDistribution) {
+			return ((IndependentProbDistribution)distrib).sample();
+		}
 		Assignment inputSample = new Assignment();
 		for (BNode inputNode : inputNodes.values()) {
 			if (inputNode instanceof ChanceNode) {
@@ -298,13 +314,10 @@ public class ChanceNode extends BNode {
 	 * @throws DialException if no sample can be selected
 	 */ 
 	public Value sample(Assignment condition) throws DialException {
-		Assignment result = distrib.sample(condition.getTrimmed(inputNodes.keySet()));
-		if (!result.containsVar(nodeId)) {
-			log.warning("result of sampling does not contain " + nodeId +": " + 
-					result + " distrib is " + distrib.getClass().getSimpleName());
-			return ValueFactory.none();
+		if (distrib instanceof IndependentProbDistribution) {
+			return ((IndependentProbDistribution)distrib).sample();
 		}
-		return result.getValue(nodeId);
+		return distrib.sample(condition.getTrimmed(inputNodes.keySet()));
 	}
 
 
@@ -324,12 +337,8 @@ public class ChanceNode extends BNode {
 				inputValues.addValues(inputNode.getId(), inputNode.getValues());
 			}
 			try {
-				Set<Assignment> outputs = distrib.getValues(inputValues);
-				for (Assignment output : outputs) {
-					if (output.containsVar(nodeId)) {
-						cachedValues.add(output.getValue(nodeId));
-					}
-				}
+				Set<Value> outputs = distrib.getValues(inputValues);
+				cachedValues.addAll(outputs);
 			}
 			catch (DialException e) {
 				log.warning("could not extract values for " + nodeId);
@@ -380,20 +389,16 @@ public class ChanceNode extends BNode {
 
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
-			CategoricalTable condTable = null;
+
 			try {
-				if (distrib instanceof IndependentProbDistribution) {
-					condTable = ((IndependentProbDistribution)distrib).toDiscrete();
-				}
-				else {
-					condTable = distrib.toDiscrete().getPosterior(combination);
-				}
-				for (Assignment head : condTable.getRows()) {
-					factor.put(new Assignment(combination, head), condTable.getProb(head));
-				}
+				IndependentProbDistribution posterior = distrib.getProbDistrib(combination);
+				for (Value value : posterior.getValues()) {
+					factor.put(new Assignment(combination, nodeId, value), posterior.getProb(value));
+				}		
 			}
 			catch (DialException e) {
 				log.warning("calculation of factor failed: " + e.toString());
+				log.debug("distrib: " + distrib);
 			}
 		}
 		return factor;

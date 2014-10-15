@@ -160,11 +160,11 @@ public class WizardControl implements Module {
 	@SuppressWarnings("serial")
 	private void displayWizardBox(ActionNode actionNode) throws DialException {
 		
-		DefaultListModel model = new DefaultListModel();
+		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (Value v : actionNode.getValues()) {
 			model.addElement(v.toString());
 		}
-		JList listBox = new JList(model);
+		JList<String> listBox = new JList<String>(model);
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scrollPane = new JScrollPane(listBox);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());		
@@ -201,11 +201,11 @@ public class WizardControl implements Module {
 	 */
 	class WizardBoxListener implements ActionListener {
 
-		JList listBox;
+		JList<String> listBox;
 		String actionVar;
 		DialogueState copy;
 		
-		public WizardBoxListener(JList listBox, String actionVar, DialogueState copy) {
+		public WizardBoxListener(JList<String> listBox, String actionVar, DialogueState copy) {
 			this.listBox = listBox;
 			this.actionVar = actionVar;
 			this.copy = copy;

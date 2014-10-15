@@ -342,7 +342,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		if (!shownDistribs.containsKey(queryVar)) {
 			IndependentProbDistribution distrib = currentState.queryProb(queryVar);
 			DistributionViewer viewer = new DistributionViewer(currentState, queryVar, this);
-			shownDistribs.put(distrib.getHeadVariables().iterator().next(), viewer);
+			shownDistribs.put(distrib.getVariable(), viewer);
 		}
 	}
 	

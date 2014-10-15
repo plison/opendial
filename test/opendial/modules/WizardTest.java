@@ -37,7 +37,7 @@ import javax.swing.JViewport;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.core.DialogueRecorder;
@@ -80,6 +80,7 @@ public class WizardTest {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testWizardControl() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
@@ -90,12 +91,12 @@ public class WizardTest {
 		assertEquals(2, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
 		system.addContent(new Assignment("u_u", "hi"));
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
-		assertEquals(3, ((JList)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
+		assertEquals(3, ((JList<String>)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
 				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
 		system.addContent(new Assignment("a_m", "Say(Greet)"));		
 		system.addContent(new Assignment("u_u", "move left"));
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
-		assertEquals(4, ((JList)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
+		assertEquals(4, ((JList<String>)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
 				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
 				+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"

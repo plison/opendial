@@ -23,9 +23,10 @@
 
 package opendial.inference.exact;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -34,9 +35,10 @@ import java.util.TreeMap;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.ConditionalTable;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -44,9 +46,7 @@ import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.ReductionQuery;
-import opendial.inference.queries.UtilQuery;
+import opendial.inference.Query;
 import opendial.utils.CombinatoricsUtils;
 import opendial.utils.InferenceUtils;
 
@@ -71,12 +71,12 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @throws DialException 
 	 */
 	@Override
-	public CategoricalTable queryProb (ProbQuery query) throws DialException {
+	public MultivariateTable queryProb (Query.ProbQuery query) throws DialException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
 		Assignment evidence = query.getEvidence();
-
+		
 		// generates the full joint distribution
 		Map<Assignment, Double> fullJoint = getFullJoint(network, false);
 
@@ -106,7 +106,7 @@ public class NaiveInference implements InferenceAlgorithm {
 		queryResult = InferenceUtils.normalise(queryResult);
 
 		// write the result in a probability table
-		CategoricalTable distrib = new CategoricalTable();
+		MultivariateTable distrib = new MultivariateTable();
 		distrib.addRows(queryResult);
 
 		return distrib;
@@ -159,12 +159,12 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @return the corresponding utility table
 	 */
 	@Override
-	public UtilityTable queryUtil(UtilQuery query) {
+	public UtilityTable queryUtil(Query.UtilQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
 		Assignment evidence = query.getEvidence();
-
+		
 		// generates the full joint distribution
 		Map<Assignment, Double> fullJoint = getFullJoint(network, true);
 
@@ -212,26 +212,32 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(ReductionQuery query) throws DialException {
-
-		BNetwork network = new BNetwork();
+	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
 	
-		for (String var : query.getSortedQueryVars()) {	
-			Set<String> directAncestors = query.getInputNodes(var);
+		BNetwork network = query.getNetwork();
+		Collection<String> queryVars = query.getQueryVars();
+		Assignment evidence = query.getEvidence();
+		
+		List<String> sortedNodesIds = network.getSortedNodesIds();
+		sortedNodesIds.retainAll(queryVars);
+		Collections.reverse(sortedNodesIds);
+		
+		BNetwork reduced = new BNetwork();
+		for (String var : sortedNodesIds) {	
+			Set<String> directAncestors = network.getNode(var).getAncestorsIds(queryVars);
 			
 			// generating the conditional assignments for var
 			Map<String,Set<Value>> inputValues = new HashMap<String,Set<Value>>();
 			for (String input : directAncestors) {
-				inputValues.put(input, query.getNetwork().getNode(var).getValues());
+				inputValues.put(input, network.getNode(var).getValues());
 			}
 			Set<Assignment> inputs = CombinatoricsUtils.getAllCombinations(inputValues);
 			
 			// creating a conditional probability table for the variable
-			ConditionalCategoricalTable table = new ConditionalCategoricalTable();
+			ConditionalTable table = new ConditionalTable(var);
 			for (Assignment a : inputs) {
-				Assignment evidence = new Assignment(query.getEvidence(),a);
-				ProbQuery subQuery = new ProbQuery(query.getNetwork(), Arrays.asList(var), evidence);
-				CategoricalTable result = queryProb(subQuery);
+				Assignment evidence2 = new Assignment(evidence,a);
+				CategoricalTable result = (CategoricalTable)queryProb(network, var, evidence2);
 				table.addDistrib(a, result);
 			}
 			
@@ -239,12 +245,12 @@ public class NaiveInference implements InferenceAlgorithm {
 			ChanceNode cn = new ChanceNode(var);
 			cn.setDistrib(table);
 			for (String ancestor : directAncestors) {
-				cn.addInputNode(network.getNode(ancestor));
+				cn.addInputNode(reduced.getNode(ancestor));
 			}
-			network.addNode(cn);
+			reduced.addNode(cn);
 		}
 
-		return network;
+		return reduced;
 	}
 
 }

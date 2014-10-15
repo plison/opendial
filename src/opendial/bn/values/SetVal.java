@@ -112,6 +112,7 @@ public final class SetVal implements Value {
 		return ""+set.toString();
 	}
 
+	@Override
 	public Value concatenate (Value v) {
 		if (v instanceof SetVal) {
 			Set<Value> newSet = new HashSet<Value>(set);

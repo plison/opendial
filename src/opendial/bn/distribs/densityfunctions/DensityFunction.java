@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.bn.distribs.continuous.functions;
+package opendial.bn.distribs.densityfunctions;
 
 import java.util.List;
 import java.util.Map;

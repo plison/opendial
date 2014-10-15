@@ -23,43 +23,105 @@
 
 package opendial.bn.distribs;
 
-
 import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.arch.Logger;
+import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.ValueRange;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * Generic probability distribution P(X1,...,Xn) without conditional variables.
- * The probability distribution may be continuous or discrete.
+ * Representation of an unconditional probability distribution P(X), where 
+ * X is a random variable.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2014-03-20 21:16:08 #$
+ *
  */
 public interface IndependentProbDistribution extends ProbDistribution {
-	
-	/**
-	 * Returns a sample from the probability distribution
-	 * 
-	 * @return the sample value
-	 * @throws DialException if no value could be sampled
-	 */
-	public Assignment sample() throws DialException;
 
-	/**
-	 * Returns a discrete representation of the distribution as a categorical table.
-	 * 
-	 * @return the distribution in the format of a categorical table
-	 * @throws DialException if the distribution could not be converted to a discrete form
-	 */
-	@Override
-	public CategoricalTable toDiscrete();
+	public static Logger log = new Logger("IndependentProbDistribution", Logger.Level.DEBUG);
+
 	
+	/**
+	 * Returns the probability P(value), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param value the value for the random variable
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */
+	public double getProb(Value value) ;
+	
+	/**
+	 * Returns the probability P(value), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param value the value for the random variable (as a string)
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */	
+	public default double getProb(String value) {
+		return getProb(ValueFactory.create(value));
+	}
+	
+	/**
+	 * Returns the probability P(value), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param value the value for the random variable (as a boolean)
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */
+	public default double getProb(boolean value) {
+		return getProb(ValueFactory.create(value));
+	}
+	
+	/**
+	 * Returns the probability P(value), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param value the value for the random variable (as a double)
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */
+	public default double getProb(double value) {
+		return getProb(ValueFactory.create(value));
+	}
+	
+	/**
+	 * Returns the probability P(value), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param value the value for the random variable (as a double array)
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */
+	public default double getProb(Double[] value) {
+		return getProb(ValueFactory.create(value));
+	}
+	
+	/**
+	 * Returns a sampled value for the distribution.
+	 * 
+	 * @return the sampled value
+	 * @throws DialException 
+	 */
+	public Value sample() throws DialException ;
+		
+	/**
+	 * Returns a set of possible values for the distribution.  If the distribution is continuous,
+	 * assumes a discretised representation of the distribution.
+	 * 
+	 * @return the possible values for the distribution
+	 */
+	public abstract Set<Value> getValues();
+
 	
 	/**
 	 * Returns a continuous representation of the distribution.
@@ -70,20 +132,13 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	public ContinuousDistribution toContinuous() throws DialException;
 	
 	/**
-	 * Returns a copy of the distribution.
-	 */
-	@Override
-	public IndependentProbDistribution copy();
-	
-	
-	/**
-	 * Returns a set of possible values for the distribution.  If the distribution is continuous,
-	 * assumes a discretised representation of the distribution.
+	 * Returns a discrete representation of the distribution
 	 * 
-	 * @return the possible values for the distribution
+	 * @return the distribution in a discrete form.
 	 */
-	public abstract Set<Assignment> getValues();
+	public CategoricalTable toDiscrete();
 
+	
 	/**
 	 * Generates a XML node that represents the distribution.
 	 * 
@@ -91,6 +146,83 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @return the corresponding XML node
 	 * @throws DialException 
 	 */
-	public abstract Node generateXML(Document document) throws DialException;
-}
+	public Node generateXML(Document document) throws DialException;
+	
 
+	
+	/**
+	 * Returns a copy of the distribution.
+	 * 
+	 * @return the copied distribution
+	 */
+	@Override
+	public IndependentProbDistribution copy() ;
+	
+	
+	/**
+	 * Returns itself.
+	 * 
+	 * @return the distribution itself.
+	 */
+	@Override
+	public default IndependentProbDistribution getPosterior(Assignment condition) {
+		return this;
+	}
+	
+
+	/**
+	 * Returns the marginal distribution for a particular variable
+	 * 
+	 * @param var the variable label
+	 * @return the marginal probability
+	 */
+	public default IndependentProbDistribution getMarginal(String var) {
+		if (!var.equals(getVariable())) {
+			log.warning("different variable names: " + var + " vs. " + getVariable());
+		}
+		return this;
+	}
+	
+	/**
+	 * Returns the set of possible values for the distribution. If the distribution is 
+	 * continuous, the method returns a discretised set. The value range is ignored.
+	 * 
+	 * @param range ignored
+	 * @return a set of possible values for the variable
+	 * @throws DialException 
+	 */
+	@Override
+	public default Set<Value> getValues(ValueRange range) throws DialException {
+		return getValues();
+	}
+	
+	
+	/**
+	 * Returns the probability for the head assignment, if the value can be found in the
+	 * distribution.  Else, returns 0.0.  The conditional assignment is ignored.
+	 */
+	@Override
+	public default double getProb(Assignment condition, Value head) throws DialException {
+		return getProb(head);
+	}
+	
+	
+	/**
+	 * Returns a sample from the distribution (the condition is ignored).
+	 */
+	@Override
+	public default Value sample(Assignment condition) throws DialException {
+		return sample();
+	}
+	
+	
+	/**
+	 * Returns itself.
+	 */
+	@Override
+	public default IndependentProbDistribution getProbDistrib(Assignment condition) {
+		return this;
+	}
+
+	
+}
