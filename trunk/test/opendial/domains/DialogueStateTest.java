@@ -28,9 +28,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.common.InferenceChecks;
-import opendial.datastructs.Assignment;
 import opendial.domains.rules.effects.Effect;
-import opendial.inference.queries.ProbQuery;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
@@ -77,15 +75,13 @@ public class DialogueStateTest {
 				ruleId = id;
 			}
 		}
-		ProbQuery query = new ProbQuery(initialState, ruleId);			
 
-		inference.checkProb(query, new Assignment(ruleId, Effect.parseEffect("a_u2+=HowAreYou")), 0.9);
-		inference.checkProb(query, new Assignment(ruleId, Effect.parseEffect("Void")), 0.1);
+		inference.checkProb(initialState, ruleId, Effect.parseEffect("a_u2+=HowAreYou"), 0.9);
+		inference.checkProb(initialState, ruleId, Effect.parseEffect("Void"), 0.1);
 
-		query = new ProbQuery(initialState,"a_u2");			
-		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
-		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
-		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 	
+		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
+		inference.checkProb(initialState, "a_u2", "[HowAreYou, Greet]", 0.7);
+		inference.checkProb(initialState, "a_u2", "None", 0.1); 	
 		
 		StatePruner.ENABLE_PRUNING = true;
 	}
@@ -103,11 +99,9 @@ public class DialogueStateTest {
 
 		DialogueState initialState = system.getState().copy();
 
-		ProbQuery query = new ProbQuery(initialState,"a_u2");			
-
-		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou]"), 0.2);
-		inference.checkProb(query, new Assignment("a_u2", "[HowAreYou, Greet]"), 0.7);
-		inference.checkProb(query, new Assignment("a_u2", "None"), 0.1); 
+		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
+		inference.checkProb(initialState, "a_u2", "[HowAreYou, Greet]", 0.7);
+		inference.checkProb(initialState, "a_u2", "None", 0.1); 
 		
 		
 	}

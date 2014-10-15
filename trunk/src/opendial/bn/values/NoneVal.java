@@ -72,6 +72,7 @@ public final class NoneVal implements Value {
 	/**
 	 * Returns the value v provided as argument.
 	 */
+	@Override
 	public Value concatenate(Value v) {
 		return v;
 	}

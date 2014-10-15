@@ -39,14 +39,12 @@ import javax.swing.JLabel;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentProbDistribution;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.ProbDistribution.DistribType;
-import opendial.bn.distribs.continuous.ContinuousDistribution;
-import opendial.bn.distribs.continuous.functions.DensityFunction;
-import opendial.bn.distribs.continuous.functions.KernelDensityFunction;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.datastructs.Assignment;
+import opendial.bn.distribs.densityfunctions.DensityFunction;
+import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
+import opendial.bn.values.Value;
 import opendial.state.DialogueState;
 
 import org.jfree.chart.ChartFactory;
@@ -80,7 +78,7 @@ public class DistributionViewer extends JDialog {
 	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
 
 	String queryVar;
-	ProbDistribution lastDistrib;
+	IndependentProbDistribution lastDistrib;
 	
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
@@ -120,7 +118,7 @@ public class DistributionViewer extends JDialog {
 		else if (lastDistrib != null && this.lastDistrib.equals(currentState.getChanceNode(queryVar).getDistrib())) {
 			return;
 		}
-		this.lastDistrib = currentState.getChanceNode(queryVar).getDistrib();
+		this.lastDistrib = currentState.queryProb(queryVar);
 		
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
@@ -131,8 +129,8 @@ public class DistributionViewer extends JDialog {
 
 		try {
 			IndependentProbDistribution indepDistrib = currentState.queryProb(queryVar);
-			if (indepDistrib.getPreferredType() == DistribType.CONTINUOUS) {
-				container.add(generatePanel(indepDistrib.toContinuous()), BorderLayout.CENTER);
+			if (indepDistrib instanceof ContinuousDistribution) {
+				container.add(generatePanel(indepDistrib.toContinuous()), BorderLayout.CENTER);				
 			}
 			else {
 				container.add(generatePanel(indepDistrib.toDiscrete()), BorderLayout.CENTER);
@@ -160,13 +158,12 @@ public class DistributionViewer extends JDialog {
 	 * @return the constructed chart panel
 	 */
 	private ChartPanel generatePanel(CategoricalTable distrib) {
-		final String variableName = distrib.getHeadVariables().toString().replace("[", "").replace("]", "");
-
+		final String variableName = distrib.getVariable();
+		
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
 
-		for (Assignment row : distrib.getRows()) {
-			String val = row.getValues().toString().replace("[", "").replace("]", "");
-			dataset.addValue(distrib.getProb(row), "", val.toString());
+		for (Value val : distrib.getValues()) {
+			dataset.addValue(distrib.getProb(val), "", val.toString());
 		}
 
 		JFreeChart chart = ChartFactory.createBarChart("Probability distribution P(" + variableName + ")", // chart title 
@@ -205,7 +202,7 @@ public class DistributionViewer extends JDialog {
 	 */
 	private ChartPanel generatePanel(ContinuousDistribution distrib) throws DialException {
 
-		final String variableName = distrib.getHeadVariables().toString().replace("[", "").replace("]", "");
+		final String variableName = distrib.getVariable();
 		
 		List<Series> series = extractSeries(distrib.getFunction());
 

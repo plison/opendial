@@ -33,7 +33,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.bn.distribs.discrete.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
@@ -50,43 +50,41 @@ public class IncrementalTest {
 	
 	@Test
 	public void test1() throws DialException, InterruptedException {
-		Settings.incrementalTimeOut = Settings.incrementalTimeOut / 10;
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().showGUI = true;
+		system.getSettings().showGUI = false;
 		system.getSettings().recording = Settings.Recording.ALL;
 		system.startSystem();
 		system.addContent(new Assignment(system.getSettings().userSpeech, "busy"));
-		system.addIncrementalContent(new CategoricalTable(new Assignment("u_u", "go")), false);
+		system.addIncrementalContent(new CategoricalTable("u_u", "go"), false);
 		Thread.sleep(100);
-		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "go")));
+		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("go")));
 		assertTrue(system.getState().hasChanceNode("nlu"));
-		CategoricalTable t = new CategoricalTable();
-		t.addRow(new Assignment("u_u", "forward"), 0.7);
-		t.addRow(new Assignment("u_u", "backward"), 0.2);
+	CategoricalTable t = new CategoricalTable("u_u");
+		t.addRow("forward", 0.7);
+		t.addRow("backward", 0.2);
 		system.addIncrementalContent(t, true);
 		Thread.sleep(100);
-		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "go forward")));
-		assertEquals(system.getContent("u_u").toDiscrete().getProb(new Assignment("u_u", "go backward")), 0.2, 0.001);
+		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("go forward")));
+		assertEquals(system.getContent("u_u").getProb("go backward"), 0.2, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.addContent(new Assignment(system.getSettings().userSpeech, "None"));
-		system.addIncrementalContent(new CategoricalTable(new Assignment("u_u", "please")), true);
-		assertEquals(system.getContent("u_u").toDiscrete().getProb(new Assignment("u_u", "go please")), 0.1, 0.001);
-		assertTrue(system.getState().hasChanceNode("nlu"));
-		Thread.sleep(Settings.incrementalTimeOut + 100);
-		assertFalse(system.getState().hasChanceNode("nlu"));
-		CategoricalTable t2 = new CategoricalTable();
-		t2.addRow(new Assignment("u_u", "I said go backward"), 0.3);
-		system.addIncrementalContent(t2, true);
- 		assertEquals(system.getContent("a_u").toDiscrete().getProb(new Assignment("a_u", "Request(Backward)")), 0.82, 0.05);
-		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "I said go backward")));
+		system.addIncrementalContent(new CategoricalTable("u_u", "please"), true);
+		assertEquals(system.getContent("u_u").getProb("go please"), 0.1, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
 		assertFalse(system.getState().hasChanceNode("nlu"));
-		system.addIncrementalContent(new CategoricalTable(new Assignment("u_u", "yes that is right")), false);
-		assertTrue(system.getContent("u_u").getValues().contains(new Assignment("u_u", "yes that is right")));
+		CategoricalTable t2 = new CategoricalTable("u_u");
+		t2.addRow("I said go backward", 0.3);
+		system.addIncrementalContent(t2, true);
+		assertEquals(system.getContent("a_u").getProb("Request(Backward)"), 0.82, 0.05);
+		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("I said go backward")));
 		assertTrue(system.getState().hasChanceNode("nlu"));
-		Settings.incrementalTimeOut = Settings.incrementalTimeOut * 10;
+		system.getState().setAsCommitted("u_u");
+		assertFalse(system.getState().hasChanceNode("nlu"));
+		system.addIncrementalContent(new CategoricalTable("u_u", "yes that is right"), false);
+		assertTrue(system.getContent("u_u").getValues().contains(ValueFactory.create("yes that is right")));
+		assertTrue(system.getState().hasChanceNode("nlu"));
 	}
 
 }

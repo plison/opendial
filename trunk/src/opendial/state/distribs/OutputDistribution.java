@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,17 +23,14 @@
 
 package opendial.state.distribs;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -52,7 +49,7 @@ import opendial.domains.rules.effects.Effect;
  * @version $Date::                      $
  *
  */
-public class OutputDistribution implements DiscreteDistribution {
+public class OutputDistribution implements ProbDistribution {
 
 	// logger
 	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
@@ -63,8 +60,6 @@ public class OutputDistribution implements DiscreteDistribution {
 	// primes attached to the variable label
 	String primes;
 
-	// cache for the probability distribution
-	Map<Assignment, CategoricalTable> cache;
 
 
 	/**
@@ -74,8 +69,8 @@ public class OutputDistribution implements DiscreteDistribution {
 	public OutputDistribution(String var) {
 		this.baseVar = var.replace("'", "");
 		this.primes = var.replace(baseVar, "");
-		cache = new HashMap<Assignment,CategoricalTable>();
 	}
+
 
 
 	/**
@@ -90,7 +85,6 @@ public class OutputDistribution implements DiscreteDistribution {
 			this.baseVar = newId.replace("'", "");
 			this.primes = newId.replace(baseVar, "");
 		}
-		cache.clear();
 	}
 
 
@@ -103,13 +97,19 @@ public class OutputDistribution implements DiscreteDistribution {
 	 * @throws DialException if no value could be sampled
 	 */
 	@Override
-	public Assignment sample(Assignment condition) throws DialException {	
-		synchronized(cache) {
-			if (!cache.containsKey(condition)) {
-				fillCacheForCondition(condition);
-			}	
-			return cache.get(condition).sample();
-		}
+	public Value sample(Assignment condition) throws DialException {
+		CategoricalTable result = getProbDistrib(condition);
+		return result.sample();
+	}
+	
+	
+	
+	/**
+	 * Does nothing.
+	 */
+	@Override
+	public void pruneValues(double threshold) {
+		return;
 	}
 
 
@@ -124,169 +124,11 @@ public class OutputDistribution implements DiscreteDistribution {
 	 * @return the resulting probability
 	 */
 	@Override
-	public double getProb(Assignment condition, Assignment head) {
-		if (!cache.containsKey(condition)) {
-			fillCacheForCondition(condition);
-		}	
-		return cache.get(condition).getProb(head);
+	public double getProb(Assignment condition, Value head) {
+		CategoricalTable result = getProbDistrib(condition);
+		return result.getProb(head);
 	}
 
-
-
-	/**
-	 * Returns the probability table associated with the condition
-	 * 
-	 * @param condition the conditional assignment
-	 * @return the resulting probability table
-	 */
-	@Override
-	public CategoricalTable getPosterior(Assignment condition)  {
-		if (!cache.containsKey(condition)) {
-			fillCacheForCondition(condition);
-		}	
-		return cache.get(condition);
-	}
-
-
-	/**
-	 * Returns the probability table associated with the condition
-	 * 
-	 * @param condition the conditional assignment
-	 * @return the resulting probability table
-	 */
-	@Override
-	public CategoricalTable getPartialPosterior(Assignment condition)  {	
-		return getPosterior(condition);
-	}
-
-
-	/**
-	 * Returns the possible outputs values given the input range in the parent nodes
-	 * (probability rule nodes and previous version of the variable)
-	 * 
-	 * @param range the range of values for the parents
-	 * @return the possible values for the output
-	 */
-	@Override
-	public Set<Assignment> getValues(ValueRange range) {
-
-		// check whether the parents contain add or discard operations
-		boolean containsAddOrDiscard = false;
-		for (String var : range.getVariables()) {
-			for (Value val : range.getValues(var)) {
-				if (val instanceof Effect) {
-					if (!((Effect)val).getValues(baseVar, EffectType.ADD).isEmpty()
-							|| !((Effect)val).getValues(baseVar, EffectType.DISCARD).isEmpty()) {
-						containsAddOrDiscard = true;
-					}
-				}
-			}
-		}
-
-		Set<Assignment> result = new HashSet<Assignment>();
-
-		// if the parents do not contain add or discard, the extraction of values can be 
-		// performed efficiently
-		if (!containsAddOrDiscard) {
-			for (String var : range.getVariables()) {
-				for (Value val : range.getValues(var)) {
-					if (val instanceof Effect) {
-						Set<Value> setValues = ((Effect)val).getValues(baseVar, EffectType.SET);
-						for (Value v : setValues) {
-							result.add(new Assignment(baseVar+primes, v));
-						}
-						if (setValues.isEmpty()) {
-							result.add(new Assignment(baseVar+primes, ValueFactory.none()));
-						}
-					}
-					else if (var.equals(baseVar + ((!primes.isEmpty())? primes.substring(0, primes.length()-1): ""))) {
-						result.add(new Assignment(baseVar+primes, val));
-					}
-				}
-			}	
-			if (result.isEmpty()) {
-				result.add(new Assignment(baseVar+primes, ValueFactory.none()));
-			}
-		}
-
-		// else, we generate all possible conditions
-		else {
-			Set<Assignment> conditions = range.linearise();
-			for (Assignment condition : conditions) {
-				CategoricalTable table = getPosterior(condition);
-				result.addAll(table.getRows());
-			}
-		}
-
-		return result;
-	}
-
-
-	/**
-	 * Returns a singleton set with the label of the output
-	 * 
-	 * @return the singleton set with the output label
-	 */
-	@Override
-	public Collection<String> getHeadVariables() {
-		Set<String> headVars = new HashSet<String>(Arrays.asList(baseVar+primes));
-		return headVars;
-	}
-
-
-
-	/**
-	 * Returns discrete.
-	 */
-	@Override
-	public DistribType getPreferredType() {
-		return DistribType.DISCRETE;
-	}
-
-	/**
-	 * Returns true.
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return true;
-	}
-
-	/**
-	 * Returns itself.
-	 */
-	@Override
-	public DiscreteDistribution toDiscrete() throws DialException {
-		return this;
-	}
-
-
-
-
-	/**
-	 * Returns a copy of the distribution
-	 */
-	@Override
-	public OutputDistribution copy() {
-		return new OutputDistribution(baseVar + primes);
-	}
-
-
-
-	/**
-	 * Does nothing.
-	 */
-	@Override
-	public void pruneValues(double threshold) {
-		return;
-	}
-
-	/**
-	 * Returns "(output)".
-	 */
-	@Override
-	public String toString() {
-		return "(output)";
-	}
 
 
 	/**
@@ -294,30 +136,33 @@ public class OutputDistribution implements DiscreteDistribution {
 	 * 
 	 * @param condition the condition for which to fill the cache
 	 */
-	private void fillCacheForCondition(Assignment condition) {
+	@Override
+	public CategoricalTable getProbDistrib(Assignment condition) {
 
 		// creating the table
-		CategoricalTable probTable = new CategoricalTable();
+		CategoricalTable probTable = new CategoricalTable(baseVar+primes);
 
 		// combining all effects
-		Effect combinedEffect = new Effect();
+		Effect fullEffect = new Effect();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
-				combinedEffect.addSubEffects(((Effect)inputVal).getSubEffects());
+				fullEffect.addSubEffects(((Effect)inputVal).getSubEffects());
 			}
 		}
 
-		Set<Value> setValues = combinedEffect.getValues(baseVar, EffectType.SET);
-		Set<Value> addValues = combinedEffect.getValues(baseVar, EffectType.ADD);
-		Set<Value> discardValues = combinedEffect.getValues(baseVar, EffectType.DISCARD);
+		Set<Value> setValues = fullEffect.getValues(baseVar, EffectType.SET);
+		Set<Value> addValues = fullEffect.getValues(baseVar, EffectType.ADD);
+		Set<Value> discardValues = fullEffect.getValues(baseVar, EffectType.DISCARD);
 
-		Value previousValue = (!combinedEffect.getClearVariables().contains(baseVar))?
-				condition.getValue(baseVar) : ValueFactory.none();
-
+		Value previousValue = condition.getValue(baseVar);
+		if (fullEffect.getClearVariables().contains(baseVar)) {
+			previousValue = ValueFactory.none();
+		}
+	
 		// case 1: at least one effect is a classical set operation
 		if (!setValues.isEmpty()) {
 			for (Value v : setValues) {
-				probTable.addRow(new Assignment(baseVar+primes, v), (1.0 / setValues.size()));
+				probTable.addRow(v, (1.0 / setValues.size()));
 			}		
 		}
 
@@ -332,17 +177,112 @@ public class OutputDistribution implements DiscreteDistribution {
 				addVal.add(previousValue);
 			}
 			addVal.removeAll(discardValues);
-			probTable.addRow(new Assignment(baseVar+primes, addVal), 1.0);
+			probTable.addRow(addVal, 1.0);
 		}
-		
+
 		// case 3: backtrack to previous value
 		else {
-			probTable.addRow(new Assignment(baseVar+primes, previousValue), 1.0);
+			probTable.addRow(previousValue, 1.0);
 		}
 
-
-		cache.put(new Assignment(condition), probTable);
+		return probTable;
 	}
+
+	/**
+	 * Returns the probability table associated with the condition
+	 * 
+	 * @param condition the conditional assignment
+	 * @return the resulting probability table
+	 */
+	@Override
+	public MarginalDistribution getPosterior(Assignment condition)  {
+		return new MarginalDistribution(this, condition);
+	}
+
+
+
+	/**
+	 * Returns the possible outputs values given the input range in the parent nodes
+	 * (probability rule nodes and previous version of the variable)
+	 * 
+	 * @param range the range of values for the parents
+	 * @return the possible values for the output
+	 */
+	@Override
+	public Set<Value> getValues(ValueRange range) {
+
+		Set<Value> values = new HashSet<Value>();
+
+		loop: for (String var : range.getVariables()) {
+			for (Value val : range.getValues(var)) {
+				if (val instanceof Effect) {
+
+					Set<EffectType> types = ((Effect)val).getEffectTypes(baseVar);
+					if (types.contains(EffectType.ADD) || types.contains(EffectType.DISCARD)) {
+						for (Assignment condition : range.linearise()) {
+							values.addAll(getProbDistrib(condition).getValues());
+						}
+						break loop;
+					}
+
+					Set<Value> setValues = ((Effect)val).getValues(baseVar, EffectType.SET);		
+					values.addAll(setValues);
+					if (setValues.isEmpty()) {
+						values.add(ValueFactory.none());
+					}
+				}
+				else if (var.equals(baseVar)) {
+					values.add(val);
+				}
+			}
+		}	
+
+		if (values.isEmpty()) {
+			values.add(ValueFactory.none());
+		}
+		return values;
+
+	}
+
+
+	/**
+	 * Returns a singleton set with the label of the output
+	 * 
+	 * @return the singleton set with the output label
+	 */
+	@Override
+	public String getVariable() {
+		return baseVar+primes;
+	}
+
+	/**
+	 * Returns true.
+	 */
+	@Override
+	public boolean isWellFormed() {
+		return true;
+	}
+
+
+
+	/**
+	 * Returns a copy of the distribution
+	 */
+	@Override
+	public OutputDistribution copy() {
+		return new OutputDistribution(baseVar + primes);
+	}
+
+
+
+	/**
+	 * Returns "(output)".
+	 */
+	@Override
+	public String toString() {
+		return "(output)";
+	}
+
 
 
 

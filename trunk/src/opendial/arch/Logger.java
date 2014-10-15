@@ -37,8 +37,8 @@ public class Logger {
 	
 	/** Logging levels */
 	public static enum Level {
-		NONE,  		/* no messages are shown */
-		MIN,  		/* only severe errors are shown */
+		NONE, 		/* no messages are shown */
+		MIN, 		/* only severe errors are shown */
 		NORMAL, 	/* severe errors, warning and infos are shown */
 		DEBUG 		/* every message is shown, including debug */
 	}  

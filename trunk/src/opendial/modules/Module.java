@@ -24,10 +24,7 @@
 package opendial.modules;
 
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-
 import opendial.arch.DialException;
 import opendial.state.DialogueState;
 
@@ -92,28 +89,5 @@ public interface Module {
 	 */
 	public boolean isRunning();
 
-	
-	/**
-	 * Exception thrown when a parameter is missing for the module initialisation.
-	 */
-	@SuppressWarnings("serial")
-	class MissingParameterException extends DialException {
-
-		List<String> missingParams;
-
-		public MissingParameterException(String missingParam) {
-			super("could not start module due to missing parameter : " + missingParam);
-			this.missingParams = Arrays.asList(missingParam);
-		}
-
-		public MissingParameterException(List<String> missingParams) {
-			super("could not start module due to missing parameters : " + missingParams);
-			this.missingParams = missingParams;
-		}
-
-		public List<String> getMissingParameters() {
-			return missingParams;
-		}
-	}
 
 }

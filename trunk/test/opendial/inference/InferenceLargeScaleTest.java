@@ -40,7 +40,6 @@ import opendial.common.InferenceChecks;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
 import opendial.inference.exact.NaiveInference;
-import opendial.inference.queries.ProbQuery;
 
 import org.junit.Test;
 
@@ -56,7 +55,7 @@ public class InferenceLargeScaleTest {
 	// logger
 	public static Logger log = new Logger("InferenceLargeScaleTest", Logger.Level.NORMAL);
 
-	public static int PERCENT_COMPARISONS = 1;
+	public static double PERCENT_COMPARISONS = 0.5;
 
 
 	@Test
@@ -76,10 +75,8 @@ public class InferenceLargeScaleTest {
 				for (Assignment evidence : evidencePowerset) {
 
 					if ((new Random()).nextDouble() < PERCENT_COMPARISONS / 100.0) {
-												
-						ProbQuery query = new ProbQuery(bn, new ArrayList<String>(queryVars), evidence);
-											
-						try {inference.checkProb(query);}
+																							
+						try {inference.checkProb(bn, queryVars, evidence);}
 						catch (AssertionError e) {
 							nbErrors++;
 							if (nbErrors > 2) {

@@ -23,28 +23,101 @@
 
 package opendial.bn.distribs;
 
-import java.util.Collection;
 import java.util.Set;
 
 import opendial.arch.DialException;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 
 /**
- * Generic probability distribution of the type (PX1,...Xn | Y1,...Yn). The distribution
- * may be discrete or continuous.
- *
+ * Representation of a conditional probability distribution P(X | Y1,...Ym), 
+ * where X is the "head" random variable for the distribution, and Y1,...Ym
+ * are the conditional variables
+ * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date:: 2014-03-20 21:16:08 #$
  *
  */
 public interface ProbDistribution  {
 
-	/** possible types of distribution: discrete, continuous or a combination of the two */
-	public enum DistribType {DISCRETE, CONTINUOUS, HYBRID}
+	
+	/**
+	 * Returns the name of the random variable
+	 * 
+	 * @return the name of the random variable
+	 */
+	public String getVariable();
+	
+
+	/**
+	 * Returns the probability P(head|condition), if any is specified.  Else,
+	 * returns 0.0f.
+	 * 
+	 * @param condition the conditional assignment for Y1,..., Ym
+	 * @param head the value for the random variable
+	 * @return the associated probability, if one exists.
+	 * @throws DialException if the probability could not be extracted
+	 */
+	public double getProb(Assignment condition, Value head) throws DialException ;
 	
 	
+	/**
+	 * Returns the (unconditional) probability distribution associated with
+	 * the conditional assignment provided as argument.
+	 * 
+	 * @param condition the conditional assignment on Y1,...Ym
+	 * @return the independent probability distribution on X.
+	 * @throws DialException 
+	 */
+	public IndependentProbDistribution getProbDistrib(Assignment condition) throws DialException;
+
+	
+	/**
+	 * Returns a sample value for the distribution given a particular conditional
+	 * assignment.
+	 * 
+	 * @param condition the conditional assignment for Y1,...,Ym
+	 * @return the sampled values for the random variable
+	 * @throws DialException if no value(s) could be sampled
+	 */
+	public Value sample(Assignment condition) throws DialException;
+	
+
+
+	/**
+	 * Returns the set of possible values for the distribution, given a set of possible values 
+	 * for the conditional variables. If the distribution is continuous, the method returns
+	 * a discretised set. 
+	 * 
+	 * @param range possible values for the conditional variables
+	 * @return a set of possible values for the variable
+	 * @throws DialException 
+	 */
+	public Set<Value> getValues(ValueRange range) throws DialException;
+	
+
+	/**
+	 * Returns a new probability distribution that is the posterior of the
+	 * current distribution, given the conditional assignment as argument.
+	 * 
+	 * @param condition an assignment of values to the conditional variables
+	 * @return the posterior distribution
+	 * @throws DialException 
+	 */	
+	public abstract ProbDistribution getPosterior(Assignment condition) throws DialException;
+	
+	
+	
+	/**
+	 * Prunes values whose frequency in the distribution is lower than the given threshold. 
+	 * 
+	 * @param threshold the threshold to apply for the pruning
+	 */
+	public void pruneValues(double threshold);
+	
+	
+
 	/**
 	 * Checks that the probability distribution is well-formed (all assignments are covered,
 	 * and the probabilities add up to 1.0f)
@@ -60,9 +133,9 @@ public interface ProbDistribution  {
 	 * @return the copy
 	 */
 	public ProbDistribution copy();
-
-
 	
+	
+
 	/**
 	 * Changes a variable label in the distribution
 	 * 
@@ -70,90 +143,7 @@ public interface ProbDistribution  {
 	 * @param newId the new variable label
 	 */
 	public void modifyVariableId(String oldId, String newId);
-	
-	
-	/**
-	 * Returns the labels for the random variables the distribution is defined on.
-	 * 
-	 * @return the collection of variable labels
-	 */
-	public Collection<String> getHeadVariables();
-
-	/**
-	 * Returns a sample value for the distribution given a particular conditional
-	 * assignment.
-	 * 
-	 * @param condition the conditional assignment for Y1,...,Ym
-	 * @return the sampled values for the head assignment X1,...,Xn.
-	 * @throws DialException if no value(s) could be sampled
-	 */
-	public Assignment sample(Assignment condition) throws DialException;
-	
-	/**
-	 * Returns the discrete form of the distribution.  If the current distribution
-	 * has a continuous range, the returned distribution will be a discretised conversion
-	 * of the current one.
-	 * 
-	 * @return the discretised form of the distribution
-	 * @throws DialException 
-	 */
-	public DiscreteDistribution toDiscrete() throws DialException;
-	
-	
-	
-	/**
-	 * Returns the preferred representation format for the distribution.
-	 * 
-	 * @return the preferred representation format
-	 */
-	public DistribType getPreferredType() ;
-	
-	
-	/**
-	 * Returns the probability table for the head variables, given the
-	 * conditional assignment given as argument.  This method requires
-	 * a full assignment of values to the conditional variables of the
-	 * current distribution.
-	 * 
-	 * <p>If a head variable has a continuous range, the values defined
-	 * in the table are based on a discretisation procedure which creates
-	 * a sequence of buckets, each with an approximatively similar
-	 * probability mass.
-	 * 
-	 * @param condition the assignment for the conditional variable
-	 * @return the resulting probability table
-	 * @throws DialException 
-	 */
-	public abstract IndependentProbDistribution getPosterior(Assignment condition) throws DialException ;
-	
-	/**
-	 * Returns a new probability distribution that is the posterior of the
-	 * current distribution, given the conditional assignment as argument.
-	 * 
-	 * @param condition an assignment of values to the conditional variables
-	 * @return the posterior distribution
-	 * @throws DialException 
-	 */	
-	public abstract ProbDistribution getPartialPosterior(Assignment condition) throws DialException;
-	
-	
-	/**
-	 * Returns the set of possible values for the distribution, given a set of possible values 
-	 * for the conditional variables. If the distribution is continuous, the method returns
-	 * a discretised set. 
-	 * 
-	 * @param range possible values for the conditional variables
-	 * @return a set of assignments for the head variables 
-	 * @throws DialException 
-	 */
-	public abstract Set<Assignment> getValues(ValueRange range) throws DialException;
 
 	
-	/**
-	 * Prunes values whose frequency in the distribution is lower than the given threshold. 
-	 * 
-	 * @param threshold the threshold to apply for the pruning
-	 */
-	public void pruneValues(double threshold);
 	
 }

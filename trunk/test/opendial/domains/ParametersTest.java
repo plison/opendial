@@ -34,8 +34,8 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
@@ -48,8 +48,6 @@ import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.StochasticParameter;
 import opendial.inference.approximate.LikelihoodWeighting;
-import opendial.inference.queries.ProbQuery;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
@@ -99,19 +97,16 @@ public class ParametersTest {
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
-		
 		assertTrue(system.getState().hasChanceNode("theta_1"));
-		ProbQuery query = new ProbQuery(system.getState(), "theta_1");
-		inference.checkCDF(query, new Assignment("theta_1", 0.5), 0.5);
-		inference.checkCDF(query, new Assignment("theta_1", 5), 0.99);
+		inference.checkCDF(system.getState(), "theta_1", 0.5, 0.5);
+		inference.checkCDF(system.getState(), "theta_1", 5, 0.99);
 		
-		query = new ProbQuery(system.getState(), "theta_2");
-		inference.checkCDF(query, new Assignment("theta_2", 1), 0.07);
-		inference.checkCDF(query, new Assignment("theta_2", 2), 0.5);
+		inference.checkCDF(system.getState(), "theta_2", 1, 0.07);
+		inference.checkCDF(system.getState(), "theta_2", 2, 0.5);
 		
 		system.startSystem();
 		system.addContent(new Assignment("u_u", "hello there"));
-		UtilityTable utils = ((new LikelihoodWeighting()).queryUtil(new UtilQuery(system.getState(), "u_m'")));
+		UtilityTable utils = ((new LikelihoodWeighting()).queryUtil(system.getState(), "u_m'"));
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) > 0);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < 
@@ -132,16 +127,15 @@ public class ParametersTest {
 		system.getSettings().showGUI = false;
 		
 		assertTrue(system.getState().hasChanceNode("theta_3"));
-		ProbQuery query = new ProbQuery(system.getState(), "theta_3");
-		inference.checkCDF(query, new Assignment("theta_3", 0.6), 0.0);
-		inference.checkCDF(query, new Assignment("theta_3", 0.8), 0.5);
-		inference.checkCDF(query, new Assignment("theta_3", 0.95), 1.0);
+		inference.checkCDF(system.getState(), "theta_3", 0.6, 0.0);
+		inference.checkCDF(system.getState(), "theta_3", 0.8, 0.5);
+		inference.checkCDF(system.getState(), "theta_3", 0.95, 1.0);
 
 		system.startSystem();
 		system.addContent(new Assignment("u_u", "brilliant"));
-		ProbDistribution distrib = system.getContent("a_u");
+		IndependentProbDistribution distrib = system.getContent("a_u");
 
-		assertEquals(0.8, distrib.toDiscrete().getProb(new Assignment(), new Assignment("a_u", "Approval")), 0.05);
+		assertEquals(0.8, distrib.getProb("Approval"), 0.05);
 
 }
 	
@@ -168,8 +162,7 @@ public class ParametersTest {
 		assertEquals(0.36, system.getState().
 				queryProb("theta_4").toContinuous().getFunction().getMean()[0], 0.1);
 		
-		assertEquals(0.64, system.getContent("a_u").toDiscrete().
-				getProb(new Assignment("a_u", "Disapproval")), 0.1);
+		assertEquals(0.64, system.getContent("a_u").getProb("Disapproval"), 0.1);
 		
 }
 	
@@ -236,11 +229,9 @@ public class ParametersTest {
 		assertEquals(1.0, system.getState(). 
 				queryProb("theta_6").toContinuous().getFunction().getMean()[0], 0.08);
 		
-		assertEquals(0.72, system.getContent("a_u").toDiscrete().
-				getProb(new Assignment("a_u", "Approval")), 0.08);
+		assertEquals(0.72, system.getContent("a_u").getProb("Approval"), 0.08);
 		
-		assertEquals(0.28, system.getContent("a_u").toDiscrete().
-				getProb(new Assignment("a_u", "Irony")), 0.08);
+		assertEquals(0.28, system.getContent("a_u").getProb("Irony"), 0.08);
 		
 }
 	

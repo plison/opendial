@@ -28,8 +28,8 @@ import java.util.Map;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.utility.UtilityDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
@@ -115,7 +115,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 
 		Assignment input = fullInput.getTrimmedInverse(rule.getOutputVariables());
 		Assignment actions = fullInput.getTrimmed(rule.getOutputVariables());
-
 		if (cache != null && cache.containsKey(input) && cache.get(input).getRows().contains(actions)) {
 			return cache.get(input).getUtil(actions);
 		}
@@ -128,7 +127,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 			}
 			cache.get(input).setUtil(actions, util);
 		}
-
 		return util;
 	}
 

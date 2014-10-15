@@ -24,7 +24,6 @@
 package opendial.modules.core;
 
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,15 +33,15 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
-import opendial.bn.distribs.other.EmpiricalDistribution;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
+import opendial.inference.Query;
 import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.SamplingProcess;
 import opendial.inference.approximate.WeightedSample;
-import opendial.inference.queries.UtilQuery;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -123,7 +122,7 @@ public class WizardLearner implements Module {
 			if (!relevantParams.isEmpty()) {
 				// creates a new query thread
 				SamplingProcess isquery = new SamplingProcess
-						(new UtilQuery(state, relevantParams), 
+						(new Query.UtilQuery(state, relevantParams, new Assignment()), 
 								Settings.nbSamples, Settings.maxSamplingTime);
 						
 				// extract and redraw the samples according to their weight.
@@ -141,7 +140,7 @@ public class WizardLearner implements Module {
 				for (String param : relevantParams) {
 					ChanceNode paramNode = state.getChanceNode(param);
 					
-					ProbDistribution newDistrib = empiricalDistrib.getMarginalDistrib(param,
+					ProbDistribution newDistrib = empiricalDistrib.getMarginal(param,
 							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}

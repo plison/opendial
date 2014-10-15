@@ -124,7 +124,6 @@ public class AudioUtils {
 	public static List<Mixer.Info> getInputMixers() {
 
 		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
-		Mixer.Info defaultMixer = null;
 		
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
 		for (int i = 0 ; i < mixerInfos.length ; i++) {
@@ -132,22 +131,10 @@ public class AudioUtils {
 				if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
 						new DataLine.Info(TargetDataLine.class, format))) {
 					mixers.add(mixerInfos[i]);
-
-					try { if (AudioSystem.getTargetDataLine(format).getLineInfo().matches(
-							AudioSystem.getTargetDataLine(format, mixerInfos[i]).getLineInfo())) {
-						defaultMixer = mixerInfos[i];
-					} }
-					catch (Exception e) { 
-						e.printStackTrace(); }
-					break;
 				}
 			}
 		}
 
-/**		if (defaultMixer != null) {
-			mixers.remove(defaultMixer);
-			mixers.add(0, defaultMixer);
-		} */
 		return mixers;
 	}
 	
@@ -207,7 +194,14 @@ public class AudioUtils {
 		        Clip clip = (outputMixer != null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
 		        clip.open(input);
 			    clip.start();
-			}
+			    while (!clip.isActive()) {
+			      	Thread.sleep(50);
+			    }
+			    while (clip.isActive()) {
+			    	Thread.sleep(50);
+			    }
+			    clip.close();
+		}
 			catch (Exception e) {
 				log.severe("unable to play sound file, aborting.  Error: " + e.toString());
 			} 

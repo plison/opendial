@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,6 +24,7 @@
 package opendial.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.bn.values.ArrayVal;
+import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
@@ -46,10 +49,10 @@ public class CombinatoricsUtils {
 
 	// logger
 	public static Logger log = new Logger("CombinatoricsUtils", Logger.Level.DEBUG);
-	
+
 	static Random sampler = new Random();
-	
-	
+
+
 	/**
 	 * Generates all possible assignment combinations from the set of values
 	 * provided as parameters -- each variable being associated with a set of
@@ -61,28 +64,28 @@ public class CombinatoricsUtils {
 	 * @return the list of all possible combinations
 	 */
 	public static Set<Assignment> getAllCombinations(Map<String,Set<Value>> valuesMatrix) {
-			
+
 		valuesMatrix = new HashMap<String,Set<Value>>(valuesMatrix);
 		try {
-		// start with a single, empty assignment
-		Set<Assignment> assignments = new HashSet<Assignment>();
-		assignments.add(new Assignment());
-		
-		// at each iterator, we expand each assignment with a new combination
-		for (String label : valuesMatrix.keySet()) {
-			Set<Assignment> assignments2 = new HashSet<Assignment>();
+			// start with a single, empty assignment
+			Set<Assignment> assignments = new HashSet<Assignment>();
+			assignments.add(new Assignment());
 
-			for (Value val: valuesMatrix.get(label)) {
-				
-				for (Assignment ass: assignments) {
-					Assignment ass2 = new Assignment(ass, label, val);
-					assignments2.add(ass2);
+			// at each iterator, we expand each assignment with a new combination
+			for (String label : valuesMatrix.keySet()) {
+				Set<Assignment> assignments2 = new HashSet<Assignment>();
+
+				for (Value val: valuesMatrix.get(label)) {
+
+					for (Assignment ass: assignments) {
+						Assignment ass2 = new Assignment(ass, label, val);
+						assignments2.add(ass2);
+					}
 				}
-			}
-			assignments = assignments2;
-		}	
+				assignments = assignments2;
+			}	
 
-		return assignments;
+			return assignments;
 		}
 		catch (OutOfMemoryError e) {
 			log.debug("out of memory error, initial matrix: " + valuesMatrix);
@@ -90,8 +93,8 @@ public class CombinatoricsUtils {
 			return new HashSet<Assignment>();
 		}
 	}
-	
-	
+
+
 
 	/**
 	 * Generates all combinations of assignments from the list
@@ -102,33 +105,33 @@ public class CombinatoricsUtils {
 	 * @return the generated combination of assignments
 	 */
 	public static Set<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
-				
+
 		// start with a single, empty assignment
 		Set<Assignment> assignments = new HashSet<Assignment>();
 		assignments.add(new Assignment());
-		
+
 		// incrementally combines and expands the assignments
 		for (Set<Assignment> list1: allAssignments) {
 
 			Set<Assignment> assignments2 = new HashSet<Assignment>();
 
 			for (Assignment a : list1) {
-				
+
 				for (Assignment ass: assignments) {
 					if (ass.consistentWith(a)) {
-					Assignment ass2 = new Assignment(ass, a);
-					assignments2.add(ass2);
+						Assignment ass2 = new Assignment(ass, a);
+						assignments2.add(ass2);
 					}
 				}
 			}
 			assignments = assignments2;
 		}		
-		
+
 		return assignments;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the set of possible (variable,value) pairs used in the the
 	 * set of assignments given as arguments.
@@ -157,26 +160,26 @@ public class CombinatoricsUtils {
 	 * @return its power set
 	 */
 	public static <T> Set<Set<T>> getPowerset(Set<T> originalSet) {
-	    Set<Set<T>> sets = new HashSet<Set<T>>();
-	    if (originalSet.size() >= 8) {
+		Set<Set<T>> sets = new HashSet<Set<T>>();
+		if (originalSet.size() >= 8) {
 			log.debug("original set is too big, not returning any result");
 			return sets;
 		}
-		    if (originalSet.isEmpty()) {
-		        sets.add(new HashSet<T>());
-		        return sets;
-		    }
-		    List<T> list = new ArrayList<T>(originalSet);
-		    T head = list.get(0);
-		    Set<T> rest = new HashSet<T>(list.subList(1, list.size())); 
-		    for (Set<T> set : getPowerset(rest)) {
-		        Set<T> newSet = new HashSet<T>();
-		        newSet.add(head);
-		        newSet.addAll(set);
-		        sets.add(newSet);
-		        sets.add(set); 
-		    }           
-		    return sets;
+		if (originalSet.isEmpty()) {
+			sets.add(new HashSet<T>());
+			return sets;
+		}
+		List<T> list = new ArrayList<T>(originalSet);
+		T head = list.get(0);
+		Set<T> rest = new HashSet<T>(list.subList(1, list.size())); 
+		for (Set<T> set : getPowerset(rest)) {
+			Set<T> newSet = new HashSet<T>();
+			newSet.add(head);
+			newSet.addAll(set);
+			sets.add(newSet);
+			sets.add(set); 
+		}           
+		return sets;
 	}
 
 
@@ -197,5 +200,38 @@ public class CombinatoricsUtils {
 	}
 
 
-	
+	/**
+	 * Returns the relative frequencies of each (variable,value) pair
+	 * in the collection of assignments.
+	 * 
+	 * @param assignments the assignments
+	 * @return the relative frequencies of each pair
+	 */
+	public static Map<String, Map<Value, Integer>> getFrequencies(
+			Collection<Assignment> assignments) {
+
+		Map<String,Map<Value,Integer>> frequencies = 
+				new HashMap<String,Map<Value,Integer>>();
+		for (Assignment sample : assignments) {
+			for (String var : sample.getVariables()) {
+				Value val = sample.getValue(var);
+				if (!(val instanceof DoubleVal) && !(val instanceof ArrayVal)) {
+					if (!frequencies.containsKey(var)) {
+						frequencies.put(var, new HashMap<Value,Integer>());
+					}
+					Map<Value,Integer> valFreq = frequencies.get(var);
+					if (!valFreq.containsKey(val)) {
+						valFreq.put(val, 1);
+					}
+					else {
+						valFreq.put(val, valFreq.get(val) + 1);
+					}
+				}
+			}
+		}
+		return frequencies;
+	}
+
+
+
 }

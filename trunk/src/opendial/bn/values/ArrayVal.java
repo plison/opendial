@@ -141,6 +141,7 @@ public final class ArrayVal implements Value {
 	 * @param v the value to concatenate
 	 * @return the concatenated result
 	 */
+	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof ArrayVal) {
 			Double[] newvals = new Double[array.length + ((ArrayVal)v).getArray().length];

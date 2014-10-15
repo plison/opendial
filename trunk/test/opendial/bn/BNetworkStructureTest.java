@@ -27,17 +27,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.discrete.ConditionalCategoricalTable;
-import opendial.bn.distribs.utility.UtilityTable;
+import opendial.bn.distribs.ConditionalTable;
+import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -162,7 +157,7 @@ public class BNetworkStructureTest {
 		ChanceNode e = bn.getChanceNode("Earthquake");
 		assertTrue(e.getDistrib().isWellFormed());
 		e.removeProb(ValueFactory.create(false));
-		ConditionalCategoricalTable.log.setLevel(Logger.Level.NONE);
+		ConditionalTable.log.setLevel(Logger.Level.NONE);
 	//	assertFalse(e.getDistribution().isWellFormed());
 		e.addProb(ValueFactory.create(false), 0.1f);
 	//	assertFalse(e.getDistribution().isWellFormed());
@@ -181,7 +176,7 @@ public class BNetworkStructureTest {
 		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),ValueFactory.create(true), 0.29f);
 		assertTrue(a.getDistrib().isWellFormed());
 
-		ConditionalCategoricalTable.log.setLevel(Logger.Level.NORMAL);
+		ConditionalTable.log.setLevel(Logger.Level.NORMAL);
 
 		UtilityTable.log.setLevel(Logger.Level.NONE);
 		UtilityNode v = bn.getUtilityNode("Util1");

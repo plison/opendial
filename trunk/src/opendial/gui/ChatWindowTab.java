@@ -26,8 +26,6 @@ package opendial.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.StringReader;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -49,12 +47,10 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.bn.distribs.discrete.CategoricalTable;
-import opendial.bn.distribs.discrete.DiscreteDistribution;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
+import opendial.bn.values.ValueFactory;
 import opendial.gui.audio.SpeechInputPanel;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
@@ -68,7 +64,7 @@ import opendial.utils.StringUtils;
  *
  */
 @SuppressWarnings("serial")
-public class ChatWindowTab extends JComponent implements ActionListener {
+public class ChatWindowTab extends JComponent {
 
 	public static final String TAB_TITLE = " Chat Window ";
 	public static final String TAB_TIP = "Chat window listing the user and system utterances";
@@ -137,12 +133,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		final BalloonTip tip = new BalloonTip(helpButton, TIP_TEXT);
 		tip.setVisible(false);
 
-		helpButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				tip.setVisible(!tip.isVisible());
-			}
-		});
+		helpButton.addActionListener(e -> tip.setVisible(!tip.isVisible()));
 		helpButton.setFocusable(false);
 
 		inputContainer.add(helpButton, BorderLayout.EAST);
@@ -151,7 +142,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		add (utterancesScrollPane, BorderLayout.CENTER);
 		//	setPreferredSize(new Dimension(380,380));
 
-		inputField.addActionListener(this);	
+		inputField.addActionListener(e -> addUtteranceToState());	
 
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
@@ -178,18 +169,6 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		else if (inputContainer.getComponentCount() == 4 && !toEnable) {
 			inputContainer.remove(3);
 			repaint();
-		}
-	}
-
-
-	/**
-	 * If the action event originates from the text field, adds the entered utterance
-	 * to the dialogue state
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().getClass().equals(JTextField.class)) {
-			addUtteranceToState();
 		}
 	}
 
@@ -221,11 +200,11 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		if (!rawText.equals("")) {
 			String[] splitText = rawText.split(";");
 
-			CategoricalTable table = new CategoricalTable();
+			CategoricalTable table = new CategoricalTable(system.getSettings().userInput);
 
 			for (String split : Arrays.asList(splitText)) {				
 				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
-				table.addRow(new Assignment(system.getSettings().userInput, split2.getKey()), split2.getValue());
+				table.addRow(split2.getKey(), split2.getValue());
 			}
 
 			inputField.setText("");
@@ -252,7 +231,7 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 
 
 	/**                                                                                                                                                                
-	 * If the probability value of a given input is provided in parenthesis,                                                                                           
+	 * If the probability value of a given input is provided in parenthesis,                                                                                          
 	 * try to extract it                                                                                                                                               
 	 *                                                                                                                                                                 
 	 * @param text the string where the probability value might be                                                                                                     
@@ -286,37 +265,34 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	private String getHtmlRendering(CategoricalTable table) {
 
 		String htmlTable = "";
-		for (String var : table.getHeadVariables()) {
-			String baseVar = var.replace("'", "");
-			htmlTable += "<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
+		String baseVar = table.getVariable().replace("'", "");
+		htmlTable += "<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
 
-			if (baseVar.equals(system.getSettings().userInput)) {
-				htmlTable += "<b>[user]</b>";
-			}
-			else if (baseVar.equals(system.getSettings().systemOutput)) {
-				htmlTable += "<b>[system]</b>";
-			}
-			else {
-				htmlTable += "[" + baseVar + "]";
-			}
-			htmlTable += "</font></td>";
-			CategoricalTable marginalTable = table.getMarginalTable(var);
-			for (Assignment a : marginalTable.getRows()) {
-				Value value = a.getValue(var);
-				if (!(value instanceof NoneVal)) {
-					htmlTable += "<td><font size=4>";
-					String content = value.toString();
-					if (marginalTable.getProb(a) < 0.98) {
-						content += " (" + StringUtils.getShortForm(marginalTable.getProb(a)) + ")";
-					}
-					if (system.getSettings().varsToMonitor.contains(baseVar)) {
-						content = "<i>" + content + "</i>";
-					}
-					htmlTable += content + "</font></td></tr><tr><td></td>";
-				}
-			}
-			htmlTable = htmlTable.substring(0, htmlTable.length() - 13) + "</table></p>\n";		
+		if (baseVar.equals(system.getSettings().userInput)) {
+			htmlTable += "<b>[user]</b>";
 		}
+		else if (baseVar.equals(system.getSettings().systemOutput)) {
+			htmlTable += "<b>[system]</b>";
+		}
+		else {
+			htmlTable += "[" + baseVar + "]";
+		}
+		htmlTable += "</font></td>";
+		for (Value value : table.getValues()) {
+			if (!(value instanceof NoneVal)) {
+				htmlTable += "<td><font size=4>";
+				String content = value.toString();
+				if (table.getProb(value) < 0.98) {
+					content += " (" + StringUtils.getShortForm(table.getProb(value)) + ")";
+				}
+				if (system.getSettings().varsToMonitor.contains(baseVar)) {
+					content = "<i>" + content + "</i>";
+				}
+				htmlTable += content + "</font></td></tr><tr><td></td>";
+			}
+		}
+		htmlTable = htmlTable.substring(0, htmlTable.length() - 13) + "</table></p>\n";		
+
 		return htmlTable;		
 	}
 
@@ -353,18 +329,9 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		updateActivation();
 		if (updatedVars.contains(system.getSettings().userInput)
 				&& state.hasChanceNode(system.getSettings().userInput)) {	
-			try {
-				DiscreteDistribution distrib = state.getChanceNode(system.getSettings().userInput).getDistrib().toDiscrete();
-				if (distrib instanceof CategoricalTable) {
-					showVariable((CategoricalTable)distrib);
-				}
-				else {
-					showVariable(state.queryProb(system.getSettings().userInput).toDiscrete());
-				}
-			}
-			catch (DialException e) {
-				log.warning("cannot add utterance: " + e);
-			}
+			CategoricalTable distrib = state.queryProb(
+					system.getSettings().userInput, false).toDiscrete();
+			showVariable(distrib);
 		}
 		if (updatedVars.contains(system.getSettings().systemOutput)
 				&& state.hasChanceNode(system.getSettings().systemOutput)) {
@@ -385,13 +352,18 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 	 * @param distrib the distribution to display
 	 */
 	private void showVariable(CategoricalTable distrib) {
-		distrib = (distrib.getBest().isDefault())? distrib.getNBest(nBestView+1) : distrib.getNBest(nBestView);
+		
+		if (distrib.getBest() == ValueFactory.none()) {
+			distrib = distrib.getNBest(nBestView+1);
+		}
+		else {
+			distrib = distrib.getNBest(nBestView);
+		}
 		String text = getHtmlRendering(distrib);
-		String variable = distrib.getHeadVariables().iterator().next();
+		String variable = distrib.getVariable();
 		try {
 			if (variable.equals(lastUpdatedVariable) 
-					&& (system.getState().isIncremental(variable))
-					&& System.currentTimeMillis() - lastUpdate < Settings.incrementalTimeOut) {
+					&& (system.getState().isIncremental(variable))) {
 				doc.remove(doc.getLength() - negativeOffset, negativeOffset);
 			}
 			int initLength = doc.getLength();
@@ -440,11 +412,11 @@ public class ChatWindowTab extends JComponent implements ActionListener {
 		@Override
 		public void run() {
 			try {
-					system.addContent(table);
-			
-					// TODO: add a notation mechanism to add incremental content
-					// (no need to document, internal functionality)
-					// system.addIncrementalContent(table, true);
+				system.addContent(table);
+
+				// TODO: add a notation mechanism to add incremental content
+				// (no need to document, internal functionality)
+				// system.addIncrementalContent(table, true);
 			}
 			catch (DialException e) {
 				log.warning("cannot update state with user utterance");
