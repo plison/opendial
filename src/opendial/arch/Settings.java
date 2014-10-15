@@ -34,6 +34,7 @@ import javax.sound.sampled.Mixer;
 import opendial.modules.Module;
 import opendial.readers.XMLSettingsReader;
 import opendial.utils.AudioUtils;
+import opendial.utils.StringUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -236,13 +237,13 @@ public class Settings {
 		mapping.setProperty("system", ""+systemOutput);
 		mapping.setProperty("inputmixer", ""+inputMixer);
 		mapping.setProperty("outputmixer", ""+outputMixer);
-		mapping.setProperty("monitor", varsToMonitor.toString().replace("[", "").replace("]", ""));
+		mapping.setProperty("monitor", StringUtils.join(varsToMonitor));
 		mapping.setProperty("samples", ""+nbSamples);
 		mapping.setProperty("timeout", ""+maxSamplingTime);
 		mapping.setProperty("discretisation", ""+discretisationBuckets);
 		List<String> moduleNames = new ArrayList<String>();
 		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
-		mapping.setProperty("modules", ""+moduleNames.toString().replace("[", "").replace("]", ""));
+		mapping.setProperty("modules", ""+StringUtils.join(moduleNames));
 		return mapping;
 	}
 	

@@ -124,6 +124,8 @@ public class StateViewerTab extends JComponent {
 	 * Creates a new GUI component for displaying and controlling the dialogue state's
 	 * Bayesian Network.
 	 * 
+	 * @param mainFrame the reference to the main GUI frame.
+	 * 
 	 */
 	public StateViewerTab(GUIFrame mainFrame) {
 		setLayout(new BorderLayout());
@@ -187,6 +189,7 @@ public class StateViewerTab extends JComponent {
 	 * dialogue state is named "Current state" in the selection list.
 	 * 
 	 * @param state the updated Bayesian Network
+	 * @param updatedVars the updated variables
 	 */
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
@@ -203,8 +206,9 @@ public class StateViewerTab extends JComponent {
 				}
 			}
 		}
-		if (mainFrame.getSystem().getSettings().recording != Recording.NONE && !updatedVars.isEmpty()) {
-			String title = "After update of " + updatedVars.toString().replace("[", "").replace("]", "");
+		if (mainFrame.getSystem().getSettings().recording 
+				!= Recording.NONE && !updatedVars.isEmpty()) {
+			String title = "After update of " + StringUtils.join(updatedVars) ;
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
@@ -240,7 +244,7 @@ public class StateViewerTab extends JComponent {
 	/**
 	 * Writes the given distribution in the logging area at the bottom of the window
 	 * 
-	 * @param the distribution to write
+	 * @param distrib the distribution to write
 	 */
 	public void writeToLogArea(MultivariateDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
@@ -251,7 +255,7 @@ public class StateViewerTab extends JComponent {
 	/**
 	 * Writes the given distribution in the logging area at the bottom of the window
 	 * 
-	 * @param the distribution to write
+	 * @param distrib the distribution to write
 	 */
 	public void writeToLogArea(UtilityDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
@@ -259,6 +263,11 @@ public class StateViewerTab extends JComponent {
 		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");
 	}
 
+	/**
+	 * Returns the reference to the main GUI.
+	 * 
+	 * @return the GUI frame.
+	 */
 	public GUIFrame getMainFrame() {
 		return mainFrame;
 	}

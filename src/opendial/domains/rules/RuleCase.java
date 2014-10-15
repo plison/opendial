@@ -102,7 +102,6 @@ public class RuleCase {
 	 * 
 	 * @param effect the effect
 	 * @param param the effect's probability or utility
-	 * @throws DialException 
 	 */
 	public void addEffect(Effect effect, double param) {
 		addEffect(effect, new FixedParameter(param));
@@ -228,7 +227,7 @@ public class RuleCase {
 	/**
 	 * Returns the mapping between effects and parameters for the case.
 	 * 
-	 * @return the mapping effects -> parameters
+	 * @return the mapping effects: parameters
 	 */
 	public Map<Effect,Parameter> getEffectMap() {
 		return effects;

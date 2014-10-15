@@ -208,8 +208,8 @@ public class DialogueSystem {
 		catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException 
 				| NoSuchMethodException | SecurityException e) {
-			log.warning("cannot attach module " + module.getSimpleName() + ": " + e.getCause());
-			displayComment("cannot attach module " + module.getSimpleName() + ": " +  e.getCause());
+			log.warning("cannot attach " + module.getSimpleName() + ": " + e.getCause());
+			displayComment("cannot attach " + module.getSimpleName() + ": " +  e.getCause());
 		}
 	}
 
@@ -353,6 +353,7 @@ public class DialogueSystem {
 	 * @param content the content to add / concatenate
 	 * @param followPrevious whether the results should be concatenated to the previous values,
 	 *        or reset the content (e.g. when starting a new utterance)
+	 * @return the set of variables that have been updated
 	 * @throws DialException if the incremental update failed
 	 */
 	public Set<String> addIncrementalContent(CategoricalTable content, 
@@ -414,7 +415,8 @@ public class DialogueSystem {
 	 * updates the dialogue state.
 	 * 
 	 * @param newState the state to merge into the current state
-	 * @throws DialException if the 
+	 * @return the set of variables that have been updated
+	 * @throws DialException if the update failed 
 	 */
 	public Set<String> addContent(DialogueState newState) throws DialException {
 		if (!paused) {

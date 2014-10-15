@@ -82,7 +82,8 @@ public class ForwardPlanner implements Module {
 	
 	/**
 	 * Constructs a forward planner for the dialogue system.
-	 * @param system
+	 * 
+	 * @param system the dialogue system associated with the planner.
 	 */
 	public ForwardPlanner(DialogueSystem system) {
 		this.system = system;
@@ -145,6 +146,8 @@ public class ForwardPlanner implements Module {
 
 		/**
 		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
+		 * 
+		 * @param initState initial dialogue state.
 		 */
 		public PlannerProcess(DialogueState initState) {
 			super(Settings.maxSamplingTime * 2);

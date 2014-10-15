@@ -407,7 +407,6 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @param variable the variable label to query
 	 * @return the corresponding probability distribution
-	 * @throws DialException 
 	 */
 	public IndependentProbDistribution queryProb(String variable) {
 		return queryProb(variable, true);
@@ -418,8 +417,8 @@ public class DialogueState extends BNetwork {
 	 * of the state variable provided as argument.
 	 * 
 	 * @param variable the variable label to query
+	 * @param includeEvidence whether to include or ignore the evidence in the dialogue state
 	 * @return the corresponding probability distribution
-	 * @throws DialException 
 	 */
 	public IndependentProbDistribution queryProb(String variable, boolean includeEvidence)  {
 

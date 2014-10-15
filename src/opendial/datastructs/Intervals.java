@@ -33,7 +33,7 @@ import opendial.arch.Logger;
 
 /**
  * Representation of a collection of intervals, each of which is associated with
- * a content object, and start & end values. The difference between the start & 
+ * a content object, and start and end values. The difference between the start and
  * end values of an interval can for instance represent the object probability.
  * 
  * <p>The intervals can then be used for sampling a content object according to 
@@ -62,7 +62,7 @@ public class Intervals<T> {
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
 	 * @param table the tables from which to create the intervals
-	 * @throws DialException 
+	 * @throws DialException  if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Map<T,Double> table) throws DialException {
@@ -92,7 +92,7 @@ public class Intervals<T> {
 	 * 
 	 * @param elements the elements
 	 * @param probs their probability
-	 * @throws DialException 
+	 * @throws DialException if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(T[] elements, double[] probs) throws DialException {

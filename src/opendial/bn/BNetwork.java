@@ -147,9 +147,8 @@ public class BNetwork {
 	 * Replaces an existing node with a new one (with same identifier)
 	 * 
 	 * @param node the new value for the node
-	 * @throws DialException 
 	 */
-	public void replaceNode(BNode node) throws DialException {
+	public void replaceNode(BNode node) {
 		if (!nodes.containsKey(node.getId())) {
 			log.debug("network does not contain a node with identifier " + node.getId());
 		}
@@ -200,6 +199,7 @@ public class BNetwork {
 	 * Remove all the specified nodes
 	 * 
 	 * @param valueNodeIds the nodes to remove
+	 * @return the removed nodes
 	 */
 	public List<BNode> removeNodes(Collection<String> valueNodeIds) {
 		List<BNode> removed = new ArrayList<BNode>();
@@ -588,7 +588,7 @@ public class BNetwork {
 	 * Creates subnetworks corresponding to the cliques of the network
 	 * 
 	 * @return the subnetworks corresponding to the cliques.
-	 * @throws DialException 
+	 * @throws DialException if the cliques could not be created
 	 */
 	public List<BNetwork> createCliques() throws DialException {
 

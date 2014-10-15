@@ -150,8 +150,9 @@ public class DialogueRecorder implements Module {
 
 	
 	/**
-	 * Adds a comment in the XML recordiings.
-	 * @param comment
+	 * Adds a comment in the XML recordings.
+	 * 
+	 * @param comment the comment to add
 	 */
 	public void addComment(String comment) {
 		try {

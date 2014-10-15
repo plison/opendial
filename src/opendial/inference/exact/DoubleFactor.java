@@ -66,7 +66,8 @@ public class DoubleFactor {
 
 	/**
 	 * Creates a new factor out of an existing one
-	 * @param existingFactor
+	 * 
+	 * @param existingFactor the existing factor
 	 */
 	public DoubleFactor(DoubleFactor existingFactor) {
 		matrix = new HashMap<Assignment,double[]>(existingFactor.getMatrix());
@@ -173,8 +174,8 @@ public class DoubleFactor {
 	/**
 	 * Normalises the factor, with the conditional variables as argument.
 	 * 
-	 */
-	
+	 * @param condVars the conditional variables
+	 */	
 	public void normalise(Collection<String> condVars) {
 		Map<Assignment,Double> probMatrix = InferenceUtils.normalise(getProbMatrix(), condVars);
 		Map<Assignment,Double> utilityMatrix = getUtilityMatrix();
@@ -188,6 +189,11 @@ public class DoubleFactor {
 		}
 	}
 	
+	/**
+	 * Trims the factor to the variables provided as argument.
+	 * 
+	 * @param headVars the variables to retain.
+	 */
 	public void trim(Collection<String> headVars) {
 		Map<Assignment,double[]> newMatrix = new HashMap<Assignment,double[]>(matrix.size());		
 		for (Assignment a : matrix.keySet()) {

@@ -75,7 +75,7 @@ public class XMLUtils {
 	 * 
 	 * @param filename the filename
 	 * @return the XML document
-	 * @throws DialException
+	 * @throws DialException if the XML document could not be read.
 	 */
 	public static Document getXMLDocument (String filename) throws DialException {
 

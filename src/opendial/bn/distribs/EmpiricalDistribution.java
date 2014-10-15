@@ -133,7 +133,6 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * arbitrary sample out of the set defining the distribution
 	 * 
 	 * @return the selected sample
-	 * @throws DialException 
 	 */
 	@Override
 	public Assignment sample() {
@@ -197,7 +196,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 
 	/**
 	 * Returns the number of samples.
-	 * @return
+	 * 
+	 * @return the number of samples.
 	 */
 	public int size() {
 		return samples.size();
@@ -252,6 +252,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * variables in the distribution).
 	 * 
 	 * @return the corresponding continuous distribution.
+	 * @throws DialException if the distribution content is discrete.
 	 */
 	public ContinuousDistribution toContinuous() throws DialException {
 		if (continuousCache == null) {
@@ -269,6 +270,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns an independent probability distribution on a single random
 	 * variable based on the samples. This distribution may be a categorical
 	 * table or a continuous distribution.
+	 * 
+	 * @return the probability distribution resulting from the marginalisation.
 	 */
 	@Override
 	public IndependentProbDistribution getMarginal(String var) {
@@ -395,6 +398,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Creates a conditional categorical table derived from the samples.  This method 
 	 * should be called in the presence of conditional variables.
 	 * 
+	 * @param headVar the name of the head variable
+	 * @param condVars the conditional variables.
 	 * @return the conditional categorical table 
 	 */
 	public ConditionalTable createConditionalTable(String headVar, 

@@ -25,11 +25,13 @@
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}" />
 	</target>
+	
+
 
 	<!-- COMPILATION -->
 	<target name="compile" depends="init" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+		<javac srcdir="${src}" target="1.8" destdir="${build}" includeantruntime="false">
 <!--			    <compilerarg value="-Xlint"/> -->
 			    <classpath refid="compile.classpath" />
 		</javac>

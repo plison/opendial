@@ -61,7 +61,6 @@ public class XMLDomainReader {
 	 * 
 	 * @param topDomainFile the filename of the top XML file
 	 * @return the extracted dialogue domain
-	 * @throws IOException if the file cannot be found/opened
 	 * @throws DialException if a format error occurs
 	 */
 	public static Domain extractDomain(String topDomainFile) throws DialException {

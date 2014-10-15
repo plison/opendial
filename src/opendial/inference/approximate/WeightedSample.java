@@ -56,11 +56,20 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	
 	/**
 	 * Creates a new sample
+	 * 
+	 * @param a the existing assignment
 	 */
 	public WeightedSample(Assignment a) {
 		super(a);
 	}
 	
+	/**
+	 * Creates a new sample with an existing weight and utility
+	 * 
+	 * @param a the assignment
+	 * @param logWeight the logarithmic weight
+	 * @param utility the utility
+	 */
 	public WeightedSample(Assignment a, double logWeight, double utility) {
 		super(a);
 		this.logWeight = logWeight;

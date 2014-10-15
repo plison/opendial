@@ -99,10 +99,9 @@ public class KernelDensityFunction implements DensityFunction {
 	 * 
 	 * @param x the point
 	 * @return its density
-	 * @throws DialException 
 	 */
 	@Override
-	public double getDensity(Double... x) throws DialException {
+	public double getDensity(Double... x) {
 		double density = 0.0;
 		int dim = (isBounded)? bandwidths.length -1 : bandwidths.length;
 		for (Double[] point : points) {
@@ -370,7 +369,8 @@ public class KernelDensityFunction implements DensityFunction {
 	 * Converts the distribution to a Gaussian distribution and returns its XML
 	 * representation.
 	 * 
-	 * @throws DialException 
+	 * @param doc the XML document
+	 * @throws DialException if the XML representation could not be generated
 	 * 
 	 */
 	@Override

@@ -71,6 +71,8 @@ public class RewardLearner implements Module {
 
 	/**
 	 * Creates the reward learner for the dialogue system.
+	 * 
+	 * @param system the dialogue system.
 	 */
 	public RewardLearner(DialogueSystem system) {
 		this.system = system;

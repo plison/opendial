@@ -157,6 +157,7 @@ public class CombinatoricsUtils {
 	 * Get the power set of the given set
 	 * 
 	 * @param originalSet the original set
+	 * @param <T> the type of the elements in the set
 	 * @return its power set
 	 */
 	public static <T> Set<Set<T>> getPowerset(Set<T> originalSet) {

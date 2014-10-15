@@ -124,9 +124,10 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	/**
 	 * Extracts a unique (non reweighted) sample for the query.
 	 * 
-	 * @param query the query
+	 * @param network the network on which to extract the sample
+	 * @param queryVars the variables to extract
 	 * @return the extracted sample
-	 * @throws DialException
+	 * @throws DialException if no sample could be extracted.
 	 */
 	public static Assignment extractSample(BNetwork network, Collection<String> queryVars) 
 			throws DialException {
@@ -273,7 +274,7 @@ public class LikelihoodWeighting implements InferenceAlgorithm {
 	 * 
 	 * @param samples the initial samples (with their weight)
 	 * @return the redrawn samples given their weight
-	 * @throws DialException
+	 * @throws DialException if the samples could not be redrawn.
 	 */
 	public static Stack<WeightedSample> redrawSamples(Stack<WeightedSample> samples)
 			throws DialException {

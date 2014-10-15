@@ -64,6 +64,8 @@ public class CompositeParameter implements Parameter {
 	
 	/**
 	 * Creates a new composite parameter 
+	 * 
+	 * @param operator whether add or multiply operator
 	 */
 	public CompositeParameter(Operator operator) {
 		this.parameters = new HashSet<Parameter>();
@@ -75,6 +77,7 @@ public class CompositeParameter implements Parameter {
 	 * Creates a new composite parameter with the given parameter distributions
 	 * 
 	 * @param paramIds the collection of distributions
+	 * @param operator whether add or multiply operator
 	 */
 	public CompositeParameter(Collection<Parameter> paramIds, Operator operator) {
 		this(operator);

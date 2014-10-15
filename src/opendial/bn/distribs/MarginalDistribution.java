@@ -74,7 +74,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * provided assignment has a probability 1.0).
 	 * 
 	 * @param condDistrib the distribution P(X|Y1,...Yn, Z1,...Zm)
-	 * @param uncondDistrib the assignment of values for Z1,...Zm
+	 * @param assign the assignment of values for Z1,...Zm
 	 */
 	public MarginalDistribution(ProbDistribution condDistrib, Assignment assign) {
 		this.condDistrib = condDistrib;
@@ -178,7 +178,7 @@ public class MarginalDistribution implements ProbDistribution {
 	/**
 	 * Returns the posterior distribution given the conditional assignment.
 	 * 
-	 * @param a conditional assignment on a subset of variables from Y1,...Yn
+	 * @param condition a conditional assignment on a subset of variables from Y1,...Yn
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
@@ -192,7 +192,7 @@ public class MarginalDistribution implements ProbDistribution {
 	/**
 	 * Prune the values below a certain threshold.
 	 * 
-	 * @param the threshold
+	 * @param threshold the threshold to apply
 	 */
 	@Override
 	public void pruneValues(double threshold) {

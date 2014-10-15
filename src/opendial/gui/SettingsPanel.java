@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.utils.StringUtils;
 
 
 /**
@@ -115,7 +116,7 @@ public class SettingsPanel extends JDialog {
 
 		gui.add(new JLabel(" Other variables to monitor in chat window:     "));
 		final JFormattedTextField toMonitor = new JFormattedTextField();
-		toMonitor.setText(""+settings.varsToMonitor.toString().replace("[", "").replace("]", ""));
+		toMonitor.setText(""+StringUtils.join(settings.varsToMonitor));
 		gui.add(toMonitor);	
 
 		allOptions.add(gui);

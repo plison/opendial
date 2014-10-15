@@ -54,7 +54,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param value the value for the random variable
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
 	 */
 	public double getProb(Value value) ;
 	
@@ -64,7 +63,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param value the value for the random variable (as a string)
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
 	 */	
 	public default double getProb(String value) {
 		return getProb(ValueFactory.create(value));
@@ -76,7 +74,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param value the value for the random variable (as a boolean)
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
 	 */
 	public default double getProb(boolean value) {
 		return getProb(ValueFactory.create(value));
@@ -88,7 +85,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param value the value for the random variable (as a double)
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
 	 */
 	public default double getProb(double value) {
 		return getProb(ValueFactory.create(value));
@@ -100,7 +96,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param value the value for the random variable (as a double array)
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
 	 */
 	public default double getProb(Double[] value) {
 		return getProb(ValueFactory.create(value));
@@ -110,7 +105,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns a sampled value for the distribution.
 	 * 
 	 * @return the sampled value
-	 * @throws DialException 
+	 * @throws DialException if no sample could be extracted.
 	 */
 	public Value sample() throws DialException ;
 		
@@ -144,7 +139,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param document the XML node to which the node will be attached
 	 * @return the corresponding XML node
-	 * @throws DialException 
+	 * @throws DialException if the XML generation failed.
 	 */
 	public Node generateXML(Document document) throws DialException;
 	
@@ -189,7 +184,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param range ignored
 	 * @return a set of possible values for the variable
-	 * @throws DialException 
+	 * @throws DialException if the possible values could not be extracted.
 	 */
 	@Override
 	public default Set<Value> getValues(ValueRange range) throws DialException {
@@ -200,6 +195,11 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	/**
 	 * Returns the probability for the head assignment, if the value can be found in the
 	 * distribution.  Else, returns 0.0.  The conditional assignment is ignored.
+	 * 
+	 * @param condition the conditional assignment
+	 * @param head the value for the head variable
+	 * @return the resulting probability
+	 * @throws DialException if the probability could not be extracted.
 	 */
 	@Override
 	public default double getProb(Assignment condition, Value head) throws DialException {

@@ -64,7 +64,8 @@ public class OutputDistribution implements ProbDistribution {
 
 	/**
 	 * Creates the output distribution for the output variable label
-	 * @param var
+	 * 
+	 * @param var the variable name
 	 */
 	public OutputDistribution(String var) {
 		this.baseVar = var.replace("'", "");

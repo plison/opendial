@@ -109,7 +109,7 @@ public class RuleOutput extends RuleCase {
 	 * 
 	 * @param input input assignment (with parameters values)
 	 * @return the corresponding mass
-	 * @throws DialException
+	 * @throws DialException if some parameters could not be found.
 	 */
 	public double getTotalMass(Assignment input) throws DialException {
 		double mass = 0;

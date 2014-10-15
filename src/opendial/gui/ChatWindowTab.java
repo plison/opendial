@@ -159,6 +159,8 @@ public class ChatWindowTab extends JComponent {
 
 	/**
 	 * Enables or disables the speech input panel in the tab 
+	 * 
+	 * @param toEnable true if the speech panel should be enabled, else false
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (inputContainer.getComponentCount() == 3 && toEnable) {
@@ -175,7 +177,7 @@ public class ChatWindowTab extends JComponent {
 	/**
 	 * Sets the number of N-Best elements to display
 	 * 
-	 * @param nBestView
+	 * @param nBestView the number of N-best elements to use
 	 */
 	public void setNBest(int nBestView) {
 		this.nBestView = nBestView;
