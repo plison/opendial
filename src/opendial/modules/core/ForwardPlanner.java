@@ -123,12 +123,8 @@ public class ForwardPlanner implements Module {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
-			try {
 				currentProcess = new PlannerProcess(state);
-				currentProcess.start();
-				currentProcess.join();
-			} 
-			catch (InterruptedException e) { e.printStackTrace(); }
+				currentProcess.run();
 		}
 	} 
 
@@ -138,7 +134,7 @@ public class ForwardPlanner implements Module {
 	 * @author  Pierre Lison (plison@ifi.uio.no)
 	 * @version $Date::                      $
 	 */
-	public class PlannerProcess extends AnytimeProcess {
+	public class PlannerProcess implements AnytimeProcess {
 
 		DialogueState initState;
 
@@ -150,8 +146,8 @@ public class ForwardPlanner implements Module {
 		 * @param initState initial dialogue state.
 		 */
 		public PlannerProcess(DialogueState initState) {
-			super(Settings.maxSamplingTime * 2);
 			this.initState = initState;
+			this.setTimeout(Settings.maxSamplingTime * 2);
 		}
 
 		/**

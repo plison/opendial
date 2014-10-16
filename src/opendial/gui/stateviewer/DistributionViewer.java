@@ -177,12 +177,9 @@ public class DistributionViewer extends JDialog {
 
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		BarRenderer renderer = (BarRenderer) plot.getRenderer(); 
-		renderer.setToolTipGenerator(new CategoryToolTipGenerator()
-		{ @Override
-			public String generateToolTip(CategoryDataset data, int series, int category) {
-			return "P("+variableName + "=" + data.getColumnKeys().get(category) + ") = "
-					+ data.getValue(series, category); 
-		} });
+		renderer.setToolTipGenerator((d,s,c) -> {
+			return "P("+variableName + "=" + d.getColumnKeys().get(c) + ") = "+ d.getValue(s, c); 
+		});
 
 		renderer.setBarPainter(new StandardBarPainter());
 		renderer.setDrawBarOutline(false);

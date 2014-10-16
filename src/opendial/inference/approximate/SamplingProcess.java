@@ -20,7 +20,7 @@ import opendial.inference.Query;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class SamplingProcess extends AnytimeProcess {
+public class SamplingProcess implements AnytimeProcess {
 
 	// logger
 	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
@@ -56,7 +56,7 @@ public class SamplingProcess extends AnytimeProcess {
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
 	public SamplingProcess(Query query,int nbSamples, long maxSamplingTime) {
-		super(maxSamplingTime);
+		setTimeout(maxSamplingTime);
 		this.query = query;
 		samples = new Stack<WeightedSample>();
 		this.nbSamples = nbSamples;
@@ -154,9 +154,7 @@ public class SamplingProcess extends AnytimeProcess {
 	 * @return the collected samples
 	 */
 	public Stack<WeightedSample> getSamples() {
-		start();
-		try {	join(); } 
-		catch (InterruptedException e) { e.printStackTrace(); }
+		run();
 		return samples;
 	}
 
@@ -243,6 +241,7 @@ public class SamplingProcess extends AnytimeProcess {
 	public boolean isTerminated() {
 		return isTerminated;
 	}
+
 
 
 }
