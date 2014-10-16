@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
  * X is a random variable.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-03-20 21:16:08 #$
+ * @version $Date::                      $
  *
  */
 public interface IndependentProbDistribution extends ProbDistribution {
