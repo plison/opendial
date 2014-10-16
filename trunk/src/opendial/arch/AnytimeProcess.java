@@ -34,17 +34,17 @@ import java.util.TimerTask;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public abstract class AnytimeProcess extends Thread {
+public interface AnytimeProcess extends Runnable {
 
 
 	public Logger log = new Logger("AnytimeProcess", Logger.Level.NORMAL);
 
 	/**
-	 * Creates a new anytime process with the given timeout (in milliseconds)
+	 * Sets the timeout for the process
 	 * 
-	 * @param timeout the maximum duration of the process
+	 * @param timeout time (in milliseconds) before terminating the process
 	 */
-	public AnytimeProcess(final long timeout) {
+	public default void setTimeout(final long timeout) {
 		final Class<? extends AnytimeProcess> cls = this.getClass();
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -54,8 +54,7 @@ public abstract class AnytimeProcess extends Thread {
 					log.debug("Time (" + timeout + " ms.) has run out for " + cls.getSimpleName());
 					terminate();
 				}
-			}
-		}, timeout);
+			}}, timeout);
 	}
 
 	/**

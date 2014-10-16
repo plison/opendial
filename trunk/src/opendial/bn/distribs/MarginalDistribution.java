@@ -30,7 +30,7 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-
+ 
 /**
  * Representation of a probability distribution P(X|Y1,...Yn) by way of two
  * distributions:<ul>

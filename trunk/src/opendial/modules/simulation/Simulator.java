@@ -129,33 +129,8 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public void trigger(final DialogueState systemState, Collection<String> updatedVars) {
-		final String outputVar = system.getSettings().systemOutput;
-		if (updatedVars.contains(outputVar)) {
-			(new Thread() {
-				@Override
-				public void run() {
-					try {
-						synchronized (systemState) {
-
-							Value systemAction = ValueFactory.none();
-							if (systemState.hasChanceNode(outputVar)) {
-								systemAction = systemState.queryProb(outputVar).toDiscrete().getBest();
-							}
-
-
-							log.debug("Simulator input: " + systemAction);
-							boolean turnPerformed = performTurn(systemAction);
-							int repeat = 0 ;
-							while (!turnPerformed && repeat < 5) {
-								turnPerformed = performTurn(systemAction);
-							}
-						}
-					}
-					catch (DialException e) {
-						log.debug("cannot update simulator: " + e);
-					}
-				}
-			}).start();
+		if (updatedVars.contains(system.getSettings().systemOutput)) {
+			new PerformTurn().start();
 		}
 	}
 
@@ -240,12 +215,45 @@ public class Simulator implements Module {
 		return false;
 	}
 
-	
+
 	private static Domain extractDomain(String simulatorDomain) throws DialException {
 		if (simulatorDomain == null) {
 			throw new DialException("Required parameter: simulatorDomain");
 		}
 		return XMLDomainReader.extractDomain(simulatorDomain);
+	}
+	
+	
+	
+	/**
+	 * Thread employed to perform a new turn by the user simulator.
+	 *
+	 */
+	final class PerformTurn extends Thread {
+		
+		public void run() {
+			DialogueState systemState = system.getState();
+			final String outputVar = system.getSettings().systemOutput;
+			try {
+				synchronized (systemState) {
+
+					Value systemAction = ValueFactory.none();
+					if (systemState.hasChanceNode(outputVar)) {
+						systemAction = systemState.queryProb(outputVar).toDiscrete().getBest();
+					}
+
+					log.debug("Simulator input: " + systemAction);
+					boolean turnPerformed = performTurn(systemAction);
+					int repeat = 0 ;
+					while (!turnPerformed && repeat < 5) {
+						turnPerformed = performTurn(systemAction);
+					}
+				}
+			}
+			catch (DialException e) {
+				log.debug("cannot update simulator: " + e);
+			}
+		}
 	}
 
 }

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -98,10 +98,10 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 
 	// whether the viewer is currently being updated
 	volatile boolean isUpdating = false;
-	
+
 	// shown distribution charts
 	Map<String, DistributionViewer> shownDistribs;
-		
+
 
 	/**
 	 * Creates a new graph viewer, connected to the component given as
@@ -132,7 +132,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		graphMouse.setMode(Mode.PICKING);
 		graphMouse.add(new PopupHandler(this));
 		setGraphMouse(graphMouse);
-		
+
 		shownDistribs = new HashMap<String,DistributionViewer>();
 	}
 
@@ -150,25 +150,25 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		// adding the nodes and edges
 		int counter = 0;
 		try {
-		for (BNode node: new ArrayList<BNode>(ds.getNodes())) {
-			if (showParameters || !ds.getParameterIds().contains(node.getId())) {
-			String nodeName = getVerticeId(node);
+			for (BNode node: new ArrayList<BNode>(ds.getNodes())) {
+				if (showParameters || !ds.getParameterIds().contains(node.getId())) {
+					String nodeName = getVerticeId(node);
 
-			f.addVertex(nodeName);
-			for (BNode inputNode : new ArrayList<BNode>(node.getInputNodes())) {
-				if (ds.getNode(inputNode.getId()) != null) {
-					String inputNodeName =  getVerticeId(inputNode);
-					f.addEdge(counter, inputNodeName, nodeName);
-					counter++;
+					f.addVertex(nodeName);
+					for (BNode inputNode : new ArrayList<BNode>(node.getInputNodes())) {
+						if (ds.getNode(inputNode.getId()) != null) {
+							String inputNodeName =  getVerticeId(inputNode);
+							f.addEdge(counter, inputNodeName, nodeName);
+							counter++;
+						}
+					}
 				}
 			}
-			}
-		}
 		}
 		catch (ConcurrentModificationException e) {
 			return getGraphLayout(ds, showParameters);
 		}
-		
+
 		CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
 		StaticLayout<String,Integer> layout  = new StaticLayout<String,Integer>(f, transformer); 
 
@@ -224,45 +224,46 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	public synchronized void showBayesianNetwork(DialogueState state) {
 		currentState = state;	
 		if (!isUpdating) {
-			new Thread(new Runnable() { 
-				@Override
-				public void run() { 
-					isUpdating = true;
-					if (tab.getMainFrame().getSystem().isPaused()) {
-						update();
-					}
-					else {
+			new Thread(() -> { 
+				isUpdating = true;
+				if (tab.getMainFrame().getSystem().isPaused()) {
+					update();
+				}
+				else {
 					synchronized (currentState) {
 						update();
 					}
-					}
-					isUpdating = false;				
 				}
-				
-				private void update() {
-					Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
-					setGraphLayout(layout);
-					updateDistribs();
-				}
+				isUpdating = false;				
 			}).start();
 		}
 	} 
-	
-	
+
+
+	/**
+	 * Updates the viewer with the current state.
+	 */
+	private void update() {
+		Layout<String,Integer> layout = getGraphLayout(currentState, tab.showParameters());
+		setGraphLayout(layout);
+		updateDistribs();
+	}
+
+
 	/**
 	 * Quick fix for a strange bung in JUNG
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
-			try {
+		try {
 			super.paintComponent(g);
-			}
-			catch (NullPointerException e) {
-				log.debug("cannot repaint state viewer, waiting for next update");
-				isUpdating = false;
-				tab.trigger(currentState, currentState.getChanceNodeIds());
-			}
-		
+		}
+		catch (NullPointerException e) {
+			log.debug("cannot repaint state viewer, waiting for next update");
+			isUpdating = false;
+			tab.trigger(currentState, currentState.getChanceNodeIds());
+		}
+
 	}
 
 
@@ -330,9 +331,9 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	public DialogueState getState() {
 		return currentState;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Displays the probability distribution(s) for the selected variables.
 	 * 
@@ -345,8 +346,8 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 			shownDistribs.put(distrib.getVariable(), viewer);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Updates the windows displaying probability distributions.
 	 */
@@ -371,16 +372,16 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		public String transform(String nodeGraphId) {
 			BNode node = getBNode(nodeGraphId);
 			if (node != null) {
-			String prettyPrintNode = node.toString();
-			String htmlDistrib = "<html>&nbsp;&nbsp;" + 
-					prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
-							+ "<br>&nbsp;&nbsp;") + "<br></html>";
-			htmlDistrib = htmlDistrib
-					.replace("if", "<b>if</b>")
-					.replace("then", "<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-					.replace("else", "<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-					.replace("<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>", "<b>else if</b>");
-			return StringUtils.getHtmlRendering(htmlDistrib);
+				String prettyPrintNode = node.toString();
+				String htmlDistrib = "<html>&nbsp;&nbsp;" + 
+						prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
+								+ "<br>&nbsp;&nbsp;") + "<br></html>";
+				htmlDistrib = htmlDistrib
+						.replace("if", "<b>if</b>")
+						.replace("then", "<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+						.replace("else", "<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+						.replace("<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>", "<b>else if</b>");
+				return StringUtils.getHtmlRendering(htmlDistrib);
 			}
 			else {
 				return "";
@@ -415,7 +416,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		}
 	}
 
-	
+
 	/**
 	 * Renderer for the vertice colour
 	 */
@@ -479,14 +480,14 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 	}
 
 
-	
+
 	/**
 	 * Custom layout manager for the state viewer.
 	 */
 	final class CustomLayoutTransformer implements Transformer<String,Point2D> {
 
 		Map<BNode,Point2D> positions;
-		
+
 		public CustomLayoutTransformer(BNetwork network) {
 			positions = new HashMap<BNode, Point2D>();
 			Point current = new Point(0, 0);
@@ -504,7 +505,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 					current = incrementPoint(current);
 				}
 			}
-			
+
 			current = new Point(current.x + 200, 0);
 			for (BNode node : network.getNodes()) {
 				if (!positions.containsKey(node)) {
@@ -513,7 +514,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 				}
 			}
 		}
-		
+
 		private Point incrementPoint(Point curPoint) {
 			if (curPoint.y < 500) {
 				return new Point(curPoint.x, curPoint.y + 150);
@@ -522,12 +523,12 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 				return new Point(curPoint.x + 150, 0);
 			}
 		}
-		
+
 		@Override
 		public Point2D transform(String id) {
 			return positions.get(getBNode(id));
 		}
-		
+
 	}
 
 }

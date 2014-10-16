@@ -148,10 +148,10 @@ public class GUIMenuBar extends JMenuBar {
 		ButtonGroup modeGroup = new ButtonGroup();
 		JRadioButtonMenuItem normalMode = new JRadioButtonMenuItem("Normal mode");
 		normalMode.addActionListener(e -> switchMode(false));
-		
+
 		JRadioButtonMenuItem wozMode = new JRadioButtonMenuItem("Wizard-of-Oz mode");
 		wozMode.addActionListener(e -> switchMode(true));
-		
+
 		modeGroup.add(normalMode);
 		modeGroup.add(wozMode);
 		normalMode.setSelected(true);
@@ -185,10 +185,10 @@ public class GUIMenuBar extends JMenuBar {
 				mixerButton.setSelected(true);
 			}
 		}
-		
+
 		inputMenu.setEnabled(frame.isSpeechEnabled);
 		optionMenu.add(inputMenu);
-		
+
 		outputMenu = new JMenu("Audio output");
 		ButtonGroup outputGroup = new ButtonGroup();
 		for (final Mixer.Info mixer : AudioUtils.getOutputMixers()) {
@@ -212,7 +212,7 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getChatTab().setNBest(1);
 			frame.addComment("Number of shown user hypotheses: 1");
 		});
-		
+
 		JRadioButtonMenuItem threeBest = new JRadioButtonMenuItem("3-best list");
 		threeBest.addActionListener(e -> {
 			frame.getChatTab().setNBest(3);
@@ -223,7 +223,7 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getChatTab().setNBest(20);
 			frame.addComment("Number of shown user hypotheses: 20");
 		});
-		
+
 		group.add(singleBest);
 		group.add(threeBest);
 		group.add(allBest);
@@ -240,20 +240,20 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getSystem().getSettings().recording = Recording.NONE;
 			frame.addComment("Stop recording intermediate dialogue states");
 		});
-	
+
 		JRadioButtonMenuItem last = new JRadioButtonMenuItem("Last input");
 		last.addActionListener(e -> {
 			frame.getSystem().getSettings().recording = Recording.LAST_INPUT;
 			frame.addComment("Recording intermediate dialogue states for the last user input");
 		});
-	
+
 		JRadioButtonMenuItem all = new JRadioButtonMenuItem("Full history");
 		all.addActionListener(e -> {
 			frame.getSystem().getSettings().recording = Recording.ALL;
 			frame.addComment("Recording all intermediate dialogue states "
 					+ "(warning: can slow down processing)");
 		});
-		
+
 		group2.add(none);
 		group2.add(last);
 		group2.add(all);
@@ -273,7 +273,7 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getStateViewerTab().showParameters(!curSetting);
 			frame.addComment("Show parameters: " + frame.getStateViewerTab().showParameters());
 		});
-		
+
 		optionMenu.add(stateDisplayMenu);
 
 		optionMenu.add(new JSeparator());
@@ -286,10 +286,10 @@ public class GUIMenuBar extends JMenuBar {
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About");
 		aboutItem.addActionListener(e -> showAboutPanel(frame));
-		
+
 		JMenuItem docItem = new JMenuItem("Documentation");
 		docItem.addActionListener(e -> openDocumentation());
-		
+
 		helpMenu.add(aboutItem);
 		helpMenu.add(docItem);
 		add(helpMenu);
@@ -311,8 +311,8 @@ public class GUIMenuBar extends JMenuBar {
 			frame.addComment("Switching interaction to normal mode");
 		}
 	}
-	
-	
+
+
 	/**
 	 * Enables or disables the speech option menu 
 	 */
@@ -385,17 +385,13 @@ public class GUIMenuBar extends JMenuBar {
 					+ "plison@ifi.uio.no</a>)</body></html>");
 
 			// handle link events
-			ep.addHyperlinkListener(new HyperlinkListener()
-			{
-				@Override
-				public void hyperlinkUpdate(HyperlinkEvent e)  {
-					if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
-						try {
-							Desktop.getDesktop().browse(e.getURL().toURI());
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						} 
-					}
+			ep.addHyperlinkListener(e ->  {
+				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED) && Desktop.isDesktopSupported()) {
+					try {
+						Desktop.getDesktop().browse(e.getURL().toURI());
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					} 
 				}
 			});
 			ep.setEditable(false);

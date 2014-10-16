@@ -181,6 +181,14 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return new MarginalDistribution(this, condition);
 	}
 
+	
+	/**
+	 * Returns the categorical table associated with the conditional assignment.
+	 * 
+	 * @param condition the conditional assignment
+	 * @return the corresponding categorical table on the true and false values
+	 * @throws DialException if the table could not be extracted for the condition
+	 */
 	@Override
 	public CategoricalTable getProbDistrib(Assignment condition) throws DialException {
 		double positiveProb = getProb(condition);
@@ -203,28 +211,6 @@ public class EquivalenceDistribution implements ProbDistribution {
 		vals.add(ValueFactory.create(true));
 		vals.add(ValueFactory.create(false));
 		return vals;
-	}
-
-
-	private Value[] getCoupledValues(Assignment initialInput) throws DialException {
-
-		Value[] coupledValues = new Value[2];
-		for (String inputVar : initialInput.getVariables()) {
-			if (inputVar.equals(baseVar+"^p")) {
-				coupledValues[0] = initialInput.getValue(inputVar);
-			}
-			else if (inputVar.equals(baseVar+"'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);				
-			}
-			else if (inputVar.equals(baseVar) && !inputVar.contains(baseVar+"'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);								
-			}
-		}
-		if (coupledValues[0]==null || coupledValues[1]==null) {
-			throw new DialException("equivalence distribution with variable " + 
-					baseVar + " cannot handle condition " + initialInput);
-		}
-		return coupledValues;
 	}
 
 
@@ -260,6 +246,28 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return true;
 	}
 
+	
+
+	private Value[] getCoupledValues(Assignment initialInput) throws DialException {
+
+		Value[] coupledValues = new Value[2];
+		for (String inputVar : initialInput.getVariables()) {
+			if (inputVar.equals(baseVar+"^p")) {
+				coupledValues[0] = initialInput.getValue(inputVar);
+			}
+			else if (inputVar.equals(baseVar+"'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);				
+			}
+			else if (inputVar.equals(baseVar) && !inputVar.contains(baseVar+"'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);								
+			}
+		}
+		if (coupledValues[0]==null || coupledValues[1]==null) {
+			throw new DialException("equivalence distribution with variable " + 
+					baseVar + " cannot handle condition " + initialInput);
+		}
+		return coupledValues;
+	}
 
 
 }
