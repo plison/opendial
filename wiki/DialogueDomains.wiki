@@ -278,7 +278,7 @@ Each basic condition is written as an `<if .../>` markup with three basic attrib
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 || Variable label ||
 || `relation` || Attribute || 0-1 || (Optional) binary relation to satisfy.  Admissible relations are `=` (equality), `!=` (inequality), `<` (lower than),<br> `>` (higher than), `in` (contains), and `!in` (not contains).  Default relation is equality. ||
-|| `var` || Attribute || 1 || Variable value to check ||
+|| `value` || Attribute || 1 || Variable value to check ||
 
 <br>
 
