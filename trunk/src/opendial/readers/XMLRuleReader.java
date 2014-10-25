@@ -97,6 +97,7 @@ public class XMLRuleReader {
 		//creating the rule
 		Rule rule = new Rule(ruleId, type);
 
+		
 		// extracting the rule cases
 		for (int i = 0 ; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
@@ -104,12 +105,18 @@ public class XMLRuleReader {
 			if (node.getNodeName().equals("case")) {
 				RuleCase newCase = getCase(node, type);
 				rule.addCase(newCase);
+				
 			}
 			else if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
 				throw new DialException("Ill-formed rule: " + node.getNodeName() + " not accepted");
 			}
 		}
 
+		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("priority") != null) {
+			int priority = Integer.parseInt(topNode.getAttributes()
+					.getNamedItem("priority").getNodeValue());
+			rule.setPriority(priority);
+		}
 		return rule;
 	}
 
@@ -394,7 +401,10 @@ public class XMLRuleReader {
 		} 
 		
 		EffectType type = getEffectType(node);
-
+		// "clear" effect is outdated
+		if (node.getNodeName().equalsIgnoreCase("clear")) {
+			value = new Template("None");
+		}
 		// checking for other attributes
 		for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
 			Node attr = node.getAttributes().item(i);
@@ -431,7 +441,7 @@ public class XMLRuleReader {
 			return EffectType.DISCARD;
 		}
 		else if (node.getNodeName().equalsIgnoreCase("clear")) {
-			return EffectType.CLEAR;
+			return EffectType.SET;
 		}
 		else  {
 			throw new DialException("unrecognized effect: " + node.getNodeName());

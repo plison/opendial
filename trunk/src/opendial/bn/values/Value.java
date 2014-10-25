@@ -23,6 +23,8 @@
 
 package opendial.bn.values;
 
+import opendial.arch.DialException;
+
 /**
  * Generic interface for a variable value, that can be copied.
  * 
@@ -57,7 +59,8 @@ public interface Value extends Comparable<Value> {
 	 * 
 	 * @param value the value to concatenate with the current one
 	 * @return the concatenated result
+	 * @throws DialException if the values could not be concatenated 
 	 */
-	public abstract Value concatenate(Value value);
+	public abstract Value concatenate(Value value) throws DialException;
 	
 }

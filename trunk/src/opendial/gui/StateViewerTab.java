@@ -208,7 +208,7 @@ public class StateViewerTab extends JComponent {
 		}
 		if (mainFrame.getSystem().getSettings().recording 
 				!= Recording.NONE && !updatedVars.isEmpty()) {
-			String title = "After update of " + StringUtils.join(updatedVars) ;
+			String title = "After update of " + StringUtils.join(updatedVars, ",") ;
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);

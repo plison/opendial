@@ -52,8 +52,6 @@ import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
 
-import org.apache.commons.collections15.ListUtils;
-
 /**
  *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
  *  <li> the current dialogue state
@@ -110,6 +108,7 @@ public class DialogueSystem {
 		modules.add(new GUIFrame(this));
 		modules.add(new DialogueRecorder(this));
 		modules.add(new ForwardPlanner(this));
+		domain = new Domain();
 	}
 
 
@@ -221,9 +220,13 @@ public class DialogueSystem {
 	 * @param moduleClass the class of the module to detach.
 	 */
 	public void detachModule(Class<? extends Module> moduleClass) {
-		Module module = getModule(moduleClass);
-		if (module != null) {
-			modules.remove(module);
+		synchronized (curState) {
+			Module module = getModule(moduleClass);
+			if (module != null) {
+		//		log.info("detaching module " + module.getClass().getSimpleName());
+				module.pause(true);
+				modules.remove(module);
+			}
 		}
 	}
 
@@ -270,9 +273,6 @@ public class DialogueSystem {
 	 */
 	public void changeSettings(Settings settings) {
 
-		for (Class<Module> toDetach : ListUtils.subtract(this.settings.modules, settings.modules)) {
-			detachModule(toDetach);
-		}
 		this.settings.fillSettings(settings.getFullMapping());
 
 		for (Class<Module> toAttach : settings.modules) {
@@ -288,7 +288,7 @@ public class DialogueSystem {
 	//  STATE UPDATE
 	// ===================================
 
-	
+
 	/**
 	 * Adds the user input (assuming a perfect confidence score) to the dialogue state
 	 * and subsequently updates it.
@@ -301,8 +301,8 @@ public class DialogueSystem {
 		Assignment a = new Assignment(settings.userInput, userInput);
 		return addContent(a);
 	}
-	
-	
+
+
 	/**
 	 * Adds the user input (as a N-best list, where each hypothesis is associated with a 
 	 * probability) to the dialogue state and subsequently updates it.
@@ -320,7 +320,7 @@ public class DialogueSystem {
 	}
 
 
-	
+
 	/**
 	 * Adds the content (expressed as a categorical table over variables) to the
 	 * current dialogue state, and subsequently updates the dialogue state.
@@ -342,7 +342,7 @@ public class DialogueSystem {
 		}
 	}
 
-	
+
 	/**
 	 * Adds the incremental content (expressed as a distribution over variables) to the current 
 	 * dialogue state, and subsequently updates it.  If followPrevious is set to true, the content
@@ -392,7 +392,7 @@ public class DialogueSystem {
 			return new HashSet<String>();
 		}
 	}
-	
+
 
 	public Set<String> addContent(MultivariateDistribution distrib) throws DialException {
 		if (!paused) {
@@ -447,11 +447,11 @@ public class DialogueSystem {
 	protected Set<String> update() {
 
 		Set<String> updatedVars = new HashSet<String>();
-		
+
 		while (!curState.getNewVariables().isEmpty()) {
 			Set<String> toProcess = curState.getNewVariables();
 			curState.reduce();	
-
+			
 			for (Model model : domain.getModels()) {
 				model.trigger(curState, toProcess);
 			}
@@ -460,7 +460,7 @@ public class DialogueSystem {
 			}
 			updatedVars.addAll(toProcess);
 		}
-		
+
 		return updatedVars;
 	}
 

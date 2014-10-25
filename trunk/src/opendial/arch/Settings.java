@@ -237,13 +237,13 @@ public class Settings {
 		mapping.setProperty("system", ""+systemOutput);
 		mapping.setProperty("inputmixer", ""+inputMixer);
 		mapping.setProperty("outputmixer", ""+outputMixer);
-		mapping.setProperty("monitor", StringUtils.join(varsToMonitor));
+		mapping.setProperty("monitor", StringUtils.join(varsToMonitor, ","));
 		mapping.setProperty("samples", ""+nbSamples);
 		mapping.setProperty("timeout", ""+maxSamplingTime);
 		mapping.setProperty("discretisation", ""+discretisationBuckets);
 		List<String> moduleNames = new ArrayList<String>();
 		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
-		mapping.setProperty("modules", ""+StringUtils.join(moduleNames));
+		mapping.setProperty("modules", ""+StringUtils.join(moduleNames, ","));
 		return mapping;
 	}
 	

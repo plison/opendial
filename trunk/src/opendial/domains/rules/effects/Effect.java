@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -55,7 +56,6 @@ public class Effect implements Value {
 	// the sub-effects included in the effect
 	List<BasicEffect> subeffects;
 
-	
 	// ===================================
 	//  EFFECT CONSTRUCTION
 	// ===================================
@@ -97,26 +97,11 @@ public class Effect implements Value {
 	}
 	
 	
-	/**
-	 * Grounds the effect with the given assignment.
-	 * 
-	 * @param grounding the assignment containing the filled values
-	 * @return the resulting grounded effect
-	 */
-	public Effect ground(Assignment grounding) {
-		if (isFullyGrounded()) {
-			return this;
-		}
 	
-		Effect effect = new Effect();
-		for (BasicEffect e : subeffects) {
-			BasicEffect groundedE = e.ground(grounding);
-			if (groundedE.isFullyGrounded()) {
-				effect.addSubEffect(groundedE);
-			}
-		}
-		return effect;
-	}
+	// ===================================
+	//  GETTERS
+	// ===================================
+
 	
 	
 	/**
@@ -133,24 +118,6 @@ public class Effect implements Value {
 		return true;
 	}
 	
-	@Override
-	public Value concatenate (Value v) {
-		if (v instanceof Effect) {
-			Effect newEffect = copy();
-			newEffect.addSubEffects(((Effect)v).getSubEffects());
-			return newEffect;
-		}
-		else {
-			log.warning("cannot concatenate " + this + " and " + v);
-			return ValueFactory.none();
-		}
-	}
-
-	// ===================================
-	//  GETTERS
-	// ===================================
-
-	
 	/**
 	 * Returns all the sub-effect included in the complex effect
 	 * 
@@ -160,6 +127,42 @@ public class Effect implements Value {
 		return subeffects;
 	}
 
+
+	/**
+	 * Grounds the effect with the given assignment.
+	 * 
+	 * @param grounding the assignment containing the filled values
+	 * @return the resulting grounded effect
+	 */
+	public Effect getGrounded(Assignment grounding) {
+		if (isFullyGrounded()) {
+			return this;
+		}
+	
+		Effect effect = new Effect();
+		for (BasicEffect e : subeffects) {
+			BasicEffect groundedE = e.ground(grounding);
+			if (groundedE.isFullyGrounded()) {
+				effect.addSubEffect(groundedE);
+			}
+		}
+		return effect;
+	}
+	
+	
+	@Override
+	public Value concatenate (Value v) throws DialException {
+		if (v instanceof Effect) {
+			Effect newEffect = copy();
+			newEffect.addSubEffects(((Effect)v).getSubEffects());
+			return newEffect;
+		}
+		else {
+			throw new DialException("cannot concatenate " + this + " and " + v);
+		}
+	}
+
+	
 
 	/**
 	 * Returns the additional input variables for the complex effect
@@ -197,15 +200,26 @@ public class Effect implements Value {
 	 * effect type.  The method accepts the effect types SET, DISCARD and ADD (the
 	 * CLEAR effect does not return any value).
 	 * 
+	 * If several effects are defined with distinct priorities, only the effect
+	 * with highest priority is retained.
+	 * 
 	 * @param variable the variable
 	 * @param type the effect type
 	 * @return the values specified in the effect
 	 */
 	public Set<Value> getValues(String variable, EffectType type) {
 		Set<Value> result = new HashSet<Value>();
+		int highestPriority = Integer.MAX_VALUE;
 		for (BasicEffect e : subeffects) {
 			if (e.getVariable().getRawString().equals(variable) && e.getType() == type 
 					&& !e.getValue().equals(ValueFactory.none())) {
+				if (e.priority > highestPriority) {
+					continue;
+				}
+				else if (e.priority < highestPriority) {
+					result = new HashSet<Value>();
+					highestPriority = e.priority;
+				}
 				result.add(e.getValue());
 			}
 		}
@@ -228,23 +242,6 @@ public class Effect implements Value {
 		return effectTypes;
 	}
 	
-	/**
-	 * Returns the set of variables that must be cleared (according to the effect).
-	 * 
-	 * @return the set of variables to clear.
-	 */
-	public Set<String> getClearVariables() {
-		Set<String> result = new HashSet<String>();
-		for (BasicEffect e : subeffects) {
-			if (e.getType() == EffectType.CLEAR) {
-				result.add(e.getVariable().getRawString());
-			}
-			else if (e.getType() == EffectType.SET && e.getValue().equals(ValueFactory.none())) {
-				result.add(e.getVariable().getRawString());				
-			}
-		}
-		return result;
-	}
 
 	
 	public Condition convertToCondition() {
@@ -254,6 +251,7 @@ public class Effect implements Value {
 		}
 		return condition;
 	}
+	
 	
 	// ===================================
 	//  UTILITY FUNCTIONS
@@ -348,7 +346,7 @@ public class Effect implements Value {
 			}
 			if (str.contains(":=") && str.contains("{}")) {
 				String var = str.split(":=")[0];
-				o.addSubEffect(new BasicEffect(new Template(var), null, EffectType.CLEAR));
+				o.addSubEffect(new BasicEffect(new Template(var), new Template("None"), EffectType.SET));
 			}
 			else if (str.contains(":=")) {
 				String var = str.split(":=")[0];
@@ -368,6 +366,7 @@ public class Effect implements Value {
 		}	
 		return o;
 	}
+
 	
 
 }

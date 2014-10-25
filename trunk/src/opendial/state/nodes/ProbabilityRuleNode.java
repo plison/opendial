@@ -30,6 +30,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
+import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.AnchoredRule;
 import opendial.state.distribs.RuleDistribution;
@@ -101,6 +102,24 @@ public class ProbabilityRuleNode extends ChanceNode {
 	 */
 	public AnchoredRule getAnchor() {
 		return rule;
+	}
+
+
+	/**
+	 * Returns true if the rule contains at least one effect with add/discard operations on the
+	 * output variable.  Else, returns false.
+	 * 
+	 * @param outputVar the output variable to consider (without primes)
+	 * @return true if add/discard effects are defined for the output variable, else false
+	 */
+	public boolean hasAddRemoveEffects(String outputVar) {
+		for (Value v : getValues()) {
+			Set<EffectType> types = ((Effect) v).getEffectTypes(outputVar);
+			if (types.contains(EffectType.ADD) || types.contains(EffectType.DISCARD)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

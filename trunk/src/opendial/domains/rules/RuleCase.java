@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -130,7 +129,7 @@ public class RuleCase {
 	public RuleCase ground(Assignment grounding) {
 		RuleCase groundCase = new RuleCase();
 		for (Effect e : effects.keySet()) {
-			Effect groundedEffect = e.ground(grounding);
+			Effect groundedEffect = e.getGrounded(grounding);
 			if (!groundedEffect.getSubEffects().isEmpty() || e.getSubEffects().isEmpty()) {
 				groundCase.addEffect(groundedEffect, effects.get(e));
 			}

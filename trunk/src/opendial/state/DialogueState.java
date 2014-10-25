@@ -686,6 +686,7 @@ public class DialogueState extends BNetwork {
 		// looping on each output variable
 		for (String updatedVar : ruleNode.getAnchor().getOutputVariables()) {
 
+			String baseVar = updatedVar.replaceFirst("'", "");
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
 				ChanceNode outputNode = new ChanceNode(updatedVar, 
@@ -693,8 +694,8 @@ public class DialogueState extends BNetwork {
 				addNode(outputNode);
 
 				// adding the connection to the previous version of the variable (if any)
-				if (hasChanceNode(updatedVar.replaceFirst("'", "")) && !(updatedVar.contains("^p"))) {
-					outputNode.addInputNode(getChanceNode(updatedVar.replaceFirst("'", "")));
+				if (hasChanceNode(baseVar) && !(updatedVar.contains("^p")) && ruleNode.hasAddRemoveEffects(baseVar)) {
+					outputNode.addInputNode(getChanceNode(baseVar));
 				}
 
 				// connecting to prior predictions
