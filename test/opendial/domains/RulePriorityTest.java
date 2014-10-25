@@ -23,36 +23,28 @@
 
 package opendial.domains;
 
-
-import static org.junit.Assert.assertEquals;
-import opendial.arch.Logger;
-import opendial.datastructs.Template;
-import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
-import opendial.domains.rules.effects.Effect;
+import static org.junit.Assert.*;
+import opendial.DialogueSystem;
+import opendial.arch.DialException;
+import opendial.bn.values.ValueFactory;
+import opendial.readers.XMLDomainReader;
 
 import org.junit.Test;
 
-public class OutputsTest {
-
-	// logger
-	public static Logger log = new Logger("OutputsTest", Logger.Level.NORMAL);
+public class RulePriorityTest {
 
 	
+	public static final String domainFile = "test/domains/rulepriorities.xml";
+	
 	@Test
-	public void testOutputs() {
+	public void priorityTest() throws DialException, InterruptedException {
 		
-		Effect o = new Effect();
-		assertEquals(o, Effect.parseEffect("Void"));
-		o.addSubEffect(new BasicEffect(new Template("v1"), new Template("val1"), EffectType.SET));
-		assertEquals(o, Effect.parseEffect("v1:=val1"));
-
-		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val2"), EffectType.ADD));
-		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2"));
-		
-		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val3"), EffectType.DISCARD));
-		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
-				
+		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+		system.getSettings().showGUI = false;
+		system.startSystem();
+		assertEquals(system.getContent("a_u").getProb("Opening"), 0.8, 0.01);
+		assertEquals(system.getContent("a_u").getProb("Nothing"), 0.1, 0.01);
+		assertEquals(system.getContent("a_u").getProb("start"), 0.0, 0.01);
+		assertFalse(system.getContent("a_u").toDiscrete().hasProb(ValueFactory.create("start")));
 	}
 }
-
