@@ -73,11 +73,6 @@
 					<set var="a_u" value="Request(Stop)" />
 				</effect>
 			</case>
-			<case>
-				<effect>
-					<clear var="a_u"/>
-				</effect>
-			</case>
 		</rule>
 	</model>
 
