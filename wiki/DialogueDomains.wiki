@@ -245,11 +245,15 @@ Here is one concrete example of probability rule (corresponding to the rule r,,1
 
 Rule r,,1,, simply indicates that the probability of a fire if there is no rain and a hot weather is 0.03, while this probability is 0.01 in other cases. 
 
+In some circumstances, one may want to enforce a particular dominance hierarchy among the rules (in order to ensure that some rules have priority over others if they are triggered simultaneously). This can be specified using the `priority` attribute, taking an integer value (where `1` indicates the highest priority). 
+
 
 *XML format for `<rule>`:*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `id` || Attribute || 0-1 || (optional) name for the rule ||
+|| `priority` || Attribute || 0-1 || (optional) integer indicated the priority level of the rule (where 1 is highest) ||
 || `<case>` || Element || 1-n || List of rule cases ||
+
 
 *XML format for `<case>`:*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
