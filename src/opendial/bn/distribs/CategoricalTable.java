@@ -259,8 +259,14 @@ public class CategoricalTable implements IndependentProbDistribution {
 		CategoricalTable newtable = new CategoricalTable(variable);
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
+				try {
 				Value concat = thisA.concatenate(otherA);
 				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
+				}
+				catch (DialException e) {
+					log.warning("could not concatenated the tables " + this + " and " + other);
+					return this.copy();
+				}
 			}
 		}
 		return newtable;

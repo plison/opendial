@@ -116,7 +116,7 @@ public class SettingsPanel extends JDialog {
 
 		gui.add(new JLabel(" Other variables to monitor in chat window:     "));
 		final JFormattedTextField toMonitor = new JFormattedTextField();
-		toMonitor.setText(""+StringUtils.join(settings.varsToMonitor));
+		toMonitor.setText(""+StringUtils.join(settings.varsToMonitor, ","));
 		gui.add(toMonitor);	
 
 		allOptions.add(gui);

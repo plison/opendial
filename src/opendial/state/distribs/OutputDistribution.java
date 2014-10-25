@@ -155,21 +155,12 @@ public class OutputDistribution implements ProbDistribution {
 		Set<Value> addValues = fullEffect.getValues(baseVar, EffectType.ADD);
 		Set<Value> discardValues = fullEffect.getValues(baseVar, EffectType.DISCARD);
 
-		Value previousValue = condition.getValue(baseVar);
-		if (fullEffect.getClearVariables().contains(baseVar)) {
-			previousValue = ValueFactory.none();
-		}
-	
-		// case 1: at least one effect is a classical set operation
-		if (!setValues.isEmpty()) {
-			for (Value v : setValues) {
-				probTable.addRow(v, (1.0 / setValues.size()));
-			}		
-		}
+		// case 1 : add or remove effects
+		if (!addValues.isEmpty() || !discardValues.isEmpty()) {
 
-		// case 2: operations on set (add / removal)
-		else if (!addValues.isEmpty() || !discardValues.isEmpty()) {
-
+			Value previousValue = (!setValues.isEmpty())? 
+					setValues.iterator().next() : condition.getValue(baseVar) ;
+			
 			SetVal addVal = ValueFactory.create(addValues);
 			if (previousValue instanceof SetVal) {
 				addVal.addAll((SetVal)previousValue);
@@ -180,10 +171,17 @@ public class OutputDistribution implements ProbDistribution {
 			addVal.removeAll(discardValues);
 			probTable.addRow(addVal, 1.0);
 		}
-
-		// case 3: backtrack to previous value
+		
+		// case 2 (most common): classical set operations
+		else if (!setValues.isEmpty()) {
+			for (Value v : setValues) {
+				probTable.addRow(v, (1.0 / setValues.size()));
+			}		
+		}
+		
+		// case 3: set to none value
 		else {
-			probTable.addRow(previousValue, 1.0);
+			probTable.addRow(ValueFactory.none(), 1.0);
 		}
 
 		return probTable;

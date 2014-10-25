@@ -23,9 +23,7 @@
 
 package opendial.utils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -152,13 +150,14 @@ public class StringUtils {
 	
 	/**
 	 * Joins the string elements into a single string where the elements
-	 * are joined by a white space.
+	 * are joined by a specific string.
 	 * 
 	 * @param elements the string elements
+	 * @param jointure the string used to join the elements
 	 * @return the concatenated string.
 	 */
-	public static String join(Collection<String> elements) {
-		return elements.stream().collect(Collectors.joining(" "));
+	public static String join(Collection<String> elements, String jointure) {
+		return elements.stream().collect(Collectors.joining(jointure));
 	}
 
 

@@ -101,6 +101,7 @@ public class GUIFrame implements Module {
 		frame.setLocation(new Point(200, 200));
 
 		frame.addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) 
 			{ System.exit(0); }
 		}); 

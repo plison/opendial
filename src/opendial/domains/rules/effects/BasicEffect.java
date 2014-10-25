@@ -63,12 +63,13 @@ public class BasicEffect {
 		SET, 		// for variable := value
 		DISCARD, 	// for variable != value
 		ADD, 		// for variable += value (add the value to the set)
-		CLEAR, 	// clearing the variable (NB: variableValue is then ignored)
 	}
 	
 	// effect type for the basic effect
 	EffectType type;
 	
+	// priority level for the effect (1 is highest)
+	int priority = 1;
 
 	// ===================================
 	//  EFFECT CONSTRUCTION
@@ -102,7 +103,19 @@ public class BasicEffect {
 		}
 		Template newT = variableLabel.fillSlots(grounding);
 		Template newV = variableValue.fillSlots(grounding);
-		return new BasicEffect(newT, newV, type);
+		BasicEffect grounded = new BasicEffect(newT, newV, type);
+		grounded.priority = this.priority;
+		return grounded;
+	}
+	
+	
+	/**
+	 * Sets the priority level of the basic effect
+	 * 
+	 * @param priority priority level (1 is highest)
+	 */
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 	
 	// ===================================
@@ -210,7 +223,6 @@ public class BasicEffect {
 		case SET: str += ":="; break;
 		case DISCARD: str += "!="; break;
 		case ADD: str += "+="; break;
-		case CLEAR : return "clear " + variableLabel.toString();
 		}
 		str += variableValue.toString();
 		return str;
@@ -258,7 +270,9 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		return new BasicEffect(variableLabel, variableValue, type);
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, type);
+		copy.priority = this.priority;
+		return copy;
 	}
 
 	
