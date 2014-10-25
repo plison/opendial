@@ -37,7 +37,7 @@ public class RuleAndParams {
 		assertFalse(system.getState().hasChanceNode("movements"));
 		assertEquals(system.getContent("theta_moves").toContinuous().getFunction().getMean()[0], 2.0/6, 0.05);
 		system.addContent(new Assignment("a_m", "turning left"));
-		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.33, 0.04);
+		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.23, 0.04);
 		assertEquals(system.getState().getChanceNode("theta_moves").getOutputNodesIds().size(), 1);		
 	}
 }

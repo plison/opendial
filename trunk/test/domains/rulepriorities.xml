@@ -1,0 +1,33 @@
+<domain>
+
+<initialstate>
+<variable id="u_u">
+<value prob="0.8">hello!</value>
+</variable>
+<variable id="a_u">
+<value prob="0.7">start</value>
+</variable>
+</initialstate>
+
+<model trigger="u_u">
+<rule priority="1">
+<case>
+<condition>
+<if var="u_u" value="hello" relation="in"/>
+</condition>
+<effect>
+<set var="a_u" value="Opening"/>
+</effect>
+</case>
+</rule>
+
+<rule priority="2">
+<case>
+<effect prob="0.5">
+<set var="a_u" value="Nothing"/>
+</effect>
+</case>
+</rule>
+</model>
+
+</domain>

@@ -54,11 +54,6 @@
 					<set var="a_u" value="Request(Stop)" />
 				</effect>
 			</case>
-			<case>
-				<effect>
-					<clear var="a_u"/>
-				</effect>
-			</case>
 		</rule>
 	</model>
 
@@ -130,11 +125,6 @@
 				</condition>
 				<effect prob="0.9">
 					<set var="a_u^p" value="{a_u}" />
-				</effect>
-			</case>
-			<case>
-				<effect>
-					<clear var="a_u^p"/>
 				</effect>
 			</case>
 		</rule>
