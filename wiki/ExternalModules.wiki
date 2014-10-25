@@ -66,18 +66,17 @@ Note that the `trigger` method is empty in this example, as the module runs inde
 == Attaching a module ==
 
 Once it is implemented, a module can be attached to the dialogue system.  This can be done in several ways:
- * The first possibility is to click on `Options > Load Modules` and activate the module.  
 
- * Alternatively, you can specify the module's full classname (e.g. `opendial.modules.ModuleExample1`) in the `<modules>` property of the [DialogueDomains#5._Settings domain settings]. 
+ * You can specify the module's full classname (e.g. `opendial.modules.ModuleExample1`) in the `<modules>` property of the [DialogueDomains#5._Settings domain settings]. 
 
- * you can also include the module classname to the command line properties, with the flag -Dmodules=classname.
+ * you can also directly include the module classname to the command line properties, with the flag `-Dmodules=classname` (notice the `-D` prefix). If the module requires additional parameters, you can add them as additional command line properties, e.g. `-DparamName=paramValue`.
 
  * Finally, you can also attach the module programmatically by creating the module instance and then calling the method `attachModule(...)` in the current `DialogueSystem`.
 
 
-The three first options will only work for modules that have a constructor that specifies the `DialogueSystem` instance as only argument (such as is the case for `ModuleExample1` and `ModuleExample2`). The fourth option will work for module with arbitrary constructors.
+The two first options will only work for modules that have a constructor that specifies the `DialogueSystem` instance as only argument (such as is the case for `ModuleExample1` and `ModuleExample2`). The third option will work for module with arbitrary constructors.
 
-Modules can require some specific settings to be specified before initialisation. Such settings can be directly encoded as new properties in the `<settings>` element of the dialogue domain specification.  If a required parameter is missing, the module should throw a `MissingParameterException`. 
+Modules can require some specific settings to be specified before initialisation. Such settings can be directly encoded as new properties in the `<settings>` element of the dialogue domain specification. 
 
 <br><br>
 
