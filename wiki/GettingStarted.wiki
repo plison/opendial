@@ -101,7 +101,6 @@ The !OpenDial toolbar offers several functions:
 || _Options_ > _View Utterances_ || Determines how to display the user utterances in the chat window ||
 || _Options_ > _Record Intermediate States_ || Determines whether to record intermediate states in the state viewer ||
 || _Options_ > _Show/Hide Parameters_ || Determines whether to display parameters in the state viewer||
-|| _Options_ > _Load Modules_ || Loads or unloads modules ||
 || _Options_ > _Settings_ || Changes the current system settings ||
 
 <br><br>
