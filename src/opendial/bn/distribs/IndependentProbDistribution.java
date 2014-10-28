@@ -97,7 +97,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @param value the value for the random variable (as a double array)
 	 * @return the associated probability, if one exists.
 	 */
-	public default double getProb(Double[] value) {
+	public default double getProb(double[] value) {
 		return getProb(ValueFactory.create(value));
 	}
 	

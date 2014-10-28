@@ -28,7 +28,7 @@ import opendial.datastructs.Assignment;
 
 
 /**
- * Representation of a weighted sample, which consists of an assignment
+ * Representation of a (possibly weighted) sample, which consists of an assignment
  * of values together with a weight (here in logarithmic form) and utility.
  * 
  *
@@ -36,7 +36,7 @@ import opendial.datastructs.Assignment;
  * @version $Date::                      $
  *
  */
-public class WeightedSample extends Assignment implements Comparable<WeightedSample> {
+public class Sample extends Assignment implements Comparable<Sample> {
 
 	// logger
 	public static Logger log = new Logger("WeightedSample", Logger.Level.NORMAL);
@@ -50,7 +50,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	/**
 	 * Creates a new, empty weighted sample
 	 */
-	public WeightedSample() {
+	public Sample() {
 		super();
 	}
 	
@@ -59,7 +59,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	 * 
 	 * @param a the existing assignment
 	 */
-	public WeightedSample(Assignment a) {
+	public Sample(Assignment a) {
 		super(a);
 	}
 	
@@ -70,7 +70,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 	 * @param logWeight the logarithmic weight
 	 * @param utility the utility
 	 */
-	public WeightedSample(Assignment a, double logWeight, double utility) {
+	public Sample(Assignment a, double logWeight, double utility) {
 		super(a);
 		this.logWeight = logWeight;
 		this.utility = utility;
@@ -135,7 +135,7 @@ public class WeightedSample extends Assignment implements Comparable<WeightedSam
 
 	
 	@Override
-	public int compareTo(WeightedSample arg0) {
+	public int compareTo(Sample arg0) {
 		return (int)((utility - arg0.getUtility())*1000);
 	}
 

@@ -134,9 +134,9 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	public CategoricalTable toDiscrete() {
 
 		if (discreteCache == null) {
-			Map<Double[],Double> discretisation = function.discretise(Settings.discretisationBuckets);
+			Map<double[],Double> discretisation = function.discretise(Settings.discretisationBuckets);
 			discreteCache = new CategoricalTable(variable);
-			for (Double[] value : discretisation.keySet()) {
+			for (double[] value : discretisation.keySet()) {
 				Value val = (value.length > 1)? new ArrayVal(value) : ValueFactory.create(value[0]);
 				discreteCache.addRow(val, discretisation.get(value));
 			}
@@ -162,18 +162,12 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @return the resulting density
 	 */
 	public double getProbDensity(Value val) {
-		try {
 			if (val instanceof ArrayVal) {
 				return function.getDensity(((ArrayVal)val).getArray());
 			}
 			if (val instanceof DoubleVal) {
 				return function.getDensity(((DoubleVal)val).getDouble());
 			}
-			
-		}
-		catch (DialException e) {
-			log.warning("exception: " + e);
-		}
 		return 0.0;
 	}
 	
@@ -185,13 +179,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @return the resulting density
 	 */
 	public double getProbDensity(double val) {
-		try {
 		return function.getDensity(val);
-		}
-		catch (DialException e) {
-			log.warning("exception: " + e);
-		}
-		return 0.0;
 	}
 	
 	/**
@@ -200,14 +188,8 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @param val (as a Double array)
 	 * @return the resulting density
 	 */
-	public double getProbDensity(Double[] val) {
-		try {
+	public double getProbDensity(double[] val) {
 		return function.getDensity(val);
-		}
-		catch (DialException e) {
-			log.warning("exception: " + e);
-		}
-		return 0.0;
 	}
 
 	/**
@@ -244,7 +226,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 				return function.getCDF(((ArrayVal)val).getArray());
 			}
 			else if (val instanceof DoubleVal) {
-				return function.getCDF(new Double[]{((DoubleVal)val).getDouble()});
+				return function.getCDF(new double[]{((DoubleVal)val).getDouble()});
 			}
 		}
 		catch (DialException e) {
@@ -280,7 +262,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * 		(as an array of Doubles)
 	 * @return the cumulative probability
 	 */
-	public double getCumulativeProb(Double[] val) {
+	public double getCumulativeProb(double[] val) {
 		try {	
 			return function.getCDF(val);
 		}

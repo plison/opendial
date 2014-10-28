@@ -49,7 +49,7 @@ public interface DensityFunction {
 	 * @return the density value for the point
 	 * @throws DialException if the density of x could not be calculated.
 	 */
-	public double getDensity(Double ...x) throws DialException;
+	public double getDensity(double ...x);
 	
 
 	/**
@@ -58,7 +58,7 @@ public interface DensityFunction {
 	 * 
 	 * @return the density mean.
 	 */
-	public Double[] getMean();
+	public double[] getMean();
 	
 	
 	/**
@@ -67,7 +67,7 @@ public interface DensityFunction {
 	 * 
 	 * @return the density variance
 	 */
-	public Double[] getVariance();
+	public double[] getVariance();
 	
 	
 	/**
@@ -76,7 +76,7 @@ public interface DensityFunction {
 	 * 
 	 * @return the sampled value.
 	 */
-	public Double[] sample();
+	public double[] sample();
 	
 	
 	/**
@@ -95,7 +95,7 @@ public interface DensityFunction {
 	 * @return a discretised probability distribution, mapping a collection of points
 	 *         to a probability value
 	 */
-	public Map<Double[], Double> discretise(int nbBuckets);
+	public Map<double[],Double> discretise(int nbBuckets);
 
 	
 	/**
@@ -114,7 +114,7 @@ public interface DensityFunction {
 	 * @return the cumulative probability from 0 to x
 	 * @throws DialException if the CDF could not be extracted
 	 */
-	public Double getCDF(Double...x) throws DialException;
+	public double getCDF(double...x) throws DialException;
 
 
 	

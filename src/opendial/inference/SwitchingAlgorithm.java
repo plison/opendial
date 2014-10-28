@@ -32,7 +32,7 @@ import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.VariableElimination;
 
 
@@ -67,11 +67,11 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int MAX_CONTINUOUS = 0;
 
 	VariableElimination ve;
-	LikelihoodWeighting lw;
+	SamplingAlgorithm lw;
 
 	public SwitchingAlgorithm() {
 		this.ve = new VariableElimination();
-		this.lw = new LikelihoodWeighting();
+		this.lw = new SamplingAlgorithm();
 	}
 
 	/**

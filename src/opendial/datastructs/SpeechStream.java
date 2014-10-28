@@ -268,7 +268,7 @@ public class SpeechStream extends InputStream implements Value {
 	 */
 	@Override
 	public Value concatenate(Value value) {
-		return ValueFactory.none();
+		return copy();
 	}
 
 

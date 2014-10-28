@@ -56,7 +56,7 @@ public class DistanceUtils {
 	 * @param b the second array
 	 * @return true is a is lower than b in all dimensions, and false otherwise
 	 */
-	public static boolean isLower(Double[] a, Double[] b) {
+	public static boolean isLower(double[] a, double[] b) {
 		for (int i = 0 ; i < a.length  ; i++) {
 			if (a[i] > b[i]) {
 				return false;
@@ -81,8 +81,8 @@ public class DistanceUtils {
 		double minDistance = Double.MAX_VALUE;
 		for (Value v : rows) {
 			double totalDistance = 0;
-			Double[] val1 = convertToDouble(toFind);
-			Double[] val2 = convertToDouble(v);
+			double[] val1 = convertToDouble(toFind);
+			double[] val2 = convertToDouble(v);
 			totalDistance += getDistance(val1, val2);
 			
 			if (totalDistance < minDistance) {
@@ -104,7 +104,7 @@ public class DistanceUtils {
 	 * @param point2 the second double array
 	 * @return the distance beteeen the two points
 	 */
-	public static double getDistance(Double[] point1, Double[] point2) {
+	public static double getDistance(double[] point1, double[] point2) {
 		if (point1 == null || point2 == null || point1.length != point2.length) {
 			return Double.MAX_VALUE;
 		}
@@ -124,8 +124,8 @@ public class DistanceUtils {
 	 * @param point2 the second point
 	 * @return the array with the distance on each dimension
 	 */
-	public static Double[] getFullDistance(Double[] point1, Double[] point2) {
-		Double[] dist = new Double[point1.length];
+	public static double[] getFullDistance(double[] point1, double[] point2) {
+		double[] dist = new double[point1.length];
 		if (point1 == null || point2 == null || point1.length != point2.length) {
 			return dist;
 		}
@@ -143,13 +143,13 @@ public class DistanceUtils {
 	 * @param points the collection of points
 	 * @return the minimum distance between all possible pairs of points
 	 */
-	public static double getMinEuclidianDistance(Collection<Double[]> points) {
+	public static double getMinEuclidianDistance(Collection<double[]> points) {
 		double minDistance = Double.MAX_VALUE;
-		List<Double[]> l = new ArrayList<Double[]>(points);
+		List<double[]> l = new ArrayList<double[]>(points);
 		for (int i = 0 ; i < points.size()-1 ; i++) {
-			Double[] first = l.get(i);
+			double[] first = l.get(i);
 			for (int j = i+1 ; j < points.size() ; j++) {
-				Double[] second = l.get(j);
+				double[] second = l.get(j);
 				double dist = getDistance(first, second);
 				if (dist < minDistance) {
 					minDistance = dist;
@@ -167,13 +167,13 @@ public class DistanceUtils {
 	 * @param val the value to convert
 	 * @return the converted value or null.
 	 */
-	private static Double[] convertToDouble(Value val) {
-		Double[] a = null;
+	private static double[] convertToDouble(Value val) {
+		double[] a = null;
 		if (val instanceof ArrayVal) {
 			a = ((ArrayVal)val).getArray();
 		}
 		else if (val instanceof DoubleVal) {
-			a = new Double[]{((DoubleVal)val).getDouble()};
+			a = new double[]{((DoubleVal)val).getDouble()};
 		}
 		return a;
 	}

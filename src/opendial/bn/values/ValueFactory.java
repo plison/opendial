@@ -117,7 +117,7 @@ public class ValueFactory {
 	}
 
 
-	public static ArrayVal create(Double[] d) {
+	public static ArrayVal create(double[] d) {
 		return new ArrayVal(d);
 	}
 
