@@ -400,13 +400,13 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public ContinuousDistribution toContinuous() throws DialException {
 
 		if (isContinuous()) {
-			Map<Double[],Double> points = new HashMap<Double[],Double>();
+			Map<double[],Double> points = new HashMap<double[],Double>();
 			for (Value v : getValues()) {
 				if (v instanceof ArrayVal) {
 					points.put(((ArrayVal)v).getArray(), getProb(v));
 				}
 				else if (v instanceof DoubleVal) {
-					points.put(new Double[]{((DoubleVal)v).getDouble()}, getProb(v));
+					points.put(new double[]{((DoubleVal)v).getDouble()}, getProb(v));
 				}
 			}
 			DiscreteDensityFunction fun = new DiscreteDensityFunction(points);

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -30,6 +30,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -74,8 +75,7 @@ public class WizardControl implements Module {
 
 	DialogueSystem system;
 	GUIFrame gui;
-	
-	
+
 	/**
 	 * Creates a new wizard control for the dialogue system.
 	 * 
@@ -84,7 +84,7 @@ public class WizardControl implements Module {
 	 */
 	public WizardControl(DialogueSystem system) throws DialException {
 		this.system = system;
-		
+
 		if (system.getModule(GUIFrame.class) == null) {
 			throw new DialException("could not create wizard control: no GUI");
 		}
@@ -92,8 +92,8 @@ public class WizardControl implements Module {
 			gui = system.getModule(GUIFrame.class);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Does nothing
 	 */
@@ -111,9 +111,9 @@ public class WizardControl implements Module {
 	 */
 	@Override
 	public boolean isRunning() {  return true;	}
-	
-	
-	
+
+
+
 	/**
 	 * Triggers the wizard control. The wizard control window is displayed whenever the dialogue
 	 * state contains at least one action node. 
@@ -127,29 +127,28 @@ public class WizardControl implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		// if the action selection is straightforward and parameter-less, directly select the action
-		if (state.getUtilityNodeIds().size() == 1 
-				&& state.getUtilityNodes().iterator().next() instanceof UtilityRuleNode) {
-			if (((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getInputConditions().size() == 1 &&
-					((UtilityRuleNode)state.getUtilityNodes().iterator().next()).getAnchor().getParameters().isEmpty()) {
+
+		if (state.getNodes(UtilityRuleNode.class).size() == 1) {
+			UtilityRuleNode urnode = state.getNodes(UtilityRuleNode.class).stream().findFirst().get();
+			if (urnode.getInputConditions().size() == 1 && urnode.getAnchor().getParameters().isEmpty()) {
 				system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
+				return;
 			}
 		}
-		
 		try {
-				
-		for (ActionNode action : state.getActionNodes()) {
-			displayWizardBox(action);
-		}
-		state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
-		state.removeNodes(state.getActionNodeIds());
-		state.removeNodes(state.getUtilityNodeIds());
+			for (ActionNode action : state.getActionNodes()) {
+				displayWizardBox(action);
+			}
+			state.addToState(Assignment.createDefault(state.getActionNodeIds()).removePrimes());
+			state.removeNodes(state.getActionNodeIds());
+			state.removeNodes(state.getUtilityNodeIds());
 		}
 		catch (DialException e) {
 			log.warning("could not apply wizard control: " + e);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Displays the Wizard-of-Oz window with the possible action values specified in the
 	 * action node.
@@ -159,7 +158,7 @@ public class WizardControl implements Module {
 	 */
 	@SuppressWarnings("serial")
 	private void displayWizardBox(ActionNode actionNode) throws DialException {
-		
+
 		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (Value v : actionNode.getValues()) {
 			model.addElement(v.toString());
@@ -175,7 +174,8 @@ public class WizardControl implements Module {
 		container.setLayout(new BorderLayout());
 		container.add(scrollPane);
 		final JButton button = new JButton("Select");
-		button.addActionListener(new WizardBoxListener(listBox, actionNode.getId().replace("'", ""), system.getState().copy()));
+		DialogueState copy = system.getState().copy();
+		button.addActionListener(e->recordAction(copy, listBox, actionNode.getId().replace("'", "")));
 
 		InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
@@ -184,7 +184,7 @@ public class WizardControl implements Module {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				button.doClick();
-		} });
+			} });
 
 		container.add(button, BorderLayout.SOUTH);
 		if (gui.getChatTab().getComponentCount() > 2) {
@@ -193,46 +193,25 @@ public class WizardControl implements Module {
 		gui.getChatTab().add(container, BorderLayout.EAST);
 		gui.getChatTab().repaint();
 	}
-	
-	
-	
-	/**
-	 * Action listener for the Wizard-of-Oz selection box.
-	 */
-	class WizardBoxListener implements ActionListener {
 
-		JList<String> listBox;
-		String actionVar;
-		DialogueState copy;
-		
-		public WizardBoxListener(JList<String> listBox, String actionVar, DialogueState copy) {
-			this.listBox = listBox;
-			this.actionVar = actionVar;
-			this.copy = copy;
+
+	public void recordAction(DialogueState previousState, JList<String> listBox, String actionVar) {
+		String actionValue = listBox.getModel().getElementAt(listBox.getMinSelectionIndex()).toString();
+		Assignment action = new Assignment(actionVar, actionValue);
+		if (system.getModule(DialogueRecorder.class) != null) {
+			system.getModule(DialogueRecorder.class).addWizardAction(action);
 		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (e.getSource().getClass().equals(JButton.class)) {
-				try {
-				String actionValue = listBox.getModel().getElementAt(listBox.getMinSelectionIndex()).toString();
-				Assignment action = new Assignment(actionVar, actionValue);
-				if (system.getModule(DialogueRecorder.class) != null) {
-					system.getModule(DialogueRecorder.class).addWizardAction(action);
-				}
-				Set<String> updatedParams = WizardLearner.learnFromWizardAction(copy, action.addPrimes());
-				for (String param : updatedParams) {
-					system.getState().getChanceNode(param).setDistrib(copy.getChanceNode(param).getDistrib());
-				}
-				system.addContent(action);
-				gui.getChatTab().remove(gui.getChatTab().getComponent(2));
-				}
-				catch (DialException j) {
-					log.warning("could not add wizard-selected action: " + j);
-				}
-			}
+		if (system.getModule(WizardLearner.class) != null) {
+			system.getState().reset(previousState);
+			system.getState().addEvidence(action.addPrimes());
+			system.getModule(WizardLearner.class).trigger(system.getState(), Arrays.asList());
 		}
-		
+		try {
+			system.addContent(action);
+		} catch (DialException e) {
+			e.printStackTrace();
+		}
+		gui.getChatTab().remove(gui.getChatTab().getComponent(2));
 	}
 
 

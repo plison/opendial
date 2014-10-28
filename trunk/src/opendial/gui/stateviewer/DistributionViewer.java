@@ -30,9 +30,11 @@ import java.awt.Dialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -43,6 +45,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
+import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
 import opendial.bn.values.Value;
 import opendial.state.DialogueState;
@@ -77,7 +80,7 @@ public class DistributionViewer extends JDialog {
 
 	String queryVar;
 	IndependentProbDistribution lastDistrib;
-	
+
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
 	 * 
@@ -117,7 +120,7 @@ public class DistributionViewer extends JDialog {
 			return;
 		}
 		this.lastDistrib = currentState.queryProb(queryVar);
-		
+
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		container.add(new JLabel("        "), BorderLayout.NORTH);
@@ -157,14 +160,14 @@ public class DistributionViewer extends JDialog {
 	 */
 	private ChartPanel generatePanel(CategoricalTable distrib) {
 		final String variableName = distrib.getVariable();
-		
+
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
 
-		for (Value val : distrib.getValues()) {
-			dataset.addValue(distrib.getProb(val), "", val.toString());
-		}
+		distrib.getValues().stream()
+		.forEach(d -> dataset.addValue(distrib.getProb(d), "", ""+d));
 
-		JFreeChart chart = ChartFactory.createBarChart("Probability distribution P(" + variableName + ")", // chart title 
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Probability distribution P(" + variableName + ")", // chart title 
 				"Value", // domain axis label 
 				"Probability", // range axis label
 				dataset, // data 
@@ -198,12 +201,11 @@ public class DistributionViewer extends JDialog {
 	private ChartPanel generatePanel(ContinuousDistribution distrib) throws DialException {
 
 		final String variableName = distrib.getVariable();
-		
-		List<Series> series = extractSeries(distrib.getFunction());
+
+		List<XYSeries> series = extractSeries(distrib.getFunction());
 
 		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis("Value"));
-		for (Series serie : series) {
-			serie.smoothen();
+		for (XYSeries serie : series) {
 
 			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title 
 					"Value", // domain axis label 
@@ -218,83 +220,56 @@ public class DistributionViewer extends JDialog {
 			combined.add(plot);
 			plot.setBackgroundPaint(Color.white); plot.setRangeGridlinePaint(Color.white);			
 		}	
-		
+
 		return new ChartPanel(new JFreeChart("Probability distribution P(" + variableName + ")", 
 				JFreeChart.DEFAULT_TITLE_FONT, combined, true), false); 
 	}
-	
-	
-	
-	private List<Series >extractSeries(DensityFunction function) throws DialException {
 
-		List<Series> series =new ArrayList<Series>();
+
+
+	private List<XYSeries>extractSeries(DensityFunction function) throws DialException {
+
+		List<XYSeries> series =new ArrayList<XYSeries>();
 
 		for (int i = 0 ; i < function.getDimensionality() ; i++) {
-			series.add(new Series("dimension " + i));
+			series.add(new XYSeries("dimension " + i));
 		}
-		
-		if (function instanceof KernelDensityFunction) {
-			((KernelDensityFunction)function).multiplyBandwidth(5);
-			for (int i = 0 ; i < 200 ; i++) {
-				Double[] point1 = function.sample();
-				double density1 = function.getDensity(point1);
-				Double[] point2 = function.sample();
-				double density2 = function.getDensity(point2);
-				Double[] midrange = new Double[point1.length];
-				for (int d = 0 ; d < point1.length ; d++) {
-					midrange[d] = (point1[d] + point2[d])/2.0;
-				}
-				double density_mid = function.getDensity(midrange);
-				for (int d = 0 ; d < point1.length ; d++) {
-					series.get(d).add(point1[d].doubleValue(), density1);		
-					series.get(d).add(point2[d].doubleValue(), density2);		
-					series.get(d).add(midrange[d].doubleValue(), density_mid);		
-				}
-			}
-			((KernelDensityFunction)function).multiplyBandwidth(0.2);
-		}
-		else {
-			Set<Double[]> points = function.discretise(200).keySet();
-			for (Double[] point : points) {
-				double density = function.getDensity(point);
-				for (int d = 0 ; d < point.length ; d++) {
-					series.get(d).add(point[d].doubleValue(), density);
-				}
-			}
-		}
-		
 
+		Consumer<double[]> addToSeries = p -> {
+			double density = function.getDensity(p);
+			for (int d = 0 ; d < p.length ; d++) {
+				series.get(d).add(p[d], density);
+			}
+		};
+
+		Set<double[]> points = function.discretise(500).keySet();
+		points.stream().forEach(addToSeries);
+		
+		
+		for (XYSeries serie : series) {
+			boolean doSmoothing = (function instanceof KernelDensityFunction) 
+					|| (function instanceof DirichletDensityFunction);
+			while (doSmoothing) {
+				int nbFluctuations = 0;
+				double prevPrevY = serie.getY(0).doubleValue();
+				double prevY = serie.getY(1).doubleValue();
+				for (int i = 2 ; i < serie.getItemCount(); i++) {
+					double currentY = serie.getY(i).doubleValue();
+					if (Math.signum(prevY - prevPrevY) != Math.signum(currentY - prevY)) {
+						double avg = (prevPrevY + prevY + currentY)/3.0;
+						serie.updateByIndex(i-2, avg);
+						serie.updateByIndex(i-1, avg);
+						serie.updateByIndex(i, avg);
+						nbFluctuations++;
+					}
+					prevPrevY = prevY;
+					prevY = currentY;
+				}
+				doSmoothing = (nbFluctuations> points.size()/2)? true : false;
+			}
+
+		}
 		return series;
-	}
-
-
-
-	/**
-	 * Series of "smoothed" XYDataItem for continuous distributions.
-	 */
-	class Series extends XYSeries {
-
-		static final int WINDOW = 2;
-
-		public Series(String key) {
-			super(key);
-		}
-
-		public void smoothen() {
-			List<XYDataItem> newList = new ArrayList<XYDataItem>();
-			for (int i = 0 ; i < data.size() ; i++) {
-				double newProb = 0.0;
-				double totalWeight = 0.0;
-				for (int j = Math.max(0, i-WINDOW) ; j < Math.min(data.size(), i+WINDOW); j++) {
-					double weight = 1.0 / (Math.abs(i-j)+1);
-					newProb += weight * getDataItem(j).getYValue();
-					totalWeight += weight;
-				}
-				newProb = newProb / totalWeight;
-				newList.add(new XYDataItem(getDataItem(i).getXValue(), newProb));
-			}
-			data = newList;
-		}
 	}
 
 

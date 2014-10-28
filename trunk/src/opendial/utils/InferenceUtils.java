@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
@@ -61,24 +63,16 @@ public class InferenceUtils {
 	 * @return the normalised distribution
 	 */
 	public static <T> Map<T, Double> normalise (Map<T, Double> distrib) {
-		double total = 0.0f;
-		for (T a : distrib.keySet()) {
-			total += distrib.get(a);
-		}
+		double total = distrib.values().stream().mapToDouble(i->i).sum();
 		if (total == 0.0f) {
-			//		log.debug("distribution: " + distrib);
 			log.warning("all assignments in the distribution have a zero " +
 					"probability, cannot be normalised");
-			total = 1.0f;
+			return distrib;
 		}
 
-		Map<T,Double> normalisedDistrib = new HashMap<T,Double>();
-		for (T a: distrib.keySet()) {
-			double prob = distrib.get(a)/ total;
-				if (prob > 0.0) {
-			normalisedDistrib.put(a, prob);
-				}
-		}
+		Map<T,Double> normalisedDistrib = distrib.keySet().stream()
+			.collect(Collectors.toMap(a -> a, a -> distrib.get(a)/total));
+		
 		return normalisedDistrib;
 	}
 
@@ -143,7 +137,7 @@ public class InferenceUtils {
 	 * @param initProbs the unnormalised values
 	 * @return the normalised values
 	 */
-	public static Double[] normalise(Double[] initProbs) {
+	public static double[] normalise(double[] initProbs) {
 		for (int i = 0 ; i < initProbs.length; i++) {
 			if (initProbs[i] < 0) {
 				initProbs[i] = 0.0;
@@ -154,7 +148,7 @@ public class InferenceUtils {
 			sum += prob;
 		}
 
-		Double[] result = new Double[initProbs.length];
+		double[] result = new double[initProbs.length];
 
 		if (sum > 0.001) {
 			for (int i = 0 ; i < initProbs.length; i++) {

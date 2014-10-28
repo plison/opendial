@@ -444,7 +444,7 @@ public class DialogueSystem {
 	 * 
 	 * @return the set of updated variables
 	 */
-	protected Set<String> update() {
+	public Set<String> update() {
 
 		Set<String> updatedVars = new HashSet<String>();
 

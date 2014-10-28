@@ -49,7 +49,7 @@ import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.inference.SwitchingAlgorithm;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
 import opendial.state.nodes.ProbabilityRuleNode;
@@ -504,7 +504,7 @@ public class DialogueState extends BNetwork {
 	 */
 	public double queryUtil() {
 		try {
-			return (new LikelihoodWeighting()).queryUtil(this);
+			return (new SamplingAlgorithm()).queryUtil(this);
 		} 
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
@@ -558,7 +558,7 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if no sample could be extracted
 	 */
 	public Assignment getSample() throws DialException {
-		return LikelihoodWeighting.extractSample(this, getChanceNodeIds());
+		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
 	}
 
 

@@ -240,7 +240,6 @@ public class Template {
 		if (slots.isEmpty()) {
 			return this;
 		}
-
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
 			if (fillers.getValue(slot) != ValueFactory.none()) {
@@ -330,10 +329,6 @@ public class Template {
 			if (!vars.containsKey(var)) {
 				vars.put(var,incr);
 				incr++;
-			}
-			else {
-				log.warning("same variable " + var + " is used twice in the template, " +
-						"ignoring the occurrence");
 			}
 		}
 		return vars;

@@ -54,7 +54,7 @@ public class DirichletDensityFunction implements DensityFunction {
 			Logger.Level.DEBUG);
 
 	// hyper-parameters
-	Double[] alphas;
+	double[] alphas;
 
 	// normalisation factor
 	double C;
@@ -67,7 +67,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * 
 	 * @param alphas the hyper-parameters for the density function
 	 */
-	public DirichletDensityFunction(Double[] alphas) {
+	public DirichletDensityFunction(double[] alphas) {
 		this.alphas = alphas;
 		if (alphas.length < 2) {
 			log.warning("must have at least 2 alphas");
@@ -88,7 +88,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the density for the point
 	 */
 	@Override
-	public double getDensity(Double... x) {
+	public double getDensity(double... x) {
 		if (x.length == alphas.length) {
 
 			double sum = 0;
@@ -130,10 +130,10 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the sampled point.
 	 */
 	@Override
-	public Double[] sample() {
+	public double[] sample() {
 
 		double sum = 0;
-		Double[] sample = new Double[alphas.length];
+		double[] sample = new double[alphas.length];
 		for (int i = 0 ; i < alphas.length ; i++) {
 			sample[i] = sampleFromGamma(alphas[i], 1);
 			sum += sample[i];
@@ -246,8 +246,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the discretised version of the density function.
 	 */
 	@Override
-	public Map<Double[], Double> discretise(int nbBuckets) {
-		Map<Double[], Double> table = new HashMap<Double[], Double>();
+	public Map<double[], Double> discretise(int nbBuckets) {
+		Map<double[], Double> table = new HashMap<double[], Double>();
 		for (int i = 0 ; i < nbBuckets ; i++) {
 			table.put(sample(), 1.0/nbBuckets);
 		}
@@ -260,8 +260,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the mean value.
 	 */
 	@Override
-	public Double[] getMean() {
-		Double[] mean = new Double[alphas.length];
+	public double[] getMean() {
+		double[] mean = new double[alphas.length];
 		for (int i = 0 ; i < alphas.length ; i++) {
 			mean[i] = alphas[i] / getAlphaSum();
 		}
@@ -275,8 +275,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the variance.
 	 */
 	@Override
-	public Double[] getVariance() {
-		Double[] variance = new Double[alphas.length];
+	public double[] getVariance() {
+		double[] variance = new double[alphas.length];
 		double denominator = Math.pow(getAlphaSum(), 2) * (getAlphaSum() + 1);
 		for (int j = 0 ; j < alphas.length ; j++) {
 			double numerator = alphas[j]*(getAlphaSum() - alphas[j]);
@@ -292,7 +292,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public Double getCDF(Double... x) throws DialException {
+	public double getCDF(double... x) throws DialException {
 		throw new DialException("currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
 	}
 
