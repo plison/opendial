@@ -66,7 +66,7 @@ public class ValueTest {
 		assertEquals(ValueFactory.create("3"), a.getValue("blabla"));
 		assertEquals(ValueFactory.create(false), a.getValue("bloblo"));
 		assertEquals(ValueFactory.create("32.4"), a.getValue("TTT"));
-		assertEquals(ValueFactory.create(new Double[]{0.4, 0.6}), a.getValue("v"));
+		assertEquals(ValueFactory.create(new double[]{0.4, 0.6}), a.getValue("v"));
 		assertEquals(ValueFactory.create(true), a.getValue("final"));
 	}
 	
