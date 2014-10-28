@@ -24,6 +24,7 @@
 package opendial.bn.values;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
 

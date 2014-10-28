@@ -32,7 +32,6 @@ import java.util.Random;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
-import opendial.utils.DistanceUtils;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
@@ -78,7 +77,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 		sampler = new Random();
 		
 		// calculate the minimum distance between points
-		this.minDistance = DistanceUtils.getMinEuclidianDistance(points.keySet());
+		this.minDistance = MathUtils.getMinEuclidianDistance(points.keySet());
 		
 		// and define the volume with a radius that is half this distance
 		this.volume = MathUtils.getVolume(minDistance/2, getDimensionality());
@@ -104,7 +103,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 		double[] closest = null;
 		double closestDist = - Double.MAX_VALUE;
 		for (double[] point : points.keySet()) {
-			double curDist = DistanceUtils.getDistance(point, x);
+			double curDist = MathUtils.getDistance(point, x);
 			if (closest == null || curDist < closestDist) {
 				closest = point;
 				closestDist = curDist;
@@ -243,12 +242,11 @@ public class DiscreteDensityFunction implements DensityFunction {
 			throw new DialException("Illegal dimensionality: " + x.length + "!=" + getDimensionality());
 		}
 
-		double cdf = 0.0f;
-		for (double[] point : points.keySet()) {
-			if (DistanceUtils.isLower(point, x)) {
-				cdf += points.get(point);
-			}
-		}
+		double cdf = points.keySet().stream()
+				.filter(v -> MathUtils.isLower(v, x))
+				.mapToDouble(v -> points.get(v))
+				.sum();
+		
 		return cdf;
 	}
 

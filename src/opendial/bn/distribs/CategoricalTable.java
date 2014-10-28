@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 import java.util.Random;
 import java.util.Set;
 
@@ -44,8 +45,8 @@ import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Intervals;
-import opendial.utils.DistanceUtils;
 import opendial.utils.InferenceUtils;
+import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
 /**
@@ -196,6 +197,19 @@ public class CategoricalTable implements IndependentProbDistribution {
 		addRow(ValueFactory.create(value), prob);
 	}
 
+	
+
+	/**
+	 * Adds a new row to the probability table.
+	 * If the table already contains a probability, it is erased.
+	 * 
+	 * @param value the value to add (as a double array)
+	 * @param prob the associated probability
+	 */
+	public void addRow(double[] value, double prob) {
+		addRow(ValueFactory.create(value), prob);		
+	}
+
 
 	/**
 	 * Increments the probability specified in the table for the given head 
@@ -339,18 +353,27 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.containsKey(val)) {
 			return table.get(val);
 		}
-
+		
 		// if the distribution has continuous values, search for the closest element
-		else if (isContinuous() && val!=ValueFactory.none()) {
-			try {
-				Value closest = DistanceUtils.getClosestElement(getValues(), val);
-				return getProb(closest);
-			}
-			catch (DialException e) {
-				log.warning("could not locate nearest point in distribution: " + e);
-			}
+		else if (val instanceof DoubleVal && isContinuous()) {
+			double toFind = ((DoubleVal)val).getDouble();
+			Value closest = table.keySet().stream()
+					.filter(v -> v instanceof DoubleVal)
+					.min((v1, v2) -> Double.compare(
+							Math.abs(((DoubleVal)v1).getDouble()-toFind), 
+							Math.abs(((DoubleVal)v2).getDouble()-toFind))).get();	
+			return getProb(closest);
 		}
-
+		
+		else if (val instanceof ArrayVal && isContinuous()) {
+			double[] toFind = ((ArrayVal)val).getArray();
+			Value closest = table.keySet().stream()
+					.filter(v -> v instanceof ArrayVal)
+					.min((v1, v2) -> Double.compare(
+							MathUtils.getDistance(((ArrayVal)v1).getArray(),toFind), 
+							MathUtils.getDistance(((ArrayVal)v2).getArray(),toFind))).get();	
+			return getProb(closest);
+		}
 		return 0.0f;
 	}
 

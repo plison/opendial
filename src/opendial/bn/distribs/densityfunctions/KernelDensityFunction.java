@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.utils.DistanceUtils;
+import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
 import org.w3c.dom.Document;
@@ -288,12 +288,9 @@ public class KernelDensityFunction implements DensityFunction {
 		if (x.length != getDimensionality()) {
 			throw new DialException("Illegal dimensionality: " + x.length + "!=" + getDimensionality());
 		}
-		double nbOfLowerPoints = 0.0;
-		for (double[] point : points) {
-			if (DistanceUtils.isLower(point,x)) {
-				nbOfLowerPoints++;
-			}
-		}
+		double nbOfLowerPoints = points.stream()
+				.filter(v -> MathUtils.isLower(v, x))
+				.count();
 		return nbOfLowerPoints / points.size();
 	}
 
