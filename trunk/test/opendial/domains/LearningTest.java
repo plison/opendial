@@ -58,7 +58,7 @@ public class LearningTest {
 	Settings.maxSamplingTime = Settings.maxSamplingTime*10;
 	system.startSystem(); 
 	
-	Double[] initMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
+	double[] initMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
 
 	CategoricalTable table = new CategoricalTable("a_u");
 	table.addRow("Move(Left)", 1.0);
@@ -68,7 +68,7 @@ public class LearningTest {
 	system.getState().removeNodes(system.getState().getUtilityNodeIds());
 	system.getState().removeNodes(system.getState().getActionNodeIds());
 	
-	Double[] afterMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
+	double[] afterMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
 
 	assertTrue(afterMean[0] - initMean[0] > 0.04);
 	assertTrue(afterMean[1] - initMean[1] < 0.04);

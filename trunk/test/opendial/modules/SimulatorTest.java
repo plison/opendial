@@ -105,6 +105,7 @@ public class SimulatorTest {
 
 		}
 		checkCondition2(system);
+		system.pause(true);
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct = system.getContent("theta_correct").toContinuous().getFunction();
 		theta_incorrect = system.getContent("theta_incorrect").toContinuous().getFunction();

@@ -34,7 +34,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.UtilityTable;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
-import opendial.inference.approximate.LikelihoodWeighting;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.NaiveInference;
 import opendial.inference.exact.VariableElimination;
 
@@ -55,7 +55,7 @@ public class NetworkReductionTest {
 	BNetwork network;
 
 	VariableElimination ve;
-	LikelihoodWeighting is;
+	SamplingAlgorithm is;
 	NaiveInference naive;
 	SwitchingAlgorithm sw;
 
@@ -63,7 +63,7 @@ public class NetworkReductionTest {
 		network = NetworkExamples.constructBasicNetwork2();
 
 		ve = new VariableElimination();
-		is = new LikelihoodWeighting(3000, 500);
+		is = new SamplingAlgorithm(3000, 500);
 		naive = new NaiveInference();
 		sw = new SwitchingAlgorithm();
 	}
