@@ -32,11 +32,3 @@ If you are using !OpenDial for research purposes, please refer to my PhD thesis 
   school={University of Oslo}
 }
 }}}
-
-
-----
-<font size="1">_!YourKit is kindly supporting open source projects with its full-featured Java Profiler.
-!YourKit, LLC is the creator of innovative and intelligent tools for </font><br><font size="1">profiling
-Java and .NET applications. Take a look at !YourKit's leading software products:
-[http://www.yourkit.com/java/profiler/index.jsp YourKit Java Profiler] and
-[http://www.yourkit.com/.net/profiler/index.jsp YourKit .NET Profiler]._</font>
