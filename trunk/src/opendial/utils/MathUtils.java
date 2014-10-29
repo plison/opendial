@@ -24,7 +24,16 @@
 package opendial.utils;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.values.ArrayVal;
+import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
 
 
 /**
@@ -37,6 +46,68 @@ public class MathUtils {
 
 	// logger
 	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
+
+
+	/**
+	 * Returns true is all elements in the array a have a lower value than
+	 * the corresponding elements in the array b
+	 * 
+	 * @param a the first array
+	 * @param b the second array
+	 * @return true is a is lower than b in all dimensions, and false otherwise
+	 */
+	public static boolean isLower(double[] a, double[] b) {
+		for (int i = 0 ; i < a.length  ; i++) {
+			if (a[i] > b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the Euclidian distance between two double arrays.
+	 * 
+	 * @param point1 the first double array
+	 * @param point2 the second double array
+	 * @return the distance beteeen the two points
+	 */
+	public static double getDistance(double[] point1, double[] point2) {
+		if (point1 == null || point2 == null || point1.length != point2.length) {
+			return Double.MAX_VALUE;
+		}
+		double dist = IntStream.range(0, point1.length)
+				.mapToDouble(i -> Math.pow(point1[i]-point2[i], 2))
+				.sum();
+		return Math.sqrt(dist);
+	}
+
+
+
+
+	/**
+	 * Returns the minimal Euclidian distance between any two pairs of points
+	 * in the collection of points provided as argument.
+	 * 
+	 * @param points the collection of points
+	 * @return the minimum distance between all possible pairs of points
+	 */
+	public static double getMinEuclidianDistance(Collection<double[]> points) {
+		double minDistance = Double.MAX_VALUE;
+		List<double[]> l = new ArrayList<double[]>(points);
+		for (int i = 0 ; i < points.size()-1 ; i++) {
+			double[] first = l.get(i);
+			for (int j = i+1 ; j < points.size() ; j++) {
+				double[] second = l.get(j);
+				double dist = getDistance(first, second);
+				if (dist < minDistance) {
+					minDistance = dist;
+				}
+			}
+		}
+		return minDistance;
+	}
+
 
 	
 	/**
@@ -80,6 +151,6 @@ public class MathUtils {
 		double denum = gamma((dimension/2.0) + 1);
 		double radius2 = Math.pow(radius, dimension);
 		return radius2*numerator/denum;
-	}
+	} 
 }
 
