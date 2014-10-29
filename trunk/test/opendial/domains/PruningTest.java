@@ -40,7 +40,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
-import opendial.utils.DistanceUtils;
+import opendial.utils.MathUtils;
 
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class PruningTest {
 	static DialogueSystem system;
 	
 	static {
-		DistanceUtils.log.setLevel(Level.DEBUG);
+		MathUtils.log.setLevel(Level.DEBUG);
 		try { 
 		domain = XMLDomainReader.extractDomain(domainFile); 
 		inference = new InferenceChecks();
