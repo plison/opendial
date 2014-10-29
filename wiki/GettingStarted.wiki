@@ -43,16 +43,18 @@ A window similar to this one should pop up:
 
 Additional properties can be included in the command line.  All these properties are optional (and can usually also be changed through the graphical interface):
 || *Property* || *Value* ||
-|| domain || File path for domain specification (cf. [DialogueDomains Specifying Dialogue Domains]) ||
-|| settings || File path for system settings (default is in `resources/settings.xml`) ||
-|| dialogue || File path of previously recorded dialogue to import ||
-|| simulator || Filepath of domain specification for a user simulator (cf. [ParameterEstimation Learning parameters from data]) ||
-|| gui || `true`/`false` to activate or deactivate the graphical interface (default is `true`). ||
+|| {{{domain}}} || File path for domain specification (cf. [DialogueDomains Specifying Dialogue Domains]) ||
+|| {{{settings}}} || File path for system settings (default is in `resources/settings.xml`) ||
+|| {{{dialogue}}} || File path of previously recorded dialogue to import ||
+|| {{{simulator}}} || Filepath of domain specification for a user simulator (cf. [ParameterEstimation Learning parameters from data]) ||
+|| {{{gui}}} || `true`/`false` to activate or deactivate the graphical interface (default is `true`). ||
 
 Command line parameters must be specified in the following manner:
 {{{
-ant run -Dproperty=value -Dproperty2=value2 ....
+ant run -Dname_of_property1=value1 -Dname_of_property2=value2 ....
 }}}
+where {{{name_of_propertyX}}} must be replaced by the properties in the above table.
+
 
 <br>
 
