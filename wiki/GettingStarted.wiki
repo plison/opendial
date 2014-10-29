@@ -42,7 +42,7 @@ A window similar to this one should pop up:
 
 
 Additional properties can be included in the command line.  All these properties are optional (and can usually also be changed through the graphical interface):
-|| *Property* || *Value* ||
+|| *Property name* || *Value* ||
 || {{{domain}}} || File path for domain specification (cf. [DialogueDomains Specifying Dialogue Domains]) ||
 || {{{settings}}} || File path for system settings (default is in `resources/settings.xml`) ||
 || {{{dialogue}}} || File path of previously recorded dialogue to import ||
@@ -53,7 +53,7 @@ Command line parameters must be specified in the following manner:
 {{{
 ant run -Dname_of_property1=value1 -Dname_of_property2=value2 ....
 }}}
-where {{{name_of_propertyX}}} must be replaced by the properties in the above table.
+where {{{name_of_propertyX}}} must be replaced by the property names in the above table.
 
 
 <br>
