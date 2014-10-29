@@ -40,6 +40,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -119,7 +120,8 @@ public class ChatWindowTab extends JComponent {
 		lines.setMargin(new Insets(5,5,5,5));
 		lines.setEditable(false);
 		JScrollPane utterancesScrollPane = new JScrollPane(lines);
-
+		DefaultCaret caret = (DefaultCaret)lines.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		inputContainer = new Container();
 		inputContainer.setLayout(new BorderLayout());
