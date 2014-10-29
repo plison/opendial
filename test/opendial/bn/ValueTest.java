@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import opendial.arch.Logger;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.BooleanVal;
 import opendial.bn.values.DoubleVal;
@@ -93,6 +94,16 @@ public class ValueTest {
 		assertEquals(1, ValueFactory.create(5).compareTo(ValueFactory.create(3)));
 		assertEquals(ValueFactory.create("test").compareTo(ValueFactory.create(5)), 
 				-ValueFactory.create(5).compareTo(ValueFactory.create("test")));		
+	}
+	
+	
+	public void testClosest() {
+		CategoricalTable table = new CategoricalTable("v");
+		table.addRow(new double[]{0.2,0.2}, 0.3);
+		table.addRow(new double[]{0.6,0.6}, 0.4);
+		assertEquals(table.getProb(new double[]{0.25,0.3}), 0.3, 0.01);
+		assertEquals(table.getProb(new double[]{0.5,0.4}), 0.4, 0.01);
+		
 	}
 }
 
