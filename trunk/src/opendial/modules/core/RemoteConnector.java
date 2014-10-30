@@ -84,7 +84,9 @@ public class RemoteConnector implements Module {
 		try {
 			remoteClient = HttpClientBuilder.create().build();
 			URIBuilder builder = new URIBuilder();
+			builder.setScheme("http");
 			builder.setHost(host);
+			builder.setPath("/opendial");
 			remoteURI = builder.build();
 			HttpPost post = new HttpPost(remoteURI);
 			post.setEntity(new StringEntity("this is the first message", "UTF-8"));
@@ -93,7 +95,8 @@ public class RemoteConnector implements Module {
 	        log.info("response: " + responseStr);
 			
 		} catch (URISyntaxException | IOException e) {
-			log.info("cannot start connection with remote machine " + host +": " + e );
+			e.printStackTrace();
+			log.info("cannot start connection with remote machine " + host +": " + e);
 		}
 	}
 	
