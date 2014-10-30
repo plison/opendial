@@ -80,7 +80,8 @@ public class RemoteConnector implements Module {
 	public void start() throws DialException {
 		paused = false;
 		setupServer();
-		writeToSocket(MessageType.INIT, local.getInetAddress().getHostAddress()+":" + local.getLocalPort());
+		writeToSocket(MessageType.INIT, local.getInetAddress().getHostAddress()
+				+":" + local.getLocalPort());
 	}
 
 	@Override
