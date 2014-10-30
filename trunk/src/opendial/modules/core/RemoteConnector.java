@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -107,6 +108,7 @@ public class RemoteConnector implements Module {
         server.createContext("/opendial", new MyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
+        log.debug("starting server on " + Inet4Address.getLocalHost().getHostAddress());
 		}
 		catch (IOException e) {
 			log.info("cannot start server: " + e );			
