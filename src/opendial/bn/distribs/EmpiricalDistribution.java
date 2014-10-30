@@ -410,11 +410,9 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	public ConditionalTable createConditionalTable(String headVar, 
 			Collection<String> condVars) {
 
-		ConditionalTable table = new ConditionalTable(headVar);
-
 		Map<Assignment,Map<Value,Integer>> temp = 
 				new HashMap<Assignment,Map<Value,Integer>>();
-	
+			
 		for (Assignment sample: samples) {
 			Assignment condition = sample.getTrimmed(condVars);
 			Value val = sample.getValue(headVar);
@@ -434,6 +432,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			}
 		}
 
+		ConditionalTable table = new ConditionalTable(headVar);
 		for (Assignment condition : temp.keySet()) {
 			Map<Value,Integer> counts = temp.get(condition);
 			double totalCounts =counts.values().stream().mapToInt(i->i).sum();
