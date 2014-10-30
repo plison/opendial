@@ -99,6 +99,7 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	 * terminate() is called, or enough samples have been collected. 
 	 * 
 	 */
+	@Override
 	public void run() {
 		List<BNode> sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);

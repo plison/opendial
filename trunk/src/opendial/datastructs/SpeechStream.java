@@ -41,7 +41,6 @@ import javax.sound.sampled.TargetDataLine;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
 import opendial.utils.AudioUtils;
 
 /**
