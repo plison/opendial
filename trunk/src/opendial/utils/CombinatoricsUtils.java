@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
@@ -65,7 +68,6 @@ public class CombinatoricsUtils {
 	 */
 	public static Set<Assignment> getAllCombinations(Map<String,Set<Value>> valuesMatrix) {
 
-		valuesMatrix = new HashMap<String,Set<Value>>(valuesMatrix);
 		try {
 			// start with a single, empty assignment
 			Set<Assignment> assignments = new HashSet<Assignment>();
@@ -73,18 +75,11 @@ public class CombinatoricsUtils {
 
 			// at each iterator, we expand each assignment with a new combination
 			for (String label : valuesMatrix.keySet()) {
-				Set<Assignment> assignments2 = new HashSet<Assignment>();
-
-				for (Value val: valuesMatrix.get(label)) {
-
-					for (Assignment ass: assignments) {
-						Assignment ass2 = new Assignment(ass, label, val);
-						assignments2.add(ass2);
-					}
-				}
-				assignments = assignments2;
+				Set<Value> values = valuesMatrix.get(label);
+ 				assignments = assignments.stream()
+						.flatMap(a -> values.stream().map(v -> new Assignment(a,label,v)).sequential())
+						.collect(Collectors.toSet());
 			}	
-
 			return assignments;
 		}
 		catch (OutOfMemoryError e) {
@@ -94,41 +89,6 @@ public class CombinatoricsUtils {
 		}
 	}
 
-
-
-	/**
-	 * Generates all combinations of assignments from the list
-	 * 
-	 * <p>NB: use with caution, computational complexity is exponential!
-
-	 * @param allAssignments list of alternative assignments
-	 * @return the generated combination of assignments
-	 */
-	public static Set<Assignment> getAllCombinations(List<Set<Assignment>> allAssignments) {
-
-		// start with a single, empty assignment
-		Set<Assignment> assignments = new HashSet<Assignment>();
-		assignments.add(new Assignment());
-
-		// incrementally combines and expands the assignments
-		for (Set<Assignment> list1: allAssignments) {
-
-			Set<Assignment> assignments2 = new HashSet<Assignment>();
-
-			for (Assignment a : list1) {
-
-				for (Assignment ass: assignments) {
-					if (ass.consistentWith(a)) {
-						Assignment ass2 = new Assignment(ass, a);
-						assignments2.add(ass2);
-					}
-				}
-			}
-			assignments = assignments2;
-		}		
-
-		return assignments;
-	}
 
 
 
