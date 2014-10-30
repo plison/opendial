@@ -25,23 +25,15 @@ package opendial.utils;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.DoubleBinaryOperator;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.values.ArrayVal;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
 
 
 /**

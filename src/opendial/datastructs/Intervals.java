@@ -31,7 +31,6 @@ import java.util.function.Function;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.inference.approximate.Sample;
 
 
 /**

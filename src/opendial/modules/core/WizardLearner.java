@@ -26,17 +26,13 @@ package opendial.modules.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
@@ -44,7 +40,6 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.inference.Query;
 import opendial.inference.approximate.SamplingAlgorithm;
-import opendial.inference.approximate.LikelihoodWeighting;
 import opendial.inference.approximate.Sample;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
