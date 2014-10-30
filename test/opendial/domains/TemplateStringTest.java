@@ -35,6 +35,7 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.readers.XMLDomainReader;
+import opendial.utils.MathUtils;
 
 import org.junit.Test;
 
@@ -204,5 +205,13 @@ public class TemplateStringTest {
 		system.startSystem();
 		assertEquals(system.getContent("caught").getProb(false), 1.0, 0.01);
 		assertEquals(system.getContent("caught2").getProb(true), 1.0, 0.01);
+	}
+	
+	@Test
+	public void testTemplateMath() {
+		assertEquals(MathUtils.evaluateExpression("1+2"), 3.0, 0.001);
+		assertEquals(MathUtils.evaluateExpression("-1.2*3"), -3.6, 0.001);
+		Template t = new Template("{X}+2");
+		assertEquals(t.fillSlots(new Assignment("X", "3")).toString(), "5.0");
 	}
 }

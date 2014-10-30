@@ -42,7 +42,7 @@ public interface Value extends Comparable<Value> {
 	 * 
 	 * @return the value
 	 */
-	public abstract Value copy();
+	public Value copy();
 
 	
 	/**
@@ -51,7 +51,7 @@ public interface Value extends Comparable<Value> {
 	 * @param subvalue the value to check for inclusion
 	 * @return true if the value is contained, false otherwise
 	 */
-	public abstract boolean contains(Value subvalue);
+	public boolean contains(Value subvalue);
 
 
 	/**
@@ -61,6 +61,6 @@ public interface Value extends Comparable<Value> {
 	 * @return the concatenated result
 	 * @throws DialException if the values could not be concatenated 
 	 */
-	public abstract Value concatenate(Value value) throws DialException;
+	public Value concatenate(Value value) throws DialException;
 	
 }

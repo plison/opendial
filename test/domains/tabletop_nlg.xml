@@ -22,7 +22,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move({X}))" />
-				<if var="X" value="Short" relation="notcontains" />
+				<if var="X" value="Short" relation="!contains" />
 			</condition>
 			<effect util="1">
 				<set var="u_m" value="OK, moving {X}" />

@@ -24,7 +24,6 @@
 package opendial.bn.distribs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +41,6 @@ import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.utils.CombinatoricsUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on a collection of
@@ -410,11 +408,9 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	public ConditionalTable createConditionalTable(String headVar, 
 			Collection<String> condVars) {
 
-		ConditionalTable table = new ConditionalTable(headVar);
-
 		Map<Assignment,Map<Value,Integer>> temp = 
 				new HashMap<Assignment,Map<Value,Integer>>();
-	
+			
 		for (Assignment sample: samples) {
 			Assignment condition = sample.getTrimmed(condVars);
 			Value val = sample.getValue(headVar);
@@ -434,6 +430,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			}
 		}
 
+		ConditionalTable table = new ConditionalTable(headVar);
 		for (Assignment condition : temp.keySet()) {
 			Map<Value,Integer> counts = temp.get(condition);
 			double totalCounts =counts.values().stream().mapToInt(i->i).sum();
@@ -460,8 +457,24 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	@Override
 	public void pruneValues(double threshold) {
 		
-		Map<String,Map<Value, Integer>> frequencies = 
-				CombinatoricsUtils.getFrequencies(samples);
+		Map<String,Map<Value,Integer>> frequencies = 
+				new HashMap<String,Map<Value,Integer>>();
+		
+		for (Assignment sample : samples) {
+			for (String var : sample.getVariables()) {
+				Value val = sample.getValue(var);
+					if (!frequencies.containsKey(var)) {
+						frequencies.put(var, new HashMap<Value,Integer>());
+					}
+					Map<Value,Integer> valFreq = frequencies.get(var);
+					if (!valFreq.containsKey(val)) {
+						valFreq.put(val, 1);
+					}
+					else {
+						valFreq.put(val, valFreq.get(val) + 1);
+					}
+			}
+		}
 		
 		int minNumber = (int) (samples.size()*threshold);
 		for (int i= 0; i < samples.size() ; i++) {

@@ -29,11 +29,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import opendial.arch.DialException;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import opendial.arch.Logger;
-import opendial.bn.values.ArrayVal;
-import opendial.bn.values.DoubleVal;
-import opendial.bn.values.Value;
 
 
 /**
@@ -108,6 +108,24 @@ public class MathUtils {
 		return minDistance;
 	}
 
+	
+	/**
+	 * Parse basic mathematical expressions comprised of two numbers joined by
+	 * a binary operator, such as 1+1, 3-2,3*7 or 6/2.
+	 * 
+	 * @param expression the mathematical expression as a string
+	 * @return the result of the evaluation
+	 */
+	public static double evaluateExpression(String expression) {
+		ScriptEngineManager manager = new ScriptEngineManager();
+	    ScriptEngine engine = manager.getEngineByName("js");        
+	    try {
+			return Double.parseDouble(engine.eval(expression).toString());
+		} catch (NumberFormatException | ScriptException e) {
+			log.warning("cannot evaluation expression: " + expression);
+			return 0.0;
+		}
+	}
 
 	
 	/**

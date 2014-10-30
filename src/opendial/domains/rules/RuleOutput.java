@@ -111,15 +111,8 @@ public class RuleOutput extends RuleCase {
 	 * @return the corresponding mass
 	 * @throws DialException if some parameters could not be found.
 	 */
-	public double getTotalMass(Assignment input) throws DialException {
-		double mass = 0;
-		for (Parameter param : effects.values()) {
-			double paramValue = param.getParameterValue(input);
-			if (paramValue > 0) {
-				mass += param.getParameterValue(input);
-			}
-		}
-		return mass;
+	public double getTotalMass(Assignment input)  {	
+		return effects.values().stream().mapToDouble(p -> p.getParameterValue(input)).sum();
 	}
 	
 

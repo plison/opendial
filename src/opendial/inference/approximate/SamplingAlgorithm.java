@@ -27,10 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -111,7 +108,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 		
 		// extract and redraw the samples according to their weight.
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 
 		// creates an empirical distribution from the samples
 		return new EmpiricalDistribution(samples);
@@ -133,7 +130,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, 1, Settings.maxSamplingTime);
 		
 		// extract and redraw the samples according to their weight.
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 		if (samples.isEmpty()) {
 			throw new DialException("could not extract sample");
 		}
@@ -155,17 +152,24 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	@Override
 	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
 
+		try {
 		// creates a new query thread
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 		
 		// extract and redraw the samples
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 
 		// creates the utility table from the samples
 		UtilityTable utilityTable = new UtilityTable();
 		samples.stream().forEach(s -> utilityTable.incrementUtil(s, s.getUtility()));
 
 		return utilityTable;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.info("HAHAA" + e);
+			return new UtilityTable();
+		}
 	}
 
 	
@@ -184,7 +188,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 		
 		// extract and redraw the samples
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 
 		double total = samples.stream().parallel().mapToDouble(s -> s.getUtility()).sum();
 		return total / samples.size();
@@ -210,7 +214,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 		
 		// extract and redraw the samples
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 
 		EmpiricalDistribution fullDistrib = new EmpiricalDistribution(samples);
 
@@ -257,7 +261,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 			Consumer<Collection<Sample>> weightScheme) throws DialException {
 		
 		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
-		Stack<Sample> samples = isquery.getSamples();
+		List<Sample> samples = isquery.getSamples();
 		weightScheme.accept(samples);
 		Intervals<Sample> intervals = new Intervals<Sample>(samples, s -> s.getWeight());
 		

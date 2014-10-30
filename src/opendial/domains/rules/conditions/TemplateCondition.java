@@ -25,7 +25,6 @@ package opendial.domains.rules.conditions;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import opendial.arch.Logger;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
@@ -124,6 +123,12 @@ public class TemplateCondition implements Condition {
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVariables = new HashSet<Template>();
 		inputVariables.add(variable);
+		if (expectedValue.getSlots().size() == 1) {
+			String slot = expectedValue.getSlots().stream().findFirst().get();
+			if (expectedValue.getRawString().equals("{"+slot+"}")) {
+				inputVariables.add(new Template(slot));
+			}
+		}
 		return inputVariables;
 	}
 
@@ -157,6 +162,8 @@ public class TemplateCondition implements Condition {
 			case UNEQUAL: return !expectedValue2.match(actualValue.toString(), true).isMatching(); 
 			case CONTAINS: return expectedValue2.match(actualValue.toString(), false).isMatching();
 			case NOT_CONTAINS: return !expectedValue2.match(actualValue.toString(), false).isMatching();
+			case IN: return new Template(actualValue.toString()).match(expectedValue2.toString(), false).isMatching();
+			case NOT_IN: return !new Template(actualValue.toString()).match(expectedValue2.toString(), false).isMatching();
 			default: return false;
 			}
 		}
@@ -169,6 +176,8 @@ public class TemplateCondition implements Condition {
 		case LOWER_THAN: return (actualValue.compareTo(filledValue) < 0);
 		case CONTAINS: return actualValue.contains(filledValue); 
 		case NOT_CONTAINS: return !actualValue.contains(filledValue); 
+		case IN: return filledValue.contains(actualValue);
+		case NOT_IN: return !filledValue.contains(actualValue);
 		}
 		return false;
 	}

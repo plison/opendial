@@ -29,7 +29,6 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.values.Value;
@@ -44,8 +43,6 @@ import opendial.state.AnchoredRule;
 /**
  * Discrete probability distribution based on a rule specification (which can be for
  * an update rule or a prediction rule).
- * 
- * <p>The distribution exploits a cache to speed up the inference.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -59,8 +56,6 @@ public class RuleDistribution implements ProbDistribution {
 	String id;
 
 	AnchoredRule arule;
-
-	ConditionalTable cache;
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
@@ -83,9 +78,6 @@ public class RuleDistribution implements ProbDistribution {
 		}
 		id = rule.getRule().getRuleId();
 
-		if (rule.getParameters().isEmpty()) {
-			cache = new ConditionalTable(id);
-		}
 	}
 
 
@@ -94,7 +86,6 @@ public class RuleDistribution implements ProbDistribution {
 	 */
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
-		cache = new ConditionalTable(newId);
 		if (id.equals(oldId)) {
 			id = newId;
 		}
@@ -147,13 +138,7 @@ public class RuleDistribution implements ProbDistribution {
 	 */
 	@Override
 	public ProbDistribution getPosterior(Assignment condition) throws DialException {
-
-		if (cache != null && cache.hasProbTable(condition)) {
-			return cache.getProbDistrib(condition);
-		}
-		else {
-			return new MarginalDistribution(this, condition);
-		}
+		return new MarginalDistribution(this, condition);
 	}
 
 
@@ -198,22 +183,19 @@ public class RuleDistribution implements ProbDistribution {
 	@Override
 	public CategoricalTable getProbDistrib(Assignment input) throws DialException {
 
-		if (cache != null && cache.hasProbTable(input)) {
-			return cache.getProbDistrib(input);
-		}	
-
 		// search for the matching case
 
 		Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
 		RuleOutput output = arule.getRule().getOutput(ruleInput);
 
 		// creating the distribution
-		double totalMass = 	 output.getTotalMass(input);
-		CategoricalTable probTable = new CategoricalTable(id);
+		double totalMass = output.getTotalMass(input);
+		CategoricalTable probTable = new CategoricalTable(id, false);
 		if (totalMass < 0.99) {
 			probTable.addRow(new Effect(), 1.0 - totalMass);
 			totalMass = 1.0;
 		}	
+		
 		for (Effect e : output.getEffects()) {
 			double param = output.getParameter(e).getParameterValue(input) / totalMass;
 			if (param > 0) {
@@ -226,9 +208,6 @@ public class RuleDistribution implements ProbDistribution {
 					+ "input " +	ruleInput + " and rule " + arule.toString());
 		}
 
-		if (cache != null) {
-			cache.addRows(input, probTable);
-		}
 		return probTable;
 	}
 

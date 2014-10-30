@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import opendial.arch.Logger;
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
 /**
@@ -64,7 +66,8 @@ public class Template {
 	// group number in the pattern
 	Map<String,Integer> slots;
 
-
+	// regular expression to detect algebraic expressions
+	static Pattern mathExpression = Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
 	// ===================================
 	//  TEMPLATE CONSTRUCTION
@@ -101,6 +104,11 @@ public class Template {
 			log.warning("illegal pattern syntax: " + regex);
 			pattern = Pattern.compile("bogus pattern");
 		}
+		
+		if (slots.isEmpty() && mathExpression.matcher(rawString).matches()) {
+			rawString = "" + MathUtils.evaluateExpression(rawString);
+		}
+
 	}
 
 

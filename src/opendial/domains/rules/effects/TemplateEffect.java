@@ -23,45 +23,41 @@
 
 package opendial.domains.rules.effects;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import opendial.bn.values.Value;
+import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
-import opendial.domains.rules.conditions.BasicCondition;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 /**
  * Representation of a basic effect of a rule.  A basic effect is formally
  * defined as a triple with: <ol>
- * <li> a variable label;
+ * <li> a (possibly underspecified) variable label;
  * <li> one of four basic operations on the variable SET, DISCARD, ADD;
- * <li> a variable value;
+ * <li> a (possibly underspecified) variable value;
  * </ol>
- * 
- * This class represented a usual, fully grounded effect.  For effects including
- * underspecified entities, use TemplateEffect.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
  */
-public class BasicEffect {
+public class TemplateEffect extends BasicEffect {
 
-	String variableLabel;
+	static Logger log = new Logger("TemplateEffect", Logger.Level.DEBUG);
 	
-	Value variableValue;
+	// variable label for the basic effect (as a template)
+	Template labelTemplate;
 	
-	// enumeration of the four possible effect operations
-	public static enum EffectType {
-		SET, 		// for variable := value
-		DISCARD, 	// for variable != value
-		ADD, 		// for variable += value (add the value to the set)
-	}
-		
-	EffectType type;
+	// variable value for the basic effect  (as a template)
+	Template valueTemplate;
 
-	int priority;
-	
 	// ===================================
 	//  EFFECT CONSTRUCTION
 	// ===================================
@@ -70,37 +66,40 @@ public class BasicEffect {
 	/**
 	 * Constructs a new basic effect, with a variable label, value, and type
 	 * 
-	 * @param variable variable label (raw string)
-	 * @param value variable value (raw string)
+	 * @param variable variable label (raw string, possibly with slots)
+	 * @param value variable value (raw string, possibly with slots)
 	 * @param type type of effect
 	 */
-	public BasicEffect(String variable, String value, EffectType type){
-		this(variable, ValueFactory.create(value), type);
-	}
-	
-	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
-	 * 
-	 * @param variable variable label (raw string)
-	 * @param value variable value
-	 * @param type type of effect
-	 */
-	public BasicEffect(String variable, Value value, EffectType type){
-		this.variableLabel = variable;
-		this.variableValue = value;
-		this.type = type;
+	public TemplateEffect(Template variable, Template value, EffectType type){
+		super(variable.toString(), value.isUnderspecified()? ValueFactory.none() : 
+			ValueFactory.create(value.getRawString()), type);
+		this.labelTemplate = variable;
+		this.valueTemplate = value;
 	}
 
-	
+
 	/**
-	 * Sets the priority level of the basic effect
+	 * Ground the slots in the effect variable and value (given the assignment)
+	 * and returns the resulting effect.
 	 * 
-	 * @param priority priority level (1 is highest)
+	 * @param grounding the grounding
+	 * @return the grounded effect
 	 */
-	public void setPriority(int priority) {
-		this.priority = priority;
+	public BasicEffect ground(Assignment grounding) {
+		Template newT = labelTemplate.fillSlots(grounding);
+		Template newV = valueTemplate.fillSlots(grounding);
+		if (newT.isUnderspecified() || newV.isUnderspecified()) {
+			TemplateEffect grounded = new TemplateEffect(newT, newV, type);
+			grounded.priority = this.priority;
+			return grounded;	
+		}
+		else {
+			BasicEffect grounded = new BasicEffect(newT.getRawString(), newV.getRawString(), type);
+			grounded.priority = this.priority;
+			return grounded;
+		}
+		
 	}
-	
 	
 	
 	// ===================================
@@ -109,36 +108,26 @@ public class BasicEffect {
 	
 	
 	/**
-	 * Returns the effect type
-	 * 
-	 * @return the type
+	 * Returns the set of additional input variables for the effect (from slots 
+	 * in the variable label and value).
+	 *
+	 * @return sets of input variables
 	 */
-	public EffectType getType() {
-		return type;
-	}
+	public Set<String> getSlots() {
+		Set<String> additionalInputVariables = new HashSet<String>();
+		additionalInputVariables.addAll(this.labelTemplate.getSlots());
+		additionalInputVariables.addAll(this.valueTemplate.getSlots());
+		return additionalInputVariables;
+		}
 
+	
 
 	/**
-	 * Returns the variable label for the basic effect
-	 * 
-	 * @return the variable label
+	 * Returns true if the effect contains slots to fill, and false otherwise
 	 */
-	public String getVariable() {
-		return variableLabel;
+	public boolean containsSlots() {
+		return !labelTemplate.getSlots().isEmpty() || !valueTemplate.getSlots().isEmpty();
 	}
-	
-	
-	/**
-	 * Returns the variable value for the basic effect.  If the variable value is 
-	 * underspecified, returns the value None.
-	 * 
-	 * @return the variable value
-	 */
-	public Value getValue() {
-		return variableValue;
-	}
-
-
 	
 	/**
 	 * Converts the basic effect into an equivalent condition.
@@ -147,16 +136,7 @@ public class BasicEffect {
 	 */
 	public Condition convertToCondition() {
 		Relation r = (type == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
-			return new BasicCondition(variableLabel, variableValue, r);
-	}
-	
-	
-	/**
-	 * Returns false.
-	 * 
-	 */
-	public boolean containsSlots() {
-		return false;
+		return new TemplateCondition(labelTemplate, valueTemplate, r);
 	}
 
 	
@@ -170,13 +150,13 @@ public class BasicEffect {
 	 */
 	@Override
 	public String toString() {
-		String str = variableLabel;
+		String str = labelTemplate.toString();
 		switch (type) {
 		case SET: str += ":="; break;
 		case DISCARD: str += "!="; break;
 		case ADD: str += "+="; break;
 		}
-		str += variableValue;
+		str += valueTemplate.toString();
 		return str;
 	}
 	
@@ -188,7 +168,7 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return variableLabel.hashCode() - variableValue.hashCode() + type.hashCode();
+		return labelTemplate.hashCode() - valueTemplate.hashCode() + type.hashCode();
 	}
 
 	
@@ -201,14 +181,14 @@ public class BasicEffect {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof BasicEffect) {
-			if (!((BasicEffect)o).getVariable().equals(variableLabel)) {
+		if (o instanceof TemplateEffect) {
+			if (!((TemplateEffect)o).getVariable().equals(variableLabel)) {
 				return false;
 			}
-			else if (!((BasicEffect)o).getValue().equals(getValue())) {
+			else if (!((TemplateEffect)o).valueTemplate.equals(valueTemplate)) {
 				return false;
 			}
-			else if (!((BasicEffect)o).getType().equals(type)) {
+			else if (!((TemplateEffect)o).getType().equals(type)) {
 				return false;
 			}
 			return true;
@@ -221,10 +201,12 @@ public class BasicEffect {
 	 * 
 	 * @return the copy.
 	 */
-	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue, type);
+	public TemplateEffect copy() {
+		TemplateEffect copy = new TemplateEffect(labelTemplate, valueTemplate, type);
 		copy.priority = this.priority;
 		return copy;
 	}
 
+
+	
 }

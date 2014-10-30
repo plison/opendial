@@ -208,9 +208,12 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * 1.0 for these cases.
 	 */
 	public void fillConditionalHoles() {
+		if (conditionalVars.size() <= 1) {
+			return;
+		}
 		Map<String,Set<Value>> possibleCondPairs = 
 				CombinatoricsUtils.extractPossiblePairs(table.keySet());
-		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 400)  {				
+		if (CombinatoricsUtils.getNbCombinations(possibleCondPairs) < 500)  {				
 			Set<Assignment> possibleCondAssignments = 
 					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 			possibleCondAssignments.remove(new Assignment());

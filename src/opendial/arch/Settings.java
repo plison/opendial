@@ -26,9 +26,10 @@ package opendial.arch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-
+import java.util.Set;
 import javax.sound.sampled.Mixer;
 
 import opendial.modules.Module;
@@ -102,12 +103,16 @@ public class Settings {
 	/** Domain-specific modules to run */
 	public List<Class<Module>> modules = new ArrayList<Class<Module>>();
 	
+	/** settings that have been explicitly specified (i.e. non-default) */
+	Set<String> explicitSettings;
 	
 	/**
 	 * Creates new settings with the default values
 	 */
 	public Settings() {
+		explicitSettings = new HashSet<String>();
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
+		explicitSettings.clear();
 		selectAudioMixers();
 	}
 	
@@ -128,7 +133,9 @@ public class Settings {
 	 * @param mapping the properties
 	 */
 	public Settings(Properties mapping) {
+		explicitSettings = new HashSet<String>();
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
+		explicitSettings.clear();
 		fillSettings(mapping);	
 		selectAudioMixers();
 	}
@@ -217,6 +224,7 @@ public class Settings {
 				params.put(key, mapping.getProperty(key));
 			}
 		}
+		explicitSettings.addAll(mapping.stringPropertyNames());
 	}
 	
 	
@@ -244,6 +252,16 @@ public class Settings {
 		List<String> moduleNames = new ArrayList<String>();
 		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
 		mapping.setProperty("modules", ""+StringUtils.join(moduleNames, ","));
+		return mapping;
+	}
+	
+	public Properties getSpecifiedMapping() {
+		Properties fullMapping = getFullMapping();
+
+		Properties mapping = new Properties();
+		fullMapping.stringPropertyNames().stream()
+			.filter(p -> explicitSettings.contains(p))
+			.forEach(p -> mapping.setProperty(p, fullMapping.getProperty(p)));
 		return mapping;
 	}
 	

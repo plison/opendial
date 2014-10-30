@@ -30,7 +30,6 @@ import java.awt.Dialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -47,7 +46,6 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
-import opendial.bn.values.Value;
 import opendial.state.DialogueState;
 
 import org.jfree.chart.ChartFactory;
@@ -61,7 +59,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 

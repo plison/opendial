@@ -26,9 +26,9 @@
 		<rule>
 			<case>
 				<condition operator="or">
-					<if var="u_u" value="turn * left" relation="in" />
-					<if var="u_u" value="move * left" relation="in" />
-					<if var="u_u" value="go * left" relation="in" />
+					<if var="u_u" value="turn * left" relation="contains" />
+					<if var="u_u" value="move * left" relation="contains" />
+					<if var="u_u" value="go * left" relation="contains" />
 				</condition>
 				<effect prob="1">
 					<set var="a_u" value="Request(Left)" />
@@ -36,9 +36,9 @@
 			</case>
 			<case>
 				<condition operator="or">
-					<if var="u_u" value="turn * right" relation="in" />
-					<if var="u_u" value="move * right" relation="in" />
-					<if var="u_u" value="go * right" relation="in" />
+					<if var="u_u" value="turn * right" relation="contains" />
+					<if var="u_u" value="move * right" relation="contains" />
+					<if var="u_u" value="go * right" relation="contains" />
 				</condition>
 				<effect prob="1">
 					<set var="a_u" value="Request(Right)" />
@@ -46,11 +46,11 @@
 			</case>
 			<case>
 				<condition operator="or">
-					<if var="u_u" value="move * forward" relation="in" />
-					<if var="u_u" value="go * forward" relation="in" />
-					<if var="u_u" value="move * forwards" relation="in" />
-					<if var="u_u" value="go * forwards" relation="in" />
-					<if var="u_u" value="go * straight" relation="in" />
+					<if var="u_u" value="move * forward" relation="contains" />
+					<if var="u_u" value="go * forward" relation="contains" />
+					<if var="u_u" value="move * forwards" relation="contains" />
+					<if var="u_u" value="go * forwards" relation="contains" />
+					<if var="u_u" value="go * straight" relation="contains" />
 				</condition>
 				<effect prob="1">
 					<set var="a_u" value="Request(Forward)" />
@@ -58,8 +58,8 @@
 			</case>
 			<case>
 				<condition operator="or">
-					<if var="u_u" value="move * backward" relation="in" />
-					<if var="u_u" value="go * backward" relation="in" />
+					<if var="u_u" value="move * backward" relation="contains" />
+					<if var="u_u" value="go * backward" relation="contains" />
 				</condition>
 				<effect prob="1">
 					<set var="a_u" value="Request(Backward)" />
@@ -67,7 +67,7 @@
 			</case>
 			<case>
 				<condition>
-					<if var="u_u" value="stop" relation="in" />
+					<if var="u_u" value="stop" relation="contains" />
 				</condition>
 				<effect prob="1">
 					<set var="a_u" value="Request(Stop)" />

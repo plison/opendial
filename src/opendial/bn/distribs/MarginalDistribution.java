@@ -195,7 +195,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @param threshold the threshold to apply
 	 */
 	@Override
-	public void pruneValues(double threshold) {
+	public synchronized void pruneValues(double threshold) {
 		condDistrib.pruneValues(threshold);
 		uncondDistrib.pruneValues(threshold);
 	}
@@ -220,7 +220,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * Modifies the variable identifier in the two distributions.
 	 */
 	@Override
-	public void modifyVariableId(String oldId, String newId) {
+	public synchronized void modifyVariableId(String oldId, String newId) {
 		condDistrib.modifyVariableId(oldId, newId);
 		uncondDistrib.modifyVariableId(oldId, newId);
 	}

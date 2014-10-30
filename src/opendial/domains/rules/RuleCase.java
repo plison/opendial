@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
@@ -129,7 +130,7 @@ public class RuleCase {
 	public RuleCase ground(Assignment grounding) {
 		RuleCase groundCase = new RuleCase();
 		for (Effect e : effects.keySet()) {
-			Effect groundedEffect = e.getGrounded(grounding);
+			Effect groundedEffect = e.ground(grounding);
 			if (!groundedEffect.getSubEffects().isEmpty() || e.getSubEffects().isEmpty()) {
 				groundCase.addEffect(groundedEffect, effects.get(e));
 			}
@@ -204,11 +205,9 @@ public class RuleCase {
 	 * @return the set of output variables defined in the case's effects
 	 */
 	public Set<String> getOutputVariables() {
-		Set<String> outputVariables = new HashSet<String>();
-		for (Effect effect : effects.keySet()) {
-			outputVariables.addAll(effect.getOutputVariables());
-		}
-		return outputVariables;
+		return effects.keySet().stream()
+				.flatMap(e -> e.getOutputVariables().stream())
+				.collect(Collectors.toSet());
 	}
 	
 	

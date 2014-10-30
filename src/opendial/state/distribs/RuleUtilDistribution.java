@@ -23,13 +23,11 @@
 
 package opendial.state.distribs;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.UtilityDistribution;
-import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
@@ -53,9 +51,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	// A rule
 	AnchoredRule rule;
 
-	// a cache with the utility assignments
-	Map<Assignment,UtilityTable> cache;
-
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
 	// ===================================
@@ -77,10 +72,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 					"rule-based utility distribution");
 		}
 
-		if (rule.getParameters().isEmpty()) {
-			cache = new HashMap<Assignment,UtilityTable>();
-		}
-
 	}
 
 
@@ -91,9 +82,7 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 */
 	@Override
 	public void modifyVarId(String oldId, String newId) {
-		if (cache != null) {
-			cache.clear();
-		}
+		return;
 	}
 
 
@@ -113,21 +102,11 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	@Override
 	public double getUtil(Assignment fullInput) {
 
-		Assignment input = fullInput.getTrimmedInverse(rule.getOutputVariables());
-		Assignment actions = fullInput.getTrimmed(rule.getOutputVariables());
-		if (cache != null && cache.containsKey(input) && cache.get(input).getRows().contains(actions)) {
-			return cache.get(input).getUtil(actions);
-		}
-
-		double util = getUtil(input, actions);
-
-		if (cache != null) {
-			if (!cache.containsKey(input)) {
-				cache.put(input, new UtilityTable());
-			}
-			cache.get(input).setUtil(actions, util);
-		}
-		return util;
+		Set<String> outputVars = rule.getOutputVariables();
+		Assignment input = fullInput.getTrimmedInverse(outputVars);
+		Assignment actions = fullInput.getTrimmed(outputVars);
+		
+		return getUtil(input, actions);
 	}
 
 	// ===================================
@@ -184,7 +163,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 */
 	private double getUtil(Assignment input, Assignment actions) {
 
-		try {
 			Assignment ruleInput = input.getTrimmed(rule.getInputs().getVariables());
 			Assignment ruleAction = actions.removePrimes();
 
@@ -202,11 +180,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 			}
 
 			return totalUtil;
-		}
-		catch (DialException e) {
-			log.warning("error extracting utility: " + e + " for rule " + rule);
-		}
-		return 0.0;	
 	}
 
 

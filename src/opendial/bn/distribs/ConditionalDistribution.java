@@ -90,7 +90,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @param newVarId the new variable label
 	 */
 	@Override
-	public void modifyVariableId(String oldVarId, String newVarId) {
+	public  void modifyVariableId(String oldVarId, String newVarId) {
 	//	log.debug("changing var id from " + oldVarId + " --> " + newVarId);
 		HashMap<Assignment,T> newTable = new HashMap<Assignment,T>();
 
@@ -124,7 +124,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @param distrib the distribution (in a continuous, function-based representation)
 	 * @throws DialException if distrib relates to a different random variable
 	 */
-	public void addDistrib (Assignment condition, T distrib) throws DialException {
+	public  void addDistrib (Assignment condition, T distrib) throws DialException {
 		table.put(condition, distrib);
 		if (!distrib.getVariable().equals(this.headVar)) {
 			throw new DialException("Variable is " + this.headVar + ", not " + distrib.getVariable());
@@ -352,7 +352,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Map<String,Set<Value>> possibleCondPairs = 
 			CombinatoricsUtils.extractPossiblePairs(table.keySet());
 		
-		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 100) {
+		if (CombinatoricsUtils.getNbCombinations(possibleCondPairs) < 100) {
 		// Note that here, we only check on the possible assignments in the distribution itself
 		// but a better way to do it would be to have it on the actual values given by the input nodes
 		// but would require the distribution to have some access to it.

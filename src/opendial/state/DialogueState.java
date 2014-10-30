@@ -269,8 +269,8 @@ public class DialogueState extends BNetwork {
 
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
-			CategoricalTable newtable = ((CategoricalTable)queryProb(var)
-					.getMarginal(var)).concatenate(distrib);
+			CategoricalTable newtable = ((CategoricalTable)queryProb(var))
+					.concatenate(distrib);
 			getChanceNode(var).setDistrib(newtable);
 			getChanceNode(var).setId(var + "'");
 		}
@@ -463,7 +463,6 @@ public class DialogueState extends BNetwork {
 		if (!getNodeIds().containsAll(variables)) {
 			log.warning(variables + " not contained in " + getNodeIds());
 		}
-
 		// else, perform the inference operation
 		try {
 			return new SwitchingAlgorithm().queryProb(this, variables, evidence);

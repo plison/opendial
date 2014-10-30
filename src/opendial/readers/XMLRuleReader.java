@@ -46,6 +46,8 @@ import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.BasicEffect;
+import opendial.domains.rules.effects.TemplateEffect;
 import opendial.domains.rules.parameters.CompositeParameter;
 import opendial.domains.rules.parameters.CompositeParameter.Operator;
 import opendial.domains.rules.parameters.FixedParameter;
@@ -293,20 +295,17 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
-			else if (relationStr.toLowerCase().trim().equals("partial")) {
-				relation = Relation.CONTAINS;
-			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
-				relation = Relation.CONTAINS;
+				relation = Relation.IN;
 			}
 			/**		else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
 			} */
-			else if (relationStr.toLowerCase().trim().equals("notcontains")) {
+			else if (relationStr.toLowerCase().trim().equals("!contains")) {
 				relation = Relation.NOT_CONTAINS;
 			}
 			else if (relationStr.toLowerCase().trim().equals("!in")) {
-				relation = Relation.NOT_CONTAINS;
+				relation = Relation.NOT_IN;
 			}
 			else if (relationStr.toLowerCase().trim().equals(">")) {
 				relation = Relation.GREATER_THAN;
@@ -371,7 +370,6 @@ public class XMLRuleReader {
 				effects.add(subeffect);
 			}
 		}
-
 		return new Effect(effects);		
 	}
 
@@ -390,21 +388,25 @@ public class XMLRuleReader {
 					" and var " + node.getAttributes().getNamedItem("var"));
 		}
 
-		Template variable = new Template(node.getAttributes().getNamedItem("var").getNodeValue());
+		String var = node.getAttributes().getNamedItem("var").getNodeValue();
 		
-		Template value = null;
+		String value = null;
 		if (node.getAttributes().getNamedItem("value")!=null) {
-			value = new Template(node.getAttributes().getNamedItem("value").getNodeValue());
+			value = node.getAttributes().getNamedItem("value").getNodeValue();
 		}
 		else if (node.getAttributes().getNamedItem("var2")!=null) {
-			value = new Template("{" + node.getAttributes().getNamedItem("var2").getNodeValue() + "}");
-		} 
+			value = "{" + node.getAttributes().getNamedItem("var2").getNodeValue() + "}";
+		}
+		else {
+			value = "None";
+		}
 		
 		EffectType type = getEffectType(node);
 		// "clear" effect is outdated
 		if (node.getNodeName().equalsIgnoreCase("clear")) {
-			value = new Template("None");
+			value = "None";
 		}
+		
 		// checking for other attributes
 		for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
 			Node attr = node.getAttributes().item(i);
@@ -413,8 +415,16 @@ public class XMLRuleReader {
 				throw new DialException("unrecognized attribute: " + attr.getNodeName());
 			}
 		}
-
-		return new BasicEffect (variable, value, type);
+		
+		Template tvar = new Template(var);
+		Template tval = new Template(value);
+		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
+			return new TemplateEffect(tvar, tval, type);
+		}
+		else {
+			return new BasicEffect(var, value, type);
+		}
+		
 	}
 
 	

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,31 +23,15 @@
 
 package opendial.modules.core;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.BindException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.jfree.util.Log;
-
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -59,66 +43,30 @@ public class RemoteConnector implements Module {
 	// logger
 	public static Logger log = new Logger("RemoteConnector", Logger.Level.DEBUG);
 
+	public static int PORT = 2111;
 	DialogueSystem system;
 	boolean paused = true;
 	
-	HttpServer server;
-	HttpClient remoteClient;
-	URI remoteURI;
-	
+	public static enum MessageType {INIT, XML, STREAM, MISC}
+
+	ServerSocket local;
+
 	public RemoteConnector(DialogueSystem system) {
 		this.system = system;
 	}
-	
+
 	@Override
 	public void start() throws DialException {
 		paused = false;
-		createServer();
-		if (system.getSettings().params.getProperty("connectto") != null) {
-			createClient();
-		}
+		setupServer();
+		writeToSocket(MessageType.INIT, local.getInetAddress().getHostAddress()
+				+":" + local.getLocalPort());
 	}
-	
-	
-	private void createClient() {
-		String host = system.getSettings().params.getProperty("connectto");
-		try {
-			remoteClient = HttpClientBuilder.create().build();
-			URIBuilder builder = new URIBuilder();
-			builder.setScheme("http");
-			builder.setHost(host);
-			builder.setPath("/opendial");
-			remoteURI = builder.build();
-			HttpPost post = new HttpPost(remoteURI);
-			post.setEntity(new StringEntity("this is the first message", "UTF-8"));
-			HttpResponse response = remoteClient.execute(post);
-			String responseStr = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
-	        log.info("response: " + responseStr);
-			
-		} catch (URISyntaxException | IOException e) {
-			e.printStackTrace();
-			log.info("cannot start connection with remote machine " + host +": " + e);
-		}
-	}
-	
-	
-	private void createServer() {
-		try {
-		server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/opendial", new MyHandler());
-        server.setExecutor(null); // creates a default executor
-        server.start();
-        log.debug("starting server on " + Inet4Address.getLocalHost().getHostAddress());
-		}
-		catch (IOException e) {
-			log.info("cannot start server: " + e );			
-		}
-	}
- 
+
 	@Override
-	public void trigger(DialogueState state, Collection<String> updatedVars) {
+	public void trigger(DialogueState state, Collection<String> updatedVars) {		
 		if (!paused) {
-			
+			writeToSocket(MessageType.MISC,"updated variables:" + updatedVars);
 		}
 	}
 
@@ -132,18 +80,59 @@ public class RemoteConnector implements Module {
 		return !paused;
 	}
 
+	private void setupServer() {
+		try {
+			try { local = new ServerSocket(PORT); }
+			catch (BindException e) { local = new ServerSocket(PORT+1);}
+			new Thread(() -> readFromSocket()).start();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    static class MyHandler implements HttpHandler {
-        public void handle(HttpExchange t) throws IOException {
-        	
-        	String message = IOUtils.toString(t.getRequestBody(), "UTF-8");
-        	log.info("message was: " + message);
-        	
-            String response = "This is the response";
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-        }
-    }
+	
+	private void writeToSocket(MessageType messageType, String content) {
+		try {
+		String connect = system.getSettings().params.getProperty("connect");
+		if (connect!= null) {
+			int port = (connect.contains(":"))? Integer.parseInt(connect.split(":")[1]) : PORT;
+			Socket socket = new Socket(connect.split(":")[0],port);
+			OutputStream out = socket.getOutputStream();
+			out.write(messageType.ordinal());
+			IOUtils.write(content, out);
+			socket.close();
+		}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void readFromSocket() {
+		while (true) {
+			Socket connection;
+			try {
+				connection = local.accept();
+				InputStream in = connection.getInputStream();
+				MessageType type = MessageType.values()[in.read()];
+				byte[] message = IOUtils.toByteArray(in);
+				if (type == MessageType.INIT) {
+					String content = new String(message);
+					log.info("Connecting to " + content);
+					system.getSettings().params.setProperty("connect", content);
+				}
+				else if (type == MessageType.MISC) {
+					String content = new String(message);
+					log.info("received message: " + content);
+				}
+				Thread.sleep(100);
+			} catch (IOException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+
 }

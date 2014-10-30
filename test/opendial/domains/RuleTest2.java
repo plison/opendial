@@ -46,10 +46,10 @@ import org.junit.Test;
  * @version $Date::                      $
  *
  */
-public class BasicRuleTest2 {
+public class RuleTest2 {
 
 	// logger
-	public static Logger log = new Logger("BasicRuleTest2", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleTest2", Logger.Level.DEBUG);
 
 	public static final String domainFile = "test//domains//domain2.xml";
 	public static final String domainFile2 = "test//domains//domain3.xml";

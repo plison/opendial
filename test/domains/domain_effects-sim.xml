@@ -59,7 +59,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move(*))" />
-				<if var="perceived" value="RedObj" relation="notcontains" />
+				<if var="perceived" value="RedObj" relation="!contains" />
 			</condition>
 			<effect prob="0.3">
 				<add var="perceived" value="RedObj" />
@@ -79,7 +79,7 @@
 		<case>
 			<condition>
 				<if var="a_m" value="Do(Move(*))" />
-				<if var="perceived" value="BlueObj" relation="notcontains" />
+				<if var="perceived" value="BlueObj" relation="!contains" />
 			</condition>
 			<effect prob="0.3">
 				<add var="perceived" value="BlueObj" />
