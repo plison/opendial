@@ -13,7 +13,7 @@
 <rule priority="1">
 <case>
 <condition>
-<if var="u_u" value="hello" relation="in"/>
+<if var="u_u" value="hello" relation="contains"/>
 </condition>
 <effect>
 <set var="a_u" value="Opening"/>

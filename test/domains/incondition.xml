@@ -1,0 +1,43 @@
+
+<domain>
+
+<initialstate>
+<variable id="theset">
+<value prob="0.7">[val1, val2]</value>
+<value prob="0.2">[val1]</value>
+</variable>
+
+<variable id="string">
+<value prob="0.5">this is a string</value>
+<value prob="0.4">shouldn't work</value>
+</variable>
+
+<variable id="start">
+<value prob="0.8">val1</value>
+</variable>
+</initialstate>
+
+<model trigger="start">
+<rule>
+<case>
+<condition>
+<if var="start" value="{theset}" relation="in"/>
+</condition>
+<effect>
+<set var="out" value="{start} is in {theset}"/>
+</effect>
+</case>
+</rule>
+
+<rule>
+<case>
+<condition>
+<if var="string" value="this is a string isn't it?" relation="in"/>
+</condition>
+<effect>
+<set var="out2" value="{string} is matched"/>
+</effect>
+</case>
+</rule>
+</model>
+</domain>
