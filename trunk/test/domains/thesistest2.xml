@@ -25,7 +25,7 @@
 <rule id="r12">
 	<case>
 		<condition>
-		<if var="A" value="a2" relation="!in"/>
+		<if var="A" value="a2" relation="notcontains"/>
 		</condition>
 	<effect>
 		<add var="A" value="a2"/>
@@ -46,7 +46,7 @@
 <rule id="r14">
 	<case>
 		<condition>
-			<if var="u_u" value="take the {OBJ}" relation="in"/>
+			<if var="u_u" value="take the {OBJ}" relation="contains"/>
 		</condition>
 		<effect>
 			<set var="a_u" value="Request({OBJ})"/>
