@@ -64,7 +64,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int MAX_QUERYVARS = 6;
 
 	// maximum number of continuous variables
-	public static int MAX_CONTINUOUS = 2;
+	public static int MAX_CONTINUOUS = 0;
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;
