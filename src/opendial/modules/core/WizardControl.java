@@ -203,11 +203,7 @@ public class WizardControl implements Module {
 			system.getState().addEvidence(action.addPrimes());
 			system.getModule(WizardLearner.class).trigger(system.getState(), Arrays.asList());
 		}
-		try {
-			system.addContent(action);
-		} catch (DialException e) {
-			e.printStackTrace();
-		}
+		system.addContent(action);
 		gui.getChatTab().remove(gui.getChatTab().getComponent(2));
 	}
 

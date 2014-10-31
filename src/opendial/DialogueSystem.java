@@ -311,7 +311,7 @@ public class DialogueSystem {
 	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated
 	 */
-	public Set<String> addUserInput(Map<String,Double> userInput) throws DialException {
+	public Set<String> addUserInput(Map<String,Double> userInput) {
 		CategoricalTable table = new CategoricalTable(settings.userInput);
 		for (String input : userInput.keySet()) {
 			table.addRow(input, userInput.get(input));
@@ -329,11 +329,17 @@ public class DialogueSystem {
 	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated.
 	 */
-	public Set<String> addContent(IndependentProbDistribution distrib) throws DialException {
+	public Set<String> addContent(IndependentProbDistribution distrib) {
 		if (!paused) {
 			synchronized (curState) {
+				try {
 				curState.addToState(distrib);
 				return update();
+				}
+				catch (DialException e) {
+					log.warning("cannot update state with " + distrib + ": " + e);
+					return new HashSet<String>();
+				}
 			}
 		}
 		else {
@@ -357,11 +363,17 @@ public class DialogueSystem {
 	 * @throws DialException if the incremental update failed
 	 */
 	public Set<String> addIncrementalContent(CategoricalTable content, 
-			boolean followPrevious) throws DialException {
+			boolean followPrevious) {
 		if (!paused) {
 			synchronized (curState) {
-				curState.addToState_incremental(content, followPrevious);
-				return update();
+				try {
+					curState.addToState_incremental(content, followPrevious);
+					return update();
+					}
+					catch (DialException e) {
+						log.warning("cannot update state with " + content + ": " + e);
+						return new HashSet<String>();
+					}
 			}
 		}
 		else {
@@ -380,11 +392,17 @@ public class DialogueSystem {
 	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated.
 	 */
-	public Set<String> addContent(Assignment assign) throws DialException {
+	public Set<String> addContent(Assignment assign) {
 		if (!paused) {
 			synchronized (curState) {
-				curState.addToState(assign);
-				return update();
+				try {
+					curState.addToState(assign);
+					return update();
+					}
+					catch (DialException e) {
+						log.warning("cannot update state with " + assign + ": " + e);
+						return new HashSet<String>();
+					}
 			}
 		}
 		else {
@@ -394,11 +412,25 @@ public class DialogueSystem {
 	}
 
 
-	public Set<String> addContent(MultivariateDistribution distrib) throws DialException {
+	/**
+	 * Adds the content (expressed as a multivariate distribution over variables) 
+	 * to the current dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param distrib the multivariate distribution to add
+	 * @return the variables that were updated in the process
+	 * @throws DialException if the state could not be updated.
+	 */
+	public Set<String> addContent(MultivariateDistribution distrib) {
 		if (!paused) {
 			synchronized (curState) {
-				curState.addToState(distrib);
-				return update();
+				try {
+					curState.addToState(distrib);
+					return update();
+					}
+					catch (DialException e) {
+						log.warning("cannot update state with " + distrib + ": " + e);
+						return new HashSet<String>();
+					}
 			}
 		}
 		else {
@@ -614,6 +646,8 @@ public class DialogueSystem {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
+	
+	
 
 
 
