@@ -46,7 +46,7 @@ public class BasicCondition implements Condition {
 
 	// possible relations used in a basic condition
 	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
-		GREATER_THAN, LOWER_THAN}
+		GREATER_THAN, LOWER_THAN, IN, NOT_IN}
 
 	// variable label (can include slots to fill)
 	String variable;
@@ -151,6 +151,8 @@ public class BasicCondition implements Condition {
 		case LOWER_THAN: return (actualValue.compareTo(expectedValue) < 0);
 		case CONTAINS: return actualValue.contains(expectedValue); 
 		case NOT_CONTAINS: return !actualValue.contains(expectedValue); 
+		case IN: return expectedValue.contains(actualValue); 
+		case NOT_IN: return !expectedValue.contains(actualValue); 
 		}
 		return false;
 	}

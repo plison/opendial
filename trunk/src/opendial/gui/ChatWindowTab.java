@@ -127,7 +127,7 @@ public class ChatWindowTab extends JComponent {
 		inputContainer.setLayout(new BorderLayout());
 
 		inputField = new JTextField(60);		
-		inputContainer.add(new JLabel("User input: "), BorderLayout.WEST);
+		inputContainer.add(new JLabel("Input: "), BorderLayout.WEST);
 		inputContainer.add(inputField, BorderLayout.CENTER);
 		final JButton helpButton = new JButton( "" );
 		helpButton.putClientProperty( "JButton.buttonType", "help" );
@@ -201,10 +201,15 @@ public class ChatWindowTab extends JComponent {
 	 */
 	private void addUtteranceToState()  {
 		String rawText= inputField.getText();
+		String inputVariable = system.getSettings().userInput;
+		if (rawText.contains("=")) {
+			inputVariable = rawText.split("=")[0].trim();
+			rawText = rawText.split("=")[1].trim();
+		}
 		if (!rawText.equals("")) {
 			String[] splitText = rawText.split(";");
 
-			CategoricalTable table = new CategoricalTable(system.getSettings().userInput);
+			CategoricalTable table = new CategoricalTable(inputVariable);
 
 			for (String split : Arrays.asList(splitText)) {				
 				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
@@ -212,8 +217,7 @@ public class ChatWindowTab extends JComponent {
 			}
 
 			inputField.setText("");
-			(new StateUpdater(system, table)).start();
-
+			(new Thread(() -> system.addContent(table))).start();
 		}
 	}
 
@@ -389,43 +393,6 @@ public class ChatWindowTab extends JComponent {
 	 */
 	public String getChat() {
 		return lines.getText();
-	}
-
-
-	/**
-	 * Thread employed to update the dialogue state
-	 */
-	final class StateUpdater extends Thread {
-
-		DialogueSystem system;
-		CategoricalTable table;
-
-		/**
-		 * Constructs a new state updater
-		 * @param system the dialogue system
-		 * @param table the categorical table to insert
-		 */
-		public StateUpdater(DialogueSystem system, CategoricalTable table) {
-			this.system = system;
-			this.table = table;
-		}
-
-		/**
-		 * Updates the dialogue state with the table
-		 */
-		@Override
-		public void run() {
-			try {
-				system.addContent(table);
-
-				// TODO: add a notation mechanism to add incremental content
-				// (no need to document, internal functionality)
-				// system.addIncrementalContent(table, true);
-			}
-			catch (DialException e) {
-				log.warning("cannot update state with user utterance");
-			}
-		}
 	}
 
 

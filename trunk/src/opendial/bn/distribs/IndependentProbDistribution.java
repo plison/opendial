@@ -164,19 +164,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 		return this;
 	}
 	
-
-	/**
-	 * Returns the marginal distribution for a particular variable
-	 * 
-	 * @param var the variable label
-	 * @return the marginal probability
-	 */
-	public default IndependentProbDistribution getMarginal(String var) {
-		if (!var.equals(getVariable())) {
-			log.warning("different variable names: " + var + " vs. " + getVariable());
-		}
-		return this;
-	}
 	
 	/**
 	 * Returns the set of possible values for the distribution. If the distribution is 

@@ -293,11 +293,8 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
-			else if (relationStr.toLowerCase().trim().equals("partial")) {
-				relation = Relation.CONTAINS;
-			}
 			else if (relationStr.toLowerCase().trim().equals("in")) {
-				relation = Relation.CONTAINS;
+				relation = Relation.IN;
 			}
 			/**		else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
@@ -306,7 +303,7 @@ public class XMLRuleReader {
 				relation = Relation.NOT_CONTAINS;
 			}
 			else if (relationStr.toLowerCase().trim().equals("!in")) {
-				relation = Relation.NOT_CONTAINS;
+				relation = Relation.NOT_IN;
 			}
 			else if (relationStr.toLowerCase().trim().equals(">")) {
 				relation = Relation.GREATER_THAN;

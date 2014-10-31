@@ -145,16 +145,11 @@ public class ModuleExample2 implements Module {
 			if (paused) {
 				return;
 			}
-			try {
 			switch (((BasicArrowButton)arg0.getSource()).getDirection()) {
 			case SwingConstants.NORTH : system.addContent(new Assignment("a_u", "Request(Forward)")); break;
 			case SwingConstants.SOUTH : system.addContent(new Assignment("a_u", "Request(Backward)")); break;
 			case SwingConstants.WEST : system.addContent(new Assignment("a_u", "Request(Left)")); break;
 			case SwingConstants.EAST : system.addContent(new Assignment("a_u", "Request(Right)")); break;
-			}
-			}
-			catch (DialException e) {
-				log.warning("could not send instruction: " + e);
 			}
 		}
 	}

@@ -269,8 +269,8 @@ public class DialogueState extends BNetwork {
 
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
-			CategoricalTable newtable = ((CategoricalTable)queryProb(var)
-					.getMarginal(var)).concatenate(distrib);
+			CategoricalTable newtable = ((CategoricalTable)queryProb(var))
+					.concatenate(distrib);
 			getChanceNode(var).setDistrib(newtable);
 			getChanceNode(var).setId(var + "'");
 		}
