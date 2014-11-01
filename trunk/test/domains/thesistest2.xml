@@ -25,7 +25,7 @@
 <rule id="r12">
 	<case>
 		<condition>
-		<if var="A" value="a2" relation="notcontains"/>
+		<if var="A" value="a2" relation="!contains"/>
 		</condition>
 	<effect>
 		<add var="A" value="a2"/>
