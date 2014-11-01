@@ -22,7 +22,7 @@
 				<if var="u_u" value="backwards" relation="contains" />
 				<and>
 					<if var="u_u" value="back" relation="contains" />
-					<if var="u_u" value="turn" relation="notcontains" />
+					<if var="u_u" value="turn" relation="!contains" />
 				</and>
 			</condition>
 			<effect>
@@ -148,10 +148,10 @@
 				<if var="u_u" value="great" relation="contains" />
 				<and>
 					<if var="u_u" value="right" relation="contains" />
-					<if var="u_u" value="turn" relation="notcontains" />
-					<if var="u_u" value="rotate" relation="notcontains" />
-					<if var="u_u" value="move" relation="notcontains" />
-					<if var="u_u" value="go" relation="notcontains" />
+					<if var="u_u" value="turn" relation="!contains" />
+					<if var="u_u" value="rotate" relation="!contains" />
+					<if var="u_u" value="move" relation="!contains" />
+					<if var="u_u" value="go" relation="!contains" />
 				</and>
 				<if var="u_u" value="ok" relation="contains" />
 				<if var="u_u" value="good" relation="contains" />
