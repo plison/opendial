@@ -43,7 +43,7 @@
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="PickUp({Z})" />
-				<if var="perceived" value="{Z}" relation="notcontains" />
+				<if var="perceived" value="{Z}" relation="!contains" />
 			</condition>
 			<effect util="20">
 				<set var="a_m" value="Say(DoNotSeeObject)" />
@@ -86,7 +86,7 @@
 		<case>
 			<condition operator="and">
 				<if var="i_u" value="DoYouSee({B})" />
-				<if var="perceived" value="{B}" relation="notcontains" />
+				<if var="perceived" value="{B}" relation="!contains" />
 			</condition>
 			<effect util="20">
 				<set var="a_m" value="Say(Disconfirm)" />
