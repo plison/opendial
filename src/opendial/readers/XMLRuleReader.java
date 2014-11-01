@@ -299,7 +299,7 @@ public class XMLRuleReader {
 			/**		else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
 			} */
-			else if (relationStr.toLowerCase().trim().equals("notcontains")) {
+			else if (relationStr.toLowerCase().trim().equals("!contains")) {
 				relation = Relation.NOT_CONTAINS;
 			}
 			else if (relationStr.toLowerCase().trim().equals("!in")) {
