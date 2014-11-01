@@ -104,9 +104,9 @@ We will therefore write a new model with one single probability rule and trigger
     <rule>
       <case>
         <condition operator="or">
-          <if var="u_u" value="turn * left" relation="in" />
-          <if var="u_u" value="move * left" relation="in" />
-          <if var="u_u" value="go * left" relation="in" />
+          <if var="u_u" value="turn * left" relation="contains" />
+          <if var="u_u" value="move * left" relation="contains" />
+          <if var="u_u" value="go * left" relation="contains" />
         </condition>
         <effect prob="1">
           <set var="a_u" value="Request(Left)" />
@@ -114,9 +114,9 @@ We will therefore write a new model with one single probability rule and trigger
       </case>
       <case>
         <condition operator="or">
-          <if var="u_u" value="turn * right" relation="in" />
-          <if var="u_u" value="move * right" relation="in" />
-          <if var="u_u" value="go * right" relation="in" />
+          <if var="u_u" value="turn * right" relation="contains" />
+          <if var="u_u" value="move * right" relation="contains" />
+          <if var="u_u" value="go * right" relation="contains" />
         </condition>
         <effect prob="1">
           <set var="a_u" value="Request(Right)" />
@@ -124,9 +124,9 @@ We will therefore write a new model with one single probability rule and trigger
       </case>
       <case>
         <condition operator="or">
-          <if var="u_u" value="move * forward" relation="in" />
-          <if var="u_u" value="go * forward" relation="in" />
-          <if var="u_u" value="go * straight" relation="in" />
+          <if var="u_u" value="move * forward" relation="contains" />
+          <if var="u_u" value="go * forward" relation="contains" />
+          <if var="u_u" value="go * straight" relation="contains" />
         </condition>
         <effect prob="1">
           <set var="a_u" value="Request(Forward)" />
@@ -134,8 +134,8 @@ We will therefore write a new model with one single probability rule and trigger
       </case>
       <case>
         <condition operator="or">
-          <if var="u_u" value="move * backward" relation="in" />
-          <if var="u_u" value="go * backward" relation="in" />
+          <if var="u_u" value="move * backward" relation="contains" />
+          <if var="u_u" value="go * backward" relation="contains" />
         </condition>
         <effect prob="1">
           <set var="a_u" value="Request(Backward)" />
@@ -154,9 +154,9 @@ A few things are worth noting in this model.  First, the rule conditions are a b
 
 One example of basic condition is 
 {{{
-          <if var="u_u" value="turn * left" relation="in" />
+          <if var="u_u" value="turn * left" relation="contains" />
 }}}
-This condition is satisfied whenever the pattern `turn * left` is found inside the string of the user utterance `u_u`.  The attribute `relation="in"` indicates that the condition checks whether the pattern is included as a substring of the full utterance (in other words, it performs partial matching). The `*` sign indicates a wildcard and can capture any subsequence.^[3]^
+This condition is satisfied whenever the pattern `turn * left` is found inside the string of the user utterance `u_u`.  The attribute `relation="contains"` indicates that the condition checks whether the pattern is included as a substring of the full utterance (in other words, it performs partial matching). The `*` sign indicates a wildcard and can capture any subsequence.^[3]^
 
 The effects themselves specify how output variables (in this case, the user dialogue act `a_u`) must be updated.  In this case, all effects are deterministic.  We will however later encounter rules that are non-deterministic (i.e. they include several alternative effects with distinct probabilities of occurrence). 
 
