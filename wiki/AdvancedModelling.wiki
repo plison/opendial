@@ -111,7 +111,7 @@ Most variables of a dialogue system have values encoded as strings.  !OpenDial i
 <rule id="r14">
   <case>
     <condition>
-      <if var="u_u" value="take the {OBJ}" relation="in"/>
+      <if var="u_u" value="take the {OBJ}" relation="contains"/>
     </condition>
     <effect>
       <set var="a_u" value="Request({OBJ})"/>
@@ -127,7 +127,7 @@ If the actual content of the slot can be ignored, the placeholder can be replace
 <rule>
   <case>
     <condition>
-      <if var="u_u" value="turn * left" relation="in" />
+      <if var="u_u" value="turn * left" relation="contains" />
     </condition>
     <effect>
       <set var="a_u" value="Request(Left)" />
@@ -145,10 +145,15 @@ In addition to strings, many state variables also contain collections of element
 
 Rule conditions can check for the presence/absence of particular items in a collection, as for instance:
 {{{
-<if var="somecollection" value="element1" relation="in"/>
+<if var="somecollection" value="element1" relation="contains"/>
 }}}
 
-The condition will therefore be satisfied if `somecollection=[element1,element3]`, but not if `somecollection=[element3]`. In addition to the relation `in`, the relation `!in` (does not contain) can also be employed in the condition.
+The condition will therefore be satisfied if `somecollection=[element1,element3]`, but not if `somecollection=[element3]`. In addition to the relation `in`, the relation `!contains` (does not contain) can also be employed in the condition. 
+
+One can also check whether some individual element is contained in a collection through the two relations `in` and `!in`, as for instance:
+{{{
+<if var="element" value="somecollection" relation="in"/>
+}}}
 
 ==== Addition and removal of elements: ====
 
