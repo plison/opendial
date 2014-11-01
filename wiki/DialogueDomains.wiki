@@ -281,7 +281,7 @@ Each basic condition is written as an `<if .../>` markup with three basic attrib
 *XML format for `<if .../>`:*
 || *Content* || *XML Type* || *Cardinality* || *Description* ||
 || `var` || Attribute || 1 || Variable label ||
-|| `relation` || Attribute || 0-1 || (Optional) binary relation to satisfy.  Default relation is equality. Admissible relations are: <ul> <li>`=` (equality) <li>`!=` (inequality) <li>`<` (lower than) <li>`>` (higher than) <li>`contains` (contains element or substring) <li>`notcontains` (does not contain element or substring) <li>`in` (is contained in) <li>`!in` (is not contained in) ||
+|| `relation` || Attribute || 0-1 || (Optional) binary relation to satisfy.  Default relation is equality. Admissible relations are: <ul> <li>`=` (equality) <li>`!=` (inequality) <li>`<` (lower than) <li>`>` (higher than) <li>`contains` (contains element or substring) <li>`!contains` (does not contain element or substring) <li>`in` (is contained in) <li>`!in` (is not contained in) ||
 || `value` || Attribute || 1 || Variable value to check ||
 
 <br>
