@@ -135,7 +135,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * @param head the assignment for X1...Xn
 	 * @param prob the associated probability
 	 */
-	public void addRow (Assignment head, double prob) {
+	public synchronized void addRow (Assignment head, double prob) {
 
 		if (prob < 0.0f || prob > 1.02f) {
 			return;
@@ -180,7 +180,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @param heads the mappings (head assignment, probability value)
 	 */
-	public void addRows(Map<Assignment,Double> heads) {
+	public synchronized void addRows(Map<Assignment,Double> heads) {
 		for (Assignment head : heads.keySet()) {
 			addRow(head, heads.get(head));
 		}
@@ -192,7 +192,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @param assign the value assignment
 	 */
-	public void extendRows(Assignment assign) {
+	public synchronized void extendRows(Assignment assign) {
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
 		for (Assignment row : table.keySet()) {
 			newTable.put(new Assignment(row, assign), table.get(row));
@@ -205,7 +205,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @param head head assignment
 	 */
-	public void removeRow(Assignment head) {
+	public synchronized void removeRow(Assignment head) {
 
 		table.remove(head);
 
@@ -215,22 +215,6 @@ public class MultivariateTable implements MultivariateDistribution {
 		}
 	}
 
-
-
-	/**
-	 * Resets the interval caches associated with the table.
-	 */
-	private void resetIntervals() {
-		if (table.isEmpty()) {
-			log.warning("creating intervals for an empty table");
-		}
-		try {
-			intervals = new Intervals<Assignment>(table);
-		}
-		catch (DialException e) {
-			log.warning("could not reset intervals: " + e);
-		}
-	}
 
 
 	// ===================================
@@ -314,8 +298,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	@Override
 	public Assignment sample() throws DialException  {
 
-		while (intervals == null) {
-			resetIntervals();
+		if (intervals == null) {
+			intervals = new Intervals<Assignment>(table);
 		}
 		if (intervals.isEmpty()) {
 			log.warning("interval is empty, table: " + table);
@@ -418,7 +402,7 @@ public class MultivariateTable implements MultivariateDistribution {
 		}
 
 		table = newTable;
-		resetIntervals();
+		intervals = null;
 	}
 
 	/**

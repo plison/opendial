@@ -213,7 +213,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		}
 		Map<String,Set<Value>> possibleCondPairs = 
 				CombinatoricsUtils.extractPossiblePairs(table.keySet());
-		if (CombinatoricsUtils.getEstimatedNbCombinations(possibleCondPairs) < 500)  {				
+		if (CombinatoricsUtils.getNbCombinations(possibleCondPairs) < 500)  {				
 			Set<Assignment> possibleCondAssignments = 
 					CombinatoricsUtils.getAllCombinations(possibleCondPairs);
 			possibleCondAssignments.remove(new Assignment());

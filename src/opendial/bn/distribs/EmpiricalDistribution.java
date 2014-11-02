@@ -458,8 +458,24 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	@Override
 	public void pruneValues(double threshold) {
 		
-		Map<String,Map<Value, Integer>> frequencies = 
-				CombinatoricsUtils.getFrequencies(samples);
+		Map<String,Map<Value,Integer>> frequencies = 
+				new HashMap<String,Map<Value,Integer>>();
+		
+		for (Assignment sample : samples) {
+			for (String var : sample.getVariables()) {
+				Value val = sample.getValue(var);
+					if (!frequencies.containsKey(var)) {
+						frequencies.put(var, new HashMap<Value,Integer>());
+					}
+					Map<Value,Integer> valFreq = frequencies.get(var);
+					if (!valFreq.containsKey(val)) {
+						valFreq.put(val, 1);
+					}
+					else {
+						valFreq.put(val, valFreq.get(val) + 1);
+					}
+			}
+		}
 		
 		int minNumber = (int) (samples.size()*threshold);
 		for (int i= 0; i < samples.size() ; i++) {

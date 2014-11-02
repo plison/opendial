@@ -3,6 +3,8 @@ package opendial.inference.approximate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
@@ -13,6 +15,7 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
 import opendial.inference.Query;
 
@@ -33,13 +36,13 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	public static double WEIGHT_THRESHOLD = 0.00001f;
 
 	// the stack of weighted samples which have been collected so far
-	Stack<Sample> samples;
-
-	// the total weight accumulated by the samples
-	double totalWeight = 0.0f;
+	List<Sample> samples;
 
 	// the query
 	Query query;
+
+	// sorted nodes in the network
+	List<BNode> sortedNodes;
 
 	// termination status
 	boolean isTerminated = false; 
@@ -62,6 +65,8 @@ public class LikelihoodWeighting implements AnytimeProcess {
 		this.query = query;
 		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
+		sortedNodes = query.getFilteredSortedNodes();
+		Collections.reverse(sortedNodes);
 	}
 
 
@@ -92,6 +97,38 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	}
 
 
+	/**
+	 * Returns the collected samples
+	 * 
+	 * @return the collected samples
+	 */
+	public List<Sample> getSamples() {
+		run();
+		redrawSamples();
+		return samples;
+	}
+
+	/**
+	 * Generates the samples
+	 */
+	@Override
+	public void run() {
+		samples = Stream.generate(() -> this)
+				.filter(p -> !p.isTerminated)
+				.parallel()
+				.map(p -> p.sample())
+				.filter(s -> !s.isEmpty())
+				.limit(nbSamples)
+				.collect(Collectors.toList());
+	}
+
+
+
+	@Override
+	public boolean isTerminated() {
+		return isTerminated;
+	}
+
 
 	/**
 	 * Runs the sample collection procedure until termination (either due to a time-out 
@@ -99,98 +136,58 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	 * terminate() is called, or enough samples have been collected. 
 	 * 
 	 */
-	@Override
-	public void run() {
-		List<BNode> sortedNodes = query.getFilteredSortedNodes();
-		Collections.reverse(sortedNodes);
+	protected Sample sample() {
 
-		// continue until the thread is marked as finished
-		while (!isTerminated) {
-			try {
-				Sample sample = new Sample();
+		Sample sample = new Sample();
+		try {
+			for (BNode n : sortedNodes) {
 
-				for (BNode n : sortedNodes) {
-
-					// if the value is already part of the sample, skip to next one
-					if (sample.containsVar(n.getId())) {
-						continue;
-					}
-
-					// if the node is an evidence node and has no input nodes
-					else if (n.getInputNodeIds().isEmpty() 
-							&& query.getEvidence().containsVar(n.getId())) {
-						sample.addPair(n.getId(), query.getEvidence().getValue(n.getId()));
-					}
-					else if (n instanceof ChanceNode) {
-						sampleChanceNode((ChanceNode)n, sample);
-					}
-
-					// if the node is an action node
-					else if (n instanceof ActionNode) {
-						sampleActionNode((ActionNode)n, sample);
-					}
-
-					// finally, if the node is a utility node, calculate the utility
-					else if (n instanceof UtilityNode) {
-						double newUtil = ((UtilityNode)n).getUtility(sample);
-						sample.addUtility(newUtil);
-					}
+				// if the value is already part of the sample, skip to next one
+				if (sample.containsVar(n.getId())) {
+					continue;
 				}
 
-				// we only add the sample if the weight is larger than a given threshold
-				if (sample.getWeight() > WEIGHT_THRESHOLD) {
-					sample.trim(query.getQueryVars());
-					addSample(sample);
+				// if the node is an evidence node and has no input nodes
+				else if (n.getInputNodeIds().isEmpty() 
+						&& query.getEvidence().containsVar(n.getId())) {
+					sample.addPair(n.getId(), query.getEvidence().getValue(n.getId()));
+				}
+				else if (n instanceof ChanceNode) {
+					sampleChanceNode((ChanceNode)n, sample);
 				}
 
+				// if the node is an action node
+				else if (n instanceof ActionNode) {
+					sampleActionNode((ActionNode)n, sample);
+				}
+
+				// finally, if the node is a utility node, calculate the utility
+				else if (n instanceof UtilityNode) {
+					double newUtil = ((UtilityNode)n).getUtility(sample);
+					sample.addUtility(newUtil);
+				}
 			}
-			catch (DialException e) {
-				log.info("exception caught: " + e);
+
+			// we only add the sample if the weight is larger than a given threshold
+			if (sample.getWeight() < WEIGHT_THRESHOLD) {
+				sample.clear();
 			}
+
+			sample.trim(query.getQueryVars());
+
 		}
+		catch (DialException e) {
+			log.info("exception caught: " + e);
+		}
+		return sample;
 	}
 
-
-	/**
-	 * Returns the collected samples
-	 * 
-	 * @return the collected samples
-	 */
-	public Stack<Sample> getSamples() {
-		run();
-		redrawSamples();
-		return samples;
-	}
-	
-	
-	@Override
-	public boolean isTerminated() {
-		return isTerminated;
-	}
 
 
 	// ===================================
 	//  PRIVATE METHODS
 	// ===================================
 
-
-	/**
-	 * Adds a sample to the stack of collected samples.  If the desired
-	 * number of samples is achieved, terminate the sample collection.
-	 * 
-	 * @param sample the sample to add
-	 */
-	private void addSample (Sample sample) {
-		if (samples.size() < nbSamples) {
-			if (!isTerminated) {
-				samples.add(sample);
-				totalWeight += sample.getWeight();
-			}
-		}
-		else {
-			terminate();
-		}
-	}
 
 
 	/**
@@ -248,7 +245,7 @@ public class LikelihoodWeighting implements AnytimeProcess {
 		}
 	}
 
-	
+
 	/**
 	 * Redraw the samples according to their weight.  The number of redrawn samples is the same 
 	 * as the one given as argument.
@@ -260,14 +257,14 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	private void redrawSamples() {
 
 		try {
-		Intervals<Sample> intervals = new Intervals<Sample>(samples, s -> s.getWeight());
-		
-		Stack<Sample> newSamples = new Stack<Sample>();
-		int sampleSize = samples.size();
-		for (int j = 0 ; j < sampleSize; j++) {
-			newSamples.add(intervals.sample());
-		}
-		samples = newSamples;
+			Intervals<Sample> intervals = new Intervals<Sample>(samples, s -> s.getWeight());
+
+			Stack<Sample> newSamples = new Stack<Sample>();
+			int sampleSize = samples.size();
+			for (int j = 0 ; j < sampleSize; j++) {
+				newSamples.add(intervals.sample());
+			}
+			samples = newSamples;
 		}
 		catch (DialException e) {
 			log.warning("could not redraw samples: "  +e );

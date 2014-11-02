@@ -463,7 +463,6 @@ public class DialogueState extends BNetwork {
 		if (!getNodeIds().containsAll(variables)) {
 			log.warning(variables + " not contained in " + getNodeIds());
 		}
-
 		// else, perform the inference operation
 		try {
 			return new SwitchingAlgorithm().queryProb(this, variables, evidence);

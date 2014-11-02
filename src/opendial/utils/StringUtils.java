@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
+import opendial.bn.distribs.CategoricalTable;
 
 
 /**
@@ -158,6 +159,40 @@ public class StringUtils {
 	 */
 	public static String join(Collection<String> elements, String jointure) {
 		return elements.stream().collect(Collectors.joining(jointure));
+	}
+
+
+	/**
+	 * Returns a categorical table from the provided GUI input 
+	 * 
+	 * @param rawText the raw text expressing the table
+	 * @param defaultVar the default variable label for the input
+	 */
+	public static CategoricalTable getTableFromInput(String rawText, String defaultVar) {
+	
+		String inputVariable = defaultVar;
+		if (rawText.contains("=")) {
+			inputVariable = rawText.split("=")[0].trim();
+			rawText = rawText.split("=")[1].trim();
+		}
+
+		CategoricalTable table = new CategoricalTable(inputVariable);
+
+		Pattern p = Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
+
+		for (String split : rawText.split(";")) {	
+			Matcher m = p.matcher(split);
+			if (m.find()) {
+				String probValueStr = m.group(1);
+				float probValue = Float.parseFloat(probValueStr);
+				String remainingStr = split.replace("(" + probValueStr + ")", "").trim();
+				table.addRow(remainingStr, probValue);
+			}
+			else {
+				table.addRow(split.trim(), 1.0);
+			}
+		}
+		return table;
 	}
 
 

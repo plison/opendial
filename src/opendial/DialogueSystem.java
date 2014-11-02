@@ -23,6 +23,7 @@
 
 package opendial;
 
+import java.io.Console;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
+import opendial.gui.TextOnlyInterface;
 import opendial.modules.Module;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
@@ -273,7 +275,7 @@ public class DialogueSystem {
 	 */
 	public void changeSettings(Settings settings) {
 
-		this.settings.fillSettings(settings.getFullMapping());
+		this.settings.fillSettings(settings.getSpecifiedMapping());
 
 		for (Class<Module> toAttach : settings.modules) {
 			if (getModule(toAttach) == null) {
@@ -639,6 +641,9 @@ public class DialogueSystem {
 				system.attachModule(simulator);
 			}
 			system.changeSettings(system.getSettings());
+			if (!system.getSettings().showGUI) {
+				system.attachModule(new TextOnlyInterface(system));
+			}
 			system.startSystem();
 			log.info("Dialogue system started!");
 		}
@@ -647,8 +652,6 @@ public class DialogueSystem {
 		}
 	}
 	
-	
-
 
 
 

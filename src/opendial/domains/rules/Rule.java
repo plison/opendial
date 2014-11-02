@@ -24,6 +24,7 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +82,7 @@ public class Rule {
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();	
 		cache = new HashMap<Assignment,RuleOutput>();
+		cache = Collections.synchronizedMap(cache);
 	}
 
 
