@@ -54,19 +54,28 @@ public class LikelihoodWeighting implements AnytimeProcess {
 
 
 	/**
-	 * Creates a new sampling query with the given arguments
+	 * Creates a new sampling query with the given arguments and starts
+	 * sampling (using parallel streams). 
 	 * 
 	 * @param query the query to answer
 	 * @param nbSamples the number of samples to collect
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
 	public LikelihoodWeighting(Query query,int nbSamples, long maxSamplingTime) {
-		setTimeout(maxSamplingTime);
 		this.query = query;
 		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
+		setTimeout(maxSamplingTime);
+		
+		samples = Stream.generate(() -> this)  	// creates infinite stream
+				.filter(p -> !p.isTerminated)  	// stop when process is terminated
+				.parallel()						// parallelise
+				.map(p -> p.sample())			// generate a sample
+				.filter(s -> !s.isEmpty())		// discard empty samples	
+				.limit(nbSamples)				// stop when nbSamples are collected
+				.collect(Collectors.toList());	// makes a list of samples
 	}
 
 
@@ -103,23 +112,8 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	 * @return the collected samples
 	 */
 	public List<Sample> getSamples() {
-		run();
 		redrawSamples();
 		return samples;
-	}
-
-	/**
-	 * Generates the samples
-	 */
-	@Override
-	public void run() {
-		samples = Stream.generate(() -> this)
-				.filter(p -> !p.isTerminated)
-				.parallel()
-				.map(p -> p.sample())
-				.filter(s -> !s.isEmpty())
-				.limit(nbSamples)
-				.collect(Collectors.toList());
 	}
 
 

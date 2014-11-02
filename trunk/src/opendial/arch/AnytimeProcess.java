@@ -34,7 +34,7 @@ import java.util.TimerTask;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public interface AnytimeProcess extends Runnable {
+public interface AnytimeProcess {
 
 
 	public Logger log = new Logger("AnytimeProcess", Logger.Level.NORMAL);

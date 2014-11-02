@@ -124,7 +124,6 @@ public class ForwardPlanner implements Module {
 
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
 				currentProcess = new PlannerProcess(state);
-				currentProcess.run();
 		}
 	} 
 
@@ -141,21 +140,16 @@ public class ForwardPlanner implements Module {
 		boolean isTerminated = false;
 
 		/**
-		 * Creates the planning process.  Timeout is set to twice the maximum sampling time.
+		 * Creates the planning process.  Timeout is set to twice the maximum sampling time. 
+		 * Then, runs the planner until the horizon has been reached, or the planner has 
+		 * run out of time.  Adds the best action to the dialogue state.
 		 * 
 		 * @param initState initial dialogue state.
 		 */
 		public PlannerProcess(DialogueState initState) {
 			this.initState = initState;
 			this.setTimeout(Settings.maxSamplingTime * 2);
-		}
-
-		/**
-		 * Runs the planner until the horizon has been reached, or the planner has run out
-		 * of time.  Adds the best action to the dialogue state.
-		 */
-		@Override
-		public void run() {
+	
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
 
