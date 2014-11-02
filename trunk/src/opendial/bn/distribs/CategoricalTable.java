@@ -23,6 +23,7 @@
 
 package opendial.bn.distribs;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 */
 	public CategoricalTable(String variable) {
 		table = new HashMap<Value,Double>(5);
+		table = Collections.synchronizedMap(table);
 		this.variable = variable;
 		sampler = new Random();
 	}
@@ -158,6 +160,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		else {
 			table.remove(ValueFactory.none());
 		}
+		intervals = null;
 	}
 
 
@@ -196,7 +199,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		addRow(ValueFactory.create(value), prob);
 	}
 
-	
+
 
 	/**
 	 * Adds a new row to the probability table.
@@ -253,6 +256,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (totalProb < 0.99999 && head != ValueFactory.none()) {
 			table.put(ValueFactory.none(), 1.0 - totalProb);
 		}
+		intervals = null;
 	}
 
 
@@ -273,8 +277,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
 				try {
-				Value concat = thisA.concatenate(otherA);
-				newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
+					Value concat = thisA.concatenate(otherA);
+					newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
 				}
 				catch (DialException e) {
 					log.warning("could not concatenated the tables " + this + " and " + other);
@@ -301,23 +305,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		}
 	}
 
-
-	/**
-	 * Resets the interval caches associated with the table.
-	 */
-	private void resetIntervals() {
-		if (table.isEmpty()) {
-			log.warning("creating intervals for an empty table");
-		}
-		try {
-			intervals = new Intervals<Value>(table);
-		}
-		catch (DialException e) {
-			log.warning("could not reset intervals: " + e);
-		}
-	}
-
-
 	/**
 	 * Prunes all table values that have a probability lower than the threshold.
 	 * 
@@ -333,6 +320,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 			}
 		}
 		table = InferenceUtils.normalise(newTable);
+		intervals = null;
 	}
 
 
@@ -352,7 +340,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.containsKey(val)) {
 			return table.get(val);
 		}
-		
+
 		// if the distribution has continuous values, search for the closest element
 		else if (val instanceof DoubleVal && isContinuous()) {
 			double toFind = ((DoubleVal)val).getDouble();
@@ -363,7 +351,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 							Math.abs(((DoubleVal)v2).getDouble()-toFind))).get();	
 			return getProb(closest);
 		}
-		
+
 		else if (val instanceof ArrayVal && isContinuous()) {
 			double[] toFind = ((ArrayVal)val).getArray();
 			Value closest = table.keySet().stream()
@@ -399,8 +387,11 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public Value sample() throws DialException {
 
-		while (intervals == null) {
-			resetIntervals();
+		if (intervals == null) {
+			if (table.isEmpty()) {
+					log.warning("creating intervals for an empty table");
+				}
+			intervals = new Intervals<Value>(table);	
 		}
 		if (intervals.isEmpty()) {
 			log.warning("interval is empty, table: " + table);
@@ -447,7 +438,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public CategoricalTable toDiscrete() {
 		return this;
 	}
-	
+
 
 	/**
 	 * Returns the set of variable labels used in the table
@@ -593,7 +584,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return tableCopy;
 	}
 
-	
+
 	/**
 	 * Generates the XML representation for the table, for the document doc.
 	 * 

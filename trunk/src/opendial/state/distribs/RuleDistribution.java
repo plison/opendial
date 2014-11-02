@@ -44,8 +44,6 @@ import opendial.state.AnchoredRule;
 /**
  * Discrete probability distribution based on a rule specification (which can be for
  * an update rule or a prediction rule).
- * 
- * <p>The distribution exploits a cache to speed up the inference.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -59,8 +57,6 @@ public class RuleDistribution implements ProbDistribution {
 	String id;
 
 	AnchoredRule arule;
-
-	ConditionalTable cache;
 
 	// ===================================
 	//  DISTRIBUTION CONSTRUCTION
@@ -83,9 +79,6 @@ public class RuleDistribution implements ProbDistribution {
 		}
 		id = rule.getRule().getRuleId();
 
-		if (rule.getParameters().isEmpty()) {
-			cache = new ConditionalTable(id);
-		}
 	}
 
 
@@ -94,7 +87,6 @@ public class RuleDistribution implements ProbDistribution {
 	 */
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
-		cache = new ConditionalTable(newId);
 		if (id.equals(oldId)) {
 			id = newId;
 		}
@@ -147,13 +139,7 @@ public class RuleDistribution implements ProbDistribution {
 	 */
 	@Override
 	public ProbDistribution getPosterior(Assignment condition) throws DialException {
-
-		if (cache != null && cache.hasProbTable(condition)) {
-			return cache.getProbDistrib(condition);
-		}
-		else {
-			return new MarginalDistribution(this, condition);
-		}
+		return new MarginalDistribution(this, condition);
 	}
 
 
@@ -198,10 +184,6 @@ public class RuleDistribution implements ProbDistribution {
 	@Override
 	public CategoricalTable getProbDistrib(Assignment input) throws DialException {
 
-		if (cache != null && cache.hasProbTable(input)) {
-			return cache.getProbDistrib(input);
-		}	
-
 		// search for the matching case
 
 		Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
@@ -226,9 +208,6 @@ public class RuleDistribution implements ProbDistribution {
 					+ "input " +	ruleInput + " and rule " + arule.toString());
 		}
 
-		if (cache != null) {
-			cache.addRows(input, probTable);
-		}
 		return probTable;
 	}
 

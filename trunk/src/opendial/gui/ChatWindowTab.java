@@ -52,6 +52,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 import opendial.gui.audio.SpeechInputPanel;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
@@ -198,26 +199,33 @@ public class ChatWindowTab extends JComponent {
 
 	/**
 	 * Adds the utterance entered in the text field to the dialogue state
+	 * 
+	 * NB: if the text is starting or ending with '/', assume it represents
+	 * incremental inputs (where an '/' at the end represents an unfinished
+	 * input, and '/' at the beginning a follow-up to a previous unit).
 	 */
 	private void addUtteranceToState()  {
-		String rawText= inputField.getText();
-		String inputVariable = system.getSettings().userInput;
-		if (rawText.contains("=")) {
-			inputVariable = rawText.split("=")[0].trim();
-			rawText = rawText.split("=")[1].trim();
-		}
+		String rawText= inputField.getText().trim();
 		if (!rawText.equals("")) {
-			String[] splitText = rawText.split(";");
-
-			CategoricalTable table = new CategoricalTable(inputVariable);
-
-			for (String split : Arrays.asList(splitText)) {				
-				Map.Entry<String, Float> split2 = getProbabilityValueInParenthesis(split);
-				table.addRow(split2.getKey(), split2.getValue());
-			}
-
+			boolean unfinished = rawText.endsWith("/");
+			boolean followPrevious = rawText.startsWith("/");
+			rawText = rawText.replaceAll("/", "");
+			CategoricalTable table = StringUtils.getTableFromInput(rawText, 
+					system.getSettings().userInput);
 			inputField.setText("");
-			(new Thread(() -> system.addContent(table))).start();
+			
+			Runnable insertion;
+			if (!unfinished && !followPrevious) {
+				insertion = () -> system.addContent(table);
+			}
+			else {
+				insertion = () -> {
+					String speechValue = (unfinished)? "busy" : "None";
+					system.addContent(new Assignment(system.getSettings().userSpeech, speechValue));
+					system.addIncrementalContent(table, followPrevious);
+				};
+			}
+			new Thread(insertion).start();
 		}
 	}
 
@@ -238,30 +246,6 @@ public class ChatWindowTab extends JComponent {
 
 
 
-	/**                                                                                                                                                                
-	 * If the probability value of a given input is provided in parenthesis,                                                                                          
-	 * try to extract it                                                                                                                                               
-	 *                                                                                                                                                                 
-	 * @param text the string where the probability value might be                                                                                                     
-	 * @return the probability value if a valid one is entered, else 1.0f                                                                                              
-	 */
-	private Map.Entry<String, Float> getProbabilityValueInParenthesis (String text) {
-
-		try {
-			Pattern p = Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
-			Matcher m = p.matcher(text);
-			if (m.find()) {
-				String probValueStr = m.group(1);
-				float probValue = Float.parseFloat(probValueStr);
-				String remainingStr = text.replace("(" + probValueStr + ")", "").trim();
-				return new AbstractMap.SimpleEntry<String,Float>(remainingStr, probValue);
-			}
-			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
-		}
-		catch (Exception e) {
-			return new AbstractMap.SimpleEntry<String,Float>(text.trim(), 1.0f);
-		}
-	}
 
 
 	/**
@@ -360,7 +344,7 @@ public class ChatWindowTab extends JComponent {
 	 * @param distrib the distribution to display
 	 */
 	private void showVariable(CategoricalTable distrib) {
-		
+
 		if (distrib.getBest() == ValueFactory.none()) {
 			distrib = distrib.getNBest(nBestView+1);
 		}
@@ -394,7 +378,6 @@ public class ChatWindowTab extends JComponent {
 	public String getChat() {
 		return lines.getText();
 	}
-
 
 
 }

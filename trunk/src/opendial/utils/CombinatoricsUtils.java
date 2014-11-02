@@ -29,9 +29,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -49,8 +52,6 @@ public class CombinatoricsUtils {
 
 	// logger
 	public static Logger log = new Logger("CombinatoricsUtils", Logger.Level.DEBUG);
-
-	static Random sampler = new Random();
 
 
 	/**
@@ -87,6 +88,20 @@ public class CombinatoricsUtils {
 	}
 
 
+
+	/**
+	 * Returns the estimated number (higher bound) of combinations for the set of 
+	 * variables and associated values given as argument.
+	 * 
+	 * @param valuesMatrix the set of values to combine
+	 * @return the higher bound on the number of possible combinations
+	 */
+	public static int getNbCombinations( Map<String, Set<Value>> valuesMatrix) {	
+		OptionalInt estimation = valuesMatrix.values().stream()
+				.mapToInt(set -> set.size())
+				.reduce((a,b) -> a*b);
+		return (estimation.isPresent())? estimation.getAsInt() : 1;
+	}
 
 
 	/**
@@ -138,56 +153,6 @@ public class CombinatoricsUtils {
 			sets.add(set); 
 		}           
 		return sets;
-	}
-
-
-
-	/**
-	 * Returns the estimated number (higher bound) of combinations for the set of 
-	 * variables and associated values given as argument.
-	 * 
-	 * @param valuesMatrix the set of values to combine
-	 * @return the higher bound on the number of possible combinations
-	 */
-	public static int getEstimatedNbCombinations( Map<String, Set<Value>> valuesMatrix) {	
-		int estimation = 1;
-		for (String var : valuesMatrix.keySet()) {
-			estimation = estimation * valuesMatrix.get(var).size();
-		}	
-		return estimation;
-	}
-
-
-	/**
-	 * Returns the relative frequencies of each (variable,value) pair
-	 * in the collection of assignments.
-	 * 
-	 * @param assignments the assignments
-	 * @return the relative frequencies of each pair
-	 */
-	public static Map<String, Map<Value, Integer>> getFrequencies(
-			Collection<Assignment> assignments) {
-
-		Map<String,Map<Value,Integer>> frequencies = 
-				new HashMap<String,Map<Value,Integer>>();
-		for (Assignment sample : assignments) {
-			for (String var : sample.getVariables()) {
-				Value val = sample.getValue(var);
-				if (!(val instanceof DoubleVal) && !(val instanceof ArrayVal)) {
-					if (!frequencies.containsKey(var)) {
-						frequencies.put(var, new HashMap<Value,Integer>());
-					}
-					Map<Value,Integer> valFreq = frequencies.get(var);
-					if (!valFreq.containsKey(val)) {
-						valFreq.put(val, 1);
-					}
-					else {
-						valFreq.put(val, valFreq.get(val) + 1);
-					}
-				}
-			}
-		}
-		return frequencies;
 	}
 
 
