@@ -57,7 +57,7 @@ public class RemoteConnector implements Module {
 	// logger
 	public static Logger log = new Logger("RemoteConnector", Logger.Level.DEBUG);
 
-	public static int PORT = 2222;
+	public static int PORT = 2111;
 	DialogueSystem system;
 	boolean paused = true;
 	
@@ -131,8 +131,8 @@ public class RemoteConnector implements Module {
 		String connect = system.getSettings().params.getProperty("connect");
 		if (connect!= null) {
 			int port = (connect.contains(":"))? Integer.parseInt(connect.split(":")[1]) : PORT;
-			Socket socket = new Socket(connect.split(":")[0],port);
 			log.debug("forwarding content to "+ connect.split(":")[0] + ": " + port);
+			Socket socket = new Socket(connect.split(":")[0],port);
 			OutputStream out = socket.getOutputStream();
 			out.write(messageType.ordinal());
 			IOUtils.write(content, out);
@@ -149,10 +149,12 @@ public class RemoteConnector implements Module {
 			Socket connection;
 			try {
 				connection = local.accept();
+				log.debug("got a new connection!");
 				InputStream in = connection.getInputStream();
 				MessageType type = MessageType.values()[in.read()];
 				byte[] message = IOUtils.toByteArray(in);
 				String content = new String(message);
+				log.debug("type is " + type + " and content: " + content);
 				if (type == MessageType.INIT) {
 					log.info("Connected to " + content);
 					system.getSettings().params.setProperty("connect", content);
