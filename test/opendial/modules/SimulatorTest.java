@@ -65,7 +65,7 @@ public class SimulatorTest {
 
 		String str = "";
 		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
-			Thread.sleep(1000);
+			Thread.sleep(500);
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			try {
 				checkCondition(str);
