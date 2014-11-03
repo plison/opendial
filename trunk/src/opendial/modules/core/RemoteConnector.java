@@ -57,7 +57,7 @@ public class RemoteConnector implements Module {
 	// logger
 	public static Logger log = new Logger("RemoteConnector", Logger.Level.DEBUG);
 
-	public static int PORT = 2111;
+	public static int PORT = 5666;
 	DialogueSystem system;
 	boolean paused = true;
 	
@@ -161,7 +161,8 @@ public class RemoteConnector implements Module {
 				}
 				else if (type == MessageType.XML) {
 					Document doc = XMLUtils.loadXMLFromString(content);
-					BNetwork nodes = XMLStateReader.getBayesianNetwork(doc);
+					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils.getMainNode(doc));
+					log.debug("nodes: " + nodes);
 					system.addContent(nodes);
 				}
 				else if (type == MessageType.MISC) {
