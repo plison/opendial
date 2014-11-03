@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -148,63 +149,6 @@ public class XMLUtils {
 		} 	
 	}
 
-	/**
-	public static Map<String,String> getDomainFiles(String topFile, String suffix) {
-		Map<String,String> outputFiles = new HashMap<String,String>();
-
-		try {
-			FileReader fileReader =  new FileReader(topFile);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			String rootpath = (new File(topFile)).getParent();   
-			String text = "";
-			String line = null;
-			while((line = bufferedReader.readLine()) != null) {
-				if (line.contains("import href")) {
-					String fileStr = line.substring(line.indexOf("href=\"")+6, line.indexOf("/>")-1);
-					outputFiles.putAll(getDomainFiles(rootpath +"/" + fileStr, suffix));
-				}
-				text += line + "\n";
-			}	
-			bufferedReader.close();
-			outputFiles.put(topFile.replace(rootpath, rootpath+"/" + suffix).replace(rootpath.replace("/", "//"), 
-					rootpath+"/" + suffix), text);
-		}
-		catch (Exception e) {
-			log.warning("could not extract domain files: " + e);
-		}
-		return outputFiles;
-	} 
-
-
-	public static void writeDomain(Map<String,String> domainFiles) {
-
-		String rootpath = new File(domainFiles.keySet().iterator().next()).getParent();
-		if ((new File(rootpath)).exists()) {
-			final File[] files = (new File(rootpath)).listFiles();
-			log.info("Deleting all files in directory " + rootpath);
-			for (File f : files) {
-				f.delete();
-			}
-		}
-		else {
-			(new File(rootpath)).mkdir();
-		}
-
-		log.info("Writing updated domain specification to files : " + domainFiles.keySet());
-		for (String domainFile : domainFiles.keySet()) {
-			try {
-				FileWriter fileWriter = new FileWriter(domainFile);
-				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-				bufferedWriter.write(domainFiles.get(domainFile));
-				bufferedWriter.flush();
-				bufferedWriter.close();
-			}
-			catch (IOException e) {
-				log.warning("could not write output to files. " + e);
-			}
-		}
-	} */
-
 
 	/**
 	 * Writes the XML document to the particular file specified as argument
@@ -230,6 +174,15 @@ public class XMLUtils {
 		}
 	}
 
+	
+	public static Document loadXMLFromString(String xml) throws ParserConfigurationException, SAXException, IOException
+	{
+	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder builder = factory.newDocumentBuilder();
+	    InputSource is = new InputSource(new StringReader(xml));
+	    return builder.parse(is);
+	}
+	
 	/**
 	 * Returns the main node of the XML document
 	 * 

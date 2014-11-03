@@ -30,13 +30,25 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.BNetwork;
 import opendial.modules.Module;
+import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
+import opendial.utils.XMLUtils;
 
 public class RemoteConnector implements Module {
 
@@ -59,14 +71,29 @@ public class RemoteConnector implements Module {
 	public void start() throws DialException {
 		paused = false;
 		setupServer();
-		writeToSocket(MessageType.INIT, local.getInetAddress().getHostAddress()
+		forwardContent(MessageType.INIT, local.getInetAddress().getHostAddress()
 				+":" + local.getLocalPort());
 	}
 
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {		
 		if (!paused) {
-			writeToSocket(MessageType.MISC,"updated variables:" + updatedVars);
+			try {
+			Document xmlDoc = XMLUtils.newXMLDocument();
+			Element root = xmlDoc.createElement("update");
+			xmlDoc.appendChild(root);
+			updatedVars.stream()
+					.filter(v -> state.hasChanceNode(v))
+					.map(v -> {try {return state.queryProb(v).generateXML(xmlDoc); } 
+					catch (DialException e) {return null; }})
+					.filter(v -> v!=null)
+					.forEach(n -> root.appendChild(n));
+			
+			forwardContent(MessageType.XML,XMLUtils.serialise(xmlDoc));
+			}
+			catch (DialException e) {
+				log.warning("cannot update remote connector: " +e);
+			}
 		}
 	}
 
@@ -84,7 +111,7 @@ public class RemoteConnector implements Module {
 		try {
 			try { local = new ServerSocket(PORT); }
 			catch (BindException e) { local = new ServerSocket(PORT+1);}
-			new Thread(() -> readFromSocket()).start();
+			new Thread(() -> readContent()).start();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -92,7 +119,7 @@ public class RemoteConnector implements Module {
 	}
 
 	
-	private void writeToSocket(MessageType messageType, String content) {
+	private void forwardContent(MessageType messageType, String content) {
 		try {
 		String connect = system.getSettings().params.getProperty("connect");
 		if (connect!= null) {
@@ -109,7 +136,7 @@ public class RemoteConnector implements Module {
 		}
 	}
 
-	private void readFromSocket() {
+	private void readContent() {
 		while (true) {
 			Socket connection;
 			try {
@@ -117,18 +144,22 @@ public class RemoteConnector implements Module {
 				InputStream in = connection.getInputStream();
 				MessageType type = MessageType.values()[in.read()];
 				byte[] message = IOUtils.toByteArray(in);
+				String content = new String(message);
 				if (type == MessageType.INIT) {
-					String content = new String(message);
 					log.info("Connecting to " + content);
 					system.getSettings().params.setProperty("connect", content);
 				}
+				else if (type == MessageType.XML) {
+					Document doc = XMLUtils.loadXMLFromString(content);
+					BNetwork nodes = XMLStateReader.getBayesianNetwork(doc);
+					system.addContent(nodes);
+				}
 				else if (type == MessageType.MISC) {
-					String content = new String(message);
 					log.info("received message: " + content);
 				}
 				Thread.sleep(100);
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
+			} catch (IOException | InterruptedException | ParserConfigurationException 
+					| SAXException | DialException e) {
 				e.printStackTrace();
 			}
 		}
