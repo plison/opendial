@@ -29,7 +29,6 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.values.Value;
@@ -190,12 +189,13 @@ public class RuleDistribution implements ProbDistribution {
 		RuleOutput output = arule.getRule().getOutput(ruleInput);
 
 		// creating the distribution
-		double totalMass = 	 output.getTotalMass(input);
-		CategoricalTable probTable = new CategoricalTable(id);
+		double totalMass = output.getTotalMass(input);
+		CategoricalTable probTable = new CategoricalTable(id, false);
 		if (totalMass < 0.99) {
 			probTable.addRow(new Effect(), 1.0 - totalMass);
 			totalMass = 1.0;
 		}	
+		
 		for (Effect e : output.getEffects()) {
 			double param = output.getParameter(e).getParameterValue(input) / totalMass;
 			if (param > 0) {

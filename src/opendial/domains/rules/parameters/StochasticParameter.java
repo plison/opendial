@@ -114,10 +114,9 @@ public class StochasticParameter implements Parameter {
 	 *
 	 * @param input the input assignment
 	 * @return the actual value for the parameter
-	 * @throws DialException if the value is not specified in the input assignment
 	 */
 	@Override
-	public double getParameterValue(Assignment input) throws DialException {
+	public double getParameterValue(Assignment input) {
 		Value value = input.getValue(paramId);
 		if (input.containsVar(paramId) && value instanceof DoubleVal) {
 			return ((DoubleVal)input.getValue(paramId)).getDouble();
@@ -126,8 +125,10 @@ public class StochasticParameter implements Parameter {
 				&& ((ArrayVal)value).getArray().length > dimension) {
 			return ((ArrayVal)value).getArray()[dimension];
 		}
+		
 		else {
-			throw new DialException("input " + input + " does not contain " + paramId);
+			log.warning("input " + input + " does not contain " + paramId);
+			return 0.0;
 		}
 	}
 	

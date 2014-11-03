@@ -27,9 +27,11 @@ package opendial.modules.core;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import opendial.DialogueSystem;
-import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -79,6 +81,9 @@ public class ForwardPlanner implements Module {
 
 	boolean paused = false;
 
+	//scheduled thread pool to terminate planning once the time limit is reached
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+
 	
 	/**
 	 * Constructs a forward planner for the dialogue system.
@@ -97,7 +102,7 @@ public class ForwardPlanner implements Module {
 		paused = shouldBePaused;
 		if (currentProcess != null && !currentProcess.isTerminated) {
 			log.debug("trying to terminate the process?");
-			currentProcess.terminate();
+			currentProcess.isTerminated = true;
 		}
 	}
 
@@ -133,7 +138,7 @@ public class ForwardPlanner implements Module {
 	 * @author  Pierre Lison (plison@ifi.uio.no)
 	 * @version $Date::                      $
 	 */
-	public class PlannerProcess implements AnytimeProcess {
+	public class PlannerProcess {
 
 		DialogueState initState;
 
@@ -148,7 +153,8 @@ public class ForwardPlanner implements Module {
 		 */
 		public PlannerProcess(DialogueState initState) {
 			this.initState = initState;
-			this.setTimeout(Settings.maxSamplingTime * 2);
+			service.schedule(() -> isTerminated=true, Settings.maxSamplingTime*2, TimeUnit.MILLISECONDS);
+
 	
 			try {
 				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
@@ -324,39 +330,7 @@ public class ForwardPlanner implements Module {
 			return modified;
 		}
 
-
-		/**
-		 * Terminates the planning process
-		 */
-		@Override
-		public void terminate() {
-			isTerminated = true;
-		}
-
-		/**
-		 * Returns true if the planner is terminated, and false otherwise.
-		 */
-		@Override
-		public boolean isTerminated() {
-			return isTerminated;
-		}
-
 	}
-	
-	/**
-	public class IncrementalPlannerProcess extends AnytimeProcess {
-
-		public IncrementalPlannerProcess(long timeout) {
-			super(timeout);
-		}
-		
-		
-		public void run() {
-			
-		}
-
-	} */
-	
 
 
 }

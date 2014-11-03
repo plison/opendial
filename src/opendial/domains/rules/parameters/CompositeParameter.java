@@ -174,10 +174,9 @@ public class CompositeParameter implements Parameter {
 	 * 
 	 * @param input the input assignment
 	 * @return the parameter value
-	 * @throws DialException if the value could not be retrieved from the assignment
 	 */
 	@Override
-	public double getParameterValue(Assignment input) throws DialException {
+	public double getParameterValue(Assignment input) {
 		double totalValue = (operator == Operator.ADD)? 0.0 : 1.0;
 		for (Parameter paramVar : parameters) {
 			double paramVal = paramVar.getParameterValue(input);

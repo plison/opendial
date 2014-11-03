@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
@@ -39,6 +40,7 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.TemplateEffect;
 
 
 /**
@@ -227,16 +229,10 @@ public class Rule {
 	 * @return true if at least one effect is underspecified, and false otherwise
 	 */
 	public boolean hasUnderspecifiedEffects() {
-		for (RuleCase c : cases) {
-			for (Effect e : c.getEffects()) {
-				for (BasicEffect be : e.getSubEffects()) {
-					if (!be.isFullyGrounded()) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+		return cases.stream()
+				.flatMap(c -> c.getEffects().stream())
+				.flatMap(e -> e.getSubEffects().stream())
+				.anyMatch(e -> e instanceof TemplateEffect);
 	}
 	
 	
@@ -246,16 +242,8 @@ public class Rule {
 	 * 
 	 * @return the set of all possible output variables
 	 */
-	public Set<Template> getOutputVariables() {
-		Set<Template> outputs = new HashSet<Template>();
-		for (RuleCase c : cases) {
-			for (Effect e : c.getEffects()) {
-				for (BasicEffect be : e.getSubEffects()) {
-					outputs.add(be.getVariable());
-				}
-			}
-		}
-		return outputs;
+	public Set<String> getOutputVariables() {
+		return cases.stream().flatMap(c -> c.getOutputVariables().stream()).collect(Collectors.toSet());
 	}
 	
 	

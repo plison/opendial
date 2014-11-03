@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -110,12 +111,7 @@ public class Effect implements Value {
 	 * @return true if fully grounded, false otherwise
 	 */
 	public boolean isFullyGrounded() {
-		for (BasicEffect e : subeffects) {
-			if (!e.isFullyGrounded()) {
-				return false;
-			}
-		}
-		return true;
+		return subeffects.stream().allMatch(e -> !e.containsSlots());
 	}
 	
 	/**
@@ -134,16 +130,20 @@ public class Effect implements Value {
 	 * @param grounding the assignment containing the filled values
 	 * @return the resulting grounded effect
 	 */
-	public Effect getGrounded(Assignment grounding) {
+	public Effect ground(Assignment grounding) {
 		if (isFullyGrounded()) {
 			return this;
 		}
-	
 		Effect effect = new Effect();
 		for (BasicEffect e : subeffects) {
-			BasicEffect groundedE = e.ground(grounding);
-			if (groundedE.isFullyGrounded()) {
-				effect.addSubEffect(groundedE);
+			if (e instanceof TemplateEffect) {
+				BasicEffect grounded = ((TemplateEffect)e).ground(grounding);
+				if (!grounded.containsSlots()) {
+					effect.addSubEffect(grounded);
+				}
+			}
+			else {
+				effect.addSubEffect(e);
 			}
 		}
 		return effect;
@@ -170,11 +170,10 @@ public class Effect implements Value {
 	 * @return the set of labels for the additional input variables
 	 */
 	public Set<String> getAdditionalInputVariables() {
-		Set<String> variables = new HashSet<String>();
-		for (BasicEffect e : subeffects) {
-			variables.addAll(e.getAdditionalInputVariables());
-		}
-		return variables;
+		return subeffects.stream()
+				.filter(e -> e.containsSlots())
+				.flatMap(e -> ((TemplateEffect)e).getSlots().stream())
+				.collect(Collectors.toSet());
 	}
 
 	
@@ -185,13 +184,9 @@ public class Effect implements Value {
 	 * @return the set of all output variables
 	 */
 	public Set<String> getOutputVariables() {
-		Set<String> variables = new HashSet<String>();
-		for (BasicEffect e : subeffects) {
-			if (e.isFullyGrounded()) {
-				variables.add(e.getVariable().getRawString());
-			}
-		}
-		return variables;
+		return subeffects.stream()
+				.map(e -> e.getVariable())
+				.collect(Collectors.toSet());
 	}
 
 	
@@ -211,7 +206,7 @@ public class Effect implements Value {
 		Set<Value> result = new HashSet<Value>();
 		int highestPriority = Integer.MAX_VALUE;
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().getRawString().equals(variable) && e.getType() == type 
+			if (e.getVariable().equals(variable) && e.getType() == type 
 					&& !e.getValue().equals(ValueFactory.none())) {
 				if (e.priority > highestPriority) {
 					continue;
@@ -235,7 +230,7 @@ public class Effect implements Value {
 	public Set<EffectType> getEffectTypes(String variable) {
 		Set<EffectType> effectTypes = new HashSet<EffectType>();
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().getRawString().equals(variable)) {
+			if (e.getVariable().equals(variable)) {
 				effectTypes.add(e.getType());
 			}
 		}
@@ -344,24 +339,33 @@ public class Effect implements Value {
 			if (str.contains("Void")) {
 				return new Effect();
 			}
-			if (str.contains(":=") && str.contains("{}")) {
-				String var = str.split(":=")[0];
-				o.addSubEffect(new BasicEffect(new Template(var), new Template("None"), EffectType.SET));
-			}
-			else if (str.contains(":=")) {
-				String var = str.split(":=")[0];
-				String val = str.split(":=")[1];
-				o.addSubEffect(new BasicEffect(new Template(var), new Template(val), EffectType.SET));
+			
+			EffectType type = EffectType.SET;
+			String var = "";
+			String val = "";
+			if (str.contains(":=")) {
+				var = str.split(":=")[0];
+				val = str.split(":=")[1];
+				val = (val.contains("{}"))? "None": val;
+				type = EffectType.SET;
 			}
 			else if (str.contains("!=")) {
-				String var = str.split("!=")[0];
-				String val = str.split("!=")[1];
-				o.addSubEffect(new BasicEffect(new Template(var), new Template(val), EffectType.DISCARD));
+				var = str.split("!=")[0];
+				val = str.split("!=")[1];
+				type = EffectType.DISCARD;
 			}
 			else if (str.contains("+=")) {
-				String var = str.split("\\+=")[0];
-				String val = str.split("\\+=")[1];
-				o.addSubEffect(new BasicEffect(new Template(var), new Template(val), EffectType.ADD));
+				var = str.split("\\+=")[0];
+				val = str.split("\\+=")[1];
+				type = EffectType.ADD;
+			}
+			Template tvar = new Template(var);
+			Template tval = new Template(val);
+			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
+				o.addSubEffect(new TemplateEffect(tvar, tval, type));
+			}
+			else {
+				o.addSubEffect(new BasicEffect(var, val, type));
 			}
 		}	
 		return o;

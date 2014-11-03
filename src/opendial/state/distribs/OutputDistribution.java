@@ -141,7 +141,7 @@ public class OutputDistribution implements ProbDistribution {
 	public CategoricalTable getProbDistrib(Assignment condition) {
 
 		// creating the table
-		CategoricalTable probTable = new CategoricalTable(baseVar+primes);
+		CategoricalTable probTable = new CategoricalTable(baseVar+primes, false);
 
 		// combining all effects
 		Effect fullEffect = new Effect();

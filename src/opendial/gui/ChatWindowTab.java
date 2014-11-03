@@ -27,13 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Insets;
 import java.io.StringReader;
-import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -46,7 +40,6 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;

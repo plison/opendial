@@ -3,10 +3,12 @@ package opendial.inference.approximate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import opendial.arch.AnytimeProcess;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ContinuousDistribution;
@@ -15,7 +17,6 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
 import opendial.inference.Query;
 
@@ -25,7 +26,7 @@ import opendial.inference.Query;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  */
-public class LikelihoodWeighting implements AnytimeProcess {
+public class LikelihoodWeighting {
 
 	// logger
 	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
@@ -47,6 +48,8 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	// termination status
 	boolean isTerminated = false; 
 
+	//scheduled thread pool to terminate sampling once the time limit is reached
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
 
 	// ===================================
 	//  PUBLIC METHODS
@@ -67,7 +70,8 @@ public class LikelihoodWeighting implements AnytimeProcess {
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
-		setTimeout(maxSamplingTime);
+		
+		service.schedule(() -> {if (!isTerminated) { terminate(); }}, maxSamplingTime, TimeUnit.MILLISECONDS);
 		
 		samples = Stream.generate(() -> this)  	// creates infinite stream
 				.filter(p -> !p.isTerminated)  	// stop when process is terminated
@@ -83,7 +87,6 @@ public class LikelihoodWeighting implements AnytimeProcess {
 	 * Terminates all sampling threads, compile their results, and notifies
 	 * the sampling algorithm.
 	 */
-	@Override
 	public void terminate() {
 		if (!isTerminated) {
 			if (samples.size() == 0) {
@@ -116,12 +119,6 @@ public class LikelihoodWeighting implements AnytimeProcess {
 		return samples;
 	}
 
-
-
-	@Override
-	public boolean isTerminated() {
-		return isTerminated;
-	}
 
 
 	/**

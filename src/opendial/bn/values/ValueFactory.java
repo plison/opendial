@@ -66,6 +66,10 @@ public class ValueFactory {
 	 * @return the resulting value
 	 */
 	public static Value create(String str) {
+		
+		if (str == null) {
+			return noneValue;
+		}
 		str = str.trim();
 
 		Matcher m = doublePattern.matcher(str);

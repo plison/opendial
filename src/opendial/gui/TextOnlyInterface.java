@@ -72,7 +72,9 @@ public class TextOnlyInterface implements Module {
 			try {Thread.sleep(500);} catch (InterruptedException e) {}
 			while (true) {
 				System.out.println("Type new input: ");
-				String input = new Scanner(System.in).nextLine();
+				Scanner sc = new Scanner(System.in);
+				String input = sc.nextLine();
+				sc.close();
 				CategoricalTable table = StringUtils.getTableFromInput(input, 
 						system.getSettings().userInput);
 				if (!paused && !table.isEmpty()) {
