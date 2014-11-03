@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import opendial.arch.Logger;
-import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;

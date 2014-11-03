@@ -136,14 +136,9 @@ public class Effect implements Value {
 		}
 		Effect effect = new Effect();
 		for (BasicEffect e : subeffects) {
-			if (e instanceof TemplateEffect) {
-				BasicEffect grounded = ((TemplateEffect)e).ground(grounding);
-				if (!grounded.containsSlots()) {
-					effect.addSubEffect(grounded);
-				}
-			}
-			else {
-				effect.addSubEffect(e);
+			BasicEffect grounded = e.ground(grounding);
+			if (!grounded.containsSlots()) {
+				effect.addSubEffect(grounded);
 			}
 		}
 		return effect;
@@ -172,7 +167,7 @@ public class Effect implements Value {
 	public Set<String> getAdditionalInputVariables() {
 		return subeffects.stream()
 				.filter(e -> e.containsSlots())
-				.flatMap(e -> ((TemplateEffect)e).getSlots().stream())
+				.flatMap(e -> e.getSlots().stream())
 				.collect(Collectors.toSet());
 	}
 

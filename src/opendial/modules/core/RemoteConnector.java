@@ -27,16 +27,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.BNetwork;
 import opendial.modules.Module;
+import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
+import opendial.utils.XMLUtils;
 
 public class RemoteConnector implements Module {
 
@@ -46,6 +60,7 @@ public class RemoteConnector implements Module {
 	public static int PORT = 2111;
 	DialogueSystem system;
 	boolean paused = true;
+	boolean temporaryPause = false;
 	
 	public static enum MessageType {INIT, XML, STREAM, MISC}
 
@@ -59,14 +74,38 @@ public class RemoteConnector implements Module {
 	public void start() throws DialException {
 		paused = false;
 		setupServer();
-		writeToSocket(MessageType.INIT, local.getInetAddress().getHostAddress()
-				+":" + local.getLocalPort());
+		try {
+			String message = InetAddress.getLocalHost().getHostAddress()+":" + local.getLocalPort();
+			forwardContent(MessageType.INIT, message);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void trigger(DialogueState state, Collection<String> updatedVars) {		
+	public void trigger(DialogueState state, Collection<String> updatedVars) {	
+		if (temporaryPause) {
+			temporaryPause = false;
+			return;
+		}
 		if (!paused) {
-			writeToSocket(MessageType.MISC,"updated variables:" + updatedVars);
+			try {
+			Document xmlDoc = XMLUtils.newXMLDocument();
+			Element root = xmlDoc.createElement("update");
+			xmlDoc.appendChild(root);
+			updatedVars.stream()
+					.filter(v -> state.hasChanceNode(v))
+					.map(v -> {try {return state.queryProb(v).generateXML(xmlDoc); } 
+					catch (DialException e) {return null; }})
+					.filter(v -> v!=null)
+					.forEach(n -> root.appendChild(n));
+			if (root.hasChildNodes()) {
+				forwardContent(MessageType.XML,XMLUtils.serialise(xmlDoc));
+			}
+			}
+			catch (DialException e) {
+				log.warning("cannot update remote connector: " +e);
+			}
 		}
 	}
 
@@ -82,9 +121,13 @@ public class RemoteConnector implements Module {
 
 	private void setupServer() {
 		try {
-			try { local = new ServerSocket(PORT); }
-			catch (BindException e) { local = new ServerSocket(PORT+1);}
-			new Thread(() -> readFromSocket()).start();
+			try { 
+				local = new ServerSocket(PORT); 
+				}
+			catch (BindException e) { 
+				local = new ServerSocket(PORT+1);
+			}
+			new Thread(() -> readContent()).start();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -92,11 +135,12 @@ public class RemoteConnector implements Module {
 	}
 
 	
-	private void writeToSocket(MessageType messageType, String content) {
+	private void forwardContent(MessageType messageType, String content) {
 		try {
 		String connect = system.getSettings().params.getProperty("connect");
 		if (connect!= null) {
 			int port = (connect.contains(":"))? Integer.parseInt(connect.split(":")[1]) : PORT;
+			log.debug("forwarding content to "+ connect.split(":")[0] + ": " + port);
 			Socket socket = new Socket(connect.split(":")[0],port);
 			OutputStream out = socket.getOutputStream();
 			out.write(messageType.ordinal());
@@ -104,31 +148,39 @@ public class RemoteConnector implements Module {
 			socket.close();
 		}
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (Exception e) {
+			log.warning("cannot forward content: " + e);
 		}
 	}
 
-	private void readFromSocket() {
+	private void readContent() {
 		while (true) {
 			Socket connection;
 			try {
 				connection = local.accept();
+				log.debug("got a new connection!");
 				InputStream in = connection.getInputStream();
 				MessageType type = MessageType.values()[in.read()];
 				byte[] message = IOUtils.toByteArray(in);
+				String content = new String(message);
+				log.debug("type is " + type + " and content: " + content);
 				if (type == MessageType.INIT) {
-					String content = new String(message);
-					log.info("Connecting to " + content);
+					log.info("Connected to " + content);
 					system.getSettings().params.setProperty("connect", content);
 				}
+				else if (type == MessageType.XML) {
+					Document doc = XMLUtils.loadXMLFromString(content);
+					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils.getMainNode(doc));
+					log.debug("nodes: " + nodes);
+					temporaryPause = true;
+					system.addContent(nodes);
+				}
 				else if (type == MessageType.MISC) {
-					String content = new String(message);
 					log.info("received message: " + content);
 				}
 				Thread.sleep(100);
-			} catch (IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
+			} catch (IOException | InterruptedException | ParserConfigurationException 
+					| SAXException | DialException e) {
 				e.printStackTrace();
 			}
 		}

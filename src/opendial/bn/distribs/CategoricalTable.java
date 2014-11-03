@@ -608,7 +608,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * @param doc the XML document for which to generate the XML.
 	 */
 	@Override
-	public Node generateXML(Document doc) throws DialException {
+	public Node generateXML(Document doc)  {
 
 		Element var = doc.createElement("variable");
 
