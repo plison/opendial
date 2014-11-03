@@ -125,6 +125,6 @@ public interface DensityFunction {
 	 * @return the corresponding XML elements
 	 * @throws DialException if the XML representation could not be generated.
 	 */
-	public List<Element> generateXML(Document doc) throws DialException;
+	public List<Element> generateXML(Document doc) throws DialException ;
 	
 }

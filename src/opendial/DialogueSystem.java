@@ -35,6 +35,7 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
+import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -451,7 +452,7 @@ public class DialogueSystem {
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the update failed 
 	 */
-	public Set<String> addContent(DialogueState newState) throws DialException {
+	public Set<String> addContent(BNetwork newState) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(newState);
