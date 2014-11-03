@@ -57,7 +57,7 @@ public class RemoteConnector implements Module {
 	// logger
 	public static Logger log = new Logger("RemoteConnector", Logger.Level.DEBUG);
 
-	public static int PORT = 2111;
+	public static int PORT = 2222;
 	DialogueSystem system;
 	boolean paused = true;
 	
@@ -94,8 +94,9 @@ public class RemoteConnector implements Module {
 					catch (DialException e) {return null; }})
 					.filter(v -> v!=null)
 					.forEach(n -> root.appendChild(n));
-			
-			forwardContent(MessageType.XML,XMLUtils.serialise(xmlDoc));
+			if (root.hasChildNodes()) {
+				forwardContent(MessageType.XML,XMLUtils.serialise(xmlDoc));
+			}
 			}
 			catch (DialException e) {
 				log.warning("cannot update remote connector: " +e);
@@ -131,6 +132,7 @@ public class RemoteConnector implements Module {
 		if (connect!= null) {
 			int port = (connect.contains(":"))? Integer.parseInt(connect.split(":")[1]) : PORT;
 			Socket socket = new Socket(connect.split(":")[0],port);
+			log.debug("forwarding content to "+ connect.split(":")[0] + ": " + port);
 			OutputStream out = socket.getOutputStream();
 			out.write(messageType.ordinal());
 			IOUtils.write(content, out);
