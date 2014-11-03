@@ -116,8 +116,12 @@ public class RemoteConnector implements Module {
 
 	private void setupServer() {
 		try {
-			try { local = new ServerSocket(PORT); }
-			catch (BindException e) { local = new ServerSocket(PORT+1);}
+			try { 
+				local = new ServerSocket(PORT); 
+				}
+			catch (BindException e) { 
+				local = new ServerSocket(PORT+1);
+			}
 			new Thread(() -> readContent()).start();
 		}
 		catch (IOException e) {
@@ -163,9 +167,9 @@ public class RemoteConnector implements Module {
 					Document doc = XMLUtils.loadXMLFromString(content);
 					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils.getMainNode(doc));
 					log.debug("nodes: " + nodes);
-					system.detachModule(this.getClass());
+					paused = true;
 					system.addContent(nodes);
-					system.attachModule(this);
+					paused = false;
 				}
 				else if (type == MessageType.MISC) {
 					log.info("received message: " + content);
