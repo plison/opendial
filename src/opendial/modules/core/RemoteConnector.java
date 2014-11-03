@@ -60,6 +60,7 @@ public class RemoteConnector implements Module {
 	public static int PORT = 2111;
 	DialogueSystem system;
 	boolean paused = true;
+	boolean temporaryPause = false;
 	
 	public static enum MessageType {INIT, XML, STREAM, MISC}
 
@@ -82,7 +83,11 @@ public class RemoteConnector implements Module {
 	}
 
 	@Override
-	public void trigger(DialogueState state, Collection<String> updatedVars) {		
+	public void trigger(DialogueState state, Collection<String> updatedVars) {	
+		if (temporaryPause) {
+			temporaryPause = false;
+			return;
+		}
 		if (!paused) {
 			try {
 			Document xmlDoc = XMLUtils.newXMLDocument();
@@ -167,9 +172,8 @@ public class RemoteConnector implements Module {
 					Document doc = XMLUtils.loadXMLFromString(content);
 					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils.getMainNode(doc));
 					log.debug("nodes: " + nodes);
-					paused = true;
+					temporaryPause = true;
 					system.addContent(nodes);
-					paused = false;
 				}
 				else if (type == MessageType.MISC) {
 					log.info("received message: " + content);

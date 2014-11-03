@@ -36,7 +36,6 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 
 import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -346,7 +345,6 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * 
 	 * @param doc the document to which the XML node belongs
 	 * @return the corresponding node
-	 * @throws  
 	 * @throws DialException if the XML representation could not be generated.
 	 */
 	@Override

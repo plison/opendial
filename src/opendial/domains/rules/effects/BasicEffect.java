@@ -24,8 +24,12 @@
 package opendial.domains.rules.effects;
 
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Assignment;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
@@ -160,6 +164,22 @@ public class BasicEffect {
 	}
 
 	
+	/**
+	 * Returns itself.
+	 */
+	public BasicEffect ground(Assignment grounding) {
+		return this;
+	}
+
+	/**
+	 * Returns an empty set.
+	 * @return
+	 */
+	public Collection<String> getSlots() {
+		return new HashSet<String>();
+	}
+
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -226,5 +246,6 @@ public class BasicEffect {
 		copy.priority = this.priority;
 		return copy;
 	}
+
 
 }

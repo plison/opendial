@@ -442,7 +442,28 @@ public class DialogueSystem {
 	}
 
 
-
+	
+	/**
+	 * Merges the Bayesian network included as argument into the current one, and
+	 * updates the dialogue state.
+	 * 
+	 * @param newState the state to merge into the current state
+	 * @return the set of variables that have been updated
+	 * @throws DialException if the update failed 
+	 */
+	public Set<String> addContent(BNetwork network) throws DialException {
+		if (!paused) {
+			synchronized (curState) {
+				curState.addToState(network);
+				return update();
+			}
+		}
+		else {
+			log.info("system is currently paused -- ignoring content " + network);
+			return new HashSet<String>();
+		}
+	}
+	
 
 	/**
 	 * Merges the dialogue state included as argument into the current one, and
@@ -452,7 +473,7 @@ public class DialogueSystem {
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the update failed 
 	 */
-	public Set<String> addContent(BNetwork newState) throws DialException {
+	public Set<String> addContent(DialogueState newState) throws DialException {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(newState);
@@ -464,6 +485,7 @@ public class DialogueSystem {
 			return new HashSet<String>();
 		}
 	}
+	
 
 
 
