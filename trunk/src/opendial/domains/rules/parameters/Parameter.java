@@ -25,7 +25,6 @@ package opendial.domains.rules.parameters;
 
 import java.util.Collection;
 
-import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 
 

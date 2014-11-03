@@ -63,6 +63,7 @@ public class TextOnlyInterface implements Module {
 	/**
 	 * Starts the interface.
 	 */
+	@SuppressWarnings("resource")
 	@Override
 	public void start() throws DialException {
 		paused = false;
@@ -72,9 +73,7 @@ public class TextOnlyInterface implements Module {
 			try {Thread.sleep(500);} catch (InterruptedException e) {}
 			while (true) {
 				System.out.println("Type new input: ");
-				Scanner sc = new Scanner(System.in);
-				String input = sc.nextLine();
-				sc.close();
+				String input = new Scanner(System.in).nextLine();
 				CategoricalTable table = StringUtils.getTableFromInput(input, 
 						system.getSettings().userInput);
 				if (!paused && !table.isEmpty()) {
