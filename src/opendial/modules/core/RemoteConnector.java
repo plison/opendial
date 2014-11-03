@@ -27,8 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,8 +73,12 @@ public class RemoteConnector implements Module {
 	public void start() throws DialException {
 		paused = false;
 		setupServer();
-		forwardContent(MessageType.INIT, local.getInetAddress().getHostAddress()
-				+":" + local.getLocalPort());
+		try {
+			String message = InetAddress.getLocalHost().getHostAddress()+":" + local.getLocalPort();
+			forwardContent(MessageType.INIT, message);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -131,8 +137,8 @@ public class RemoteConnector implements Module {
 			socket.close();
 		}
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (Exception e) {
+			log.warning("cannot forward content: " + e);
 		}
 	}
 
@@ -146,7 +152,7 @@ public class RemoteConnector implements Module {
 				byte[] message = IOUtils.toByteArray(in);
 				String content = new String(message);
 				if (type == MessageType.INIT) {
-					log.info("Connecting to " + content);
+					log.info("Connected to " + content);
 					system.getSettings().params.setProperty("connect", content);
 				}
 				else if (type == MessageType.XML) {
