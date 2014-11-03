@@ -45,9 +45,8 @@ public interface Parameter {
 	 * 
 	 * @param input the input assignment
 	 * @return the actual parameter value
-	 * @throws DialException if the value cannot be retrieved
 	 */
-	public double getParameterValue (Assignment input) throws DialException;
+	public double getParameterValue (Assignment input) ;
 	
 	
 	/**

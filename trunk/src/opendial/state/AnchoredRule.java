@@ -39,6 +39,7 @@ import opendial.datastructs.ValueRange;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 
@@ -118,9 +119,9 @@ public class AnchoredRule {
 			}
 			for (Effect o : output.getEffects()) {
 				effects.add(o);
-				parameters.addAll(output.getParameter(o).getParameterIds());		
+				parameters.addAll(output.getParameter(o).getParameterIds());
 				for (BasicEffect e : o.getSubEffects()) {
-					String outputVar = e.getVariable().getRawString()+"'";
+					String outputVar = e.getVariable()+"'";
 					outputs.addValue(outputVar, e.getValue());
 				}
 			}
@@ -129,13 +130,9 @@ public class AnchoredRule {
 
 		// special case for utility rules with templated action values
 		if (rule.getRuleType() == RuleType.UTIL && rule.hasUnderspecifiedEffects()) {
-			for (Template outputVar : rule.getOutputVariables()) {
-				if (!outputVar.isUnderspecified()) {
-					outputs.addValue(outputVar.getRawString() + "'", ValueFactory.none());
-					relevant = true;
-					parameters.addAll(rule.getParameterIds());
-				}
-			}
+			relevant = true;
+			parameters.addAll(rule.getParameterIds());
+			rule.getOutputVariables().stream().forEach(o -> outputs.addValue(o+"'", ValueFactory.none()));
 		}
 
 	}

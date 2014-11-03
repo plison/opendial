@@ -73,6 +73,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 	// sampler
 	Random sampler;
+	
+	// whether to automatically add a default value to fill the remaining probability mass
+	boolean addDefaultValue = true;
 
 
 	// ===================================
@@ -91,6 +94,19 @@ public class CategoricalTable implements IndependentProbDistribution {
 		this.variable = variable;
 		sampler = new Random();
 	}
+	
+	
+	/**
+	 * Constructs a new probability table, with no values
+	 * 
+	 * @param variable the name of the random variable
+	 * @param addDefaultValue whether to automatically add a default value 
+	 *        to fill the remaining probability mass
+	 */
+	public CategoricalTable(String variable, boolean addDefaultValue) {
+		this(variable);
+		this.addDefaultValue = addDefaultValue;
+	}
 
 	/**
 	 * Constructs a new probability table with a mapping between head
@@ -108,7 +124,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 			addRow(a, headTable.get(a));
 			totalProb += headTable.get(a);
 		}
-		if (totalProb < 0.99999) {
+		if (addDefaultValue && totalProb < 0.99999) {
 			incrementRow(ValueFactory.none(), 1.0 - totalProb);
 		}
 	}
@@ -153,12 +169,14 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 		table.put(value,prob);
 
+		if (addDefaultValue) {
 		double totalProb = countTotalProb();
 		if (totalProb < 0.98) {
 			table.put(ValueFactory.none(), 1.0 - totalProb);
 		}
 		else {
 			table.remove(ValueFactory.none());
+		}
 		}
 		intervals = null;
 	}
@@ -253,7 +271,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		table.remove(head);
 
 		double totalProb = countTotalProb();
-		if (totalProb < 0.99999 && head != ValueFactory.none()) {
+		if (addDefaultValue && totalProb < 0.99999 && head != ValueFactory.none()) {
 			table.put(ValueFactory.none(), 1.0 - totalProb);
 		}
 		intervals = null;
@@ -273,7 +291,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 			log.warning("can only concatenate tables with same variable");
 		}
 
-		CategoricalTable newtable = new CategoricalTable(variable);
+		CategoricalTable newtable = new CategoricalTable(variable, addDefaultValue);
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
 				try {
@@ -461,8 +479,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.isEmpty()) {
 			return true;
 		}
-		else return (table.size() == 1 && table.keySet().iterator().next().
-				equals(ValueFactory.none()));
+		else return (table.size() == 1 && table.keySet().stream().anyMatch(v -> v.equals(ValueFactory.none())));
 	}
 
 
@@ -619,19 +636,14 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 
 	/**
-	 * Returns the total accumulated probability for the distribution P(.|condition)
+	 * Returns the total accumulated probability for the distribution
 	 * 
 	 * @return the total probability
 	 */
 	private double countTotalProb() {
-		double totalProb = 0.0f;
-		Value defaultA = ValueFactory.none();
-		for (Value head : table.keySet()) {
-			if (!defaultA.equals(head)) {
-				totalProb += table.get(head);
-			}
-		}
-		return totalProb;
+		return table.keySet().stream()
+				.filter(v -> !v.equals(ValueFactory.none()))
+				.mapToDouble(v -> table.get(v)).sum();
 	}
 
 

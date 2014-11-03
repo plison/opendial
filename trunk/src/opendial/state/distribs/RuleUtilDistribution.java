@@ -23,15 +23,11 @@
 
 package opendial.state.distribs;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.UtilityDistribution;
-import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
@@ -167,7 +163,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 	 */
 	private double getUtil(Assignment input, Assignment actions) {
 
-		try {
 			Assignment ruleInput = input.getTrimmed(rule.getInputs().getVariables());
 			Assignment ruleAction = actions.removePrimes();
 
@@ -185,11 +180,6 @@ public class RuleUtilDistribution implements UtilityDistribution {
 			}
 
 			return totalUtil;
-		}
-		catch (DialException e) {
-			log.warning("error extracting utility: " + e + " for rule " + rule);
-		}
-		return 0.0;	
 	}
 
 

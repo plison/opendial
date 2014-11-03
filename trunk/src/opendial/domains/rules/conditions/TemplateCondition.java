@@ -25,8 +25,6 @@ package opendial.domains.rules.conditions;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import opendial.arch.Logger;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;

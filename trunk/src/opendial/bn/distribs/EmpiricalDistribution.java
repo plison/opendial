@@ -41,7 +41,6 @@ import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.utils.CombinatoricsUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on a collection of
