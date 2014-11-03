@@ -25,9 +25,6 @@ package opendial.domains.rules.effects;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -125,6 +122,7 @@ public class TemplateEffect extends BasicEffect {
 	/**
 	 * Returns true if the effect contains slots to fill, and false otherwise
 	 */
+	@Override
 	public boolean containsSlots() {
 		return !labelTemplate.getSlots().isEmpty() || !valueTemplate.getSlots().isEmpty();
 	}
@@ -134,6 +132,7 @@ public class TemplateEffect extends BasicEffect {
 	 * 
 	 * @return the equivalent (basic or template-based) condition
 	 */
+	@Override
 	public Condition convertToCondition() {
 		Relation r = (type == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
 		return new TemplateCondition(labelTemplate, valueTemplate, r);
@@ -201,6 +200,7 @@ public class TemplateEffect extends BasicEffect {
 	 * 
 	 * @return the copy.
 	 */
+	@Override
 	public TemplateEffect copy() {
 		TemplateEffect copy = new TemplateEffect(labelTemplate, valueTemplate, type);
 		copy.priority = this.priority;

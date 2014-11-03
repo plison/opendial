@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 

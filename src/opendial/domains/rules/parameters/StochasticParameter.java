@@ -26,7 +26,6 @@ package opendial.domains.rules.parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
