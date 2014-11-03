@@ -35,11 +35,11 @@ import opendial.datastructs.Template;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
+import opendial.domains.rules.effects.BasicEffect;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 
-import org.jfree.util.Log;
 import org.junit.Test;
 
 public class RuleTest3 {
@@ -121,15 +121,14 @@ public class RuleTest3 {
 		
 		Effect o = new Effect();
 		assertEquals(o, Effect.parseEffect("Void"));
-		o.addSubEffect(new BasicEffect(new Template("v1"), new Template("val1"), EffectType.SET));
+		o.addSubEffect(new BasicEffect("v1", "val1", EffectType.SET));
 		assertEquals(o, Effect.parseEffect("v1:=val1"));
 
-		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val2"), EffectType.ADD));
+		o.addSubEffect(new BasicEffect("v2", "val2", EffectType.ADD));
 		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 		
-		o.addSubEffect(new BasicEffect(new Template("v2"), new Template("val3"), EffectType.DISCARD));
+		o.addSubEffect(new BasicEffect("v2", "val3", EffectType.DISCARD));
 		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
-				
 	}
 	
 

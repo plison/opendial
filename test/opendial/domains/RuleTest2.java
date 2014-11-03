@@ -82,7 +82,6 @@ public class RuleTest2 {
 		system.getSettings().showGUI = false;
 		system.detachModule(ForwardPlanner.class);
 		system.startSystem(); 
-		
 	 	inference.checkProb(system.getState(), "a_u^p", "Ask(A)", 0.63);
 	 	inference.checkProb(system.getState(), "a_u^p", "Ask(B)", 0.27);
 	 	inference.checkProb(system.getState(), "a_u^p", "None", 0.1);
