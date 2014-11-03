@@ -140,7 +140,6 @@ public class RemoteConnector implements Module {
 		String connect = system.getSettings().params.getProperty("connect");
 		if (connect!= null) {
 			int port = (connect.contains(":"))? Integer.parseInt(connect.split(":")[1]) : PORT;
-			log.debug("forwarding content to "+ connect.split(":")[0] + ": " + port);
 			Socket socket = new Socket(connect.split(":")[0],port);
 			OutputStream out = socket.getOutputStream();
 			out.write(messageType.ordinal());
@@ -158,12 +157,10 @@ public class RemoteConnector implements Module {
 			Socket connection;
 			try {
 				connection = local.accept();
-				log.debug("got a new connection!");
 				InputStream in = connection.getInputStream();
 				MessageType type = MessageType.values()[in.read()];
 				byte[] message = IOUtils.toByteArray(in);
 				String content = new String(message);
-				log.debug("type is " + type + " and content: " + content);
 				if (type == MessageType.INIT) {
 					log.info("Connected to " + content);
 					system.getSettings().params.setProperty("connect", content);
@@ -171,7 +168,6 @@ public class RemoteConnector implements Module {
 				else if (type == MessageType.XML) {
 					Document doc = XMLUtils.loadXMLFromString(content);
 					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils.getMainNode(doc));
-					log.debug("nodes: " + nodes);
 					temporaryPause = true;
 					system.addContent(nodes);
 				}
