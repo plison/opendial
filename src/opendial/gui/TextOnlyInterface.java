@@ -68,6 +68,7 @@ public class TextOnlyInterface implements Module {
 	public void start() throws DialException {
 		paused = false;
 		log.info("Starting text-only user interface...");
+		log.info("Local address: " + system.getLocalAddress());
 		log.info("Press Ctrl + C to exit");
 		new Thread(() -> {
 			try {Thread.sleep(500);} catch (InterruptedException e) {}

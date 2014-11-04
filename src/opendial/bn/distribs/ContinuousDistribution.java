@@ -348,7 +348,7 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * @throws DialException if the XML representation could not be generated.
 	 */
 	@Override
-	public Node generateXML(Document doc) throws DialException {
+	public Node generateXML(Document doc) {
 		
 		Element var = doc.createElement("variable");
 
