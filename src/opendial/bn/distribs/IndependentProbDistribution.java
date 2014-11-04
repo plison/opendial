@@ -141,7 +141,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @return the corresponding XML node
 	 * @throws DialException if the XML generation failed.
 	 */
-	public Node generateXML(Document document) throws DialException;
+	public Node generateXML(Document document);
 	
 
 	

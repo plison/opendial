@@ -52,7 +52,7 @@ import opendial.utils.StringUtils;
 public class Simulator implements Module {
 
 	// logger
-	public static Logger log = new Logger("Simulator", Logger.Level.DEBUG);
+	public static Logger log = new Logger("Simulator", Logger.Level.NORMAL);
 
 	DialogueState simulatorState;
 

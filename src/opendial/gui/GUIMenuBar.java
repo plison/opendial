@@ -173,6 +173,18 @@ public class GUIMenuBar extends JMenuBar {
 		add(traceMenu);
 		JMenu optionMenu = new JMenu("Options");
 
+		JMenuItem connect = new JMenuItem("Connect to remote client");
+		connect.addActionListener(e -> { 
+			String fullAddress =  JOptionPane.showInputDialog(this ,
+					"Enter address of remote client (IP_address:port):");
+			if (fullAddress != null && fullAddress.contains(":")) {
+				String ipaddress = fullAddress.split(":")[0];
+				int port = Integer.parseInt(fullAddress.split(":")[1]);
+				frame.getSystem().connectTo(ipaddress, port);
+			}
+		});
+		
+		optionMenu.add(connect);
 		inputMenu = new JMenu("Audio input");
 		ButtonGroup inputGroup = new ButtonGroup();
 		List<Mixer.Info> mixers = AudioUtils.getInputMixers();
@@ -284,6 +296,7 @@ public class GUIMenuBar extends JMenuBar {
 
 		add(optionMenu);
 		JMenu helpMenu = new JMenu("Help");
+		
 		JMenuItem aboutItem = new JMenuItem("About");
 		aboutItem.addActionListener(e -> showAboutPanel(frame));
 
@@ -294,6 +307,7 @@ public class GUIMenuBar extends JMenuBar {
 		helpMenu.add(docItem);
 		add(helpMenu);
 	}
+
 
 	/**
 	 * Switches the interaction mode of the dialogue
@@ -377,14 +391,16 @@ public class GUIMenuBar extends JMenuBar {
 			style.append("font-size:" + font.getSize() + "pt;");
 
 			JEditorPane ep = new JEditorPane("text/html","<html><body style=\"" + style 
-					+ "\"><b>OpenDial dialogue toolkit, version 0.95</b><br>"
+					+ "\"><b>OpenDial dialogue toolkit, version 1.0</b><br>"
 					+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
 					+ "OpenDial is distributed as free software under<br>"
 					+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
 					+ "<i>Project website</i>: <a href=\"http://opendial.googlecode.com\">"
 					+ "http://opendial.googlecode.com</a><br>"
 					+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
-					+ "plison@ifi.uio.no</a>)</body></html>");
+					+ "plison@ifi.uio.no</a>)<br><br>"
+					+ "<b>Local address:</b>: <i>" + frame.getSystem().getLocalAddress() + "</i>"
+					+ "</body></html>");
 
 			// handle link events
 			ep.addHyperlinkListener(e ->  {

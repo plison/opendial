@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
@@ -109,10 +108,12 @@ public class GaussianDensityFunction implements DensityFunction {
 	}
 	
 	
-	public GaussianDensityFunction(List<double[]> samples) throws DialException {
+	public GaussianDensityFunction(List<double[]> samples) {
 		if (samples.isEmpty()) {
-			throw new DialException("empty list of samples");
+			log.warning("no samples were provided for the Gaussian");
+			samples = Arrays.asList(new double[]{0.0});
 		}
+		
 		this.mean = new double[samples.get(0).length];
 		this.variance = new double[samples.get(0).length];
 		for (int i = 0 ; i < mean.length ; i++) {

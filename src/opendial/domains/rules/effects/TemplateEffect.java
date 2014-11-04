@@ -82,6 +82,7 @@ public class TemplateEffect extends BasicEffect {
 	 * @param grounding the grounding
 	 * @return the grounded effect
 	 */
+	@Override
 	public BasicEffect ground(Assignment grounding) {
 		Template newT = labelTemplate.fillSlots(grounding);
 		Template newV = valueTemplate.fillSlots(grounding);
@@ -110,6 +111,7 @@ public class TemplateEffect extends BasicEffect {
 	 *
 	 * @return sets of input variables
 	 */
+	@Override
 	public Set<String> getSlots() {
 		Set<String> additionalInputVariables = new HashSet<String>();
 		additionalInputVariables.addAll(this.labelTemplate.getSlots());
