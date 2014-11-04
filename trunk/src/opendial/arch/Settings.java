@@ -26,10 +26,14 @@ package opendial.arch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.sound.sampled.Mixer;
 
 import opendial.modules.Module;
@@ -102,6 +106,9 @@ public class Settings {
 
 	/** Domain-specific modules to run */
 	public List<Class<Module>> modules = new ArrayList<Class<Module>>();
+	
+	/** addresses of remote clients to connect to (key=IP address, value=port) */
+	public Map<String,Integer> remoteConnections = new HashMap<String,Integer>();
 	
 	/** settings that have been explicitly specified (i.e. non-default) */
 	Set<String> explicitSettings;
@@ -187,6 +194,7 @@ public class Settings {
 			else if (key.equalsIgnoreCase("discretisation")) {
 				discretisationBuckets = Integer.parseInt(mapping.getProperty(key));
 			}
+			
 			else if (key.equalsIgnoreCase("recording")) {
 				if (mapping.getProperty(key).trim().equalsIgnoreCase("last") ) {
 					recording = Recording.LAST_INPUT;
@@ -196,6 +204,19 @@ public class Settings {
 				}
 				else {
 					recording = Recording.NONE;
+				}
+			}
+			else if (key.equalsIgnoreCase("connect")) {
+				String[] splits = mapping.getProperty(key).split(",");
+				for (String split : splits) {
+					if (split.contains(":")) {
+						String address = split.split(":")[0];
+						int port = Integer.parseInt(split.split(":")[1]);
+						remoteConnections.put(address, port);
+					}
+					else {
+						log.warning("address of remote connection must contain port");
+					}
 				}
 			}
 			else if (key.equalsIgnoreCase("modules")) {
@@ -249,9 +270,10 @@ public class Settings {
 		mapping.setProperty("samples", ""+nbSamples);
 		mapping.setProperty("timeout", ""+maxSamplingTime);
 		mapping.setProperty("discretisation", ""+discretisationBuckets);
-		List<String> moduleNames = new ArrayList<String>();
-		for (Class<Module> m : modules) { moduleNames.add(m.getCanonicalName()); }
-		mapping.setProperty("modules", ""+StringUtils.join(moduleNames, ","));
+		mapping.setProperty("modules", ""+modules.stream()
+				.map(m -> m.getCanonicalName()).collect(Collectors.joining(",")));
+		mapping.setProperty("connect", ""+remoteConnections.keySet().stream()
+				.map(i -> i + ":" + remoteConnections.get(i)).collect(Collectors.joining(",")));
 		return mapping;
 	}
 	

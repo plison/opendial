@@ -357,7 +357,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public List<Element> generateXML(Document doc) throws DialException {
+	public List<Element> generateXML(Document doc) {
 		GaussianDensityFunction gaussian = new GaussianDensityFunction(points);
 		return gaussian.generateXML(doc);
 	}

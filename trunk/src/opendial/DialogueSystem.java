@@ -48,6 +48,7 @@ import opendial.modules.Module;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.modules.core.ForwardPlanner;
+import opendial.modules.core.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
@@ -110,6 +111,7 @@ public class DialogueSystem {
 		modules.add(new GUIFrame(this));
 		modules.add(new DialogueRecorder(this));
 		modules.add(new ForwardPlanner(this));
+		modules.add(new RemoteConnector(this));
 		domain = new Domain();
 	}
 
@@ -284,7 +286,6 @@ public class DialogueSystem {
 			}
 		}	
 	}
-
 
 	// ===================================
 	//  STATE UPDATE
@@ -521,6 +522,16 @@ public class DialogueSystem {
 	}
 
 
+	/**
+	 * Connects to a remote client with the given IP address and port
+	 * 
+	 * @param address the IP address of the remote client
+	 * @param port the port of the remote client
+	 */
+	public void connectTo(String address, int port) {
+		settings.remoteConnections.put(address, port);
+		getModule(RemoteConnector.class).connectTo(address, port);
+	}
 
 	// ===================================
 	//  GETTERS
@@ -615,6 +626,15 @@ public class DialogueSystem {
 		return new ArrayList<Module>(modules);
 	}
 
+	
+	/**
+	 * Returns the local address (IP and port) used by the dialogue system
+	 * 
+	 * @return
+	 */
+	public String getLocalAddress() {
+		return getModule(RemoteConnector.class).getLocalAddress();
+	}
 
 	// ===================================
 	//  MAIN METHOD
@@ -662,9 +682,14 @@ public class DialogueSystem {
 				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
 				system.attachModule(simulator);
 			}
-			system.changeSettings(system.getSettings());
-			if (!system.getSettings().showGUI) {
+			Settings settings = system.getSettings();
+			system.changeSettings(settings);
+			if (!settings.showGUI) {
 				system.attachModule(new TextOnlyInterface(system));
+			}
+			
+			if (!settings.remoteConnections.isEmpty() && settings.showGUI) {
+				system.getModule(GUIFrame.class).enableSpeech(true);
 			}
 			system.startSystem();
 			log.info("Dialogue system started!");
