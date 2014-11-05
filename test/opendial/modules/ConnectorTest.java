@@ -55,7 +55,9 @@ public class ConnectorTest {
 		system1.addUserInput("hello, world!");
 		Thread.sleep(200);
 		String record1 = system1.getModule(DialogueRecorder.class).getRecord();
+		record1 = record1.replaceAll(system2.getLocalAddress(), "");
 		String record2 = system2.getModule(DialogueRecorder.class).getRecord();
+		record2 = record2.replaceAll(system1.getLocalAddress(), "");
 		assertEquals(record1, record2);
 		Map<String,Double> response = new HashMap<String,Double>();
 		response.put("hello back", 0.7);
@@ -63,7 +65,9 @@ public class ConnectorTest {
 		system2.addUserInput(response);
 		Thread.sleep(200);
 		record1 = system1.getModule(DialogueRecorder.class).getRecord();
+		record1 = record1.replaceAll(system2.getLocalAddress(), "");
 		record2 = system2.getModule(DialogueRecorder.class).getRecord();
+		record2 = record2.replaceAll(system1.getLocalAddress(), "");
 		assertEquals(record1, record2);
 		
 	}

@@ -182,6 +182,10 @@ public class GUIMenuBar extends JMenuBar {
 				int port = Integer.parseInt(fullAddress.split(":")[1]);
 				frame.getSystem().connectTo(ipaddress, port);
 			}
+			else {
+				frame.getSystem().displayComment("address of remote client is "
+						+ "not well-formed, must be \"IP_address:port\"");
+			}
 		});
 		
 		optionMenu.add(connect);
