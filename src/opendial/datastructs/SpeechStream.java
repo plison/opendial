@@ -248,7 +248,7 @@ public class SpeechStream extends InputStream implements Value {
 	 * Returns a copy of the stream
 	 */
 	@Override
-	public Value copy() {
+	public SpeechStream copy() {
 		return new SpeechStream(this);
 	}
 
