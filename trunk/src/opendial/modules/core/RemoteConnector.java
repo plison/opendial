@@ -31,6 +31,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Map.Entry;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
@@ -113,9 +115,8 @@ public class RemoteConnector implements Module {
 		if (!system.getSettings().remoteConnections.isEmpty()) {
 			InputStream content = IOUtils.toInputStream(getLocalAddress());
 			forwardContent(MessageType.INIT, content);
-			log.info("Connected to " + system.getSettings().remoteConnections.keySet());
 		}
-
+ 
 		// add a shutdown hook to close the remote connections
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> { 
 			if (!system.getSettings().remoteConnections.isEmpty()) {
@@ -274,6 +275,9 @@ public class RemoteConnector implements Module {
 			}
 		};
 		new Thread(r).start();
+		if (messageType == MessageType.INIT) {
+			system.displayComment("Connected to " + address  + ":" + port);
+		}
 	}
 
 	/**
@@ -298,6 +302,7 @@ public class RemoteConnector implements Module {
 					String ip = content.split(":")[0];
 					int port = Integer.parseInt(content.split(":")[1]);
 					log.info("Connected to " + ip + ":" + port);
+					system.displayComment("Connected to " + ip + ":" + port);
 					system.getSettings().remoteConnections.put(ip, port);
 					if (system.getSettings().showGUI) {
 						system.getModule(GUIFrame.class).enableSpeech(true);
@@ -320,6 +325,7 @@ public class RemoteConnector implements Module {
 				else if (type == MessageType.CLOSE) {
 					String content = new String(message);
 					log.info("Disconnecting from " + content);
+					system.displayComment("Disconnecting from " + content);
 					String ip = content.split(":")[0];
 					system.getSettings().remoteConnections.remove(ip);
 				}
