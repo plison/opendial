@@ -253,4 +253,13 @@ public class GUIFrame implements Module {
 		}
 	}
 
+	/**
+	 * Returns the menu bar for the frame
+	 * 
+	 * @return the menu bar
+	 */
+	public GUIMenuBar getMenu() {
+		return menu;
+	}
+
 }

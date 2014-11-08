@@ -306,6 +306,7 @@ public class RemoteConnector implements Module {
 					system.getSettings().remoteConnections.put(ip, port);
 					if (system.getSettings().showGUI) {
 						system.getModule(GUIFrame.class).enableSpeech(true);
+						system.getModule(GUIFrame.class).getMenu().update();
 					}
 				}
 				else if (type == MessageType.XML) {

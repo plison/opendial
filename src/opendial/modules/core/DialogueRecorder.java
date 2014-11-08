@@ -105,7 +105,8 @@ public class DialogueRecorder implements Module {
 					+ rootNode.getNodeName() + " or first value is null");
 			return;
 		}
-		if (state.isIncremental(settings.userInput)) {
+		// if the user is still speaking, do not record anything yet
+		if (state.hasChanceNode(settings.userSpeech)) {
 			return;
 		}
 
@@ -124,6 +125,9 @@ public class DialogueRecorder implements Module {
 				Set<String> varsToRecord = new HashSet<String>();
 				varsToRecord.add(settings.systemOutput);
 				varsToRecord.addAll(settings.varsToMonitor);
+				if (state.hasChanceNode("a_m")) {
+					varsToRecord.add("a_m");
+				}
 				Element el = state.generateXML(doc, varsToRecord);
 				if (el.getChildNodes().getLength() > 0) {
 				doc.renameNode(el, null, "systemTurn");
@@ -136,17 +140,6 @@ public class DialogueRecorder implements Module {
 		}
 	}
 	
-	
-	/**
-	 * Adds a wizard action to the recordings.
-	 * 
-	 * @param action the assignment of action variables selected by the wizard
-	 */
-	public void addWizardAction (Assignment action) {
-			Node wizardNode =doc.createElement("wizard");
-			wizardNode.setTextContent(action.toString());
-			rootNode.appendChild(wizardNode);
-	}
 
 	
 	/**

@@ -112,6 +112,9 @@ public class Settings {
 	
 	/** settings that have been explicitly specified (i.e. non-default) */
 	Set<String> explicitSettings;
+
+	/** whether the role of user and system are inverted */
+	public boolean invertedRole = false;
 	
 	/**
 	 * Creates new settings with the default values

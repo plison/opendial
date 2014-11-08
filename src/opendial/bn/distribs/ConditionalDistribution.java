@@ -179,11 +179,10 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 			return table.get(trimmed).sample();
 		}
 
-		log.debug("could not find the corresponding condition for " + condition + 
-				" (vars: " + conditionalVars + ", nb of rows: " + table.size() + ")");
+		log.debug("could not find the distribution for " + condition + 
+				" (vars: " + conditionalVars + ", distribution is " + toString() + ")");
 
 		return ValueFactory.none();
-				
 	}
 	
 

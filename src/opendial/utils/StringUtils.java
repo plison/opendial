@@ -24,6 +24,8 @@
 package opendial.utils;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -163,20 +165,13 @@ public class StringUtils {
 
 
 	/**
-	 * Returns a categorical table from the provided GUI input 
+	 * Returns a table with probabilities from the provided GUI input 
 	 * 
 	 * @param rawText the raw text expressing the table
-	 * @param defaultVar the default variable label for the input
 	 */
-	public static CategoricalTable getTableFromInput(String rawText, String defaultVar) {
-	
-		String inputVariable = defaultVar;
-		if (rawText.contains("=")) {
-			inputVariable = rawText.split("=")[0].trim();
-			rawText = rawText.split("=")[1].trim();
-		}
+	public static Map<String,Double> getTableFromInput(String rawText) {
 
-		CategoricalTable table = new CategoricalTable(inputVariable);
+		Map<String,Double> table = new HashMap<String,Double>();
 
 		Pattern p = Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
@@ -184,12 +179,12 @@ public class StringUtils {
 			Matcher m = p.matcher(split);
 			if (m.find()) {
 				String probValueStr = m.group(1);
-				float probValue = Float.parseFloat(probValueStr);
+				double probValue = Double.parseDouble(probValueStr);
 				String remainingStr = split.replace("(" + probValueStr + ")", "").trim();
-				table.addRow(remainingStr, probValue);
+				table.put(remainingStr, probValue);
 			}
 			else {
-				table.addRow(split.trim(), 1.0);
+				table.put(split.trim(), 1.0);
 			}
 		}
 		return table;

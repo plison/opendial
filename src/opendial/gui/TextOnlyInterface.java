@@ -25,6 +25,7 @@ package opendial.gui;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Scanner;
 
 import opendial.DialogueSystem;
@@ -75,10 +76,9 @@ public class TextOnlyInterface implements Module {
 			while (true) {
 				System.out.println("Type new input: ");
 				String input = new Scanner(System.in).nextLine();
-				CategoricalTable table = StringUtils.getTableFromInput(input, 
-						system.getSettings().userInput);
+				Map<String,Double> table = StringUtils.getTableFromInput(input);
 				if (!paused && !table.isEmpty()) {
-					system.addContent(table);
+					system.addUserInput(table);
 				}
 			}
 		}).start();
