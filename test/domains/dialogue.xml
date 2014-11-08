@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<interaction>
+<userTurn>
+<variable id="u_u">
+<value prob="0.45">move left</value>
+<value prob="0.55">None</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.6">move left</value>
+<value prob="0.2">go left</value>
+<value prob="0.2">None</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving left!</value>
+</variable>
+<variable id="a_m">
+<value>Move(Left)</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.55">and now move forward</value>
+<value prob="0.45">None</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="a_m">
+<value>Move(Left)</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.35">move backward</value>
+<value prob="0.3">move forward</value>
+<value prob="0.35">None</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>Sorry, could you repeat?</value>
+</variable>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<userTurn>
+<variable id="u_u">
+<value prob="0.7">move forward please</value>
+<value prob="0.3">None</value>
+</variable>
+</userTurn>
+<systemTurn>
+<variable id="a_m">
+<value>AskRepeat</value>
+</variable>
+</systemTurn>
+<systemTurn>
+<variable id="u_m">
+<value>Ok, moving forward!</value>
+</variable>
+<variable id="a_m">
+<value>Move(Forward)</value>
+</variable>
+</systemTurn>
+</interaction>

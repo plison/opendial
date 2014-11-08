@@ -88,7 +88,7 @@ public class RecordingTest {
 				("<font size=\"4\">OK, moving Left a little bit</font>"));
 		assertEquals(6, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
 		assertEquals(4, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
-		assertEquals(10, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "variable"));
+		assertEquals(14, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "variable"));
 	
 		system.getModule(GUIFrame.class).getFrame().dispose();
 	}
@@ -111,13 +111,13 @@ public class RecordingTest {
 		Settings.nbSamples = Settings.nbSamples / 100;
 		DialogueImporter importer = new DialogueImporter(system, 
 				XMLInteractionReader.extractInteraction(dialogueFile));
+		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();
 		while (importer.isAlive()) {
 			Thread.sleep(50);
 		}
 		Settings.nbSamples = Settings.nbSamples * 100;
-
 		GUIMenuBar.exportContent(system, exportState, "state");
 		String str = "";
 		BufferedReader br = new BufferedReader(new FileReader(exportState));

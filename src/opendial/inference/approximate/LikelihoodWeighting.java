@@ -29,7 +29,7 @@ import opendial.inference.Query;
 public class LikelihoodWeighting {
 
 	// logger
-	public static Logger log = new Logger("SamplingProcess", Logger.Level.DEBUG);
+	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
 
 	// actual number of samples for the algorithm
 	int nbSamples;
@@ -49,7 +49,7 @@ public class LikelihoodWeighting {
 	boolean isTerminated = false; 
 
 	//scheduled thread pool to terminate sampling once the time limit is reached
-	static ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
 
 	// ===================================
 	//  PUBLIC METHODS
@@ -71,7 +71,8 @@ public class LikelihoodWeighting {
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
 		
-		service.schedule(() -> {if (!isTerminated) { terminate(); }}, maxSamplingTime, TimeUnit.MILLISECONDS);
+		service.schedule(() -> {if (!isTerminated) { terminate(); }}, 
+				maxSamplingTime, TimeUnit.MILLISECONDS);
 		
 		samples = Stream.generate(() -> this)  	// creates infinite stream
 				.filter(p -> !p.isTerminated)  	// stop when process is terminated
@@ -89,7 +90,7 @@ public class LikelihoodWeighting {
 	 */
 	public void terminate() {
 		if (!isTerminated) {
-			if (samples.size() == 0) {
+			if (samples.isEmpty()) {
 				log.debug("no samples for query: " + query);
 				query.getEvidence().clear();
 			}

@@ -28,6 +28,8 @@ import java.awt.Container;
 import java.awt.Insets;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Map;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -190,37 +192,7 @@ public class ChatWindowTab extends JComponent {
 	}
 
 
-	/**
-	 * Adds the utterance entered in the text field to the dialogue state
-	 * 
-	 * NB: if the text is starting or ending with '/', assume it represents
-	 * incremental inputs (where an '/' at the end represents an unfinished
-	 * input, and '/' at the beginning a follow-up to a previous unit).
-	 */
-	private void addUtteranceToState()  {
-		String rawText= inputField.getText().trim();
-		if (!rawText.equals("")) {
-			boolean unfinished = rawText.endsWith("/");
-			boolean followPrevious = rawText.startsWith("/");
-			rawText = rawText.replaceAll("/", "");
-			CategoricalTable table = StringUtils.getTableFromInput(rawText, 
-					system.getSettings().userInput);
-			inputField.setText("");
-			
-			Runnable insertion;
-			if (!unfinished && !followPrevious) {
-				insertion = () -> system.addContent(table);
-			}
-			else {
-				insertion = () -> {
-					String speechValue = (unfinished)? "busy" : "None";
-					system.addContent(new Assignment(system.getSettings().userSpeech, speechValue));
-					system.addIncrementalContent(table, followPrevious);
-				};
-			}
-			new Thread(insertion).start();
-		}
-	}
+
 
 
 	/**
@@ -370,6 +342,81 @@ public class ChatWindowTab extends JComponent {
 	 */
 	public String getChat() {
 		return lines.getText();
+	}
+
+
+
+	/**
+	 * Adds the utterance entered in the text field to the dialogue state
+	 * 
+	 * NB: if the text is starting or ending with '/', assume it represents
+	 * incremental inputs (where an '/' at the end represents an unfinished
+	 * input, and '/' at the beginning a follow-up to a previous unit).
+	 */
+	private void addUtteranceToState()  {
+		String rawText= inputField.getText().trim();
+		inputField.setText("");
+		if (rawText.equals("")) {
+			return;
+		}
+
+		// special case : incremental user input
+		else if (rawText.contains("/")) {
+			addIncrementalUtterance(rawText);
+		}
+
+		// special case: input for custom variable (not user input)
+		else if (rawText.contains("=")) {
+			addSpecialInput(rawText);
+		}
+		
+		// default case
+		else {
+			Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+			new Thread(() -> system.addUserInput(table)).start();
+		}
+	}
+
+	/**
+	 * Addition of an incremental user input to the dialogue state
+	 * 
+	 * @param rawText the raw text from the GUI
+	 */
+	private void addIncrementalUtterance(String rawText) {
+
+		boolean followPrevious = rawText.startsWith("/");
+		boolean incomplete = rawText.endsWith("/");
+		rawText = rawText.replaceAll("/", "").trim();
+
+		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+
+		new Thread(() -> {
+			system.addContent(new Assignment(system.getSettings().userSpeech, 
+					(incomplete)? "busy": "None"));
+			system.addIncrementalUserInput(table, followPrevious);
+			if (!incomplete) {
+				system.getState().setAsCommitted(system.getSettings().userInput);
+			}
+		}).start();
+		
+	}
+
+	/**
+	 * Adds a special input to the dialogue state (not the default user input)
+	 * 
+	 * @param rawText the raw text from the GUI
+	 */
+	private void addSpecialInput(String rawText) {
+		String specialInput = rawText.split("=")[0].trim();
+		rawText = rawText.split("=")[1].trim();
+
+		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+
+		CategoricalTable table2 = new CategoricalTable(specialInput);
+		for (String value : table.keySet()) {
+			table2.addRow(value, table.get(value));
+		}
+		new Thread(() -> system.addContent(table2)).start();
 	}
 
 

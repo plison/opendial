@@ -110,8 +110,8 @@ public class DialogueSystem {
 		modules = new ArrayList<Module>();
 		modules.add(new GUIFrame(this));
 		modules.add(new DialogueRecorder(this));
-		modules.add(new ForwardPlanner(this));
 		modules.add(new RemoteConnector(this));
+		modules.add(new ForwardPlanner(this));
 		domain = new Domain();
 	}
 
@@ -182,8 +182,7 @@ public class DialogueSystem {
 			log.info("Module " + module.getClass().getCanonicalName() + " is already attached");
 			return;
 		}
-		int pos = modules.indexOf(getModule(ForwardPlanner.class));
-		modules.add(pos, module);
+		modules.add((!modules.isEmpty())? modules.size()-1 : 0, module);
 		if (!paused) {
 			try {
 				module.start();
@@ -315,7 +314,9 @@ public class DialogueSystem {
 	 * @throws DialException if the state could not be updated
 	 */
 	public Set<String> addUserInput(Map<String,Double> userInput) {
-		CategoricalTable table = new CategoricalTable(settings.userInput);
+		curState.setAsCommitted(settings.userInput);
+		String var = (!settings.invertedRole)? settings.userInput : settings.systemOutput;
+		CategoricalTable table = new CategoricalTable(var);
 		for (String input : userInput.keySet()) {
 			table.addRow(input, userInput.get(input));
 		}
@@ -353,15 +354,14 @@ public class DialogueSystem {
 
 
 	/**
-	 * Adds the incremental content (expressed as a distribution over variables) to the current 
-	 * dialogue state, and subsequently updates it.  If followPrevious is set to true, the content
-	 * is concatenated with the current distribution for the variable. This allows (for instance) 
-	 * to perform incremental updates of user utterances.
-	 * 
+	 * Adds the incremental content (expressed as a distribution over variables) 
+	 * to the current dialogue state, and subsequently updates it.  If followPrevious 
+	 * is set to true, the content is concatenated with the current distribution for 
+	 * the variable. 
 	 * 
 	 * @param content the content to add / concatenate
-	 * @param followPrevious whether the results should be concatenated to the previous values,
-	 *        or reset the content (e.g. when starting a new utterance)
+	 * @param followPrevious whether the results should be concatenated to the previous 
+	 *        values, or reset the content (e.g. when starting a new utterance)
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the incremental update failed
 	 */
@@ -383,6 +383,28 @@ public class DialogueSystem {
 			log.info("system is currently paused -- ignoring content " + content);
 			return new HashSet<String>();
 		}
+	}
+	
+	/**
+	 * Adds the incremental user input (expressed as an N-best list) to the current 
+	 * dialogue state, and subsequently updates it.  If followPrevious is set to true, 
+	 * the content is concatenated with the current distribution for the variable. 
+	 * This allows (for instance) to perform incremental updates of user utterances.
+	 * 
+	 * 
+	 * @param content the user input to add / concatenate
+	 * @param followPrevious whether the results should be concatenated to the previous 
+	 *        values, or reset the content (e.g. when starting a new utterance)
+	 * @return the set of variables that have been updated
+	 * @throws DialException if the incremental update failed
+	 */
+	public Set<String> addIncrementalUserInput(Map<String,Double> userInput, 
+			boolean followPrevious) {
+		CategoricalTable table = new CategoricalTable(settings.userInput);
+		for (String input : userInput.keySet()) {
+			table.addRow(input, userInput.get(input));
+		}
+		return addIncrementalContent(table, followPrevious);
 	}
 
 
@@ -531,6 +553,10 @@ public class DialogueSystem {
 	public void connectTo(String address, int port) {
 		settings.remoteConnections.put(address, port);
 		getModule(RemoteConnector.class).connectTo(address, port);
+		if (settings.showGUI) {
+			getModule(GUIFrame.class).enableSpeech(true);
+			getModule(GUIFrame.class).getMenu().update();
+		}
 	}
 
 	// ===================================

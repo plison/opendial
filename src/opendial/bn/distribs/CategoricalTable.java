@@ -128,8 +128,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 			incrementRow(ValueFactory.none(), 1.0 - totalProb);
 		}
 	}
-
-
+	
+	
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
@@ -583,6 +583,26 @@ public class CategoricalTable implements IndependentProbDistribution {
 		}
 
 		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
+	}
+	
+	/**
+	 * Returns true if the object o is a categorical table with the same content
+	 * 
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof CategoricalTable) {
+			Set<Value> otherVals = ((CategoricalTable)o).getValues();
+			if (!getValues().equals(otherVals)) {
+				return false;
+			}
+			for (Value v : getValues()) {
+				if (Math.abs(((CategoricalTable)o).getProb(v) - getProb(v)) > 0.01) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 

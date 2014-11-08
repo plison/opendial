@@ -32,6 +32,7 @@ import java.util.Map;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.gui.GUIFrame;
 import opendial.modules.core.DialogueRecorder;
 
 import org.junit.Test;
@@ -51,6 +52,7 @@ public class ConnectorTest {
 		system1.startSystem();
 		system2.startSystem();
 		system2.connectTo(address.split(":")[0], Integer.parseInt(address.split(":")[1]));
+		system2.getSettings().invertedRole = true;
 		Thread.sleep(200);
 		system1.addUserInput("hello, world!");
 		Thread.sleep(200);
@@ -66,6 +68,12 @@ public class ConnectorTest {
 		Thread.sleep(200);
 		record1 = system1.getModule(DialogueRecorder.class).getRecord();
 		record1 = record1.replaceAll(system2.getLocalAddress(), "");
+		assertEquals(record1, "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
+				+ "<interaction><!--Connected to --><userTurn>"
+				+ "<variable id=\"u_u\"><value>hello, world!</value></variable></userTurn>"
+				+ "<systemTurn><variable id=\"u_m\"><value prob=\"0.7\">hello back</value>"
+				+ "<value prob=\"0.1\">elbow black</value><value prob=\"0.2\">None</value></variable>"
+				+ "</systemTurn></interaction>");
 		record2 = system2.getModule(DialogueRecorder.class).getRecord();
 		record2 = record2.replaceAll(system1.getLocalAddress(), "");
 		assertEquals(record1, record2);

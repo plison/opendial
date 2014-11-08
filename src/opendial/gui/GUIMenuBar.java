@@ -23,15 +23,19 @@
 
 package opendial.gui;
 
+import java.awt.event.ItemEvent;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.Mixer;
@@ -52,12 +56,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
-import opendial.modules.core.WizardControl;
 import opendial.modules.core.WizardLearner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
@@ -91,7 +95,9 @@ public class GUIMenuBar extends JMenuBar {
 	JMenuItem inputMenu;
 	JMenuItem outputMenu;
 	JMenuItem stateDisplayMenu;
-
+	
+	JRadioButtonMenuItem systemRole;
+	
 	/**
 	 * Creates the menu bar for the frame.
 	 * 
@@ -135,44 +141,6 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenu traceMenu = new JMenu("Interaction");
 
-		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
-		freezeItem.addActionListener(e -> {
-			boolean toPause = !frame.getSystem().isPaused();
-			frame.getSystem().pause(toPause);
-			frame.getSystem().displayComment((toPause)? "system paused" : "system resumed");
-		});
-		traceMenu.add(freezeItem);
-
-
-		JMenu modeMenu = new JMenu("Interaction mode");
-		ButtonGroup modeGroup = new ButtonGroup();
-		JRadioButtonMenuItem normalMode = new JRadioButtonMenuItem("Normal mode");
-		normalMode.addActionListener(e -> switchMode(false));
-
-		JRadioButtonMenuItem wozMode = new JRadioButtonMenuItem("Wizard-of-Oz mode");
-		wozMode.addActionListener(e -> switchMode(true));
-
-		modeGroup.add(normalMode);
-		modeGroup.add(wozMode);
-		normalMode.setSelected(true);
-		modeMenu.add(normalMode);
-		modeMenu.add(wozMode);
-		traceMenu.add(modeMenu);
-
-		traceMenu.add(new JSeparator());
-
-		JMenuItem runThrough = new JMenuItem("Import Dialogue From...");
-
-		runThrough.addActionListener(e -> importInteraction());
-		traceMenu.add(runThrough);
-
-		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
-		saveInteraction.addActionListener(e -> saveInteraction());
-		traceMenu.add(saveInteraction);
-
-		add(traceMenu);
-		JMenu optionMenu = new JMenu("Options");
-
 		JMenuItem connect = new JMenuItem("Connect to remote client");
 		connect.addActionListener(e -> { 
 			String fullAddress =  JOptionPane.showInputDialog(this ,
@@ -188,7 +156,55 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		});
 		
-		optionMenu.add(connect);
+		traceMenu.add(connect);
+		
+		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
+		freezeItem.addActionListener(e -> {
+			boolean toPause = !frame.getSystem().isPaused();
+			frame.getSystem().pause(toPause);
+			frame.getSystem().displayComment((toPause)? "system paused" : "system resumed");
+		});
+		traceMenu.add(freezeItem);
+
+
+		JMenu roleMenu = new JMenu("Interaction role");
+		ButtonGroup modeGroup = new ButtonGroup();
+		JRadioButtonMenuItem userRole = new JRadioButtonMenuItem("User");
+		ItemListener inversion = e -> {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				Settings settings = frame.getSystem().getSettings();
+				settings.invertedRole = !settings.invertedRole;
+			}
+		};
+		modeGroup.add(userRole);
+		userRole.setSelected(true);
+		roleMenu.add(userRole);
+		systemRole = new JRadioButtonMenuItem("System");
+		modeGroup.add(systemRole);
+		roleMenu.add(systemRole);
+		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections.isEmpty());
+		traceMenu.add(roleMenu);
+		userRole.addItemListener(inversion);
+		systemRole.addItemListener(inversion);
+
+		traceMenu.add(new JSeparator());
+
+		JMenu runThrough = new JMenu("Import Dialogue From...");
+		JMenuItem normal = new JMenuItem("Normal Transcript");
+		JMenuItem woz = new JMenuItem("Wizard-of-Oz Transcript");
+		runThrough.add(normal);
+		runThrough.add(woz);
+		normal.addActionListener(e -> importInteraction(false));
+		woz.addActionListener(e -> importInteraction(true));
+		traceMenu.add(runThrough);
+
+		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
+		saveInteraction.addActionListener(e -> saveInteraction());
+		traceMenu.add(saveInteraction);
+
+		add(traceMenu);
+		JMenu optionMenu = new JMenu("Options");
+
 		inputMenu = new JMenu("Audio input");
 		ButtonGroup inputGroup = new ButtonGroup();
 		List<Mixer.Info> mixers = AudioUtils.getInputMixers();
@@ -311,26 +327,7 @@ public class GUIMenuBar extends JMenuBar {
 		helpMenu.add(docItem);
 		add(helpMenu);
 	}
-
-
-	/**
-	 * Switches the interaction mode of the dialogue
-	 * 
-	 * @param isWozMode true if the interaction should be Wizard-of-Oz
-	 */
-	protected void switchMode(boolean isWozMode) {
-		if (isWozMode) {
-			frame.getSystem().attachModule(WizardControl.class);
-			frame.getSystem().attachModule(WizardLearner.class);
-			frame.addComment("Switching interaction to Wizard-of-Oz mode");
-
-		}
-		else {
-			frame.getSystem().detachModule(WizardControl.class);
-			frame.getSystem().detachModule(WizardLearner.class);
-			frame.addComment("Switching interaction to normal mode");
-		}
-	}
+	
 
 
 	/**
@@ -344,7 +341,7 @@ public class GUIMenuBar extends JMenuBar {
 	/**
 	 * Imports a previous interaction.
 	 */
-	protected void importInteraction() {
+	protected void importInteraction(boolean isWizardOfOz) {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
 		int returnVal = fc.showOpenDialog(frame.getFrame());
@@ -354,6 +351,7 @@ public class GUIMenuBar extends JMenuBar {
 			try {
 				List<DialogueState> interaction = XMLInteractionReader.extractInteraction(interactionFile);
 				DialogueImporter importer = new DialogueImporter(frame.getSystem(), interaction);
+				importer.setWizardOfOzMode(isWizardOfOz);
 				importer.start();
 			}
 			catch (Exception f) {
@@ -581,6 +579,7 @@ public class GUIMenuBar extends JMenuBar {
 				((JRadioButtonMenuItem)c).setSelected(true);
 			}
 		}
+		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections.isEmpty());
 	}
 
 
