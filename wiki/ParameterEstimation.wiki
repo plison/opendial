@@ -40,20 +40,23 @@ The order of user and system turns is arbitrary (user turns can follow other use
 
 === Recording Wizard-of-Oz interactions ===
 
-Wizard-of-Oz interactions can also be recorded through the !OpenDial interface. A Wizard-of-Oz interaction is an interaction in which a human user is asked to interact with a system that is remotely operated by an unseen human agent.  A special `Wizard-of-Oz` mode is integrated in !OpenDial to facilitate the gathering of Wizard-of-Oz data. This mode is accessible by clicking on `Interactions -> Interaction Mode -> Wizard-of-Oz mode`.  
+Wizard-of-Oz interactions can also be recorded through the !OpenDial interface. A Wizard-of-Oz interaction is an interaction in which a human user is asked to interact with a system that is remotely operated by an unseen human agent.  One can easily execute such Wizard-of-Oz experiments via the "remote connection" functionality integrated in the latest versions of !OpenDial. To allow two !OpenDial systems to be connected with one another, follow the following procedure:
+ * Start !OpenDial on the two machines A and B (where A and B have mutually accessible IP addresses).
+ * Click on `Help -> About` on machine A.  Copy the local address (IP and port) for the machine.
+ * Click on `Interaction -> Connect to Remote Client` on machine B.  Copy the address and port for machine A into the field and click `OK`.
+ * The connection between the two clients is now established.  To use this remote connection for a Wizard-of-Oz dialogue, the machine playing the role of the Wizard should change its role by clicking on `Interaction -> Interaction Role -> System`.
+ * At the end of the interaction, simply save the transcript into XML by clicking on `Interaction -> Save Dialogue As ...`.
 
-The Wizard-of-Oz mode delegates to the Wizard the responsibility of selecting the system actions.  When a new user input is received, !OpenDial will therefore trigger the domain models as usual, but will not select the highest-utility actions.  Instead, the system will show a list of possible actions on the right side of the chat window.  The wizard is then expected to select the most appropriate action in this list. 
+If one wishes to conduct more advanced Wizard-of-Oz experiments (where e.g. the wizard can only choose among the set of actions available from a predefined dialogue domain), the module `WizardControl` can be used. Using this module, !OpenDial will trigger the domain models as usual upon the reception of new user inputs, but will not select the highest-utility actions.  Instead, the system will show a list of possible actions on the right side of the chat window.  The wizard is then expected to select the most appropriate action in this list.  Note that the action selection box only displays actions that are relevant in the current situation (i.e. for which at least one utility rule specifies a utility). Using the domain from the [SimpleExample step-by-step example], three actions will therefore be available to the wizard after observing the user input `a_u=Request(Left)`, namely `Move(Left)`, `AskRepeat`, and the default `None` (representing the absence of any action).  
 
-<p align="center"> 
-<img align="center" src="http://opendial.googlecode.com/svn/wiki/opendial_woz.png"><br><br>
-
-Note that the action selection box only displays actions that are relevant in the current situation (i.e. for which at least one utility rule specifies a utility). Using the domain from the [SimpleExample step-by-step example], three actions will therefore be available to the wizard after observing the user input `a_u=Request(Left)`, namely `Move(Left)`, `AskRepeat`, and the default `None` (representing the absence of any action).  
-
-As for any dialogue, Wizard-of-Oz interactions can be saved to a file by clicking on `Interactions -> Save Dialogue As`.
 
 == Importing dialogues ==
 
 Previously recorded dialogues can be imported via `Interactions -> Import Dialogue From...`.  This function does more than simply displaying the dialogue history in the chat window - it actually "replays" the full interaction, performing dialogue update at each step (including the update of parameter distributions). This import function is therefore a crucial tool to estimate model parameters based on previously recorded dialogue data. 
+
+Two alternatives import modes are available: 
+ * `Standard Transcript` simply replays the dialogue from start to finish, without making any particular assumption on the system actions.
+ * `Wizard-of-Oz Transcript` is used when the system actions come from a wizard (or some other kind of gold standard).  In this mode, the posterior distributions over the domain parameters are updated in order to reflect the choice of actions observed in the dialogue (see below).
 
 == 2. Parameter estimation ==
 
