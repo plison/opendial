@@ -4,8 +4,11 @@
 
  * *What is the relationship between !OpenDial and POMDP approaches?*
 
+As in previous work on POMDPs models for dialogue management, !OpenDial represents the dialogue state as a Bayesian network that is regularly updated with new observations and employed to derive the system's actions.  The key difference between !OpenDial and traditional POMDP models is that the domain models (i.e. the transition, reward and observation models) are expressed via _probabilistic rules_. The rules can be viewed as high-level templates for probabilistic graphical models.  They essentially provide an abstraction layer that allows the system designer to capture the domain in a concise and human-readable form. In other words, !OpenDial can be seen as a "structured POMDP" approach.
+
+
 = Technical problems =
 
  * *I get the following message when I try to compile !OpenDial with `ant`: `javac: invalid target release: 1.8`*.
 
-All version of !OpenDial > 0.95 require Java 8 in order to compile.  Simply download and install the Java 8 JDK in order to solve the issue.
+All version of !OpenDial > 0.95 require Java 8 in order to compile.  Simply download and install the Java 8 JDK in order to resolve the issue.
