@@ -71,8 +71,12 @@ public class XMLInteractionReader {
 
 			Node node = mainNode.getChildNodes().item(j);	
 			if (node.getNodeName().contains("Turn")) {
-				BNetwork state = XMLStateReader.getBayesianNetwork(node);
-				sample.add(new DialogueState(state));
+				DialogueState state = new DialogueState(XMLStateReader.getBayesianNetwork(node));
+				sample.add(state);
+				if (node.getNodeName().equals("systemTurn") && state.hasChanceNode("a_m")) {
+					Assignment assign = new Assignment("a_m", state.queryProb("a_m").toDiscrete().getBest());
+					state.addEvidence(assign);
+				}
 			}
 			else if (node.getNodeName().equals("wizard")) {
 				Assignment assign = Assignment.createFromString(node.getFirstChild().getNodeValue().trim());

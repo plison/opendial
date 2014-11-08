@@ -47,6 +47,7 @@ public class DialogueImporter extends Thread {
 	
 	DialogueSystem system;
 	List<DialogueState> turns;
+	boolean wizardOfOzMode = false;
 
 	/**
 	 * Creates a new dialogue importer attached to a particular dialogue system, and
@@ -61,23 +62,48 @@ public class DialogueImporter extends Thread {
 	}
 	
 	/**
+	 * Sets whether the import should consider the system actions as "expert" 
+	 * Wizard-of-Oz actions to imitate.
+	 * 
+	 * @param isWizardOfOz whether the system actions are wizard-of-Oz examples
+	 */
+	public void setWizardOfOzMode(boolean isWizardOfOz) {
+		wizardOfOzMode = isWizardOfOz;
+	}
+	
+	/**
 	 * Runs the import operation.
 	 */
 	@Override
 	public void run() {
-		system.attachModule(WizardLearner.class);
-		for (final DialogueState turn : turns) {
-			try {
-				while (system.isPaused() || !system.getModule(DialogueRecorder.class).isRunning()) {
-					try { Thread.sleep(100); } catch (Exception e) { }
-				}
-				system.addContent(turn.copy()); 
-			} 
-			catch (DialException e) {	
-				log.warning("could not add content: " + e);	
+		
+		if (wizardOfOzMode) {
+			system.attachModule(WizardLearner.class);
+			for (final DialogueState turn : turns) {
+				addTurn(turn);
 			}
 		}
-		system.detachModule(WizardLearner.class);
+		else {
+			system.detachModule(ForwardPlanner.class);
+			for (final DialogueState turn : turns) {
+				addTurn(turn);
+				system.getState().removeNodes(system.getState().getActionNodeIds());
+				system.getState().removeNodes(system.getState().getUtilityNodeIds());
+			}
+			system.attachModule(ForwardPlanner.class);			
+		}
+	}
+	
+	private void addTurn(DialogueState turn) {
+		try {
+			while (system.isPaused() || !system.getModule(DialogueRecorder.class).isRunning()) {
+				try { Thread.sleep(100); } catch (Exception e) { }
+			}
+			system.addContent(turn.copy());
+		} 
+		catch (DialException e) {	
+			log.warning("could not add content: " + e);	
+		}
 	}
 
 

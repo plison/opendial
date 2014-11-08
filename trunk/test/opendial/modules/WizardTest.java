@@ -41,8 +41,8 @@ import opendial.bn.distribs.ContinuousDistribution;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.core.DialogueRecorder;
-import opendial.modules.core.WizardControl;
 import opendial.modules.core.WizardLearner;
+import opendial.modules.examples.WizardControl;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.state.DialogueState;
@@ -100,7 +100,8 @@ public class WizardTest {
 				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
 				+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
-				+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable></systemTurn><userTurn>"
+				+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable>"
+				+ "<variable id=\"a_m\"><value>Say(Greet)</value></variable></systemTurn><userTurn>"
 				+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>", 
 				system.getModule(DialogueRecorder.class).getRecord());
 		system.getModule(GUIFrame.class).getFrame().dispose();

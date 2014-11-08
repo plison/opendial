@@ -26,6 +26,7 @@ package opendial.inference;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -63,8 +64,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	// maximum number of query variables
 	public static int MAX_QUERYVARS = 6;
 
-	// maximum number of continuous variables
-	public static int MAX_CONTINUOUS = 0;
+	// maximum number of values per variable
+	public static int MAX_NBVALUES = Settings.discretisationBuckets/2;
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;
@@ -128,27 +129,21 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	public InferenceAlgorithm selectBestAlgorithm (Query query) {
 
-		int nbQueries = query.getQueryVars().size();
-		int branchingFactor = 0;
-		int nbContinuous = 0;
+		if (query.getQueryVars().size() > MAX_QUERYVARS) {
+			return lw;
+		}
 		for (BNode node : query.getFilteredSortedNodes()) {
-			if (node.getInputNodeIds().size() > branchingFactor) {
-				branchingFactor = node.getInputNodeIds().size();
+			if (node.getInputNodeIds().size() > MAX_BRANCHING_FACTOR) {
+				return lw;
 			}
-			if (node instanceof ChanceNode && ((ChanceNode)node).getDistrib()
-					instanceof ContinuousDistribution) {
-				nbContinuous++;
+			if (node instanceof ChanceNode) {
+				int nbValues = ((ChanceNode)node).getNbValues();
+				if (nbValues > MAX_NBVALUES) {
+					return lw;
+				}
 			}
 		}		
-		if (nbContinuous > MAX_CONTINUOUS ||
-				branchingFactor > MAX_BRANCHING_FACTOR || 
-				nbQueries > MAX_QUERYVARS) {	
-			return lw;
-
-		}
-		else {
-			return ve;
-		}
+		return ve;
 	}
 
 

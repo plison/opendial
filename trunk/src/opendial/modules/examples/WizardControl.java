@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules.examples;
 
 
 import java.awt.BorderLayout;
@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Collection;
+
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -50,6 +51,9 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
+import opendial.modules.core.DialogueRecorder;
+import opendial.modules.core.ForwardPlanner;
+import opendial.modules.core.WizardLearner;
 import opendial.state.DialogueState;
 import opendial.state.nodes.UtilityRuleNode;
 
@@ -123,8 +127,8 @@ public class WizardControl implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
+	
 		// if the action selection is straightforward and parameter-less, directly select the action
-
 		if (state.getNodes(UtilityRuleNode.class).size() == 1) {
 			UtilityRuleNode urnode = state.getNodes(UtilityRuleNode.class).stream().findFirst().get();
 			if (urnode.getInputConditions().size() == 1 && urnode.getAnchor().getParameters().isEmpty()) {
@@ -195,9 +199,7 @@ public class WizardControl implements Module {
 	public void recordAction(DialogueState previousState, JList<String> listBox, String actionVar) {
 		String actionValue = listBox.getModel().getElementAt(listBox.getMinSelectionIndex()).toString();
 		Assignment action = new Assignment(actionVar, actionValue);
-		if (system.getModule(DialogueRecorder.class) != null) {
-			system.getModule(DialogueRecorder.class).addWizardAction(action);
-		}
+
 		if (system.getModule(WizardLearner.class) != null) {
 			system.getState().reset(previousState);
 			system.getState().addEvidence(action.addPrimes());
