@@ -1,0 +1,76 @@
+#summary Speech recognition and synthesis using cloud-based speech APIs.
+
+= Plugins for speech recognition and synthesis = 
+
+Various types of speech recognisers can be plugged into !OpenDial in order to perform speech recognition and synthesis.  One can either rely on cloud-based APIS such as the ones provided by Nuance and AT&T, or do the speech recognition and synthesis locally using software such as Sphinx and Mary TTS.  
+
+== Nuance Speech API ==
+
+A bridge to the Nuance Speech API is already installed by default in !OpenDial. In order to access the API, you first need to 
+register as a developer on the [http://dragonmobile.nuancemobiledeveloper.com Nuance Mobile Developer website]. Once registered, go to " View Sandbox credentials" on the Developer Website, and you will find your AppID and key (look for the one for HTTP Client Applications) which are necessary to use the plugin.  
+
+The plugin relies on three parameters:
+ * `id`  (mandatory) is the Sandbox application ID
+- `key` (mandatory) is the Sandbox application key
+- `lang` (mandatory) is the language code for your application (e.g. eng-USA, nor-NOR, etc.)
+
+To start !OpenDial with the plugin, you can directly add the required parameters to the command line:
+{{{
+-Dmodules=opendial.plugins.NuanceSpeech -Did=your_application_ID -Dkey=your_application_key -Dlang=your_language_code
+}}}
+
+_Alternatively_, you can also specify these parameters in the XML domain specification:
+
+{{{
+	<settings>
+		<modules>opendial.plugins.NuanceSpeech</modules>
+		<id>your_application_id</id>
+		<key>your_application_key</secret>
+                <lang>your_language_code</lang>
+	</settings>
+}}}
+
+If the plugin is successfully started, you should see a button "Press and hold to record speech" beneath the chat window of !OpenDial:
+
+<br><p align="center">
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/speechinput.png"><br>_Interface to capture speech input in !OpenDial._<br><br>
+
+Simply click and hold the button to record speech input, and release it to send the audio signal to Nuance's speech API for recognition. You can change the device used to capture audio via the menu `Options -> Audio Input`. If the audio data is properly captured, you should see the volume bar moving while you speak.
+
+For improved speech recognition results, it is recommended to use custom vocabularies tailored for your application.  Check the Nuance developer website on how to upload and activate such custom vocabularies. Please note that Nuance's Sandbox access is limited to 5000 transactions per day, so you might need to upgrade your account if your applications requires a higher number of recognition or synthesis requests. 
+
+== AT&T Speech API ==
+
+The AT&T Speech API can also be used to perform cloud-based speech recognition and synthesis. Compared to Nuancce, the AT&T speech API has a slighly higher error rate, and is also a bit slower than Nuance.  However, the API allows system developers to provide a full recognition grammar to the recogniser (while Nuance only allows for custom vocabularies). 
+
+The AT&T speech plugin requires an application ID and secret. To obtain these, you first need to register as a developer on the [https://developer.att.com/apis/speech AT&T Developer website]. Once registered, you must setup a new application, with access to the "Speech To Text Custom" and "Text to Speech" APIs.  At the end of the setup procedure, a confidential application ID and secret will be created.  
+
+As for the Nuance plugin, you can start the AT&T plugin by directly adding the required parameters to the command line:
+{{{
+-Dmodules=opendial.plugins.ATTSpeech -Did=your_application_ID -Dsecret=your_application_secret -Dgrammar=the_path_to_your_recognition_grammar
+}}}
+
+The grammar parameter is optional. You can also specify these parameters in the XML domain specification (cf. previous section).
+
+As for the Nuance Speech API, a button "Press and hold to record speech" beneath the chat window should appear upon starting the system. You can change the device used to capture audio via the menu `Options -> Audio Input`. If you want to provide the speech API with a recognition grammar, you can do so by specifying a grammar in the GRXML format and passing its path in the `grammar` parameter. 
+
+== Sphinx and Mary TTS ==
+
+If you don't want to use cloud-based solutions for speech recognition and synthesis (for instance, if your dialogue system is not always online), you can use locally installed software such as [http://cmusphinx.sourceforge.net/ Sphinx] and [http://mary.dfki.de Mary TTS].  To do so, first install the two external plugins `sphinx` and `mary` listed in the [DownloadPackages Downloads] page. Follow the installation instructions in the `README.txt` files to integrate the plugins into !OpenDial.
+
+Once you are done, you can attach the two modules to the dialogue system from the command line: {{{-Dmodules=opendial.plugins.SphinxASR,opendial.plugins.MaryTTS -Dgrammar=the_path_to_your_recognition_grammar}}}
+
+Alternatively, you can attach the modules by modifying the domain specification:
+{{{
+	<settings>
+		<modules>opendial.plugins.SphinxASR, opendial.plugins.MaryTTS</modules>
+		<grammar>the_path_to_your_recognition_grammar</grammar>
+	</settings>
+}}}
+The recognition grammar for Sphinx must be specified in JSGF format.  Note that the bridge to Sphinx ASR is quite rudimentary and will most likely require some fine tuning in order to get decent recognition results. 
+
+== Other modules ==
+
+Of course, nothing prevents you from writing your own modules to connect to !OpenDial to other components (see the section ExternalModules for details). 
+
+If you own a Nao robot, a bridge to the embedded Vocon speech recognition is already implemented as part of the `Nao bindings` plugin (available in the [DownloadPackages Downloads] page). 
