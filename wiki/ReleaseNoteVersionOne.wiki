@@ -2,10 +2,11 @@
 
 = Major changes in version 1.0 =
 
- * *Upgrade to Java 8* (which is required to compiled and run the toolkit)
- * Major refactoring of the internal code base and efficiency improvements in the inference algorithms.
- * Support for Nuance cloud-based speech recognition and synthesis via the `NuanceSpeech` plugin.
- * Ability to connect two remote instances of !OpenDial via the `Connect to Remote Client` functionality. This can notably be used to conduct Wizard-of-Oz experiment, as explained in the section [https://code.google.com/p/opendial/wiki/ParameterEstimation#1._Data_collection Data collection]. It can also be used to develop distributed dialogue architectures.
- * Basic support for incremental processing via the `addIncrementalContent` method in `DialogueSystem`.
- * Probabilistic rules can now be associated with a particular priority level (via the `priority` attribute in the XML specification), allowing them to supercede one another.
- * Removal of the `Load modules` functionality in the GUI.
+ # *Upgrade to Java 8* (which is required to compiled and run the toolkit).<br><br>
+ # Major refactoring of the internal code base and efficiency improvements in the inference algorithms. For example, the sampling algorithm can now take full advantage of multi-core architectures.<br><br>
+ # Support for Nuance cloud-based speech recognition and synthesis via the `NuanceSpeech` plugin.<br><br>
+ # Ability to connect two remote instances of !OpenDial via the `Connect to Remote Client` functionality. This can notably be used to conduct Wizard-of-Oz experiment, as explained in the section [https://code.google.com/p/opendial/wiki/ParameterEstimation#1._Data_collection Data collection]. It can also be used to develop distributed dialogue architectures.<br><br>
+ # Basic support for incremental processing via the `addIncrementalContent` method in `DialogueSystem`.<br><br>
+ # Probabilistic rules can now be associated with a particular priority level (via the `priority` attribute in the XML specification), allowing them to supercede one another.<br><br>
+ # Inclusion of a text-only interface (which can be used to run !OpenDial in terminals without support for X11 forwarding). <br><br>
+ # Removal of the `Load modules` functionality in the GUI.
