@@ -16,7 +16,7 @@ The plugin relies on three parameters:
 
 To start !OpenDial with the plugin, you can directly add the required parameters to the command line:
 {{{
--Dmodules=opendial.plugins.NuanceSpeech -Did=your_application_ID -Dkey=your_application_key -Dlang=your_language_code
+-Dmodules=opendial.plugins.NuanceSpeech -Did=application_ID -Dkey=application_key -Dlang=language_code
 }}}
 
 _Alternatively_, you can also specify these parameters in the XML domain specification:
@@ -24,9 +24,9 @@ _Alternatively_, you can also specify these parameters in the XML domain specifi
 {{{
 	<settings>
 		<modules>opendial.plugins.NuanceSpeech</modules>
-		<id>your_application_id</id>
-		<key>your_application_key</secret>
-                <lang>your_language_code</lang>
+		<id>application_id</id>
+		<key>application_key</secret>
+                <lang>language_code</lang>
 	</settings>
 }}}
 
@@ -47,7 +47,7 @@ The AT&T speech plugin requires an application ID and secret. To obtain these, y
 
 As for the Nuance plugin, you can start the AT&T plugin by directly adding the required parameters to the command line:
 {{{
--Dmodules=opendial.plugins.ATTSpeech -Did=your_application_ID -Dsecret=your_application_secret -Dgrammar=the_path_to_your_recognition_grammar
+-Dmodules=opendial.plugins.ATTSpeech -Did=application_ID -Dsecret=application_secret -Dgrammar=path_to_your_grammar
 }}}
 
 The grammar parameter is optional. You can also specify these parameters in the XML domain specification (cf. previous section).
@@ -58,13 +58,13 @@ As for the Nuance Speech API, a button "Press and hold to record speech" beneath
 
 If you don't want to use cloud-based solutions for speech recognition and synthesis (for instance, if your dialogue system is not always online), you can use locally installed software such as [http://cmusphinx.sourceforge.net/ Sphinx] and [http://mary.dfki.de Mary TTS].  To do so, first install the two external plugins `sphinx` and `mary` listed in the [DownloadPackages Downloads] page. Follow the installation instructions in the `README.txt` files to integrate the plugins into !OpenDial.
 
-Once you are done, you can attach the two modules to the dialogue system from the command line: {{{-Dmodules=opendial.plugins.SphinxASR,opendial.plugins.MaryTTS -Dgrammar=the_path_to_your_recognition_grammar}}}
+Once you are done, you can attach the two modules to the dialogue system from the command line: {{{-Dmodules=opendial.plugins.SphinxASR,opendial.plugins.MaryTTS -Dgrammar=path_to_your_grammar}}}
 
 Alternatively, you can attach the modules by modifying the domain specification:
 {{{
 	<settings>
 		<modules>opendial.plugins.SphinxASR, opendial.plugins.MaryTTS</modules>
-		<grammar>the_path_to_your_recognition_grammar</grammar>
+		<grammar>path_to_your_grammar</grammar>
 	</settings>
 }}}
 The recognition grammar for Sphinx must be specified in JSGF format.  Note that the bridge to Sphinx ASR is quite rudimentary and will most likely require some fine tuning in order to get decent recognition results. 
