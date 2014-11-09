@@ -33,7 +33,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -59,6 +61,7 @@ import javax.swing.plaf.basic.BasicArrowButton;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityDistribution;
@@ -83,7 +86,7 @@ import opendial.utils.StringUtils;
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
  *
- */
+ */ 
 @SuppressWarnings("serial")
 public class StateViewerTab extends JComponent {
 
@@ -169,7 +172,7 @@ public class StateViewerTab extends JComponent {
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
 		if (states.containsKey(CURRENT_NAME)) {
-			trigger(mainFrame.getSystem().getState(), mainFrame.getSystem().getState().getParameterIds());
+			refresh(mainFrame.getSystem().getState());
 		}
 	}
 
@@ -191,12 +194,13 @@ public class StateViewerTab extends JComponent {
 	 * @param state the updated Bayesian Network
 	 * @param updatedVars the updated variables
 	 */
-	public void trigger(DialogueState state, Collection<String> updatedVars) {
+	public void refresh(DialogueState state) {
 
 		recordState(state, CURRENT_NAME);
 		listBox.setSelectedIndex(0);
-		if (updatedVars.contains(mainFrame.getSystem().getSettings().userInput)) {
-			if (mainFrame.getSystem().getSettings().recording == Recording.ALL) {
+		Settings settings = mainFrame.getSystem().getSettings();
+		if (state.getNewVariables().contains(settings.userInput)) {
+			if (settings.recording == Recording.ALL) {
 				listModel.add(2, "separator-utterances");
 			}
 			else {
@@ -206,9 +210,12 @@ public class StateViewerTab extends JComponent {
 				}
 			}
 		}
-		if (mainFrame.getSystem().getSettings().recording 
-				!= Recording.NONE && !updatedVars.isEmpty()) {
-			String title = "After update of " + StringUtils.join(updatedVars, ",") ;
+		List<String> varsInProcessing = state.getNodeIds().stream()
+				.filter(s -> s.contains("'"))
+				.map(s -> s.replace("'", ""))
+				.collect(Collectors.toList());
+		if (settings.recording != Recording.NONE && !varsInProcessing.isEmpty()) {
+			String title = "Updating " + StringUtils.join(varsInProcessing, ",") ;
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
