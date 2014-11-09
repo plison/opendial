@@ -27,7 +27,6 @@ import java.awt.event.ItemEvent;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -35,8 +34,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.Mixer;
 import javax.swing.ButtonGroup;
@@ -62,7 +59,6 @@ import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
-import opendial.modules.core.WizardLearner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
@@ -141,22 +137,6 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenu traceMenu = new JMenu("Interaction");
 
-		JMenuItem connect = new JMenuItem("Connect to remote client");
-		connect.addActionListener(e -> { 
-			String fullAddress =  JOptionPane.showInputDialog(this ,
-					"Enter address of remote client (IP_address:port):");
-			if (fullAddress != null && fullAddress.contains(":")) {
-				String ipaddress = fullAddress.split(":")[0];
-				int port = Integer.parseInt(fullAddress.split(":")[1]);
-				frame.getSystem().connectTo(ipaddress, port);
-			}
-			else {
-				frame.getSystem().displayComment("address of remote client is "
-						+ "not well-formed, must be \"IP_address:port\"");
-			}
-		});
-		
-		traceMenu.add(connect);
 		
 		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
 		freezeItem.addActionListener(e -> {
@@ -187,6 +167,25 @@ public class GUIMenuBar extends JMenuBar {
 		userRole.addItemListener(inversion);
 		systemRole.addItemListener(inversion);
 
+		traceMenu.add(new JSeparator());
+
+		JMenuItem connect = new JMenuItem("Connect to Remote Client");
+		connect.addActionListener(e -> { 
+			String fullAddress =  JOptionPane.showInputDialog(this ,
+					"Enter address of remote client (IP_address:port):");
+			if (fullAddress != null && fullAddress.contains(":")) {
+				String ipaddress = fullAddress.split(":")[0];
+				int port = Integer.parseInt(fullAddress.split(":")[1]);
+				frame.getSystem().connectTo(ipaddress, port);
+			}
+			else if (fullAddress != null){
+				frame.getSystem().displayComment("address of remote client is "
+						+ "not well-formed, must be \"IP_address:port\"");
+			}
+		});
+		
+		traceMenu.add(connect);
+		
 		traceMenu.add(new JSeparator());
 
 		JMenu runThrough = new JMenu("Import Dialogue From...");

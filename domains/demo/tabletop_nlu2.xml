@@ -16,17 +16,9 @@
 		<case>
 			<condition>
 				<if var="a_u^t" value="PickUp({X})" />
-				<if var="X" value="red" relation="contains" />
-			</condition>
-			<effect>
-				<set var="a_u" value="PickUp(RedObj)" />
-			</effect>
-		</case>
-		<case>
-			<condition>
-				<if var="a_u^t" value="PickUp({X})" />
 				<or>
 					<if var="X" value="blue" relation="contains" />
+					<if var="perceived" value="[BlueObj]"/>
 					<and>
 						<if var="X" value="it" relation="contains" />
 						<or>
@@ -45,6 +37,7 @@
 				<if var="a_u^t" value="PickUp({X})" />
 				<or>
 					<if var="X" value="red" relation="contains" />
+						<if var="perceived" value="[RedObj]"/>
 					<and>
 						<if var="X" value="it" relation="contains" />
 						<or>

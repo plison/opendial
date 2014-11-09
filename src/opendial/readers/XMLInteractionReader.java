@@ -29,7 +29,6 @@ import java.util.List;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.BNetwork;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;

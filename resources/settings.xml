@@ -2,7 +2,7 @@
 <settings>
 	<gui>true</gui>
 	<horizon>1</horizon>
-	<samples>2500</samples>
+	<samples>3000</samples>
 	<discount>1.0</discount>
 	<gui>true</gui>
 	<system>u_m</system>
@@ -10,5 +10,5 @@
 	<speech>s_u</speech>
 	<discretisation>50</discretisation>
 	<recording>last</recording>
-	<timeout>250</timeout>
+	<timeout>400</timeout>
 </settings>

@@ -589,6 +589,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Returns true if the object o is a categorical table with the same content
 	 * 
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CategoricalTable) {
 			Set<Value> otherVals = ((CategoricalTable)o).getValues();
