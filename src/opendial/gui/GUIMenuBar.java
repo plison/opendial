@@ -147,6 +147,26 @@ public class GUIMenuBar extends JMenuBar {
 		traceMenu.add(freezeItem);
 
 
+		traceMenu.add(new JSeparator());
+
+		JMenuItem connect = new JMenuItem("Connect to Remote Client");
+		connect.addActionListener(e -> { 
+			String fullAddress =  JOptionPane.showInputDialog(this ,
+					"Enter address of remote client (IP_address:port):");
+			if (fullAddress != null && fullAddress.contains(":")) {
+				String ipaddress = fullAddress.split(":")[0];
+				int port = Integer.parseInt(fullAddress.split(":")[1]);
+				frame.getSystem().connectTo(ipaddress, port);
+			}
+			else if (fullAddress != null){
+				frame.getSystem().displayComment("address of remote client is "
+						+ "not well-formed, must be \"IP_address:port\"");
+			}
+		});
+		
+		traceMenu.add(connect);
+		
+
 		JMenu roleMenu = new JMenu("Interaction role");
 		ButtonGroup modeGroup = new ButtonGroup();
 		JRadioButtonMenuItem userRole = new JRadioButtonMenuItem("User");
@@ -166,25 +186,6 @@ public class GUIMenuBar extends JMenuBar {
 		traceMenu.add(roleMenu);
 		userRole.addItemListener(inversion);
 		systemRole.addItemListener(inversion);
-
-		traceMenu.add(new JSeparator());
-
-		JMenuItem connect = new JMenuItem("Connect to Remote Client");
-		connect.addActionListener(e -> { 
-			String fullAddress =  JOptionPane.showInputDialog(this ,
-					"Enter address of remote client (IP_address:port):");
-			if (fullAddress != null && fullAddress.contains(":")) {
-				String ipaddress = fullAddress.split(":")[0];
-				int port = Integer.parseInt(fullAddress.split(":")[1]);
-				frame.getSystem().connectTo(ipaddress, port);
-			}
-			else if (fullAddress != null){
-				frame.getSystem().displayComment("address of remote client is "
-						+ "not well-formed, must be \"IP_address:port\"");
-			}
-		});
-		
-		traceMenu.add(connect);
 		
 		traceMenu.add(new JSeparator());
 

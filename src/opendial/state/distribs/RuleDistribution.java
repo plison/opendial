@@ -205,7 +205,8 @@ public class RuleDistribution implements ProbDistribution {
 
 		if (probTable.isEmpty()) {
 			log.warning("probability table is empty (no effects) for "
-					+ "input " +	ruleInput + " and rule " + arule.toString());
+					+ "input " +	input + " and rule " + arule.toString());
+			log.debug("output was " + output + " and effect " + output.getEffects());
 		}
 
 		return probTable;

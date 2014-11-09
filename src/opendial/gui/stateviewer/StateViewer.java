@@ -261,7 +261,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		catch (NullPointerException e) {
 			log.debug("cannot repaint state viewer, waiting for next update");
 			isUpdating = false;
-			tab.trigger(currentState, currentState.getChanceNodeIds());
+	//		tab.trigger(currentState, currentState.getChanceNodeIds());
 		}
 
 	}
