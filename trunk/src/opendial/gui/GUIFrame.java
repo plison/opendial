@@ -152,7 +152,7 @@ public class GUIFrame implements Module {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (frame != null && frame.isVisible()) {
 		chatTab.trigger(state, updatedVars);
-		stateMonitorTab.trigger(state, updatedVars);
+		stateMonitorTab.refresh(state);
 		menu.update();
 		if (system.getDomain() == null) {
 			frame.setTitle("OpenDial toolkit");
@@ -160,6 +160,13 @@ public class GUIFrame implements Module {
 		else if (!frame.getTitle().contains(system.getDomain().getName())){
 			frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
 		}
+		}
+	}
+	
+
+	public void refreshStateViewer() {
+		if (frame != null && frame.isVisible()) {
+			stateMonitorTab.refresh(system.getState());
 		}
 	}
 	
@@ -261,5 +268,6 @@ public class GUIFrame implements Module {
 	public GUIMenuBar getMenu() {
 		return menu;
 	}
+
 
 }
