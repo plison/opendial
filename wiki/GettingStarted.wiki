@@ -97,7 +97,8 @@ The !OpenDial toolbar offers several functions:
 || _Domain_ > _Export_ > _Dialogue State_ || Exports the current dialogue state into an XML file ||
 || _Domain_ > _Import_ > _Parameters_ || Exports the current parameters into an XML file ||
 || _Interaction_ > _Pause/Resume_ || Pauses or resumes the current interaction ||
-|| _Interaction_ > _Interaction Mode_ || Switches between a 'normal' mode and a Wizard-of-oz mode (in which the wizard selects actions). ||
+|| _Interaction_ > _Connect to Remote Client_ || Connects to a remote machine that also runs !OpenDial (in order to e.g. conduct Wizard-of-Oz experiments) ||
+|| _Interaction_ > _Interaction role_ || If the system is connected to a remote client, selects the role (user or system) played by the local machine. ||
 || _Interaction_ > _Import Dialogue From_ || Imports a previous saved dialogue and runs through it again ||
 || _Interaction_ > _Save Dialogue As_ || Exports the dialogue history to an XML file ||
 || _Options_ > _View Utterances_ || Determines how to display the user utterances in the chat window ||
