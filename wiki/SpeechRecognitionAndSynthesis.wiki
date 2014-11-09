@@ -54,7 +54,7 @@ The grammar parameter is optional. You can also specify these parameters in the 
 
 As for the Nuance Speech API, a button "Press and hold to record speech" beneath the chat window should appear upon starting the system. You can change the device used to capture audio via the menu `Options -> Audio Input`. If you want to provide the speech API with a recognition grammar, you can do so by specifying a grammar in the GRXML format and passing its path in the `grammar` parameter. 
 
-== Sphinx and Mary TTS ==
+== Sphinx ASR and Mary TTS ==
 
 If you don't want to use cloud-based solutions for speech recognition and synthesis (for instance, if your dialogue system is not always online), you can use locally installed software such as [http://cmusphinx.sourceforge.net/ Sphinx] and [http://mary.dfki.de Mary TTS].  To do so, first install the two external plugins `sphinx` and `mary` listed in the [DownloadPackages Downloads] page. Follow the installation instructions in the `README.txt` files to integrate the plugins into !OpenDial.
 
