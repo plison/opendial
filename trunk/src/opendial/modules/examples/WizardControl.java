@@ -51,7 +51,6 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
-import opendial.modules.core.DialogueRecorder;
 import opendial.modules.core.ForwardPlanner;
 import opendial.modules.core.WizardLearner;
 import opendial.state.DialogueState;

@@ -32,7 +32,6 @@ import java.util.Map;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.gui.GUIFrame;
 import opendial.modules.core.DialogueRecorder;
 
 import org.junit.Test;
