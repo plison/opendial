@@ -386,16 +386,10 @@ public class ChanceNode extends BNode {
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
 
-			try {
 				IndependentProbDistribution posterior = distrib.getProbDistrib(combination);
 				for (Value value : posterior.getValues()) {
 					factor.put(new Assignment(combination, nodeId, value), posterior.getProb(value));
 				}		
-			}
-			catch (DialException e) {
-				log.warning("calculation of factor failed: " + e.toString());
-				log.debug("distrib: " + distrib);
-			}
 		}
 		return factor;
 	}

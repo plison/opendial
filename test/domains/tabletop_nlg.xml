@@ -299,6 +299,11 @@
 				<set var="u_m" value="My name is Lenny" />
 			</effect>
 		</case>
+		<case>
+			<effect util="0">
+				<set var="u_m" value="None"/>
+			</effect>
+		</case>
 	</rule>
 
 

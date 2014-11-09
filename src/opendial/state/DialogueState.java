@@ -240,7 +240,6 @@ public class DialogueState extends BNetwork {
 
 		String variable = distrib.getVariable() + "'";
 		distrib.modifyVariableId(distrib.getVariable(),variable);
-
 		ChanceNode newNode = new ChanceNode(variable, distrib);
 
 		if (hasNode(variable)) {
@@ -336,21 +335,14 @@ public class DialogueState extends BNetwork {
 		// first case: new probability rule
 		if (r.getRuleType() == RuleType.PROB && arule.isRelevant()) {
 			if (hasChanceNode(r.getRuleId())) {
-				BNode prevNode = getChanceNode(r.getRuleId());
-				for (BNode outputNode : prevNode.getOutputNodes()) {
-					if (!outputNode.getId().contains("'")) {
-						outputNode.setId(outputNode.getId()+"'");
-					}
-				}
-				removeNode(prevNode.getId());
+				getChanceNode(r.getRuleId()).getOutputNodes().stream()
+					.filter(n -> !n.getId().contains("'"))
+					.forEach(n -> n.setId(n.getId()+"'"));
+				removeNode(r.getRuleId());
 			}
 			ProbabilityRuleNode ruleNode = new ProbabilityRuleNode(arule);
-			for (ChanceNode inputNode : arule.getInputNodes()) {
-				ruleNode.addInputNode(inputNode);
-			}
-			for (ChanceNode parameter : arule.getParameters()) {
-				ruleNode.addInputNode(parameter);
-			}
+			arule.getInputNodes().forEach(n -> ruleNode.addInputNode(n));
+			arule.getParameters().forEach(n -> ruleNode.addInputNode(n));
 			addNode(ruleNode);
 			addOutputNodes(ruleNode);
 		}
@@ -361,12 +353,8 @@ public class DialogueState extends BNetwork {
 				removeNode(r.getRuleId());
 			}
 			UtilityRuleNode ruleNode = new UtilityRuleNode(arule);
-			for (ChanceNode inputNode : arule.getInputNodes()) {
-				ruleNode.addInputNode(inputNode);
-			}
-			for (ChanceNode parameter : arule.getParameters()) {
-				ruleNode.addInputNode(parameter);
-			}
+			arule.getInputNodes().forEach(n -> ruleNode.addInputNode(n));
+			arule.getParameters().forEach(n -> ruleNode.addInputNode(n));
 			addNode(ruleNode);
 			addActionNodes(ruleNode);
 		}

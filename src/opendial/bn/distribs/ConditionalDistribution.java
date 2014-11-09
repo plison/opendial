@@ -223,7 +223,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		}
 		else {
 			throw new DialException("could not find the corresponding "
-					+ "condition for " + condition + ")");
+					+ "condition for " + condition + " in " + toString());
 		}
 	}
 

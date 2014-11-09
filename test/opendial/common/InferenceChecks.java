@@ -35,7 +35,7 @@ import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
-import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
@@ -175,8 +175,8 @@ public class InferenceChecks {
 			Assignment a, double expected) throws DialException {
 			
 		Query.UtilQuery query = new Query.UtilQuery(network, queryVars, new Assignment());
-		UtilityDistribution distrib1 = computeUtil(query, ve);
-		UtilityDistribution distrib2 = computeUtil(query, is);
+		UtilityFunction distrib1 = computeUtil(query, ve);
+		UtilityFunction distrib2 = computeUtil(query, is);
 
 			assertEquals(expected, distrib1.getUtil(a), EXACT_THRESHOLD);
 			try { assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);	}
@@ -186,7 +186,7 @@ public class InferenceChecks {
 			}
 
 			if (includeNaive) {
-				UtilityDistribution distrib3 = computeUtil(query, naive);
+				UtilityFunction distrib3 = computeUtil(query, naive);
 				assertEquals(expected, distrib3.getUtil(a), EXACT_THRESHOLD);
 			}
 		}
@@ -206,10 +206,10 @@ public class InferenceChecks {
 	}
 	
 	
-	private UtilityDistribution computeUtil(Query.UtilQuery query, InferenceAlgorithm algo) throws DialException {
+	private UtilityFunction computeUtil(Query.UtilQuery query, InferenceAlgorithm algo) throws DialException {
 		
 			long time1 = System.nanoTime();
-			UtilityDistribution distrib = algo.queryUtil(query);
+			UtilityFunction distrib = algo.queryUtil(query);
 			long inferenceTime = System.nanoTime() - time1;
 			numbers.put(algo, numbers.get(algo) + 1);
 			timings.put(algo, timings.get(algo) + inferenceTime);

@@ -525,18 +525,27 @@ public class DialogueSystem {
 	 */
 	public Set<String> update() {
 
+		// set of variables that have been updated
 		Set<String> updatedVars = new HashSet<String>();
 
 		while (!curState.getNewVariables().isEmpty()) {
+			
+			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
+			
+			// reducing the dialogue state to its relevant nodes
 			curState.reduce();	
 			
+			// applying the domain models 
 			for (Model model : domain.getModels()) {
 				model.trigger(curState, toProcess);
 			}
+			
+			// applying the external modules
 			for (Module module : modules) {
 				module.trigger(curState, toProcess);
 			}
+			
 			updatedVars.addAll(toProcess);
 		}
 

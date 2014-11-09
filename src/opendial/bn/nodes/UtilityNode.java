@@ -30,7 +30,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
@@ -48,7 +48,7 @@ public class UtilityNode extends BNode {
 	public static Logger log = new Logger("UtilityNode", Logger.Level.DEBUG);
 
 	// the utility distribution
-	protected UtilityDistribution distrib;
+	protected UtilityFunction distrib;
 
 	// ===================================
 	//  NODE CONSTRUCTION
@@ -71,7 +71,7 @@ public class UtilityNode extends BNode {
 	 * @param nodeId the node identifier
 	 * @param distrib the utility distribution
 	 */
-	public UtilityNode(String nodeId, UtilityDistribution distrib) {
+	public UtilityNode(String nodeId, UtilityFunction distrib) {
 		super(nodeId);
 		this.distrib = distrib;
 	}
@@ -108,7 +108,7 @@ public class UtilityNode extends BNode {
 
 
 
-	public void setDistrib(UtilityDistribution distrib) {
+	public void setDistrib(UtilityFunction distrib) {
 		this.distrib = distrib;
 	}
 
@@ -151,7 +151,7 @@ public class UtilityNode extends BNode {
 	 * 
 	 * @return the utility distribution
 	 */
-	public UtilityDistribution getDistrib() {
+	public UtilityFunction getDistrib() {
 		return distrib;
 	}
 

@@ -102,14 +102,13 @@ public class DemoTest {
 		Map<String,Double> t2 = new HashMap<String,Double>();
 	 	t2.put("move forward", 0.06);
 		system.addUserInput(t2);
-		
+
 		assertFalse(system.getState().hasChanceNode("u_m"));
 		
 		t2 = new HashMap<String,Double>();
 	 	t2.put("move forward", 0.45);
 		system.addUserInput(t2);
 		
-	//	Thread.sleep(1000000);
 		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().toString());
 		
 		t = new CategoricalTable("u_u");
@@ -156,7 +155,7 @@ public class DemoTest {
 	 	t.addRow("yes", 0.8);
 	 	t.addRow("move backward", 0.1);
 		system.addContent(t);
-		
+
 		assertEquals("OK, moving Forward a little bit", system.getContent("u_m").toDiscrete().getBest().toString());
 
 		t = new CategoricalTable("u_u");
