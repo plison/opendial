@@ -8,7 +8,7 @@ You have the choice between downloading stable release packages or the developme
 
 
 === Stable release packages:===
- * *[http://opendial.googlecode.com/svn/downloads/opendial-1.0.zip OpenDial, latest version]*   (version 1.0, released on 25/10/2014)
+ * *[http://opendial.googlecode.com/svn/downloads/opendial-1.0.zip OpenDial, latest version]*   (version 1.0, released on 9/11/2014)
  * [http://opendial.googlecode.com/svn/downloads/ older versions]
 
 === Bleeding-edge version:===
@@ -25,8 +25,8 @@ See the [OpenDialUserManual user manual] for more instructions on how to use !Op
 == 2. !OpenDial plugins==
 
 A series of plugins have been developed to extend !OpenDial with new modules. The plugins currently available are:
- * [http://opendial.googlecode.com/svn/downloads/plugins/nuancespeech.zip Nuance Speech]: Cloud-based speech recognition and synthesis using the [http://dragonmobile.nuancemobiledeveloper.com speech API] developed by Nuance.
- * [http://opendial.googlecode.com/svn/downloads/plugins/attspeech.zip AT&T Speech]: Cloud-based speech recognition and synthesis using the [http://developer.att.com/apis/speech speech API] developed by AT&T.
+ * _Nuance Speech_: Speech recognition and synthesis using Nuance's cloud-based [http://dragonmobile.nuancemobiledeveloper.com speech API]. (*included by default in !OpenDial*)
+ * _AT&T Speech_: Speech recognition and synthesis using AT&T's cloud-based [http://developer.att.com/apis/speech speech API] (*included by default in !OpenDial*)
  * [http://opendial.googlecode.com/svn/downloads/plugins/mary.zip Mary TTS]: Local speech synthesis using the open-source [http://mary.dfki.de Mary] TTS engine.
  * [http://opendial.googlecode.com/svn/downloads/plugins/sphinx.zip Sphinx ASR]: Local speech recognition using the open-source [http://cmusphinx.sourceforge.net/ Sphinx 4] ASR engine.
  * [http://opendial.googlecode.com/svn/downloads/plugins/nao.zip Nao bindings]: Bindings for connecting !OpenDial with the [http://www.aldebaran-robotics.com Nao] robot.
