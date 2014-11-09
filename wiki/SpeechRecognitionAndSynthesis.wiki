@@ -11,8 +11,8 @@ register as a developer on the [http://dragonmobile.nuancemobiledeveloper.com Nu
 
 The plugin relies on three parameters:
  * `id`  (mandatory) is the Sandbox application ID
-- `key` (mandatory) is the Sandbox application key
-- `lang` (mandatory) is the language code for your application (e.g. eng-USA, nor-NOR, etc.)
+ * `key` (mandatory) is the Sandbox application key
+ * `lang` (mandatory) is the language code for your application (e.g. eng-USA, nor-NOR, etc.)
 
 To start !OpenDial with the plugin, you can directly add the required parameters to the command line:
 {{{
