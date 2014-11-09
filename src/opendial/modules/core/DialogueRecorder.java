@@ -32,7 +32,6 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
-import opendial.datastructs.Assignment;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;

@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
-import opendial.bn.distribs.CategoricalTable;
 
 
 /**

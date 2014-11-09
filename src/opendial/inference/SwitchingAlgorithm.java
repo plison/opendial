@@ -28,7 +28,6 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.BNode;
