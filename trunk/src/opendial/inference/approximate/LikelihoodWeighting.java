@@ -170,6 +170,7 @@ public class LikelihoodWeighting {
 		}
 		catch (DialException e) {
 			log.info("exception caught: " + e);
+			e.printStackTrace();
 		}
 		return sample;
 	}
