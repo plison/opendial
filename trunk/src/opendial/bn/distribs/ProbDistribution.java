@@ -101,7 +101,7 @@ public interface ProbDistribution  {
 	 * Returns a new probability distribution that is the posterior of the
 	 * current distribution, given the conditional assignment as argument.
 	 * 
-	 * @param condition an assignment of values to the conditional variables
+	 * @param condition an assignment of values to (a subset of) the conditional variables
 	 * @return the posterior distribution
 	 * @throws DialException if the posterior could not be computed.
 	 */	
@@ -137,7 +137,7 @@ public interface ProbDistribution  {
 	
 
 	/**
-	 * Changes a variable label in the distribution
+	 * Changes the variable name in the distribution
 	 * 
 	 * @param oldId the old variable label
 	 * @param newId the new variable label
