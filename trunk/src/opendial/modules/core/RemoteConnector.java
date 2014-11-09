@@ -56,7 +56,7 @@ import opendial.utils.XMLUtils;
  * in order to conduct Wizard-of-Oz experiments).
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-11-03 15:53:16 #$ *
+ * @version $Date::                      $ *
  */
 public class RemoteConnector implements Module {
 

@@ -43,7 +43,7 @@ import opendial.utils.StringUtils;
  * is available.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-10-25 21:21:31 #$
+ * @version $Date::                      $
  *
  */
 public class TextOnlyInterface implements Module {
