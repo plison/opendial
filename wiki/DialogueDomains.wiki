@@ -44,7 +44,7 @@ A dialogue domain in !OpenDial follows the skeleton below:
 
 The settings, initial state and parameters can be left out of the domain specification if empty.  The number of rule-structured models is arbitrary.
 
-For more complex domains, the domain specification can be split in several files through the `import`marker: 
+For more complex domains, the domain specification can be split in several files through the `import` marker: 
 {{{
     <import href="path to another file" />
 }}}
