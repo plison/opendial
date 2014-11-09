@@ -44,6 +44,7 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -389,11 +390,10 @@ public class ChatWindowTab extends JComponent {
 		rawText = rawText.replaceAll("/", "").trim();
 
 		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
-
 		new Thread(() -> {
+			system.addIncrementalUserInput(table, followPrevious);
 			system.addContent(new Assignment(system.getSettings().userSpeech, 
 					(incomplete)? "busy": "None"));
-			system.addIncrementalUserInput(table, followPrevious);
 			if (!incomplete) {
 				system.getState().setAsCommitted(system.getSettings().userInput);
 			}

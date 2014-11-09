@@ -42,14 +42,14 @@
 	<variable id="theta_6">
 		<distrib type="gaussian">
 			<mean>1</mean>
-			<variance>0.2</variance>
+			<variance>0.1</variance>
 		</distrib>
 	</variable>
 
 	<variable id="theta_7">
 		<distrib type="gaussian">
 			<mean>2</mean>
-			<variance>0.4</variance>
+			<variance>0.2</variance>
 		</distrib>
 	</variable>
 

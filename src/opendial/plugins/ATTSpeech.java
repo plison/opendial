@@ -33,14 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.att.api.oauth.OAuthService;
-import com.att.api.rest.APIResponse;
-import com.att.api.rest.RESTClient;
-import com.att.api.rest.RESTException;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -51,6 +43,14 @@ import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.att.api.oauth.OAuthService;
+import com.att.api.rest.APIResponse;
+import com.att.api.rest.RESTClient;
+import com.att.api.rest.RESTException;
 
 /**
  * Plugin to access the AT&amp;T Speech API for both speech recognition and synthesis.
@@ -65,7 +65,7 @@ import opendial.utils.AudioUtils;
  * @version $Date::                      $
  */
 public class ATTSpeech implements Module {
- 
+  
 	// logger
 	public static Logger log = new Logger("ATTSpeech", Logger.Level.DEBUG);
 

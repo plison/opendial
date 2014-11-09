@@ -153,15 +153,14 @@ public class ForwardPlanner implements Module {
 		 */
 		public PlannerProcess(DialogueState initState) {
 			this.initState = initState;
-			service.schedule(() -> isTerminated=true, Settings.maxSamplingTime*2, TimeUnit.MILLISECONDS);
+			Settings settings = system.getSettings();
+			service.schedule(() -> isTerminated=true, 
+					Settings.maxSamplingTime*2, TimeUnit.MILLISECONDS);
 
-	
 			try {
-				UtilityTable evalActions =getQValues(initState, system.getSettings().horizon);
+				UtilityTable evalActions =getQValues(initState, settings.horizon);
 
 				Assignment bestAction =  evalActions.getBest().getKey(); 
-				initState.removeNodes(initState.getUtilityNodeIds());
-				initState.removeNodes(initState.getActionNodeIds());
 				
 				if (evalActions.getUtil(bestAction) < 0.001) {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
@@ -169,7 +168,9 @@ public class ForwardPlanner implements Module {
 				
 				// only executes action if the user is not currently speaking 
 				// (simplifying assumption, could be corrected afterwards)
-				if (!initState.hasChanceNode(system.getSettings().userSpeech)) {
+				if (!initState.hasChanceNode(settings.userSpeech)) {
+					initState.removeNodes(initState.getUtilityNodeIds());
+					initState.removeNodes(initState.getActionNodeIds());
 					initState.addToState(bestAction.removePrimes());
 				}
 				

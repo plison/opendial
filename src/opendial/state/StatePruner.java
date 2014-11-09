@@ -75,7 +75,6 @@ public class StatePruner {
 
 			// step 1 : selection of nodes to keep
 			Set<String> nodesToKeep = getNodesToKeep(state);
-
 			if (!nodesToKeep.isEmpty()) {
 
 				// step 2: reduction

@@ -24,6 +24,7 @@
 package opendial.domains.rules;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +71,9 @@ public class RuleOutput extends RuleCase {
 	public void addCase(RuleCase newCase) {
 
 		if (newCase.getEffects().isEmpty()) { return;	}
-		else if (effects.hashCode() == newCase.getEffectMap().hashCode()) { return ; }
+		
+		if (effects.hashCode() == newCase.getEffectMap().hashCode()) { return ; }
+		
 		else if (effects.isEmpty()) {
 			effects.putAll(newCase.getEffectMap());
 			return;
