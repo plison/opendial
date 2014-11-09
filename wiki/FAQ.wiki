@@ -2,9 +2,9 @@
 
 = Generalities = 
 
- * *What is the relationship between !OpenDial and POMDP approaches?*
+ * *What is the relationship between !OpenDial and MDP/POMDP approaches?*
 
-As in existing POMDP models, !OpenDial represents the dialogue state as a Bayesian network that is regularly updated with new observations and employed to derive the system's actions.  The key difference between !OpenDial and traditional POMDP approaches is that the domain models (i.e. the transition, reward and observation models) are expressed via _probabilistic rules_. 
+As in existing statistical frameworks, !OpenDial represents the dialogue state as a Bayesian network that is regularly updated with new observations and employed to derive the system's actions.  The key difference between !OpenDial and traditional MDP/POMDP approaches is that the domain models (i.e. the transition, reward and observation models) are expressed via _probabilistic rules_. 
 
 In other words, !OpenDial can be seen as a "structured POMDP" approach. The rules are essentially high-level templates for probabilistic graphical models.  They provide an abstraction layer that allows the system designer to capture the domain in a concise and human-readable form, with a limited number of parameters.  See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)] for a full description of the approach.
 
