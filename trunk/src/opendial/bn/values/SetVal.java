@@ -55,7 +55,17 @@ public final class SetVal implements Value {
 	 * 
 	 * @param values the values
 	 */
-	protected SetVal(Collection<Value> values) { this.set = new HashSet<Value>(values); };
+	protected SetVal(Collection<Value> values) {
+		this.set = new HashSet<Value>(); 
+		for (Value v : values) {
+			if (v instanceof SetVal) {
+				this.set.addAll(((SetVal)v).getSet());
+			}
+			else {
+				this.set.add(v);
+			}
+		}
+		};
 
 	/**
 	 * Creates the set of values

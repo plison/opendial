@@ -26,7 +26,6 @@ package opendial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -339,9 +338,6 @@ public class DialogueSystem {
 			synchronized (curState) {
 				try {
 				curState.addToState(distrib);
-				if (getModule(GUIFrame.class) != null) {
-					getModule(GUIFrame.class).refreshStateViewer();
-				}
 				return update();
 				}
 				catch (DialException e) {
@@ -375,9 +371,6 @@ public class DialogueSystem {
 			synchronized (curState) {
 				try {
 					curState.addToState_incremental(content, followPrevious);
-					if (getModule(GUIFrame.class) != null) {
-						getModule(GUIFrame.class).refreshStateViewer();
-					}
 					return update();
 					}
 					catch (DialException e) {
@@ -429,9 +422,6 @@ public class DialogueSystem {
 			synchronized (curState) {
 				try {
 					curState.addToState(assign);
-					if (getModule(GUIFrame.class) != null) {
-						getModule(GUIFrame.class).refreshStateViewer();
-					}
 					return update();
 					}
 					catch (DialException e) {
@@ -460,9 +450,6 @@ public class DialogueSystem {
 			synchronized (curState) {
 				try {
 					curState.addToState(distrib);
-					if (getModule(GUIFrame.class) != null) {
-						getModule(GUIFrame.class).refreshStateViewer();
-					}
 					return update();
 					}
 					catch (DialException e) {
@@ -491,9 +478,6 @@ public class DialogueSystem {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(network);
-				if (getModule(GUIFrame.class) != null) {
-					getModule(GUIFrame.class).refreshStateViewer();
-				}
 				return update();
 			}
 		}
@@ -516,9 +500,6 @@ public class DialogueSystem {
 		if (!paused) {
 			synchronized (curState) {
 				curState.addToState(newState);
-				if (getModule(GUIFrame.class) != null) {
-					getModule(GUIFrame.class).refreshStateViewer();
-				}
 				return update();
 			}
 		}

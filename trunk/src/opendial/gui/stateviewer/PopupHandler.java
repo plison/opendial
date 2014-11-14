@@ -35,7 +35,7 @@ import javax.swing.JPopupMenu;
 
 import opendial.arch.Logger;
 import opendial.bn.distribs.MultivariateDistribution;
-import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityFunction;
 import opendial.state.DialogueState;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 
@@ -105,7 +105,7 @@ implements MouseListener {
 			
 			utilityItem.addActionListener(ev -> {
 				
-				UtilityDistribution result = viewer.getState().queryUtil(pickedVertices);
+				UtilityFunction result = viewer.getState().queryUtil(pickedVertices);
 				viewer.getStateMonitorTab().writeToLogArea(result);
 				resetPickedVertices();
 			});

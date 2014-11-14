@@ -28,8 +28,8 @@ import opendial.arch.DialException;
 /**
  * Generic interface for a variable value, that can be copied.
  * 
- * <p>The classes implementing this interface should also 
- * implement the hashcode(), equals() and toString() methods
+ * <p>All classes implementing this interface MUST also 
+ * implement the hashcode(), equals() and toString() methods.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $

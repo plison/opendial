@@ -156,7 +156,7 @@ public class RemoteConnector implements Module {
 			skipNextTrigger = false;
 			return;
 		}
-		else if (paused) {
+		else if (paused || system.getSettings().remoteConnections.isEmpty()) {
 			return;
 		}
 		try {
@@ -165,10 +165,10 @@ public class RemoteConnector implements Module {
 			Element root = xmlDoc.createElement("update");
 			xmlDoc.appendChild(root);
 			updatedVars.stream()
-			.filter(v -> state.hasChanceNode(v))
-			.filter(v -> !v.equals(system.getSettings().userSpeech))
-			.map(v -> state.queryProb(v).generateXML(xmlDoc))
-			.forEach(n -> root.appendChild(n));
+				.filter(v -> state.hasChanceNode(v))
+				.filter(v -> !v.equals(system.getSettings().userSpeech))
+				.map(v -> state.queryProb(v).generateXML(xmlDoc))
+				.forEach(n -> root.appendChild(n));
 
 			// if the resulting document is non-empty, forward it through the socket
 			if (root.hasChildNodes()) {

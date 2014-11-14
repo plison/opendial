@@ -38,6 +38,7 @@ import opendial.arch.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
+import opendial.bn.nodes.ActionNode;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
 import opendial.modules.Module;
@@ -126,8 +127,15 @@ public class ForwardPlanner implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-
-		if (!paused && !state.getActionNodeIds().isEmpty()) {
+	
+		Settings settings = system.getSettings();
+		if (state.hasChanceNode(settings.userSpeech) && state.hasActionNode(settings.systemOutput+"'")) {
+			ActionNode sysOutNode = state.getActionNode(settings.systemOutput+"'");
+			state.removeNodes(sysOutNode.getOutputNodesIds());
+			state.removeNode(sysOutNode.getId());
+		}
+		
+		if (!paused && !state.getActionNodeIds().isEmpty()) {	
 				currentProcess = new PlannerProcess(state);
 		}
 	} 
@@ -154,29 +162,34 @@ public class ForwardPlanner implements Module {
 		public PlannerProcess(DialogueState initState) {
 			this.initState = initState;
 			Settings settings = system.getSettings();
-			service.schedule(() -> isTerminated=true, 
-					Settings.maxSamplingTime*2, TimeUnit.MILLISECONDS);
+			
+			// setting the timeout for the planning 
+			long timeout = Settings.maxSamplingTime*2;
+			// if the speech stream is not finished, only allow fast, reactive responses
+			timeout = (initState.hasChanceNode(settings.userSpeech))? timeout/5 : timeout;
+			service.schedule(() -> isTerminated=true, timeout, TimeUnit.MILLISECONDS);
 
 			try {
+				
+				// step 1: extract the Q-values
 				UtilityTable evalActions =getQValues(initState, settings.horizon);
 
+				// step 2: find the action with highest utility
 				Assignment bestAction =  evalActions.getBest().getKey(); 
-				
 				if (evalActions.getUtil(bestAction) < 0.001) {
 					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
 				
-				// only executes action if the user is not currently speaking 
-				// (simplifying assumption, could be corrected afterwards)
-				if (!initState.hasChanceNode(settings.userSpeech)) {
-					initState.removeNodes(initState.getUtilityNodeIds());
-					initState.removeNodes(initState.getActionNodeIds());
-					initState.addToState(bestAction.removePrimes());
-				}
-				
+				// step 3: remove the action and utility nodes
+				initState.removeNodes(initState.getUtilityNodeIds());
+				Set<String> actionVars = new HashSet<String>(initState.getActionNodeIds());
+				initState.removeNodes(actionVars);
+								
+				// step 4: add the selection action to the dialogue state
+				initState.addToState(bestAction.removePrimes());
 				isTerminated = true;
 			}
-			catch (Exception e) {
+			catch (DialException e) {
 				log.warning("could not perform planning, aborting action selection: " + e);
 				e.printStackTrace();
 			}

@@ -28,7 +28,9 @@ import java.awt.Container;
 import java.awt.Insets;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -44,7 +46,6 @@ import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -75,10 +76,15 @@ public class ChatWindowTab extends JComponent {
 			+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
 			+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
 			+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
-			+ "- Finally, to enter an N-best list of user utterances, separate each<br>"
+			+ "- To enter an N-best list of user utterances, separate each<br>"
 			+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
 			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
-			+ "do not move left (0.15)<br><br></html>";
+			+ "do not move left (0.15)</i><br><br>"
+			+ "- Finally, to insert content other than user inputs into the dialogue state (for <br>"
+			+ "&nbsp;&nbsp;&nbsp;instance, contextual variables), you can simply type into the text field:"
+			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<i>var_name = the_content_to_add</i><br><br>"
+			+ "&nbsp;&nbsp;&nbsp;where <i>var_name</i> is the variable label, and <i>the_content_to_add</i> its value(s),<br>"
+			+ "&nbsp;&nbsp;&nbsp;using the same format as the one described above for user inputs.<br><br></html>";
 
 	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
 
@@ -236,7 +242,10 @@ public class ChatWindowTab extends JComponent {
 			htmlTable += "[" + baseVar + "]";
 		}
 		htmlTable += "</font></td>";
-		for (Value value : table.getValues()) {
+		List<Value> rankedValues = table.getValues().stream()
+				.sorted((v1,v2) -> Double.compare(table.getProb(v2), table.getProb(v1)))
+				.collect(Collectors.toList());
+		for (Value value : rankedValues) {
 			if (!(value instanceof NoneVal)) {
 				htmlTable += "<td><font size=4>";
 				String content = value.toString();
@@ -391,9 +400,9 @@ public class ChatWindowTab extends JComponent {
 
 		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
 		new Thread(() -> {
-			system.addIncrementalUserInput(table, followPrevious);
 			system.addContent(new Assignment(system.getSettings().userSpeech, 
 					(incomplete)? "busy": "None"));
+			system.addIncrementalUserInput(table, followPrevious);
 			if (!incomplete) {
 				system.getState().setAsCommitted(system.getSettings().userInput);
 			}

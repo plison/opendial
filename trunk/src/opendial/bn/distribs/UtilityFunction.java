@@ -27,7 +27,7 @@ package opendial.bn.distribs;
 import opendial.datastructs.Assignment;
 
 /**
- * Generic interface for an utility distribution (also called value distribution),
+ * Generic interface for a utility function (also called value function),
  * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).  
  * 
  * <p>Typically, at least one of these X1, ..., Xn variables consist of a decision variable.
@@ -36,7 +36,7 @@ import opendial.datastructs.Assignment;
  * @version $Date::                      $
  *
  */
-public interface UtilityDistribution {
+public interface UtilityFunction {
 
 	/**
 	 * Returns the utility associated with the specific assignment of values for
@@ -48,7 +48,7 @@ public interface UtilityDistribution {
 	public double getUtil(Assignment input);
 	
 	/**
-	 * Checks that the utility distribution is well-formed (all assignments are covered)
+	 * Checks that the utility function is well-formed (all assignments are covered)
 	 * 
 	 * @return true is the distribution is well-formed, false otherwise
 	 */
@@ -60,7 +60,7 @@ public interface UtilityDistribution {
 	 * 
 	 * @return the copy
 	 */
-	public UtilityDistribution copy();
+	public UtilityFunction copy();
 
 
 	/**

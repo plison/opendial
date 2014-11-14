@@ -27,7 +27,7 @@ import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityFunction;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule.RuleType;
@@ -43,7 +43,7 @@ import opendial.state.AnchoredRule;
  * @version $Date::                      $
  *
  */
-public class RuleUtilDistribution implements UtilityDistribution {
+public class RuleUtilDistribution implements UtilityFunction {
 
 	// logger
 	public static Logger log = new Logger("RuleUtilDistribution", Logger.Level.DEBUG);
@@ -171,9 +171,9 @@ public class RuleUtilDistribution implements UtilityDistribution {
 			RuleOutput output = rule.getRule().getOutput(fullInput);	
 
 			for (Effect effectOutput : output.getEffects()) {
-				Condition condition = effectOutput.convertToCondition();
-
-				if (condition.isSatisfiedBy(ruleAction)) {
+				Condition effectCondition = effectOutput.convertToCondition();
+ 
+				if (effectCondition.isSatisfiedBy(ruleAction)) {
 					totalUtil += output.getParameter(effectOutput).
 							getParameterValue(input);
 				}
