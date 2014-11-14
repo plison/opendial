@@ -157,7 +157,7 @@ One can also check whether some individual element is contained in a collection 
 
 ==== Addition and removal of elements: ====
 
-Rule effects can also include special effects to `add`, `remove` or `clear` elements from a collection:
+Rule effects can also include special effects to `add` or `remove` elements from a collection:
 {{{
 
 <rule id="r12">
@@ -172,11 +172,8 @@ Rule effects can also include special effects to `add`, `remove` or `clear` elem
 </rule>
 }}}
 
-The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.
+The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.  *IMPORTANT NOTE*: the `add` and `remove` effects are only available for probability rules (not utility rules). 
 
-The `add` markup is used to add a new element to the current set, while `remove` will discard an element.  
-
-*IMPORTANT NOTE*: the `add` and `remove` effects are currently only available for probability rules (not utility rules). 
 
 == 6. Predictive variables ==
 
