@@ -31,7 +31,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.distribs.MultivariateDistribution;
-import opendial.bn.distribs.UtilityDistribution;
+import opendial.bn.distribs.UtilityFunction;
 import opendial.gui.stateviewer.StateViewer;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
@@ -264,7 +263,7 @@ public class StateViewerTab extends JComponent {
 	 * 
 	 * @param distrib the distribution to write
 	 */
-	public void writeToLogArea(UtilityDistribution distrib) {
+	public void writeToLogArea(UtilityFunction distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
 		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");

@@ -169,12 +169,14 @@ public class NuanceSpeech implements Module {
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
 			Value speechVal = system.getContent(speechVar).toDiscrete().getBest();
 			if (speechVal instanceof SpeechStream) {
-				new Thread(() -> {
+				Thread t = new Thread(() -> {
 					Map<String,Double> table = recognise((SpeechStream)speechVal);
 					if (!table.isEmpty()) {
 						system.addUserInput(table);
 					}
-				}).start();
+				});
+				t.start();
+				
 			}
 		}
 		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar) && !paused) {
@@ -221,9 +223,9 @@ public class NuanceSpeech implements Module {
 			InputStreamEntity reqEntity  = new InputStreamEntity(stream);
 			reqEntity.setContentType(format);
 			httppost.setEntity(reqEntity);			
-
+			
 			HttpResponse response = asrClient.execute(httppost);
-
+			
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity== null || response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());

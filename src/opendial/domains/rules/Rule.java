@@ -164,8 +164,8 @@ public class Rule {
 			return cache.get(input);
 		}
 		RuleOutput output = new RuleOutput(ruleType);
-		for (Assignment grounding : getGroundings(input)) {
-			Assignment fullInput = new Assignment(input, grounding);
+		for (Assignment g : getGroundings(input)) {
+			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
 			RuleCase match = getMatchingCase(fullInput);
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
@@ -177,13 +177,10 @@ public class Rule {
 	
 	
 	private RuleCase getMatchingCase(Assignment input) {
-		for (RuleCase ruleCase : cases) {
-			if (ruleCase.getCondition().isSatisfiedBy(input)) {
-				RuleCase groundedCase = ruleCase.ground(input);
-				return groundedCase;
-			}
-		}
-		return new RuleCase();
+		return cases.stream()
+				.filter(c -> c.getCondition().isSatisfiedBy(input))
+				.map(c -> c.ground(input))
+				.findFirst().orElse(new RuleCase());
 	}
 
 
@@ -228,7 +225,7 @@ public class Rule {
 	 * 
 	 * @return true if at least one effect is underspecified, and false otherwise
 	 */
-	public boolean hasUnderspecifiedEffects() {
+	public boolean hasTemplateEffect() {
 		return cases.stream()
 				.flatMap(c -> c.getEffects().stream())
 				.flatMap(e -> e.getSubEffects().stream())
@@ -243,7 +240,8 @@ public class Rule {
 	 * @return the set of all possible output variables
 	 */
 	public Set<String> getOutputVariables() {
-		return cases.stream().flatMap(c -> c.getOutputVariables().stream()).collect(Collectors.toSet());
+		return cases.stream().flatMap(c -> c.getOutputVariables().stream())
+				.collect(Collectors.toSet());
 	}
 	
 	

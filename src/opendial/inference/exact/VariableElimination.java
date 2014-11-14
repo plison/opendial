@@ -121,6 +121,7 @@ public class VariableElimination implements InferenceAlgorithm {
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 		Collection<String> queryVars = query.getQueryVars();
 		Assignment evidence = query.getEvidence();
+		
 		for (BNode n: query.getFilteredSortedNodes()) {
 			// create the basic factor for every variable
 			DoubleFactor basicFactor = makeFactor(n, evidence);
@@ -336,6 +337,7 @@ public class VariableElimination implements InferenceAlgorithm {
 		
 		// create the query factor
 		DoubleFactor queryFactor = createQueryFactor(query);
+
 		BNetwork reduced = new BNetwork();
 		
 		List<String> sortedNodesIds = network.getSortedNodesIds();
@@ -419,7 +421,6 @@ public class VariableElimination implements InferenceAlgorithm {
 			ConditionalTable table = new ConditionalTable(variable);
 			Set<String> depVariables = new HashSet<String>(factor.getVariables());
 			depVariables.remove(variable);
-
 			factor.normalise(depVariables);
 			for (Assignment a : factor.getMatrix().keySet()) {
 				Assignment condition = a.getTrimmed(depVariables);

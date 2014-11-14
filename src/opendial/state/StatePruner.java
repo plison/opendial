@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -79,7 +81,7 @@ public class StatePruner {
 
 				// step 2: reduction
 				DialogueState reduced = reduce(state, nodesToKeep);
-
+				
 				// step 3: reinsert action and utility nodes (if necessary)
 				reinsertActionAndUtilityNodes(reduced, state);
 
@@ -135,7 +137,9 @@ public class StatePruner {
 			}
 
 			if (state.isIncremental(node.getId())) {
-				nodesToKeep.addAll(node.getDescendantIds());
+				Set<String> descendants = node.getDescendantIds().stream()
+						.filter(i -> state.hasChanceNode(i)).collect(Collectors.toSet());
+				nodesToKeep.addAll(descendants);
 			}
 
 			if (state.getParameterIds().contains(node.getId())

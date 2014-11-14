@@ -32,7 +32,7 @@ package opendial.arch;
  * @version $Date::                      $
  *  
  */ 
-public class DialException extends Exception {
+public class DialException extends RuntimeException {
 
 	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
 

@@ -46,7 +46,7 @@ import opendial.utils.StringUtils;
  * @version $Date::                      $
  *
  */
-public class UtilityTable implements UtilityDistribution {
+public class UtilityTable implements UtilityFunction {
 
 	// logger
 	public static Logger log = new Logger("UtilityTable", Logger.Level.DEBUG);

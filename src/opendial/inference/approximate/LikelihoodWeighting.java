@@ -49,7 +49,7 @@ public class LikelihoodWeighting {
 	boolean isTerminated = false; 
 
 	//scheduled thread pool to terminate sampling once the time limit is reached
-	static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
 
 	// ===================================
 	//  PUBLIC METHODS
