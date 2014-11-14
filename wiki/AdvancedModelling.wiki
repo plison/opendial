@@ -163,7 +163,7 @@ Rule effects can also include special effects to `add` or `remove` elements from
 <rule id="r12">
   <case>
     <condition>
-      <if var="A" value="a1" relation="!in"/>
+      <if var="A" value="a1" relation="!contains"/>
     </condition>
     <effect>
       <add var="A" value="a1"/>
