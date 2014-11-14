@@ -152,7 +152,7 @@ public class GUIFrame implements Module {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (frame != null && frame.isVisible()) {
 		chatTab.trigger(state, updatedVars);
-		stateMonitorTab.refresh(state);
+		stateMonitorTab.refresh(state, updatedVars);
 		menu.update();
 		if (system.getDomain() == null) {
 			frame.setTitle("OpenDial toolkit");
@@ -163,12 +163,6 @@ public class GUIFrame implements Module {
 		}
 	}
 	
-
-	public void refreshStateViewer() {
-		if (frame != null && frame.isVisible()) {
-			stateMonitorTab.refresh(system.getState());
-		}
-	}
 	
 	/**
 	 * Records a dialogue state in the component and makes it available for display
