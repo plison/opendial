@@ -31,6 +31,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +172,7 @@ public class StateViewerTab extends JComponent {
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
 		if (states.containsKey(CURRENT_NAME)) {
-			refresh(mainFrame.getSystem().getState());
+			refresh(mainFrame.getSystem().getState(), mainFrame.getSystem().getState().getParameterIds());
 		}
 	}
 
@@ -193,12 +194,12 @@ public class StateViewerTab extends JComponent {
 	 * @param state the updated Bayesian Network
 	 * @param updatedVars the updated variables
 	 */
-	public void refresh(DialogueState state) {
+	public void refresh(DialogueState state, Collection<String> updatedVars) {
 
 		recordState(state, CURRENT_NAME);
 		listBox.setSelectedIndex(0);
 		Settings settings = mainFrame.getSystem().getSettings();
-		if (state.getNewVariables().contains(settings.userInput)) {
+		if (updatedVars.contains(settings.userInput)) {
 			if (settings.recording == Recording.ALL) {
 				listModel.add(2, "separator-utterances");
 			}
