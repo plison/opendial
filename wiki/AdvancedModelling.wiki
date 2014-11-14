@@ -174,7 +174,9 @@ Rule effects can also include special effects to `add`, `remove` or `clear` elem
 
 The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.
 
-The `add` markup is used to add a new element to the current set, while `remove` will delete an element.  Finally, `clear` will remove all elements in the set.
+The `add` markup is used to add a new element to the current set, while `remove` will discard an element.  
+
+*IMPORTANT NOTE*: the `add` and `remove` effects are currently only available for probability rules (not utility rules). 
 
 == 6. Predictive variables ==
 
