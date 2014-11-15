@@ -10,7 +10,7 @@ As in existing statistical frameworks, !OpenDial represents the dialogue state a
 
 The rules are essentially high-level templates for probabilistic graphical models.  They provide an abstraction layer that allows the system designer to capture the domain in a concise and human-readable form, with a limited number of parameters.  In other words, !OpenDial can be seen as following a "structured POMDP" approach to dialogue. See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)] for a more detailed description of the formalism.
 
-== What exactly are the utilities of utility rules? Do they represent rewards, action-values, or something else?==
+== What exactly are the utility rules? Do they represent rewards, action-values, or something else?==
 
 It all depends on the planning horizon that is employed for your domain.  In the most common case, the planning horizon is set to 1 (i.e. limited to the present time step). In this setting, the action selected by !OpenDial will simply correspond to the one that maximises the total utility in the current dialogue state. It is, however, also possible to use planning horizons larger than 1, in which case online planning is performed to find the action that maximises the accumulated utilities from the present time up to the horizon limit (given a particular discount factor). Online planning is, however, a computational expensive operation due to the combinatorial explosion of the number of possible interaction paths to consider. It also necessitates the specification of a full transition model.  
 
