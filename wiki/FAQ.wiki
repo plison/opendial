@@ -35,7 +35,7 @@ In practice, probability rules are typically used to define the models used in l
 
 This can be done quite easily: just add the starting system action in the initial dialogue state for the domain.
 
-==The calculation of marginal distributions in the dialogue state monitor often provides imprecise results. Why?==
+==The calculation of marginal distributions in the dialogue state monitor sometimes gives imprecise results. Why?==
 
 If your domain includes continuous distributions (such as unknown parameter values), !OpenDial will rely on sampling algorithms to perform probabilistic inference.  Sampling algorithms are approximate algorithms, so the probability value will always be somewhat imprecise -- especially when dealing with multivariate continuous distributions, which are more difficult to sample.  You can easily modify the number of samples in the `Options -> Settings` GUI window, or in the domain settings.
 
