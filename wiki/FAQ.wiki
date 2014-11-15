@@ -1,20 +1,22 @@
 #summary Frequently Asked Questions
 
+<wiki:toc max_depth="2" />
+
 = Generalities = 
 
- * *What is the relationship between !OpenDial and MDP/POMDP approaches?*
+== What is the relationship between !OpenDial and MDP/POMDP approaches? ==
 
 As in existing statistical frameworks, !OpenDial represents the dialogue state as a Bayesian network that is regularly updated with new observations and employed to derive the system's actions.  The key difference between !OpenDial and traditional MDP/POMDP approaches is that the domain models (i.e. the transition, reward and observation models) are expressed via _probabilistic rules_. 
 
 The rules are essentially high-level templates for probabilistic graphical models.  They provide an abstraction layer that allows the system designer to capture the domain in a concise and human-readable form, with a limited number of parameters.  In other words, !OpenDial can be seen as following a "structured POMDP" approach to dialogue. See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)] for a more detailed description of the formalism.
 
- * *What exactly are the utilities of utility rules? Do they represent rewards, action-values, or something else?*
+== What exactly are the utilities of utility rules? Do they represent rewards, action-values, or something else?==
 
 It all depends on the planning horizon that is employed for your domain.  In the most common case, the planning horizon is set to 1 (i.e. limited to the present time step). In this setting, the action selected by !OpenDial will simply correspond to the one that maximises the total utility in the current dialogue state. It is, however, also possible to use planning horizons larger than 1, in which case online planning is performed to find the action that maximises the accumulated utilities from the present time up to the horizon limit (given a particular discount factor). Online planning is, however, a computational expensive operation due to the combinatorial explosion of the number of possible interaction paths to consider. It also necessitates the specification of a full transition model.  
 
 For most dialogue domains, we recommend therefore to keep the planning horizon to its default value, and ensure that the (handcrafted or learned) utilities reflect the long-term utilities of the action, and not just its immediate reward.
 
- * *Why is there a distinction between "predictive" variables `X^p` and normal state variables `X` in !OpenDial?*
+==Why is there a distinction between "predictive" variables `X^p` and normal state variables `X` in !OpenDial?==
 
 We sometimes want to use probability rules to provide a prior prediction on a future, currently unobserved variable (for instance, to predict the next user dialogue act following a particular system response). The suffix ^p allows !OpenDial to distinguish such predictions from actually observed values.  Once matched with actual observed values, the prediction acts as a prior for the observation. Technically, this is realised via an "equivalence node" inserted between the prediction and the observation, see [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)], p. 78-79) for details.
 
@@ -23,21 +25,21 @@ This explicit distinction between prediction and observations is necessary in !O
 
 = Dialogue domains = 
 
- * *What are the differences between probability and utility rules?*
+==What are the differences between probability and utility rules?==
 
 Probability rules represent conditional probability models P(*Y*|*X*), where *Y* and *X* are arbitrary subsets of the state variables. In other words, probability rules express conditional, probabilistic relations between state variables.  Utility rules, on the other hand, express the utility U(*A*,*X*) of particular system actions A depending on the state variables *X*.  The utility rules encode the relative "desirability" (from the system's point of view) of executing particular actions depending on the current state. 
 
 In practice, probability rules are typically used to define the models used in language understanding (to capture e.g. the relation between the user utterances and their corresponding dialogue acts), dialogue state update (to capture the relation between the dialogue acts and other state variables such as the underlying user intentions) and in the prediction of future observations.  The utility rules, for their part, are most often used in action selection (to select the next system action to execute) and generation (to select the best realisation of a particular communicative action).
 
- * *How do I get the dialogue system to start first, before the user has uttered anything?*
+==How do I get the dialogue system to start first, before the user has uttered anything?==
 
 This can be done quite easily: just add the starting system action in the initial dialogue state for the domain.
 
- * *The probabilities I get when calcutating marginal distributions in the dialogue state monitor are often imprecise. Why?*
+==The probabilities I get when calculating marginal distributions in the dialogue state monitor are often imprecise. Why?==
 
 If your domain includes continuous distributions (such as unknown parameter values), !OpenDial will rely on sampling algorithms to perform probabilistic inference.  Sampling algorithms are approximate algorithms, so the probability value will always be somewhat imprecise -- especially when dealing with multivariate continuous distributions, which are more difficult to sample.  You can easily modify the number of samples in the `Options -> Settings` GUI window, or in the domain settings.
 
- * *What is this special `None` value present in some distributions?*
+==hat is this special `None` value present in some distributions?==
 
 The `None` value is employed as a filler value to ensure that all probability distributions sum up to 1.0.  For instance, if a user utterance is expressed as an N-best list with 2 elements, one "move left" with probability 0.6 and one "mow the left" with probability 0.2, the distribution over possible user utterance will have a `None` value with probability 0.2, corresponding to an empty utterance. 
 
@@ -45,7 +47,7 @@ For system actions, the `None` value represents the void action (i.e. do nothing
 
 = Miscellaneous = 
 
- * *How do I connect two !OpenDial clients running on remote machines?*
+==How do I connect two !OpenDial clients running on remote machines?==
 
 !OpenDial includes a functionality to connect two remote machines (on the same network) with one another.  This can be especially useful to perform Wizard-of-Oz experiments. To allow two !OpenDial systems to be connected with one another, follow the following procedure:
  * Start !OpenDial on the two machines A and B (where A and B have mutually accessible IP addresses).
@@ -56,11 +58,11 @@ For system actions, the `None` value represents the void action (i.e. do nothing
 
 = Technical issues =
 
- * *I get the following message when I try to compile !OpenDial with `ant`: `javac: invalid target release: 1.8`*.
+==I get the following message when I try to compile !OpenDial with `ant`: `javac: invalid target release: 1.8`.==
 
 All version of !OpenDial > 0.95 require Java 8 in order to compile.  Simply download and install the Java 8 JDK in order to resolve the issue.
 
- * Speech recognition with the Nuance API does not seem to work.
+==Speech recognition with the Nuance API does not seem to work.==
 
 You should first check that the correct input mixer is selected in the `Options`, that the volume bar is moving when you talk in the microphone, and that you are connected to the internet.  You should also make sure that the speech data lasts longer than 2 seconds, as the Nuance API seems to have problems with speech data of shorter duration. 
 
