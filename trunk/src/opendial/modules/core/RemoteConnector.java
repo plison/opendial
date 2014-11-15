@@ -104,10 +104,9 @@ public class RemoteConnector implements Module {
 	 * Starts the connector. If the system settings include remote connections, 
 	 * connects to them by sending an INIT message.
 	 * 
-	 * @throws DialException 
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() {
 
 		// connect to remote connections
 		if (!system.getSettings().remoteConnections.isEmpty()) {

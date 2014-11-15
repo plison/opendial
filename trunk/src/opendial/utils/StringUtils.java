@@ -167,6 +167,7 @@ public class StringUtils {
 	 * Returns a table with probabilities from the provided GUI input 
 	 * 
 	 * @param rawText the raw text expressing the table
+	 * @return the string values together with their probabilities
 	 */
 	public static Map<String,Double> getTableFromInput(String rawText) {
 

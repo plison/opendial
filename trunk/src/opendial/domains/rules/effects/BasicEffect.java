@@ -158,6 +158,8 @@ public class BasicEffect {
 	/**
 	 * Returns false.
 	 * 
+	 * @return false.
+	 * 
 	 */
 	public boolean containsSlots() {
 		return false;
@@ -166,6 +168,9 @@ public class BasicEffect {
 	
 	/**
 	 * Returns itself.
+	 * 
+	 * @param grounding the grounding assignment
+	 * @return itself
 	 */
 	public BasicEffect ground(Assignment grounding) {
 		return this;
@@ -173,7 +178,8 @@ public class BasicEffect {
 
 	/**
 	 * Returns an empty set.
-	 * @return
+	 * 
+	 * @return an empty set
 	 */
 	public Collection<String> getSlots() {
 		return new HashSet<String>();
