@@ -392,7 +392,7 @@ public class DialogueSystem {
 	 * This allows (for instance) to perform incremental updates of user utterances.
 	 * 
 	 * 
-	 * @param content the user input to add / concatenate
+	 * @param userInput the user input to add / concatenate
 	 * @param followPrevious whether the results should be concatenated to the previous 
 	 *        values, or reset the content (e.g. when starting a new utterance)
 	 * @return the set of variables that have been updated
@@ -470,7 +470,7 @@ public class DialogueSystem {
 	 * Merges the Bayesian network included as argument into the current one, and
 	 * updates the dialogue state.
 	 * 
-	 * @param newState the state to merge into the current state
+	 * @param network the Bayesian network to merge into the current state
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the update failed 
 	 */
@@ -665,7 +665,7 @@ public class DialogueSystem {
 	/**
 	 * Returns the local address (IP and port) used by the dialogue system
 	 * 
-	 * @return
+	 * @return the IP_address:port of the dialogue system
 	 */
 	public String getLocalAddress() {
 		return getModule(RemoteConnector.class).getLocalAddress();
