@@ -10,7 +10,9 @@ The rules are essentially high-level templates for probabilistic graphical model
 
  * *What exactly are the utilities of utility rules? Do they represent rewards, action-values, or something else?*
 
-It all depends on the planning horizon that is employed for your domain.  In the most common case, the planning horizon is set to 1 (i.e. limited to the present time step). In this setting, the action selected by !OpenDial will simply correspond to the one that maximises the total utility in the current dialogue state. It is, however, also possible to use planning horizons larger than 1, in which case online planning is performed to find the action that maximises the accumulated utilities from the present time up to the horizon limit (given a particular discount factor). Online planning is, however, a computational expensive operation due to the combinatorial explosion of the number of possible interaction paths to consider. It also necessitates the specification of a full transition model.  For most dialogue domains, we recommend therefore to keep the planning horizon to its default value, and ensure that the (handcrafted or learned) utilities reflect the long-term utilities of the action, and not just its immediate reward.
+It all depends on the planning horizon that is employed for your domain.  In the most common case, the planning horizon is set to 1 (i.e. limited to the present time step). In this setting, the action selected by !OpenDial will simply correspond to the one that maximises the total utility in the current dialogue state. It is, however, also possible to use planning horizons larger than 1, in which case online planning is performed to find the action that maximises the accumulated utilities from the present time up to the horizon limit (given a particular discount factor). Online planning is, however, a computational expensive operation due to the combinatorial explosion of the number of possible interaction paths to consider. It also necessitates the specification of a full transition model.  
+
+For most dialogue domains, we recommend therefore to keep the planning horizon to its default value, and ensure that the (handcrafted or learned) utilities reflect the long-term utilities of the action, and not just its immediate reward.
 
  * *Why is there a distinction between "predictive" variables `X^p` and normal state variables `X` in !OpenDial?*
 
@@ -41,7 +43,19 @@ The `None` value is employed as a filler value to ensure that all probability di
 
 For system actions, the `None` value represents the void action (i.e. do nothing). 
 
-= Technical problems =
+= Miscellaneous = 
+
+ * *How do I connect two !OpenDial clients running on remote machines?
+
+!OpenDial includes a functionality to connect two remote machines (on the same network) with one another.  This can be especially useful to perform Wizard-of-Oz experiments. To allow two !OpenDial systems to be connected with one another, follow the following procedure:
+ * Start !OpenDial on the two machines A and B (where A and B have mutually accessible IP addresses).
+ * Click on `Help -> About` on machine A.  Copy the local address (IP and port) for the machine.
+ * Click on `Interaction -> Connect to Remote Client` on machine B.  Copy the address and port for machine A into the field and click `OK`.
+ * The connection between the two clients is now established.  To use this remote connection for a Wizard-of-Oz dialogue, the machine playing the role of the Wizard should change its role by clicking on `Interaction -> Interaction Role -> System`.
+ * At the end of the interaction, you can simply save the transcript into XML by clicking on `Interaction -> Save Dialogue As ...`.
+
+
+= Technical issues =
 
  * *I get the following message when I try to compile !OpenDial with `ant`: `javac: invalid target release: 1.8`*.
 
