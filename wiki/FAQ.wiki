@@ -37,7 +37,7 @@ If your domain includes continuous distributions (such as unknown parameter valu
 
  * *What is this special `None` value present in some distributions?*
 
-The `None` value is employed as a filler value to ensure that all probability distributions sum up to 1.0.  For instance, if a user utterance is expressed as an N-best list with 2 elements, one `move left` with probability 0.6 and one "mow the left" with probability 0.2, the distribution over possible user utterance will have a `None` value with probability 0.2, corresponding to an empty utterance. 
+The `None` value is employed as a filler value to ensure that all probability distributions sum up to 1.0.  For instance, if a user utterance is expressed as an N-best list with 2 elements, one "move left" with probability 0.6 and one "mow the left" with probability 0.2, the distribution over possible user utterance will have a `None` value with probability 0.2, corresponding to an empty utterance. 
 
 For system actions, the `None` value represents the void action (i.e. do nothing). 
 
