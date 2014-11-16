@@ -29,6 +29,7 @@ A series of plugins have been developed to extend !OpenDial with new modules. Th
  * _AT&T Speech_: Speech recognition and synthesis using AT&T's cloud-based [http://developer.att.com/apis/speech speech API] (*included by default in !OpenDial*)
  * [http://opendial.googlecode.com/svn/downloads/plugins/mary.zip Mary TTS]: Local speech synthesis using the open-source [http://mary.dfki.de Mary] TTS engine.
  * [http://opendial.googlecode.com/svn/downloads/plugins/sphinx.zip Sphinx ASR]: Local speech recognition using the open-source [http://cmusphinx.sourceforge.net/ Sphinx 4] ASR engine.
+ * [http://opendial.googlecode.com/svn/downloads/plugins/maltparser.zip MaltParser]: data-driven dependency parsing using the [http://maltparser.org MaltPaser] and the [http://nlp.stanford.edu/software/tagger.shtml Stanford POS tagger].
  * [http://opendial.googlecode.com/svn/downloads/plugins/nao.zip Nao bindings]: Bindings for connecting !OpenDial with the [http://www.aldebaran-robotics.com Nao] robot.
 
 In order to integrate these plugins, simply download their ZIP-file and follow the instructions in the README.txt file. 
