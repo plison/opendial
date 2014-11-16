@@ -1,4 +1,5 @@
 #summary Speech recognition and synthesis using cloud-based speech APIs.
+#sidebar TableOfContents
 
 = Plugins for speech recognition and synthesis = 
 
