@@ -33,7 +33,7 @@ package opendial.bn.values;
  *
  */
 public final class NoneVal implements Value {
-	
+	 
 	/**
 	 * Creates the none value 
 	 * (protected, use the value factory)

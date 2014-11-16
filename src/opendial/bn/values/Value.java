@@ -26,10 +26,14 @@ package opendial.bn.values;
 import opendial.arch.DialException;
 
 /**
- * Generic interface for a variable value, that can be copied.
+ * Generic class for a variable value.  The value can be:<ol>
+ * <li>compared to other values
+ * <li>copied in a new value
+ * <li>check if it contains a sub-value
+ * <li>concatenated with another value.</ol>.
  * 
- * <p>All classes implementing this interface MUST also 
- * implement the hashcode(), equals() and toString() methods.
+ * <p><b>IMPORTANT</b>: all implementations of Value <i>must</i> implement
+ * the three core methods equals(Object o), toString() and hashCode().
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  * @version $Date::                      $
@@ -62,5 +66,30 @@ public interface Value extends Comparable<Value> {
 	 * @throws DialException if the values could not be concatenated 
 	 */
 	public Value concatenate(Value value) throws DialException;
+	
+
+	/**
+	 * Returns the hash code for the value
+	 * 
+	 * @return the hash code
+	 */
+	@Override
+	public int hashCode();
+	
+	/**
+	 * Returns the string representation of the value
+	 * 
+	 * @return the string representation
+	 */
+	@Override
+	public String toString();
+	
+	/**
+	 * Returns true if o and the current object are equal, and false otherwise
+	 * 
+	 * @param o the other to compare
+	 * @return true if this==o, false otherwise
+	 */
+	public boolean equals(Object o);
 	
 }
