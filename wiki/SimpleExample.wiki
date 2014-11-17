@@ -385,7 +385,7 @@ http://opendial.googlecode.com/svn/wiki/example_step5.png
 The parameters must then be optimised from dialogue data.  This will be covered in the section [ParameterEstimation Learning rule parameters from data].
 
 == Final domain ==
-The full XML specification for the dialogue domain can be found at [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml domains/examples/example-step-by-step.xml].
+The full XML specification for the dialogue domain can be found at [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml domains/examples/example-step-by-step_fixed.xml] (without the unknown parameters) and [http://opendial.googlecode.com/svn/trunk/domains/examples/example-step-by-step.xml domains/examples/example-step-by-step_params.xml] (with the unknown parameters).
 
 <br><br>
 
