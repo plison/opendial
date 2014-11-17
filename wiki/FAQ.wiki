@@ -23,7 +23,7 @@ We sometimes want to use probability rules to provide a prior prediction on a fu
 
 This explicit distinction between prediction and observations is necessary in !OpenDial since both the predictions and the observations may be uncertain (and hence expressed as distinct probability distributions). Spoken dialogue systems must indeed frequently integrate observations that represent "soft" evidence, such as the ASR/NLU hypotheses of the user dialogue act.
 
-
+<br><br>
 = Dialogue domains = 
 
 ==What are the differences between probability and utility rules?==
@@ -44,7 +44,9 @@ If your domain includes continuous distributions (such as unknown parameter valu
 
 The `None` value is employed as a filler value to ensure that all probability distributions sum up to 1.0.  For instance, if a user utterance is expressed as an N-best list with 2 elements, one "move left" with probability 0.6 and one "mow the left" with probability 0.2, the distribution over possible user utterance will have a `None` value with probability 0.2, corresponding to an empty utterance. 
 
-For system actions, the `None` value represents the void action (i.e. do nothing). 
+For system actions, the `None` value represents the void action (i.e. do nothing).
+ 
+<br><br>
 
 = Miscellaneous = 
 
@@ -56,6 +58,8 @@ For system actions, the `None` value represents the void action (i.e. do nothing
  * Click on `Interaction -> Connect to Remote Client` on machine B.  Copy the address and port for machine A into the field and click `OK`.
  * The connection between the two clients is now established.  To use this remote connection for a Wizard-of-Oz dialogue, the machine playing the role of the Wizard should change its role by clicking on `Interaction -> Interaction Role -> System`.
  * At the end of the interaction, you can simply save the transcript into XML by clicking on `Interaction -> Save Dialogue As ...`.
+
+<br><br>
 
 = Technical issues =
 
