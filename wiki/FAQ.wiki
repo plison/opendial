@@ -59,6 +59,8 @@ For system actions, the `None` value represents the void action (i.e. do nothing
  * The connection between the two clients is now established.  To use this remote connection for a Wizard-of-Oz dialogue, the machine playing the role of the Wizard should change its role by clicking on `Interaction -> Interaction Role -> System`.
  * At the end of the interaction, you can simply save the transcript into XML by clicking on `Interaction -> Save Dialogue As ...`.
 
+== How can I perform incremental processing of user inputs in !OpenDial?==
+
 <br><br>
 
 = Technical issues =
