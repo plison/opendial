@@ -74,6 +74,22 @@ By default, the dialogue state will only contain the most recent value of the us
 
 The same can be of course done for other state variables. 
 
+Alternatively, if you want to keep track of the complete dialogue history (without limit on the number of elements), you can also define the history as a list, and insert a new element after each update:
+
+{{{
+
+<rule>
+	<case>
+		<effect>
+			<add var="a_u-history" value="{a_u}" />
+		</effect>
+	</case>
+</rule>
+}}}
+
+For this last approach, you might need to reduce the number of hypotheses in the N-best lists in order to avoid a combinatorial explosion in the number of values in this history variable. 
+
+
 <br><br>
 
 = Miscellaneous = 
