@@ -57,6 +57,22 @@ The `None` value is employed as a filler value to ensure that all probability di
 
 For system actions, the `None` value represents the void action (i.e. do nothing).
 
+== How can I keep track of the dialogue history? ==
+
+By default, the dialogue state will only contain the most recent value of the user or system-related variables such as `u_u` (user utterance), `a_u` (user dialogue act), `a_m` (system action) or `u_m` (system utterance).  However, one can easily record longer dialogue histories by creating new variables.  For instance, we can create a new variable `a_u-prev` that contains the next-to-last dialogue act from the user, and specify the following rule in the domain model updating the user dialogue act:
+
+{{{
+
+<rule>
+	<case>
+		<effect>
+			<set var="a_u-prev" value="{a_u}" />
+		</effect>
+	</case>
+</rule>
+}}}
+
+The same can be of course done for other state variables. 
 
 <br><br>
 
