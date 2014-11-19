@@ -11,11 +11,15 @@ As in existing statistical frameworks, !OpenDial represents the dialogue state a
 
 The rules are essentially high-level templates for probabilistic models.  They provide an abstraction layer that allows the system designer to capture the domain in a concise and human-readable form, with a limited number of parameters.  In other words, !OpenDial can be seen as following a "structured POMDP" approach to dialogue. See [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2014.pdf Lison (2014)] for a more detailed description of the formalism.
 
+<br><br>
+
 == What exactly are the utility rules? Do they represent rewards, action-values, or something else?==
 
 It depends on the planning horizon that is employed for your domain.  In the most common case, the planning horizon is set to 1 (i.e. limited to the present time step). In this setting, the action selected by !OpenDial will simply correspond to the one that maximises the total utility in the current dialogue state. It is, however, also possible to use planning horizons larger than 1, in which case online planning is performed to find the action that maximises the accumulated utilities from the present time up to the horizon limit (given a particular discount factor). Online planning is, however, a computational expensive operation due to the combinatorial explosion of the number of possible interaction paths to consider. It also necessitates the specification of a full transition model.  
 
 For most dialogue domains, we recommend therefore to keep the planning horizon to its default value, and ensure that the (handcrafted or learned) utilities reflect the long-term utilities of the action, and not just its immediate reward.
+
+<br><br>
 
 ==Why is there a distinction between "predictive" variables `X^p` and normal state variables `X` in !OpenDial?==
 
@@ -23,6 +27,7 @@ We sometimes want to use probability rules to provide a prior prediction on a fu
 
 This explicit distinction between prediction and observations is necessary in !OpenDial since both the predictions and the observations may be uncertain (and hence expressed as distinct probability distributions). Spoken dialogue systems must indeed frequently integrate observations that represent "soft" evidence, such as the ASR/NLU hypotheses of the user dialogue act.
 
+<br><br>
 
 ==What are the differences between probability and utility rules?==
 
@@ -31,15 +36,20 @@ Probability rules represent conditional probability models P(*Y*|*X*), where *Y*
 In practice, probability rules are typically used to define the models used in language understanding (to capture e.g. the relation between the user utterances and their corresponding dialogue acts), dialogue state update (to capture the relation between the dialogue acts and other state variables such as the underlying user intentions) and in the prediction of future observations.  The utility rules, for their part, are most often used in action selection (to find the next system action to execute) and generation (to find the best realisation of a particular communicative action).
 
 <br><br>
+
 = Dialogue domains = 
 
 ==How do I get the dialogue system to start first, before the user has uttered anything?==
 
-This can be done quite easily: just add the starting system action in the initial dialogue state for the domain.
+This can be done very easily: just add the starting system action in the initial dialogue state for the domain.
 
-==The calculation of marginal distributions in the dialogue state monitor sometimes gives imprecise results. Why?==
+<br><br>
+
+==The calculation of marginal distributions sometimes gives imprecise results. Why?==
 
 If your domain includes continuous distributions (such as unknown parameter values), !OpenDial will rely on sampling algorithms to perform probabilistic inference.  Sampling algorithms are approximate algorithms, so the probability value will always be somewhat imprecise -- especially when dealing with multivariate continuous distributions, which are more difficult to sample.  You can easily modify the number of samples in the `Options -> Settings` GUI window, or in the domain settings.
+
+<br><br>
 
 ==What is this special `None` value present in some distributions?==
 
@@ -47,7 +57,6 @@ The `None` value is employed as a filler value to ensure that all probability di
 
 For system actions, the `None` value represents the void action (i.e. do nothing).
 
- 
 
 <br><br>
 
@@ -62,7 +71,30 @@ For system actions, the `None` value represents the void action (i.e. do nothing
  * The connection between the two clients is now established.  To use this remote connection for a Wizard-of-Oz dialogue, the machine playing the role of the Wizard should change its role by clicking on `Interaction -> Interaction Role -> System`.
  * At the end of the interaction, you can simply save the transcript into XML by clicking on `Interaction -> Save Dialogue As ...`.
 
+<br><br>
+
 == How can I perform incremental processing of user inputs in !OpenDial?==
+
+!OpenDial allows you to insert user inputs in an incremental manner. This can be useful if you have a speech recogniser that is able to output partial recognition hypotheses while the user is speaking. This way, you can get the dialogue system to react quickly and start processing the user inputs as soon as some partial hypotheses are available.
+
+In practice, the insertion of incremental content is achieved via the method `addIncrementalContent(...)` in the class `DialogueSystem`.  The method takes two arguments: a partial N-Best list of user input, and a boolean flag `followPrevious` that indicates whether the new content is a continuation of some previous hypotheses, or whether it constitutes a new utterance. Here is an example of how you can use the method:
+{{{
+DialogueSystem system = new DialogueSystem();
+system.startSystem();
+		
+Map<String,Double> nbestList1 = new HashMap<String,Double>();
+nbestList1.put("this is", 0.7);
+nbestList1.put("these", 0.3);
+system.addIncrementalUserInput(nbestList1, false);
+		
+Map<String,Double> nbestList2 = new HashMap<String,Double>();
+nbestList2.put("a screw", 0.6);
+system.addIncrementalUserInput(nbestList2, true);
+}}}
+
+The method starts by inserting a partial N-best list ["this is" (0.7), "these" (0.3)], and then expands these initial hypotheses with the N-best list ["a screw" (0.6), "" (0.4)].  At the end, the full N-Best list for the utterance will be ["this is a screw (0.42), "this is" (0.28), "these a screw" (0.18), "these" (0.12)].
+
+When operating in this incremental mode, the probabilistic rules and the external modules are triggered as usual, but the state variables can be modified at anytime to reflect the insertion of new incremental content.  If you want to perform incremental updates of other variables than the user inputs, you can do so with the method `addIncrementalContent(...)`.
 
 <br><br>
 
