@@ -23,14 +23,15 @@ We sometimes want to use probability rules to provide a prior prediction on a fu
 
 This explicit distinction between prediction and observations is necessary in !OpenDial since both the predictions and the observations may be uncertain (and hence expressed as distinct probability distributions). Spoken dialogue systems must indeed frequently integrate observations that represent "soft" evidence, such as the ASR/NLU hypotheses of the user dialogue act.
 
-<br><br>
-= Dialogue domains = 
 
 ==What are the differences between probability and utility rules?==
 
 Probability rules represent conditional probability models P(*Y*|*X*), where *Y* and *X* are arbitrary subsets of the state variables. In other words, probability rules express conditional, probabilistic relations between state variables.  Utility rules, on the other hand, express the utility U(*A*,*X*) of particular system actions *A* depending on the state variables *X*.  The utility rules encode the relative "desirability" (from the system's point of view) of executing particular actions depending on the current state. 
 
 In practice, probability rules are typically used to define the models used in language understanding (to capture e.g. the relation between the user utterances and their corresponding dialogue acts), dialogue state update (to capture the relation between the dialogue acts and other state variables such as the underlying user intentions) and in the prediction of future observations.  The utility rules, for their part, are most often used in action selection (to find the next system action to execute) and generation (to find the best realisation of a particular communicative action).
+
+<br><br>
+= Dialogue domains = 
 
 ==How do I get the dialogue system to start first, before the user has uttered anything?==
 
@@ -45,7 +46,9 @@ If your domain includes continuous distributions (such as unknown parameter valu
 The `None` value is employed as a filler value to ensure that all probability distributions sum up to 1.0.  For instance, if a user utterance is expressed as an N-best list with 2 elements, one "move left" with probability 0.6 and one "mow the left" with probability 0.2, the distribution over possible user utterance will have a `None` value with probability 0.2, corresponding to an empty utterance. 
 
 For system actions, the `None` value represents the void action (i.e. do nothing).
+
  
+
 <br><br>
 
 = Miscellaneous = 
