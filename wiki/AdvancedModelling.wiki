@@ -137,11 +137,11 @@ If the actual content of the slot can be ignored, the placeholder can be replace
 }}}
 The above rule will be fired for a user utterance such as "`turn left`", "`turn to the left`", or even "`now robot please turn to the left`" (since the match can be partial). 
 
-== 5. Operations on sets ==
+== 5. Operations on collections ==
 
 In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such collections.
 
-==== Conditions on sets: ====
+==== Conditions on lists: ====
 
 Rule conditions can check for the presence/absence of particular items in a collection, as for instance:
 {{{
@@ -172,7 +172,7 @@ Rule effects can also include special effects to `add` or `remove` elements from
 </rule>
 }}}
 
-The above rule specifies that the value `a1` must be added to the set `A` if it not already included in it.  *IMPORTANT NOTE*: the `add` and `remove` effects are only available for probability rules (not utility rules). 
+The above rule specifies that the value `a1` must be added to the list `A` if it not already included in it.  *IMPORTANT NOTE*: the `add` and `remove` effects are only available for probability rules (not utility rules). 
 
 
 == 6. Predictive variables ==
