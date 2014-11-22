@@ -7,6 +7,8 @@ Assume you want to create a simple dialogue system for a robot that can be instr
 
 We focus in this example on the specification of the dialogue domain to process the user inputs and select the most relevant actions depending on the conversational situation.  Of course, a real robot will also need to include distinct modules for the actual speech recognition, speech synthesis and motor control.  The integration of such modules is described in the sections [SpeechRecognitionAndSynthesis Speech Recognition and Synthesis] and [ExternalModules External modules].
 
+_Notational conventions_: in our example (and in !OpenDial in general), we shall label all variables related to the user with the suffix `_u`, and all variables related to the system `_m` (`m` standing for "machine"). The variable  `u_u` is therefore the default label for the user utterance, while `u_m` is the default label for the system utterance. These labels can be changed in the system settings.
+
 == General skeleton == 
 
 We start by creating an XML file with the specification of the dialogue domain.  The top XML node must be `<domain>`:
@@ -18,7 +20,8 @@ We start by creating an XML file with the specification of the dialogue domain. 
 
 Each dialogue domain is constituted of a set of (rule-structured) _models_.  A model is essentially a collection of probabilistic rules together with a trigger variable that indicates when the rules should be applied.
 
-In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger.^[1]^  The domain specification becomes:
+
+In our case, we want to define a model that is triggered when a new user utterance is observed.  We will therefore construct a model with the variable `u_u` as trigger.  The domain specification becomes:
 
 {{{
 <domain>
@@ -95,7 +98,7 @@ http://opendial.googlecode.com/svn/wiki/example_step1bis.png
 
 == Language understanding model == 
 
-One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "`turn to the left`" or "`now please move forward`" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act, and then let the utility model operate on this logical representation.
+One shortcoming of the current dialogue domain is its rigid range of possible user inputs.  User utterances such as "`turn to the left`" or "`now please move forward`" are simply ignored by the system.  Although we could in principle directly enumerate all possible inputs in the utility rule, a more principled approach is to write a probability rule that converts the user utterance into a logical representation of the user dialogue act (denoted `a_u`), and then let the utility model operate on this logical representation.
 
 
 We will therefore write a new model with one single probability rule and trigger variable `u_u`:
@@ -163,7 +166,7 @@ The effects themselves specify how output variables (in this case, the user dial
 
 == Generation model == 
 
-Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: (1) selection of a high-level logical representation of the next action, followed by (2) selection of the best linguistic realisation for this logical action. Such a generation model can be easily constructed with one single utility rule:
+Instead of directly hard-coding the system utterances as system actions, it is often more appropriate to factor the system decisions in two steps: (1) selection of a high-level logical representation of the next action (denoted `a_m`), followed by (2) selection of the best linguistic realisation for this logical action. Such a generation model can be easily constructed with one single utility rule:
 {{{
 
 <model trigger="a_m">
@@ -391,7 +394,6 @@ The full XML specification for the dialogue domain can be found at [http://opend
 
 ----
 
-^[1]^ `u_u` is the default label for the user utterance in !OpenDial, while `u_m` is the default label for the system utterance.  Both can be changed in the system settings.
 
 ^[2]^ Probabilistic rules is used as an umbrella term to cover both probability and utility rules.
 
