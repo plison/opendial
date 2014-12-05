@@ -53,7 +53,11 @@ public class StringUtils {
 	 * @return the string
 	 */
 	public static String getShortForm(double value) {
-		return "" + Math.round(value*10000.0)/10000.0;
+		String rounded = "" + Math.round(value*10000.0)/10000.0;
+		if (rounded.endsWith(".0")) {
+			rounded = rounded.substring(0, rounded.length()-2);
+		}
+		return rounded;
 	}
 
 
@@ -98,14 +102,8 @@ public class StringUtils {
 	 * @param c the character to search for
 	 * @return the number of occurrences
 	 */
-	public static int countNbOccurrences(String s, char c) {
-		int counter = 0;
-		for( int i=0; i<s.length(); i++ ) {
-		    if( s.charAt(i) == '$' ) {
-		        counter++;
-		    } 
-		}
-		return counter;
+	public static long countNbOccurrences(String s, char c) {
+		return s.chars().filter(sc -> sc == c).count();
 	}
 
 	/**
@@ -158,8 +156,8 @@ public class StringUtils {
 	 * @param jointure the string used to join the elements
 	 * @return the concatenated string.
 	 */
-	public static String join(Collection<String> elements, String jointure) {
-		return elements.stream().collect(Collectors.joining(jointure));
+	public static String join(Collection<? extends Object> elements, String jointure) {
+		return elements.stream().map(o -> o.toString()).collect(Collectors.joining(jointure));
 	}
 
 

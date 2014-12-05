@@ -24,8 +24,11 @@
 package opendial.bn.values;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import opendial.arch.Logger;
 import opendial.utils.StringUtils;
@@ -189,6 +192,13 @@ public final class ArrayVal implements Value {
 	 */
 	@Override
 	public boolean contains(Value filledValue) {
+		if (filledValue instanceof DoubleVal) {
+			for (double a : array) {
+				if (Math.abs(a - ((DoubleVal)filledValue).d) < 0.0001) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 

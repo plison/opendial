@@ -68,7 +68,7 @@ public class TemplateEffect extends BasicEffect {
 	 * @param type type of effect
 	 */
 	public TemplateEffect(Template variable, Template value, EffectType type){
-		super(variable.toString(), value.isUnderspecified()? ValueFactory.none() : 
+		super(variable.toString(), (value.getSlots().isEmpty())? ValueFactory.none() : 
 			ValueFactory.create(value.getRawString()), type);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
@@ -86,7 +86,7 @@ public class TemplateEffect extends BasicEffect {
 	public BasicEffect ground(Assignment grounding) {
 		Template newT = labelTemplate.fillSlots(grounding);
 		Template newV = valueTemplate.fillSlots(grounding);
-		if (newT.isUnderspecified() || newV.isUnderspecified()) {
+		if (newT.isUnderspecified() || (!newV.getSlots().isEmpty())) {
 			TemplateEffect grounded = new TemplateEffect(newT, newV, type);
 			grounded.priority = this.priority;
 			return grounded;	
@@ -94,7 +94,7 @@ public class TemplateEffect extends BasicEffect {
 		else {
 			BasicEffect grounded = new BasicEffect(newT.getRawString(), newV.getRawString(), type);
 			grounded.priority = this.priority;
-			return grounded;
+		return grounded;
 		}
 		
 	}

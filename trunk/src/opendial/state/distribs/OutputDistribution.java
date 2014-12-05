@@ -31,7 +31,7 @@ import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.MarginalDistribution;
-import opendial.bn.values.SetVal;
+import opendial.bn.values.ListVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -161,9 +161,9 @@ public class OutputDistribution implements ProbDistribution {
 			Value previousValue = (!setValues.isEmpty())? 
 					setValues.iterator().next() : condition.getValue(baseVar) ;
 			
-			SetVal addVal = ValueFactory.create(addValues);
-			if (previousValue instanceof SetVal) {
-				addVal.addAll((SetVal)previousValue);
+			ListVal addVal = ValueFactory.create(addValues);
+			if (previousValue instanceof ListVal) {
+				addVal.addAll((ListVal)previousValue);
 			} 
 			else if (!previousValue.equals(ValueFactory.none())) {
 				addVal.add(previousValue);

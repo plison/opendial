@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -527,6 +528,13 @@ public class DialogueSystem {
 
 		// set of variables that have been updated
 		Set<String> updatedVars = new HashSet<String>();
+		
+		// skip new update if the current thread is already processing an update loop
+		if (Stream.of(Thread.currentThread().getStackTrace()).skip(2).limit(20)
+			.anyMatch(t -> t.getClassName().equals(getClass().getCanonicalName()) 
+					&& t.getMethodName().equals("update"))) {
+			return updatedVars;
+		}
 
 		while (!curState.getNewVariables().isEmpty()) {
 			

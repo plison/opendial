@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -68,6 +68,9 @@ public class Template {
 	// regular expression to detect algebraic expressions
 	static Pattern mathExpression = Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
+	// regular expression for complex regex (alternatives, optional elements)
+	static Pattern complexRegex = Pattern.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
+
 	// ===================================
 	//  TEMPLATE CONSTRUCTION
 	// ===================================
@@ -97,13 +100,13 @@ public class Template {
 
 		// compiling the associated pattern
 		try {
-			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
 		catch (PatternSyntaxException e) {
 			log.warning("illegal pattern syntax: " + regex);
 			pattern = Pattern.compile("bogus pattern");
 		}
-		
+
 		if (slots.isEmpty() && mathExpression.matcher(rawString).matches()) {
 			rawString = "" + MathUtils.evaluateExpression(rawString);
 		}
@@ -125,7 +128,7 @@ public class Template {
 		regex = (!alternatives.isEmpty())? regex.substring(0, regex.length()-1) : regex;
 		// compiling the associated pattern
 		try {
-			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
 		catch (PatternSyntaxException e) {
 			log.warning("illegal pattern syntax: " + regex);
@@ -166,8 +169,10 @@ public class Template {
 	 * @return true if the template is underspecified, false otherwsie
 	 */
 	public boolean isUnderspecified() {
-		return pattern.toString().contains(".*");
+		return pattern.toString().contains(".*") || pattern.toString().contains("(?:") 
+				|| pattern.toString().contains("|");
 	}
+
 
 
 	/**
@@ -181,32 +186,55 @@ public class Template {
 	 */
 	public MatchResult match (String str, boolean fullMatch) {
 		String input = str.trim();
+		if (!isUnderspecified() && fullMatch) {
+			return new MatchResult(input.equalsIgnoreCase(rawString));
+		}
 		Matcher matcher = pattern.matcher(input);
-		if (matcher.find()) {
+
+		if ((fullMatch && matcher.matches()) || (!fullMatch && matcher.find())) {
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
-			boolean isMatching = false;		
-			if (fullMatch) {
-				isMatching = (start==0 && end==(input.length()));
-			}
-			else {
-				boolean leftOK = (start == 0 || isWhitespaceOrPunctuation(input.charAt(start-1)));
-				boolean rightOK = (end >= input.length() || isWhitespaceOrPunctuation(input.charAt(end)));
-				isMatching = leftOK && rightOK;
-			}
 
-			if (isMatching) {
-				MatchResult match = new MatchResult(true);
-				match.setBoundaries(start, end);
-				for (String slot : slots.keySet()) {
-					String filledValue = matcher.group(slots.get(slot)+1).trim();
-					match.addFilledSlot(slot, filledValue);
-				}
-				return match;
+			if (!fullMatch && ((start!=0 && !isWhitespaceOrPunctuation(input.charAt(start-1)))
+					|| (end < input.length() && !isWhitespaceOrPunctuation(input.charAt(end))))) {
+				return new MatchResult(false);
 			}
+			MatchResult match = new MatchResult(true);
+			match.setBoundaries(start, end);
+			for (String slot : slots.keySet()) {
+				String filledValue = matcher.group(slots.get(slot)+1).trim();
+				if (filledValue.indexOf(')') < filledValue.indexOf('(')) {
+					return new MatchResult(false);
+				}
+				match.addFilledSlot(slot, filledValue);
+			}
+			return match;
 		}
 		return new MatchResult(false);
 	}
+
+
+
+	/**
+	 * Checks whether two strings match one another, taking regular expression
+	 * patterns into account in both strings.
+	 * 
+	 * @param str1 the first string
+	 * @param str2 the second string
+	 * @return whether the two strings can match
+	 */
+	public static boolean match(String str1, String str2) {
+		if (str1.contains("*") || str1.contains(")?") || str1.contains("|")) {
+			Template t1 = new Template(str1);
+			return t1.match(str2, true).isMatching();
+		}
+		else if (str2.contains("*") || str2.contains(")?") || str2.contains("|")) {
+			Template t2 = new Template(str2);
+			return t2.match(str1, true).isMatching();
+		}
+		return str1.equalsIgnoreCase(str2);
+	}
+
 
 
 	// ===================================
@@ -342,6 +370,11 @@ public class Template {
 	}
 
 
+	public boolean isRawSlot() {
+		return slots.size()==1 && rawString.equals("{"+slots.keySet().iterator().next()+"}");
+	}
+
+
 	/**
 	 * Returns true is the character is a white space character or
 	 * a punctuation
@@ -375,21 +408,55 @@ public class Template {
 		StringBuilder builder = new StringBuilder();
 		char[] charArr = init.toLowerCase().toCharArray();
 
-	    for(int i = 0; i < charArr.length; i++) {
-	        if (charArr[i] == '(') { builder.append("\\("); }
-	        else if (charArr[i] == ')') { builder.append("\\)"); }
-	        else if (charArr[i] == '[') { builder.append("\\["); }
-	        else if (charArr[i] == ']') { builder.append("\\]"); }
-	        else if (charArr[i] == '?') { builder.append("\\?"); }
-	        else if (charArr[i] == '!') { builder.append("\\!"); }
-	        else if (charArr[i] == '^') { builder.append("\\^"); }
-	        else if (charArr[i] == '*' && i < (charArr.length-1) && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
-	        else if (charArr[i] == '*') { builder.append("(?:.*)"); }
-	        else if (charArr[i] == '{' && charArr[i+1]=='}') { builder.append("\\{\\}"); i++; }
-	        else {
-	        	builder.append(charArr[i]);
-	        }
-	    }
+		boolean hasComplexRegex = false;
+		for(int i = 0; i < charArr.length; i++) {
+			if (charArr[i] == '(') { builder.append("\\("); }
+			else if (charArr[i] == ')') { builder.append("\\)"); }
+			else if (charArr[i] == '[') { builder.append("\\["); }
+			else if (charArr[i] == ']') { builder.append("\\]"); }
+			else if (charArr[i] == '?') { builder.append("\\?"); }
+			else if (charArr[i] == '.') { builder.append("\\."); }
+			else if (charArr[i] == '!') { builder.append("\\!"); }
+			else if (charArr[i] == '^') { builder.append("\\^"); }
+			else if (charArr[i] == '*' && i < (charArr.length-1) && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
+			else if (charArr[i] == '*') { builder.append("(?:.*)"); }
+			else if (charArr[i] == '{' && charArr[i+1]=='}') { builder.append("\\{\\}"); i++; }
+			else {
+				builder.append(charArr[i]);
+			}
+			if (charArr[i] == '|' || (charArr[i]=='?' && charArr[i-1]==')')) {
+				hasComplexRegex = true;
+			}
+		}
+
+		if (hasComplexRegex) {
+			Matcher m = complexRegex.matcher(builder.toString());
+			while (m.find()) {
+				String core = m.group(1);
+				if (m.group(0).endsWith("?")) {
+
+					// need to remove whitespaces at specific positions
+					if (m.start() > 0 && builder.charAt(m.start()-1)==' ' &&
+							(m.end() >= builder.length() || builder.charAt(m.end())==' ')) {
+						String replace =  "(?: " + core.replaceAll(" \\|", " \\|") + ")?";
+						builder = builder.replace(m.start()-1, m.end(), replace);
+					}
+					else if (m.end() < builder.length() && builder.charAt(m.end())==' ' &&
+							(m.start() == 0 || builder.charAt(m.start()-1)==' ')) {
+						String replace =  "(?: " + core.replaceAll(" \\|", " \\|") + ")?";
+						builder = builder.replace(m.start(), m.end()+1, replace);
+					}
+
+					else {
+						builder = builder.replace(m.start(), m.end(), "(?:"+core+")?");	    			
+					}
+				}
+				else {
+					builder = builder.replace(m.start(), m.end(), "(?:"+core+")");	 
+				}
+				m = complexRegex.matcher(builder.toString());
+			}		
+		}
 		return builder.toString();
 	}
 
@@ -446,7 +513,7 @@ public class Template {
 			return this.isMatching;
 		}
 
-		
+
 		/**
 		 * Returns the match boundaries as an array of two integers.
 		 * 
@@ -465,7 +532,7 @@ public class Template {
 			return filledSlots;
 		}
 
-		
+
 		/**
 		 * Returns the string representation for the matching result
 		 */
@@ -474,6 +541,8 @@ public class Template {
 			return isMatching + " (" + filledSlots+")";
 		}
 	}
+
+
 
 
 }

@@ -131,6 +131,10 @@ public class StatePruner {
 					&& node.getValues().iterator().next().equals(ValueFactory.none())) {
 				continue;
 			}
+			else if (node.getId().endsWith("^p") && 
+					node.getOutputNodesIds().stream().anyMatch(i -> i.startsWith("=_"))) {
+				continue;
+			}
 			// keeping the newest nodes
 			else if (!(state.hasChanceNode(node.getId()+"'"))) {
 				nodesToKeep.add(node.getId());

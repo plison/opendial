@@ -24,6 +24,7 @@
 package opendial.datastructs;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -97,7 +98,7 @@ public class ValueRange {
 	 * @param variable the variable
 	 * @param values the values to add
 	 */
-	public void addValues(String variable, Set<? extends Value> values) {
+	public void addValues(String variable, Collection<? extends Value> values) {
 		for (Value val : values) {
 			addValue(variable, val);
 		}

@@ -160,6 +160,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		return this.headVar;
 	}
 	
+	
+	
 	/**
 	 * Sample a head assignment from the distribution P(head|condition), given the
 	 * condition.  If no assignment can be sampled (due to e.g. an ill-formed 

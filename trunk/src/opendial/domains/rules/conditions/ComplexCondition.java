@@ -34,6 +34,7 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 
 /**
@@ -149,6 +150,29 @@ public class ComplexCondition implements Condition {
 	}
 
 
+	/**
+	 * Returns the subconditions in the complex condition.
+	 * 
+	 * @return the subconditions.
+	 */
+	public Collection<Condition> getConditions() {
+		return subconditions;
+	}
+	
+	
+	/**
+	 * Returns the list of all slots used in the conditions
+	 * 
+	 * @return the list of all slots
+	 */
+	public Set<String> getSlots() {
+		Set<String> slots = new HashSet<String>();
+		for (Condition cond: subconditions) {
+			slots.addAll(cond.getSlots());
+		}
+		return slots;
+	}
+
 
 
 	/**
@@ -163,7 +187,6 @@ public class ComplexCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-
 		for (Condition cond : subconditions) {
 			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input)) {
 				return false;
@@ -184,7 +207,6 @@ public class ComplexCondition implements Condition {
 	 */
 	@Override
 	public ValueRange getGroundings(Assignment input) {
-
 
 		ValueRange groundings = new ValueRange();
 		for (Condition cond : subconditions) {
@@ -239,6 +261,7 @@ public class ComplexCondition implements Condition {
 	public boolean equals(Object o) {
 		return this.hashCode() == o.hashCode();
 	}
+
 
 
 }

@@ -78,6 +78,16 @@ public class VoidCondition implements Condition {
 	
 	
 	/**
+	 * Returns an empty list
+	 * 
+	 * @return an empty list
+	 */
+	public Set<String> getSlots() {
+		return new HashSet<String>();
+	}
+	
+	
+	/**
 	 * Returns the string "true" indicating that the condition is
 	 * always trivially true
 	 *
