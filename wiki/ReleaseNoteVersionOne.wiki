@@ -13,4 +13,4 @@
  # Probabilistic rules can now be associated with a particular priority level (via the `priority` attribute in the XML specification), allowing them to supercede one another.<br><br>
  # Inclusion of a text-only interface (which can be used to run !OpenDial in terminals without support for X11 forwarding). <br><br>
  # Removal of the `Load modules` functionality in the GUI.<br><br>
- # Inclusion of a new, extended example of dialogue domain: the flight-booking domain.
+ # Inclusion of a new, extended example of dialogue domain: the [FlightBookingExample flight-booking domain].
