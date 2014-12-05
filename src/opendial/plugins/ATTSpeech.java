@@ -92,7 +92,7 @@ public class ATTSpeech implements Module {
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
 	 * @param system the dialogue system to attach
-	 * @throws DialException
+	 * @throws DialException if the module could not be established
 	 */
 	public ATTSpeech(DialogueSystem system) throws DialException {
 		this.system = system;

@@ -40,7 +40,7 @@ import opendial.state.DialogueState;
  * </ol>
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-10-16 00:07:06 #$ *
+ * @version $Date::                      $ *
  */
 public class FlightBookingExample implements Module {
 
@@ -116,7 +116,7 @@ public class FlightBookingExample implements Module {
 	/**
 	 * Pauses the module.
 	 * 
-	 * @param whether to pause the module or not
+	 * @param toPause whether to pause the module or not
 	 */
 	@Override
 	public void pause(boolean toPause) {

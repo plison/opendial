@@ -36,7 +36,7 @@ import opendial.arch.Logger;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: 2014-11-15 00:14:12 #$
+ * @version $Date::                      $
  *
  */
 public final class ListVal implements Value {
