@@ -105,7 +105,7 @@
 	<!-- The action-selection model -->
 	<model trigger="a_u">
 
-		<rule>
+		<rule id="correctornot">
 			<case>
 				<condition>
 					<if var="a_u" value="Request({X})" />

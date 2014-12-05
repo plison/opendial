@@ -129,24 +129,6 @@ public class RuleTest3 {
 		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 	}
 	
-
-
-	@Test
-	public void testpredict() throws DialException, InterruptedException {
-		Domain domain = XMLDomainReader.extractDomain(predictDomainFile); 
-		inference = new InferenceChecks();
-
-		DialogueSystem system = new DialogueSystem(domain);
-		system.getSettings().showGUI = false;
-
-		system.startSystem();
-		system.addContent(new Assignment("a_u", "None"));
-		assertEquals(1, system.getState().getNodeIds().size());
-
-		system.addContent(new Assignment("a_u", "bloblo"));
-
-		assertEquals(2, system.getState().getNodeIds().size());
-	}
 	
 	
 
@@ -158,10 +140,10 @@ public class RuleTest3 {
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
-		assertEquals(0.56, system.getContent("out").getProb("val1 is in [val2, val1]"), 0.01);
+		assertEquals(0.56, system.getContent("out").getProb("val1 is in [val1, val2]"), 0.01);
 		assertEquals(0.5, system.getContent("out2").getProb("this is a string is matched"), 0.01);
-		
 	}
+	
 	
 
 }
