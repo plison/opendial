@@ -98,7 +98,7 @@ public class SpeechStream extends InputStream implements Value {
 	/**
 	 * Sets a padding silence before and after the speech stream.
 	 * 
-	 * @param duration duration of the silence (in milliseconds)
+	 * @param silenceDuration duration of the silence (in milliseconds)
 	 */
 	public void setSilence(int silenceDuration) {
 		this.silenceDuration = silenceDuration;
