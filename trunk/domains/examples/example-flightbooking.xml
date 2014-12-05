@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+	<!-- Example of a dialogue domain for a flight-booking system specified in 
+	probabilistic rules. The system enables the user to book (single or round-trip)
+	flight tickets between Norwegian airports.  The dialogue domain shows how to
+	implement a basic slot-filling system. 
+	
+	The domain still remains quite rudimentary (e.g. there is currently no possibility 
+	to fill several slots at once or  "backtrack" to change a previous slot), but it
+	demonstrates how to specify all the parts of the dialogue system, from natural language
+	understanding to dialogue management and generation.
+
+	 )-->
+	 
+	<initialstate>
+		
+		<!-- Starting prompt -->
+		<variable id="u_m">
+			<value>Welcome to our Norwegian flight-booking system!</value>
+		</variable>
+		
+		<!-- We start the dialogue by asking for the destination -->
+		<variable id="current_step">
+			<value>Destination</value>
+		</variable>
+
+	</initialstate>
+
+	<!-- Natural language understanding models -->
+	<import href="example-flightbooking_nlu.xml"/>
+
+	<!--  Dialogue management models (action selection and transition) -->
+	<import href="example-flightbooking_dm.xml"/>
+
+	<!-- Natural language generation models -->
+	<import href="example-flightbooking_nlg.xml"/>
+
+
+	<!-- External module showing how to interface the dialogue system with an external 
+	database (used here to find the ticket prices and "book" the tickets) -->
+	<settings>
+		<modules>opendial.modules.examples.FlightBookingExample</modules>
+	</settings>
+</domain>
