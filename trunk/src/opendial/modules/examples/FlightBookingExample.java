@@ -116,7 +116,7 @@ public class FlightBookingExample implements Module {
 	/**
 	 * Pauses the module.
 	 * 
-	 * @param whether to pause the module or not
+	 * @param toPause whether to pause the module or not
 	 */
 	@Override
 	public void pause(boolean toPause) {
