@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	<!-- Dialogue management models, composed of three models: an action selection 
+		model to find the best system action to execute, a transition model that 
+		specifies how the selected action modifies the current dialogue state, and 
+		a prediction model for the prior distributions on the destinations and 
+		departures. -->
+
+
+	<model trigger="Destination,Departure,Date,ReturnDate,NbTickets">
+		<!-- This model specifies the utilities of various system actions, such 
+			as clarification requests (repetitions and confirmations) and 
+			grounding actions. -->
+
+		<!-- If the current step is to ask for the destination, specifies the utilities 
+			of a confirmation request or a grounding action using the current value of 
+			the "Destination" slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Destination" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Destination,{Destination})" />
+				</effect>
+				<effect util="0.5">
+					<set var="a_m" value="Confirm(Destination,{Destination})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask for the departure, specifies the utilities 
+			of a confirmation request or a grounding action using the current value of 
+			the "Departure" slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Departure" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Departure,{Departure})" />
+				</effect>
+				<effect util="0.5">
+					<set var="a_m" value="Confirm(Departure,{Departure})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask for the flight date, specifies the utilities 
+			of a confirmation request or a grounding action using the current value of 
+			the "Date" slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Date" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Date,{Date})" />
+				</effect>
+				<effect util="0.5">
+					<set var="a_m" value="Confirm(Date,{Date})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask whether to book a round-trip ticket 
+			and the user answers yes, specifies the utility of asking for the return 
+			date. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Return" />
+					<if var="a_u" relation="contains" value="Confirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Return)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="Return" />
+					<if var="a_u" relation="contains" value="Disconfirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(NoReturn)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask for the return date, specifies the utilities 
+			of a confirmation request or a grounding action using the current value of 
+			the "ReturnDate" slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="ReturnDate" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(ReturnDate,{ReturnDate})" />
+				</effect>
+				<effect util="0.5">
+					<set var="a_m" value="Confirm(ReturnDate,{ReturnDate})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask whether to proceed with the booking 
+			and the user answers yes, specifies the utility of asking for the number 
+			of tickets. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="MakeOffer" />
+					<if var="a_u" relation="contains" value="Confirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(MakeOffer)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask whether to proceed with the booking 
+			and the user answers no, specifies the utility of grounding the cancel action. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="MakeOffer" />
+					<if var="a_u" relation="contains" value="Disconfirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Cancel)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask for the number of tickets, specifies 
+			the utilities of a confirmation request or a grounding action using the current 
+			value of the "NbTickets" slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="NbTickets" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(NbTickets,{NbTickets})" />
+				</effect>
+				<effect util="0.5">
+					<set var="a_m" value="Confirm(NbTickets,{NbTickets})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask for a last confirmation and the user 
+			answers yes, specifies the utility of grounding the booking. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+					<if var="a_u" relation="contains" value="Confirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Booking)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+					<if var="a_u" relation="contains" value="Disconfirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Cancel)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask whether to book additional tickets and 
+			the user answers yes, specifies the utility of restarting the interaction. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Final" />
+					<if var="a_u" relation="contains" value="Confirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Restart)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the current step is to ask whether to book additional tickets and 
+			the user answers no, specifies the utility of closing the interaction. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Final" />
+					<if var="a_u" relation="contains" value="Disconfirm" />
+				</condition>
+				<effect util="5">
+					<set var="a_m" value="Ground(Close)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Specifies the utility of a repetition request -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" relation="!=" value="None" />
+				</condition>
+				<effect util="0.1">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Specifies the "base" utility of all possible actions, in the absence 
+			of any other information (allows to set an implicit threshold on the system 
+			confidence before selecting a particular action). -->
+		<rule>
+			<case>
+				<effect util="-4.5">
+					<set var="a_m" value="Ground(*)" />
+				</effect>
+				<effect util="-0.3">
+					<set var="a_m" value="Confirm(*)" />
+				</effect>
+				<effect util="-0.03">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+		
+		
+		<!-- Records the next-to-last system action -->
+		<rule>
+			<case>
+				<effect>
+					<set var="a_m-prev" value="{a_m}" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+	
+	
+	
+
+	<model trigger="a_m">
+		<!-- Transition model that specifies how the selection of a particular 
+			system action affects the current dialogue state, in particular the current 
+			step in the dialogue. -->
+
+		<!-- Moves to the next step if a particular slot has been confirmed -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Destination,*)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Departure" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Departure,*)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Date" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Date,*)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Return" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Return)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="ReturnDate" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(NoReturn)" />
+				</condition>
+				<effect prob="1">
+					<set var="ReturnDate" value="NoReturn" />
+					<set var="a_m" value="FindOffer" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(ReturnDate,*)" />
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="FindOffer" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(MakeOffer)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="NbTickets" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Cancel)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Final" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(NbTickets,{Number})" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="LastConfirm" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Booking)" />
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Book"/>
+					<set var="current_step" value="Final" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Restart)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Destination" />
+					<set var="Destination" value="None" />
+					<set var="Departure" value="None" />
+					<set var="Date" value="None" />
+					<set var="ReturnDate" value="None" />
+					<set var="NbTickets" value="None" />
+					<set var="TotalCost" value="None" />
+					<set var="a_u" value="None" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Close)" />
+				</condition>
+				<effect prob="1">
+					<set var="current_step" value="Close" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<!-- If the external module produces the system action MakeOffer(particular price),
+		registers the price in a separate variable and moves the current step. -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="MakeOffer({Price})" />
+				</condition>
+				<effect>
+					<set var="TotalCost" value="{Price}" />
+					<set var="current_step" value="MakeOffer" />
+				</effect>
+			</case>
+		<!-- If the number of tickets is grounded, update the total cost by multiplying the
+		price with the number of tickets. -->
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(NbTickets,*)" />
+				</condition>
+				<effect>
+					<set var="TotalCost" value="{TotalCost}*{NbTickets}" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+	<model trigger="a_m,current_step">
+		<!-- Specifies the prior distributions for the destinations, departures and
+		responses to yes/no questions -->
+	
+		<!-- Prior probabilities for the destinations and departures -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Destination" />
+				</condition>
+				<effect prob="0.25">
+					<set var="Destination^p" value="Oslo" />
+				</effect>
+				<effect prob="0.15">
+					<set var="Destination^p" value="Bergen" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Destination^p" value="Trondheim" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Destination^p" value="Stavanger" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Destination^p" value="Moss" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Destination^p" value="Sandefjord" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Destination^p" value="Tromsø" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Destination^p" value="Bodø" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Destination^p" value="Kristiansand" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Destination^p" value="Ålesund" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="Departure" />
+				</condition>
+				<effect prob="0.25">
+					<set var="Departure^p" value="Oslo" />
+				</effect>
+				<effect prob="0.15">
+					<set var="Departure^p" value="Bergen" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Departure^p" value="Trondheim" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Departure^p" value="Stavanger" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Departure^p" value="Moss" />
+				</effect>
+				<effect prob="0.1">
+					<set var="Departure^p" value="Sandefjord" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Departure^p" value="Tromsø" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Departure^p" value="Bodø" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Departure^p" value="Kristiansand" />
+				</effect>
+				<effect prob="0.05">
+					<set var="Departure^p" value="Ålesund" />
+				</effect>
+			</case>
+		</rule>
+		
+		
+			<!-- Prediction rule on the next user dialogue act (the probabilities
+		are here quite low to account for a range of unexpected responses)   -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="(AskRepeat|None)"/>
+					<if var="a_u" relation="!=" value="None"/>
+					<if var="a_u" relation="!=" value="[Other]"/>
+				</condition>
+				<effect prob="0.3">
+					<set var="a_u^p" value="{a_u}"/>
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="a_m" value="Confirm(*)"/>
+					<if var="current_step" value="Return"/>
+					<if var="current_step" value="MakeOffer"/>
+					<if var="current_step" value="LastConfirm"/>
+					<if var="current_step" value="Final"/>
+				</condition>
+				<effect prob="0.2">
+					<set var="a_u^p" value="[Confirm]"/>
+				</effect>
+				<effect prob="0.2">
+					<set var="a_u^p" value="[Disconfirm]"/>
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<set var="a_u^p" value="None"/>
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
+
+</domain>

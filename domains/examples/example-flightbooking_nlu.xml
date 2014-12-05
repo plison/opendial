@@ -1,0 +1,217 @@
+
+<domain>
+	<!-- Natural language understanding models, constituted of two models: one model to recognise
+	the user dialogue act. from the utterance, and one model to update the slots in accordance with 
+	this dialogue act.
+
+	The user dialogue act associated with each utterance is represented here as a list of 
+	basic acts (such as "Confirm" or "Inform(...)").  This representation allows us to 
+	capture the fact that an utterance such as "Yes, 3 tickets" contains both a confirmation
+	and a new information about the number of tickets. 
+	-->
+
+	<model trigger="u_u">
+		<!-- This model takes the raw user utterance as input, and outputs the corresponding 
+	  dialogue acts from the user. This model uses simple shallow patterns to extract 
+	  domain-specific information (such as airports or dates) from the utterance. -->
+	  
+	  
+		<!-- Extracts booking information related to the departure or destination  -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(to|from)? {Airport}" />
+					<if var="Airport" relation="in"
+						value="[Oslo,Bergen,Trondheim,Stavanger,Moss,
+								Sandefjord,Tromsø,Bodø,Kristiansand,Ålesund]" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Airport,{Airport})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Extracts booking information related to the flight dates.  -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(on)? {Month} {Day}" />
+					<if var="Month" relation="in"
+						value="[January,February,March,April,May,June,July,
+								August,September,October,November,December]" />
+					<if var="Day" relation="&gt;" value="0" />
+					<if var="Day" relation="&lt;" value="32" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Date,{Month},{Day})" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(on the)? the {Day}th of {Month}" />
+					<if var="Month" relation="in"
+						value="[January,February,March,April,May,June,July,
+								August,September,October,November,December]" />
+					<if var="Day" relation="&gt;" value="0" />
+					<if var="Day" relation="&lt;" value="32" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Date,{Month},{Day})" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Extracts booking information related to the number of tickets.  -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(1|one|a single) (ticket)?" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Number,1)" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(2|two) (tickets)?" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Number,2)" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(3|three) (tickets)?" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Number,3)" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(4|four) (tickets)?" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Inform(Number,4)" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Extracts confirmations and disconfirmations -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(yes|correct|exactly|sure|right)" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Confirm" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="(no|nope|wrong)" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Disconfirm" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Rule of lower priority that associates the dialogue act to "Other"
+		    if nothing else is recognised. -->
+		<rule priority="2">
+			<case>
+				<condition>
+					<if var="u_u" relation="!=" value="None" />
+				</condition>
+				<effect>
+					<add var="a_u" value="Other" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+	
+	<model trigger="a_u">
+		<!-- This model take the dialogue act fom the user and uses it to fill the corresponding
+	  slots (departure, destination, flight dates, number of tickets, etc.). -->
+	  
+	  
+		<!-- Fills the slots in accordance with the information in the dialogue act -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="(Destination|Departure)" />
+					<if var="a_u" relation="contains" value="Inform(Airport,{Airport})" />
+				</condition>
+				<effect>
+					<set var="{current_step}" value="{Airport}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="(Date|ReturnDate)" />
+					<if var="a_u" relation="contains" value="Inform(Date,{Month},{Day})" />
+				</condition>
+				<effect>
+					<set var="{current_step}" value="{Month} {Day}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="NbTickets" />
+					<if var="a_u" relation="contains" value="Inform(Number,{Number})" />
+				</condition>
+				<effect>
+					<set var="NbTickets" value="{Number}" />
+				</effect>
+			</case>
+		</rule>
+		
+
+		<!-- If the last system action is a confirmation request and the user confirms the
+		information, also update the corresponding slot-->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm({Step},{Value})" />
+					<if var="a_u" relation="contains" value="Confirm" />
+				</condition>
+				<effect>
+					<set var="{Step}" value="{Value}" />
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- If the system utters a grounding action which is not contradicted
+		by the user, assumes the information is correct -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground({Slot},{Value})" />
+				</condition>
+				<effect>
+					<set var="{Slot}" value="{Value}" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Catch-all rule that simply keeps the slots to their current value
+		in the absence of any other new information. -->
+		<rule priority="2">
+			<case>
+				<effect>
+					<set var="Destination" value="None" />
+					<set var="Destination" value="{Destination}" />
+					<set var="Departure" value="{Departure}" />
+					<set var="Date" value="{Date}" />
+					<set var="ReturnDate" value="{ReturnDate}" />
+					<set var="NbTickets" value="{NbTickets}" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+	</domain>
