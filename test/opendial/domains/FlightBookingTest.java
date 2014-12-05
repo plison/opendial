@@ -399,7 +399,6 @@ public class FlightBookingTest {
 		assertEquals(0.97, system.getContent("a_u").getProb("[Disconfirm]"), 0.01);
 		assertEquals(1.0, system.getContent("current_step").getProb("Close"), 0.01);
 		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("welcome back!"));
-		log.debug(system.getModule(DialogueRecorder.class).getRecord());
 		assertTrue(system.getModule(DialogueRecorder.class).getRecord().contains("<systemTurn><variable id=\"u_m\">"
 				+ "<value>You are ordering one round-trip ticket from Moss to Tromsø on March 16 and returning on "
 				+ "March 20 for a total cost of 299 EUR. "
