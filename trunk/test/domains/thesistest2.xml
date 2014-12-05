@@ -42,6 +42,14 @@
 	</case>
 </rule>
 
+<rule id="rnew">
+	<case>
+		<effect>
+			<add var="A" value="{A}"/>
+		</effect>
+	</case>
+</rule>
+
 
 <rule id="r14">
 	<case>

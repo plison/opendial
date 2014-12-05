@@ -124,10 +124,10 @@
 				<if var="carried" value="[]" />
 				<if var="perceived" value="{OBJ}" relation="contains" />
 			</condition>
-			<effect prob="0.2">
+			<effect prob="0.5">
 				<set var="i_u" value="PickUp({OBJ})" />
 			</effect>
-			<effect prob="0.05">
+			<effect prob="0.1">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
 		</case>
@@ -136,7 +136,7 @@
 				<if var="completed-task" value="true" />
 				<if var="carried" value="[]" />
 			</condition>
-			<effect prob="0.05">
+			<effect prob="0.1">
 				<set var="i_u" value="PickUp(AtFeet)" />
 			</effect>
 		</case>

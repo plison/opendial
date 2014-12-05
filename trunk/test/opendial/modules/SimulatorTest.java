@@ -64,14 +64,14 @@ public class SimulatorTest {
 		system.startSystem();
 
 		String str = "";
-		for (int i = 0 ; i < 20 && ! system.isPaused(); i++) {
+		for (int i = 0 ; i < 30 && ! system.isPaused(); i++) {
 			Thread.sleep(500);
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			try {
 				checkCondition(str);
 				system.pause(true);
 			}
-			catch (AssertionError e) {		}
+			catch (AssertionError e) {	}
 		}
 
 		checkCondition(str);
@@ -93,14 +93,14 @@ public class SimulatorTest {
 			Settings.nbSamples = Settings.nbSamples * 2 ;
 			system.startSystem();
 
-			for (int i = 0 ; i < 10 && !system.isPaused() ; i++) {
+			for (int i = 0 ; i < 20 && !system.isPaused() ; i++) {
 				Thread.sleep(500);
 				try {
 					checkCondition2(system);
 					system.pause(true);
 					break outloop;
 				}
-				catch (AssertionError e) {		}
+				catch (AssertionError e) { 	}
 			}
 
 		}
@@ -120,7 +120,7 @@ public class SimulatorTest {
 		assertTrue(str.contains("AskRepeat"));
 		assertTrue(str.contains("Do(Move"));
 		assertTrue(str.contains("YouSee")); 
-		assertTrue(str.contains("Reward: 10.0"));
+		assertTrue(str.contains("Reward: 10"));
 		assertTrue(str.contains("Do(Pick"));
 	}
 
