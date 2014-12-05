@@ -38,6 +38,7 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
@@ -186,6 +187,21 @@ public class Effect implements Value {
 
 	
 	/**
+	 * Returns the underspecified slots in the effect
+	 * 
+	 * @return the labels for the underspecified slots
+	 */
+	public Set<String> getSlots() {
+		Set<String> slots = new HashSet<String>();
+		for (BasicEffect e : subeffects) {
+			if (e instanceof TemplateEffect) {
+				slots.addAll(((TemplateEffect)e).getSlots());
+			}
+		}
+		return slots;
+	}
+	
+	/**
 	 * Returns the set of values specified in the effect for the given variable and
 	 * effect type.  The method accepts the effect types SET, DISCARD and ADD (the
 	 * CLEAR effect does not return any value).
@@ -201,8 +217,7 @@ public class Effect implements Value {
 		Set<Value> result = new HashSet<Value>();
 		int highestPriority = Integer.MAX_VALUE;
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable) && e.getType() == type 
-					&& !e.getValue().equals(ValueFactory.none())) {
+			if (e.getVariable().equals(variable) && e.getType() == type) {
 				if (e.priority > highestPriority) {
 					continue;
 				}
@@ -210,7 +225,9 @@ public class Effect implements Value {
 					result = new HashSet<Value>();
 					highestPriority = e.priority;
 				}
-				result.add(e.getValue());
+				if (!e.getValue().equals(ValueFactory.none())) {
+					result.add(e.getValue());
+				}
 			}
 		}
 		return result;
@@ -235,9 +252,15 @@ public class Effect implements Value {
 
 	
 	public Condition convertToCondition() {
+		if (subeffects.size()==1) {
+			return subeffects.get(0).convertToCondition();
+		}
 		ComplexCondition condition = new ComplexCondition();
 		for (BasicEffect subeffect : getSubEffects()) {
 			condition.addCondition(subeffect.convertToCondition());
+		}
+		if (this.getOutputVariables().size() == 1) {
+			condition.setOperator(BinaryOperator.OR);
 		}
 		return condition;
 	}

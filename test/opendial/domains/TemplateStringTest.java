@@ -28,6 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -213,5 +214,53 @@ public class TemplateStringTest {
 		assertEquals(MathUtils.evaluateExpression("-1.2*3"), -3.6, 0.001);
 		Template t = new Template("{X}+2");
 		assertEquals(t.fillSlots(new Assignment("X", "3")).toString(), "5.0");
+	}
+	
+	@Test
+	public void ComplexRegex() {
+		Template t = new Template("a (pizza)? margherita");
+		assertTrue(t.match("a margherita", true).isMatching());
+		assertTrue(t.match("a pizza margherita", true).isMatching());
+		assertFalse(t.match("a pizza", true).isMatching());
+		assertTrue(t.match("I would like a margherita", false).isMatching());
+		Template t2 = new Template("a (bottle of)? (beer|wine)");
+		assertTrue(t2.match("a beer", true).isMatching());
+		assertTrue(t2.match("a bottle of wine", true).isMatching());
+		assertFalse(t2.match("a bottle of", true).isMatching());
+		assertFalse(t2.match("a coke", true).isMatching());
+		assertTrue(t2.match("I would like a bottle of beer", false).isMatching());
+		Template t3 = new Template("move (a (little)? bit)? (to the)? left");
+		assertTrue(t3.match("move a little bit to the left", true).isMatching());
+		assertTrue(t3.match("move a bit to the left", true).isMatching());
+		assertTrue(t3.match("move to the left", true).isMatching());
+		assertTrue(t3.match("move a little bit left", true).isMatching());
+		assertFalse(t3.match("move a to the left", true).isMatching());
+		Template t4 = new Template("I want beer(s)?");
+		assertTrue(t4.match("I want beer", true).isMatching());
+		assertTrue(t4.match("I want beers", true).isMatching());
+		assertFalse(t4.match("I want beer s", true).isMatching());
+		Template t5 = new Template("(beer(s)?|wine)");
+		assertTrue(t5.match("beer", true).isMatching());
+		assertTrue(t5.match("beers", true).isMatching());
+		assertTrue(t5.match("wine", true).isMatching());
+		assertFalse(t5.match("wines", true).isMatching());
+		assertFalse(t5.match("beer wine", true).isMatching());
+	}
+	
+	@Test
+	public void testDouble() {
+		Template t= new Template("MakeOrder({Price})");
+		assertTrue(t.match("MakeOrder(179)", true).isMatching());
+		assertTrue(t.match("MakeOrder(179.0)", true).isMatching());
+		assertFalse(t.match("MakkeOrder(179.0)", true).isMatching());
+		assertFalse(t.match("MakkeOrder()", true).isMatching());
+	}
+	
+	@Test
+	public void testMatchInString() {
+		Template t = new Template("{X}th of March");
+		assertTrue(t.match("20th of March", true).isMatching());
+		assertTrue(t.match("on the 20th of March", false).isMatching());
+		assertFalse(t.match("20 of March", true).isMatching());
 	}
 }

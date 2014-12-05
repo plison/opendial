@@ -146,7 +146,7 @@ public class PruningTest {
 	@Test
 	public void testPruning7() throws DialException, InterruptedException {
 		
-		inference.checkProb(system.getState(), "a_u2", "[HowAreYou, Greet]", 0.7);
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 
@@ -178,7 +178,7 @@ public class PruningTest {
 			howareyouNode = createdNodes.first();
 		}
 
-		inference.checkProb(system.getState(),"a_u3", "["+greetNode +"," + howareyouNode +"]", 0.7);
+		inference.checkProb(system.getState(),"a_u3", "["+howareyouNode +"," + greetNode +"]", 0.7);
 		inference.checkProb(system.getState(),"a_u3", "none", 0.1);
 		inference.checkProb(system.getState(),"a_u3", "[" + howareyouNode + "]", 0.2);
 		inference.checkProb(system.getState(),greetNode+"", "Greet", 0.7);

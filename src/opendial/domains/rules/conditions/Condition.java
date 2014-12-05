@@ -67,7 +67,15 @@ public interface Condition {
 	 * @param input the assignment from which to calculate the groundings
 	 * @return the groundings (as a value range).
 	 */
-	public ValueRange getGroundings(Assignment input); 
-	
+	public ValueRange getGroundings(Assignment input);
+
+
+	/**
+	 * Returns the labels for the underspecified values in the condition
+	 * 
+	 * @return the list of slots
+	 */
+	public Set<String> getSlots(); 
+
 }
 

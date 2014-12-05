@@ -71,34 +71,18 @@ public class LikelihoodWeighting {
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
 		
-		service.schedule(() -> {if (!isTerminated) { terminate(); }}, 
+		service.schedule(() -> isTerminated = true, 
 				maxSamplingTime, TimeUnit.MILLISECONDS);
 		
 		samples = Stream.generate(() -> this)  	// creates infinite stream
-				.filter(p -> !p.isTerminated)  	// stop when process is terminated
 				.parallel()						// parallelise
 				.map(p -> p.sample())			// generate a sample
-				.filter(s -> !s.isEmpty())		// discard empty samples	
 				.limit(nbSamples)				// stop when nbSamples are collected
+				.filter(s -> !s.isEmpty())		// discard empty samples	
 				.collect(Collectors.toList());	// makes a list of samples
 	}
 
 
-	/**
-	 * Terminates all sampling threads, compile their results, and notifies
-	 * the sampling algorithm.
-	 */
-	public void terminate() {
-		if (!isTerminated) {
-			if (samples.isEmpty()) {
-				log.debug("no samples for query: " + query);
-				query.getEvidence().clear();
-			}
-			else {
-				isTerminated = true;
-			}
-		}
-	}
 
 
 	/**
@@ -131,6 +115,9 @@ public class LikelihoodWeighting {
 	protected Sample sample() {
 
 		Sample sample = new Sample();
+		if (isTerminated) {
+			return sample;
+		}
 		try {
 			for (BNode n : sortedNodes) {
 
@@ -164,9 +151,7 @@ public class LikelihoodWeighting {
 			if (sample.getWeight() < WEIGHT_THRESHOLD) {
 				sample.clear();
 			}
-
 			sample.trim(query.getQueryVars());
-
 		}
 		catch (DialException e) {
 			log.info("exception caught: " + e);
@@ -174,7 +159,6 @@ public class LikelihoodWeighting {
 		}
 		return sample;
 	}
-
 
 
 	// ===================================

@@ -134,7 +134,7 @@ public final class DoubleVal implements Value {
 			return (new Double(d)).compareTo(((DoubleVal)o).getDouble());
 		}
 		else {
-			return hashCode() - o.hashCode();
+			return 0;
 		}
 	}
 
@@ -143,7 +143,7 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public boolean contains(Value subvalue) {
-		return false;
+		return equals(subvalue);
 	}
 	
 }

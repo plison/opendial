@@ -26,12 +26,14 @@ package opendial.bn.values;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
+import opendial.utils.StringUtils;
 
 /**
  * Factory for creating variable values
@@ -55,7 +57,7 @@ public class ValueFactory {
 	static Pattern arrayPattern = Pattern.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
 			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
-
+	
 	/**
 	 * Creates a new value based on the provided string representation.
 	 * If the string contains a numeric value, "true", "false", "None", 
@@ -97,13 +99,25 @@ public class ValueFactory {
 			}
 			else if (str.startsWith("[") && str.endsWith("]")) {
 
-				Set<Value> subVals = new HashSet<Value>();
+				LinkedList<Value> subVals = new LinkedList<Value>();
+				
+				boolean openParenthesis = false;
 				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
-					if (subVal.length() > 0) {
-						subVals.add(create(subVal.trim()));
+					subVal = subVal.trim();
+					if (subVal.length() == 0) {
+						continue;
 					}
+					else if (!openParenthesis) {
+						subVals.add(create(subVal));
+					}
+					else {
+						subVal = subVals.getLast().toString()+","+subVal;
+						subVals.set(subVals.size()-1, create(subVal));
+					}
+					openParenthesis =  (StringUtils.countNbOccurrences(subVal, '(') >
+					StringUtils.countNbOccurrences(subVal, ')'));
 				}
-				return new SetVal(subVals);
+				return new ListVal(subVals);
 			}
 		}
 
@@ -141,8 +155,8 @@ public class ValueFactory {
 	 * @param vals the values
 	 * @return the set value
 	 */
-	public static SetVal create(Value...vals) {
-		return new SetVal(vals);
+	public static ListVal create(Value...vals) {
+		return new ListVal(vals);
 	}
 
 	/**
@@ -151,8 +165,8 @@ public class ValueFactory {
 	 * @param vals the values
 	 * @return the set value
 	 */
-	public static SetVal create(Collection<Value> vals) {
-		return new SetVal(vals);
+	public static ListVal create(Collection<Value> vals) {
+		return new ListVal(vals);
 	}
 
 

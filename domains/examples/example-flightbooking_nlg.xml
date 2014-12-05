@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+	<!-- Natural language generation models. The domain can produce new system 
+		utterance either when the current step is changed, or when a new system action 
+		is selected. -->
+
+
+	<model trigger="current_step">
+		<!--Model producing new system utterances when the current step is moved 
+			to a new step. -->
+
+		<!-- Asks for the destination -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Destination" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="What is your destination?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks for the departure -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Departure" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="What is your departure?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks for the flight date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Date" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="On which date do you want to travel to {Destination}?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks whether to book a return trip -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Return" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Do you want to book a return trip?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks for the return date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="ReturnDate" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="On which date do you want to travel back to {Departure}?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks for the number of tickets -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="NbTickets" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="How many tickets should I order?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks for the last confirmation -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+					<if var="ReturnDate" value="NoReturn" />
+					<if var="NbTickets" value="1"/>
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You are ordering one one-way ticket from {Departure}
+					to {Destination} on {Date} for a total cost of {TotalCost} EUR. 
+					Shall I confirm your order?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+					<if var="NbTickets" value="1"/>
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You are ordering one round-trip ticket from {Departure}
+					to {Destination} on {Date} and returning on {ReturnDate}  for a total cost of 
+					{TotalCost} EUR. Shall I confirm your order?" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+					<if var="ReturnDate" value="NoReturn" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You are ordering {NbTickets} one-way tickets from {Departure}
+					to {Destination} on {Date} for a total cost of {TotalCost} EUR. 
+					Shall I confirm your order?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="current_step" value="LastConfirm" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You are ordering {NbTickets} round-trip tickets from {Departure}
+					to {Destination} on {Date} and returning on {ReturnDate}  for a total cost of 
+					{TotalCost} EUR. Shall I confirm your order?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Asks whether to order additional tickets -->
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="current_step" value="Final" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Do you want to order additional tickets?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Closes the interaction -->
+		<rule>
+			<case>
+				<condition>
+					<if var="current_step" value="Close" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Thank you for your order and welcome back!" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+
+	<model trigger="a_m">
+		<!-- Model producing new system utterances related to the last system action -->
+
+		<!-- grounding the destination -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Destination,{Dest})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, flying to {Dest}." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- grounding the departure -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Departure,{Depart})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, flying from {Depart}." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- grounding the flight date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Date,{Date})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="OK, flying from {Departure} to {Destination} on {Date}." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- grounding the number of tickets -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(NbTickets,{Number})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, {Number} tickets." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- grounding the return date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(ReturnDate,NoReturn)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, no return trip." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(ReturnDate,{ReturnDate})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="OK, flying back from {Destination} to {Departure} on {ReturnDate}." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- confirmation request for the destination -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(Destination,{Dest})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="You want to fly to {Dest}. Is that correct?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- confirmation request for the departure -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(Departure,{Depart})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="You want to fly from {Depart}. Is that correct?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- confirmation request for the flight date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(Date,{Date1})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You want to fly to {Destination} on {Date1}. Is that correct?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- confirmation request for the return date -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(ReturnDate,NoReturn)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Do you want to order a return trip?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(ReturnDate,{Date2})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="You want to fly back to {Departure} on {Date2}. Is that correct?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- confirmation request for the number of tickets -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm(NbTickets,{Number})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="You want to order {Number} tickets. Is that correct?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- repetition request -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+					<if var="current_step" value="(Destination|Departure)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="Sorry, could you repeat? The available airports are Oslo, Bergen, 
+					Trondheim, Stavanger, Moss,	Sandefjord, Tromsø, Bodø, Kristiansand and Ålesund." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+					<if var="current_step" value="(Date|ReturnDate)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="Sorry, could you repeat? Please state the month and day of
+					your desired flight." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m-prev" value="AskRepeat" />
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="Sorry I couldn't understand you. Could you please repeat one more time?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Sorry, could you repeat?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Making a price offer -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="MakeOffer({Price})" />
+					<if var="ReturnDate" value="NoReturn" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="One-way flight tickets from {Departure} to {Destination} 
+					on {Date} cost {Price} EUR per person. Do you want me to order tickets?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="MakeOffer({Price})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="Flight tickets from {Departure} to {Destination} on {Date} and returning 
+						on {ReturnDate} cost {Price} EUR per person. Do you want me to order tickets?" />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Grounding the cancellation -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Cancel)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, your booking is now cancelled." />
+				</effect>
+			</case>
+		</rule>
+
+		<!-- Grounding the booking -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground(Booking)" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="OK, your tickets are now ordered and will be sent to you via email." />
+				</effect>
+			</case>
+		</rule>
+
+		
+	</model>
+
+</domain>

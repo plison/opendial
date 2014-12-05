@@ -27,6 +27,7 @@ package opendial.plugins;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -36,6 +37,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Mixer;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,6 +49,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import opendial.DialogueSystem;
@@ -79,20 +85,25 @@ public class NuanceSpeech implements Module {
 	DialogueSystem system;
 
 	/** HTTP client and URI for the speech recognition */
-	HttpClient asrClient;
+	CloseableHttpClient asrClient;
 	URI asrURI;
 
 	/** HTTP client and URI for the speech synthesis */
-	HttpClient ttsClient;
+	CloseableHttpClient ttsClient;
 	URI ttsURI;
 
 	/** whether the system is paused or active */
 	boolean paused = true;
 
 	/** file used to save the speech input (leave empty to avoid recording) */
-	public static String SAVE_SPEECH = null;
+	public static String SAVE_SPEECH = "resources/temp.wav";
 
-
+	/** stack of yet-to-play synthesised audio */
+	Stack<ByteArrayOutputStream> audioToPlay = new Stack<ByteArrayOutputStream>();
+	
+	/** audio clip currently playing */
+	Clip currentClip;
+	
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
@@ -182,7 +193,10 @@ public class NuanceSpeech implements Module {
 		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar) && !paused) {
 			Value utteranceVal = system.getContent(outputVar).toDiscrete().getBest();
 			if (utteranceVal instanceof StringVal) {
-				synthesise(utteranceVal.toString());
+				Thread t = new Thread(() -> {
+					synthesise(utteranceVal.toString());
+				});
+				t.start();
 			}
 		}
 	}
@@ -200,12 +214,14 @@ public class NuanceSpeech implements Module {
 	private Map<String,Double> recognise(SpeechStream stream) {
 
 		Map<String,Double> table = new HashMap<String,Double>();
-
+		currentClip.stop();
+		audioToPlay.clear();
 		int sampleRate =  (int)stream.getFormat().getSampleRate();
 		log.info("calling Nuance server for recognition... "
-				+ "(sample rate: " + sampleRate + " Hz.)" );       
+				+ "(sample rate: " + sampleRate + " Hz.)" );   
+		stream.setSilence(50);
 		try {
-			
+		//	stream.setSilence(200);
 			// wait until the stream is closed to save the audio data
 			if (SAVE_SPEECH != null && SAVE_SPEECH.length() > 0) {
 				while (!stream.isClosed()) {
@@ -229,9 +245,8 @@ public class NuanceSpeech implements Module {
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity== null || response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());
-				return table;
 			}
-
+			else {
 			BufferedReader reader = new BufferedReader(
 					new InputStreamReader(resEntity.getContent()));
 			String sentence;
@@ -242,6 +257,8 @@ public class NuanceSpeech implements Module {
 			table.putAll(InferenceUtils.normalise(lines));
 			log.debug("recognition results: " + table);
 			reader.close();
+			}
+			httppost.releaseConnection();
 		}
 		catch (Exception e) {
 			log.warning("could not extract ASR results: " + e);
@@ -259,9 +276,12 @@ public class NuanceSpeech implements Module {
 	 * @param utterance the utterance to synthesis
 	 */
 	public void synthesise(String utterance) {
+
 		try {
 			log.info("calling Nuance server for synthesis...\t"); 
-
+			ByteArrayOutputStream rawBuffer = new ByteArrayOutputStream();
+			audioToPlay.add(rawBuffer);
+			
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type",  "text/plain");
 			httppost.addHeader("Accept", "audio/x-wav;codec=pcm;bit=16;rate=16000");
@@ -278,16 +298,32 @@ public class NuanceSpeech implements Module {
 
 			InputStream in = resEntity.getContent();
 
-			ByteArrayOutputStream rawBuffer = new ByteArrayOutputStream();
 			int nRead;
 			byte[] data = new byte[1024 * 16];
 			while ((nRead = in.read(data, 0, data.length)) != -1) {
 				rawBuffer.write(data, 0, nRead);
 			}
 			rawBuffer.flush();
-
-			AudioUtils.playAudio(rawBuffer.toByteArray(), system.getSettings().outputMixer);
-
+			rawBuffer.close();
+			httppost.releaseConnection();
+			
+			while (audioToPlay.indexOf(rawBuffer) > 0) {
+				Thread.sleep(50);
+			}
+			if (audioToPlay.isEmpty()) {
+				return;
+			}
+			
+			Mixer.Info mixer = system.getSettings().outputMixer;
+			currentClip = AudioUtils.playAudio(rawBuffer.toByteArray(), mixer);
+			while (!currentClip.isActive()) {
+				Thread.sleep(50);
+			}
+			while (currentClip.isActive()) {
+				Thread.sleep(50);
+			}
+			audioToPlay.remove(rawBuffer);
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -321,6 +357,7 @@ public class NuanceSpeech implements Module {
 			builder.setPath("/NMDPTTSCmdServlet/tts");
 			builder.setParameter("ttsLang", system.getSettings().params.getProperty("lang"));
 			ttsURI = builder.build();
+			
 		}
 		catch (Exception e) {
 			throw new DialException("cannot build client: " + e);

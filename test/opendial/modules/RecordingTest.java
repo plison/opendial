@@ -70,7 +70,6 @@ public class RecordingTest {
 		table.addRow("move left", 0.3);
 		table.addRow("move a bit to the left", 0.05);
 		system.addContent(table);
-
 		table = new CategoricalTable("u_u");
 		table.addRow("no", 0.5);
 		system.addContent(table);

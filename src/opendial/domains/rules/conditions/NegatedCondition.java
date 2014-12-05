@@ -23,6 +23,7 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
@@ -104,6 +105,16 @@ public class NegatedCondition implements Condition {
 	 */
 	public Condition getInitCondition() {
 		return initCondition;
+	}
+	
+	
+	/**
+	 * Returns the list of slots in the condition
+	 * 
+	 * @return the list of slots
+	 */
+	public Set<String> getSlots() {
+		return initCondition.getSlots();
 	}
 	
 

@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.bn.values.ListVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -111,6 +112,16 @@ public class BasicCondition implements Condition {
 	public Value getValue() {
 		return expectedValue;
 	}
+	
+	
+	/**
+	 * Returns an empty list
+	 * 
+	 * @return an empty list
+	 */
+	public Set<String> getSlots() {
+		return new HashSet<String>();
+	}
 
 
 
@@ -166,7 +177,11 @@ public class BasicCondition implements Condition {
 	 */
 	@Override
 	public ValueRange getGroundings(Assignment input) {	
-		return new ValueRange();
+		ValueRange groundings = new ValueRange();
+		if (relation == Relation.IN && expectedValue instanceof ListVal) {
+			groundings.addValues(variable, ((ListVal)expectedValue).getList());
+		}
+		return groundings;
 	}
 
 
@@ -189,6 +204,8 @@ public class BasicCondition implements Condition {
 		case LOWER_THAN : return variable + "<" + expectedValue; 
 		case CONTAINS: return expectedValue + " in " + variable; 
 		case NOT_CONTAINS: return expectedValue + " !in " + variable;
+		case IN: return variable + " in " + expectedValue; 
+		case NOT_IN: return variable + " not in " + expectedValue;
 		default: return ""; 
 		}
 	}

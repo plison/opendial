@@ -399,7 +399,7 @@ public class XMLRuleReader {
 		else {
 			value = "None";
 		}
-		
+		value = value.replaceAll("\\s+"," ");
 		EffectType type = getEffectType(node);
 		// "clear" effect is outdated
 		if (node.getNodeName().equalsIgnoreCase("clear")) {

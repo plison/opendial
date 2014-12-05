@@ -175,7 +175,7 @@ public class RuleTest1 {
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
 		
-		inference.checkProb(system.getState(), "a_u2", "[HowAreYou, Greet]", 0.7);
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 		

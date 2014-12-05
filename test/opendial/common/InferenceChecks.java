@@ -70,7 +70,7 @@ public class InferenceChecks {
 
 		ve = new VariableElimination();
 		is = new SamplingAlgorithm(2000,200);
-		is2 = new SamplingAlgorithm(10000, 1000);
+		is2 = new SamplingAlgorithm(12000, 1200);
 		naive = new NaiveInference();
 	
 		timings = new HashMap<InferenceAlgorithm, Long>();

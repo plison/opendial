@@ -23,6 +23,7 @@
 package opendial.bn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,6 +81,11 @@ public class BNetwork {
 		actionNodes = new HashMap<String,ActionNode>();
 	}
 
+	public BNetwork(BNode... nodes) {
+		this();
+		addNodes(Arrays.asList(nodes));
+	}
+
 	/**
 	 * Adds a new node to the network.  Note: if the node already exists, it is better
 	 * to use the "replaceNode" method, to avoid warning messages.
@@ -89,8 +95,6 @@ public class BNetwork {
 	public void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			Thread.dumpStack();
-			System.exit(0);
 		}
 		nodes.put(node.getId(), node);
 		node.setNetwork(this);

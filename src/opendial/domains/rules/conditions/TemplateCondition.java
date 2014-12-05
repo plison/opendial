@@ -25,8 +25,9 @@ package opendial.domains.rules.conditions;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import opendial.arch.Logger;
-import opendial.bn.values.SetVal;
+import opendial.bn.values.ListVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -45,7 +46,7 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  */
 public class TemplateCondition implements Condition {
 
-	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
+	static Logger log = new Logger("TemplateCondition", Logger.Level.DEBUG);
 
 	// variable label (can include slots to fill)
 	Template variable;
@@ -123,16 +124,20 @@ public class TemplateCondition implements Condition {
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVariables = new HashSet<Template>();
 		inputVariables.add(variable);
-		if (expectedValue.getSlots().size() == 1) {
-			String slot = expectedValue.getSlots().stream().findFirst().get();
-			if (expectedValue.getRawString().equals("{"+slot+"}")) {
-				inputVariables.add(new Template(slot));
-			}
-		}
 		return inputVariables;
 	}
 
 
+	
+	/**
+	 * Returns the slots in the variable and value template
+	 */
+	public Set<String> getSlots() {
+		Set<String> slots = new HashSet<String>();
+		slots.addAll(variable.getSlots());
+		slots.addAll(expectedValue.getSlots());
+		return slots;
+	}
 
 
 	/**
@@ -147,15 +152,14 @@ public class TemplateCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-
 		if (!variable.isFilledBy(input) || !expectedValue.isFilledBy(input)) {
 			return false;
 		}
 
-		String filledVar = variable.fillSlots(input).getRawString();
+		
 		Template expectedValue2 = expectedValue.fillSlots(input);
+		String filledVar = variable.fillSlots(input).getRawString();
 		Value actualValue = input.getValue(filledVar);
-
 		if (expectedValue2.isUnderspecified()) {
 			switch (relation) {	
 			case EQUAL: return expectedValue2.match(actualValue.toString(), true).isMatching();
@@ -191,10 +195,10 @@ public class TemplateCondition implements Condition {
 	 */
 	@Override
 	public ValueRange getGroundings(Assignment input) {	
-
 		ValueRange groundings = new ValueRange();
 
-		if (variable.isUnderspecified() && variable.fillSlots(input).isUnderspecified()) {
+		if (variable.isUnderspecified() && !variable.isRawSlot() 
+				&& variable.fillSlots(input).isUnderspecified()) {
 			for (String inputVar : input.getVariables()) {
 				MatchResult m = variable.match(inputVar, true);
 				if (m.isMatching()) {
@@ -221,8 +225,8 @@ public class TemplateCondition implements Condition {
 					groundings.addAssign(possGrounding);
 				}
 			}
-			else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
-				for (Value subval : ((SetVal)actualValue).getSet()) {
+			else if (relation == Relation.CONTAINS && actualValue instanceof ListVal) {
+				for (Value subval : ((ListVal)actualValue).getList()) {
 					MatchResult m2 = expectedValue2.match(subval.toString(), true);
 					if (m2.isMatching()) {
 						Assignment possGrounding = m2.getFilledSlots();
@@ -263,8 +267,10 @@ public class TemplateCondition implements Condition {
 		case UNEQUAL: return variable + "!=" + expectedValue ; 
 		case GREATER_THAN: return variable + ">" + expectedValue; 
 		case LOWER_THAN : return variable + "<" + expectedValue; 
-		case CONTAINS: return expectedValue + " in " + variable; 
-		case NOT_CONTAINS: return expectedValue + " !in " + variable;
+		case CONTAINS: return variable + " contains " + expectedValue; 
+		case NOT_CONTAINS: return variable + " does not contains " + expectedValue;
+		case IN: return variable + " in " + expectedValue; 
+		case NOT_IN: return variable + " not in " + expectedValue;
 		default: return ""; 
 		}
 	}

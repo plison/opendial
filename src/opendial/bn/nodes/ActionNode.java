@@ -31,9 +31,11 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.Logger;
+import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.Template;
 
 /**
  * Representation of an action node (sometimes also called decision node).
