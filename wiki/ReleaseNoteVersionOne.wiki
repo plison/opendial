@@ -9,6 +9,6 @@
  # Ability to connect two remote instances of !OpenDial via the `Connect to Remote Client` functionality. This can notably be used to conduct Wizard-of-Oz experiment, as explained in the section [https://code.google.com/p/opendial/wiki/ParameterEstimation#1._Data_collection Data collection]. It can also be used to develop distributed dialogue architectures.<br><br>
  # Basic support for incremental processing via the `addIncrementalContent` method in `DialogueSystem`.<br><br>
  # The pattern matching functionalities used in the rule conditions have been extended to capture optional or alternative elements. For instance, the condition `<if var="u_u" relation="contains" value="one (big|small)? object"/>` will match strings such as "one big object", "one small object" or "one object". Such patterns can be very useful for natural language understanding models.
-# Probabilistic rules can now be associated with a particular priority level (via the `priority` attribute in the XML specification), allowing them to supercede one another.<br><br>
+ # Probabilistic rules can now be associated with a particular priority level (via the `priority` attribute in the XML specification), allowing them to supercede one another.<br><br>
  # Inclusion of a text-only interface (which can be used to run !OpenDial in terminals without support for X11 forwarding). <br><br>
  # Removal of the `Load modules` functionality in the GUI.
