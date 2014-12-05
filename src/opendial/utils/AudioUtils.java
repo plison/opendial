@@ -99,13 +99,16 @@ public class AudioUtils {
 	 * 
 	 * @param audioData the audio data to play
 	 * @param outputMixer the output mixer to employ
+	 * @return the audio clip
 	 */
-	public static void playAudio(byte[] audioData, Mixer.Info outputMixer) {
-		try {
-			(new Thread(new AudioPlayer(audioData, outputMixer))).start();
+	public static Clip playAudio(byte[] audioData, Mixer.Info outputMixer) {
+		try {	
+			AudioPlayer player = new AudioPlayer(audioData, outputMixer);
+			(new Thread(player)).start();
+			return player.getClip();
 		}
 		catch (Exception e) {
-			log.warning("cannot play audio: " + e);
+			throw new DialException("Audio exception " + e);
 		}
 	}
 	
@@ -115,13 +118,16 @@ public class AudioUtils {
 	 * 
 	 * @param stream the stream to play
 	 * @param outputMixer the output mixer to employ
+	 * @return the audio clip
 	 */
-	public static void playAudio(AudioInputStream stream, Mixer.Info outputMixer) {
+	public static Clip playAudio(AudioInputStream stream, Mixer.Info outputMixer) {
 		try {
-			(new Thread(new AudioPlayer(stream, outputMixer))).start();
-		}
+			AudioPlayer player = new AudioPlayer(stream, outputMixer);
+			(new Thread(player)).start();
+			return player.getClip();		
+			}
 		catch (Exception e) {
-			log.warning("cannot play audio: " + e);
+			throw new DialException("Audio exception " + e);
 		}
 	}
 
@@ -216,6 +222,10 @@ public class AudioUtils {
 		public AudioPlayer(byte[] bytes, Mixer.Info outputMixer) 
 				throws LineUnavailableException, UnsupportedAudioFileException, IOException {
 			this(getAudioStream(bytes), outputMixer);
+		}
+		
+		public Clip getClip() {
+			return clip;
 		}
 
 

@@ -271,7 +271,8 @@ public class ChatWindowTab extends JComponent {
 		if (system.getDomain() == null) {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
-			if (lines.getText().length() <= 100 && ! lines.getText().contains("No domain currently selected")) {
+			if (lines.getText().length() <= 100 
+					&& !lines.getText().contains("No domain currently selected")) {
 				addComment("No domain currently selected");
 			}
 		}

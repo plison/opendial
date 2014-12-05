@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -63,10 +63,10 @@ public class XMLDomainReader {
 	 * @throws DialException if a format error occurs
 	 */
 	public static Domain extractDomain(String topDomainFile) throws DialException {
-		
+
 		// create a new, empty domain
 		Domain domain = new Domain();
-	
+
 
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(topDomainFile);
@@ -87,15 +87,15 @@ public class XMLDomainReader {
 
 		NodeList firstElements = mainNode.getChildNodes();
 		for (int j = 0 ; j < firstElements.getLength() ; j++) {
-			
+
 			Node node = firstElements.item(j);	
 			domain = extractPartialDomain(node, domain, rootpath);
 		}
 		return domain;
 	}
-	
-	 
-	
+
+
+
 	/**
 	 * Extracts a partially specified domain from the XML node and add its content
 	 * to the dialogue domain.
@@ -109,46 +109,56 @@ public class XMLDomainReader {
 	private static Domain extractPartialDomain (Node mainNode, Domain domain, 
 			String rootpath) throws DialException {
 
-			// extracting rule-based probabilistic model
-			if (mainNode.getNodeName().equals("settings")) {
-						Properties settings = XMLSettingsReader.extractMapping(mainNode);
-						domain.getSettings().fillSettings(settings);
-				}
-					
-			// extracting initial state
-			else if (mainNode.getNodeName().equals("initialstate")) {
-				BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
-				domain.setInitialState(new DialogueState(state));
-		//		log.debug(state);
+		// extracting rule-based probabilistic model
+		if (mainNode.getNodeName().equals("domain")) {
+
+			NodeList firstElements = mainNode.getChildNodes();
+			for (int j = 0 ; j < firstElements.getLength() ; j++) {	
+				Node node = firstElements.item(j);	
+				domain = extractPartialDomain(node, domain, rootpath);
 			}
-			
-			// extracting rule-based probabilistic model
-			else if (mainNode.getNodeName().equals("model")) {
-				Model model = createModel(mainNode);
-		//		log.debug(model);
-				domain.addModel(model);
-			}
-			
-			// extracting parameters
-				else if (mainNode.getNodeName().equals("parameters")) {
-						BNetwork parameters = XMLStateReader.getBayesianNetwork(mainNode);
-						domain.setParameters(parameters);
-				}
-			
-			// extracting imported references
-			else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes() && 
-					mainNode.getAttributes().getNamedItem("href") != null) {
-				
-				String fileName = mainNode.getAttributes().getNamedItem("href").getNodeValue();	
-				Document subdoc = XMLUtils.getXMLDocument(rootpath+ File.separator + fileName);
-				domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain, rootpath);		
-			}
-			
-		
+		}
+
+		// extracting rule-based probabilistic model
+		if (mainNode.getNodeName().equals("settings")) {
+			Properties settings = XMLSettingsReader.extractMapping(mainNode);
+			domain.getSettings().fillSettings(settings);
+		}
+
+		// extracting initial state
+		else if (mainNode.getNodeName().equals("initialstate")) {
+			BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
+			domain.setInitialState(new DialogueState(state));
+			//		log.debug(state);
+		}
+
+		// extracting rule-based probabilistic model
+		else if (mainNode.getNodeName().equals("model")) {
+			Model model = createModel(mainNode);
+			//		log.debug(model);
+			domain.addModel(model);
+		}
+
+		// extracting parameters
+		else if (mainNode.getNodeName().equals("parameters")) {
+			BNetwork parameters = XMLStateReader.getBayesianNetwork(mainNode);
+			domain.setParameters(parameters);
+		}
+
+		// extracting imported references
+		else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes() && 
+				mainNode.getAttributes().getNamedItem("href") != null) {
+
+			String fileName = mainNode.getAttributes().getNamedItem("href").getNodeValue();	
+			Document subdoc = XMLUtils.getXMLDocument(rootpath+ File.separator + fileName);
+			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain, rootpath);		
+		}
+
+
 		return domain;
 	}
-	
-	
+
+
 	/**
 	 * Given an XML node, extracts the rule-based model that corresponds to it.
 	 * 
@@ -165,7 +175,7 @@ public class XMLDomainReader {
 				model.addRule(rule);
 			}
 		}
-		
+
 		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("trigger")!= null) {
 			String[] triggerArray = topNode.getAttributes().getNamedItem("trigger").getNodeValue().split(",");
 			model.addTriggers(Arrays.asList(triggerArray));			
@@ -173,12 +183,12 @@ public class XMLDomainReader {
 		else {
 			throw new DialException("each model must specify a variable trigger:" + XMLUtils.serialise(topNode));
 		}
-		
+
 		if (topNode.getAttributes().getNamedItem("id")!= null) {
 			String id = topNode.getAttributes().getNamedItem("id").getNodeValue();
 			model.setId(id);
 		}
-		
+
 
 		return model;
 	}

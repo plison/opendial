@@ -60,7 +60,7 @@ public final class StringVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return str.hashCode(); }
+	public int hashCode() { return str.toLowerCase().hashCode(); }
 	
 	
 	
@@ -116,7 +116,7 @@ public final class StringVal implements Value {
 			return str.compareTo(((StringVal)o).str);
 		}
 		else {
-			return hashCode() - o.hashCode();
+			return 0;
 		}
 	}
 	
@@ -157,7 +157,9 @@ public final class StringVal implements Value {
 			}
 			return stringval.template.match(str,false).isMatching();
 		}
-		return false;
+		else {
+			return subvalue.toString().contains(str);
+		}
 	}
 	
 }

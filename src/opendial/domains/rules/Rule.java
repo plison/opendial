@@ -24,20 +24,29 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.TemplateEffect;
@@ -60,13 +69,14 @@ public class Rule {
 
 	// ordered list of cases
 	List<RuleCase> cases;
-	
+
 	public enum RuleType {PROB, UTIL}
 
 	RuleType ruleType;
-	
-	Map<Assignment,RuleOutput> cache;
 
+	// cache with the outputs for a given assignment
+	Map<Assignment,RuleOutput> cache;
+	
 	// ===================================
 	//  RULE CONSTRUCTION
 	// ===================================
@@ -111,11 +121,11 @@ public class Rule {
 	 */
 	public void setPriority(int priority) {
 		for (RuleCase c : cases) {
-		for (Effect e : c.getEffects()) {
-			for (BasicEffect e2: e.getSubEffects()) {
-				e2.setPriority(priority);
+			for (Effect e : c.getEffects()) {
+				for (BasicEffect e2: e.getSubEffects()) {
+					e2.setPriority(priority);
+				}
 			}
-		}
 		}
 	}
 
@@ -174,8 +184,8 @@ public class Rule {
 		cache.put(input, output);
 		return output;
 	}
-	
-	
+
+
 	private RuleCase getMatchingCase(Assignment input) {
 		return cases.stream()
 				.filter(c -> c.getCondition().isSatisfiedBy(input))
@@ -219,20 +229,7 @@ public class Rule {
 	}
 
 
-	/**
-	 * Returns true if at least one effect is underspecified (with a variable
-	 * reference or free variable).
-	 * 
-	 * @return true if at least one effect is underspecified, and false otherwise
-	 */
-	public boolean hasTemplateEffect() {
-		return cases.stream()
-				.flatMap(c -> c.getEffects().stream())
-				.flatMap(e -> e.getSubEffects().stream())
-				.anyMatch(e -> e instanceof TemplateEffect);
-	}
-	
-	
+
 	/**
 	 * Returns the set of all (templated) output variables defined inside
 	 * the rule
@@ -243,8 +240,8 @@ public class Rule {
 		return cases.stream().flatMap(c -> c.getOutputVariables().stream())
 				.collect(Collectors.toSet());
 	}
-	
-	
+
+
 	/**
 	 * Returns the set of all parameter identifiers employed in the rule
 	 * 
@@ -272,6 +269,66 @@ public class Rule {
 			effects.addAll(c.getEffects());
 		}
 		return effects;
+	}
+
+
+	/**
+	 * Returns the list of conditions in the rule
+	 * 
+	 * @return the conditions
+	 */
+	public List<Condition> getConditions() {
+		return cases.stream().map(c -> c.getCondition()).collect(Collectors.toList());
+	}
+
+
+
+
+	/**
+	 * Returns the list of underspecified slots in the rule that appear in both
+	 * the conditions and effects of the rule and that aren't included in the
+	 * known variables.
+	 * 
+	 * @param knownVars the known variables
+	 * @return the list of slots for the rule
+	 */
+	public Set<String> getSlots(Set<String> knownVars) {
+
+		Set<String> slots = new HashSet<String>();
+		for (RuleCase c : cases) {
+			Set<String> conditionSlots = c.getCondition().getSlots();
+			conditionSlots.removeAll(knownVars);
+			Set<String> effectSlots = c.getEffects().stream()
+					.flatMap(e -> e.getSlots().stream())
+					.collect(Collectors.toSet());
+			conditionSlots.retainAll(effectSlots);
+			slots.addAll(conditionSlots);
+		}
+		return slots;
+	}
+	
+	
+	/**
+	 * Returns true if the rule contains inequalities in its conditions, and false
+	 * otherwise.
+	 * 
+	 * @return true if inequalities are there, false otherwise
+	 */
+	public boolean hasInequalities() {
+		for (RuleCase c : cases) {
+			List<Condition> conds = new LinkedList<Condition>(Arrays.asList(c.getCondition()));
+			while (!conds.isEmpty()) {
+				Condition cond = conds.remove(0);
+				if (cond instanceof TemplateCondition && 
+						((TemplateCondition)cond).getRelation() == Relation.UNEQUAL) {
+					return true;
+				}
+				else if (cond instanceof ComplexCondition) {
+					conds.addAll(((ComplexCondition)cond).getConditions());
+				}
+			}
+		}
+		return false;
 	}
 
 

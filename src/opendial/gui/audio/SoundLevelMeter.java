@@ -123,7 +123,7 @@ public class SoundLevelMeter extends JPanel {
 		@Override
 		public void run() { 
 			while (active && !stream.isClosed()) {
-				byte[] data = stream.toByteArray();
+				byte[] data = stream.toByteArray(false);
 				if (data != null && data.length > 0) {
 					updateVolume(calculateRMSLevel(data));			
 				}

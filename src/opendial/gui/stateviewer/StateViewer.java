@@ -38,10 +38,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.ToolTipManager;
 
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -125,8 +127,8 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		getRenderContext().setVertexLabelRenderer(new CustomVertexLabelRenderer());
 		getRenderer().getVertexLabelRenderer().setPosition(Position.S);
 		setVertexToolTipTransformer(new CustomToolTipTransformer());
-
-
+		ToolTipManager.sharedInstance().setDismissDelay(1000000000);
+		
 		// connects the graph to a custom mouse listener (for selecting nodes)
 		DefaultModalGraphMouse<String,Integer> graphMouse = new DefaultModalGraphMouse<String,Integer>();
 		graphMouse.setMode(Mode.PICKING);
@@ -491,15 +493,28 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		public CustomLayoutTransformer(BNetwork network) {
 			positions = new HashMap<BNode, Point2D>();
 			Point current = new Point(0, 0);
-			for (BNode node : network.getChanceNodes()) {
+			
+			// trying to avoid nasty concurrent modifications
+			List<BNode> nodes = new ArrayList<BNode>();
+			for (int i = 0 ; i < 3 ; i++) {
+				try {
+					nodes.addAll(network.getNodes());
+					break;
+				}
+				catch (ConcurrentModificationException e) {
+					try {	Thread.sleep(50);} 
+					catch (InterruptedException e1) {	e1.printStackTrace();}
+				}
+			}
+			for (BNode node : nodes) {
 				if (!node.getId().contains("'") && !node.getId().contains("=") 
-						&& !(node instanceof ProbabilityRuleNode)) {
+						&& (node instanceof ChanceNode) && !(node instanceof ProbabilityRuleNode)) {
 					positions.put(node, current);
 					current = incrementPoint(current);
 				}
 			}
 			current = new Point(current.x + 200, 0);
-			for (BNode node : network.getNodes()) {
+			for (BNode node : nodes) {
 				if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
 					positions.put(node, current);
 					current = incrementPoint(current);
@@ -507,7 +522,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 			}
 
 			current = new Point(current.x + 200, 0);
-			for (BNode node : network.getNodes()) {
+			for (BNode node : nodes) {
 				if (!positions.containsKey(node)) {
 					positions.put(node, current);
 					current = incrementPoint(current);

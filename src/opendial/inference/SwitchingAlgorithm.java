@@ -28,6 +28,7 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.BNode;
@@ -57,14 +58,12 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	// logger
 	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
 
-	// maximum branching factor (in-degree)
-	public static int MAX_BRANCHING_FACTOR = 4;
+	// maximum branching factor (in-degree) for VE
+	public static int MAX_BRANCHING_FACTOR = 5;
 
-	// maximum number of query variables
-	public static int MAX_QUERYVARS = 6;
+	// maximum number of values to use VE
+	public static int MAX_NBVALUES = 200;
 
-	// maximum number of values per variable
-	public static int MAX_NBVALUES = Settings.discretisationBuckets/2;
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;
@@ -128,20 +127,23 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	public InferenceAlgorithm selectBestAlgorithm (Query query) {
 
-		if (query.getQueryVars().size() > MAX_QUERYVARS) {
-			return lw;
-		}
 		for (BNode node : query.getFilteredSortedNodes()) {
 			if (node.getInputNodeIds().size() > MAX_BRANCHING_FACTOR) {
 				return lw;
 			}
 			if (node instanceof ChanceNode) {
-				int nbValues = ((ChanceNode)node).getNbValues();
+				if (((ChanceNode) node).getDistrib() instanceof ContinuousDistribution) {
+					return lw;
+				}
+				int nbValues = ((ChanceNode) node).getNbValues();
+				for (ChanceNode i : node.getInputNodes(ChanceNode.class)) {
+					nbValues *= i.getNbValues();
+				}
 				if (nbValues > MAX_NBVALUES) {
 					return lw;
 				}
 			}
-		}		
+		}	
 		return ve;
 	}
 

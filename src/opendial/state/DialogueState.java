@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -38,6 +39,7 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -253,7 +255,7 @@ public class DialogueState extends BNetwork {
 
 		incrementalVars.remove(variable);
 	}
-
+	
 
 	/**
 	 * Concatenates the current value for the new content onto the current content, if followPrevious
@@ -680,11 +682,6 @@ public class DialogueState extends BNetwork {
 						new OutputDistribution(updatedVar));
 				addNode(outputNode);
 
-				// adding the connection to the previous version of the variable (if any)
-				if (hasChanceNode(baseVar) && !(updatedVar.contains("^p")) && ruleNode.hasAddRemoveEffects(baseVar)) {
-					outputNode.addInputNode(getChanceNode(baseVar));
-				}
-
 				// connecting to prior predictions
 				connectToPredictions(outputNode);
 
@@ -723,7 +720,7 @@ public class DialogueState extends BNetwork {
 		for (String actionVar : actions.getVariables()) {
 
 			// if the action variable does not yet exist, create it
-			if (!hasNode(actionVar)) {
+			if (!hasActionNode(actionVar)) {
 				ActionNode actionNode = new ActionNode(actionVar);
 				addNode(actionNode);
 				ruleNode.addInputNode(actionNode);
@@ -735,7 +732,10 @@ public class DialogueState extends BNetwork {
 			}
 
 			// and add the values specified in the utility rule to the variable
-			getActionNode(actionVar).addValues(actions.getValues(actionVar));
+			// (and removing underspecified values)
+			Set<Value> actionValues = actions.getValues(actionVar).stream()
+					.filter(v -> !v.toString().contains("*")).collect(Collectors.toSet());
+			getActionNode(actionVar).addValues(actionValues);
 		}
 	}
 

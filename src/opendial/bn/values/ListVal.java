@@ -23,69 +23,68 @@
 
 package opendial.bn.values;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import opendial.arch.Logger;
 
 
 /**
- * Value that is defined as a set of values (with no duplicate elements).
- * Note that the set if not sorted.
+ * Value that is defined as an ordered list of values.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version $Date:: 2014-11-15 00:14:12 #$
  *
  */
-public final class SetVal implements Value {
+public final class ListVal implements Value {
 	
 	 // logger
-	 public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
+	 public static Logger log = new Logger("ListVal", Logger.Level.DEBUG);
 
 	 
-	// the set of values
-	final Set<Value> set;
+	// the list of values
+	final List<Value> list;
 	
 	/**
-	 * Creates the set of values
+	 * Creates the list of values
 	 * (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
-	protected SetVal(Collection<Value> values) {
-		this.set = new HashSet<Value>(); 
+	protected ListVal(Collection<Value> values) {
+		this.list = new ArrayList<Value>(); 
 		for (Value v : values) {
-			if (v instanceof SetVal) {
-				this.set.addAll(((SetVal)v).getSet());
+			if (v instanceof ListVal) {
+				this.list.addAll(((ListVal)v).getList());
 			}
 			else {
-				this.set.add(v);
+				this.list.add(v);
 			}
 		}
 		};
 
 	/**
-	 * Creates the set of values
+	 * Creates the list of values
 	 * (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
+	protected ListVal(Value...values) { this(Arrays.asList(values)) ;};
 	
 	
 	/**
-	 * Returns the hashcode for the set
+	 * Returns the hashcode for the list
 	 *
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return set.hashCode(); }
+	public int hashCode() { return list.hashCode(); }
 	
 	/**
-	 * Returns true if the sets are equals (contain the same elements), false
+	 * Returns true if the lists are equals (contain the same elements), false
 	 * otherwise
 	 *
 	 * @param o the object to compare
@@ -93,41 +92,44 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+		return ((o instanceof ListVal && ((ListVal)o).getList().equals(getList())));
 	}
 	
 	
 	/**
-	 * Returns the set of values
+	 * Returns the list of values
 	 *  
-	 * @return the set
+	 * @return the list
 	 */
-	public Set<Value> getSet() {return set; }
+	public List<Value> getList() {return list; }
 	
 	/**
-	 * Returns a copy of the set
+	 * Returns a copy of the list
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public SetVal copy() { return new SetVal(set); }
+	public ListVal copy() { return new ListVal(list); }
 	
 	/**
-	 * Returns a string representation of the set
+	 * Returns a string representation of the list
 	 *
 	 * @return the string
 	 */
 	@Override
 	public String toString() { 
-		return ""+set.toString();
+		return ""+list.toString();
 	}
 
+	/**
+	 * Concatenates the two lists. 
+	 */
 	@Override
 	public Value concatenate (Value v) {
-		if (v instanceof SetVal) {
-			Set<Value> newSet = new HashSet<Value>(set);
-			newSet.addAll(((SetVal)v).getSet());
-			return new SetVal(newSet);
+		if (v instanceof ListVal) {
+			List<Value> newList = new ArrayList<Value>(list);
+			newList.addAll(((ListVal)v).getList());
+			return new ListVal(newList);
 		}
 		else if (v instanceof NoneVal) {
 			return this;
@@ -139,20 +141,20 @@ public final class SetVal implements Value {
 	}
 	
 	/**
-	 * Adds all the values in the given SetVal to this value
+	 * Adds all the values in the given ListVal to this value
 	 * 
-	 * @param values the setVal with the values to add
+	 * @param values the ListVal with the values to add
 	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
+	public void addAll(ListVal values) {
+		list.addAll(values.getList());
 	}
 	
-	public void removeAll(Set<Value> discardValues) {
-		set.removeAll(discardValues);
+	public void removeAll(Collection<Value> discardValues) {
+		list.removeAll(discardValues);
 	}
 	
 	/**
-	 * Compares the set value to another value
+	 * Compares the list value to another value
 	 * 
 	 * @return hashcode difference
 	 */
@@ -162,11 +164,11 @@ public final class SetVal implements Value {
 	}
 
 	public void remove(Value object) {
-		set.remove(object);
+		list.remove(object);
 	}
 
 	public void add(Value object) {
-		set.add(object);
+		list.add(object);
 	}
 
 	/**
@@ -176,11 +178,11 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean contains(Value subvalue) {
-		return set.contains(subvalue);
+		return list.contains(subvalue);
 	}
 
 	public boolean isEmpty() {
-		return set.isEmpty();
+		return list.isEmpty();
 	}
 
 

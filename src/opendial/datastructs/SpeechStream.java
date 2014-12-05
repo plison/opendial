@@ -66,6 +66,8 @@ public class SpeechStream extends InputStream implements Value {
 	/** Whether the stream has been closed or not */
 	boolean isClosed = false;
 
+	/** Duration of padding silence before and after the speech (in milliseconds) */
+	int silenceDuration = 0;
 	
 	/**
 	 * Creates a new speech stream on a particular input audio mixer
@@ -92,6 +94,15 @@ public class SpeechStream extends InputStream implements Value {
 		this.data = stream.data;
 		this.isClosed = stream.isClosed;
 	}
+	
+	/**
+	 * Sets a padding silence before and after the speech stream.
+	 * 
+	 * @param duration duration of the silence (in milliseconds)
+	 */
+	public void setSilence(int silenceDuration) {
+		this.silenceDuration = silenceDuration;
+	}
 
 
 	/**
@@ -105,7 +116,12 @@ public class SpeechStream extends InputStream implements Value {
 			return data[currentPos++];
 		}
 		else {
-			return -1;
+			if (!isClosed) {
+				try {Thread.sleep(100); }
+				catch (InterruptedException e) { }
+				return read();
+			}
+		return -1;
 		}
 	}
 	
@@ -141,7 +157,6 @@ public class SpeechStream extends InputStream implements Value {
 	 */
 	@Override
 	public synchronized void close() throws IOException {
-		log.debug("stopped...\t");
 		isClosed = true;
 		notifyAll();
 	}
@@ -183,10 +198,19 @@ public class SpeechStream extends InputStream implements Value {
 	/**
 	 * Returns the byte array for the stream
 	 * 
+	 * @param includeSilence whether to include the padding silence
 	 * @return the byte array
 	 */
-	public byte[] toByteArray() {
+	public byte[] toByteArray(boolean includeSilence) {
+		if (includeSilence || data.length == 0) {
 		return data;
+		}
+		else {
+			int offset = silenceDuration*((int)getFormat().getFrameRate())/1000;
+			byte[] speechData = new byte[data.length-2*offset];
+			System.arraycopy(data, offset, speechData, 0, speechData.length);
+			return speechData;
+		}
 	}
 	
 
@@ -212,6 +236,7 @@ public class SpeechStream extends InputStream implements Value {
 				audioLine.open();
 				audioLine.start();
 				audioLine.flush();
+				int frameRate = (int)getFormat().getFrameRate();
 				// we limit the stream buffer to a maximum of 20 seconds
 				ByteArrayOutputStream stream = new ByteArrayOutputStream(320000);
 				byte[] buffer = new byte[audioLine.getBufferSize()/20];
@@ -221,7 +246,10 @@ public class SpeechStream extends InputStream implements Value {
 					// Save this chunk of data.
 					if (numBytesRead > 0) {
 						stream.write(buffer, 0, numBytesRead);
-						data = stream.toByteArray();
+						byte[] content = stream.toByteArray();
+						int offset = silenceDuration*frameRate/1000;
+						data = new byte[content.length + 2*offset];
+						System.arraycopy(content, 0, data, offset, content.length);
 					}
 				}
 				audioLine.stop();

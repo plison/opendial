@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -24,13 +24,17 @@
 package opendial.domains.rules;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 
 
@@ -46,7 +50,7 @@ import opendial.domains.rules.parameters.Parameter;
  */
 public class RuleOutput extends RuleCase {
 
-	
+
 	// the rule type
 	RuleType type;
 
@@ -70,16 +74,23 @@ public class RuleOutput extends RuleCase {
 	public void addCase(RuleCase newCase) {
 
 		if (newCase.getEffects().isEmpty()) { return;	}
-		
+
 		if (effects.hashCode() == newCase.getEffectMap().hashCode()) { return ; }
-		
+
 		else if (effects.isEmpty()) {
 			effects.putAll(newCase.getEffectMap());
 			return;
 		}
-		
+
 		if (type == RuleType.PROB) {
 			Map<Effect,Parameter> newOutput = new HashMap<Effect,Parameter>();
+			
+			double fixedMass = effects.keySet().stream()
+					.map(e -> this.getParameter(e)).filter(e -> e instanceof FixedParameter)
+					.mapToDouble(e -> ((FixedParameter)e).getParameterValue()).sum();
+			if (fixedMass > 0) {
+				addEffect(new Effect(), new FixedParameter(1.0-fixedMass));
+			}
 			for (Effect o : effects.keySet()) {
 				for (Effect o2 : newCase.getEffects()) {
 					Effect newEffect = new Effect(o.getSubEffects());
@@ -102,9 +113,9 @@ public class RuleOutput extends RuleCase {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the total probability mass specified by the output (possibly given
 	 * an assignment of parameter values).
@@ -116,6 +127,6 @@ public class RuleOutput extends RuleCase {
 	public double getTotalMass(Assignment input)  {	
 		return effects.values().stream().mapToDouble(p -> p.getParameterValue(input)).sum();
 	}
-	
+
 
 }

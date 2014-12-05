@@ -172,7 +172,6 @@ public class RuleUtilDistribution implements UtilityFunction {
 
 			for (Effect effectOutput : output.getEffects()) {
 				Condition effectCondition = effectOutput.convertToCondition();
- 
 				if (effectCondition.isSatisfiedBy(ruleAction)) {
 					totalUtil += output.getParameter(effectOutput).
 							getParameterValue(input);
