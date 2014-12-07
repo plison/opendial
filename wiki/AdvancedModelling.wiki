@@ -137,6 +137,20 @@ If the actual content of the slot can be ignored, the placeholder can be replace
 }}}
 The above rule will be fired for a user utterance such as "`turn left`", "`turn to the left`", or even "`now robot please turn to the left`" (since the match can be partial). 
 
+!OpenDial also support patterns with optional or alternative substrings.  Optional substrings can be expressed via the `(the_substring)?` construction, as in:
+{{{
+<if var="u_u" value="turn (a bit)? to the left" relation="contains" />
+}}}
+
+The above condition will match both "`turn to the left`" and "`turn a bit to the left`".
+
+Finally, alternative elements can be expressed via the construction `(alternative_1|alternative_2|...)`, such as in the following condition:
+{{{
+<if var="u_u" value="turn (a bit|a little bit)? to the left" relation="contains" />
+}}}
+
+This last conditition matches the strings "`turn to the left`", "`turn a bit to the left`" and "`turn a little bit to the left`". 
+
 == 5. Operations on collections ==
 
 In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such collections.
