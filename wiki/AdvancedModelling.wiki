@@ -151,13 +151,13 @@ Finally, alternative elements can be expressed via the construction `(alternativ
 
 This last conditition matches the strings "`turn to the left`", "`turn a bit to the left`" and "`turn a little bit to the left`". 
 
-== 5. Operations on collections ==
+== 5. Operations on lists ==
 
-In addition to strings, many state variables also contain collections of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such collections.
+In addition to strings, many state variables also contain lists of elements (for instance, the _n_ most recent dialogue acts, or the list of objects perceived in the current scene).  Probabilistic rules come with built-in functions to manipulate such lists.
 
 ==== Conditions on lists: ====
 
-Rule conditions can check for the presence/absence of particular items in a collection, as for instance:
+Rule conditions can check for the presence/absence of particular items in a list, as for instance:
 {{{
 <if var="somecollection" value="element1" relation="contains"/>
 }}}
@@ -169,24 +169,65 @@ One can also check whether some individual element is contained in a collection 
 <if var="element" value="somecollection" relation="in"/>
 }}}
 
-==== Addition and removal of elements: ====
+==== Effects on lists ====
 
-Rule effects can also include special effects to `add` or `remove` elements from a collection:
+By default, the output variable of a rule can only be associated to a single value.  Consider for instance the two following rules:
 {{{
 
-<rule id="r12">
+<rule id="r1>
   <case>
-    <condition>
-      <if var="A" value="a1" relation="!contains"/>
-    </condition>
-    <effect>
-      <add var="A" value="a1"/>
-    </effect>
+    <effect prob="0.9">
+      <set var="A" value="val1"/>
+    </effect
+  </case>
+</rule>
+
+<rule id="r2>
+  <case>
+    <effect prob="0.9>
+      <set var="A" value="val2"/>
+    </effect
   </case>
 </rule>
 }}}
 
-The above rule specifies that the value `a1` must be added to the list `A` if it not already included in it.  *IMPORTANT NOTE*: the `add` and `remove` effects are only available for probability rules (not utility rules). 
+The two rules `r1` and `r2` are in conflict, which means that the distribution for the output variable `A` will be `P(A=val1)=0.495`, `P(A=val_2)=0.495` and `P(A=None)=0.01`. Sometimes, one might want to lift the constraint of a single value per variable.  For instance, the last dialogue act of the user might contain several basic elements which can be combined with one another. In such a case, the last dialogue act can be represented as a list of elements. 
+
+The `add` effect can be employed to specify that the value of the output variable is to be added to a list.  For instance, one can rewrite the two rules `r1` and `r2` as such:
+{{{
+
+<rule id="r1>
+  <case>
+    <effect prob="0.9">
+      <add var="A" value="val1"/>
+    </effect
+  </case>
+</rule>
+
+<rule id="r2>
+  <case>
+    <effect prob="0.9">
+      <add var="A" value="val2"/>
+    </effect
+  </case>
+</rule>
+}}}
+
+The distribution of the output variable `A` will in this case be `P(A=[val1,val2])=0.81`, `P(A=[val1])=0.09`, `P(A=[val2])=0.09` and `P(A=None)=0.01`. 
+
+
+* Notes*: 
+ * By default, the existing values for the output variable will be erased by the new values specified in the rules.  If you want to keep the existing values, simply add a rule to transfer the current content of the variable onto the updated variable:
+{{{
+<rule id="transfer>
+  <case>
+    <effect>
+      <set var="A" value="{A}"/>
+    </effect
+  </case>
+</rule>
+}}}
+ * The `add` and `remove` effects are only available for probability rules (not utility rules). 
 
 
 == 6. Predictive variables ==
