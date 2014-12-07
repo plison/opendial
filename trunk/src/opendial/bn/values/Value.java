@@ -90,6 +90,7 @@ public interface Value extends Comparable<Value> {
 	 * @param o the other to compare
 	 * @return true if this==o, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o);
 	
 }

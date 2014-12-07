@@ -25,7 +25,6 @@ package opendial.domains.rules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,15 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.TemplateCondition;
@@ -49,7 +45,6 @@ import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.TemplateEffect;
 
 
 /**

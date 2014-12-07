@@ -132,6 +132,7 @@ public class TemplateCondition implements Condition {
 	/**
 	 * Returns the slots in the variable and value template
 	 */
+	@Override
 	public Set<String> getSlots() {
 		Set<String> slots = new HashSet<String>();
 		slots.addAll(variable.getSlots());

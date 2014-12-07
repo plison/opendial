@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -119,7 +118,7 @@ public class WizardLearner implements Module {
 		Set<String> relevantParams = state.getParameterIds().stream()
 				.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
 				.collect(Collectors.toSet());
-
+		
 		if (!relevantParams.isEmpty()) {
 			try {
 				List<String> queryVars = new ArrayList<String>(relevantParams);
@@ -148,7 +147,6 @@ public class WizardLearner implements Module {
 
 
 	private static void reweightSamples(Collection<Sample> samples, Assignment wizardAction) {
-
 		Set<String> actionVars = wizardAction.getVariables();
 
 		UtilityTable averages = new UtilityTable();
@@ -159,18 +157,17 @@ public class WizardLearner implements Module {
 		if (averages.getTable().size() == 1) {
 			return;
 		}
-
 		for (Sample sample : samples) {
 
 			UtilityTable copy = averages.copy();
 			Assignment sampleAssign = sample.getTrimmed(actionVars);
 			copy.setUtil(sampleAssign, sample.getUtility());
-			int ranking = copy.getRanking(wizardAction);
+			int ranking = copy.getRanking(wizardAction, 0.1);
 			if (ranking != -1) {
 				double logweight = Math.log((GEOMETRIC_FACTOR 
 						* Math.pow(1-GEOMETRIC_FACTOR, ranking)) + 0.00001);
 				sample.addLogWeight(logweight);
-			}				
+			}	
 		}
 	}
 

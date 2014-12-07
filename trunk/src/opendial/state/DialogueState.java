@@ -39,7 +39,6 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -675,7 +674,6 @@ public class DialogueState extends BNetwork {
 		// looping on each output variable
 		for (String updatedVar : ruleNode.getAnchor().getOutputVariables()) {
 
-			String baseVar = updatedVar.replaceFirst("'", "");
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
 				ChanceNode outputNode = new ChanceNode(updatedVar, 
