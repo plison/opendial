@@ -24,7 +24,6 @@
 package opendial.datastructs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
@@ -145,19 +144,9 @@ public class Intervals<T> {
 		int max = intervals.length ;
 		while (min <= max) {
 			int mid = min + (max - min) / 2;
-			if (mid < 0 || mid > intervals.length -1) {
-				throw new DialException("could not sample: (min=" + min + ", max=" + max +
-						") -- intervals = " + Arrays.asList(intervals));
-			}
 			switch (intervals[mid].compareTo(rand)) {
 			case +1: max = mid - 1; break;
-			case 0: 
-				T result = intervals[mid].getObject(); 
-				if (result == null) {
-					log.warning("result of sampling with intervals is null (mid=" + mid+")");
-					log.warning("intervals: " + this);
-				}
-				return result;
+			case 0: return intervals[mid].getObject(); 
 			case -1 : min = mid + 1; break;
 			}
 		}

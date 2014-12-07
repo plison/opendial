@@ -24,12 +24,8 @@
 package opendial.bn.values;
 
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import opendial.arch.Logger;
 import opendial.utils.StringUtils;
 

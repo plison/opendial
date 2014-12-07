@@ -55,9 +55,9 @@ import opendial.inference.Query;
 public class SamplingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SamplingAlgorithm", Logger.Level.DEBUG);
 
-	int nbSamples = Settings.nbSamples;
+	public int nbSamples = Settings.nbSamples;
 
 	long maxSamplingTime = Settings.maxSamplingTime;
 

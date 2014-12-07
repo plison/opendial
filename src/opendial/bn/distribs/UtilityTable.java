@@ -172,8 +172,15 @@ public class UtilityTable implements UtilityFunction {
 	}
 	
 	
-	public int getRanking(Assignment input) {
-		return InferenceUtils.getRanking(getTable(), input);
+	/**
+	 * Returns the ranking of the given input sorted by utility
+	 * 
+	 * @param input the input to rank
+	 * @param minDifference the minimum difference between utilities
+	 * @return the rank of the given assignment in the utility table
+	 */
+	public int getRanking(Assignment input, double minDifference) {
+		return InferenceUtils.getRanking(getTable(), input, minDifference);
 	}
 
 

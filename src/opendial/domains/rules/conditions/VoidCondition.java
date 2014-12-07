@@ -82,6 +82,7 @@ public class VoidCondition implements Condition {
 	 * 
 	 * @return an empty list
 	 */
+	@Override
 	public Set<String> getSlots() {
 		return new HashSet<String>();
 	}

@@ -26,7 +26,6 @@ package opendial.inference;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -62,7 +61,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int MAX_BRANCHING_FACTOR = 5;
 
 	// maximum number of values to use VE
-	public static int MAX_NBVALUES = 200;
+	public static int MAX_NBVALUES = 300;
 
 
 	VariableElimination ve;

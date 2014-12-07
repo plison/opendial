@@ -34,7 +34,6 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 
 /**
@@ -165,6 +164,7 @@ public class ComplexCondition implements Condition {
 	 * 
 	 * @return the list of all slots
 	 */
+	@Override
 	public Set<String> getSlots() {
 		Set<String> slots = new HashSet<String>();
 		for (Condition cond: subconditions) {

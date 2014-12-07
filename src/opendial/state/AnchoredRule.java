@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
@@ -40,14 +39,8 @@ import opendial.datastructs.ValueRange;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.ComplexCondition;
-import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.TemplateCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.TemplateEffect;
 
 /**
  * Representation of a probabilistic rule anchored in a particular dialogue state.
