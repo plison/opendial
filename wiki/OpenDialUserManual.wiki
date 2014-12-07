@@ -11,7 +11,7 @@ This user guide explains how to practically employ the !OpenDial toolkit to deve
 
  * *[DialogueDomains Dialogue domains]* <br>XML encoding format for dialogue domains.
 
- * *[AdvancedModelling Advanced modelling]* <br>Build-in functionalities for handling nested conditions, variable references, quantification<br> mechanisms, string matching, lists of elements and predictive variables.
+ * *[AdvancedModelling Advanced modelling]* <br>Build-in functionalities for handling nested conditions, variable references, quantification<br> mechanisms, pattern matching, lists of elements and predictive variables.
 
  * *[SpeechRecognitionAndSynthesis Speech recognition and synthesis]*<br>How to use the available plugins for speech recognition and synthesis integrated in !OpenDial.
 
