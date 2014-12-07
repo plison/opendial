@@ -253,10 +253,10 @@ public class DistributionsTest {
 		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.3)), 1.0, 0.001);
 		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.31)), 1.0, 0.001); 
 		double sum = 0;
-		for (int i = 0 ; i < 10000 ; i++) {
+		for (int i = 0 ; i < 20000 ; i++) {
 			sum += ((DoubleVal)continuous2.sample()).getDouble();
 		}
-		assertEquals(sum/10000.0, 0.424, 0.1);
+		assertEquals(sum/20000.0, 0.424, 0.1);
 	//		DistributionViewer.showDistributionViewer(continuous2);
 	//	Thread.sleep(300000000); 
 		assertEquals(continuous2.toDiscrete().getProb(-1.5), 0.2, 0.03);

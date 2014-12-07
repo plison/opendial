@@ -119,6 +119,7 @@ public class BasicCondition implements Condition {
 	 * 
 	 * @return an empty list
 	 */
+	@Override
 	public Set<String> getSlots() {
 		return new HashSet<String>();
 	}

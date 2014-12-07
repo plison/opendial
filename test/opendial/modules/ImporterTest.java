@@ -106,6 +106,8 @@ public class ImporterTest {
 	@Test
 	public void testImporter4() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
+		Settings.nbSamples = Settings.nbSamples*3;
+		Settings.maxSamplingTime = Settings.maxSamplingTime*3;
 		system.getSettings().showGUI = false;
 		DialogueImporter importer = new DialogueImporter(system, 
 				XMLInteractionReader.extractInteraction(dialogueFile2));
@@ -118,7 +120,9 @@ public class ImporterTest {
 		assertEquals(10, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(10, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
 		assertEquals(((ContinuousDistribution)system.getState().getChanceNode
-				("theta_repeat").getDistrib()).getFunction().getMean()[0], 1.4, 0.4);
+				("theta_repeat").getDistrib()).getFunction().getMean()[0], 1.35, 0.25);
+		Settings.nbSamples = Settings.nbSamples/3;
+		Settings.maxSamplingTime = Settings.maxSamplingTime/3;
 	}
 	
 	

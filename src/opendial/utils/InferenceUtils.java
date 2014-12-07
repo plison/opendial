@@ -181,7 +181,7 @@ public class InferenceUtils {
 		List<Map.Entry<T,Double>> entries = 
 				new ArrayList<Map.Entry<T,Double>>(initTable.entrySet());
 
-		Collections.sort(entries, new EntryComparator<T>());
+		Collections.sort(entries, new EntryComparator<T>(0.0001));
 		Collections.reverse(entries);
 
 		LinkedHashMap<T,Double> newTable = new LinkedHashMap<T,Double>();
@@ -210,19 +210,27 @@ public class InferenceUtils {
 	 * @param initTable the table 
 	 * @param assign the assignment to find
 	 * @param <T> the type of the elements in the table
+	 * @param minDifference the minimum difference between values
 	 * @return the index in the ordered table, or -1 if the element is not in the table
 	 */
-	public static <T> int getRanking(Map<T,Double> initTable, T assign) {
+	public static <T> int getRanking(Map<T,Double> initTable, T assign, double minDifference) {
 
 		List<Map.Entry<T,Double>> entries = 
 				new ArrayList<Map.Entry<T,Double>>(initTable.entrySet());
-
-		Collections.sort(entries, new EntryComparator<T>());
+		EntryComparator<T> comp = new EntryComparator<T>(minDifference);
+		Collections.sort(entries, comp);
 		Collections.reverse(entries);
 
-		for (Map.Entry<T,Double> entry : entries) {
+		for (int i = 0 ; i < entries.size() ; i++) {
+			Map.Entry<T,Double> entry = entries.get(i);
 			if (entry.getKey().equals(assign)) {
 				return entries.indexOf(entry);
+			}
+			else if (i < entries.size()-1) {
+				Map.Entry<T,Double> nextEntry = entries.get(i+1);
+				if (nextEntry.getKey().equals(assign) && comp.compare(entry, nextEntry)==0) {
+					return entries.indexOf(entry);
+				}
 			}
 		}
 		return -1;
@@ -238,14 +246,20 @@ public class InferenceUtils {
 	 */
 	static final class EntryComparator<T> implements Comparator<Map.Entry<T,Double>> {
 
+		double minDifference;
+		
+		public EntryComparator(double minDifference) {
+			this.minDifference = minDifference;
+		}
+		
 		@Override
 		public int compare(Entry<T, Double> arg0, Entry<T, Double> arg1) {
-			int result = (int)((arg0.getValue() - arg1.getValue())*10000000);
-			if (result != 0) {
-				return result;
+			double result = arg0.getValue() - arg1.getValue();
+			if (Math.abs(result) < minDifference) {
+				return 0;
 			}
 			else {
-				return (sampler.nextBoolean())? -1 : +1 ;
+				return (int)(result*10000000);
 			}
 		}
 

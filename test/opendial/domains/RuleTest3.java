@@ -30,7 +30,6 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
-import opendial.datastructs.Assignment;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
