@@ -25,6 +25,10 @@ package opendial.domains;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -116,16 +120,16 @@ public class RuleTest3 {
 	@Test
 	public void testOutputs() {
 		
-		Effect o = new Effect();
-		assertEquals(o, Effect.parseEffect("Void"));
-		o.addSubEffect(new BasicEffect("v1", "val1", EffectType.SET));
-		assertEquals(o, Effect.parseEffect("v1:=val1"));
+		List<BasicEffect> effects = new ArrayList<BasicEffect>();
+		assertEquals(new Effect(effects), Effect.parseEffect("Void"));
+		effects.add(new BasicEffect("v1", "val1", EffectType.SET));
+		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1"));
 
-		o.addSubEffect(new BasicEffect("v2", "val2", EffectType.ADD));
-		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2"));
+		effects.add(new BasicEffect("v2", "val2", EffectType.ADD));
+		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 		
-		o.addSubEffect(new BasicEffect("v2", "val3", EffectType.DISCARD));
-		assertEquals(o, Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
+		effects.add(new BasicEffect("v2", "val3", EffectType.DISCARD));
+		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 	}
 	
 	
