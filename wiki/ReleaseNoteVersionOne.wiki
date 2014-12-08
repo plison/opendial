@@ -6,7 +6,7 @@
  # *Upgrade to Java 8* (which is required to compiled and run the toolkit).<br><br>
  # Major refactoring of the internal code base and efficiency improvements in the inference algorithms. For example, the sampling algorithm can now take full advantage of multi-core architectures.<br><br>
  # Support for Nuance cloud-based speech recognition and synthesis via the `NuanceSpeech` plugin.<br><br>
- # Support for data-driven dependency parsing with a new module bridging !OpenDial to the MaltParser.<br><br>
+ # Support for data-driven dependency parsing with a new module bridging !OpenDial to the [http://maltparser.org MaltParser].<br><br>
  # Ability to connect two remote instances of !OpenDial via the `Connect to Remote Client` functionality. This can notably be used to conduct Wizard-of-Oz experiment, as explained in the section [https://code.google.com/p/opendial/wiki/ParameterEstimation#1._Data_collection Data collection]. It can also be used to develop distributed dialogue architectures.<br><br>
  # Basic support for incremental processing via the `addIncrementalContent` method in `DialogueSystem`.<br><br>
  # The pattern matching functionalities used in the rule conditions have been extended to capture optional or alternative elements. For instance, the condition `<if var="u_u" relation="contains" value="one (big|small)? object"/>` will match strings such as "one big object", "one small object" or "one object". Such patterns can be very useful for natural language understanding models.<br><br>
