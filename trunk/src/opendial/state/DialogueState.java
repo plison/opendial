@@ -337,7 +337,7 @@ public class DialogueState extends BNetwork {
 		if (r.getRuleType() == RuleType.PROB && arule.isRelevant()) {
 			if (hasChanceNode(r.getRuleId())) {
 				getChanceNode(r.getRuleId()).getOutputNodes().stream()
-					.filter(n -> !n.getId().contains("'"))
+					.filter(n -> !n.getId().endsWith("'") && !hasChanceNode(n.getId()+"'"))
 					.forEach(n -> n.setId(n.getId()+"'"));
 				removeNode(r.getRuleId());
 			}
