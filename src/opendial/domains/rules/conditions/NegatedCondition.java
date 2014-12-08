@@ -38,15 +38,14 @@ import opendial.datastructs.ValueRange;
  * @version $Date::                      $
  *
  */
-public class NegatedCondition implements Condition {
+public final class NegatedCondition implements Condition {
 
 	// logger
 	public static Logger log = new Logger("NegatedCondition", Logger.Level.NORMAL);
 	
 	// condition to negate
-	Condition initCondition;
-	
-	
+	final Condition initCondition;
+		
 
 	// ===================================
 	//  CONDITION CONSTRUCTIOn

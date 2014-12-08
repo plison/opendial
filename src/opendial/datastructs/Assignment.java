@@ -62,7 +62,7 @@ public class Assignment {
 	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
 
 	// the hashmap encoding the assignment
-	Map<String,Value> map;
+	final Map<String,Value> map;
 
 	// the initial size of the hash
 	public static final int MAP_SIZE = 3;

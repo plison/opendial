@@ -24,6 +24,7 @@
 package opendial.domains.rules.effects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,7 @@ import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
+import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
@@ -50,24 +52,37 @@ import opendial.domains.rules.effects.BasicEffect.EffectType;
  * @version $Date::                      $
  *
  */
-public class Effect implements Value {
+public final class Effect implements Value {
 
 	// logger
 	static Logger log = new Logger("Effect", Logger.Level.DEBUG);
 
 	// the sub-effects included in the effect
-	List<BasicEffect> subeffects;
+	final List<BasicEffect> subeffects;
 
 	// ===================================
 	//  EFFECT CONSTRUCTION
 	// ===================================
 
 	
+
 	/**
-	 * Creates a new, empty complex effect
+	 * Creates a new complex effect with no effect
+	 * 
+	 * @param effect the effect to include
 	 */
 	public Effect() {
 		subeffects = new ArrayList<BasicEffect>();
+	}
+	
+
+	/**
+	 * Creates a new complex effect with a single effect
+	 * 
+	 * @param effect the effect to include
+	 */
+	public Effect(BasicEffect effect) {
+		subeffects = Arrays.asList(effect);
 	}
 	
 	/**
@@ -76,43 +91,14 @@ public class Effect implements Value {
 	 * @param effects the effects to include
 	 */
 	public Effect(Collection<BasicEffect> effects) {
-		this();
-		addSubEffects(effects);
-	}
-
-	/**
-	 * Adds a new sub-effect in the complex effect
-	 * 
-	 * @param effect the effect to add
-	 */
-	public void addSubEffect(BasicEffect effect) {
-		if (!subeffects.contains(effect)) {
-			subeffects.add(effect);
+		subeffects = new ArrayList<BasicEffect>();
+		for (BasicEffect e : effects) {
+			if (!subeffects.contains(e)) {
+				subeffects.add(e);
+			}
 		}
 	}
 
-	/**
-	 * Adds a collection of new sub-effects in the complex effect
-	 * 
-	 * @param effects the effect to add
-	 */
-	public void addSubEffects(Collection<BasicEffect> effects) {
-		for (BasicEffect effect : effects) {
-			addSubEffect(effect);
-		}
-	}
-	
-	
-	/**
-	 * Removes a new sub-effect in the complex effect
-	 * 
-	 * @param e the effect to remove
-	 */
-	public void removeEffect(BasicEffect e) {
-		subeffects.remove(e);
-	}
-
-	
 	
 	
 	// ===================================
@@ -150,23 +136,20 @@ public class Effect implements Value {
 		if (isFullyGrounded()) {
 			return this;
 		}
-		Effect effect = new Effect();
-		for (BasicEffect e : subeffects) {
-			BasicEffect grounded = e.ground(grounding);
-			if (!grounded.containsSlots()) {
-				effect.addSubEffect(grounded);
-			}
-		}
-		return effect;
+		List<BasicEffect> grounded = subeffects.stream()
+				.map(e -> e.ground(grounding))
+				.filter(e -> !e.containsSlots())
+				.collect(Collectors.toList());
+		return new Effect(grounded);
 	}
 	
 	
 	@Override
 	public Value concatenate (Value v) throws DialException {
 		if (v instanceof Effect) {
-			Effect newEffect = copy();
-			newEffect.addSubEffects(((Effect)v).getSubEffects());
-			return newEffect;
+			Collection<BasicEffect> effects = new ArrayList<BasicEffect>(subeffects);
+			effects.addAll(((Effect)v).getSubEffects());
+			return new Effect(effects);
 		}
 		else {
 			throw new DialException("cannot concatenate " + this + " and " + v);
@@ -270,14 +253,20 @@ public class Effect implements Value {
 		if (subeffects.size()==1) {
 			return subeffects.get(0).convertToCondition();
 		}
-		ComplexCondition condition = new ComplexCondition();
+		List<Condition> conditions = new ArrayList<Condition>();
 		for (BasicEffect subeffect : getSubEffects()) {
-			condition.addCondition(subeffect.convertToCondition());
+			conditions.add(subeffect.convertToCondition());
 		}
-		if (this.getOutputVariables().size() == 1) {
-			condition.setOperator(BinaryOperator.OR);
+		if (conditions.isEmpty()) {
+			return new VoidCondition();
 		}
-		return condition;
+		else if (conditions.size() == 1) {
+			return conditions.get(0);
+		}
+		else {
+			return new ComplexCondition(conditions, (this.getOutputVariables().size() == 1)? 
+					BinaryOperator.OR : BinaryOperator.AND);
+		}
 	}
 	
 	
@@ -329,11 +318,7 @@ public class Effect implements Value {
 	 */
 	@Override
 	public Effect copy() {
-		Effect effect = new Effect();
-		for (BasicEffect e : subeffects) {
-			effect.addSubEffect(e.copy());
-		}
-		return effect;
+		return new Effect(subeffects.stream().map(e -> e.copy()).collect(Collectors.toList()));
 	}
 
 	/**
@@ -361,16 +346,17 @@ public class Effect implements Value {
 	 * @return the corresponding effect
 	 */
 	public static Effect parseEffect(String str) {
-		Effect o = new Effect();
 		if (str.contains(" ^ ")) {
+			List<BasicEffect> effects = new ArrayList<BasicEffect>();
 			for (String split : str.split(" \\^ ")) {
 				Effect subOutput = parseEffect (split);
-				o.addSubEffects(subOutput.getSubEffects());
+				effects.addAll(subOutput.getSubEffects());
 			}
+			return new Effect(effects);
 		}
 		else {
 			if (str.contains("Void")) {
-				return new Effect();
+				return new Effect(new ArrayList<BasicEffect>());
 			}
 			
 			EffectType type = EffectType.SET;
@@ -395,13 +381,12 @@ public class Effect implements Value {
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				o.addSubEffect(new TemplateEffect(tvar, tval, type));
+				return new Effect(new TemplateEffect(tvar, tval, type));
 			}
 			else {
-				o.addSubEffect(new BasicEffect(var, val, type));
+				return new Effect(new BasicEffect(var, val, type));
 			}
 		}	
-		return o;
 	}
 
 

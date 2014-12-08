@@ -44,19 +44,19 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  * @version $Date::                      $
  *
  */
-public class TemplateCondition implements Condition {
+public final class TemplateCondition implements Condition {
 
 	static Logger log = new Logger("TemplateCondition", Logger.Level.DEBUG);
 
 	// variable label (can include slots to fill)
-	Template variable;
+	final Template variable;
 
 	// expected variable value (can include slots to fill)
-	Template expectedValue;
+	final Template expectedValue;
 
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
-	Relation relation = Relation.EQUAL;
+	final Relation relation;
 
 	// ===================================
 	//  CONDITION CONSTRUCTION

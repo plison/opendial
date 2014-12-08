@@ -38,7 +38,7 @@ import opendial.datastructs.ValueRange;
  * @version $Date::                      $
  *
  */
-public class VoidCondition implements Condition {
+public final class VoidCondition implements Condition {
 
 	// logger
 	static Logger log = new Logger("VoidCondition", Logger.Level.NORMAL);

@@ -46,19 +46,20 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  * @version $Date::                      $
  *
  */
-public class TemplateEffect extends BasicEffect {
+public final class TemplateEffect extends BasicEffect {
 
 	static Logger log = new Logger("TemplateEffect", Logger.Level.DEBUG);
 	
 	// variable label for the basic effect (as a template)
-	Template labelTemplate;
+	final Template labelTemplate;
 	
 	// variable value for the basic effect  (as a template)
-	Template valueTemplate;
+	final Template valueTemplate;
 
 	// ===================================
 	//  EFFECT CONSTRUCTION
 	// ===================================
+	
 	
 	
 	/**
@@ -69,8 +70,20 @@ public class TemplateEffect extends BasicEffect {
 	 * @param type type of effect
 	 */
 	public TemplateEffect(Template variable, Template value, EffectType type){
+		this(variable,value,type, 1);
+	}
+	
+	
+	/**
+	 * Constructs a new basic effect, with a variable label, value, and type
+	 * 
+	 * @param variable variable label (raw string, possibly with slots)
+	 * @param value variable value (raw string, possibly with slots)
+	 * @param type type of effect
+	 */
+	public TemplateEffect(Template variable, Template value, EffectType type, int priority){
 		super(variable.toString(), (value.getSlots().isEmpty())? ValueFactory.none() : 
-			ValueFactory.create(value.getRawString()), type);
+			ValueFactory.create(value.getRawString()), type, priority);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
 	}
@@ -88,14 +101,10 @@ public class TemplateEffect extends BasicEffect {
 		Template newT = labelTemplate.fillSlots(grounding);
 		Template newV = valueTemplate.fillSlots(grounding);
 		if (newT.isUnderspecified() || (!newV.getSlots().isEmpty())) {
-			TemplateEffect grounded = new TemplateEffect(newT, newV, type);
-			grounded.priority = this.priority;
-			return grounded;	
+			return new TemplateEffect(newT, newV, type, priority);
 		}
 		else {
-			BasicEffect grounded = new BasicEffect(newT.getRawString(), newV.getRawString(), type);
-			grounded.priority = this.priority;
-			return grounded;
+			return new BasicEffect(newT.getRawString(), newV.getRawString(), type, priority);
 		}
 		
 	}
@@ -141,7 +150,26 @@ public class TemplateEffect extends BasicEffect {
 		return new TemplateCondition(labelTemplate, valueTemplate, r);
 	}
 
+
+	/**
+	 * Returns the template representation of the variable label
+	 * 
+	 * @return the variable template
+	 */
+	public Template getVariableTemplate() {
+		return labelTemplate;
+	}
 	
+
+	/**
+	 * Returns the template representation of the variable value
+	 * 
+	 * @return the value template
+	 */
+	public Template getValueTemplate() {
+		return valueTemplate;
+	}
+
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -208,11 +236,18 @@ public class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public TemplateEffect copy() {
-		TemplateEffect copy = new TemplateEffect(labelTemplate, valueTemplate, type);
-		copy.priority = this.priority;
-		return copy;
+		return new TemplateEffect(labelTemplate, valueTemplate, type, priority);
 	}
 
+
+	/**
+	 * Returns a copy of the effect with a new priority
+	 * @param priority the new priority
+	 * @return a new basic effect with the changed priority
+	 */
+	public TemplateEffect changePriority(int priority) {
+		return new TemplateEffect(labelTemplate, valueTemplate, type, priority);	
+	}
 
 	
 }
