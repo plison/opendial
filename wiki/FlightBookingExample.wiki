@@ -1,4 +1,5 @@
 #summary A more extended example of domain specification for a flight-booking system.
+#sidebar TableOfContents
 
 The first [https://code.google.com/p/opendial/wiki/SimpleExample step-by-step example] introduced the most basic functions of !OpenDial. In this second, more detailed example, we look at some more advanced concepts for a slot-filling domain. The objective of the dialogue system is to help the user to book flight tickets between Norwegian airports.
 
