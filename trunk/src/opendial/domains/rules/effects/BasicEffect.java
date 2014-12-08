@@ -51,9 +51,9 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  */
 public class BasicEffect {
 
-	String variableLabel;
+	final String variableLabel;
 	
-	Value variableValue;
+	final Value variableValue;
 	
 	// enumeration of the four possible effect operations
 	public static enum EffectType {
@@ -62,13 +62,14 @@ public class BasicEffect {
 		ADD, 		// for variable += value (add the value to the set)
 	}
 		
-	EffectType type;
+	final EffectType type;
 
-	int priority = 1;
+	final int priority;
 	
 	// ===================================
 	//  EFFECT CONSTRUCTION
 	// ===================================
+	
 	
 	
 	/**
@@ -79,7 +80,19 @@ public class BasicEffect {
 	 * @param type type of effect
 	 */
 	public BasicEffect(String variable, String value, EffectType type){
-		this(variable, ValueFactory.create(value), type);
+		this(variable, ValueFactory.create(value), type, 1);
+	}
+	
+	/**
+	 * Constructs a new basic effect, with a variable label, value, and type
+	 * 
+	 * @param variable variable label (raw string)
+	 * @param value variable value (raw string)
+	 * @param type type of effect
+	 * @param priority the priority level
+	 */
+	public BasicEffect(String variable, String value, EffectType type, int priority){
+		this(variable, ValueFactory.create(value), type, priority);
 	}
 	
 	/**
@@ -88,23 +101,14 @@ public class BasicEffect {
 	 * @param variable variable label (raw string)
 	 * @param value variable value
 	 * @param type type of effect
+	 * @param priority the priority level
 	 */
-	public BasicEffect(String variable, Value value, EffectType type){
+	public BasicEffect(String variable, Value value, EffectType type, int priority){
 		this.variableLabel = variable;
 		this.variableValue = value;
 		this.type = type;
-	}
-
-	
-	/**
-	 * Sets the priority level of the basic effect
-	 * 
-	 * @param priority priority level (1 is highest)
-	 */
-	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	
 	
 	
 	// ===================================
@@ -260,9 +264,17 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue, type);
-		copy.priority = this.priority;
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, type, priority);
 		return copy;
+	}
+
+	/**
+	 * Returns a copy of the effect with a new priority
+	 * @param priority the new priority
+	 * @return a new basic effect with the changed priority
+	 */
+	public BasicEffect changePriority(int priority) {
+		return new BasicEffect(variableLabel, variableValue, type, priority);
 	}
 
 

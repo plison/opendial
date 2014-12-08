@@ -24,12 +24,16 @@
 package opendial.domains.rules;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
@@ -90,8 +94,9 @@ public class RuleOutput extends RuleCase {
 			}
 			for (Effect o : effects.keySet()) {
 				for (Effect o2 : newCase.getEffects()) {
-					Effect newEffect = new Effect(o.getSubEffects());
-					newEffect.addSubEffects(o2.getSubEffects());
+					Collection<BasicEffect> effectsList = new ArrayList<BasicEffect>(o.getSubEffects());
+					effectsList.addAll(o2.getSubEffects());
+					Effect newEffect = new Effect(effectsList);
 					Parameter mergeParam = effects.get(o).multiplyParameter(newCase.getParameter(o2));
 					newOutput.put(newEffect, mergeParam);
 				}

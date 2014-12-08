@@ -23,6 +23,7 @@
 
 package opendial.readers;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -195,9 +196,7 @@ public class XMLRuleReader {
 		}
 		else {
 			BinaryOperator operator = getBinaryOperator(conditionNode);
-			ComplexCondition condition = new ComplexCondition(subconditions);
-			condition.setOperator(operator);
-
+			ComplexCondition condition = new ComplexCondition(subconditions, operator);
 			return condition;
 		}
 	}
@@ -252,18 +251,18 @@ public class XMLRuleReader {
 		}
 
 		// extracting a conjunction, disjunction, or negated conjunction
-		else if (node.getNodeName().equals("or") || node.getNodeName().equals("and") || node.getNodeName().equals("neg")) {
-			ComplexCondition condition = new ComplexCondition();
+		else if (node.getNodeName().equals("or") || node.getNodeName().equals("and")) {
+		
 			BinaryOperator operator = (node.getNodeName().equals("or"))? BinaryOperator.OR : BinaryOperator.AND;
-			condition.setOperator(operator);
 
+			List<Condition> conditions = new ArrayList<Condition>();
 			for (int i = 0; i < node.getChildNodes().getLength() ; i++) {
 				Node subNode = node.getChildNodes().item(i);
 				if (!subNode.getNodeName().equals("#text") && !subNode.getNodeName().equals("#comment")) {
-					condition.addCondition(getSubcondition(subNode));
+					conditions.add(getSubcondition(subNode));
 				}
 			}
-			return (!node.getNodeName().equals("neg"))? condition : new NegatedCondition(condition);
+			return new ComplexCondition(conditions, operator);
 		}
 		return new VoidCondition();
 	}

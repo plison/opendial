@@ -41,7 +41,7 @@ import opendial.datastructs.ValueRange;
  * @version $Date::                      $
  *
  */
-public class BasicCondition implements Condition {
+public final class BasicCondition implements Condition {
 
 	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
 
@@ -50,14 +50,14 @@ public class BasicCondition implements Condition {
 		GREATER_THAN, LOWER_THAN, IN, NOT_IN}
 
 	// variable label (can include slots to fill)
-	String variable;
+	final String variable;
 
 	// expected variable value (can include slots to fill)
-	Value expectedValue;
+	final Value expectedValue;
 
 	// the relation which needs to hold between the variable and the value
 	// (default is EQUAL)
-	Relation relation = Relation.EQUAL;
+	final Relation relation;
 
 	// ===================================
 	//  CONDITION CONSTRUCTION

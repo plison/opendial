@@ -23,8 +23,10 @@
 
 package opendial.state.distribs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -146,13 +148,13 @@ public class OutputDistribution implements ProbDistribution {
 		CategoricalTable probTable = new CategoricalTable(baseVar+primes, false);
 
 		// combining all effects
-		Effect fullEffect = new Effect();
+		List<BasicEffect> fullEffects = new ArrayList<BasicEffect>();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
-				Collection<BasicEffect> effects = ((Effect)inputVal).getSubEffects();
-				fullEffect.addSubEffects(effects);
+				fullEffects.addAll(((Effect)inputVal).getSubEffects());
 			}
 		}
+		Effect fullEffect = new Effect(fullEffects);
 
 		Set<Value> setValues = fullEffect.getValues(baseVar, EffectType.SET);
 		Set<Value> addValues = fullEffect.getValues(baseVar, EffectType.ADD);
