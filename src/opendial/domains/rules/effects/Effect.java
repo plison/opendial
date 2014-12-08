@@ -58,7 +58,7 @@ public final class Effect implements Value {
 	static Logger log = new Logger("Effect", Logger.Level.DEBUG);
 
 	// the sub-effects included in the effect
-	final List<BasicEffect> subeffects;
+	final Set<BasicEffect> subeffects;
 
 	// ===================================
 	//  EFFECT CONSTRUCTION
@@ -72,7 +72,7 @@ public final class Effect implements Value {
 	 * @param effect the effect to include
 	 */
 	public Effect() {
-		subeffects = new ArrayList<BasicEffect>();
+		subeffects = new HashSet<BasicEffect>();
 	}
 	
 
@@ -82,7 +82,7 @@ public final class Effect implements Value {
 	 * @param effect the effect to include
 	 */
 	public Effect(BasicEffect effect) {
-		subeffects = Arrays.asList(effect);
+		subeffects = new HashSet<BasicEffect>(Arrays.asList(effect));
 	}
 	
 	/**
@@ -91,12 +91,7 @@ public final class Effect implements Value {
 	 * @param effects the effects to include
 	 */
 	public Effect(Collection<BasicEffect> effects) {
-		subeffects = new ArrayList<BasicEffect>();
-		for (BasicEffect e : effects) {
-			if (!subeffects.contains(e)) {
-				subeffects.add(e);
-			}
-		}
+		subeffects = new HashSet<BasicEffect>(effects);
 	}
 
 	
@@ -250,9 +245,6 @@ public final class Effect implements Value {
 
 	
 	public Condition convertToCondition() {
-		if (subeffects.size()==1) {
-			return subeffects.get(0).convertToCondition();
-		}
 		List<Condition> conditions = new ArrayList<Condition>();
 		for (BasicEffect subeffect : getSubEffects()) {
 			conditions.add(subeffect.convertToCondition());

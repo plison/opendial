@@ -55,7 +55,7 @@ public class RuleCase {
 	static Logger log = new Logger("Case", Logger.Level.DEBUG);
 
 	// the condition for the case
-	Condition condition;
+	final Condition condition;
 	
 	// the list of alternative effects, together with their probability/utility
 	protected Map<Effect,Parameter> effects;
@@ -86,16 +86,7 @@ public class RuleCase {
 		this.condition = condition;
 		effects = new HashMap<Effect,Parameter>();
 	}
-	
-	/**
-	 * Sets the condition for the case (if a condition is already specified,
-	 * it is erased)
-	 * 
-	 * @param condition the condition
-	 */
-	public void setCondition(Condition condition) {
-		this.condition = condition;
-	}
+
 	
 	/**
 	 * Adds an new effect and its associated probability/utility to the case
