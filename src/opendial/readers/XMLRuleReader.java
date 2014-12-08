@@ -41,7 +41,6 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.NegatedCondition;
 import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
@@ -142,13 +141,7 @@ public class XMLRuleReader {
 			// extracting the condition
 			if (node.getNodeName().equals("condition")) {
 				Condition condition = getFullCondition(node);
-				if (newCase.getCondition() instanceof VoidCondition) {
-					newCase.setCondition(condition); 
-				}
-				else {
-					throw new DialException ("only one condition allowed by case, and two are defined: " 
-							+ newCase.getCondition() + " and " + condition);
-				}
+					newCase  = new RuleCase(condition);
 			}
 			// extracting an effect
 			else if (node.getNodeName().equals("effect")) {

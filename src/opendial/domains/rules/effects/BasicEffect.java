@@ -27,6 +27,7 @@ package opendial.domains.rules.effects;
 import java.util.Collection;
 import java.util.HashSet;
 
+import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -50,6 +51,9 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  *
  */
 public class BasicEffect {
+
+	// logger
+	static Logger log = new Logger("BasicEffect", Logger.Level.DEBUG);
 
 	final String variableLabel;
 	
@@ -227,7 +231,7 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return variableLabel.hashCode() - variableValue.hashCode() + type.hashCode() + priority;
+		return variableLabel.hashCode() ^ type.hashCode() ^ priority ^ variableValue.hashCode();
 	}
 
 	

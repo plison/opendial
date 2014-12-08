@@ -95,7 +95,7 @@ public class RuleTest3 {
 	
 
 	@Test
-	public void test2() throws DialException {
+	public void test2() throws DialException, InterruptedException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(test2domainFile); 
