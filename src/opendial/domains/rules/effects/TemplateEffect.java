@@ -25,6 +25,7 @@ package opendial.domains.rules.effects;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -94,7 +95,7 @@ public class TemplateEffect extends BasicEffect {
 		else {
 			BasicEffect grounded = new BasicEffect(newT.getRawString(), newV.getRawString(), type);
 			grounded.priority = this.priority;
-		return grounded;
+			return grounded;
 		}
 		
 	}
@@ -169,7 +170,7 @@ public class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return labelTemplate.hashCode() - valueTemplate.hashCode() + type.hashCode();
+		return labelTemplate.hashCode() - valueTemplate.hashCode() + type.hashCode() + priority;
 	}
 
 	
@@ -190,6 +191,9 @@ public class TemplateEffect extends BasicEffect {
 				return false;
 			}
 			else if (!((TemplateEffect)o).getType().equals(type)) {
+				return false;
+			}
+			else if (((TemplateEffect)o).priority != priority) {
 				return false;
 			}
 			return true;

@@ -45,6 +45,7 @@ import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.Parameter;
 
 
 /**
@@ -115,13 +116,22 @@ public class Rule {
 	 * @param priority the priority level
 	 */
 	public void setPriority(int priority) {
+		List<RuleCase> newCases = new ArrayList<RuleCase>();
 		for (RuleCase c : cases) {
+			RuleCase newCase = new RuleCase(c.getCondition());
 			for (Effect e : c.getEffects()) {
+				Parameter param = c.getParameter(e);
+				Effect e3 = new Effect();
 				for (BasicEffect e2: e.getSubEffects()) {
-					e2.setPriority(priority);
+					BasicEffect e4 = e2.copy();
+					e4.setPriority(priority);
+					e3.addSubEffect(e4);
 				}
+				newCase.addEffect(e3, param);
 			}
+			newCases.add(newCase);
 		}
+		cases = newCases;
 	}
 
 
