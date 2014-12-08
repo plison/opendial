@@ -1,14 +1,14 @@
 #summary A more extended example of domain specification for a flight-booking system.
 #sidebar TableOfContents
 
-The first [https://code.google.com/p/opendial/wiki/SimpleExample step-by-step example] introduced the most basic functions of !OpenDial. In this second, more extensive example, we look at some more advanced functionalities of! OpenDial in the context of a slot-filling application. The objective of the dialogue system is to help the user to book flight tickets between Norwegian airports.
+The first [https://code.google.com/p/opendial/wiki/SimpleExample step-by-step example] introduced the most basic functions of !OpenDial. In this second, more extensive example, we look at some more advanced functionalities of !OpenDial in the context of a slot-filling application. The objective of the dialogue system is to help the user to book flight tickets between Norwegian airports.
 
 
 <br><p align="center">
 <img align="center" src="http://opendial.googlecode.com/svn/wiki/flight-booking.png"><br>_Example of interaction with the flight-booking system_<br><br>
 
 
-The complete dialogue domain is available in the file [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking.xml domains/examples/example-flightbooking.xml]. As usual, the XML specification of the dialogue domain can be divided into natural language understanding, dialogue management, and generation. In this dialogue domain, these are specified in separate XML files (referenced to in the top XML file `example-flightbooking.xml`).
+The complete dialogue domain designed for the system is available in the file [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking.xml domains/examples/example-flightbooking.xml]. As usual, the XML specification of the dialogue domain can be divided into natural language understanding, dialogue management, and generation. In this dialogue domain, these are specified in separate XML files (referenced to in the top XML file `example-flightbooking.xml`).
 
 The dialogue state contains various variable related to the various slots to fill (the flight destination and departure, the date of travel, the return date if any, and the number of tickets to book).  The dialogue proceeds by moving through a sequence of steps, and the current step is recorded in the variable `current_step`. The following steps are:
  # Asking the user for the destination
