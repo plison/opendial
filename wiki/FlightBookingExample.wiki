@@ -3,15 +3,30 @@
 
 The first [https://code.google.com/p/opendial/wiki/SimpleExample step-by-step example] introduced the most basic functions of !OpenDial. In this second, more detailed example, we look at some more advanced concepts for a slot-filling domain. The objective of the dialogue system is to help the user to book flight tickets between Norwegian airports.
 
-The complete dialogue domain is available at [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking.xml http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking.xml]. As usual, the XML specification of the dialogue domain can be divided into natural language understanding models, dialogue management models, and generation models. In this dialogue domain, these models are specified in separate XML files (referenced to in the top XML file `example-flightbooking.xml`).
 
-The dialogue state contains various variable related to the various slots to fill (the flight destination and departure, the date of travel, the return date if any, and the number of tickets to book).  The dialogue proceeds by moving through a sequence of steps, and the current step is recorded in the variable `current_step`. 
+<br><p align="center">
+<img align="center" src="http://opendial.googlecode.com/svn/wiki/flight-booking.png"><br>_Example of interaction with the flight-booking system_<br><br>
+
+
+The complete dialogue domain is available in the file [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking.xml domains/examples/example-flightbooking.xml]. As usual, the XML specification of the dialogue domain can be divided into natural language understanding models, dialogue management models, and generation models. In this dialogue domain, these models are specified in separate XML files (referenced to in the top XML file `example-flightbooking.xml`).
+
+The dialogue state contains various variable related to the various slots to fill (the flight destination and departure, the date of travel, the return date if any, and the number of tickets to book).  The dialogue proceeds by moving through a sequence of steps, and the current step is recorded in the variable `current_step`. The following steps are:
+ # Asking the user for the destination
+ # Asking the user for the departure
+ # Asking the user for the flight date
+ # Asking the user whether she/he wants a return trip
+ # If yes, asking for the return date
+ # Checking the price of the desired flight and informing the user about this price
+ # Asking the user whether he wants to book a ticket
+ # Asking for the number of tickets to book for the trip
+ # Asking the user to confirm all the provided information on last time
+ # If the user confirms, booking all the tickets
+ # Asking the user whether she/he wants to book additional tickets. 
+
 
 = 1. Natural language understanding =
 
-The models for natural language understanding are expressed in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlu.xml http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlu.xml].  The file contains two models:   
- * one model to recognise the user dialogue act `a_u` from the raw user utterance `u_u`
- * and one model to update the slots (`Destination`, `Departure`, `Date`, `ReturnDate` and `NbTickets`) in accordance with this dialogue act `a_u`.
+The models for natural language understanding are expressed in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlu.xml domains/examples/example-flightbooking_nlu.xml].  The file contains two models:  one model to recognise the user dialogue act `a_u` from the raw user utterance `u_u`, and one model to update the slots (`Destination`, `Departure`, `Date`, `ReturnDate` and `NbTickets`) in accordance with this dialogue act `a_u`.
 
 == Dialogue act recognition model ==
 
@@ -23,7 +38,7 @@ The dialogue act recognition model relies on complex conditions such as:
   <if var="Airport" relation="in" value="[Oslo,Bergen,Trondheim,Stavanger,Moss, Sandefjord,Tromsø,Bodø,Kristiansand,Ålesund]" />
 }}}
 
-The above condition checks for mentions of an airport (among the list of available airports) in the user utterance.  Note that the pattern can rely on regular expression syntax with optional or alternative elements, as `(to|from)` (see [https://code.google.com/p/opendial/wiki/AdvancedModelling#4._String_Matching Advanced modelling: String Matching] for details).
+The above condition checks for mentions of an airport (among the list of available airports) in the user utterance.  Note that the pattern can rely on regular expression syntax with optional or alternative elements, such as `(to|from)?` (see [https://code.google.com/p/opendial/wiki/AdvancedModelling#4._String_Matching Advanced modelling: String Matching] for details).
 
 The last rule of the model is a lower-priority rule (priority 2, while the other rules have priority 1) that is used to specify a default dialogue act in case no other value is found. If the user utterance is an N-best list `I want to fly to Oslo (0.7) ; I want to fly tomorrow (0.2)`, the resulting dialogue act `a_u` will be equal to `[Inform(Airport,Oslo] (0.7) ; [Other] (0.2)`.
 
@@ -34,10 +49,10 @@ The second model captures the mapping between the user dialogue act `a_u` and th
 
 The second rule of the model states that if the last system action was a confirmation request on a particular value `{Value}` for the slot `{Slot}` and the user utters a confirmation, then the slot should be set to `{Value}` (in other words, it will increase the probability of `{Value}` and decrease the probability of alternative hypotheses). The third rule marks a given slot value as certain after the system has uttered a grounding action.  Finally, the fourth rule transfers the current distributions for the slots in the absence of additional information. 
 
-Note that the slot filling model describes the distributions `P(slots|a_u)`.  An alternative modelling approach would be to model the inverse distribution `P(a_u|slots)` (as in the "user action model" of traditional POMDP approaches). However, the latter approach requires an explicit prior distribution over all possible values for the slots, which would be hard to express in our domain since the number of possible dates for the flights is theoretically infinite.
+Note that the slot filling model describes the distributions `P(slots|a_u)`.  An alternative modelling approach would be to model the inverse distribution `P(a_u|slots)`, as often done in the "user action model" of traditional POMDP approaches. However, the latter approach requires an explicit prior distribution over all possible values for the slots, which would be hard to express in our domain since the number of possible dates for the flights is theoretically infinite.
 
 = 2. Dialogue management =
-Dialogue management is split into three models, as shown in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_dm.xml http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_dm.xml]: 
+Dialogue management is split into three models, as shown in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_dm.xml domains/examples/example-flightbooking_dm.xml]: 
  * an action selection model to find the best system action to execute given the last user dialogue act, values of the slot to fill, and current step in the interaction.
  * a transition model that specifies how the selected action modifies the current dialogue state (and especially the current step)
  * a prediction model for the prior distributions on the destinations, departures. 
@@ -61,11 +76,11 @@ Finally, asking the user to repeat can be done in all cases, provided that the u
 The transition model specifies how the selection of a particular system action affects the current dialogue state, in particular the current 
 step in the dialogue. For instance, if the destination slot is being grounded, the system can move to the next slot, namely the departure. 
 
-The prediction model expresses the prior likelihoods of departures and destinations, as well the the prior likelihoods of the next user responses given the context.  These predictions allows the system to increase the probability of user dialogue acts that are likely given the context, and decrease the probability of unlikely responses.
+The prediction model expresses the prior likelihoods of departures and destinations, as well the the prior likelihoods of the next user responses given the context.  These predictions allows the system to increase the probability of user dialogue acts that are likely given the context, and decrease the probability of unlikely responses. In this example, the prior distributions are fixed by hand, but they could also be estimated from data (see the corresponding section on [https://code.google.com/p/opendial/wiki/ParameterEstimation ParameterEstimation]). 
 
 = 3. Natural language generation =
 
-Finally, the generation models in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlg.xml http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlg.xml] specify the mappings between the current dialogue state and actual system responses.  The system can produce new system utterance either when the current step is changed, or when a new system action is selected.
+Finally, the generation models in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlg.xml domains/examples/example-flightbooking_nlg.xml] specify the mappings between the current dialogue state and actual system responses.  The system can produce new system utterance either when the current step is changed, or when a new system action is selected.
 
 Note that many generation rules rely on templates to fill in certain parts of the generated responses.  For instance, the following rule case describes that if the current dialogue step is `LastConfirm` and the trip to book is a single one-way ticket, the system response can be constructed based on the values in the variables `Departure`, `Destination`, `Date` and `TotalCost`: 
 {{{
@@ -76,7 +91,8 @@ Note that many generation rules rely on templates to fill in certain parts of th
     <if var="NbTickets" value="1"/>
   </condition>
   <effect util="1">
-    <set var="u_m" value="You are ordering one one-way ticket from {Departure} to {Destination} on {Date} for a total cost of {TotalCost} EUR. Shall I confirm your order?" />
+    <set var="u_m" value="You are ordering one one-way ticket from {Departure} to {Destination} on {Date} 
+for a total cost of {TotalCost} EUR. Shall I confirm your order?" />
   </effect>
 </case>
 }}}
@@ -86,6 +102,6 @@ Note that many generation rules rely on templates to fill in certain parts of th
 
 = 4. External module =
 
-The flight-booking system needs to access an external database to check the prices of particular routes and perform the ticket booking.  The module [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/examples/FlightBookingExample.java FlightBookingExample] provides a simple, faked example of such a connection. The module monitors for the update of system actions.  When the system action is equal to `FindOffer`, the module checks the filled values for the destination, departure and dates, and returns the associated price by adding a new action `MakeOffer(price)` in the dialogue state. 
+The flight-booking system needs to access an external database to check the prices of particular routes and perform the ticket booking.  The module [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/examples/FlightBookingExample.java src/opendial/modules/examples/FlightBookingExample.java] provides a simple, faked example of such a connection. The module monitors for the update of system actions.  When the system action is equal to `FindOffer`, the module checks the filled values for the destination, departure and dates, and returns the associated price by adding a new action `MakeOffer(price)` in the dialogue state. 
 
 Similarly, if the system action is `Book`, the system can check the filled values for the destination, departure, dates and number of tickets, and perform the booking.
