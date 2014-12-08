@@ -143,3 +143,5 @@ All version of !OpenDial > 0.95 require Java 8 in order to compile.  Simply down
 You should first check that the correct input mixer is selected in the `Options`, that the volume bar is moving when you talk in the microphone, and that you are connected to the internet.  You should also make sure that the speech data lasts longer than 2 seconds, as the Nuance API seems to have problems with speech data of shorter duration. 
 
 If the problem persists, look at the logs to see what may have gone wrong.  If you get an unusual response status from the Nuance server, check the online documentation on the Nuance Mobile Developer website to get the meaning of that response status.  Finally, the !NuanceSpeech module has a parameter `SAVE_SPEECH` which can be used to save the speech data to a file before it is being sent.  Using this parameter, you can verify whether the audio data is correctly encoded. 
+
+<br><br>
