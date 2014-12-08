@@ -45,6 +45,7 @@ import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.effects.TemplateEffect;
 import opendial.domains.rules.parameters.Parameter;
 
 
@@ -121,13 +122,11 @@ public class Rule {
 			RuleCase newCase = new RuleCase(c.getCondition());
 			for (Effect e : c.getEffects()) {
 				Parameter param = c.getParameter(e);
-				Effect e3 = new Effect();
+				List<BasicEffect> newEffects = new ArrayList<BasicEffect>();
 				for (BasicEffect e2: e.getSubEffects()) {
-					BasicEffect e4 = e2.copy();
-					e4.setPriority(priority);
-					e3.addSubEffect(e4);
+					newEffects.add(e2.changePriority(priority));
 				}
-				newCase.addEffect(e3, param);
+				newCase.addEffect(new Effect(newEffects), param);
 			}
 			newCases.add(newCase);
 		}

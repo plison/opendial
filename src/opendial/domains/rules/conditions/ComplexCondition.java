@@ -44,19 +44,19 @@ import opendial.datastructs.ValueRange;
  * @version $Date::                      $
  *
  */
-public class ComplexCondition implements Condition {
+public final class ComplexCondition implements Condition {
 
 	// logger
 	static Logger log = new Logger("ComplexCondition", Logger.Level.DEBUG);
 
 	// the collection of subconditions
-	Collection<Condition> subconditions;
+	final Collection<Condition> subconditions;
 
 	// the enumeration of possible binary operators
 	public static enum BinaryOperator {AND, OR}
 
 	// the binary operator for the complex condition (default is AND)
-	BinaryOperator operator = BinaryOperator.AND;
+	final BinaryOperator operator;
 
 
 	// ===================================
@@ -65,58 +65,13 @@ public class ComplexCondition implements Condition {
 
 
 	/**
-	 * Creates a new empty complex condition
-	 */
-	public ComplexCondition() {
-		subconditions = new LinkedList<Condition>();
-	}
-
-	/**
 	 * Creates a new complex condition with a list of subconditions
 	 * 
 	 * @param subconditions the subconditions
 	 */
-	public ComplexCondition(Condition...subconditions) {
-		this.subconditions = Arrays.asList(subconditions);
-	}
-
-	/**
-	 * Creates a new complex condition with a list of subconditions
-	 * 
-	 * @param subconditions the subconditions
-	 */
-	public ComplexCondition(List<Condition> subconditions) {
+	public ComplexCondition(List<Condition> subconditions, BinaryOperator operator) {
 		this.subconditions = subconditions;
-	}
-
-	/**
-	 * Sets the logical operator for the complex condition
-	 * 
-	 * @param operator the binary operator for the condition.
-	 */
-	public void setOperator (BinaryOperator operator) {
 		this.operator = operator;
-	}
-
-
-	/**
-	 * Adds a new subcondition to the complex condition
-	 * 
-	 * @param condition the new subcondition
-	 */
-	public void addCondition(Condition condition) {
-		subconditions.add(condition);
-	}
-
-
-	/**
-	 * Removes the subcondition to the complex condition
-	 * (if it exists)
-	 * 
-	 * @param condition the subcondition to remove
-	 */
-	public void removeCondition(Condition condition) {
-		subconditions.remove(condition);
 	}
 
 

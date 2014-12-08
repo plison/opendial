@@ -149,8 +149,7 @@ public class ParametersTest {
 		
 		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0).getRules());
 		RuleOutput outputs = rules.get(1).getOutput(new Assignment("u_u", "no no"));
-		Effect o = new Effect();
-		o.addSubEffect(new BasicEffect("a_u", "Disapproval", EffectType.SET));
+		Effect o = new Effect(new BasicEffect("a_u", "Disapproval", EffectType.SET));
 		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
 		Assignment input = new Assignment("theta_4", ValueFactory.create("[0.36, 0.64]"));
 		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input), 0.01);
@@ -176,8 +175,7 @@ public class ParametersTest {
 	
 		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1).getRules());
 		RuleOutput outputs = rules.get(0).getOutput(new Assignment("u_u", "my name is"));
-		Effect o = new Effect();
-		o.addSubEffect(new BasicEffect("u_u^p", "Pierre", EffectType.SET));		
+		Effect o = new Effect(new BasicEffect("u_u^p", "Pierre", EffectType.SET));
 		assertTrue(outputs.getParameter(o) instanceof StochasticParameter);
 		Assignment input = new Assignment("theta_5", ValueFactory.create("[0.36, 0.24, 0.40]"));
 		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
@@ -214,8 +212,7 @@ public class ParametersTest {
 
 		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0).getRules());
 		RuleOutput outputs = rules.get(0).getOutput(new Assignment("u_u", "brilliant"));
-		Effect o = new Effect();
-		o.addSubEffect(new BasicEffect("a_u", "Approval", EffectType.SET));
+		Effect o = new Effect(new BasicEffect("a_u", "Approval", EffectType.SET));
 		
 		assertTrue(outputs.getParameter(o) instanceof CompositeParameter);
 		Assignment input = new Assignment(new Assignment("theta_6", 2.1), new Assignment("theta_7", 1.3));
