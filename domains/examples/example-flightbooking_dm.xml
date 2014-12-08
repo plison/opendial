@@ -3,8 +3,8 @@
 	<!-- Dialogue management models, composed of three models: an action selection 
 		model to find the best system action to execute, a transition model that 
 		specifies how the selected action modifies the current dialogue state, and 
-		a prediction model for the prior distributions on the destinations and 
-		departures. -->
+		a prediction model for the prior distributions on the destinations, 
+		departures and next user dialogue act. -->
 
 
 	<model trigger="Destination,Departure,Date,ReturnDate,NbTickets">
@@ -243,8 +243,7 @@
 	</model>
 	
 	
-	
-	
+
 
 	<model trigger="a_m">
 		<!-- Transition model that specifies how the selection of a particular 

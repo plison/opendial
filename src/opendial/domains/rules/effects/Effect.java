@@ -91,12 +91,27 @@ public class Effect implements Value {
 		}
 	}
 
-
+	/**
+	 * Adds a collection of new sub-effects in the complex effect
+	 * 
+	 * @param effects the effect to add
+	 */
 	public void addSubEffects(Collection<BasicEffect> effects) {
 		for (BasicEffect effect : effects) {
 			addSubEffect(effect);
 		}
 	}
+	
+	
+	/**
+	 * Removes a new sub-effect in the complex effect
+	 * 
+	 * @param e the effect to remove
+	 */
+	public void removeEffect(BasicEffect e) {
+		subeffects.remove(e);
+	}
+
 	
 	
 	
@@ -389,6 +404,5 @@ public class Effect implements Value {
 		return o;
 	}
 
-	
 
 }
