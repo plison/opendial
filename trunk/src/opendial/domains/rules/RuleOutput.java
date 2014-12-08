@@ -27,7 +27,6 @@ package opendial.domains.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import opendial.arch.DialException;
@@ -93,12 +92,21 @@ public class RuleOutput extends RuleCase {
 				addEffect(new Effect(), new FixedParameter(1.0-fixedMass));
 			}
 			for (Effect o : effects.keySet()) {
+				Parameter param = effects.get(o);
 				for (Effect o2 : newCase.getEffects()) {
+					Parameter newParam = newCase.getParameter(o2);
+
 					Collection<BasicEffect> effectsList = new ArrayList<BasicEffect>(o.getSubEffects());
 					effectsList.addAll(o2.getSubEffects());
 					Effect newEffect = new Effect(effectsList);
-					Parameter mergeParam = effects.get(o).multiplyParameter(newCase.getParameter(o2));
-					newOutput.put(newEffect, mergeParam);
+					Parameter mergeParam = param.multiplyParameter(newParam);
+					if (!newOutput.containsKey(newEffect)) {
+						newOutput.put(newEffect, mergeParam);
+					}
+					else {
+						Parameter addParam = newOutput.get(newEffect).sumParameter(mergeParam);
+						newOutput.put(newEffect, addParam);
+					}
 				}
 			}
 			effects = newOutput;

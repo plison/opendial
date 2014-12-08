@@ -45,7 +45,6 @@ import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.TemplateEffect;
 import opendial.domains.rules.parameters.Parameter;
 
 

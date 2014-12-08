@@ -198,7 +198,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return labelTemplate.hashCode() - valueTemplate.hashCode() + type.hashCode() + priority;
+		return labelTemplate.hashCode() ^ type.hashCode() ^ priority ^ valueTemplate.hashCode();
 	}
 
 	
@@ -212,7 +212,7 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof TemplateEffect) {
-			if (!((TemplateEffect)o).getVariable().equals(variableLabel)) {
+			if (!((TemplateEffect)o).labelTemplate.equals(labelTemplate)) {
 				return false;
 			}
 			else if (!((TemplateEffect)o).valueTemplate.equals(valueTemplate)) {
@@ -245,6 +245,7 @@ public final class TemplateEffect extends BasicEffect {
 	 * @param priority the new priority
 	 * @return a new basic effect with the changed priority
 	 */
+	@Override
 	public TemplateEffect changePriority(int priority) {
 		return new TemplateEffect(labelTemplate, valueTemplate, type, priority);	
 	}
