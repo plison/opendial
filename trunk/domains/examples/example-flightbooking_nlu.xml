@@ -175,17 +175,16 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="a_m" value="Confirm({Step},{Value})" />
+					<if var="a_m" value="Confirm({Slot},{Value})" />
 					<if var="a_u" relation="contains" value="Confirm" />
 				</condition>
 				<effect>
-					<set var="{Step}" value="{Value}" />
+					<set var="{Slot}" value="{Value}" />
 				</effect>
 			</case>
 		</rule>
 		
-		<!-- If the system utters a grounding action which is not contradicted
-		by the user, assumes the information is correct -->
+		<!-- Once the information is grounded, we assume the value won't change-->
 		<rule>
 			<case>
 				<condition>

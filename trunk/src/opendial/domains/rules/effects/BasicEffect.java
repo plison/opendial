@@ -64,7 +64,7 @@ public class BasicEffect {
 		
 	EffectType type;
 
-	int priority;
+	int priority = 1;
 	
 	// ===================================
 	//  EFFECT CONSTRUCTION
@@ -186,6 +186,15 @@ public class BasicEffect {
 	}
 
 	
+	/**
+	 * Returns the rule priority
+	 * 
+	 * @return the priority level
+	 */
+	public int getPriority() {
+		return priority;
+	}
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -214,7 +223,7 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return variableLabel.hashCode() - variableValue.hashCode() + type.hashCode();
+		return variableLabel.hashCode() - variableValue.hashCode() + type.hashCode() + priority;
 	}
 
 	
@@ -235,6 +244,9 @@ public class BasicEffect {
 				return false;
 			}
 			else if (!((BasicEffect)o).getType().equals(type)) {
+				return false;
+			}
+			else if (((BasicEffect)o).priority != priority) {
 				return false;
 			}
 			return true;

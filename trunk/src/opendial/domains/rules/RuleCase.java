@@ -120,6 +120,17 @@ public class RuleCase {
 	}
 
 	
+
+	/**
+	 * Removes an effect from the rule case
+	 * 
+	 * @param e the effect to remove
+	 */
+	public void removeEffect(Effect e) {
+		effects.remove(e);
+	}
+
+
 	/**
 	 * Returns a grounded version of the rule case, based on the grounding
 	 * assignment.

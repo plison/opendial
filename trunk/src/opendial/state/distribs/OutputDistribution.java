@@ -23,6 +23,7 @@
 
 package opendial.state.distribs;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
 
@@ -147,7 +149,8 @@ public class OutputDistribution implements ProbDistribution {
 		Effect fullEffect = new Effect();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
-				fullEffect.addSubEffects(((Effect)inputVal).getSubEffects());
+				Collection<BasicEffect> effects = ((Effect)inputVal).getSubEffects();
+				fullEffect.addSubEffects(effects);
 			}
 		}
 
