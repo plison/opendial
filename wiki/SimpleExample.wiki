@@ -7,7 +7,7 @@ Assume you want to create a simple dialogue system for a robot that can be instr
 
 We focus in this example on the specification of the dialogue domain to process the user inputs and select the most relevant actions depending on the conversational situation.  Of course, a real robot will also need to include distinct modules for the actual speech recognition, speech synthesis and motor control.  The integration of such modules is described in the sections [SpeechRecognitionAndSynthesis Speech Recognition and Synthesis] and [ExternalModules External modules].
 
-_Notational conventions_: in our example (and in !OpenDial in general), we shall label all variables related to the user with the suffix `_u`, and all variables related to the system `_m` (`m` standing for "machine"). The variable  `u_u` is therefore the default label for the user utterance, while `u_m` is the default label for the system utterance. These labels can be changed in the system settings.
+_Notational conventions_: in our example (and in !OpenDial in general), we shall label all variables related to the user with the suffix `_u`, and all variables related to the system `_m` (`m` standing for "machine"). The variable  `u_u` is therefore the default label for the user utterance, while `u_m` is the default label for the system utterance. These labels can be changed in the system settings. Similarly, the user dialogue act is denoted `a_u`,while the system action is denoted `a_m`.
 
 == General skeleton == 
 
