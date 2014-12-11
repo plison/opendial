@@ -12,7 +12,7 @@
   * [SimpleExample#Using_quantifiers Using quantifiers]
   * [SimpleExample#Parameters Parameters]
   * [SimpleExample#Final_domain Final domain]
- * [FlightBookingExample Flight-booking domain]
+ * [FlightBookingExample Flight-booking example]
   * [FlightBookingExample#1._Natural_language_understanding Natural language understanding]
   * [FlightBookingExample#2._Dialogue_management Dialogue management]
   * [FlightBookingExample#3._Natural_language_generation Natural language generation]
