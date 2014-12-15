@@ -41,7 +41,7 @@ Bodø, Kristiansand, Ålesund]" />
 
 The above condition checks for mentions of an airport (among the list of available airports) in the user utterance.  Note the reliance on regular expression syntax to capture optional or alternative elements, such as `(to|from)?` (see [https://code.google.com/p/opendial/wiki/AdvancedModelling#4._String_Matching Advanced modelling: String Matching] for details).
 
-The last rule of the model is a lower-priority rule (priority 2, while the other rules have priority 1) that is used to specify a default dialogue act in case no other value is found. If the user utterance is an N-best list {`I want to fly to Oslo (0.7) ; I want to fly tomorrow (0.2)`}, the resulting dialogue act `a_u` will be equal to {`[Inform(Airport,Oslo] (0.7) ; [Other] (0.2)`}.
+The last rule of the model is a lower-priority rule (priority 2, while the other rules have the default priority 1) that is used to specify a default dialogue act in case no other value is found. If the user utterance is an N-best list {`I want to fly to Oslo (0.7) ; I want to fly tomorrow (0.2)`}, the resulting dialogue act `a_u` will be equal to {`[Inform(Airport,Oslo] (0.7) ; [Other] (0.2)`}.
 
 
 == Slot-filling model ==
