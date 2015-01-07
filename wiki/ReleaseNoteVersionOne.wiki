@@ -3,7 +3,7 @@
 = Major changes in version 1.1 =
 
 
- # *Upgrade to Java 8* (which is required to compiled and run the toolkit).<br><br>
+ # *Upgrade to Java 8* (which is required to compile and run the toolkit).<br><br>
  # Major refactoring of the internal code base and efficiency improvements in the inference algorithms. For example, the sampling algorithm can now take full advantage of multi-core architectures.<br><br>
  # Support for Nuance cloud-based speech recognition and synthesis via the `NuanceSpeech` plugin.<br><br>
  # Support for data-driven dependency parsing with a new module bridging !OpenDial to the [http://maltparser.org MaltParser].<br><br>
