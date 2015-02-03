@@ -424,7 +424,7 @@ public class Template {
 			else {
 				builder.append(charArr[i]);
 			}
-			if (charArr[i] == '|' || (charArr[i]=='?' && charArr[i-1]==')')) {
+			if (charArr[i] == '|' || (charArr[i]=='?' && i > 0 && charArr[i-1]==')')) {
 				hasComplexRegex = true;
 			}
 		}
