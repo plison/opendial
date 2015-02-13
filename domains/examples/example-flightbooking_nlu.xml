@@ -182,6 +182,15 @@
 					<set var="{Slot}" value="{Value}" />
 				</effect>
 			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Confirm({Slot},{Value})" />
+					<if var="a_u" relation="contains" value="Disconfirm" />
+				</condition>
+				<effect>
+					<set var="{Slot}" value="None" />
+				</effect>
+			</case>
 		</rule>
 		
 		<!-- Once the information is grounded, we assume the value won't change-->
