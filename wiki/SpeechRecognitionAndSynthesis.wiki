@@ -44,11 +44,11 @@ For improved speech recognition results, it is recommended to use custom vocabul
 
 The AT&T Speech API can also be used to perform cloud-based speech recognition and synthesis. Compared to Nuancce, the AT&T speech API has a slighly higher error rate, and is also a bit slower than Nuance.  However, the API allows system developers to provide a full recognition grammar to the recogniser (while Nuance only allows for custom vocabularies). 
 
-The AT&T speech plugin requires an application ID and secret. To obtain these, you first need to register as a developer on the [https://developer.att.com/apis/speech AT&T Developer website]. Once registered, you must setup a new application, with access to the "Speech To Text Custom" and "Text to Speech" APIs.  At the end of the setup procedure, a confidential application ID and secret will be created.  
+The AT&T speech plugin requires an application ID and secret. To obtain these, you first need to register as a developer on the [https://developer.att.com/apis/speech AT&T Developer website]. Once registered, you must setup a new application, with access to the "Speech To Text Custom" and "Text to Speech" APIs.  At the end of the setup procedure, a confidential application key and secret will be created.  
 
 As for the Nuance plugin, you can start the AT&T plugin by directly adding the required parameters to the command line:
 {{{
--Dmodules=opendial.plugins.ATTSpeech -Did=application_ID -Dsecret=application_secret -Dgrammar=path_to_your_grammar
+-Dmodules=opendial.plugins.ATTSpeech -Dkey=application_key -Dsecret=application_secret -Dgrammar=path_to_your_grammar
 }}}
 
 The grammar parameter is optional. You can also specify these parameters in the XML domain specification (cf. previous section).
