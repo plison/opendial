@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.densityfunctions.DensityFunction;
+import opendial.bn.distribs.densityfunctions.DiscreteDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -275,7 +277,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 */
 	@Override
 	public IndependentProbDistribution getMarginal(String var) {
-		if (sample().getTrimmed(var).containContinuousValues()) {
+		if (sample().getTrimmed(var).containContinuousValues() 
+				&& samples.stream().distinct().limit(5).count() == 5) {
 			return this.createContinuousDistribution(var);
 		}
 		else {
@@ -379,7 +382,6 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 */
 	protected ContinuousDistribution createContinuousDistribution(String variable) {
 
-		
 		List<double[]> values = samples.stream()
 				.map(a -> a.getValue(variable))
 				.filter(v -> (v instanceof ArrayVal) || (v instanceof DoubleVal))
@@ -393,8 +395,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 				})
 				.collect(Collectors.toList());
 
-		KernelDensityFunction function = new KernelDensityFunction(values);
-		return new ContinuousDistribution(variable, function);
+		return new ContinuousDistribution(variable, new KernelDensityFunction(values));
 	}
 
 	/**

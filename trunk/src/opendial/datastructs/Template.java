@@ -190,7 +190,6 @@ public class Template {
 			return new MatchResult(input.equalsIgnoreCase(rawString));
 		}
 		Matcher matcher = pattern.matcher(input);
-
 		if ((fullMatch && matcher.matches()) || (!fullMatch && matcher.find())) {
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
