@@ -224,6 +224,15 @@ public class StatePruner {
 	}
 	
 	
+	
+	/**
+	 * "lightweight" reduction of the dialogue state (without actual inference).
+	 * 
+	 * @param state the dialogue state
+	 * @param nodesToKeep the nodes to keep
+	 * @return the reduced dialogue state
+	 * @throws DialException
+	 */
 	private static DialogueState reduce_light(DialogueState state, 
 			Collection<String> nodesToKeep) throws DialException {
 

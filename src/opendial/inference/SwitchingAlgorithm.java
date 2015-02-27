@@ -58,11 +58,10 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
 
 	// maximum branching factor (in-degree) for VE
-	public static int MAX_BRANCHING_FACTOR = 5;
+	public static int MAX_BRANCHING_FACTOR = 10;
 
 	// maximum number of values to use VE
 	public static int MAX_NBVALUES = 300;
-
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;
