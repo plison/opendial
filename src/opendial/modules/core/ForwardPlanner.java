@@ -39,6 +39,7 @@ import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
+import opendial.bn.nodes.BNode;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
 import opendial.modules.Module;
@@ -170,9 +171,9 @@ public class ForwardPlanner implements Module {
 			service.schedule(() -> isTerminated=true, timeout, TimeUnit.MILLISECONDS);
 
 			try {
-				
 				// step 1: extract the Q-values
 				UtilityTable evalActions =getQValues(initState, settings.horizon);
+			//	log.debug(" ACTION: " + evalActions);
 
 				// step 2: find the action with highest utility
 				Assignment bestAction =  evalActions.getBest().getKey(); 
@@ -187,6 +188,7 @@ public class ForwardPlanner implements Module {
 								
 				// step 4: add the selection action to the dialogue state
 				initState.addToState(bestAction.removePrimes());
+			//	log.debug("BEST ACTION: " + bestAction);
 				isTerminated = true;
 			}
 			catch (DialException e) {
