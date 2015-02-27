@@ -26,7 +26,7 @@ _Alternatively_, you can also specify these parameters in the XML domain specifi
 	<settings>
 		<modules>opendial.plugins.NuanceSpeech</modules>
 		<id>application_id</id>
-		<key>application_key</secret>
+		<key>application_key</key>
                 <lang>language_code</lang>
 	</settings>
 }}}
