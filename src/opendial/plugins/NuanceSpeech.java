@@ -212,7 +212,9 @@ public class NuanceSpeech implements Module {
 	private Map<String,Double> recognise(SpeechStream stream) {
 
 		Map<String,Double> table = new HashMap<String,Double>();
-		currentClip.stop();
+		if (currentClip != null) {
+			currentClip.stop();
+		}
 		audioToPlay.clear();
 		int sampleRate =  (int)stream.getFormat().getSampleRate();
 		log.info("calling Nuance server for recognition... "
