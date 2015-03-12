@@ -174,19 +174,19 @@ One can also check whether some individual element is contained in a collection 
 By default, the output variable of a rule can only be associated to a single value.  Consider for instance the two following rules:
 {{{
 
-<rule id="r1>
+<rule id="r1">
   <case>
     <effect prob="0.9">
       <set var="A" value="val1"/>
-    </effect
+    </effect>
   </case>
 </rule>
 
-<rule id="r2>
+<rule id="r2">
   <case>
     <effect prob="0.9>
       <set var="A" value="val2"/>
-    </effect
+    </effect>
   </case>
 </rule>
 }}}
@@ -196,19 +196,19 @@ The two rules `r1` and `r2` are in conflict, which means that the distribution f
 The `add` effect can be employed to specify that the value of the output variable is to be added to a list.  For instance, one can rewrite the two rules `r1` and `r2` as such:
 {{{
 
-<rule id="r1>
+<rule id="r1">
   <case>
     <effect prob="0.9">
       <add var="A" value="val1"/>
-    </effect
+    </effect>
   </case>
 </rule>
 
-<rule id="r2>
+<rule id="r2">
   <case>
     <effect prob="0.9">
       <add var="A" value="val2"/>
-    </effect
+    </effect>
   </case>
 </rule>
 }}}
@@ -219,11 +219,11 @@ The distribution of the output variable `A` will in this case be `P(A=[val1,val2
 * Notes*: 
  * By default, the existing values for the output variable will be erased by the new values specified in the rules.  If you want to keep the existing values, simply add a rule to transfer the current content of the variable onto the updated variable:
 {{{
-<rule id="transfer>
+<rule id="transfer">
   <case>
     <effect>
       <set var="A" value="{A}"/>
-    </effect
+    </effect>
   </case>
 </rule>
 }}}
