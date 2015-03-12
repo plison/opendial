@@ -445,7 +445,7 @@ These properties can also be modified through the GUI or by adding a `-Dproperty
 <br><br>
 ----
 
-^[1]^ Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
+^[1]^ Multivariate Gaussian distributions can also be defined.  In this case, the scalar values for the mean and variance are replaced by vector values in the form `<mean>[v1,v2,..,vn]</mean>`.  Multivariate Gaussian distributions support for the moment only distributions with a diagonal covariance (i.e. independent Gaussians).
 
 ^[2]^ Conditions can also include the nested operators `<and>`, `<not>` and `<or>` (cf. [AdvancedModelling#Nested_conditions Advanced modelling: nested conditions]).
 
