@@ -1,6 +1,8 @@
 #summary A more extended example of domain specification for a flight-booking system.
 #sidebar TableOfContents
 
+= Flight-booking Example =
+
 The first [https://code.google.com/p/opendial/wiki/SimpleExample step-by-step example] introduced the most basic functions of !OpenDial. In this second, more extensive example, we look at some more advanced functionalities of !OpenDial in the context of a _slot-filling application_. The objective of the dialogue system in this example is to help the user to book flight tickets between Norwegian airports.
 
 
@@ -24,11 +26,11 @@ The dialogue state contains various variable related to the various slots to fil
  # Asking the user whether she/he wants to book additional tickets. 
 
 <br>
-= 1. Natural language understanding =
+== 1. Natural language understanding ==
 
 The models for natural language understanding are expressed in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlu.xml domains/examples/example-flightbooking_nlu.xml].  The file contains two models:  one model to recognise the user dialogue act `a_u` from the raw user utterance `u_u`, and one model to update the slots (`Destination`, `Departure`, `Date`, `ReturnDate` and `NbTickets`) in accordance with this dialogue act `a_u`.
 
-== Dialogue act recognition model ==
+=== Dialogue act recognition model ===
 
 The first model expresses the mapping between the user dialogue act and its underlying user utterance as a probability distribution `P(a_u | u_u)`. The user dialogue act associated with each utterance is represented in the domain as a list of basic semantic units (such as "Confirm" or "Inform(!ReturnDate, March 28)").  This representation of the dialogue act as a list of elements enables us to capture the fact that an utterance such as "`Yes, 3 tickets`" contains both a confirmation and a new information about the number of tickets. To allow the dialogue act to contain more than one element, the special `add` effect is used instead of `set` (see [https://code.google.com/p/opendial/wiki/AdvancedModelling#5._Operations_on_lists Advanced modelling: Operations on lists] for details).
 
@@ -44,7 +46,7 @@ The above condition checks for mentions of an airport (among the list of availab
 The last rule of the model is a lower-priority rule (priority 2, while the other rules have the default priority 1) that is used to specify a default dialogue act in case no other value is found. If the user utterance is an N-best list {`I want to fly to Oslo (0.7) ; I want to fly tomorrow (0.2)`}, the resulting dialogue act `a_u` will be equal to {`[Inform(Airport,Oslo] (0.7) ; [Other] (0.2)`}.
 
 
-== Slot-filling model ==
+=== Slot-filling model ===
 
 The second model captures the mapping between the user dialogue act `a_u` and the domain-specific slots `Destination`, `Departure`, `Date`, `ReturnDate` and `NbTickets`. The exact slot to fill depends on the current step in the dialogue: if the current step is to ask the user for the destination and the answer is Oslo, the variable `Destination` will be filled with the value `Oslo`.  If the current step is about the departure, the same will occur for the slot `Departure`.
 
@@ -54,13 +56,13 @@ Note that the slot filling model describes the distributions `P(slots|a_u)`.  An
 
 <br>
 
-= 2. Dialogue management =
+== 2. Dialogue management ==
 Dialogue management is split into three models, as shown in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_dm.xml domains/examples/example-flightbooking_dm.xml]: 
  * an action selection model to find the best system action to execute given the last user dialogue act, values of the slot to fill, and current step in the interaction.
  * a transition model that specifies how the selected action modifies the current dialogue state (and especially the current step)
  * a prediction model for the prior distributions on the destinations, departures and next user dialogue act.
 
-== Action selection model ==
+=== Action selection model ===
 
 This model specifies the utilities of various system actions. At each step during the dialogue, the system has 4 alternative choices:
  * Grounding the most likely answer for the current slot and moving on to the next step
@@ -74,7 +76,7 @@ The initial utility of confirmation request is set to -0.3 plus 0.5 if the slot 
 
 Finally, asking the user to repeat can be done in all cases, provided that the user utterance is not equal to the `None` value.
 
-== Transition and prediction models ==
+=== Transition and prediction models ===
 
 The transition model specifies how the selection of a particular system action affects the current dialogue state, in particular the current 
 step in the dialogue. For instance, if the destination slot is being grounded, the system can move to the next slot, namely the departure. 
@@ -83,7 +85,7 @@ The prediction model expresses the prior likelihoods of departures and destinati
 
 <br>
 
-= 3. Natural language generation =
+== 3. Natural language generation ==
 
 Finally, the generation models in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlg.xml domains/examples/example-flightbooking_nlg.xml] specify the mappings between the current dialogue state and actual system responses.  The system can produce new system utterance either when the current step is changed, or when a new system action is selected.
 
@@ -108,7 +110,7 @@ It is also worth noting that the generated utterance can be tailored to the cont
 
 <br>
 
-= 4. External module =
+== 4. External module ==
 
 The flight-booking system needs to access an external database to check the prices of particular routes and perform the ticket booking.  The module [http://opendial.googlecode.com/svn/trunk/src/opendial/modules/examples/FlightBookingExample.java src/opendial/modules/examples/FlightBookingExample.java] provides a simple, faked example of such a connection. The module monitors the dialogue state and is triggered upon the update of system actions `a_m`.  When the system action is equal to `FindOffer`, the module checks the filled values for the destination, departure and dates, and returns the associated price by adding a new action `MakeOffer(price)` in the dialogue state. 
 
