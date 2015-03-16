@@ -23,7 +23,7 @@ The dialogue state contains various variable related to the various slots to fil
  # If the user confirms, booking all the tickets
  # Asking the user whether she/he wants to book additional tickets. 
 
-
+<br>
 = 1. Natural language understanding =
 
 The models for natural language understanding are expressed in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlu.xml domains/examples/example-flightbooking_nlu.xml].  The file contains two models:  one model to recognise the user dialogue act `a_u` from the raw user utterance `u_u`, and one model to update the slots (`Destination`, `Departure`, `Date`, `ReturnDate` and `NbTickets`) in accordance with this dialogue act `a_u`.
@@ -52,6 +52,8 @@ The second rule of the model states that if the last system action was a confirm
 
 Note that the slot filling model describes the distributions `P(slots|a_u)`.  An alternative modelling approach would be to model the inverse distribution `P(a_u|slots)`, as often done in the "user action model" of traditional POMDP approaches. However, the latter approach requires an explicit prior distribution over all possible values for the slots, which would be hard to express in our domain since the number of possible dates for the flights is theoretically infinite.
 
+<br>
+
 = 2. Dialogue management =
 Dialogue management is split into three models, as shown in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_dm.xml domains/examples/example-flightbooking_dm.xml]: 
  * an action selection model to find the best system action to execute given the last user dialogue act, values of the slot to fill, and current step in the interaction.
@@ -79,6 +81,8 @@ step in the dialogue. For instance, if the destination slot is being grounded, t
 
 The prediction model expresses the prior likelihoods of departures and destinations, as well the the prior likelihoods of the next user responses given the context.  These predictions allows the system to increase the probability of user dialogue acts that are likely given the context, and decrease the probability of unlikely responses. In this example, the prior distributions are fixed by hand, but they could also be estimated from data (see the corresponding section on [https://code.google.com/p/opendial/wiki/ParameterEstimation ParameterEstimation]). 
 
+<br>
+
 = 3. Natural language generation =
 
 Finally, the generation models in [http://opendial.googlecode.com/svn/trunk/domains/examples/example-flightbooking_nlg.xml domains/examples/example-flightbooking_nlg.xml] specify the mappings between the current dialogue state and actual system responses.  The system can produce new system utterance either when the current step is changed, or when a new system action is selected.
@@ -101,6 +105,8 @@ for a total cost of {TotalCost} EUR. Shall I confirm your order?" />
 (see [https://code.google.com/p/opendial/wiki/AdvancedModelling#2._References Advanced modelling: References] for more details on such references).
 
 It is also worth noting that the generated utterance can be tailored to the context.  For instance, the communicative action `a_m = AskRepeat` has distinct realisations depending on the current dialogue step and on whether an `AskRepeat` action has already been executed in the previous turn. 
+
+<br>
 
 = 4. External module =
 
