@@ -1,5 +1,5 @@
-# opendial
-## A generic Java-based toolkit for building dialogue systems
+## OpenDial 
+*A generic Java-based toolkit for building dialogue systems*
 
 **OpenDial** is a Java-based, domain-independent toolkit for developing spoken dialogue systems. The primary focus of OpenDial is on robust and adaptive dialogue management, but OpenDial can also be used to build full-fledged, end-to-end dialogue systems, integrating speech recognition, language understanding, generation and speech synthesis.
 
