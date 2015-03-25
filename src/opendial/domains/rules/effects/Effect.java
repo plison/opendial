@@ -68,7 +68,6 @@ public final class Effect implements Value {
 	/**
 	 * Creates a new complex effect with no effect
 	 * 
-	 * @param effect the effect to include
 	 */
 	public Effect() {
 		subeffects = new HashSet<BasicEffect>();
