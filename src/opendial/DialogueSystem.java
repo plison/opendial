@@ -68,7 +68,7 @@ import opendial.state.DialogueState;
  *  method startSystem(). The system can be paused or resumed at any time. 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
+ * @version ${date}
  *
  */
 public class DialogueSystem {
