@@ -40,7 +40,6 @@ import opendial.state.DialogueState;
  * </ol>
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
  */
 public class FlightBookingExample implements Module {
 

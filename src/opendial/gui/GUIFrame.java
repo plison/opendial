@@ -45,7 +45,6 @@ import opendial.state.DialogueState;
  * menus to control the application
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class GUIFrame implements Module {

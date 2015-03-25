@@ -39,7 +39,6 @@ import opendial.datastructs.ValueRange;
  * logical operator (AND, OR).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class ComplexCondition implements Condition {

@@ -33,7 +33,6 @@ import opendial.datastructs.Assignment;
  * <p>Typically, at least one of these X1, ..., Xn variables consist of a decision variable.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface UtilityFunction {

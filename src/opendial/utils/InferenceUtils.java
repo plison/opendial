@@ -43,7 +43,6 @@ import opendial.datastructs.Assignment;
  * Utility functions for inference operations.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class InferenceUtils {
@@ -242,8 +241,7 @@ public class InferenceUtils {
 	 * to their double values.
 	 * 
 	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
-	 */
+		 */
 	static final class EntryComparator<T> implements Comparator<Map.Entry<T,Double>> {
 
 		double minDifference;

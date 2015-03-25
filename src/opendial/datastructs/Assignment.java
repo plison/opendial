@@ -53,7 +53,6 @@ import org.w3c.dom.Element;
  * comparing and manipulating such assignments.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Assignment {

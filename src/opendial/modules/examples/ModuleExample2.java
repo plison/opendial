@@ -49,7 +49,6 @@ import opendial.state.DialogueState;
  * provide directions to the agent.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class ModuleExample2 implements Module {
 

@@ -51,7 +51,6 @@ import opendial.state.DialogueState;
  * are missing, a MissingParameterException should be thrown.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface Module {

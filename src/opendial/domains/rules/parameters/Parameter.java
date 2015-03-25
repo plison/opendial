@@ -32,7 +32,6 @@ import opendial.datastructs.Assignment;
  * Interface for a parameter associated with an effect
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface Parameter {

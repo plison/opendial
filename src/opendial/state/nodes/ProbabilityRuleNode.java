@@ -41,7 +41,6 @@ import opendial.state.distribs.RuleDistribution;
  * the possible effects of a probability rule depending on its inputs.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class ProbabilityRuleNode extends ChanceNode {

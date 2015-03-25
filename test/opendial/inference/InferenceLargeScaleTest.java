@@ -47,7 +47,6 @@ import org.junit.Test;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class InferenceLargeScaleTest {

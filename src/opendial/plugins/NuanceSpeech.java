@@ -72,7 +72,6 @@ import opendial.utils.InferenceUtils;
  * with custom vocabularies (see the documentation on the Nuance website).
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class NuanceSpeech implements Module {
 

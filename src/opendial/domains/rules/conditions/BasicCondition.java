@@ -38,7 +38,6 @@ import opendial.datastructs.ValueRange;
  * Basic condition between a variable and a value
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class BasicCondition implements Condition {

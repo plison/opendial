@@ -49,7 +49,6 @@ import opendial.domains.rules.effects.BasicEffect.EffectType;
  * via an implicit AND relation.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class Effect implements Value {

@@ -36,7 +36,6 @@ import opendial.arch.DialException;
  * the three core methods equals(Object o), toString() and hashCode().
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface Value extends Comparable<Value> {

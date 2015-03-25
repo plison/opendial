@@ -47,7 +47,6 @@ import opendial.utils.CombinatoricsUtils;
  * the head variable X can be represented using arbitrary distributions of type T.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class ConditionalDistribution<T extends IndependentProbDistribution> 

@@ -73,7 +73,6 @@ import org.w3c.dom.Node;
  * state variables can be marked as denoting parameter variables.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class DialogueState extends BNetwork {
 

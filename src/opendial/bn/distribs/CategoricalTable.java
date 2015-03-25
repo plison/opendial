@@ -54,7 +54,6 @@ import opendial.utils.StringUtils;
  * is a random variable.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class CategoricalTable implements IndependentProbDistribution {

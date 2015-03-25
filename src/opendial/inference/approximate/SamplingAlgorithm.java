@@ -49,7 +49,6 @@ import opendial.inference.Query;
  * algorithm (e.g. likelihood weighting).
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class SamplingAlgorithm implements InferenceAlgorithm {

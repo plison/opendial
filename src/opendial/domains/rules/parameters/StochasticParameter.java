@@ -39,7 +39,6 @@ import opendial.domains.rules.parameters.CompositeParameter.Operator;
  * the multivariate distribution.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class StochasticParameter implements Parameter {

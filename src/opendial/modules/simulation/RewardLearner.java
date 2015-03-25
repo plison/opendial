@@ -52,7 +52,6 @@ import opendial.state.DialogueState;
  * from rewards produced by the simulator.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class RewardLearner implements Module {
 

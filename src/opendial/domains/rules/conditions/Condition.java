@@ -38,7 +38,6 @@ import opendial.datastructs.ValueRange;
  * based on slots filled via string matching.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface Condition {

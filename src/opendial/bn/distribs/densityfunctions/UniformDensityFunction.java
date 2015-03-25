@@ -41,7 +41,6 @@ import org.w3c.dom.Element;
  * (Univariate) uniform density function, with a minimum and maximum.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class UniformDensityFunction implements DensityFunction {

@@ -37,7 +37,6 @@ import opendial.arch.Logger;
  * Various utilities for manipulating strings
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class StringUtils {

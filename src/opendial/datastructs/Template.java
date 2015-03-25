@@ -47,7 +47,6 @@ import opendial.utils.StringUtils;
  * strings, and filling their slots with specific values.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Template {

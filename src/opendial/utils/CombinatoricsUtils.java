@@ -40,7 +40,6 @@ import opendial.datastructs.Assignment;
  * Utility functions connected to combinatorial computations.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class CombinatoricsUtils {

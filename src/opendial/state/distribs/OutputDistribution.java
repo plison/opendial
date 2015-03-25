@@ -49,7 +49,6 @@ import opendial.domains.rules.effects.Effect;
  * parent rules.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class OutputDistribution implements ProbDistribution {

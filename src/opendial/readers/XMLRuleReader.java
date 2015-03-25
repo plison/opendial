@@ -60,7 +60,6 @@ import org.w3c.dom.Node;
  *  Extraction of a probabilistic rule given an XML specification
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class XMLRuleReader {

@@ -47,7 +47,6 @@ import opendial.utils.AudioUtils;
  * Representation of a input audio stream used to record speech.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class SpeechStream extends InputStream implements Value {
 

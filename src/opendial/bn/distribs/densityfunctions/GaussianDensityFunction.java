@@ -43,7 +43,6 @@ import org.w3c.dom.Element;
  * product of univariate distributions).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class GaussianDensityFunction implements DensityFunction {

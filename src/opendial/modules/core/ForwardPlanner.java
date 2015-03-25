@@ -59,7 +59,6 @@ import opendial.state.DialogueState;
  * [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class ForwardPlanner implements Module {
 
@@ -145,8 +144,7 @@ public class ForwardPlanner implements Module {
 	/**
 	 * Planner process, which can be terminated before the end of the horizon
 	 * @author  Pierre Lison (plison@ifi.uio.no)
-	 * @version $Date::                      $
-	 */
+		 */
 	public class PlannerProcess {
 
 		DialogueState initState;
@@ -219,7 +217,8 @@ public class ForwardPlanner implements Module {
 			}
 
 			UtilityTable qValues = new UtilityTable();
-
+			double discount = system.getSettings().discountFactor;
+			
 			for (Assignment action : rewards.getRows()) {
 				double reward = rewards.getUtil(action);
 				qValues.setUtil(action, reward);
@@ -231,7 +230,7 @@ public class ForwardPlanner implements Module {
 					updateState(copy);
 					
 					if (!action.isDefault()) {
-						double expected = system.getSettings().discountFactor * getExpectedValue(copy, horizon - 1);
+						double expected = discount * getExpectedValue(copy, horizon - 1);
 						qValues.setUtil(action, qValues.getUtil(action) + expected);
 					}	
 				}

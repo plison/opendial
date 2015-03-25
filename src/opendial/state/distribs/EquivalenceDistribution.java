@@ -53,7 +53,6 @@ import opendial.datastructs.ValueRange;
  *                          = 0 otherwise.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class EquivalenceDistribution implements ProbDistribution {
 

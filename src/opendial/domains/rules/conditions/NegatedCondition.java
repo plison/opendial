@@ -35,7 +35,6 @@ import opendial.datastructs.ValueRange;
  * Negated condition, which is satisfied when the included condition is not.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class NegatedCondition implements Condition {

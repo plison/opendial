@@ -74,7 +74,6 @@ import org.w3c.dom.Node;
  * Menu bar for the GUI.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 @SuppressWarnings("serial")

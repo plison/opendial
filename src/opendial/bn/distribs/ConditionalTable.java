@@ -46,7 +46,6 @@ import opendial.utils.StringUtils;
  * with a given probability value. 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class ConditionalTable extends ConditionalDistribution<CategoricalTable> {

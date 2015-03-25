@@ -48,7 +48,6 @@ import opendial.datastructs.Assignment;
  * with or without evidence, etc.).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface InferenceAlgorithm {

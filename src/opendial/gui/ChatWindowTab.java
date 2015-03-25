@@ -59,7 +59,6 @@ import opendial.utils.StringUtils;
  * GUI tab for the chat window.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 @SuppressWarnings("serial")

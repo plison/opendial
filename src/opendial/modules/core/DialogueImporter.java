@@ -37,7 +37,6 @@ import opendial.state.DialogueState;
  * operations.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class DialogueImporter extends Thread {
 

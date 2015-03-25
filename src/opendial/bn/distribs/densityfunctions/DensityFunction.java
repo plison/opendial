@@ -37,7 +37,6 @@ import org.w3c.dom.Element;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */ 
 public interface DensityFunction {

@@ -62,7 +62,6 @@ import com.att.api.rest.RESTException;
  * with a recognition grammar, which can be specified in the GRXML format.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class ATTSpeech implements Module {
   

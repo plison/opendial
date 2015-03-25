@@ -45,7 +45,6 @@ import org.w3c.dom.Element;
  * by a constant volume (used for normalisation).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class DiscreteDensityFunction implements DensityFunction {

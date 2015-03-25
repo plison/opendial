@@ -36,7 +36,6 @@ import opendial.datastructs.SpeechStream;
  * Small panel to indicate the current sound level captured by the microphone
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 @SuppressWarnings("serial")

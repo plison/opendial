@@ -46,7 +46,6 @@ import opendial.bn.nodes.UtilityNode;
  * The network is simply defined as a set of nodes connected with each other.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class BNetwork {
