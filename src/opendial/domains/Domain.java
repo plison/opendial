@@ -37,7 +37,6 @@ import opendial.state.DialogueState;
  * upon relevant changes.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Domain {

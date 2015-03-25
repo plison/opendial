@@ -46,7 +46,6 @@ import opendial.domains.rules.parameters.Parameter;
  * probability or utility parameter.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class RuleCase {

@@ -31,7 +31,6 @@ import opendial.arch.Logger;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
  public final class BooleanVal implements Value {

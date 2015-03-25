@@ -37,7 +37,6 @@ import org.w3c.dom.NodeList;
  * XML reader for system settings.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
- * @version $Date:: $
  * 
  */
 public class XMLSettingsReader {

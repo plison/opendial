@@ -52,7 +52,6 @@ import opendial.arch.Logger;
 /**
  * Utility methods for processing audio data.
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class AudioUtils {
 

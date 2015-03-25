@@ -33,7 +33,6 @@ import opendial.utils.StringUtils;
  * Representation of an array of doubles.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public final class ArrayVal implements Value {
 

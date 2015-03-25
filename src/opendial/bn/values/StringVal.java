@@ -30,7 +30,6 @@ import opendial.datastructs.Template;
  * String value.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 

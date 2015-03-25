@@ -42,7 +42,6 @@ import opendial.datastructs.ValueRange;
  * marginalising out the variables Z1,...Zm.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
  */
 public class MarginalDistribution implements ProbDistribution {
 

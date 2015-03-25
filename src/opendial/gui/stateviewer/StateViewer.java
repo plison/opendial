@@ -82,7 +82,6 @@ import edu.uci.ics.jung.visualization.transform.MutableTransformer;
  * the JUNG library for easy layout of the graphs.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 @SuppressWarnings("serial")

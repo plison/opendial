@@ -58,7 +58,6 @@ import org.apache.commons.collections15.ListUtils;
  * also see Koller's book to compare the algorithm
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class VariableElimination implements InferenceAlgorithm {

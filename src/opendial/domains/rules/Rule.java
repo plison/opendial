@@ -53,7 +53,6 @@ import opendial.domains.rules.parameters.Parameter;
  * list of cases. The rule can be either a probability or a utility rule.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Rule {
@@ -183,6 +182,9 @@ public class Rule {
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
 			}
+		}
+		if (cache.size() > 100) {
+			cache.clear();
 		}
 		cache.put(input, output);
 		return output;

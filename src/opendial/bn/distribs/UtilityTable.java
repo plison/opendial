@@ -43,7 +43,6 @@ import opendial.utils.StringUtils;
  * is defined via a mapping from assignment to utility estimates.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class UtilityTable implements UtilityFunction {

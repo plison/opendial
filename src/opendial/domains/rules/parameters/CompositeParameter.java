@@ -39,7 +39,6 @@ import opendial.datastructs.Assignment;
  * or a multiplication.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class CompositeParameter implements Parameter {

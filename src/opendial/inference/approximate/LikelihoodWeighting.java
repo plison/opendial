@@ -24,7 +24,6 @@ import opendial.inference.Query;
  * Sampling process (based on likelihood weighting) for a particular query.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class LikelihoodWeighting {
 

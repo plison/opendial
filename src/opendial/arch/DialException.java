@@ -29,7 +29,6 @@ package opendial.arch;
  * Exception thrown in OpenDial
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *  
  */ 
 public class DialException extends RuntimeException {

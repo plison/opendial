@@ -48,7 +48,6 @@ import org.w3c.dom.Node;
  * The module can also be used to record Wizard-of-Oz interactions.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class DialogueRecorder implements Module {
 

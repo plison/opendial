@@ -31,7 +31,6 @@ import opendial.utils.StringUtils;
  * Representation of a double value
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 

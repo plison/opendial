@@ -46,7 +46,6 @@ import opendial.domains.rules.parameters.Parameter;
  * case for every possible groundings.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class RuleOutput extends RuleCase {
 

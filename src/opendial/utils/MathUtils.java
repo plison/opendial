@@ -40,7 +40,6 @@ import opendial.arch.Logger;
  * Math utilities.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class MathUtils {
 

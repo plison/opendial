@@ -50,7 +50,6 @@ import opendial.inference.exact.VariableElimination;
  * weighting.  Variable elimination is selected in the remaining cases.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 

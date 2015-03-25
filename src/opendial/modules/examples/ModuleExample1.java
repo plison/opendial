@@ -45,7 +45,6 @@ import opendial.state.DialogueState;
  * position of the agent in accordance with the movements.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class ModuleExample1 implements Module {
 

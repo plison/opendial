@@ -43,7 +43,6 @@ import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
  * Mouse plugin to handle the right-click popup after selecting nodes
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class PopupHandler extends AbstractPopupGraphMousePlugin 

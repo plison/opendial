@@ -47,7 +47,6 @@ import opendial.utils.StringUtils;
  * Panel to modify the system preferences.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class SettingsPanel extends JDialog {

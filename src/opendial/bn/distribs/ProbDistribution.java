@@ -36,7 +36,6 @@ import opendial.datastructs.ValueRange;
  * are the conditional variables
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public interface ProbDistribution  {

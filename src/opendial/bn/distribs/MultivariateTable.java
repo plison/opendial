@@ -43,7 +43,6 @@ import opendial.utils.StringUtils;
  * where X1,...Xn are random variables.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
  *
  */
 public class MultivariateTable implements MultivariateDistribution {

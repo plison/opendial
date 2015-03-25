@@ -39,7 +39,6 @@ import opendial.datastructs.Assignment;
  * Representation of a utility node (sometimes also called utility node)
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class UtilityNode extends BNode {

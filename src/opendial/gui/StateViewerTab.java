@@ -84,7 +84,6 @@ import opendial.utils.StringUtils;
  * </ul>
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */ 
 @SuppressWarnings("serial")

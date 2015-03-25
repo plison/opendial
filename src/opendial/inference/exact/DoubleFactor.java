@@ -39,7 +39,6 @@ import opendial.utils.InferenceUtils;
  * Double factor, combining probability and utility distributions
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class DoubleFactor {

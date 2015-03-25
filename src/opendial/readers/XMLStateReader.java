@@ -46,7 +46,6 @@ import org.w3c.dom.Node;
  * XML reader for the initial state specification (and for parameters):
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class XMLStateReader {

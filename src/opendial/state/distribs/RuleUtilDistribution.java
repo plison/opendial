@@ -40,7 +40,6 @@ import opendial.state.AnchoredRule;
  * Utility distribution based on a rule specification.
  *  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class RuleUtilDistribution implements UtilityFunction {

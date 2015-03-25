@@ -45,7 +45,6 @@ import opendial.state.AnchoredRule;
  * an update rule or a prediction rule).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class RuleDistribution implements ProbDistribution {

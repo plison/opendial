@@ -48,7 +48,6 @@ import org.w3c.dom.Element;
  * System-wide settings for OpenDial.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Settings {

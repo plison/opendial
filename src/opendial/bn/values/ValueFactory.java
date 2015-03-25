@@ -37,7 +37,6 @@ import opendial.utils.StringUtils;
  * Factory for creating variable values
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class ValueFactory {

@@ -47,7 +47,6 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
  * underspecified entities, use TemplateEffect.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class BasicEffect {

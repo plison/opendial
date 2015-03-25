@@ -48,7 +48,6 @@ import opendial.datastructs.SpeechStream;
  * dialogue system for further processing by the speech recognition engine.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 @SuppressWarnings("serial")
 public class SpeechInputPanel extends JPanel implements MouseListener {

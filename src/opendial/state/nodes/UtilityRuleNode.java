@@ -36,7 +36,6 @@ import opendial.state.distribs.RuleUtilDistribution;
  * Representation of a utility node associated with a utility rule.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class UtilityRuleNode extends UtilityNode {

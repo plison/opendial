@@ -36,7 +36,6 @@ import opendial.domains.rules.parameters.CompositeParameter.Operator;
  * Representation of a parameter fixed to one single specific value.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class FixedParameter implements Parameter {

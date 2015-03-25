@@ -41,7 +41,6 @@ import opendial.state.DialogueState;
  * trigger on specific variables.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Model {

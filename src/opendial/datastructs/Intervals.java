@@ -42,7 +42,6 @@ import opendial.arch.Logger;
  * the defined intervals.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Intervals<T> {
@@ -186,7 +185,6 @@ public class Intervals<T> {
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  * @param <T>
  */

@@ -67,7 +67,6 @@ import org.jfree.data.xy.XYSeriesCollection;
  * layout of the chart is based on JFreeChart.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 @SuppressWarnings({ "deprecation", "serial" })
 public class DistributionViewer extends JDialog {

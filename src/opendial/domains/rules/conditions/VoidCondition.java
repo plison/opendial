@@ -35,7 +35,6 @@ import opendial.datastructs.ValueRange;
  * Representation of a void condition, which is always true.
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class VoidCondition implements Condition {

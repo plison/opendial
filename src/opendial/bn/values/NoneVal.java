@@ -29,7 +29,6 @@ package opendial.bn.values;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public final class NoneVal implements Value {

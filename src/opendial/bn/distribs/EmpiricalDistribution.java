@@ -50,7 +50,6 @@ import opendial.datastructs.Assignment;
  * or a continuous distribution (depending on the variable type).
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class EmpiricalDistribution implements MultivariateDistribution {

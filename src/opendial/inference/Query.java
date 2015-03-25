@@ -41,7 +41,6 @@ import opendial.datastructs.Assignment;
  * a utility query, or a reduction query.  
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
  */
 public abstract class Query {
 

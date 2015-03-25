@@ -45,7 +45,6 @@ import org.w3c.dom.Element;
  * of alpha hyper-parameters. 
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $ *
  */
 public class DirichletDensityFunction implements DensityFunction {
 

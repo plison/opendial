@@ -52,7 +52,6 @@ import opendial.state.nodes.ProbabilityRuleNode;
  * utility and action nodes, equivalence nodes, and outdated versions of updated variables).
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  */
 public class StatePruner {
 

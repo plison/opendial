@@ -33,7 +33,6 @@ import opendial.datastructs.Assignment;
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
- * @version $Date::                      $
  *
  */
 public class Sample extends Assignment implements Comparable<Sample> {
