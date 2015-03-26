@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<grammar root="top">
+
+	<rule id="top">
+		<one-of>
+			<item>
+				<ruleref uri="#Move1" />
+			</item>
+			<item>
+				<ruleref uri="#Move2" />
+			</item>
+			<item>
+				<ruleref uri="#Move3" />
+			</item>
+			<item>
+				<ruleref uri="#PickUp" />
+			</item>
+			<item>
+				<ruleref uri="#Release" />
+			</item>
+			<item>
+				<ruleref uri="#Perception" />
+			</item>
+			<item>
+				<ruleref uri="#Grounding" />
+			</item>
+			<item>
+				<ruleref uri="#Repeat" />
+			</item>
+			<item>
+				<ruleref uri="#Opening" />
+			</item>
+			<item>
+				<ruleref uri="#Closing" />
+			</item>
+			<item>
+				<ruleref uri="#Other" />
+			</item>
+			<item>stop</item>
+		</one-of>
+	</rule>
+
+	<rule id="Front">
+		<item repeat="0-1">and</item>
+		<item repeat="0-1">could you</item>
+		<item repeat="0-1">now</item>
+		<item repeat="0-1">please</item>
+	</rule>
+
+	<rule id="Back">
+		<item repeat="0-1">please</item>
+		<item repeat="0-1">again</item>
+	</rule>
+
+	<rule id="Move1">
+		<ruleref uri="#Front" />
+		<item repeat="0-1">
+			<ruleref uri="#Move4" />
+		</item>
+		<item repeat="0-1">
+			<ruleref uri="#Modif" />
+		</item>
+		<one-of>
+			<item>forward</item>
+			<item>forwards</item>
+			<item>backward</item>
+			<item>backwards</item>
+			<item>back</item>
+			<item>straight</item>
+			<item>straight ahead</item>
+		</one-of>
+		<item repeat="0-1">
+			<ruleref uri="#Modif" />
+		</item>
+		<item repeat="0-1">
+			<ruleref uri="#Back" />
+		</item>
+	</rule>
+
+	<rule id="Move2">
+		<ruleref uri="#Front" />
+		<item repeat="0-1">
+			<ruleref uri="#Move5" />
+		</item>
+		<item repeat="0-1">
+			<ruleref uri="#Modif" />
+		</item>
+		<item repeat="0-1">to the</item>
+		<one-of>
+			<item>left</item>
+			<item>right</item>
+		</one-of>
+		<item repeat="0-1">
+			<ruleref uri="#Modif" />
+		</item>
+		<item repeat="0-1">
+			<ruleref uri="#Back" />
+		</item>
+	</rule>
+
+	<rule id="Move3">
+		<ruleref uri="#Front" />
+		<one-of>
+			<item>turn back</item>
+			<item>turn one hundred eighty degrees</item>
+			<item>make a u turn</item>
+			<item>turn around</item>
+		</one-of>
+		<item repeat="0-1">
+			<ruleref uri="#Back" />
+		</item>
+	</rule>
+
+	<rule id="Move4">
+		<one-of>
+			<item>walk</item>
+			<item>go</item>
+			<item>move</item>
+			<item>continue</item>
+		</one-of>
+	</rule>
+
+
+	<rule id="Move5">
+		<one-of>
+			<item>go</item>
+			<item>move</item>
+			<item>turn</item>
+			<item>rotate</item>
+		</one-of>
+	</rule>
+
+	<rule id="Modif">
+		<item repeat="0-1">just</item>
+		a
+		<item repeat="0-1">little</item>
+		bit
+		<item repeat="0-1">more</item>
+	</rule>
+
+	<rule id="PickUp">
+		<ruleref uri="#Front" />
+		<one-of>
+			<item>
+				take
+				<ruleref uri="#Object" />
+			</item>
+			<item>take it</item>
+			<item>
+				pick up
+				<ruleref uri="#Object" />
+			</item>
+			<item>
+				grasp
+				<ruleref uri="#Object" />
+			</item>
+			<item>grasp it</item>
+			<item>pick it up</item>
+		</one-of>
+		<ruleref uri="#Back" />
+	</rule>
+
+	<rule id="Release">
+		<ruleref uri="#Front" />
+		<one-of>
+			<item>
+				release
+				<ruleref uri="#Object" />
+			</item>
+			<item>
+				put down
+				<ruleref uri="#Object" />
+			</item>
+			<item>
+				drop
+				<ruleref uri="#Object" />
+			</item>
+			<item>
+				put
+				<ruleref uri="#Object" />
+				on the floor
+			</item>
+			<item>
+				put
+				<ruleref uri="#Object" />
+				on the table
+			</item>
+		</one-of>
+		<ruleref uri="#Back" />
+	</rule>
+
+	<rule id="Object">
+		<one-of>
+			<item>something</item>
+			<item>
+				<one-of>
+					<item>the</item>
+					<item>a</item>
+				</one-of>
+				<item repeat="0-1">
+					<ruleref uri="#Colour" />
+				</item>
+				<one-of>
+					<item>food can</item>
+					<item>object</item>
+					<item>cylinder</item>
+				</one-of>
+				<item repeat="0-1">at your feet</item>
+			</item>
+		</one-of>
+	</rule>
+
+	<rule id="Colour">
+		<one-of>
+			<item>red</item>
+			<item>blue</item>
+			<item>green</item>
+			<item>yellow</item>
+			<item>white</item>
+			<item>black</item>
+		</one-of>
+	</rule>
+
+	<rule id="Perception">
+		<one-of>
+			<item>
+				what
+				<one-of>
+					<item>can</item>
+					<item>do</item>
+				</one-of>
+				you
+				<one-of>
+					<item>see</item>
+					<item>perceive</item>
+				</one-of>
+				<item repeat="0-1">in front of you</item>
+			</item>
+			<item>
+				<one-of>
+					<item>can</item>
+					<item>do</item>
+				</one-of>
+				you
+				<one-of>
+					<item>see</item>
+					<item>perceive</item>
+				</one-of>
+				<ruleref uri="#Object" />
+				<item repeat="0-1">in front of you</item>
+			</item>
+		</one-of>
+	</rule>
+
+	<rule id="Grounding">
+		<one-of>
+			<item>
+				yes
+				<item repeat="0-1">please</item>
+			</item>
+			<item>no</item>
+			<item>exactly</item>
+			<item>ok</item>
+		</one-of>
+	</rule>
+
+	<rule id="Other">
+		<one-of>
+			<item>
+				thanks
+				<item repeat="0-1">
+					<ruleref uri="#Name" />
+				</item>
+			</item>
+			<item>
+				thank you
+				<item repeat="0-1">
+					<ruleref uri="#Name" />
+				</item>
+			</item>
+			<item>
+				<item repeat="0-1">
+					<ruleref uri="#Front2" />
+				</item>
+				<one-of>
+					<item>correct</item>
+					<item>incorrect</item>
+					<item>wrong</item>
+					<item>right</item>
+					<item>perfect</item>
+					<item>great</item>
+					<item>good</item>
+				</one-of>
+			</item>
+		</one-of>
+	</rule>
+
+	<rule id="Front2">
+		<one-of>
+			<item>that's</item>
+			<item>that is</item>
+			<item>this is</item>
+		</one-of>
+	</rule>
+
+	<rule id="Repeat">
+		<ruleref uri="#Front" />
+		<one-of>
+			<item>
+				do
+				<one-of>
+					<item>it</item>
+					<item>that</item>
+				</one-of>
+				<one-of>
+					<item>again</item>
+					<item>once more</item>
+					<item>one more time</item>
+				</one-of>
+			</item>
+			<item>repeat that</item>
+		</one-of>
+	</rule>
+
+	<rule id="Opening">
+		<one-of>
+			<item>hi</item>
+			<item>hello</item>
+		</one-of>
+		<ruleref uri="#Name" />
+	</rule>
+
+	<rule id="Closing">
+		<one-of>
+			<item>bye</item>
+			<item>goodbye</item>
+		</one-of>
+		<item repeat="0-1">
+			<ruleref uri="#Name" />
+		</item>
+	</rule>
+
+	<rule id="Name">
+		<one-of>
+			<item>robot</item>
+			<item>nao</item>
+			<item>lenny</item>
+		</one-of>
+	</rule>
+
+</grammar>

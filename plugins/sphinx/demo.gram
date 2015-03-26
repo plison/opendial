@@ -1,0 +1,41 @@
+#JSGF V1.0
+grammar demo; 
+
+public <Top>= <Move1> | <Move2> | <Move3> | <PickUp> | <Release> | <Perception> | <Grounding> | <Repeat> | stop | <Opening> | <Closing> | <Other> ;
+
+<Front>= [ and ] [ could you] [ now ]  [ please ] ;
+
+<Back>= [ please ] [ again ];
+
+<Move1>= <Front> [ <Move4> ] [ <Modif> ] (forward | forwards | straight forward | backward | backwards | back | straight | straight ahead) [ <Modif> ] <Back>;
+<Move2>= <Front> [ <Move5> ]  [ <Modif> ] [ to the ] (left | right) [ <Modif> ] <Back>;
+<Move3>= <Front> (turn back | turn one hundred eighty degrees | make a u turn | turn around) <Back>;
+
+<Move4>= walk | go | move | continue ;
+<Move5>= go | move | turn | rotate ;
+
+<Modif>= [ just ] a [ little] bit [ more ];
+
+<PickUp>= <Front> (take <Object> | take it | pick up <Object> | grasp <Object> | grasp it | pick it up) <Back>;
+
+<Release>= <Front> ((release | put down | drop) <Object> | put <Object> (down | on the floor | on the table)) <Back>;
+
+<Object>= something | (the | a) [ <Colour> ] (food can | object | cylinder) [ at your feet ];
+
+<Colour>= red | blue | green | yellow | white | black ;
+
+<Perception>= (what (can | do) you (see | perceive) [ in front of you ]) | ((can | do) you (see | perceive) <Object> [ in front of you ]);
+
+<Grounding>= yes [ please ] | no | exactly | ok ;
+
+ <Other>= thanks [ <Name> ] | thank you [ <Name> ] | [ <Front2> ] (correct | incorrect | wrong | right | perfect | great | good);
+ 
+<Front2>= that's | that is | this is ;
+
+<Repeat>= <Front> do (it | that) (again | once more | one more time) | <Front> repeat that;
+
+<Opening>= (hi | hello ) <Name>;
+
+<Closing>= (bye | goodbye) [ <Name> ];
+
+<Name>= robot | lenny;
