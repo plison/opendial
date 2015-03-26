@@ -66,7 +66,6 @@ public class XMLDomainReader {
 		// create a new, empty domain
 		Domain domain = new Domain();
 
-
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(topDomainFile);
 
