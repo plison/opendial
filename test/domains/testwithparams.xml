@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+
+	<model type="update" trigger="u_u">
+
+
+		<rule id="update1">
+			<case>
+				<condition>
+					<if var="u_u" value="brilliant" />
+				</condition>
+				<effect prob="theta_3">
+					<set var="a_u" value="Approval" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="update2">
+			<case>
+				<condition>
+					<if var="u_u" value="no" relation="contains" />
+				</condition>
+				<effect prob="theta_4[1]">
+					<set var="a_u" value="Disapproval" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+
+	<model type="prediction" trigger="u_u">
+
+		<rule id="predict1">
+			<case>
+				<condition>
+					<if var="u_u" value="my name is" />
+				</condition>
+				<effect prob="theta_5[0]">
+					<set var="u_u^p" value="Pierre" />
+				</effect>
+				<effect prob="theta_5[1]">
+					<set var="u_u^p" value="Arne" />
+				</effect>
+				<effect prob="theta_5[2]">
+					<set var="u_u^p" value="Emanuele" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<clear var="u_u^p" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+
+	<model type="decision" trigger="u_u">
+
+		<rule id="decid1">
+			<case>
+				<effect util="theta_1">
+					<set var="u_m" value="yeah yeah talk to my hand" />
+				</effect>
+				<effect util="theta_2">
+					<set var="u_m" value="so interesting!" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+
+</domain>

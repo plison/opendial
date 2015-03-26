@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+	<initialstate>
+
+		<variable id="pred(A)">
+			<value prob="0.7">value1</value>
+		</variable>
+
+		<variable id="pred(B)">
+			<value prob="0.7">value2</value>
+		</variable>
+
+
+		<variable id="blabla">
+			<value prob="0.5">pred(C)</value>
+			<value prob="0.3">pred(D)</value>
+		</variable>
+
+	</initialstate>
+
+	<model type="update" trigger="pred({Y})">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="pred({X})" value="value1" />
+				</condition>
+				<effect>
+					<set var="found" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule>
+			<case>
+				<condition>
+					<if var="blabla" value="pred({X})" />
+				</condition>
+				<effect>
+					<set var="found2" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+</domain>

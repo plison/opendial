@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+	<initialstate>
+
+		<variable id="completed-task">
+			<value>true</value>
+		</variable>
+
+		<variable id="perceived">
+			<value>[]</value>
+		</variable>
+		<variable id="carried">
+			<value>[]</value>
+		</variable>
+
+	</initialstate>
+
+	<import href="woztest-params.xml" />
+
+	<import href="tabletop_nlu.xml" />
+	<import href="tabletop_nlu2.xml" />
+	<import href="tabletop_nlg.xml" />
+
+	<import href="domain_effects.xml" />
+
+	<import href="domain_prior.xml" />
+
+	<import href="domain_rewards.xml" />
+
+	<import href="domain_user.xml" />
+
+
+</domain>

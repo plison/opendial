@@ -1,0 +1,48 @@
+
+<domain>
+
+	<initialstate>
+		<variable id="a_u">
+			<value>Ground(PickUp(o1))</value>
+		</variable>
+
+	</initialstate>
+	<model trigger="a_u" type="update">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" value="PickUp({X})" />
+				</condition>
+				<effect>
+					<set var="caught" value="true" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<set var="caught" value="false" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" value="Ground({X})" />
+				</condition>
+				<effect>
+					<set var="caught2" value="true" />
+				</effect>
+			</case>
+			<case>
+				<effect>
+					<set var="caught2" value="false" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+</domain>

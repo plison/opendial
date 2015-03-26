@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+	<initialstate>
+
+		<variable id="floor">
+			<value>start</value>
+		</variable>
+
+		<variable id="perceived">
+			<value>[]</value>
+		</variable>
+		<variable id="carried">
+			<value>[]</value>
+		</variable>
+
+	</initialstate>
+
+	<!-- <import href="domain_nlu.xml"/> -->
+
+	<import href="domain_user-is.xml" />
+
+	<import href="domain_prior-is.xml" />
+
+	<import href="domain_rewards-is.xml" />
+
+	<import href="domain_effects-is.xml" />
+
+	<model type="update" trigger="a_u">
+
+
+	</model>
+
+	<!-- <import href="domain_nlg.xml"/> -->
+
+	<!-- <model type="decision" trigger="floor"> <rule> <case> <condition> <if 
+		var="a_m" value="None"/> <if var="floor" value="start" /> </condition> <effect 
+		util="1"> <set var="u_m" value="What can I do for you?" /> </effect> </case> 
+		</rule> </model> -->
+
+</domain>

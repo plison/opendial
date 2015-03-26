@@ -1,0 +1,23 @@
+
+<domain>
+
+	<initialstate>
+
+		<variable id="a_u">
+			<value prob="0.4">blabla</value>
+		</variable>
+	</initialstate>
+
+	<model type="prediction" trigger="a_u">
+
+		<rule>
+			<case>
+				<effect prob="0.95">
+					<set var="a_u^p" var2="a_u" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+</domain>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+
+		<variable id="test">
+			<value prob="0.8">correct</value>
+		</variable>
+
+	</initialstate>
+
+
+	<model type="decision" trigger="test">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="test" value="correct" />
+				</condition>
+				<effect util="2">
+					<set var="a_ml" value="SayYes" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="test" value="correct" />
+				</condition>
+				<effect util="1">
+					<set var="a_mg" value="Nod" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<effect util="-3">
+					<set var="a_md" value="DanceAround" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+</domain>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings>
+	<gui>true</gui>
+	<horizon>1</horizon>
+	<samples>2000</samples>
+	<discount>1.0</discount>
+	<gui>true</gui>
+	<system>u_m</system>
+	<user>u_u</user>
+	<discretisation>50</discretisation>
+	<recording>last</recording>
+	<timeout>250</timeout>
+</settings>

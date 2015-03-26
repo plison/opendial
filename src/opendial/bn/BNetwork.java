@@ -1,0 +1,671 @@
+// =================================================================                                                                   
+// Copyright (C) 2011-2013 Pierre Lison (plison@ifi.uio.no)                                                                            
+// Permission is hereby granted, free of charge, to any person 
+// obtaining a copy of this software and associated documentation 
+// files (the "Software"), to deal in the Software without restriction, 
+// including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, 
+// subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// =================================================================                                                                   
+
+package opendial.bn;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
+import opendial.arch.DialException;
+import opendial.arch.Logger;
+import opendial.bn.nodes.ActionNode;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.UtilityNode;
+
+
+/**
+ * Representation of a Bayesian Network augmented with value and action nodes.
+ * The network is simply defined as a set of nodes connected with each other.
+ *
+ * @author  Pierre Lison (plison@ifi.uio.no)
+ * @version $Date:: 2014-03-20 21:16:08 #$
+ *
+ */
+public class BNetwork {
+
+	// logger
+	public static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
+
+	// the set of nodes for the network
+	Map<String,BNode> nodes;
+
+	// the chance nodes 
+	Map<String,ChanceNode> chanceNodes;
+	
+	// the utility nodes
+	Map<String, UtilityNode> utilityNodes;	
+	
+	// the action nodes
+	Map<String, ActionNode> actionNodes;
+
+	// ===================================
+	//  NETWORK CONSTRUCTION
+	// ===================================
+
+
+	/**
+	 * Constructs an empty network
+	 */
+	public BNetwork() {
+		nodes = new HashMap<String,BNode>();
+		chanceNodes = new HashMap<String,ChanceNode>();
+		utilityNodes = new HashMap<String,UtilityNode>();
+		actionNodes = new HashMap<String,ActionNode>();
+	}
+
+	/**
+	 * Adds a new node to the network.  Note: if the node already exists, it is better
+	 * to use the "replaceNode" method, to avoid warning messages.
+	 * 
+	 * @param node the node to add
+	 */
+	public void addNode(BNode node) {
+		if (nodes.containsKey(node.getId())) {
+			log.warning("network already contains a node with identifier " + node.getId());
+		}
+		nodes.put(node.getId(), node);
+		node.setNetwork(this);
+
+		// adding the node in the type-specific collections
+		if (node instanceof ChanceNode) {
+			chanceNodes.put(node.getId(), (ChanceNode)node);
+		}
+		else if (node instanceof UtilityNode) {
+			utilityNodes.put(node.getId(), (UtilityNode)node);
+		}
+		else if (node instanceof ActionNode) {
+			actionNodes.put(node.getId(), (ActionNode)node);
+		}
+	}
+
+	/**
+	 * Add a collection of new nodes to the network
+	 * 
+	 * @param newNodes the collection of nodes to add
+	 */
+	public void addNodes(Collection<BNode> newNodes) {
+		for (BNode newNode: newNodes) {
+			addNode(newNode);
+		}
+	}
+	
+
+	/**
+	 * Adds all the nodes in the network provided as argument to the current network
+	 * 
+	 * @param network the network to include
+	 * 
+	 * @throws DialException if the inclusion fails
+	 */
+	public void addNetwork(BNetwork network) throws DialException {
+		for (BNode node : new ArrayList<BNode>(network.getNodes())) {
+			if (hasNode(node.getId())) {
+				removeNode(node.getId());
+			}
+		}
+		for (BNode node : network.getNodes()) {
+			addNode(node.copy());
+		}
+		for (BNode oldNode : network.getNodes()) {
+			BNode newNode = getNode(oldNode.getId());
+			for (String inputNodeId : oldNode.getInputNodeIds()) {
+				BNode newInputNode = getNode(inputNodeId);
+				newNode.addInputNode(newInputNode);
+			}
+		}
+	}
+	
+
+	/**
+	 * Replaces an existing node with a new one (with same identifier)
+	 * 
+	 * @param node the new value for the node
+	 * @throws DialException 
+	 */
+	public void replaceNode(BNode node) throws DialException {
+		if (!nodes.containsKey(node.getId())) {
+			log.debug("network does not contain a node with identifier " + node.getId());
+		}
+		else {
+			removeNode(node.getId());
+		}
+		addNode(node);
+	}
+
+
+	/**
+	 * Removes a node from the network, given its identifier
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the value for the node, if it exists
+	 */
+	public BNode removeNode(String nodeId) {
+		if (!nodes.containsKey(nodeId)) {
+		//	log.warning("network does not contain a node with identifier " + nodeId);
+		}
+		else {
+			BNode node = nodes.get(nodeId);
+
+			for (BNode inputNode : node.getInputNodes()) {
+				node.removeInputNode(inputNode.getId());
+			}
+			for (BNode outputNode: node.getOutputNodes()) {
+				outputNode.removeInputNode(nodeId);
+			}
+
+			// remove the node from the type-specific collections
+			if (node instanceof ChanceNode) {
+				chanceNodes.remove(nodeId);
+			}
+			else if (node instanceof UtilityNode) {
+				utilityNodes.remove(nodeId);
+			}
+			else if (node instanceof ActionNode) {
+				actionNodes.remove(nodeId);
+			}
+		}
+
+		return nodes.remove(nodeId);
+	}
+
+
+	/**
+	 * Remove all the specified nodes
+	 * 
+	 * @param valueNodeIds the nodes to remove
+	 */
+	public List<BNode> removeNodes(Collection<String> valueNodeIds) {
+		List<BNode> removed = new ArrayList<BNode>();
+		for (String id: new ArrayList<String>(valueNodeIds)) {
+			BNode n = removeNode(id);
+			removed.add(n);
+		}
+		return removed;
+	}
+
+
+
+	/**
+	 * Modifies the node identifier in the Bayesian Network
+	 * 
+	 * @param oldNodeId the old node identifier
+	 * @param newNodeId the new node identifier
+	 */
+	public void modifyVariableId(String oldNodeId, String newNodeId) {
+		BNode node = nodes.remove(oldNodeId);
+		chanceNodes.remove(oldNodeId);
+		utilityNodes.remove(oldNodeId);
+		actionNodes.remove(oldNodeId);
+		if (node != null) {
+			addNode(node);
+		}
+		else {
+			log.warning("node " + oldNodeId + " did not exist, cannot change its identifier");
+		}
+	}
+
+
+	/**
+	 * Resets the Bayesian network to only contain the nodes contained in the argument.
+	 * Everything else is erased.
+	 * 
+	 * @param network the network that contains the nodes to include after the reset.
+	 */
+	public void reset(BNetwork network) {
+		if (System.identityHashCode(this) != System.identityHashCode(network)) {
+		nodes.clear();
+		chanceNodes.clear();
+		utilityNodes.clear();
+		actionNodes.clear();
+			for (BNode node : network.getNodes()) {
+				addNode(node);
+			}
+		}
+
+	}
+	
+	
+	
+	// ===================================
+	//  GETTERS
+	// ===================================
+
+
+	/**
+	 * Returns true if the network contains a node with the given identifier
+	 * 
+	 * @param nodeId the node identifier
+	 * @return true if the node exists in the network, false otherwise
+	 */
+	public boolean hasNode(String nodeId) {
+		return nodes.containsKey(nodeId);
+	}
+
+	/**
+	 * Returns the node associated with the given identifier in the network.  If
+	 * no such node is present, returns null.
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the node, if it exists, or null otherwise.
+	 */
+	public BNode getNode(String nodeId) {
+		if (!nodes.containsKey(nodeId)) {
+			log.severe("network does not contain a node with identifier " + nodeId);
+		}
+		return nodes.get(nodeId);
+	}
+
+	/**
+	 * Returns the collection of nodes currently in the network
+	 * 
+	 * @return the collection of nodes
+	 */
+	public Collection<BNode> getNodes() {
+		return nodes.values();
+	}
+
+
+	/**
+	 * Returns true if the network contains a chance node with the given
+	 * identifier, and false otherwise
+	 * 
+	 * @param nodeId the node identifier to check
+	 * @return true if a chance node is found, false otherwise
+	 */
+	public boolean hasChanceNode(String nodeId) {
+		return chanceNodes.containsKey(nodeId);
+	}
+	
+	/**
+	 * Returns true if the network contains chance nodes for all the given
+	 * identifiers, and false otherwise
+	 * 
+	 * @param nodeIds the node identifiers to check
+	 * @return true if all the chance nodes is found, false otherwise
+	 */
+	
+	public boolean hasChanceNodes(Collection<String> nodeIds) {
+		for (String nodeId: nodeIds) {
+			if (!chanceNodes.containsKey(nodeId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	
+
+	/**
+	 * Returns the chance node associated with the identifier, if one
+	 * exists.  Else, returns null
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the chance node
+	 */
+	public ChanceNode getChanceNode(String nodeId) {
+		if (!chanceNodes.containsKey(nodeId)) {
+			log.severe("network does not contain a chance node with identifier " + nodeId);
+		}
+		return chanceNodes.get(nodeId);
+	}
+
+	/**
+	 * Returns the collection of chance nodes currently in the network
+	 * 
+	 * @return the collection of chance nodes
+	 */
+	public Collection<ChanceNode> getChanceNodes() {
+		return chanceNodes.values();
+	}
+
+	/**
+	 * Returns the collection of chance node identifiers currently in 
+	 * the network
+	 * 
+	 * @return the collection of identifiers of chance nodes
+	 */
+	public Set<String> getChanceNodeIds() {
+		return chanceNodes.keySet();
+	}
+
+	/**
+	 * Returns true if the network contains an action node with the given
+	 * identifier, and false otherwise
+	 * 
+	 * @param nodeId the node identifier to check
+	 * @return true if a action node is found, false otherwise
+	 */
+	public boolean hasActionNode(String nodeId) {
+		return actionNodes.containsKey(nodeId);
+	}
+
+
+	/**
+	 * Returns the action node associated with the identifier, if one
+	 * exists.  Else, returns null
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the action node
+	 */
+	public ActionNode getActionNode(String nodeId) {
+		if (!actionNodes.containsKey(nodeId)) {
+			log.severe("network does not contain an action node with identifier " + nodeId);
+		}
+		return actionNodes.get(nodeId);
+	}
+
+	/**
+	 * Returns the collection of action nodes currently in the network
+	 * 
+	 * @return the collection of action nodes
+	 */
+	public Collection<ActionNode> getActionNodes() {
+		return actionNodes.values();
+	}
+
+	/**
+	 * Returns the collection of action node identifiers currently in 
+	 * the network
+	 * 
+	 * @return the collection of identifiers of action nodes
+	 */
+	public Set<String> getActionNodeIds() {
+		return actionNodes.keySet();
+	}
+
+	/**
+	 * Returns true if the network contains a utility node with the given
+	 * identifier, and false otherwise
+	 * 
+	 * @param nodeId the node identifier to check
+	 * @return true if a utility node is found, false otherwise
+	 */
+	public boolean hasUtilityNode(String nodeId) {
+		return utilityNodes.containsKey(nodeId);
+	}
+
+
+	/**
+	 * Returns the utility node associated with the identifier, if one
+	 * exists.  Else, returns null
+	 * 
+	 * @param nodeId the node identifier
+	 * @return the utility node
+	 */
+	public UtilityNode getUtilityNode(String nodeId) {
+		if (!utilityNodes.containsKey(nodeId)) {
+			log.severe("network does not contain a utility node with identifier " + nodeId);
+		}
+		return utilityNodes.get(nodeId);
+	}
+
+	/**
+	 * Returns the collection of utility nodes currently in the network
+	 * 
+	 * @return the collection of utility nodes
+	 */
+	public Collection<UtilityNode> getUtilityNodes() {
+		return utilityNodes.values();
+	}
+
+
+	/**
+	 * Returns the collection of utility node identifiers currently in 
+	 * the network
+	 * 
+	 * @return the collection of identifiers of utility nodes
+	 */
+	public Set<String> getUtilityNodeIds() {
+		return utilityNodes.keySet();
+	}
+
+	/**
+	 * Returns the set of node identifiers currently in the network
+	 * 
+	 * @return the set of identifiers
+	 */
+	public Set<String> getNodeIds() {
+		return nodes.keySet();
+	}
+
+
+	/**
+	 * Returns an ordered list of nodes, where the ordering is defined in the 
+	 * compareTo method implemented in BNode.  The ordering will place end nodes 
+	 * (i.e. nodes with no outward edges) at the beginning of the list, and start 
+	 * nodes  (nodes with no inward edges) at the end of the list. 
+	 * 
+	 * <p>This ordering is used in particular for various inference algorithms relying
+	 * on a topological ordering of the nodes (e.g. variable elimination).
+	 * 
+	 * @return the ordered list of nodes
+	 */
+	public List<BNode> getSortedNodes() {
+		List<BNode> nodesList = new ArrayList<BNode>(nodes.values());
+		Collections.sort(nodesList);
+		return nodesList;
+	}
+	
+	
+	/**
+	 * Returns the set of maximal cliques that compose this network.  The cliques are collections
+	 * of nodes such that each node in the clique is connect to all the other nodes in the clique 
+	 * but to no nodes outside the clique.
+	 * 
+	 * @return the collection of cliques for the network.
+	 */
+	public List<Set<String>> getCliques() {
+		
+		List<Set<String>> cliques = new ArrayList<Set<String>>();
+		
+		Stack<String> nodesToProcess = new Stack<String>();
+		nodesToProcess.addAll(nodes.keySet());
+		while (!nodesToProcess.isEmpty()) {
+			String node = nodesToProcess.pop();
+			Set<String> newClique = nodes.get(node).getClique();
+			cliques.add(newClique);
+			nodesToProcess.removeAll(newClique);
+		}
+		
+		
+		// sanity check
+		for (Set<String> cluster1 : cliques) {
+			for (Set<String> cluster2 : cliques) {
+				if (!cluster1.equals(cluster2)) {
+					for (String elInCluster1 : cluster1) {
+						if (cluster2.contains(elInCluster1)) {
+							log.warning("cluster 1 = " + cluster1 + " and cluster 2 = " + cluster2);
+							log.warning("network to cluster: " + getNodeIds());
+							log.warning("network to cluster2: " + nodes.keySet());
+						}
+					}
+				}
+			}
+		}
+		return cliques;
+	}
+	
+	
+	
+	/**
+	 * Returns the subset of nodes that are referred to by the list of identifiers
+	 * 
+	 * @param ids the list of identifiers
+	 * @return the corresponding nodes
+	 */
+	protected List<BNode> getNodes(Set<String> ids) {
+		List<BNode> subset = new ArrayList<BNode>();
+		for (String id : ids) {
+			if (nodes.containsKey(id)) {
+				subset.add(nodes.get(id));
+			}
+		}
+		return subset;
+	}
+	
+	/**
+	 * Creates subnetworks corresponding to the cliques of the network
+	 * 
+	 * @return the subnetworks corresponding to the cliques.
+	 * @throws DialException 
+	 */
+	public List<BNetwork> createCliques() throws DialException {
+
+		List<BNetwork> result = new ArrayList<BNetwork>();
+		
+		for (Set<String> clique  : getCliques()) {
+			BNetwork subnetwork = new BNetwork();
+			List<BNode> sorted = getSortedNodes();
+			Collections.reverse(sorted);
+			for (BNode n : sorted) {
+				if (clique.contains(n.getId())) {
+					BNode copy = n.copy();
+
+					for (String input : n.getInputNodeIds()) {
+						if (!subnetwork.hasNode(input)) {
+							log.warning("problem in the topological ordering of the nodes");
+						}
+						copy.addInputNode(subnetwork.getNode(input));
+					}
+					subnetwork.addNode(copy);
+				}
+			}
+			result.add(subnetwork);
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * Creates a unique identifier that is guaranteed not to exist in the current network.
+	 * 
+	 * @param base the base of the identifier
+	 * @return the unique identifier
+	 */
+	public String getUniqueId(String base) {
+		if (!hasNode(base)) {
+			return base;
+		}
+		int incr = 1;
+		while(hasNode(base+incr)) {
+			incr++;
+		}
+		return base+incr;
+	}
+	
+	
+
+	// ===================================
+	//  UTILITIES
+	// ===================================
+
+
+	/**
+	 * Returns the hashcode for the network, defined as the hashcode for the
+	 * node identifiers in the network.
+	 * 
+	 * @return the hashcode for the network
+	 */
+	@Override
+	public int hashCode() {
+		return nodes.keySet().hashCode();
+	}
+
+
+	/**
+	 * Returns a copy of the Bayesian network
+	 * 
+	 * @return the copy
+	 * @throws DialException if the copy operation failed
+	 */
+	public BNetwork copy() throws DialException {
+		BNetwork copyNetwork = new BNetwork();
+		List<BNode> sortedNodes = getSortedNodes();
+		Collections.reverse(sortedNodes);
+
+		for (BNode node : sortedNodes) {
+			BNode nodeCopy = node.copy();
+			for (BNode inputNode : node.getInputNodes()) {
+				if (!copyNetwork.hasNode(inputNode.getId())) {
+					throw new DialException("cannot copy the network: structure " +
+							"is corrupt (" + inputNode.getId() + " is not present, but "
+									+ "should be input node to " + node.getId()+  ")");
+				}
+				nodeCopy.addInputNode(copyNetwork.getNode(inputNode.getId()));
+			}
+			copyNetwork.addNode(nodeCopy);
+		}
+		return copyNetwork;
+	}
+
+	/**
+	 * Returns a basic string representation for the network, defined as the set
+	 * of node identifiers in the network.
+	 */
+	@Override
+	public String toString() {
+		return nodes.keySet().toString();
+	}
+
+
+	/**
+	 * Returns true if the object is also a Bayesian network with exactly the same
+	 * node identifiers.
+	 *
+	 * @param o the object to compare
+	 * @return true if o is network with identical identifiers, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BNetwork) {
+			return (nodes.keySet().equals(((BNetwork)o).getNodeIds()));
+		}
+		return false;
+	}
+
+
+	/**
+	 * Returns a pretty print representation of the network, comprising both the 
+	 * node identifiers and the graph structure.
+	 * 
+	 * @return the pretty print representation
+	 */
+	public String prettyPrint() {
+		String s = "Nodes: " + nodes.keySet() + "\n";
+		s += "Edges: \n";
+		for (BNode node: nodes.values()) {
+			s += "\t" + node.getInputNodeIds() + "-->" + node.getId();
+		}
+		return s;
+	}
+
+
+	
+
+}

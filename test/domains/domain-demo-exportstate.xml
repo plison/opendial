@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<state>
+<variable id="u_u">
+<value prob="0.866">what do you see</value>
+<value prob="0.1082">do you see it</value>
+</variable>
+<variable id="a_m">
+<value>Describe([])</value>
+</variable>
+<variable id="u_m">
+<value>I do not see anything</value>
+</variable>
+<variable id="carried">
+<value>[]</value>
+</variable>
+<variable id="i_u">
+<value prob="0.05">DoYouSee(BlueObj)</value>
+<value prob="0.05">Move(Left)</value>
+<value prob="0.05">Move(Forward,Short)</value>
+<value prob="0.05">WhatDoYouSee</value>
+<value prob="0.5">None</value>
+<value prob="0.1">Move(Backward)</value>
+<value prob="0.05">Move(Right)</value>
+<value prob="0.05">PickUp(AtFeet)</value>
+<value prob="0.1">Move(Turn)</value>
+</variable>
+<variable id="a_u^p">
+<value prob="0.045">WhatDoYouSee</value>
+<value prob="0.045">Move(Forward,Short)</value>
+<value prob="0.55">None</value>
+<value prob="0.045">DoYouSee(BlueObj)</value>
+<value prob="0.045">Move(Left)</value>
+<value prob="0.045">PickUp(AtFeet)</value>
+<value prob="0.09">Move(Turn)</value>
+<value prob="0.045">Move(Right)</value>
+<value prob="0.09">Move(Backward)</value>
+</variable>
+<variable id="last(a_m)">
+<value>Describe([])</value>
+</variable>
+<variable id="perceived">
+<value>[]</value>
+</variable>
+<variable id="aha">
+<value prob="0.3">None</value>
+<value prob="0.7">ohoho</value>
+</variable>
+<variable id="a_u">
+<value>WhatDoYouSee</value>
+</variable>
+<variable id="completed-task">
+<value>true</value>
+</variable>
+<variable id="aha_conti">
+<distrib type="uniform">
+<min>-2.0</min>
+<max>-2.0</max>
+</distrib>
+</variable>
+<variable id="lastMove">
+<value>Move(Forward)</value>
+</variable>
+</state>

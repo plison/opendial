@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+
+
+
+	</initialstate>
+
+	<model type="update" trigger="a_u">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" value="GiveMe()"
+				
+				</condition>
+			</case>
+
+		</rule>
+
+	</model>
+
+	<model type="decision" trigger="test">
+
+
+
+	</model>
+
+</domain>

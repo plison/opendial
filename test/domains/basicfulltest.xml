@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<model type="update" trigger="u_u">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" value="do {X}" relation="partial" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Ask({X})" />
+				</effect>
+			</case>
+		</rule>
+
+
+
+	</model>
+
+
+	<model type="update" trigger="a_u">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({X})" />
+				</condition>
+				<effect prob="0.95">
+					<set var="i_u" value="Want({X})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<effect>
+					<set var="i_u" value="None" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>
+
+	<model type="decision" trigger="i_u">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="Do({X})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<quantifier id="X" />
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" relation="!=" />
+				</condition>
+				<effect util="-2">
+					<set var="a_m" value="Do({X})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="i_u" value="Want({X})" />
+				</condition>
+				<effect util="-0.2">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+			<case>
+				<effect util="-0.6">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+
+	<model type="update" trigger="a_m">
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="Do({X})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, doing {X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Sorry, could you repeat?" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+
+	<model type="prediction" trigger="a_m">
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" value="AskRepeat" />
+				</condition>
+				<effect prob="0.95">
+					<set var="a_u^p" var2="a_u" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+
+</domain>

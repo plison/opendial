@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<state>
+	<variable id="aha">
+		<value prob="0.7">ohoho</value>
+	</variable>
+
+	<variable id="aha_conti">
+		<distrib type="uniform">
+			<min>-2</min>
+			<max>-2</max>
+		</distrib>
+	</variable>
+
+</state>
