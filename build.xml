@@ -53,6 +53,10 @@
 				<include name="**"/>
 			</fileset>
 	        <zipgroupfileset dir="${lib}" includes="*.jar"/>
+			<manifest>
+			      <attribute name="Main-Class"
+			            value="opendial.DialogueSystem"/>
+			    </manifest>
 		</jar>
 	</target>
 
