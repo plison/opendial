@@ -89,7 +89,13 @@ public class GUIFrame implements Module {
 		if (system.getSettings().showGUI) {
 		frame = new JFrame();
 		try {
-		frame.setIconImage(ImageIO.read(new File(ICON_PATH)));
+		File f = new File(ICON_PATH);
+		if (f.exists()) {
+			frame.setIconImage(ImageIO.read(f));						
+		}
+		else {
+			frame.setIconImage(ImageIO.read(GUIFrame.class.getResourceAsStream("/"+ICON_PATH.replace("//", "/"))));
+		}
 		}
 		catch (Exception e) {
 			log.debug("could not employ icon: " + e);

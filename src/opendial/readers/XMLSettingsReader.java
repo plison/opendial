@@ -66,7 +66,7 @@ public class XMLSettingsReader {
 			return new Properties();
 		}
 	}
-
+	
 	
 	/**
 	 * Extract the settings from the XML node.

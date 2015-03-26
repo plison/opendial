@@ -45,7 +45,15 @@
 		<!-- Create the distribution directory -->
 		<mkdir dir="${lib}" />
 		<!-- Put everything in ${build} into the opendial-${DSTAMP}.jar file -->
-		<jar jarfile="${build}/opendial-${DSTAMP}.jar" basedir="${build}" />
+		<jar jarfile="${build}/opendial-${DSTAMP}.jar">
+			<fileset dir=".">
+			    <include name="resources/**"/>
+			  </fileset>
+			<fileset dir="${build}">
+				<include name="**"/>
+			</fileset>
+	        <zipgroupfileset dir="${lib}" includes="*.jar"/>
+		</jar>
 	</target>
 
 

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -26,8 +26,10 @@ package opendial.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -69,7 +71,6 @@ public class XMLUtils {
 	// logger
 	static Logger log = new Logger("XMLUtils", Logger.Level.NORMAL);
 
-
 	/**
 	 * Opens the XML document referenced by the filename, and returns it
 	 * 
@@ -78,16 +79,43 @@ public class XMLUtils {
 	 * @throws DialException if the XML document could not be read.
 	 */
 	public static Document getXMLDocument (String filename) throws DialException {
+		InputStream is = null;
+		if (new File(filename).exists()) {
+			try {
+				is = new FileInputStream(filename);
+				} 
+				catch (IOException e) {
+					log.warning(e.getMessage());
+					throw new DialException(e.getMessage());
+				}
+		}
+		else {
+			is = XMLUtils.class.getResourceAsStream("/"+filename.replace("//", "/"));
+			if (is == null) {
+				throw new DialException("Resource cannot be found: " + filename);
+			}
+		}
+				
+		return getXMLDocument(new InputSource(new InputStreamReader(is)));
+		
+	}
+	
 
-		log.debug("parsing file: " + filename);
+	/**
+	 * Opens the XML document referenced by the input source, and returns it
+	 * 
+	 * @param is the input source
+	 * @return the XML document
+	 * @throws DialException if the XML document could not be read.
+	 */
+	public static Document getXMLDocument (InputSource is) throws DialException {
+		log.debug("parsing file: " + is);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-
 			builder.setErrorHandler(new XMLErrorHandler());
-			InputStreamReader streamReader = new InputStreamReader(new FileInputStream(filename));
-			Document doc = builder.parse(new InputSource(streamReader));
+			Document doc = builder.parse(is);
 			//		log.info("XML parsing of file: " + filename + " successful!");
 			return doc;
 		}
@@ -173,15 +201,15 @@ public class XMLUtils {
 		}
 	}
 
-	
+
 	public static Document loadXMLFromString(String xml) throws ParserConfigurationException, SAXException, IOException
 	{
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder builder = factory.newDocumentBuilder();
-	    InputSource is = new InputSource(new StringReader(xml));
-	    return builder.parse(is);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(xml));
+		return builder.parse(is);
 	}
-	
+
 	/**
 	 * Returns the main node of the XML document
 	 * 
@@ -281,7 +309,6 @@ public class XMLUtils {
 		return includedFiles;
 	}
 }
-
 
 /**
  * Small error handler for XML syntax errors.
