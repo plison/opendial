@@ -93,7 +93,7 @@ public class NuanceSpeech implements Module {
 	boolean paused = true;
 
 	/** file used to save the speech input (leave empty to avoid recording) */
-	public static String SAVE_SPEECH = "resources/temp.wav";
+	public static String SAVE_SPEECH = "";
 
 	/** stack of yet-to-play synthesised audio */
 	Stack<ByteArrayOutputStream> audioToPlay = new Stack<ByteArrayOutputStream>();
