@@ -88,7 +88,7 @@ public class Rule {
 		this.id = id;
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();	
-		cache = new HashMap<Assignment,RuleOutput>();
+		cache = new HashMap<Assignment,RuleOutput>(100);
 		cache = Collections.synchronizedMap(cache);
 	}
 
@@ -172,9 +172,14 @@ public class Rule {
 	 * @return the matched rule case.
 	 */
 	public RuleOutput getOutput (Assignment input) {
-		if (cache.containsKey(input)) {
-			return cache.get(input);
+		
+		if (cache != null) {
+			RuleOutput v = cache.get(input);
+			if (v != null) {
+				return v;
+			}
 		}
+		
 		RuleOutput output = new RuleOutput(ruleType);
 		for (Assignment g : getGroundings(input)) {
 			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
@@ -183,10 +188,13 @@ public class Rule {
 				output.addCase(match);
 			}
 		}
-		if (cache.size() > 100) {
-			cache.clear();
+ 
+		if (cache != null) {
+			cache.put(input, output);
+			if (cache != null && cache.size() > 100) {
+				cache = null;
+			}			
 		}
-		cache.put(input, output);
 		return output;
 	}
 
