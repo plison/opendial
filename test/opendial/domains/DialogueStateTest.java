@@ -42,7 +42,7 @@ public class DialogueStateTest {
 	public static Logger log = new Logger("DialogueStateTest", Logger.Level.DEBUG);
 
 	public static final String domainFile = "test//domains//domain1.xml";
-
+ 
 	static Domain domain;
 	static InferenceChecks inference;
 

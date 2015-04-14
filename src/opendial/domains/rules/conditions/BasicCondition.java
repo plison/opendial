@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.values.ListVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -178,8 +178,8 @@ public final class BasicCondition implements Condition {
 	@Override
 	public ValueRange getGroundings(Assignment input) {	
 		ValueRange groundings = new ValueRange();
-		if (relation == Relation.IN && expectedValue instanceof ListVal) {
-			groundings.addValues(variable, ((ListVal)expectedValue).getList());
+		if (relation == Relation.IN && expectedValue instanceof SetVal) {
+			groundings.addValues(variable, ((SetVal)expectedValue).getSet());
 		}
 		return groundings;
 	}

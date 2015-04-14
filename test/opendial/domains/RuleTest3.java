@@ -36,7 +36,6 @@ import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
@@ -122,13 +121,13 @@ public class RuleTest3 {
 		
 		List<BasicEffect> effects = new ArrayList<BasicEffect>();
 		assertEquals(new Effect(effects), Effect.parseEffect("Void"));
-		effects.add(new BasicEffect("v1", "val1", EffectType.SET));
+		effects.add(new BasicEffect("v1", "val1"));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1"));
 
-		effects.add(new BasicEffect("v2", "val2", EffectType.ADD));
+		effects.add(new BasicEffect("v2", ValueFactory.create("val2"), 1, true, false));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 		
-		effects.add(new BasicEffect("v2", "val3", EffectType.DISCARD));
+		effects.add(new BasicEffect("v2", ValueFactory.create("val3"),1, false, true));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 	}
 	
@@ -143,7 +142,8 @@ public class RuleTest3 {
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
-		assertEquals(0.56, system.getContent("out").getProb("val1 is in [val1, val2]"), 0.01);
+		assertEquals(0.56, system.getContent("out").getProb("val1 is in [val1, val2]") 
+				+ system.getContent("out").getProb("val1 is in [val2, val1]"), 0.01);
 		assertEquals(0.5, system.getContent("out2").getProb("this is a string is matched"), 0.01);
 	}
 	

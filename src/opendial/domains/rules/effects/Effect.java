@@ -41,7 +41,6 @@ import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.VoidCondition;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
 
 
 /**
@@ -204,11 +203,11 @@ public final class Effect implements Value {
 	 * @param type the effect type
 	 * @return the values specified in the effect
 	 */
-	public Set<Value> getValues(String variable, EffectType type) {
+	public Set<Value> getValues(String variable) {
 		Set<Value> result = new HashSet<Value>();
 		int highestPriority = Integer.MAX_VALUE;
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable) && e.getType() == type) {
+			if (e.getVariable().equals(variable)) { 
 				if (e.priority > highestPriority) {
 					continue;
 				}
@@ -216,7 +215,7 @@ public final class Effect implements Value {
 					result = new HashSet<Value>();
 					highestPriority = e.priority;
 				}
-				if (!e.getValue().equals(ValueFactory.none())) {
+				if (!e.getValue().equals(ValueFactory.none()) && !e.isNegated()) {
 					result.add(e.getValue());
 				}
 			}
@@ -225,20 +224,20 @@ public final class Effect implements Value {
 	}
 	
 	/**
-	 * Returns the effect types associated with the given variable name
+	 * Returns true if at least one of the included effect for the variable is marked
+	 * as "additive" (allowing multiple values).
 	 * 
-	 * @param variable the variable name
-	 * @return the set of effect types used on the variable
+	 * @return true if the effect includes additive effects for the variable, false otherwise
 	 */
-	public Set<EffectType> getEffectTypes(String variable) {
-		Set<EffectType> effectTypes = new HashSet<EffectType>();
+	public boolean isAdditive(String variable) {
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable)) {
-				effectTypes.add(e.getType());
+			if (e.getVariable().equals(variable) && e.isAdditive()) {
+				return true;
 			}
 		}
-		return effectTypes;
+		return false;
 	}
+	
 	
 
 	
@@ -349,32 +348,33 @@ public final class Effect implements Value {
 				return new Effect(new ArrayList<BasicEffect>());
 			}
 			
-			EffectType type = EffectType.SET;
 			String var = "";
 			String val = "";
+			boolean additive = false;
+			boolean negated = false;
+			
 			if (str.contains(":=")) {
 				var = str.split(":=")[0];
 				val = str.split(":=")[1];
 				val = (val.contains("{}"))? "None": val;
-				type = EffectType.SET;
 			}
 			else if (str.contains("!=")) {
 				var = str.split("!=")[0];
 				val = str.split("!=")[1];
-				type = EffectType.DISCARD;
+				negated = true;
 			}
 			else if (str.contains("+=")) {
 				var = str.split("\\+=")[0];
 				val = str.split("\\+=")[1];
-				type = EffectType.ADD;
+				additive = true;
 			}
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, type));
+				return new Effect(new TemplateEffect(tvar, tval, 1, additive, negated));
 			}
 			else {
-				return new Effect(new BasicEffect(var, val, type));
+				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1, additive, negated));
 			}
 		}	
 	}

@@ -44,7 +44,6 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.TemplateEffect;
 import opendial.domains.rules.parameters.CompositeParameter;
@@ -391,7 +390,14 @@ public class XMLRuleReader {
 			value = "None";
 		}
 		value = value.replaceAll("\\s+"," ");
-		EffectType type = getEffectType(node);
+		
+		boolean additive = node.getNodeName().equalsIgnoreCase("add") || 
+				(node.getAttributes().getNamedItem("additive") != null &&
+				Boolean.parseBoolean(node.getAttributes().getNamedItem("additive").getNodeValue()));
+		
+		boolean negated = node.getAttributes().getNamedItem("relation")!=null 
+				&& getRelation(node) == Relation.UNEQUAL;
+
 		// "clear" effect is outdated
 		if (node.getNodeName().equalsIgnoreCase("clear")) {
 			value = "None";
@@ -409,43 +415,12 @@ public class XMLRuleReader {
 		Template tvar = new Template(var);
 		Template tval = new Template(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-			return new TemplateEffect(tvar, tval, type);
+			return new TemplateEffect(tvar, tval, 1, additive, negated);
 		}
 		else {
-			return new BasicEffect(var, value, type);
+			return new BasicEffect(var, ValueFactory.create(tval.toString()), 1, additive, negated);
 		}
 		
-	}
-
-	
-	/**
-	 * Returns the effect type corresponding to an XML specification
-	 * 
-	 * @param node the XML node
-	 * @return the corresponding type
-	 * @throws DialException if the effect type is ill-defined
-	 */
-	private static EffectType getEffectType(Node node) throws DialException {
-		
-		if (node.getNodeName().equalsIgnoreCase("set") & node.getAttributes().getNamedItem("relation")!=null 
-				&& getRelation(node) == Relation.UNEQUAL) {
-				return EffectType.DISCARD;
-		}
-		else if (node.getNodeName().equalsIgnoreCase("set")) {
-			return EffectType.SET;
-		}
-		else if ((node.getNodeName().equalsIgnoreCase("add"))) {
-			return EffectType.ADD;
-		}
-		else if ((node.getNodeName().equalsIgnoreCase("remove"))) {
-			return EffectType.DISCARD;
-		}
-		else if (node.getNodeName().equalsIgnoreCase("clear")) {
-			return EffectType.SET;
-		}
-		else  {
-			throw new DialException("unrecognized effect: " + node.getNodeName());
-		}
 	}
 
 	

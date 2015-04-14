@@ -168,7 +168,6 @@ public class RuleUtilDistribution implements UtilityFunction {
 			double totalUtil = 0;
 			Assignment fullInput = new Assignment(ruleInput, actions);
 			RuleOutput output = rule.getRule().getOutput(fullInput);	
-
 			for (Effect effectOutput : output.getEffects()) {
 				Condition effectCondition = effectOutput.convertToCondition();
 				if (effectCondition.isSatisfiedBy(ruleAction)) {

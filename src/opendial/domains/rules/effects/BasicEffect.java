@@ -54,19 +54,20 @@ public class BasicEffect {
 	// logger
 	static Logger log = new Logger("BasicEffect", Logger.Level.DEBUG);
 
+	/** Variable label */
 	final String variableLabel;
 	
+	/** Variable value */
 	final Value variableValue;
-	
-	// enumeration of the four possible effect operations
-	public static enum EffectType {
-		SET, 		// for variable := value
-		DISCARD, 	// for variable != value
-		ADD, 		// for variable += value (add the value to the set)
-	}
-		
-	final EffectType type;
 
+	/** Whether the value is mutually exclusive with other values for the variable (default case) or not. 
+	 * If not, distinct values are added together in a list.  */
+	final boolean additive;
+	
+	/** Whether the effect includes a negation (default is false). */
+	final boolean negated;
+		
+	/** Priority level (default is 1) */
 	final int priority;
 	
 	// ===================================
@@ -74,59 +75,42 @@ public class BasicEffect {
 	// ===================================
 	
 	
-	
 	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
+	 * Constructs a new basic effect, with a variable label and value.
 	 * 
 	 * @param variable variable label (raw string)
 	 * @param value variable value (raw string)
-	 * @param type type of effect
 	 */
-	public BasicEffect(String variable, String value, EffectType type){
-		this(variable, ValueFactory.create(value), type, 1);
+	public BasicEffect(String variable, String value){
+		this(variable, ValueFactory.create(value), 1, false, false);
 	}
 	
 	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
+	 * Constructs a new basic effect, with a variable label, value and other arguments. The 
+	 * argument "additive"  specifies whether the effect is mutually exclusive with other effects.
+	 * The argument "negated" specifies whether the effect includes a negation.
 	 * 
-	 * @param variable variable label (raw string)
-	 * @param value variable value (raw string)
-	 * @param type type of effect
-	 * @param priority the priority level
-	 */
-	public BasicEffect(String variable, String value, EffectType type, int priority){
-		this(variable, ValueFactory.create(value), type, priority);
-	}
-	
-	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
 	 * 
 	 * @param variable variable label (raw string)
 	 * @param value variable value
-	 * @param type type of effect
-	 * @param priority the priority level
+	 * @param priority the priority level (default is 1)
+	 * @param additive true if distinct values are to be added together, false otherwise 
+	 * @param negated whether to negate the effect or not.
 	 */
-	public BasicEffect(String variable, Value value, EffectType type, int priority){
+	public BasicEffect(String variable, Value value, int priority, boolean additive, boolean negated){
 		this.variableLabel = variable;
 		this.variableValue = value;
-		this.type = type;
 		this.priority = priority;
+		this.additive = additive;
+		this.negated = negated;
 	}
+	
 	
 	
 	// ===================================
 	//  GETTERS
 	// ===================================
 	
-	
-	/**
-	 * Returns the effect type
-	 * 
-	 * @return the type
-	 */
-	public EffectType getType() {
-		return type;
-	}
 
 
 	/**
@@ -157,8 +141,8 @@ public class BasicEffect {
 	 * @return the equivalent (basic or template-based) condition
 	 */
 	public Condition convertToCondition() {
-		Relation r = (type == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
-			return new BasicCondition(variableLabel, variableValue, r);
+		Relation r = (negated)? Relation.UNEQUAL : Relation.EQUAL;
+		return new BasicCondition(variableLabel, variableValue, r);
 	}
 	
 	
@@ -202,6 +186,24 @@ public class BasicEffect {
 		return priority;
 	}
 	
+	/**
+	 * Returns true if the effect allows multiple distinct values for the variable and false otherwise (default case).
+	 * 
+	 * @return true if the effect allows values to be added together, false otherwise.
+	 */
+	public boolean isAdditive() {
+		return additive;
+	}
+	
+	/**
+	 * Returns true is the effect is negated and false otherwise.
+	 * 
+	 * @return whether the effect is negated.
+	 */
+	public boolean isNegated() {
+		return negated;
+	}
+	
 	// ===================================
 	//  UTILITY METHODS
 	// ===================================
@@ -213,10 +215,14 @@ public class BasicEffect {
 	@Override
 	public String toString() {
 		String str = variableLabel;
-		switch (type) {
-		case SET: str += ":="; break;
-		case DISCARD: str += "!="; break;
-		case ADD: str += "+="; break;
+		if (negated) {
+			str += "!="; 
+		}
+		else if (additive) {
+			str += "+=";
+		}
+		else {
+			str += ":=";
 		}
 		str += variableValue;
 		return str;
@@ -230,7 +236,8 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return variableLabel.hashCode() ^ type.hashCode() ^ priority ^ variableValue.hashCode();
+		return variableLabel.hashCode() ^ (new Boolean(additive)).hashCode() ^ 
+				(new Boolean(negated)).hashCode() ^ priority ^ variableValue.hashCode();
 	}
 
 	
@@ -250,7 +257,10 @@ public class BasicEffect {
 			else if (!((BasicEffect)o).getValue().equals(getValue())) {
 				return false;
 			}
-			else if (!((BasicEffect)o).getType().equals(type)) {
+			else if (((BasicEffect)o).isAdditive() != additive) {
+				return false;
+			}
+			else if (((BasicEffect)o).isNegated() != negated) {
 				return false;
 			}
 			else if (((BasicEffect)o).priority != priority) {
@@ -267,7 +277,7 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue, type, priority);
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority, additive, negated);
 		return copy;
 	}
 
@@ -277,7 +287,7 @@ public class BasicEffect {
 	 * @return a new basic effect with the changed priority
 	 */
 	public BasicEffect changePriority(int priority) {
-		return new BasicEffect(variableLabel, variableValue, type, priority);
+		return new BasicEffect(variableLabel, variableValue, priority, additive, negated);
 	}
 
 

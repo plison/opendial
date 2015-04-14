@@ -235,7 +235,7 @@ public class RuleTest2 {
 		system2.getSettings().showGUI = false;
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem(); 
-		inference.checkProb(system2.getState(), "A", ValueFactory.create("[a2]"), 1.0);
+		inference.checkProb(system2.getState(), "A", ValueFactory.create("[a1,a2]"), 1.0);
 
 		inference.checkProb(system2.getState(), "a_u", "Request(ball)", 0.5);
 	}

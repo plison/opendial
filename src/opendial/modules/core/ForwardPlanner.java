@@ -39,7 +39,6 @@ import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
-import opendial.bn.nodes.BNode;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
 import opendial.modules.Module;
