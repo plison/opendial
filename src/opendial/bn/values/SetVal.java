@@ -23,29 +23,29 @@
 
 package opendial.bn.values;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import opendial.arch.Logger;
 
 
 /**
- * Value that is defined as an ordered list of values.
+ * Value that is defined as a set of values.
  * 
  *
  * @author  Pierre Lison (plison@ifi.uio.no)
  *
  */
-public final class ListVal implements Value {
+public final class SetVal implements Value {
 	
 	 // logger
 	 public static Logger log = new Logger("ListVal", Logger.Level.DEBUG);
 
 	 
-	// the list of values
-	final List<Value> list;
+	// the set of values
+	final Set<Value> set;
 	
 	/**
 	 * Creates the list of values
@@ -53,25 +53,25 @@ public final class ListVal implements Value {
 	 * 
 	 * @param values the values
 	 */
-	protected ListVal(Collection<Value> values) {
-		this.list = new ArrayList<Value>(); 
+	protected SetVal(Collection<Value> values) {
+		this.set = new HashSet<Value>(); 
 		for (Value v : values) {
-			if (v instanceof ListVal) {
-				this.list.addAll(((ListVal)v).getList());
+			if (v instanceof SetVal) {
+				this.set.addAll(((SetVal)v).getSet());
 			}
 			else {
-				this.list.add(v);
+				this.set.add(v);
 			}
 		}
 		};
 
 	/**
-	 * Creates the list of values
+	 * Creates the set of values
 	 * (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
-	protected ListVal(Value...values) { this(Arrays.asList(values)) ;};
+	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
 	
 	
 	/**
@@ -80,7 +80,7 @@ public final class ListVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return list.hashCode(); }
+	public int hashCode() { return set.hashCode(); }
 	
 	/**
 	 * Returns true if the lists are equals (contain the same elements), false
@@ -91,16 +91,16 @@ public final class ListVal implements Value {
 	 */
 	@Override
 	public boolean equals (Object o) {
-		return ((o instanceof ListVal && ((ListVal)o).getList().equals(getList())));
+		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
 	}
 	
 	
 	/**
-	 * Returns the list of values
+	 * Returns the set of values
 	 *  
-	 * @return the list
+	 * @return the set
 	 */
-	public List<Value> getList() {return list; }
+	public Set<Value> getSet() {return set; }
 	
 	/**
 	 * Returns a copy of the list
@@ -108,27 +108,27 @@ public final class ListVal implements Value {
 	 * @return the copy
 	 */
 	@Override
-	public ListVal copy() { return new ListVal(list); }
+	public SetVal copy() { return new SetVal(set); }
 	
 	/**
-	 * Returns a string representation of the list
+	 * Returns a string representation of the set
 	 *
 	 * @return the string
 	 */
 	@Override
 	public String toString() { 
-		return ""+list.toString();
+		return ""+set.toString();
 	}
 
 	/**
-	 * Concatenates the two lists. 
+	 * Concatenates the two sets. 
 	 */
 	@Override
 	public Value concatenate (Value v) {
-		if (v instanceof ListVal) {
-			List<Value> newList = new ArrayList<Value>(list);
-			newList.addAll(((ListVal)v).getList());
-			return new ListVal(newList);
+		if (v instanceof SetVal) {
+			Set<Value> newSet = new HashSet<Value>(set);
+			newSet.addAll(((SetVal)v).getSet());
+			return new SetVal(newSet);
 		}
 		else if (v instanceof NoneVal) {
 			return this;
@@ -144,12 +144,12 @@ public final class ListVal implements Value {
 	 * 
 	 * @param values the ListVal with the values to add
 	 */
-	public void addAll(ListVal values) {
-		list.addAll(values.getList());
+	public void addAll(SetVal values) {
+		set.addAll(values.getSet());
 	}
 	
 	public void removeAll(Collection<Value> discardValues) {
-		list.removeAll(discardValues);
+		set.removeAll(discardValues);
 	}
 	
 	/**
@@ -163,11 +163,11 @@ public final class ListVal implements Value {
 	}
 
 	public void remove(Value object) {
-		list.remove(object);
+		set.remove(object);
 	}
 
 	public void add(Value object) {
-		list.add(object);
+		set.add(object);
 	}
 
 	/**
@@ -177,11 +177,11 @@ public final class ListVal implements Value {
 	 */
 	@Override
 	public boolean contains(Value subvalue) {
-		return list.contains(subvalue);
+		return set.contains(subvalue);
 	}
 
 	public boolean isEmpty() {
-		return list.isEmpty();
+		return set.isEmpty();
 	}
 
 

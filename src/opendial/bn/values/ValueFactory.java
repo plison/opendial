@@ -114,7 +114,7 @@ public class ValueFactory {
 					openParenthesis =  (StringUtils.countNbOccurrences(subVal, '(') >
 					StringUtils.countNbOccurrences(subVal, ')'));
 				}
-				return new ListVal(subVals);
+				return new SetVal(subVals);
 			}
 		}
 
@@ -152,8 +152,8 @@ public class ValueFactory {
 	 * @param vals the values
 	 * @return the set value
 	 */
-	public static ListVal create(Value...vals) {
-		return new ListVal(vals);
+	public static SetVal create(Value...vals) {
+		return new SetVal(vals);
 	}
 
 	/**
@@ -162,8 +162,8 @@ public class ValueFactory {
 	 * @param vals the values
 	 * @return the set value
 	 */
-	public static ListVal create(Collection<Value> vals) {
-		return new ListVal(vals);
+	public static SetVal create(Collection<Value> vals) {
+		return new SetVal(vals);
 	}
 
 

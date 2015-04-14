@@ -62,27 +62,31 @@ public final class TemplateEffect extends BasicEffect {
 	
 	
 	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
+	 * Constructs a new effect, with a variable label and value
 	 * 
 	 * @param variable variable label (raw string, possibly with slots)
 	 * @param value variable value (raw string, possibly with slots)
-	 * @param type type of effect
 	 */
-	public TemplateEffect(Template variable, Template value, EffectType type){
-		this(variable,value,type, 1);
+	public TemplateEffect(Template variable, Template value){
+		this(variable,value, 1, false, false);
 	}
 	
 	
 	/**
-	 * Constructs a new basic effect, with a variable label, value, and type
+	 * Constructs a new effect, with a variable label, value, and other arguments.  The 
+	 * argument "additive"  specifies whether the effect is mutually exclusive with other effects.
+	 * The argument "negated" specifies whether the effect includes a negation.
 	 * 
-	 * @param variable variable label (raw string, possibly with slots)
-	 * @param value variable value (raw string, possibly with slots)
-	 * @param type type of effect
+	 * 
+	 * @param variable variable label
+	 * @param value variable value
+	 * @param priority the priority level (default is 1)
+	 * @param additive true if distinct values are to be added together, false otherwise 
+	 * @param negated whether to negate the effect or not.
 	 */
-	public TemplateEffect(Template variable, Template value, EffectType type, int priority){
+	public TemplateEffect(Template variable, Template value, int priority,boolean additive, boolean negated){
 		super(variable.toString(), (value.getSlots().isEmpty())? ValueFactory.none() : 
-			ValueFactory.create(value.getRawString()), type, priority);
+			ValueFactory.create(value.getRawString()), priority, additive, negated);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
 	}
@@ -100,10 +104,10 @@ public final class TemplateEffect extends BasicEffect {
 		Template newT = labelTemplate.fillSlots(grounding);
 		Template newV = valueTemplate.fillSlots(grounding);
 		if (newT.isUnderspecified() || (!newV.getSlots().isEmpty())) {
-			return new TemplateEffect(newT, newV, type, priority);
+			return new TemplateEffect(newT, newV, priority, additive, negated);
 		}
 		else {
-			return new BasicEffect(newT.getRawString(), newV.getRawString(), type, priority);
+			return new BasicEffect(newT.getRawString(), ValueFactory.create(newV.getRawString()), priority, additive, negated);
 		}
 		
 	}
@@ -145,7 +149,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public Condition convertToCondition() {
-		Relation r = (type == EffectType.DISCARD)? Relation.UNEQUAL : Relation.EQUAL;
+		Relation r = (negated)? Relation.UNEQUAL : Relation.EQUAL;
 		return new TemplateCondition(labelTemplate, valueTemplate, r);
 	}
 
@@ -180,10 +184,14 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public String toString() {
 		String str = labelTemplate.toString();
-		switch (type) {
-		case SET: str += ":="; break;
-		case DISCARD: str += "!="; break;
-		case ADD: str += "+="; break;
+		if (negated) {
+			str += "!="; 
+		}
+		else if (additive) {
+			str += "+=";
+		}
+		else {
+			str += ":=";
 		}
 		str += valueTemplate.toString();
 		return str;
@@ -197,7 +205,8 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return labelTemplate.hashCode() ^ type.hashCode() ^ priority ^ valueTemplate.hashCode();
+		return labelTemplate.hashCode() ^ (new Boolean(additive)).hashCode() ^  
+				(new Boolean(negated)).hashCode() ^ priority ^ valueTemplate.hashCode();
 	}
 
 	
@@ -217,7 +226,10 @@ public final class TemplateEffect extends BasicEffect {
 			else if (!((TemplateEffect)o).valueTemplate.equals(valueTemplate)) {
 				return false;
 			}
-			else if (!((TemplateEffect)o).getType().equals(type)) {
+			else if (((TemplateEffect)o).isAdditive() != additive) {
+				return false;
+			}
+			else if (((TemplateEffect)o).isNegated() != negated) {
 				return false;
 			}
 			else if (((TemplateEffect)o).priority != priority) {
@@ -235,7 +247,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public TemplateEffect copy() {
-		return new TemplateEffect(labelTemplate, valueTemplate, type, priority);
+		return new TemplateEffect(labelTemplate, valueTemplate,  priority, additive, negated);
 	}
 
 
@@ -246,7 +258,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public TemplateEffect changePriority(int priority) {
-		return new TemplateEffect(labelTemplate, valueTemplate, type, priority);	
+		return new TemplateEffect(labelTemplate, valueTemplate, priority, additive, negated);	
 	}
 
 	

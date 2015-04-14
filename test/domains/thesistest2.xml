@@ -22,6 +22,15 @@
 <model trigger="u_u">
 
 
+<rule id="rnew">
+	<case>
+		<effect>
+			<add var="A" value="{A}"/>
+		</effect>
+	</case>
+</rule>
+
+
 <rule id="r12">
 	<case>
 		<condition>
@@ -33,22 +42,6 @@
 	</case>
 </rule>
 
-
-<rule id="r13">
-	<case>
-		<effect>
-			<remove var="A" value="a1"/>
-		</effect>
-	</case>
-</rule>
-
-<rule id="rnew">
-	<case>
-		<effect>
-			<add var="A" value="{A}"/>
-		</effect>
-	</case>
-</rule>
 
 
 <rule id="r14">

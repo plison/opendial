@@ -27,19 +27,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.MarginalDistribution;
-import opendial.bn.values.ListVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.effects.BasicEffect;
-import opendial.domains.rules.effects.BasicEffect.EffectType;
 import opendial.domains.rules.effects.Effect;
 
 
@@ -154,32 +154,18 @@ public class OutputDistribution implements ProbDistribution {
 		}
 		Effect fullEffect = new Effect(fullEffects);
 
-		Set<Value> setValues = fullEffect.getValues(baseVar, EffectType.SET);
-		Set<Value> addValues = fullEffect.getValues(baseVar, EffectType.ADD);
-		Set<Value> discardValues = fullEffect.getValues(baseVar, EffectType.DISCARD);
-
-		// case 1 : add or remove effects
-		if (!addValues.isEmpty() || !discardValues.isEmpty()) {
-
-			Value previousValue = (!setValues.isEmpty())? 
-					setValues.iterator().next() : condition.getValue(baseVar) ;
-			
-			ListVal addVal = ValueFactory.create(addValues);
-			if (previousValue instanceof ListVal) {
-				addVal.addAll((ListVal)previousValue);
-			} 
-			else if (!previousValue.equals(ValueFactory.none())) {
-				addVal.add(previousValue);
-			}
-			addVal.removeAll(discardValues);
+		Set<Value> values = fullEffect.getValues(baseVar);
+		// case 1: additive effects
+		if (fullEffect.isAdditive(baseVar)) {
+			SetVal addVal = ValueFactory.create(values);
 			probTable.addRow(addVal, 1.0);
 		}
 		
 		// case 2 (most common): classical set operations
-		else if (!setValues.isEmpty()) {
-			for (Value v : setValues) {
-				probTable.addRow(v, (1.0 / setValues.size()));
-			}		
+		else if (!values.isEmpty()) {	
+			for (Value v : values) {
+				probTable.addRow(v, (1.0 / values.size()));
+			}	
 		}
 		
 		// case 3: set to none value
@@ -215,26 +201,20 @@ public class OutputDistribution implements ProbDistribution {
 
 		Set<Value> values = new HashSet<Value>();
 
-		loop: for (String var : range.getVariables()) {
+		for (String var : range.getVariables()) {
 			for (Value val : range.getValues(var)) {
+				
 				if (val instanceof Effect) {
 
-					Set<EffectType> types = ((Effect)val).getEffectTypes(baseVar);
-					if (types.contains(EffectType.ADD) || types.contains(EffectType.DISCARD)) {
-						for (Assignment condition : range.linearise()) {
-							values.addAll(getProbDistrib(condition).getValues());
-						}
-						break loop;
+					if (((Effect)val).isAdditive(baseVar)) {
+						return getValues_linearise(range);
 					}
 
-					Set<Value> setValues = ((Effect)val).getValues(baseVar, EffectType.SET);		
+					Set<Value> setValues = ((Effect)val).getValues(baseVar);		
 					values.addAll(setValues);
 					if (setValues.isEmpty()) {
 						values.add(ValueFactory.none());
 					}
-				}
-				else if (var.equals(baseVar)) {
-					values.add(val);
 				}
 			}
 		}	
@@ -243,8 +223,9 @@ public class OutputDistribution implements ProbDistribution {
 			values.add(ValueFactory.none());
 		}
 		return values;
-
 	}
+	
+	
 
 
 	/**
@@ -286,6 +267,22 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 
-
+	/**
+	 * Calculates the possible values for the output distribution via linearisation
+	 * (more costly operation, but necessary in case of additive effects).
+	 * 
+	 * @param range the value range to linearise
+	 * @return the set of possible output values
+	 */
+	private Set<Value> getValues_linearise (ValueRange range) {
+		
+		Set<Value> values = range.linearise().stream()
+				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
+				.collect(Collectors.toSet());
+		if (values.isEmpty()) {
+			values.add(ValueFactory.none());
+		}
+		return values;
+	}
 
 }

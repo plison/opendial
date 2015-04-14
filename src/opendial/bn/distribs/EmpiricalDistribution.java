@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.densityfunctions.DensityFunction;
-import opendial.bn.distribs.densityfunctions.DiscreteDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;

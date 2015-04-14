@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.values.ListVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -225,8 +225,8 @@ public final class TemplateCondition implements Condition {
 					groundings.addAssign(possGrounding);
 				}
 			}
-			else if (relation == Relation.CONTAINS && actualValue instanceof ListVal) {
-				for (Value subval : ((ListVal)actualValue).getList()) {
+			else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
+				for (Value subval : ((SetVal)actualValue).getSet()) {
 					MatchResult m2 = expectedValue2.match(subval.toString(), true);
 					if (m2.isMatching()) {
 						Assignment possGrounding = m2.getFilledSlots();

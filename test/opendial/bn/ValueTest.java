@@ -28,7 +28,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -37,7 +36,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.BooleanVal;
 import opendial.bn.values.DoubleVal;
-import opendial.bn.values.ListVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -79,10 +78,10 @@ public class ValueTest {
 		assertTrue(ValueFactory.create("3") instanceof DoubleVal);
 		assertTrue(ValueFactory.create("3.6") instanceof DoubleVal);
 		assertEquals(3.0, ((DoubleVal)ValueFactory.create("3")).getDouble(), 0.0001);
-		assertTrue(ValueFactory.create("[firstItem, secondItem, 3.6]") instanceof ListVal);
-		assertEquals(3, ((ListVal)ValueFactory.create("[firstItem, secondItem, 3.6]")).getList().size());
-		assertEquals(new ArrayList<Value>(Arrays.asList(ValueFactory.create("firstItem"), ValueFactory.create("secondItem"), 
-				ValueFactory.create(3.6))), ((ListVal)ValueFactory.create("[firstItem, secondItem,3.6]")).getList());
+		assertTrue(ValueFactory.create("[firstItem, secondItem, 3.6]") instanceof SetVal);
+		assertEquals(3, ((SetVal)ValueFactory.create("[firstItem, secondItem, 3.6]")).getSet().size());
+		assertEquals(new HashSet<Value>(Arrays.asList(ValueFactory.create("firstItem"), ValueFactory.create("secondItem"), 
+				ValueFactory.create(3.6))), ((SetVal)ValueFactory.create("[firstItem, secondItem,3.6]")).getSet());
 		assertTrue(ValueFactory.create("[0.6, 0.4, 32]") instanceof ArrayVal);
 		assertEquals(3, ((ArrayVal)ValueFactory.create("[0.6, 0.4, 32]")).getArray().length);
 		assertEquals(32, ((ArrayVal)ValueFactory.create("[0.6, 0.4, 32]")).getArray()[2], 0.0001);

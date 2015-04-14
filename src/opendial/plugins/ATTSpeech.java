@@ -283,7 +283,7 @@ public class ATTSpeech implements Module {
 			.addAuthorizationHeader(osrvc.getToken("STTC"))
 			.addHeader("Accept", "application/json")
 			.addHeader("X-Arg", "HasMultipleNBest=true");
-			
+			 
 			ttsClient = new RESTClient(FQDN + "/speech/v3/textToSpeech")
 			.addAuthorizationHeader(osrvc.getToken("TTS"))
 		     .addHeader("Content-Type", "text/plain")

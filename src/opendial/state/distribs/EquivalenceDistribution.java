@@ -25,7 +25,6 @@
 package opendial.state.distribs;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -35,7 +34,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.values.BooleanVal;
-import opendial.bn.values.ListVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -239,9 +238,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 			String str2 = ((StringVal)coupledValues[1]).getString();
 			return (Template.match(str1, str2))? 1.0 : 0.0;
 		}
-		else if (coupledValues[0] instanceof ListVal && coupledValues[1] instanceof ListVal) {
-			List<Value> vals0 = ((ListVal)coupledValues[0]).getList();
-			List<Value> vals1 = ((ListVal)coupledValues[1]).getList();
+		else if (coupledValues[0] instanceof SetVal && coupledValues[1] instanceof SetVal) {
+			Set<Value> vals0 = ((SetVal)coupledValues[0]).getSet();
+			Set<Value> vals1 = ((SetVal)coupledValues[1]).getSet();
 			if (vals0.isEmpty()) {
 				return (vals1.isEmpty())? 1.0 : 0.0;
 			}

@@ -42,7 +42,7 @@ import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
 
 import org.junit.Test;
- 
+  
 /**
  * 
  *
