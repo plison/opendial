@@ -181,7 +181,8 @@ public class Rule {
 		}
 		
 		RuleOutput output = new RuleOutput(ruleType);
-		for (Assignment g : getGroundings(input)) {
+		Set<Assignment> groundings = getGroundings(input);
+		for (Assignment g : groundings) {
 			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
 			RuleCase match = getMatchingCase(fullInput);
 			if (!match.getEffects().isEmpty()) {
