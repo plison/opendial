@@ -26,13 +26,10 @@ package opendial.domains.rules.effects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
@@ -208,7 +205,6 @@ public final class Effect implements Value {
 	 * with highest priority is retained.
 	 * 
 	 * @param variable the variable
-	 * @param type the effect type
 	 * @return the values specified in the effect
 	 */
 	public Set<Value> getValues(String variable) {
@@ -246,6 +242,7 @@ public final class Effect implements Value {
 	 * Returns true if at least one of the included effect for the variable is marked
 	 * as "add" (allowing multiple values).
 	 * 
+	 * @param variable the variable to check
 	 * @return true if the effect includes add effects for the variable, false otherwise
 	 */
 	public boolean isAdd(String variable) {
@@ -340,19 +337,6 @@ public final class Effect implements Value {
 	}
 	
 	
-	/**
-	 * Returns a copy of the effect, filtering out all negated effects
-	 * 
-	 * @return the filtered copy
-	 */
-	public Effect copy_positive() {
-		return new Effect(subeffects.stream()
-				.filter(e -> !e.isNegated())
-				.map(e -> e.copy())
-				.collect(Collectors.toList()));
-		
-	}
-
 	/**
 	 * Returns false.
 	 */

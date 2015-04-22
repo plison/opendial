@@ -35,7 +35,6 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.Template.MatchResult;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.RuleGrounding;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 

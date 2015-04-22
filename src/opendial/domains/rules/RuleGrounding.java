@@ -151,7 +151,7 @@ public class RuleGrounding {
 	/**
 	 * Extends the existing groundings with the alternative groundings 
 	 * 
-	 * @param other the next groundings  to extend the current ones
+	 * @param alternatives the next groundings  to extend the current ones
 	 */
 	public void extend(Collection<Assignment> alternatives) {
 		if (alternatives.isEmpty()) {
@@ -169,7 +169,7 @@ public class RuleGrounding {
 
 	/**
 	 * Returns the set of possible assignments
-	 * @return
+	 * @return the possible assignments
 	 */
 	public Set<Assignment> getAlternatives() {
 		return groundings;
@@ -196,6 +196,7 @@ public class RuleGrounding {
 	/**
 	 * Returns the hashcode of the set of alternative assignments
 	 */
+	@Override
 	public int hashCode() {
 		return groundings.hashCode();
 	}
@@ -203,6 +204,7 @@ public class RuleGrounding {
 	/**
 	 * Returns a string representation of the set of assignments
 	 */
+	@Override
 	public String toString() {
 		if (!isFailed()) {
 			return groundings.toString();
@@ -215,6 +217,7 @@ public class RuleGrounding {
 	/**
 	 * Returns true if o is a rule grounding with the same assignments, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof RuleGrounding) {
 			return ((RuleGrounding)o).groundings.equals(groundings);

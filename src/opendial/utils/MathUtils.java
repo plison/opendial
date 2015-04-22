@@ -27,14 +27,11 @@ package opendial.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import opendial.arch.Logger;
-import opendial.bn.values.ValueFactory;
 
 
 /**

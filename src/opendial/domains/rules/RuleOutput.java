@@ -40,7 +40,6 @@ import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
-import opendial.state.StatePruner;
 
 
 /**

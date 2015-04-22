@@ -25,7 +25,6 @@ package opendial.domains.rules;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;

@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.TemplateCondition;

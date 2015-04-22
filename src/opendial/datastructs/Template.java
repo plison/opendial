@@ -528,7 +528,7 @@ public final class Template {
 
 	/**
 	 * Returns the raw string after removing the braces surrounding underspecified  variables
-	 * @return
+	 * @return the string with the opening and closing braces removed.
 	 */
 	public String getStringWithoutBraces() {
 		return rawString.replaceAll("\\{(.+?)\\}", "$1");

@@ -54,7 +54,7 @@ public class TextOnlyInterface implements Module {
 	
 	/**
 	 * Creates a new text-only interface.
-	 * @param system
+	 * @param system the dialogue system
 	 */
 	public TextOnlyInterface(DialogueSystem system) {
 		this.system = system;

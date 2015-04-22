@@ -27,7 +27,6 @@ import java.util.Set;
 
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.RuleGrounding;
 
 /**

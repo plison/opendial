@@ -105,7 +105,7 @@ public class NuanceSpeech implements Module {
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
 	 * @param system the dialogue system to attach
-	 * @throws DialException
+	 * @throws DialException in case of missing parameters
 	 */
 	public NuanceSpeech(DialogueSystem system) throws DialException {
 		this.system = system;
