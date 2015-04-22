@@ -31,11 +31,10 @@
 	<!-- COMPILATION -->
 	<target name="compile" depends="init" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" target="1.8" destdir="${build}" includeantruntime="false">
-<!--			    <compilerarg value="-Xlint"/> -->
+		<javac srcdir="${src}" target="1.8" destdir="${build}" includeantruntime="false" encoding="UTF-8">
 			    <classpath refid="compile.classpath" />
-		</javac>
-		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false">
+	</javac>
+		<javac srcdir="${testsrc}" destdir="${build}" includeantruntime="false" encoding="UTF-8">
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
@@ -68,7 +67,7 @@
 		<mkdir dir="${testreports}" />
 		<junit printsummary="yes" haltonfailure="no" haltonerror="yes" showoutput="no">
 			<classpath refid="compile.classpath" />
-			<jvmarg line="-Dfile.encoding=UTF-8" />
+			<jvmarg line=" -Dfile.encoding=UTF-8" />
 			<batchtest fork="yes" todir="${testreports}">
 				<formatter type="xml" />
 				<fileset dir="${testsrc}">
