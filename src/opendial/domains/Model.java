@@ -49,6 +49,9 @@ public class Model {
 
 	// identifier for the model
 	String id;
+	
+	// whether triggering the model should block other models
+	boolean blocking = false;
 
 	// counter for the model identifier, if not explicitly given
 	public static int idCounter = 0;
@@ -121,6 +124,17 @@ public class Model {
 	public void addRule(Rule rule) {
 		rules.add(rule);
 	}
+	
+	
+	/**
+	 * Sets the model as "blocking" (forbids other models to be triggered in
+	 * parallel when this model is triggered).  Default is false.
+	 * 
+	 * @param blocking whether to set the model in blocking mode or not
+	 */
+	public void setBlocking(boolean blocking) {
+		this.blocking = blocking;
+	}
 
 
 
@@ -155,10 +169,8 @@ public class Model {
 	 * Triggers the model with the given state and list of recently updated variables.
 	 * 
 	 * @param state the current dialogue state
-	 * @param updatedVars the list of updated variables
 	 */
-	public void trigger(DialogueState state, Set<String> updatedVars) {
-		if (isTriggered(state, updatedVars)) {
+	public void trigger(DialogueState state) {
 			for (Rule r : rules) {
 				try {
 					state.applyRule(r); 
@@ -167,7 +179,6 @@ public class Model {
 					log.warning("rule " + r.getRuleId() + " could not be applied: " + e.toString()); 
 				}				
 			}
-		}
 	}
 
 	
@@ -186,7 +197,7 @@ public class Model {
 		}
 			for (Template trigger : triggers) {
 				for (String updatedVar : updatedVars) {
-					if (trigger.match(updatedVar, true).isMatching()) {
+					if (trigger.match(updatedVar).isMatching()) {
 						return true;
 					}
 				}
@@ -209,7 +220,7 @@ public class Model {
 		}
 			for (Template trigger : triggers) {
 				for (String updatedVar : updatedVars) {
-					if (trigger.match(updatedVar, true).isMatching()) {
+					if (trigger.match(updatedVar).isMatching()) {
 						return true;
 					}
 				}
@@ -225,6 +236,16 @@ public class Model {
 	 */
 	public Collection<Template> getTriggers() {
 		return triggers;
+	}
+	
+	
+	/**
+	 * Returns true if the model is set in "blocking" mode and false otherwise.
+	 * 
+	 * @return whether blocking mode is activated or not (default is false).
+	 */
+	public boolean isBlocking() {
+		return blocking;
 	}
 
 	

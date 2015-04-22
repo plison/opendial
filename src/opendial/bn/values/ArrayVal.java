@@ -24,8 +24,10 @@
 package opendial.bn.values;
 
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
+
 import opendial.arch.Logger;
 import opendial.utils.StringUtils;
 
@@ -114,6 +116,16 @@ public final class ArrayVal implements Value {
 	}
 	
 	/**
+	 * Returns the array length
+	 * 
+	 * @return the length
+	 */
+	@Override
+	public int length() {
+		return array.length;
+	}
+	
+	/**
 	 * Checks for equality
 	 */
 	@Override
@@ -165,7 +177,7 @@ public final class ArrayVal implements Value {
 	 */
 	@Override
 	public int hashCode() {
-		return 2* array.hashCode();
+		return Arrays.hashCode(array);
 	}
 	
 	

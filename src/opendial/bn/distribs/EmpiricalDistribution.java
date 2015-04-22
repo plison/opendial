@@ -225,6 +225,15 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	public double getProb(Assignment head) {
 		return toDiscrete().getProb(head);
 	}
+	
+	
+	/**
+	 * Returns the value that occurs most often in the set of samples
+	 * 
+	 */
+	public Assignment getBest() {
+		return toDiscrete().getBest();
+	}
 
 
 

@@ -29,6 +29,7 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleGrounding;
 
 
 /**
@@ -78,8 +79,10 @@ public final class NegatedCondition implements Condition {
 	}
 
 	@Override
-	public ValueRange getGroundings(Assignment input) {
-		return initCondition.getGroundings(input);
+	public RuleGrounding getGroundings(Assignment input) {
+		RuleGrounding g = initCondition.getGroundings(input);
+		g = (g.isFailed())? new RuleGrounding() : g;
+		return g;
 	}
 
 	

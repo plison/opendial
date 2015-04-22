@@ -26,6 +26,8 @@ package opendial.readers;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,16 +43,16 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
+import opendial.domains.rules.conditions.NegatedCondition;
 import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.effects.TemplateEffect;
-import opendial.domains.rules.parameters.CompositeParameter;
-import opendial.domains.rules.parameters.CompositeParameter.Operator;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.StochasticParameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Node;
@@ -145,7 +147,7 @@ public class XMLRuleReader {
 			else if (node.getNodeName().equals("effect")) {
 				Effect effect = getFullEffect(node);
 				if (effect != null) {
-					Parameter prob = getParameter(node, type);
+					Parameter prob = getParameter(node, newCase.getCondition().getSlots(), type);
 					newCase.addEffect(effect, prob);
 				}
 			}
@@ -182,13 +184,22 @@ public class XMLRuleReader {
 		if (subconditions.isEmpty()) {
 			return new VoidCondition();
 		}
-		else if (subconditions.size() == 1) {
-			return subconditions.get(0);
-		}
 		else {
-			BinaryOperator operator = getBinaryOperator(conditionNode);
-			ComplexCondition condition = new ComplexCondition(subconditions, operator);
-			return condition;
+			if (conditionNode.hasAttributes() && conditionNode.getAttributes().getNamedItem("operator")!=null) {
+				String operatorStr = conditionNode.getAttributes().getNamedItem("operator").getNodeValue();
+				if (operatorStr.toLowerCase().trim().equals("and")) {
+					return new ComplexCondition(subconditions, BinaryOperator.AND);
+				}
+				else if (operatorStr.toLowerCase().trim().equals("or")) {
+					return new ComplexCondition(subconditions, BinaryOperator.OR);
+				}
+				else if (operatorStr.toLowerCase().trim().equals("neg")) {
+					Condition negated = (subconditions.size() ==1)?
+							subconditions.get(0) : new ComplexCondition(subconditions, BinaryOperator.AND);
+					return new NegatedCondition(negated);
+				}
+			}
+			return (subconditions.size() == 1)? subconditions.get(0) : new ComplexCondition(subconditions, BinaryOperator.AND);
 		}
 	}
 
@@ -210,12 +221,17 @@ public class XMLRuleReader {
 			Condition condition;
 
 			String variable = node.getAttributes().getNamedItem("var").getNodeValue();
+			Template tvar = new Template(variable);
+			if (tvar.isUnderspecified()) {
+				tvar = new Template(tvar.getRawString().replace("*", "{"+(new Random().nextInt(100))+"}"));
+			}
 
 			if (node.getAttributes().getNamedItem("value") != null) {
 				String valueStr = node.getAttributes().getNamedItem("value").getNodeValue();
 				Relation relation = getRelation(node);
-				if ((new Template(variable)).isUnderspecified() || (new Template(valueStr)).isUnderspecified()) {
-					condition = new TemplateCondition(new Template(variable), new Template(valueStr), relation);
+				Template tval = new Template(valueStr);
+				if (tvar.isUnderspecified() || tval.isUnderspecified()) {	
+					condition = new TemplateCondition(tvar, tval, relation);
 				}
 				else {
 					condition = new BasicCondition(variable, ValueFactory.create(valueStr), relation);
@@ -225,7 +241,7 @@ public class XMLRuleReader {
 			else if (node.getAttributes().getNamedItem("var2") !=null) {
 				String variable2 = node.getAttributes().getNamedItem("var2").getNodeValue();
 				Relation relation = getRelation(node);		
-				condition = new TemplateCondition(new Template(variable), new Template("{"+variable2+"}"), relation);
+				condition = new TemplateCondition(tvar, new Template("{"+variable2+"}"), relation);
 			}
 			else {
 				throw new DialException("unrecognized format for condition ");
@@ -284,12 +300,13 @@ public class XMLRuleReader {
 			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
+			
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.IN;
 			}
-			/**		else if (relationStr.toLowerCase().trim().equals("length")) {
+			else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
-			} */
+			} 
 			else if (relationStr.toLowerCase().trim().equals("!contains")) {
 				relation = Relation.NOT_CONTAINS;
 			}
@@ -309,35 +326,6 @@ public class XMLRuleReader {
 		}
 		return relation;
 	}
-
-
-	/**
-	 * Extracting the binary operator specified at the top of a condition (if any).
-	 * 
-	 * @param conditionNode the XML node
-	 * @return the corresponding operator
-	 */
-	private static BinaryOperator getBinaryOperator(Node conditionNode) {
-		BinaryOperator operator = BinaryOperator.AND;
-		if (conditionNode.hasAttributes() && conditionNode.getAttributes().getNamedItem("operator")!=null) {
-			String operatorStr = conditionNode.getAttributes().getNamedItem("operator").getNodeValue();
-			if (operatorStr.toLowerCase().trim().equals("and")) {
-				operator = BinaryOperator.AND;
-			}
-			else if (operatorStr.toLowerCase().trim().equals("or")) {
-				operator = BinaryOperator.OR;
-			}
-			else {
-				try {
-					throw new DialException("unrecognized relation: " + operatorStr);
-				} catch (DialException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return operator;
-	}
-
 
 
 	/**
@@ -391,9 +379,9 @@ public class XMLRuleReader {
 		}
 		value = value.replaceAll("\\s+"," ");
 		
-		boolean additive = node.getNodeName().equalsIgnoreCase("add") || 
-				(node.getAttributes().getNamedItem("additive") != null &&
-				Boolean.parseBoolean(node.getAttributes().getNamedItem("additive").getNodeValue()));
+		boolean add = node.getNodeName().equalsIgnoreCase("add") || 
+				(node.getAttributes().getNamedItem("add") != null &&
+				Boolean.parseBoolean(node.getAttributes().getNamedItem("add").getNodeValue()));
 		
 		boolean negated = node.getAttributes().getNamedItem("relation")!=null 
 				&& getRelation(node) == Relation.UNEQUAL;
@@ -407,7 +395,8 @@ public class XMLRuleReader {
 		for (int i = 0 ; i < node.getAttributes().getLength() ; i++) {
 			Node attr = node.getAttributes().item(i);
 			if (!attr.getNodeName().equals("var") && !attr.getNodeName().equals("var2")
-					&& !attr.getNodeName().equals("value") && !attr.getNodeName().equals("relation")) {
+					&& !attr.getNodeName().equals("value") && !attr.getNodeName().equals("relation")
+					&& !attr.getNodeName().equals("add") ) {
 				throw new DialException("unrecognized attribute: " + attr.getNodeName());
 			}
 		}
@@ -415,10 +404,10 @@ public class XMLRuleReader {
 		Template tvar = new Template(var);
 		Template tval = new Template(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-			return new TemplateEffect(tvar, tval, 1, additive, negated);
+			return new TemplateEffect(tvar, tval, 1, add, negated);
 		}
 		else {
-			return new BasicEffect(var, ValueFactory.create(tval.toString()), 1, additive, negated);
+			return new BasicEffect(var, ValueFactory.create(tval.toString()), 1, add, negated);
 		}
 		
 	}
@@ -432,12 +421,13 @@ public class XMLRuleReader {
 	 * @return the parameter representation
 	 * @throws DialException
 	 */
-	private static Parameter getParameter(Node node, RuleType type) throws DialException {
+	private static Parameter getParameter(Node node, Set<String> caseSlots,
+			RuleType type) throws DialException {
 
 		if (type == RuleType.PROB) {
 			if (node.getAttributes().getNamedItem("prob")!= null) {
 				String prob = node.getAttributes().getNamedItem("prob").getNodeValue();
-				return getInnerParameter(prob);
+				return getInnerParameter(prob, caseSlots);
 			}
 			else {
 				return new FixedParameter(1.0);
@@ -446,7 +436,7 @@ public class XMLRuleReader {
 		else if (type == RuleType.UTIL) {
 			if (node.getAttributes().getNamedItem("util")!= null) {
 				String util = node.getAttributes().getNamedItem("util").getNodeValue();
-				return getInnerParameter(util);
+				return getInnerParameter(util, caseSlots);
 			}
 		}
 		throw new DialException("parameter is not accepted");
@@ -456,10 +446,12 @@ public class XMLRuleReader {
 	/** Returns the parameter described by the XML specification.
 	 * 
 	 * @param node the XML node
+	 * @param caseSlots the underspecified slots for the case
 	 * @return the parameter representation
 	 * @throws DialException
 	 */
-	private static Parameter getInnerParameter(String paramStr) throws DialException {
+	private static Parameter getInnerParameter(String paramStr, Set<String> caseSlots)
+			throws DialException {
 		
 		// we first try to extract a fixed value
 		try {
@@ -469,15 +461,12 @@ public class XMLRuleReader {
 		
 		// if it fails, we extract an actual unknown parameter
 		catch (NumberFormatException e) {
-			
-			// if we have a linear model
-			if (paramStr.contains("+")) {
-				String[] split = paramStr.split("\\+");
-				CompositeParameter param = new CompositeParameter(Operator.ADD);
-				for (int i = 0 ; i < split.length ; i++) {
-					param.addParameter(new StochasticParameter(split[i]));
-				}
-				return param;
+			// if we have a complex expression of parameters
+			if (paramStr.contains("{")) {
+				Template t = new Template(paramStr);
+				Set<String> unknowns = t.getSlots();
+				unknowns.removeAll(caseSlots);
+				return new ComplexParameter(paramStr, unknowns);
 			}
 			
 			// else, we extract a stochastic parameter
@@ -487,10 +476,10 @@ public class XMLRuleReader {
 				if (m.matches()) {
 					int index = Integer.parseInt(m.group(1).replace("[", "").replace("]", ""));
 					String paramId = paramStr.replace(m.group(1), "").trim();
-					return new StochasticParameter(paramId, index);
+					return new SingleParameter(paramId, index);
 				}
 				else {
-					return new StochasticParameter(paramStr);					
+					return new SingleParameter(paramStr);					
 				}
 			}
 		}

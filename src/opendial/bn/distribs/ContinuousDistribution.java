@@ -122,6 +122,13 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	}
 
 
+	/**
+	 * Returns the mean value of the distribution
+	 */
+	@Override
+	public Value getBest() {
+		return ValueFactory.create(function.getMean());
+	}
 
 	/**
 	 * Returns a discretised version of the distribution. The number of discretisation

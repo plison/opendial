@@ -180,7 +180,7 @@ public class ATTSpeech implements Module {
 		String outputVar = system.getSettings().systemOutput;
 		
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
-			Value speechVal = system.getContent(speechVar).toDiscrete().getBest();
+			Value speechVal = system.getContent(speechVar).getBest();
 			if (speechVal instanceof SpeechStream) {
 				new Thread(() -> {
 					Map<String,Double> table = recognise((SpeechStream)speechVal);
@@ -191,7 +191,7 @@ public class ATTSpeech implements Module {
 			}
 		}
 		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar) && !paused) {
-			Value utteranceVal = system.getContent(outputVar).toDiscrete().getBest();
+			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
 				synthesise(utteranceVal.toString());
 			}

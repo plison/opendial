@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+
+	<model trigger="u_u">
+
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="u_u" relation="contains" value="take {X}" />
+					<if var="u_u" relation="contains" value="pick up {X}" />
+					<if var="u_u" relation="contains" value="grab {X}" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Take({X})" add="true" />
+					<set var="ref_main" value="{X}" />
+					<set var="properties(ref_main)" value="[]" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="u_u" relation="contains" value="(yes|correct|exactly)" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Confirm" add="true"/>
+				</effect>
+			</case>
+			<case>
+				<condition operator="or">
+					<if var="u_u" relation="contains" value="(no|wrong)"/>
+				</condition>
+				<effect>
+					<set var="a_u" value="Disconfirm" add="true"/>
+				</effect>
+			</case>
+		</rule>
+		
+	
+
+	</model>
+	
+	
+	<model trigger="a_u">
+	
+	<rule>
+		<case>
+			<condition>
+				<if var="a_u" relation="contains" value="Confirm"/>
+				<if var="a_m" value="AskConfirm(object_{j})"/>
+			</condition>
+			<effect>
+				<set var="matches(ref_main)" value="[object_{j}]"/>
+			</effect>
+		</case>
+		<case>
+			<condition>
+				<if var="a_u"  relation="contains" value="Disconfirm"/>
+				<if var="a_m" value="AskConfirm(object_{j})"/>
+			</condition>
+			<effect>
+				<set var="matches(ref_main)" value="{matches(ref_main)}"/>
+				<set var="matches(ref_main)" relation="!=" value="object_{j}"/>
+			</effect>
+		</case>
+	</rule>
+	
+		<rule>
+			<case>
+			<condition>
+				<if var="ref_{id}" value="*"/>
+				<if var="id" relation="!=" value="main"/>
+				</condition>
+				<effect>
+					<set var="ref_{id}" value="None"/>
+					<set var="properties(ref_{id})" value="None"/>
+					<set var="matches(ref_{id})" value="None"/>
+				</effect>
+			</case>
+		</rule>
+	
+	</model>
+
+
+	<model trigger="ref_*" blocking="true">
+
+
+		<rule>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[left,right,top,bottom,front,back]" />
+					<if var="ref_{id}" value="* (to the|on|on the|at the)? {R} of {OtherRef}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="rel={R}(ref_{R})" />
+					<set var="ref_{R}" value="{OtherRef}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[left,right]" />
+					<if var="ref_{id}" value="* (on|to|at) my {R}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="rel={R}(spk)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[left,right]" />
+					<if var="ref_{id}" value="* (on|to|at) your {R}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[top,bottom]" />
+					<if var="ref_{id}" value="* (on|to the|at the) {R}" />
+				</condition>
+				<effect prob="1.0">
+					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[left,right]" />
+					<if var="ref_{id}" value="* (on|to|at) the {R}" />
+				</condition>
+				<effect prob="0.5">
+					<set var="properties(ref_{id})" add="true" value="rel={R}(spk)" />
+				</effect>
+				<effect prob="0.5">
+					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="R" relation="in" value="[under,below,above,over,behind,near,next to,close to,on]" />
+					<if var="ref_{id}"  value="* {R} {OtherRef}" />
+					<if var="OtherRef" relation="!=" value="(the|your|my) (left|right)?" />
+					<if var="OtherRef" relation="!=" value="top of *" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="rel={R}(ref_{R})" />
+					<set var="ref_{R}" value="{OtherRef}" />
+				</effect>
+			</case>
+		</rule>
+
+
+		<rule>
+			<case>
+				<condition>
+					<if var="ref_{id}"
+						value="{Main} (next|left|right|to|on|under|below|
+						above|in|behind|in|next|over|at|near) *" />
+				</condition>
+				<effect>
+					<set var="ref_{id}" value="{Main}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="{Main} (that|which) (is|are)"/>
+				</condition>
+				<effect>
+					<set var="ref_{id}" value="{Main}"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="{Main} (now|please)"/>
+				</condition>
+				<effect>
+					<set var="ref_{id}" value="{Main}"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="{Det} {Main} (that|which) (is|are) {Compl}"/>
+					<if var="Compl" relation="!contains" value="(next|left|right|to|on|under|below|
+						above|in|behind|in|next|over|at|near)"/>
+				</condition>
+				<effect>
+					<set var="ref_{id}" value="{Det} {Compl} {Main}"/>
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="{MainRef} and"/>
+					<if var="properties(ref_main)" relation="contains" value="rel={id}(ref_{id})"/>
+					<if var="properties(ref_{id})" relation="contains" value="{rel}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_main)" value="{properties(ref_main)}" add="true"/>
+					<set var="properties(ref_main)" value="{rel}" add="true"/>
+					<set var="properties(ref_{id})" value="[]"/>
+					<set var="ref_{id}" value="{MainRef}"/>
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
+	
+	
+	<model trigger="ref_*" blocking="true">
+		
+			<rule>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="one of (the|these) {Type}s" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="def=indef" />
+					<set var="properties(ref_{id})" add="true" value="nb=sg" />
+					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+			</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="(a|one) * {Type}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="def=indef" />
+					<set var="properties(ref_{id})" add="true" value="nb=sg" />
+					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="(the|this|that) * {Type}s" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="def=def" />
+					<set var="properties(ref_{id})" add="true" value="nb=pl" />
+					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="(the|this|that) * {Type}" />
+					<if var="Type" relation="!=" value="*s"/>
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="def=def" />
+					<set var="properties(ref_{id})" add="true" value="nb=sg" />
+					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+				</effect>
+			</case>
+		</rule>
+		
+
+		<rule>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="* {Mod} and {Mod2} {Type}" />
+					<if var="Mod" relation="!contains" value=" " />
+					<if var="Mod2" relation="!contains" value=" " />
+					<if var="Type" relation="!contains" value=" " />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
+					<set var="properties(ref_{id})" add="true" value="attr={Mod2}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="* {Mod} {Mod2} {Type}" />
+					<if var="Mod" relation="!contains" value=" " />
+					<if var="Mod" relation="!=" value="(a|the|this|that|one|and)" />
+					<if var="Mod2" relation="!contains" value=" " />
+					<if var="Type" relation="!contains" value=" " />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
+					<set var="properties(ref_{id})" add="true" value="attr={Mod2}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="ref_{id}" value="* {Mod} {Type}" />
+					<if var="Mod" relation="!contains" value=" " />
+					<if var="Mod" relation="!=" value="(a|the|this|that|one)" />
+					<if var="Type" relation="!contains" value=" " />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
+				</effect>
+			</case>
+		</rule>
+
+	
+		<rule>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" value="{content}" />
+				</condition>
+				<effect>
+					<set var="properties(ref_{id})" value="{content}" add="true" />
+				</effect>
+			</case>
+		</rule>
+
+	
+	</model>
+
+
+</domain>

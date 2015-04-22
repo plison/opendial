@@ -27,13 +27,14 @@ package opendial.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 
 
 /**
@@ -46,7 +47,7 @@ public class MathUtils {
 	// logger
 	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
 
-
+    
 	/**
 	 * Returns true is all elements in the array a have a lower value than
 	 * the corresponding elements in the array b
@@ -116,14 +117,9 @@ public class MathUtils {
 	 * @return the result of the evaluation
 	 */
 	public static double evaluateExpression(String expression) {
-		ScriptEngineManager manager = new ScriptEngineManager();
-	    ScriptEngine engine = manager.getEngineByName("js");        
-	    try {
-			return Double.parseDouble(engine.eval(expression).toString());
-		} catch (NumberFormatException | ScriptException e) {
-			log.warning("cannot evaluation expression: " + expression);
-			return 0.0;
-		}
+		
+		Expression e = new ExpressionBuilder(expression).build();
+		return e.evaluate();
 	}
 
 	

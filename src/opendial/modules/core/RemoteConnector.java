@@ -178,7 +178,7 @@ public class RemoteConnector implements Module {
 			// if the content is a user speech signal, send it as a stream
 			String speechVar = system.getSettings().userSpeech;
 			if (updatedVars.contains(speechVar) && system.getState().hasChanceNode(speechVar)) {
-				Value val = system.getContent(speechVar).toDiscrete().getBest();
+				Value val = system.getContent(speechVar).getBest();
 				if (val instanceof SpeechStream) {
 					forwardContent(MessageType.STREAM, (SpeechStream)val);
 				}

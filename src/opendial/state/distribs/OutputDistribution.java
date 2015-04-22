@@ -155,8 +155,8 @@ public class OutputDistribution implements ProbDistribution {
 		Effect fullEffect = new Effect(fullEffects);
 
 		Set<Value> values = fullEffect.getValues(baseVar);
-		// case 1: additive effects
-		if (fullEffect.isAdditive(baseVar)) {
+		// case 1: add effects
+		if (fullEffect.isAdd(baseVar)) {
 			SetVal addVal = ValueFactory.create(values);
 			probTable.addRow(addVal, 1.0);
 		}
@@ -206,7 +206,7 @@ public class OutputDistribution implements ProbDistribution {
 				
 				if (val instanceof Effect) {
 
-					if (((Effect)val).isAdditive(baseVar)) {
+					if (((Effect)val).isAdd(baseVar)) {
 						return getValues_linearise(range);
 					}
 
@@ -269,7 +269,7 @@ public class OutputDistribution implements ProbDistribution {
 
 	/**
 	 * Calculates the possible values for the output distribution via linearisation
-	 * (more costly operation, but necessary in case of additive effects).
+	 * (more costly operation, but necessary in case of add effects).
 	 * 
 	 * @param range the value range to linearise
 	 * @return the set of possible output values

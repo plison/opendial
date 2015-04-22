@@ -179,17 +179,16 @@ public class Rule {
 				return v;
 			}
 		}
-		
 		RuleOutput output = new RuleOutput(ruleType);
-		Set<Assignment> groundings = getGroundings(input);
-		for (Assignment g : groundings) {
+		RuleGrounding groundings = getGroundings(input);
+		for (Assignment g : groundings.getAlternatives()) {
 			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
 			RuleCase match = getMatchingCase(fullInput);
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
 			}
 		}
- 
+	
 		if (cache != null) {
 			cache.put(input, output);
 			if (cache != null && cache.size() > 100) {
@@ -225,21 +224,22 @@ public class Rule {
 	 * @param input the input assignment
 	 * @return the possible groundings for the rule
 	 */
-	public Set<Assignment> getGroundings(Assignment input) {
-		input = input.removePrimes();
-		ValueRange groundings = new ValueRange();
+	public RuleGrounding getGroundings(Assignment input) {
+		RuleGrounding groundings = new RuleGrounding();
+		
 		for (RuleCase thecase :cases) {
-			groundings.addRange(thecase.getGroundings(input));
+			groundings.add(thecase.getGroundings(input));
 			if (ruleType == RuleType.UTIL) {
+				Assignment input2 = input.removePrimes();
 				for (Effect e : thecase.getEffects()) {
 					Condition co = e.convertToCondition();
-					ValueRange effectGrounding = co.getGroundings(input);
-					effectGrounding.removeVariables(input.getVariables());
-					groundings.addRange(effectGrounding);
+					RuleGrounding effectGrounding = co.getGroundings(input2);
+		//			effectGrounding.removeVariables(input2.getVariables());
+					groundings.add(effectGrounding);
 				}
 			}
 		}
-		return groundings.linearise();
+		return groundings;
 	}
 
 

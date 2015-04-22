@@ -41,7 +41,7 @@ import opendial.arch.Logger;
 public final class SetVal implements Value {
 	
 	 // logger
-	 public static Logger log = new Logger("ListVal", Logger.Level.DEBUG);
+	 public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
 
 	 
 	// the set of values
@@ -94,6 +94,16 @@ public final class SetVal implements Value {
 		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
 	}
 	
+	
+	/**
+	 * Returns the set length
+	 * 
+	 * @return the length
+	 */
+	@Override
+	public int length() {
+		return set.size();
+	}
 	
 	/**
 	 * Returns the set of values

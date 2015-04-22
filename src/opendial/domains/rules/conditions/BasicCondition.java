@@ -32,6 +32,7 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleGrounding;
 
 
 /**
@@ -46,7 +47,7 @@ public final class BasicCondition implements Condition {
 
 	// possible relations used in a basic condition
 	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
-		GREATER_THAN, LOWER_THAN, IN, NOT_IN}
+		GREATER_THAN, LOWER_THAN, IN, NOT_IN, LENGTH}
 
 	// variable label (can include slots to fill)
 	final String variable;
@@ -153,7 +154,6 @@ public final class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-	
 		Value actualValue = input.getValue(variable);
 		switch (relation) {	
 		case EQUAL: return actualValue.equals(expectedValue);
@@ -162,6 +162,7 @@ public final class BasicCondition implements Condition {
 		case LOWER_THAN: return (actualValue.compareTo(expectedValue) < 0);
 		case CONTAINS: return actualValue.contains(expectedValue); 
 		case NOT_CONTAINS: return !actualValue.contains(expectedValue); 
+		case LENGTH: return actualValue.length() == expectedValue.length();
 		case IN: return expectedValue.contains(actualValue); 
 		case NOT_IN: return !expectedValue.contains(actualValue); 
 		}
@@ -176,12 +177,16 @@ public final class BasicCondition implements Condition {
 	 * @return the set of possible (alternative) groundings for the condition
 	 */
 	@Override
-	public ValueRange getGroundings(Assignment input) {	
-		ValueRange groundings = new ValueRange();
+	public RuleGrounding getGroundings(Assignment input) {	
 		if (relation == Relation.IN && expectedValue instanceof SetVal) {
-			groundings.addValues(variable, ((SetVal)expectedValue).getSet());
+			return new RuleGrounding(variable, ((SetVal)expectedValue).getSet());
 		}
-		return groundings;
+		else if (isSatisfiedBy(input)){
+			return new RuleGrounding();
+		}
+		else {
+			return new RuleGrounding.Failed();
+		}
 	}
 
 
@@ -204,6 +209,7 @@ public final class BasicCondition implements Condition {
 		case LOWER_THAN : return variable + "<" + expectedValue; 
 		case CONTAINS: return expectedValue + " in " + variable; 
 		case NOT_CONTAINS: return expectedValue + " !in " + variable;
+		case LENGTH: return "length("+variable+")=" + expectedValue;
 		case IN: return variable + " in " + expectedValue; 
 		case NOT_IN: return variable + " not in " + expectedValue;
 		default: return ""; 

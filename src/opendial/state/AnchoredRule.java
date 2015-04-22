@@ -122,9 +122,7 @@ public class AnchoredRule {
 				}
 			}
 		}
-
 		effects.add(new Effect());
-
 
 		// special case to handle corner cases with utility rules
 		if (rule.getRuleType() == RuleType.UTIL && ! rule.getSlots(state.getChanceNodeIds()).isEmpty()) {

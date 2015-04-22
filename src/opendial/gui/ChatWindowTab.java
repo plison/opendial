@@ -128,7 +128,7 @@ public class ChatWindowTab extends JComponent {
 		inputContainer = new Container();
 		inputContainer.setLayout(new BorderLayout());
 
-		inputField = new JTextField(60);		
+		inputField = new JTextField(60);
 		inputContainer.add(new JLabel("Input: "), BorderLayout.WEST);
 		inputContainer.add(inputField, BorderLayout.CENTER);
 		final JButton helpButton = new JButton( "" );
@@ -147,12 +147,10 @@ public class ChatWindowTab extends JComponent {
 		//	setPreferredSize(new Dimension(380,380));
 
 		inputField.addActionListener(e -> addUtteranceToState());	
-
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
 		lines.setEditorKit(kit);
 		lines.setDocument(doc);
-		lines.setFocusable(false);
 		updateActivation();
 
 		if (system.getModule(GUIFrame.class).isSpeechEnabled) {

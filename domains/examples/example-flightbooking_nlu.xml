@@ -20,10 +20,10 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="(to|from)? {Airport}" />
 					<if var="Airport" relation="in"
 						value="[Oslo,Bergen,Trondheim,Stavanger,Moss,
 								Sandefjord,Tromsø,Bodø,Kristiansand,Ålesund]" />
+					<if var="u_u" relation="contains" value="(to|from)? {Airport}" />
 				</condition>
 				<effect>
 					<add var="a_u" value="Inform(Airport,{Airport})" />
@@ -35,10 +35,10 @@
 		<rule>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="(on)? {Month} {Day}" />
 					<if var="Month" relation="in"
 						value="[January,February,March,April,May,June,July,
 								August,September,October,November,December]" />
+					<if var="u_u" relation="contains" value="(on)? {Month} {Day}" />
 					<if var="Day" relation="&gt;" value="0" />
 					<if var="Day" relation="&lt;" value="32" />
 				</condition>
@@ -48,10 +48,10 @@
 			</case>
 			<case>
 				<condition>
-					<if var="u_u" relation="contains" value="(on the)? the {Day}th of {Month}" />
 					<if var="Month" relation="in"
 						value="[January,February,March,April,May,June,July,
 								August,September,October,November,December]" />
+					<if var="u_u" relation="contains" value="(on the)? the {Day}th of {Month}" />
 					<if var="Day" relation="&gt;" value="0" />
 					<if var="Day" relation="&lt;" value="32" />
 				</condition>

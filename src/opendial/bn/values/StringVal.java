@@ -48,8 +48,7 @@ public final class StringVal implements Value {
 	 * @param str the string
 	 */
 	public StringVal(String str) { 
-		this.str = str.trim(); 
-	//	StringUtils.checkForm(str); 
+		this.str = str;
 	};
 	
 	
@@ -105,6 +104,15 @@ public final class StringVal implements Value {
 	
 	
 	/**
+	 * Returns the string length
+	 * 
+	 * @return the length
+	 */
+	@Override
+	public int length() {
+		return str.length();
+	}
+	/**
 	 * Compares the string value to another value
 	 * 
 	 * @return usual ordering, or hashcode if the value is not a string
@@ -154,7 +162,7 @@ public final class StringVal implements Value {
 			if (stringval.template == null) {
 				stringval.template = new Template(stringval.str);
 			}
-			return stringval.template.match(str,false).isMatching();
+			return stringval.template.partialmatch(str).isMatching();
 		}
 		else {
 			return subvalue.toString().contains(str);

@@ -28,6 +28,7 @@ import java.util.Set;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleGrounding;
 
 /**
  * Generic interface for a condition used in a probability or utility rule. 
@@ -64,9 +65,9 @@ public interface Condition {
 	 * based on the given assignment.
 	 * 
 	 * @param input the assignment from which to calculate the groundings
-	 * @return the groundings (as a value range).
+	 * @return the groundings
 	 */
-	public ValueRange getGroundings(Assignment input);
+	public RuleGrounding getGroundings(Assignment input);
 
 
 	/**

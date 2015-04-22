@@ -96,6 +96,16 @@ public final class NoneVal implements Value {
 	}
 
 	
+	/**
+	 * Returns 0
+	 * 
+	 * @return 0
+	 */
+	@Override
+	public int length() {
+		return 0;
+	}
+	
 	
 	/**
 	 * True if subvalue is contained in the current instance, and false

@@ -52,7 +52,7 @@ public class ImporterTest {
 	public void testImporter() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
-		Settings.nbSamples = Settings.nbSamples / 5;
+		Settings.nbSamples = Settings.nbSamples / 10;
 		DialogueImporter importer = new DialogueImporter(system, 
 				XMLInteractionReader.extractInteraction(dialogueFile));
 		system.startSystem();
@@ -62,7 +62,7 @@ public class ImporterTest {
 		}
 		assertEquals(20, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(22, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		Settings.nbSamples = Settings.nbSamples * 5;
+		Settings.nbSamples = Settings.nbSamples * 10;
 
 	}
 	
@@ -70,7 +70,7 @@ public class ImporterTest {
 	public void testImporter2() throws DialException, InterruptedException {
 		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
-		Settings.nbSamples = Settings.nbSamples / 5;
+		Settings.nbSamples = Settings.nbSamples / 10;
 		DialogueImporter importer = new DialogueImporter(system, 
 				XMLInteractionReader.extractInteraction(dialogueFile));
 		importer.setWizardOfOzMode(true);
@@ -83,7 +83,7 @@ public class ImporterTest {
 		assertEquals(22, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
 		assertTrue(((ContinuousDistribution)system.getState().getChanceNode
 				("theta_1").getDistrib()).getFunction().getMean()[0] > 12.0);
-		Settings.nbSamples = Settings.nbSamples * 5;
+		Settings.nbSamples = Settings.nbSamples * 10;
 	}
 	
 	@Test

@@ -23,8 +23,10 @@
 
 package opendial.datastructs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -49,26 +51,26 @@ import opendial.utils.StringUtils;
  * @author  Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class Template {
+public final class Template {
 
 	// logger
 	public static Logger log = new Logger("Template", Logger.Level.DEBUG);
 
 	// the initial string, containing the slots in raw form
-	String rawString;
+	final String rawString;
 
 	// the regular expression pattern corresponding to the template
-	Pattern pattern;
+	final Pattern pattern;
 
 	// the slots, as a mapping between slot labels and their 
 	// group number in the pattern
-	Map<String,Integer> slots;
+	final Map<String,Integer> slots;
 
 	// regular expression to detect algebraic expressions
-	static Pattern mathExpression = Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
+	final static Pattern mathExpression = Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
 	// regular expression for complex regex (alternatives, optional elements)
-	static Pattern complexRegex = Pattern.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
+	final static Pattern complexRegex = Pattern.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
 
 	// ===================================
 	//  TEMPLATE CONSTRUCTION
@@ -84,56 +86,22 @@ public class Template {
 	 */
 	public Template(String value) {
 
-		rawString = value.trim();
-
+		rawString = value;	
 		StringUtils.checkForm(rawString);
 
-		slots = constructSlots(rawString);
+		slots = constructSlots(value);
 
 		// string processing to avoid special characters for the pattern
-		String regex = constructRegex(rawString);
-
-		for (String slot : slots.keySet()) {
-			regex = regex.replace("{"+constructRegex(slot)+"}", "(.*)");
-		}
-
-		// compiling the associated pattern
-		try {
-			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-		}
-		catch (PatternSyntaxException e) {
-			log.warning("illegal pattern syntax: " + regex);
-			pattern = Pattern.compile("bogus pattern");
-		}
-
-		if (slots.isEmpty() && mathExpression.matcher(rawString).matches()) {
-			rawString = "" + MathUtils.evaluateExpression(rawString);
-		}
+		pattern = constructPattern(rawString, slots.keySet());
 
 	}
+	
 
 
 	protected Pattern getPattern() {
 		return pattern;
 	}
 
-	public Template(Collection<Template> alternatives) {
-		rawString = alternatives.toString().trim();
-		slots = new HashMap<String, Integer>();
-		String regex = "";
-		for (Template t : alternatives) {
-			regex += "(" + t.getPattern().pattern() + ")|";
-		}
-		regex = (!alternatives.isEmpty())? regex.substring(0, regex.length()-1) : regex;
-		// compiling the associated pattern
-		try {
-			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-		}
-		catch (PatternSyntaxException e) {
-			log.warning("illegal pattern syntax: " + regex);
-			pattern = Pattern.compile("bogus pattern");
-		}	
-	}
 
 
 	// ===================================
@@ -168,8 +136,8 @@ public class Template {
 	 * @return true if the template is underspecified, false otherwsie
 	 */
 	public boolean isUnderspecified() {
-		return pattern.toString().contains(".*") || pattern.toString().contains("(?:") 
-				|| pattern.toString().contains("|");
+		return pattern.toString().contains(".*") || pattern.toString().contains(".+")
+				|| pattern.toString().contains("(?:") || pattern.toString().contains("|");
 	}
 
 
@@ -180,35 +148,92 @@ public class Template {
 	 * as the boundaries of the match and the extracted slot values.
 	 * 
 	 * @param str the string to check
-	 * @param fullMatch whether to use full or partial matching
 	 * @return the matching result
 	 */
-	public MatchResult match (String str, boolean fullMatch) {
+	public MatchResult match (String str) {
 		String input = str.trim();
-		if (!isUnderspecified() && fullMatch) {
-			return new MatchResult(input.equalsIgnoreCase(rawString));
+		if (!isUnderspecified()) {
+			if (input.equalsIgnoreCase(rawString)) {
+				return new MatchResult(0, rawString.length(), new Assignment());
+			}
+			else {
+				return new MatchResult();
+			}
 		}
 		Matcher matcher = pattern.matcher(input);
-		if ((fullMatch && matcher.matches()) || (!fullMatch && matcher.find())) {
+		if ((matcher.matches())) {
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
-
-			if (!fullMatch && ((start!=0 && !isWhitespaceOrPunctuation(input.charAt(start-1)))
-					|| (end < input.length() && !isWhitespaceOrPunctuation(input.charAt(end))))) {
-				return new MatchResult(false);
+			
+			Assignment filledSlots = new Assignment();
+			for (String slot : slots.keySet()) {
+				String filledValue = matcher.group(slots.get(slot)+1).trim();
+				filledSlots.addPair(slot, filledValue);
 			}
-			MatchResult match = new MatchResult(true);
-			match.setBoundaries(start, end);
+
+			return new MatchResult(start,end, filledSlots);
+		}
+		return new MatchResult();
+	}
+	
+	
+	/**
+	 * Checks whether the template can be found within the string. The matching result contains
+	 * a boolean representing the outcome of the process, as well (if the match is successful)
+	 * as the boundaries of the match and the extracted slot values.
+	 * 
+	 * @param str the string to check
+	 * @return the matching result
+	 */
+	public MatchResult partialmatch (String str) {
+		List<MatchResult> results = find(str,1);
+		if (results.isEmpty()) {
+			return new MatchResult();
+		}
+		else {
+			return results.get(0);
+		}
+	}
+	
+	
+	/**
+	 * Searches for all occurrences of the template in the str.  The maximum number of occurrences
+	 * to find is specified in maxResults.
+	 * 
+	 * @param str the string to check
+	 * @param maxResults the maximum number of occurrences
+	 * @return the matching results
+	 */
+	public List<MatchResult> find(String str, int maxResults) {
+	
+		String input = str.trim();
+		Matcher matcher = pattern.matcher(input);
+		List<MatchResult> results = new ArrayList<MatchResult>();
+		while ((matcher.find())) {
+
+			int start = input.indexOf(matcher.group(0));
+			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
+			if (((start!=0 && !isWhitespaceOrPunctuation(input.charAt(start-1)))
+					|| (end < input.length() && !isWhitespaceOrPunctuation(input.charAt(end))))
+					&& !rawString.equals(" ")){
+				continue;
+			}
+			
+			Assignment filledSlots = new Assignment();
 			for (String slot : slots.keySet()) {
 				String filledValue = matcher.group(slots.get(slot)+1).trim();
 				if (filledValue.indexOf(')') < filledValue.indexOf('(')) {
-					return new MatchResult(false);
+					continue;
 				}
-				match.addFilledSlot(slot, filledValue);
+				filledSlots.addPair(slot, filledValue);
 			}
-			return match;
+			MatchResult result = new MatchResult(start,end,filledSlots);
+			results.add(result);
+			if (results.size() >=maxResults) {
+				return results;
+			}
 		}
-		return new MatchResult(false);
+		return results;
 	}
 
 
@@ -224,11 +249,11 @@ public class Template {
 	public static boolean match(String str1, String str2) {
 		if (str1.contains("*") || str1.contains(")?") || str1.contains("|")) {
 			Template t1 = new Template(str1);
-			return t1.match(str2, true).isMatching();
+			return t1.match(str2).isMatching();
 		}
 		else if (str2.contains("*") || str2.contains(")?") || str2.contains("|")) {
 			Template t2 = new Template(str2);
-			return t2.match(str1, true).isMatching();
+			return t2.match(str1).isMatching();
 		}
 		return str1.equalsIgnoreCase(str2);
 	}
@@ -278,6 +303,10 @@ public class Template {
 			if (fillers.getValue(slot) != ValueFactory.none()) {
 				filledTemplate = filledTemplate.replace("{"+slot+"}", fillers.getValue(slot).toString());
 			}
+		}
+		
+		if (!filledTemplate.contains("{") && mathExpression.matcher(filledTemplate).matches()) {
+			filledTemplate = "" + MathUtils.evaluateExpression(filledTemplate);
 		}
 		return new Template(filledTemplate);
 
@@ -395,6 +424,33 @@ public class Template {
 				;
 	}
 
+	
+
+	/**
+	 * Constructs the pattern associated with the string, along with the slots
+	 * already extracted.
+	 * 
+	 * @param str the string from which to construct the pattern
+	 * @param slots the slots
+	 * @return the corresponding pattern
+	 */
+	private static Pattern constructPattern(String str, Collection<String> slots) {
+		String regex = constructRegex(str);
+		for (String slot : slots) {
+			regex = regex.replace("{"+constructRegex(slot)+"}", "(.+)");
+		}
+
+		// compiling the associated pattern
+		try {
+			return Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+		}
+		catch (PatternSyntaxException e) {
+			log.warning("illegal pattern syntax: " + regex);
+			return Pattern.compile("bogus pattern");
+		}
+	}
+	
+	
 
 	/**
 	 * Constructs the regular expression corresponding to the initial string
@@ -413,11 +469,26 @@ public class Template {
 			else if (charArr[i] == '[') { builder.append("\\["); }
 			else if (charArr[i] == ']') { builder.append("\\]"); }
 			else if (charArr[i] == '?') { builder.append("\\?"); }
+			else if (charArr[i] == ' ') { 
+				builder.append(" "); 
+				for (int j=i+1;j<charArr.length;j++) {
+					if (charArr[j]==' ') {	i++;}
+					else {	break;	}
+				}
+			}
 			else if (charArr[i] == '.') { builder.append("\\."); }
 			else if (charArr[i] == '!') { builder.append("\\!"); }
 			else if (charArr[i] == '^') { builder.append("\\^"); }
-			else if (charArr[i] == '*' && i < (charArr.length-1) && charArr[i+1]==' ') { builder.append("(?:.*)"); i++; }
+			
+			else if (charArr[i] == '*' && i == 0 && charArr.length > 1 && charArr[i+1]==' ') 
+			{ builder.append("(?:.+ |)"); i++; }
+			else if (charArr[i] == '*' && i < (charArr.length-1) && i>0 
+					&& charArr[i+1]==' ' && charArr[i-1]==' ') 
+			{builder.deleteCharAt(builder.length()-1); builder.append("(?:.+|)"); }
+			else if (charArr[i] == '*' && i == (charArr.length-1) && i > 0 && charArr[i-1]==' ') 
+			{ builder.deleteCharAt(builder.length()-1); builder.append("(?: .+|)"); }
 			else if (charArr[i] == '*') { builder.append("(?:.*)"); }
+			
 			else if (charArr[i] == '{' && charArr[i+1]=='}') { builder.append("\\{\\}"); i++; }
 			else {
 				builder.append(charArr[i]);
@@ -432,19 +503,15 @@ public class Template {
 			while (m.find()) {
 				String core = m.group(1);
 				if (m.group(0).endsWith("?")) {
-
 					// need to remove whitespaces at specific positions
-					if (m.start() > 0 && builder.charAt(m.start()-1)==' ' &&
-							(m.end() >= builder.length() || builder.charAt(m.end())==' ')) {
-						String replace =  "(?: " + core.replaceAll(" \\|", " \\|") + ")?";
-						builder = builder.replace(m.start()-1, m.end(), replace);
-					}
-					else if (m.end() < builder.length() && builder.charAt(m.end())==' ' &&
-							(m.start() == 0 || builder.charAt(m.start()-1)==' ')) {
-						String replace =  "(?: " + core.replaceAll(" \\|", " \\|") + ")?";
+					if (m.end() < builder.length() &&  builder.charAt(m.end())==' ') {
+						String replace =  "(?:" + core.replaceAll("\\|", " \\|") + " )?";
 						builder = builder.replace(m.start(), m.end()+1, replace);
 					}
-
+					else if (m.end() >= builder.length() &&  m.start() > 0 && builder.charAt(m.start()-1)==' ') {
+						String replace =  "(?: " + core.replaceAll("\\|", "\\| ") + ")?";
+						builder = builder.replace(m.start()-1, m.end(), replace);
+					}
 					else {
 						builder = builder.replace(m.start(), m.end(), "(?:"+core+")?");	    			
 					}
@@ -460,14 +527,21 @@ public class Template {
 
 
 	/**
+	 * Returns the raw string after removing the braces surrounding underspecified  variables
+	 * @return
+	 */
+	public String getStringWithoutBraces() {
+		return rawString.replaceAll("\\{(.+?)\\}", "$1");
+	}
+	
+	/**
 	 * Representation of a matching result
 	 */
 	public class MatchResult {
 
-		boolean isMatching;
+		boolean isMatching = false;
 
-		Integer[] boundaries = new Integer[2];
-
+		Integer[] boundaries = new Integer[] {-1,-1};
 		Assignment filledSlots = new Assignment();
 
 		/**
@@ -475,32 +549,15 @@ public class Template {
 		 * 
 		 * @param isMatching whether the match result is positive or negative
 		 */
-		private MatchResult(boolean isMatching) {
-			this.isMatching = isMatching;
-			boundaries[0] = -1;
-			boundaries[1] = -1;
+		private MatchResult() {
+		}
+		
+		private MatchResult(int start, int end, Assignment filledSlots) {
+			this.isMatching = true;
+			boundaries = new Integer[] {start,end};
+			this.filledSlots = filledSlots;
 		}
 
-		/**
-		 * Sets the match boundaries for the result.
-		 * 
-		 * @param start the start boundary
-		 * @param end the end boundary
-		 */
-		private void setBoundaries(int start, int end) {
-			boundaries[0] = start;
-			boundaries[1] = end;
-		}
-
-		/**
-		 * Adds a filled slot.
-		 * 
-		 * @param slot the filled slot
-		 * @param filledValue the value for the slot
-		 */
-		private void addFilledSlot(String slot, String filledValue) {
-			filledSlots.addPair(slot, filledValue);
-		}
 
 		/**
 		 * Returns true is the match is positive, and false if it is negative.
@@ -511,16 +568,6 @@ public class Template {
 			return this.isMatching;
 		}
 
-
-		/**
-		 * Returns the match boundaries as an array of two integers.
-		 * 
-		 * @return the boundaries
-		 */
-		public Integer[] getBoundaries() {
-			return boundaries;
-		}
-
 		/**
 		 * Returns the filled slots as an assignment
 		 * 
@@ -528,6 +575,10 @@ public class Template {
 		 */
 		public Assignment getFilledSlots() {
 			return filledSlots;
+		}
+		
+		public Integer[] getBoundaries() {
+			return boundaries;
 		}
 
 

@@ -134,6 +134,14 @@ public interface IndependentProbDistribution extends ProbDistribution {
 
 	
 	/**
+	 * Returns the value with maximum probability (discrete case) or the mean value
+	 * of the distribution (continuous case)
+	 * 
+	 * @return the maximum-probability value (discrete) or the mean value (continuous)
+	 */
+	public Value getBest();
+	
+	/**
 	 * Generates a XML node that represents the distribution.
 	 * 
 	 * @param document the XML node to which the node will be attached

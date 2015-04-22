@@ -65,7 +65,6 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 */
 	public ConditionalTable(String headVar) {
 		super(headVar);
-		// TODO Auto-generated constructor stub
 	}
 
 	

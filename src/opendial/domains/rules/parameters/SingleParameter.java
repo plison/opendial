@@ -31,7 +31,6 @@ import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.domains.rules.parameters.CompositeParameter.Operator;
 
 /**
  * Parameter represented by a single distribution over a continuous variable.  If
@@ -41,7 +40,7 @@ import opendial.domains.rules.parameters.CompositeParameter.Operator;
  * @author  Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class StochasticParameter implements Parameter {
+public class SingleParameter implements Parameter {
 
 	// logger
 	public static Logger log = new Logger("StochasticParameter", Logger.Level.NORMAL);
@@ -58,7 +57,7 @@ public class StochasticParameter implements Parameter {
 	 * 
 	 * @param paramId the parameter identifier
 	 */
-	public StochasticParameter(String paramId) {
+	public SingleParameter(String paramId) {
 		this.paramId = paramId;
 	}
 	
@@ -69,31 +68,12 @@ public class StochasticParameter implements Parameter {
 	 * @param paramId the parameter identifier
 	 * @param dimension the dimension for the multivariate variable
 	 */
-	public StochasticParameter(String paramId, int dimension) {
+	public SingleParameter(String paramId, int dimension) {
 		this(paramId);
 		this.dimension = dimension;
 	}
 	
 
-	/**
-	 * Creates a composite parameter with the addition of the two parameters
-	 */
-	@Override
-	public Parameter sumParameter(Parameter otherParam) {
-		return new CompositeParameter(Arrays.asList(this, otherParam), Operator.ADD);
-	}
-	
-	
-
-	
-	/**
-	 * Creates a composite parameter  with the multiplication of the two parameters
-	 */
-	@Override
-	public Parameter multiplyParameter(Parameter otherParam) {
-		return new CompositeParameter(Arrays.asList(this, otherParam), Operator.MULTIPLY);
-	}
-	
 	
 	/**
 	 * Returns a singleton with the parameter label

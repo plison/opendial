@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,9 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +34,8 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleGrounding;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 
 /**
@@ -109,8 +113,8 @@ public final class ComplexCondition implements Condition {
 	public Collection<Condition> getConditions() {
 		return subconditions;
 	}
-	
-	
+
+
 	/**
 	 * Returns the list of all slots used in the conditions
 	 * 
@@ -150,7 +154,6 @@ public final class ComplexCondition implements Condition {
 		return (operator == BinaryOperator.AND);
 	}
 
-
 	/**
 	 * Returns the groundings for the complex condition (which is the union of the groundings
 	 * for all basic conditions).
@@ -158,14 +161,36 @@ public final class ComplexCondition implements Condition {
 	 * @return the full set of groundings
 	 */
 	@Override
-	public ValueRange getGroundings(Assignment input) {
+	public RuleGrounding getGroundings(Assignment input) {
 
-		ValueRange groundings = new ValueRange();
-		for (Condition cond : subconditions) {
-			groundings.addRange(cond.getGroundings(input));
+		RuleGrounding groundings = new RuleGrounding();
+
+		if (operator == BinaryOperator.AND) {
+			for (Condition cond : subconditions) {
+
+				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
+				for (Assignment g : groundings.getAlternatives()) {
+					RuleGrounding newGround = cond.getGroundings(new Assignment(input, g));
+					newGround.extend(g);
+					alternatives.add(newGround);
+				}
+				
+				groundings = new RuleGrounding();
+				groundings.add(alternatives);
+			}
 		}
-		return groundings;
+		else if (operator == BinaryOperator.OR) {
+				
+			List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
+			for (Condition cond : subconditions) {
+				RuleGrounding newGround = cond.getGroundings(input);
+				alternatives.add(newGround);
+			}
+			groundings.add(alternatives);
+			
+		}
 
+		return groundings;
 	}
 
 

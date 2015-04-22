@@ -26,13 +26,18 @@ package opendial.domains.rules.effects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -88,8 +93,11 @@ public final class Effect implements Value {
 	 * @param effects the effects to include
 	 */
 	public Effect(Collection<BasicEffect> effects) {
-		subeffects = new HashSet<BasicEffect>(effects);
-	}
+		subeffects = new LinkedHashSet<BasicEffect>();
+		effects.stream()
+			.sorted((e1, e2) -> Boolean.compare(e1.negated,e2.negated))
+			.forEach(e -> subeffects.add(e));
+ 	}
 
 	
 	
@@ -215,7 +223,18 @@ public final class Effect implements Value {
 					result = new HashSet<Value>();
 					highestPriority = e.priority;
 				}
-				if (!e.getValue().equals(ValueFactory.none()) && !e.isNegated()) {
+				if (e.isNegated()) {
+					result.remove(e.getValue());
+					for (Value v : new ArrayList<Value>(result)) {
+						if (v instanceof SetVal && ((SetVal)v).contains(e.getValue())) {
+							result.remove(v);
+							SetVal v2 = ((SetVal)v).copy();
+							v2.remove(e.getValue());
+							result.add(v2);
+						}
+					}
+				}
+				else if (!e.getValue().equals(ValueFactory.none())) {
 					result.add(e.getValue());
 				}
 			}
@@ -225,13 +244,13 @@ public final class Effect implements Value {
 	
 	/**
 	 * Returns true if at least one of the included effect for the variable is marked
-	 * as "additive" (allowing multiple values).
+	 * as "add" (allowing multiple values).
 	 * 
-	 * @return true if the effect includes additive effects for the variable, false otherwise
+	 * @return true if the effect includes add effects for the variable, false otherwise
 	 */
-	public boolean isAdditive(String variable) {
+	public boolean isAdd(String variable) {
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable) && e.isAdditive()) {
+			if (e.getVariable().equals(variable) && e.isAdd()) {
 				return true;
 			}
 		}
@@ -258,6 +277,16 @@ public final class Effect implements Value {
 		}
 	}
 	
+	
+	/**
+	 * Returns the number of basic effects
+	 * 
+	 * @return the number of effects
+	 */
+	@Override
+	public int length() {
+		return subeffects.size();
+	}
 	
 	// ===================================
 	//  UTILITY FUNCTIONS
@@ -309,6 +338,20 @@ public final class Effect implements Value {
 	public Effect copy() {
 		return new Effect(subeffects.stream().map(e -> e.copy()).collect(Collectors.toList()));
 	}
+	
+	
+	/**
+	 * Returns a copy of the effect, filtering out all negated effects
+	 * 
+	 * @return the filtered copy
+	 */
+	public Effect copy_positive() {
+		return new Effect(subeffects.stream()
+				.filter(e -> !e.isNegated())
+				.map(e -> e.copy())
+				.collect(Collectors.toList()));
+		
+	}
 
 	/**
 	 * Returns false.
@@ -350,7 +393,7 @@ public final class Effect implements Value {
 			
 			String var = "";
 			String val = "";
-			boolean additive = false;
+			boolean add = false;
 			boolean negated = false;
 			
 			if (str.contains(":=")) {
@@ -366,15 +409,15 @@ public final class Effect implements Value {
 			else if (str.contains("+=")) {
 				var = str.split("\\+=")[0];
 				val = str.split("\\+=")[1];
-				additive = true;
+				add = true;
 			}
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, 1, additive, negated));
+				return new Effect(new TemplateEffect(tvar, tval, 1, add, negated));
 			}
 			else {
-				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1, additive, negated));
+				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1, add, negated));
 			}
 		}	
 	}
