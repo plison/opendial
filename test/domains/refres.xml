@@ -1,0 +1,47 @@
+<domain>
+
+<initialstate>
+<variable id="type(object_1)">
+<value prob="0.9">ball</value>
+</variable>
+
+<variable id="type(object_2)">
+<value prob="0.7">box</value>
+</variable>
+
+<variable id="rgb(object_1)">
+<value>[252,14,3]</value>
+</variable>
+
+<variable id="rgb(object_3)">
+<value>[220,50,45]</value>
+</variable>
+
+
+<variable id="rgb(object_2)">
+<value>[0,0,255]</value>
+</variable>
+
+<variable id="pos(object_1)">
+<value>45,32</value>
+</variable>
+
+<variable id="pos(object_2)">
+<value>245,22</value>
+</variable>
+
+<variable id="pos(object_3)">
+<value>43,235</value>
+</variable>
+
+<variable id="objects">
+<value>[object_1,object_2,object_3]</value>
+</variable>
+
+</initialstate>
+
+<import href="refres_nlushallow.xml"/>
+<import href="refres_resolution.xml"/>
+<import href="refres_clarification.xml"/>
+
+</domain>
