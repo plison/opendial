@@ -166,7 +166,7 @@
 					<if var="u_u2" value="hi" relation="contains" />
 				</condition>
 				<effect>
-					<add var="a_u2" value="Greet" />
+					<set var="a_u2" value="Greet" add="true"/>
 				</effect>
 			</case>
 		</rule>
@@ -177,7 +177,7 @@
 					<if var="u_u2" value="how are you" relation="contains" />
 				</condition>
 				<effect>
-					<add var="a_u2" value="HowAreYou" />
+					<set var="a_u2" value="HowAreYou" add="true"/>
 				</effect>
 			</case>
 		</rule>
