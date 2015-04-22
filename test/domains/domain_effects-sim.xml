@@ -62,7 +62,7 @@
 				<if var="perceived" value="RedObj" relation="!contains" />
 			</condition>
 			<effect prob="0.3">
-				<add var="perceived" value="RedObj" />
+				<set var="perceived" value="RedObj" add="true"/>
 			</effect>
 		</case>
 		<case>
@@ -82,7 +82,7 @@
 				<if var="perceived" value="BlueObj" relation="!contains" />
 			</condition>
 			<effect prob="0.3">
-				<add var="perceived" value="BlueObj" />
+				<set var="perceived" value="BlueObj" add="true"/>
 			</effect>
 		</case>
 		<case>
@@ -102,7 +102,7 @@
 				<if var="a_m" value="Do(PickUp({X}))" />
 			</condition>
 			<effect prob="0.9">
-				<add var="carried" value="{X}" />
+				<set var="carried" value="{X}" add="true"/>
 			</effect>
 		</case>
 		<case>

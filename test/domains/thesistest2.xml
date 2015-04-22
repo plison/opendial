@@ -25,7 +25,7 @@
 <rule id="rnew">
 	<case>
 		<effect>
-			<add var="A" value="{A}"/>
+			<set var="A" value="{A}" add="true"/>
 		</effect>
 	</case>
 </rule>

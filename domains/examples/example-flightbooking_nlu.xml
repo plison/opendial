@@ -26,7 +26,7 @@
 					<if var="u_u" relation="contains" value="(to|from)? {Airport}" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Airport,{Airport})" />
+					<set var="a_u" value="Inform(Airport,{Airport})" add="true"/>
 				</effect>
 			</case>
 		</rule>
@@ -43,7 +43,7 @@
 					<if var="Day" relation="&lt;" value="32" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Date,{Month},{Day})" />
+					<set var="a_u" value="Inform(Date,{Month},{Day})" add="true"/>
 				</effect>
 			</case>
 			<case>
@@ -56,7 +56,7 @@
 					<if var="Day" relation="&lt;" value="32" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Date,{Month},{Day})" />
+					<set var="a_u" value="Inform(Date,{Month},{Day})" add="true"/>
 				</effect>
 			</case>
 		</rule>
@@ -68,7 +68,7 @@
 					<if var="u_u" relation="contains" value="(1|one|a single) (ticket)?" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Number,1)" />
+					<set var="a_u" value="Inform(Number,1)" add="true"/>
 				</effect>
 			</case>
 				<case>
@@ -76,7 +76,7 @@
 					<if var="u_u" relation="contains" value="(2|two) (tickets)?" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Number,2)" />
+					<set var="a_u" value="Inform(Number,2)" add="true"/>
 				</effect>
 			</case>
 				<case>
@@ -92,7 +92,7 @@
 					<if var="u_u" relation="contains" value="(4|four) (tickets)?" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Inform(Number,4)" />
+					<set var="a_u" value="Inform(Number,4)" add="true"/>
 				</effect>
 			</case>
 		</rule>
@@ -104,7 +104,7 @@
 					<if var="u_u" relation="contains" value="(yes|correct|exactly|sure|right)" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Confirm" />
+					<set var="a_u" value="Confirm" add="true"/>
 				</effect>
 			</case>
 			<case>
@@ -112,7 +112,7 @@
 					<if var="u_u" relation="contains" value="(no|nope|wrong)" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Disconfirm" />
+					<set var="a_u" value="Disconfirm" add="true"/>
 				</effect>
 			</case>
 		</rule>
@@ -125,7 +125,7 @@
 					<if var="u_u" relation="!=" value="None" />
 				</condition>
 				<effect>
-					<add var="a_u" value="Other" />
+					<set var="a_u" value="Other" add="true"/>
 				</effect>
 			</case>
 		</rule>
