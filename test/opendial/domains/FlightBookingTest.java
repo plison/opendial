@@ -256,8 +256,6 @@ public class FlightBookingTest {
 		u_u.clear();
 		u_u.put("ah ok well I want to go to Tromsø please", 0.8);
 		system.addUserInput(u_u);
-		log.debug("u_u " +system.getContent("u_u"));
-		log.debug("a_u " +system.getContent("a_u"));
 		assertEquals(0.91, system.getContent("a_u").toDiscrete().getProb("[Inform(Airport,Tromsø)]"), 0.01);
 		assertEquals(0.91, system.getContent("Destination").toDiscrete().getProb("Tromsø"), 0.01);
 		assertEquals("Confirm(Destination,Tromsø)", system.getContent("a_m").getBest().toString());
