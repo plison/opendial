@@ -30,6 +30,7 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
+import opendial.domains.rules.RuleGrounding;
 
 /**
  * Representation of a void condition, which is always true.
@@ -70,8 +71,8 @@ public final class VoidCondition implements Condition {
 	 * Returns an empty set of groundings
 	 */
 	@Override
-	public ValueRange getGroundings(Assignment input) {
-		return new ValueRange();
+	public RuleGrounding getGroundings(Assignment input) {
+		return new RuleGrounding();
 	}
 	
 	

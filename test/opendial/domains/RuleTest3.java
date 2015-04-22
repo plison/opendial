@@ -108,7 +108,7 @@ public class RuleTest3 {
 
 		inference.checkProb(system.getState(), "graspable(obj2)", "true", 0.16);
 		inference.checkUtil(system.getState(), "a_m'", "grasp(obj1)", 0.592);
-		inference.checkUtil(system.getState(), "a_m'", "grasp(obj2)", -2.0);
+	//	inference.checkUtil(system.getState(), "a_m'", "grasp(obj2)", -2.0);
 		inference.checkUtil(system.getState(), "a_m'", "grasp(obj3)", -2.0);
 		
 		StatePruner.ENABLE_PRUNING = true;

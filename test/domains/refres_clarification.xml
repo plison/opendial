@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain>
+
+<model trigger="matches(ref_main)">
+
+	<rule>
+		<case>
+			<condition>
+				<if var="matches(ref_main)" relation="contains" value="{X}" />
+				<if var="matches(ref_main)" relation="length" value="1" />
+			</condition>
+			<effect util="2">
+				<set var="a_m" value="Select({X})" />
+			</effect>
+		</case>
+		<case>
+			<effect util="-2">
+				<set var="a_m" value="Select({X})" />
+			</effect>
+		</case>
+	</rule>
+
+
+	<rule>
+		<case>
+			<condition operator="or">
+				<if var="matches(ref_main)" value="[]" />
+			</condition>
+			<effect util="1">
+				<set var="a_m" value="Failed({ref_main})" />
+			</effect>
+		</case>
+		<case>
+			<condition>
+			<not>
+				<if var="matches(ref_main)" relation="length" value="1" />
+			</not>
+				<if var="matches(ref_main)" relation="contains" value="{X}" />
+			</condition>
+			<effect util="1">
+				<set var="a_m" value="AskConfirm({X})" />
+			</effect>
+		</case>
+	</rule>
+
+
+</model>
+
+<model trigger="a_m">
+
+<rule>
+<case>
+<condition>
+<if var="a_m" value="Select({X})"/>
+</condition>
+<effect util="1">
+<set var="u_m" value="Ok, selecting {X}" />
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_m" value="Failed({X})"/>
+</condition>
+<effect util="1">
+<set var="u_m" value="Sorry I do not see {X}" />
+</effect>
+</case>
+<case>
+<condition>
+<if var="a_m" value="AskConfirm({X})"/>
+</condition>
+<effect util="1">
+<set var="u_m" value="Do you mean {X}?" />
+</effect>
+</case>
+</rule>
+
+
+
+</model>
+
+
+</domain>

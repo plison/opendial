@@ -140,9 +140,10 @@ public class StatePruner {
 			}
 
 			if (state.isIncremental(node.getId())) {
-				Set<String> descendants = node.getDescendantIds().stream()
-						.filter(i -> state.hasChanceNode(i)).collect(Collectors.toSet());
-				nodesToKeep.addAll(descendants);
+				node.getDescendantIds().stream()
+						.filter(i -> state.hasChanceNode(i))
+						.filter(i -> !state.hasChanceNode(i+"'"))
+						.forEach(i -> nodesToKeep.add(i));
 			}
 
 			if (state.getParameterIds().contains(node.getId())
@@ -313,7 +314,7 @@ public class StatePruner {
 			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
 					&& !node.getOutputNodes().isEmpty() 
 					&& reduced.getUtilityNodeIds().isEmpty()
-					&& !reduced.isIncremental(node.getId())) {
+					&& reduced.incrementalVars.isEmpty()) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
 					ProbDistribution curDistrib = outputNode.getDistrib();

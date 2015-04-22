@@ -57,20 +57,4 @@ public interface Parameter {
 
 	
 	
-	/**
-	 * Adds the value of the two parameters and returns the result
-	 * 
-	 * @param otherPram the parameter to add
-	 * @return the result of the addition
-	 */
-	public Parameter sumParameter(Parameter otherPram); 
-	
-	/**
-	 * Multiplies the value of the two parameters and returns the result
-	 * 
-	 * @param otherPram the parameter to multiply
-	 * @return the result of the multiplication
-	 */
-	public Parameter multiplyParameter(Parameter otherPram); 
-	
 }

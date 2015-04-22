@@ -170,7 +170,6 @@ public class ForwardPlanner implements Module {
 			try {
 				// step 1: extract the Q-values
 				UtilityTable evalActions =getQValues(initState, settings.horizon);
-			//	log.debug(" ACTION: " + evalActions);
 
 				// step 2: find the action with highest utility
 				Assignment bestAction =  evalActions.getBest().getKey(); 
@@ -250,7 +249,12 @@ public class ForwardPlanner implements Module {
 				Set<String> toProcess = state.getNewVariables();
 				state.reduce();	
 				for (Model model : system.getDomain().getModels()) {
-					model.trigger(state, toProcess);
+					if (model.isTriggered(state, toProcess)) {
+						model.trigger(state);
+						if (model.isBlocking() && !state.getNewVariables().isEmpty()) {
+							break;
+						}
+					}
 				}
 			}
 		}

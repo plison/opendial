@@ -91,6 +91,15 @@ import opendial.arch.Logger;
 	@Override
 	public String toString() { return ""+b; }
 
+	/**
+	 * Returns 1
+	 * 
+	 * @return 1
+	 */
+	@Override
+	public int length() {
+		return 1;
+	}
 	
 	/**
 	 * If v is a BooleanVal, returns the conjunction of the two values.  Else, returns none.

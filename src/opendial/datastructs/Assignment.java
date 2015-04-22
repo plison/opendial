@@ -157,6 +157,7 @@ public class Assignment {
 		Arrays.asList(assignments).stream().forEach(a -> addAssignment(a));
 	}
 
+	
 
 
 	/**
@@ -470,6 +471,26 @@ public class Assignment {
 	public void clear() {
 		map.clear();
 	}
+	
+	
+
+	/**
+	 * Returns the intersection of the two assignments
+	 * 
+	 * @param assign second assignment
+	 * @return the intersection
+	 */
+	public Assignment intersect(Assignment assign) {
+		Assignment intersect = new Assignment();
+		for (String var : map.keySet()) {
+			Value v = map.get(var);
+			if (assign.getValue(var).equals(v)) {
+				intersect.addPair(var, v);
+			}
+		}
+		return intersect;
+	}
+
 
 
 
@@ -586,6 +607,9 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
+		if (variables.containsAll(map.keySet())) {
+			return copy();
+		}
 		Map<String,Value> newMap = variables.stream()
 				.filter(var -> map.containsKey(var))
 				.collect(Collectors.toMap(var -> var, var -> map.get(var)));
@@ -878,6 +902,7 @@ public class Assignment {
 		return str;
 
 	}
+
 
 
 

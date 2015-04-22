@@ -115,7 +115,6 @@ public class PlanningTest {
 		t1.addRow("Ask(Coffee)", 0.95);
 		t1.addRow("Ask(Tea)", 0.02);
 		system.addContent(t1);
-
 		inference.checkProb(system.getState(), "a_m", "Do(Coffee)", 1.0);
 				
 	}

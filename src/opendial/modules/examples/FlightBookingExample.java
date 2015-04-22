@@ -82,10 +82,10 @@ public class FlightBookingExample implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m")) {
-			String action = state.queryProb("a_m").toDiscrete().getBest().toString();
+			String action = state.queryProb("a_m").getBest().toString();
 			
 			if (action.equals("FindOffer")) {
-				String returndate = state.queryProb("ReturnDate").toDiscrete().getBest().toString();
+				String returndate = state.queryProb("ReturnDate").getBest().toString();
 				
 				// here, we fake the price estimation by making up numbers.  Obviously,
 				// the prices should be derived from a database in a real system.
@@ -95,11 +95,11 @@ public class FlightBookingExample implements Module {
 			}
 			else if (action.equals("Book")) {
 					
-				String departure = state.queryProb("Departure").toDiscrete().getBest().toString();
-				String destination = state.queryProb("Destination").toDiscrete().getBest().toString();
-				String date = state.queryProb("Date").toDiscrete().getBest().toString();
-				String returndate = state.queryProb("ReturnDate").toDiscrete().getBest().toString();
-				String nbtickets = state.queryProb("NbTickets").toDiscrete().getBest().toString();
+				String departure = state.queryProb("Departure").getBest().toString();
+				String destination = state.queryProb("Destination").getBest().toString();
+				String date = state.queryProb("Date").getBest().toString();
+				String returndate = state.queryProb("ReturnDate").getBest().toString();
+				String nbtickets = state.queryProb("NbTickets").getBest().toString();
 				
 				// In a real system, the system database should be modified here to 
 				// actually perform the booking.  Here, we just print a small message.

@@ -536,7 +536,7 @@ public class DialogueSystem {
 		}
 
 		while (!curState.getNewVariables().isEmpty()) {
-			
+
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
 			
@@ -545,7 +545,12 @@ public class DialogueSystem {
 			
 			// applying the domain models 
 			for (Model model : domain.getModels()) {
-				model.trigger(curState, toProcess);
+				if (model.isTriggered(curState,toProcess)) {
+					model.trigger(curState);
+					if (model.isBlocking() && !curState.getNewVariables().isEmpty()) {
+						break;
+					}
+				}
 			}
 			
 			// applying the external modules

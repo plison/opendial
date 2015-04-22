@@ -112,4 +112,12 @@ public interface MultivariateDistribution {
 	 */
 	public void pruneValues(double threshold);
 	
+	
+	/**
+	 * Returns the value with maximum probability.
+	 *  
+	 * @return the value with maximum probability
+	 */
+	public Assignment getBest();
+	
 }

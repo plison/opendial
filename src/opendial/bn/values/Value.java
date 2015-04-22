@@ -68,6 +68,13 @@ public interface Value extends Comparable<Value> {
 	
 
 	/**
+	 * Returns the length of the value
+	 * 
+	 * @return the value length
+	 */
+	public int length();
+	
+	/**
 	 * Returns the hash code for the value
 	 * 
 	 * @return the hash code
@@ -91,5 +98,7 @@ public interface Value extends Comparable<Value> {
 	 */
 	@Override
 	public boolean equals(Object o);
+
+
 	
 }

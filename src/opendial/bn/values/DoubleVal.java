@@ -100,7 +100,15 @@ public final class DoubleVal implements Value {
 		return "" + StringUtils.getShortForm(d);
 	}
 
-
+	/**
+	 * Returns 1
+	 * 
+	 * @return 1
+	 */
+	@Override
+	public int length() {
+		return 1;
+	}
 	/**
 	 * If v is a DoubleVal, returns the addition of the two values.  If v is a StringVal,
 	 * returns the string concatenation of the two.  Else, returns none.

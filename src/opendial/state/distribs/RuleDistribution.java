@@ -186,7 +186,7 @@ public class RuleDistribution implements ProbDistribution {
 
 		Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
 		RuleOutput output = arule.getRule().getOutput(ruleInput);
-
+		
 		// creating the distribution
 		double totalMass = output.getTotalMass(input);
 		CategoricalTable probTable = new CategoricalTable(id, false);
@@ -207,7 +207,6 @@ public class RuleDistribution implements ProbDistribution {
 					+ "input " +	input + " and rule " + arule.toString());
 			log.debug("output was " + output + " and effect " + output.getEffects());
 		}
-
 		return probTable;
 	}
 

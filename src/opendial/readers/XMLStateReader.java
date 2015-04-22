@@ -143,7 +143,6 @@ public class XMLStateReader {
 
 				// extracting the probability
 				float prob = getProbability (subnode);
-
 				table.addRow(ValueFactory.create(value),prob);
 			}
 

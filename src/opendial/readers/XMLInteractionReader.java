@@ -72,7 +72,7 @@ public class XMLInteractionReader {
 				DialogueState state = new DialogueState(XMLStateReader.getBayesianNetwork(node));
 				sample.add(state);
 				if (node.getNodeName().equals("systemTurn") && state.hasChanceNode("a_m")) {
-					Assignment assign = new Assignment("a_m", state.queryProb("a_m").toDiscrete().getBest());
+					Assignment assign = new Assignment("a_m", state.queryProb("a_m").getBest());
 					state.addEvidence(assign);
 				}
 			}

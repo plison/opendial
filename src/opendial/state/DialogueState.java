@@ -327,7 +327,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @param r the rule to apply.
 	 * @throws DialException if the rule could not be applied.
-	 */
+	 */ 
 	public void applyRule(Rule r) throws DialException {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
@@ -515,12 +515,12 @@ public class DialogueState extends BNetwork {
 		for (Template t : templates) {
 			for (String slot : t.getSlots()) {
 				if (hasChanceNode(slot)) {
-					Value bestValue = queryProb(slot).toDiscrete().getBest();
+					Value bestValue = queryProb(slot).getBest();
 					t = t.fillSlots(new Assignment(slot,bestValue));
 				}
 			}
 			for (String currentVar : getChanceNodeIds()) {
-				if (t.match(currentVar, true).isMatching()) {
+				if (!currentVar.endsWith("'") && t.match(currentVar).isMatching()) {
 					inputVars.add(getChanceNode(currentVar));
 				}
 			}

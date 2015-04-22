@@ -92,7 +92,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test3() throws DialException {
+	public void test3() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
 		
@@ -101,7 +101,6 @@ public class RuleTest1 {
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
-
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
 		inference.checkProb(system.getState(), "direction", "right", 0.01);
@@ -120,8 +119,8 @@ public class RuleTest1 {
 		system.startSystem(); 
 		
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.35);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.31);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.28);
 
 		StatePruner.ENABLE_PRUNING = true;
 	}
@@ -173,7 +172,6 @@ public class RuleTest1 {
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem(); 
-		
 		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);

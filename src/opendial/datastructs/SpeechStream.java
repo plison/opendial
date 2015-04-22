@@ -149,6 +149,17 @@ public class SpeechStream extends InputStream implements Value {
 		currentPos += i;
 		return i;
 	}
+	
+	
+	/**
+	 * Returns the data length
+	 * 
+	 * @return the length
+	 */
+	@Override
+	public int length() {
+		return data.length;
+	}
  
 	/**
 	 * Closes the stream, and notifies all waiting threads.

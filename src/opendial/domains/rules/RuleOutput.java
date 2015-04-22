@@ -27,26 +27,31 @@ package opendial.domains.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.state.StatePruner;
 
 
 /**
  * Representation of a particular output derived from the application of a probabilistic 
  * rule.  The output essentially contains a (parametrised) distribution over possible 
  * effects. If the rule contains multiple groundings, the output is a merge (joint probability
- * distribution for a probability rule, additive table for a utility rule) of the rule
+ * distribution for a probability rule, add table for a utility rule) of the rule
  * case for every possible groundings.
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
- */
+ */ 
 public class RuleOutput extends RuleCase {
 
 
@@ -65,31 +70,31 @@ public class RuleOutput extends RuleCase {
 
 	/**
 	 * Adds a rule case to the output.  The result is a joint probability distribution
-	 * in the case of a probability rule, and an additive table in the case of a utility
+	 * in the case of a probability rule, and an add table in the case of a utility
 	 * rule.
 	 * 
 	 * @param newCase the new rule case to add
 	 */
 	public void addCase(RuleCase newCase) {
 
+		if (type == RuleType.PROB) {
+			newCase.pruneEffects();
+		}
+		
 		if (newCase.getEffects().isEmpty()) { return;	}
 
 		if (effects.hashCode() == newCase.getEffectMap().hashCode()) { return ; }
 
-		else if (effects.isEmpty()) {
+		if (effects.isEmpty()) {
 			effects.putAll(newCase.getEffectMap());
-			return;
 		}
 
-		if (type == RuleType.PROB) {
+		else if (type == RuleType.PROB) {
 			Map<Effect,Parameter> newOutput = new HashMap<Effect,Parameter>();
 			
-			double fixedMass = effects.keySet().stream()
-					.map(e -> this.getParameter(e)).filter(e -> e instanceof FixedParameter)
-					.mapToDouble(e -> ((FixedParameter)e).getParameterValue()).sum();
-			if (fixedMass > 0) {
-				addEffect(new Effect(), new FixedParameter(1.0-fixedMass));
-			}
+			addVoidEffect();
+			newCase.addVoidEffect();
+
 			for (Effect o : effects.keySet()) {
 				Parameter param = effects.get(o);
 				for (Effect o2 : newCase.getEffects()) {
@@ -98,22 +103,23 @@ public class RuleOutput extends RuleCase {
 					Collection<BasicEffect> effectsList = new ArrayList<BasicEffect>(o.getSubEffects());
 					effectsList.addAll(o2.getSubEffects());
 					Effect newEffect = new Effect(effectsList);
-					Parameter mergeParam = param.multiplyParameter(newParam);
+					Parameter mergeParam = multiplyParameter(param,newParam);
 					if (!newOutput.containsKey(newEffect)) {
 						newOutput.put(newEffect, mergeParam);
 					}
 					else {
-						Parameter addParam = newOutput.get(newEffect).sumParameter(mergeParam);
+						Parameter addParam = sumParameter(newOutput.get(newEffect), mergeParam);
 						newOutput.put(newEffect, addParam);
 					}
 				}
 			}
 			effects = newOutput;
+			newCase.pruneEffects();
 		}
 		else if (type == RuleType.UTIL){
 			for (Effect o2: newCase.getEffects()) {
 				if (effects.containsKey(o2)) {
-					Parameter mergeParam = effects.get(o2).sumParameter(newCase.getParameter(o2));
+					Parameter mergeParam = sumParameter(effects.get(o2), newCase.getParameter(o2));
 					effects.put(o2, mergeParam);
 				}
 				else {
@@ -133,9 +139,42 @@ public class RuleOutput extends RuleCase {
 	 * @return the corresponding mass
 	 * @throws DialException if some parameters could not be found.
 	 */
-	public double getTotalMass(Assignment input)  {	
+	public double getTotalMass(Assignment input)  {
 		return effects.values().stream().mapToDouble(p -> p.getParameterValue(input)).sum();
 	}
+	
+	
+	private Parameter sumParameter (Parameter p1, Parameter p2) {
+		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
+			double sum = ((FixedParameter)p1).getParameterValue() + ((FixedParameter)p2).getParameterValue();
+			return new FixedParameter(sum);
+		}
+		else {
+			String p1str = (p1 instanceof SingleParameter)? "{"+p1 +"}" : p1.toString();
+			String p2str = (p2 instanceof SingleParameter)? "{"+p2 +"}" : p2.toString();
+			Set<String> unknowns = new HashSet<String>();
+			unknowns.addAll(p1.getParameterIds());
+			unknowns.addAll(p2.getParameterIds());
+			return new ComplexParameter (p1str + "+" + p2str, unknowns);
+		}
+	}
+	
+	private Parameter multiplyParameter (Parameter p1, Parameter p2) {
+		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
+			double sum = ((FixedParameter)p1).getParameterValue() * ((FixedParameter)p2).getParameterValue();
+			return new FixedParameter(sum);
+		}
+		else {
+			String p1str = (p1 instanceof SingleParameter)? "{"+p1 +"}" : p1.toString();
+			String p2str = (p2 instanceof SingleParameter)? "{"+p2 +"}" : p2.toString();
+			Set<String> unknowns = new HashSet<String>();
+			unknowns.addAll(p1.getParameterIds());
+			unknowns.addAll(p2.getParameterIds());
+		return new ComplexParameter (p1str + "*" + p2str, unknowns);
+		}
+	}
+	
+	
 
 
 }

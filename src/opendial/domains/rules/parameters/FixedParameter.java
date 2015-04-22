@@ -29,7 +29,6 @@ import java.util.LinkedList;
 
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
-import opendial.domains.rules.parameters.CompositeParameter.Operator;
 
 
 /**
@@ -55,43 +54,7 @@ public class FixedParameter implements Parameter {
 		this.param = param;
 	}
 	
-	
-	/**
-	 * Sums the parameter with the other parameter.  If both values are fixed parameter, the
-	 * returned parameter is also fixed.  Else, the method constructs a composite parameter
-	 * with the two included parameters.
-	 * 
-	 * @param otherParam the other parameter
-	 * @return the parameter resulting from the addition of the two parameters
-	 */
-	@Override
-	public Parameter sumParameter(Parameter otherParam) {
-		if (otherParam instanceof FixedParameter) {
-			return new FixedParameter(param +((FixedParameter)otherParam).getParameterValue());
-		}
-		else {
-			return new CompositeParameter (Arrays.asList(this, otherParam), Operator.ADD);
-		}
-	}
-	
-	
-	/**
-	 * Multiplies the parameter with the other parameter.  If both values are fixed parameter, the
-	 * returned parameter is also fixed.  Else, the method constructs a composite parameter
-	 * with the two included parameters.
-	 * 
-	 * @param otherParam the other parameter
-	 * @return the parameter resulting from the multiplication of the two parameters
-	 */
-	@Override
-	public Parameter multiplyParameter(Parameter otherParam) {
-		if (otherParam instanceof FixedParameter) {
-			return new FixedParameter(param *((FixedParameter)otherParam).getParameterValue());
-		}
-		else {
-			return new CompositeParameter (Arrays.asList(this, otherParam), Operator.MULTIPLY);
-		}
-	}
+
 	
 	/**
 	 * Returns the parameter value

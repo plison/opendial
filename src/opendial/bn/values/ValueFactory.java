@@ -24,6 +24,7 @@
 package opendial.bn.values;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,13 +49,16 @@ public class ValueFactory {
 	static NoneVal noneValue = new NoneVal();
 
 	// pattern to find a double value
-	static Pattern doublePattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+	public static Pattern doublePattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
 	// pattern to find an array of doubles
 	static Pattern arrayPattern = Pattern.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
 			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
-	
+	static Pattern setPattern = Pattern.compile("[\\w\\-_\\.\\^\\=\\s]*"
+			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s]+[\\]\\)])?", 
+			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
+		
 	/**
 	 * Creates a new value based on the provided string representation.
 	 * If the string contains a numeric value, "true", "false", "None", 
@@ -69,8 +73,7 @@ public class ValueFactory {
 		if (str == null) {
 			return noneValue;
 		}
-		str = str.trim();
-
+		
 		Matcher m = doublePattern.matcher(str);
 		if (m.matches()) {
 			return new DoubleVal(Double.parseDouble(str));
@@ -95,24 +98,14 @@ public class ValueFactory {
 				return new ArrayVal(subVals);
 			}
 			else if (str.startsWith("[") && str.endsWith("]")) {
-
-				LinkedList<Value> subVals = new LinkedList<Value>();
 				
-				boolean openParenthesis = false;
-				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
-					subVal = subVal.trim();
-					if (subVal.length() == 0) {
-						continue;
+				LinkedList<Value> subVals = new LinkedList<Value>();
+				Matcher m3 = setPattern.matcher(str.substring(1, str.length()-1));
+				while (m3.find()) {
+					String subval = m3.group(0).trim();
+					if (subval.length() > 0) {
+						subVals.add(create(subval));
 					}
-					else if (!openParenthesis) {
-						subVals.add(create(subVal));
-					}
-					else {
-						subVal = subVals.getLast().toString()+","+subVal;
-						subVals.set(subVals.size()-1, create(subVal));
-					}
-					openParenthesis =  (StringUtils.countNbOccurrences(subVal, '(') >
-					StringUtils.countNbOccurrences(subVal, ')'));
 				}
 				return new SetVal(subVals);
 			}

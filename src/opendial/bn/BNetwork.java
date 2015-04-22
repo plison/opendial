@@ -94,6 +94,12 @@ public class BNetwork {
 	public void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
+			try {
+				Thread.sleep(1000000000);
+			}
+			catch (InterruptedException e) {
+				
+			}
 		}
 		nodes.put(node.getId(), node);
 		node.setNetwork(this);

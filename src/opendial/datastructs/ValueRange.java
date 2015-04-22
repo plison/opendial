@@ -214,5 +214,15 @@ public class ValueRange {
 			range.remove(var);
 		}
 	}
+
+	public ValueRange getSubRange(Set<String> slots) {
+		ValueRange copy = new ValueRange(range);
+		for (String id : range.keySet()) {
+			if (!slots.contains(id)) {
+				copy.range.remove(id);
+			}
+		}
+		return copy;
+	}
 }
 

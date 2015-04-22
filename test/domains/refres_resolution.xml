@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<model trigger="properties(ref_*)" blocking="true">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="type({X})" value="{T}" />
+					<if var="properties(ref_{id})" relation="contains" value="type={T}" />
+				</condition>
+				<effect>
+					<set var="matches(ref_{id},type)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="properties(ref_{id})" relation="contains" value="type=(object|thing)" />
+				</condition>
+				<effect>
+					<set var="matches(ref_{id},type)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="rcolour">
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=red" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-({R}-255)^2-{G}^2-{B}^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=green" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-{R}^2-({G}-128)^2-{B}^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=blue" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-{R}^2-{G}^2-({B}-255)^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=gray" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-({R}-128)^2-({G}-128)^2-({B}-128)^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=yellow" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-({R}-255)^2-({G}-255)^2-{B}^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=purple" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-({R}-128)^2-{G}^2-({B}-128)^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=black" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-{R}^2-{G}^2-{B}^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+				<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="attr=white" />
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="rgb({X})" value="[{R},{G},{B}]" />
+				</condition>
+				<effect prob="exp((-({R}-255)^2-({G}-255)^2-({B}-255)^2)/10000)">
+					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+			
+		<rule>
+			<case>
+				<condition>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="area({X})" value="{A}" />					
+					<if var="properties(ref_{id})" relation="contains" value="attr=big"/>
+				</condition>
+				<effect prob="exp(-100/{area})">
+					<set var="matches(ref_{id},size)^t" value="{X}" add="true"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="area({X})" value="{A}" />					
+					<if var="properties(ref_{id})" relation="contains" value="attr=small"/>
+				</condition>
+				<effect prob="exp(-{area}/100)">
+					<set var="matches(ref_{id},size)^t" value="{X}" add="true"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<condition>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="pos({X})" value="[X1,X2]" />					
+					<if var="properties(ref_{id})" relation="contains" value="rel=left({Y})"/>
+					<if var="pos({Y})" value="[Y1,Y2]" />
+				</condition>
+				<effect prob="exp(-X1^2/Y1^2 - (X2-Y2)^2/100000)">
+					<set var="matches(ref_{id},left)^t" value="{X}" add="true"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<effect>
+					<set var="objects" value="{objects}"/>
+				</effect>
+			</case>
+		</rule>
+	
+	</model>
+	
+	
+	<model id="fusion" trigger="objects" blocking="true">
+	
+	<rule id="fuse2">
+		<case>
+		<condition>
+			<if var="objects" relation="contains" value="{X}"/>
+			<if var="matches(ref_{id},{t})^t" relation="contains" value="{X}"/>
+		</condition>
+		<effect>
+			<set var="matches(ref_{id})" value="{X}" add="true"/>
+		</effect>
+		</case>
+		<case>
+		<condition>
+			<if var="objects" relation="contains" value="{X}"/>
+			<if var="matches(ref_{id},{t})^t" relation="!contains" value="{X}"/>
+			<if var="matches(ref_{id},{t})^t" relation="!=" value="None"/>
+			<if var="t" value="(type|prev)"/>
+		</condition>
+		<effect prob="1.0">
+			<set var="matches(ref_{id})" value="{X}" relation="!="/>
+		</effect>
+		</case>
+		<case>
+		<condition>
+			<if var="objects" relation="contains" value="{X}"/>
+			<if var="matches(ref_{id},{t})^t" relation="!contains" value="{X}"/>
+		</condition>
+		<effect prob="0.5">
+			<set var="matches(ref_{id})" value="{X}" relation="!="/>
+		</effect>
+		</case>
+	</rule>
+	
+	
+	<rule id="fuse3">
+		<case>
+		<condition>
+			<if var="ref_main" value="*"/>
+		</condition>
+		<effect>
+			<set var="matches(ref_main)" value="[]" add="true"/>
+		</effect>
+		</case>
+	</rule>
+	
+
+	
+	</model>
+	
+	
+	<model trigger="matches(ref_*)" blocking="true">
+	
+		<rule id="relational">
+			<case>
+				<condition>
+					<if var="properties(ref_{id})" relation="contains" value="rel=left({R})"/>
+					<if var="matches({R})" relation="contains" value="{Y}"/>
+					<if var="objects" relation="contains" value="{X}"/>
+					<if var="Y" relation="!=" value="{X}"/>
+					<if var="pos({X})" value="{X1},{X2}" />					
+					<if var="pos({Y})" value="{Y1},{Y2}" />
+				</condition>
+				<effect prob="exp(-{X1}^2/{Y1}^2 - ({X2}-{Y2})^2/10000)">
+					<set var="matches(ref_{id},left)^t" value="{X}" add="true"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<condition>
+					<if var="matches(ref_{R})" value="*"/>
+					<if var="R" relation="!=" value="main"/>
+				</condition>
+				<effect>
+					<set var="matches(ref_{R})" value="None"/>
+					<set var="objects" value="{objects}"/> 
+					<set var="matches(ref_main,prev)^t" value="{matches(ref_main)}"/> 
+					<set var="matches(ref_main,{R})^t" value="[]" add="true"/> 
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
+
+</domain>

@@ -151,7 +151,7 @@ public class Simulator implements Module {
 
 				Value systemAction = ValueFactory.none();
 				if (systemState.hasChanceNode(outputVar)) {
-					systemAction = systemState.queryProb(outputVar).toDiscrete().getBest();
+					systemAction = systemState.queryProb(outputVar).getBest();
 				}
 
 				log.debug("Simulator input: " + systemAction);
@@ -187,7 +187,12 @@ public class Simulator implements Module {
 			simulatorState.reduce();	
 
 			for (Model model : domain.getModels()) {
-				model.trigger(simulatorState, toProcess);
+				if (model.isTriggered(simulatorState,toProcess)) {
+					model.trigger(simulatorState);
+					if (model.isBlocking() && !simulatorState.getNewVariables().isEmpty()) {
+						break;
+					}
+				}
 			}
 
 			if (!simulatorState.getUtilityNodeIds().isEmpty()) {

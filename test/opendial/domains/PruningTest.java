@@ -111,7 +111,7 @@ public class PruningTest {
 	public void testPruning4() throws DialException {
 
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.35);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
 		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.31);
 	}
 
@@ -135,7 +135,7 @@ public class PruningTest {
 		system.getState().addToState(table);
 		
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.35);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
 		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.31);
 		
 		system.getState().reset(initialState);

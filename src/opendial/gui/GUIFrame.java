@@ -122,6 +122,8 @@ public class GUIFrame implements Module {
 				
 		frame.setPreferredSize(new Dimension(1000,800));
 		frame.pack();
+		chatTab.inputField.requestFocus();
+		chatTab.inputField.requestFocusInWindow();
 		frame.setVisible(true);
 		}
 		trigger(system.getState(), new ArrayList<String>());

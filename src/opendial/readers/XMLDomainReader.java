@@ -25,7 +25,11 @@ package opendial.readers;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -173,13 +177,23 @@ public class XMLDomainReader {
 				model.addRule(rule);
 			}
 		}
-
+		
 		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("trigger")!= null) {
-			String[] triggerArray = topNode.getAttributes().getNamedItem("trigger").getNodeValue().split(",");
-			model.addTriggers(Arrays.asList(triggerArray));			
+			Pattern p = Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
+					+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
+					+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
+			Matcher m = p.matcher(topNode.getAttributes().getNamedItem("trigger").getNodeValue());
+			while (m.find()) {
+				model.addTrigger(m.group());
+			}
 		}
 		else {
 			throw new DialException("each model must specify a variable trigger:" + XMLUtils.serialise(topNode));
+		}
+		
+		if (topNode.getAttributes().getNamedItem("blocking")!= null) {
+			boolean blocking = Boolean.parseBoolean(topNode.getAttributes().getNamedItem("blocking").getNodeValue());
+			model.setBlocking(blocking);	
 		}
 
 		if (topNode.getAttributes().getNamedItem("id")!= null) {

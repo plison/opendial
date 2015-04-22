@@ -62,7 +62,7 @@ public class BasicEffect {
 
 	/** Whether the value is mutually exclusive with other values for the variable (default case) or not. 
 	 * If not, distinct values are added together in a list.  */
-	final boolean additive;
+	final boolean add;
 	
 	/** Whether the effect includes a negation (default is false). */
 	final boolean negated;
@@ -87,21 +87,21 @@ public class BasicEffect {
 	
 	/**
 	 * Constructs a new basic effect, with a variable label, value and other arguments. The 
-	 * argument "additive"  specifies whether the effect is mutually exclusive with other effects.
+	 * argument "add"  specifies whether the effect is mutually exclusive with other effects.
 	 * The argument "negated" specifies whether the effect includes a negation.
 	 * 
 	 * 
 	 * @param variable variable label (raw string)
 	 * @param value variable value
 	 * @param priority the priority level (default is 1)
-	 * @param additive true if distinct values are to be added together, false otherwise 
+	 * @param add true if distinct values are to be added together, false otherwise 
 	 * @param negated whether to negate the effect or not.
 	 */
-	public BasicEffect(String variable, Value value, int priority, boolean additive, boolean negated){
+	public BasicEffect(String variable, Value value, int priority, boolean add, boolean negated){
 		this.variableLabel = variable;
 		this.variableValue = value;
 		this.priority = priority;
-		this.additive = additive;
+		this.add = add;
 		this.negated = negated;
 	}
 	
@@ -191,8 +191,8 @@ public class BasicEffect {
 	 * 
 	 * @return true if the effect allows values to be added together, false otherwise.
 	 */
-	public boolean isAdditive() {
-		return additive;
+	public boolean isAdd() {
+		return add;
 	}
 	
 	/**
@@ -218,7 +218,7 @@ public class BasicEffect {
 		if (negated) {
 			str += "!="; 
 		}
-		else if (additive) {
+		else if (add) {
 			str += "+=";
 		}
 		else {
@@ -236,8 +236,9 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		return variableLabel.hashCode() ^ (new Boolean(additive)).hashCode() ^ 
-				(new Boolean(negated)).hashCode() ^ priority ^ variableValue.hashCode();
+		int hashcode = ((negated)? -2 : 1) * variableLabel.hashCode() ^ (new Boolean(add)).hashCode() 
+				^ priority ^ variableValue.hashCode();
+		return hashcode;
 	}
 
 	
@@ -257,7 +258,7 @@ public class BasicEffect {
 			else if (!((BasicEffect)o).getValue().equals(getValue())) {
 				return false;
 			}
-			else if (((BasicEffect)o).isAdditive() != additive) {
+			else if (((BasicEffect)o).isAdd() != add) {
 				return false;
 			}
 			else if (((BasicEffect)o).isNegated() != negated) {
@@ -277,7 +278,7 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority, additive, negated);
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority, add, negated);
 		return copy;
 	}
 
@@ -287,7 +288,7 @@ public class BasicEffect {
 	 * @return a new basic effect with the changed priority
 	 */
 	public BasicEffect changePriority(int priority) {
-		return new BasicEffect(variableLabel, variableValue, priority, additive, negated);
+		return new BasicEffect(variableLabel, variableValue, priority, add, negated);
 	}
 
 

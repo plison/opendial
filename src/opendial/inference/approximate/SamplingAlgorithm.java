@@ -166,7 +166,6 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			log.info("HAHAA" + e);
 			return new UtilityTable();
 		}
 	}

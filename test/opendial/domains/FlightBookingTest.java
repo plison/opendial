@@ -50,7 +50,7 @@ public class FlightBookingTest {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.startSystem();
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("your destination?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("your destination?"));
 		assertTrue(system.getModule(DialogueRecorder.class).getRecord().contains("<interaction><systemTurn><variable id=\"u_m\">"
 				+ "<value>Welcome to our Norwegian flight-booking system!</value></variable></systemTurn>"
 				+ "<systemTurn><variable id=\"u_m\"><value>What is your destination?</value></variable></systemTurn>"));
@@ -70,7 +70,7 @@ public class FlightBookingTest {
 		assertEquals(1.0, system.getContent("Destination").getProb("Bergen"), 0.01);
 		assertEquals("Ground(Destination,Bergen)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("your departure?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("your departure?"));
 		u_u.clear();
 		u_u.put("to Stockholm", 0.8);
 		system.addUserInput(u_u);
@@ -80,8 +80,8 @@ public class FlightBookingTest {
 		assertEquals(1, system.getContent("Destination").toDiscrete().getValues().size());
 		assertEquals(1.0, system.getContent("Destination").getProb("Bergen"), 0.01);
 		assertFalse(system.getState().hasChanceNode("Departure"));
-		assertEquals("AskRepeat", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("you repeat?"));
+		assertEquals("AskRepeat", system.getContent("a_m").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("you repeat?"));
 		u_u.clear();
 		u_u.put("to Sandefjord then", 0.6);
 		system.addUserInput(u_u);
@@ -89,7 +89,7 @@ public class FlightBookingTest {
 		assertEquals(0.88, system.getContent("Departure").getProb("Sandefjord"), 0.05);
 		assertEquals("Confirm(Departure,Sandefjord)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("that correct?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("that correct?"));
 		u_u.clear();
 		u_u.put("no to Trondheim sorry", 0.08);
 		system.addUserInput(u_u);
@@ -97,7 +97,7 @@ public class FlightBookingTest {
 		assertEquals(0.51, system.getContent("Departure").getProb("Trondheim"), 0.05);
 		assertEquals("AskRepeat", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("repeat?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("repeat?"));
 		u_u.clear();
 		u_u.put("to Trondheim", 0.3);
 		u_u.put("Sandefjord", 0.1);
@@ -112,7 +112,7 @@ public class FlightBookingTest {
 		system.addUserInput(u_u);
 		assertEquals("Ground(Departure,Trondheim)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("which date"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("which date"));
 		u_u.clear();
 		u_u.put("that will be on May 26", 0.4);
 		u_u.put("this will be on May 24", 0.2);
@@ -140,14 +140,14 @@ public class FlightBookingTest {
 				toDiscrete().getBest().toString());
 		assertEquals("Ground(Date,May 24)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("return trip"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("return trip"));
 		u_u.clear();
 		u_u.put("no thanks", 0.9);
 		system.addUserInput(u_u);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("to order tickets?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("to order tickets?"));
 		assertEquals(1.0, system.getContent("ReturnDate").getProb("NoReturn"), 0.01);
 		assertEquals(1.0, system.getContent("current_step").getProb("MakeOffer"), 0.01);
-		assertEquals("MakeOffer(179)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("MakeOffer(179)", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("yes", 0.02);
 		system.addUserInput(u_u);
@@ -159,7 +159,7 @@ public class FlightBookingTest {
 		system.addUserInput(u_u);
 		assertEquals(0.978, system.getContent("a_u").getProb("[Confirm]"), 0.01);
 		assertEquals(1.0, system.getContent("current_step").getProb("NbTickets"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("many tickets"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("many tickets"));
 		u_u.clear();
 		u_u.put("uh I don't know me", 0.6);
 		system.addUserInput(u_u);
@@ -204,8 +204,8 @@ public class FlightBookingTest {
 		assertEquals("Ground(NbTickets,2)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
 		assertEquals(1.0, system.getContent("current_step").getProb("LastConfirm"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("Shall I confirm"));
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("358 EUR"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("Shall I confirm"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("358 EUR"));
 		u_u.clear();
 		u_u.put("err yes", 0.2);
 		system.addUserInput(u_u);
@@ -218,13 +218,13 @@ public class FlightBookingTest {
 		assertEquals(1.0, system.getContent("current_step").getProb("Final"), 0.01);
 		assertEquals("Book", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("additional tickets?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("additional tickets?"));
 		u_u.clear();
 		u_u.put("thanks but no thanks", 0.7);
 		system.addUserInput(u_u);
 		assertEquals(0.97, system.getContent("a_u").getProb("[Disconfirm]"), 0.01);
 		assertEquals(1.0, system.getContent("current_step").getProb("Close"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("welcome back!"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("welcome back!"));
 		assertTrue(system.getModule(DialogueRecorder.class).getRecord().contains("<systemTurn><variable id=\"u_m\">"
 				+ "<value>You are ordering 2 one-way tickets from Trondheim to Bergen on May 24 for a total cost of 358 EUR. "
 				+ "Shall I confirm your order?</value></variable>"));
@@ -252,25 +252,25 @@ public class FlightBookingTest {
 		u_u.put("err I don't know, where can I go?", 0.8);
 		system.addUserInput(u_u);
 		assertEquals(0.8, system.getContent("a_u").toDiscrete().getProb("[Other]"), 0.01);
-		assertEquals("AskRepeat", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("AskRepeat", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("ah ok well I want to go to Tromsø please", 0.8);
 		system.addUserInput(u_u);
 		assertEquals(0.91, system.getContent("a_u").toDiscrete().getProb("[Inform(Airport,Tromsø)]"), 0.01);
 		assertEquals(0.91, system.getContent("Destination").toDiscrete().getProb("Tromsø"), 0.01);
-		assertEquals("Confirm(Destination,Tromsø)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Confirm(Destination,Tromsø)", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("that's right", 0.6);
 		system.addUserInput(u_u);
-		assertEquals("Ground(Destination,Tromsø)", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("departure?"));
+		assertEquals("Ground(Destination,Tromsø)", system.getContent("a_m").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("departure?"));
 		u_u.clear();
 		u_u.put("I'll be leaving from Moss", 0.1);
 		system.addUserInput(u_u);
 		assertEquals(0.357, system.getContent("a_u").toDiscrete().getProb("[Inform(Airport,Moss)]"), 0.01);
 		assertEquals(1.0, system.getContent("Destination").toDiscrete().getProb("Tromsø"), 0.01);
 		assertEquals(0.357, system.getContent("Departure").toDiscrete().getProb("Moss"), 0.01);
-		assertEquals("AskRepeat", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("AskRepeat", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("I am leaving from Moss, did you get that right?", 0.2);
 		u_u.put("Bodø, did you get that right?", 0.4);
@@ -278,29 +278,29 @@ public class FlightBookingTest {
 		assertEquals(0.72, system.getContent("a_u").toDiscrete().getProb("[Confirm,Inform(Airport,Moss)]"), 0.01);
 		assertEquals(0.88, system.getContent("Departure").toDiscrete().getProb("Moss"), 0.01);
 		assertEquals(0.10, system.getContent("Departure").toDiscrete().getProb("Bodø"), 0.01);
-		assertEquals("Confirm(Departure,Moss)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Confirm(Departure,Moss)", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("yes", 0.6);
 		system.addUserInput(u_u);
-		assertEquals("Ground(Departure,Moss)", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("which date"));
+		assertEquals("Ground(Departure,Moss)", system.getContent("a_m").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("which date"));
 		u_u.clear();
 		u_u.put("March 16", 0.7);
 		u_u.put("March 60", 0.2);
 		system.addUserInput(u_u);
 		assertEquals(0.7, system.getContent("a_u").toDiscrete().getProb("[Inform(Date,March,16)]"), 0.01);
 		assertEquals(0.2, system.getContent("a_u").toDiscrete().getProb("[Other]"), 0.01);
-		assertEquals("AskRepeat", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("AskRepeat", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("March 16", 0.05);
 		u_u.put("March 60", 0.3);
 		system.addUserInput(u_u);
-		assertEquals("Confirm(Date,March 16)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Confirm(Date,March 16)", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("yes", 0.6);
 		system.addUserInput(u_u);
-		assertEquals("Ground(Date,March 16)", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("return trip?"));
+		assertEquals("Ground(Date,March 16)", system.getContent("a_m").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("return trip?"));
 		u_u.clear();
 		u_u.put("err", 0.1);
 		system.addUserInput(u_u);
@@ -308,50 +308,50 @@ public class FlightBookingTest {
 		u_u.clear();
 		u_u.put("yes", 0.3);
 		system.addUserInput(u_u);
-		assertEquals("AskRepeat", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("AskRepeat", system.getContent("a_m").getBest().toString());
 		u_u.clear();
 		u_u.put("yes", 0.5);
 		system.addUserInput(u_u);
 		assertEquals(1.0, system.getContent("current_step").getProb("ReturnDate"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("travel back"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("travel back"));
 		u_u.clear();
 		u_u.put("on the 20th of March", 0.7);
 		system.addUserInput(u_u);
-		assertEquals("Confirm(ReturnDate,March 20)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Confirm(ReturnDate,March 20)", system.getContent("a_m").getBest().toString());
 		assertEquals(0.7, system.getContent("ReturnDate").toDiscrete().getProb("March 20"), 0.01);
 		u_u.clear();
 		u_u.put("yes", 0.6);
 		system.addUserInput(u_u);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("299 EUR"));
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("to order tickets?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("299 EUR"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("to order tickets?"));
 		DialogueState copyState1 = system.getState().copy();
 		u_u.clear();
 		u_u.put("no", 0.7);
 		system.addUserInput(u_u);
-		assertEquals("Ground(Cancel)", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertEquals("Final", system.getContent("current_step").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("additional tickets?"));
+		assertEquals("Ground(Cancel)", system.getContent("a_m").getBest().toString());
+		assertEquals("Final", system.getContent("current_step").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("additional tickets?"));
 		DialogueState copyState2 = system.getState().copy();
-		assertEquals("Final", copyState2.queryProb("current_step").toDiscrete().getBest().toString());
+		assertEquals("Final", copyState2.queryProb("current_step").getBest().toString());
 		u_u.clear();
 		u_u.put("no", 0.7);
 		system.addUserInput(u_u);
-		assertEquals("Final", copyState2.queryProb("current_step").toDiscrete().getBest().toString());
-		assertEquals("Ground(Close)", system.getContent("a_m").toDiscrete().getBest().toString());
-		assertEquals("Close", system.getContent("current_step").toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("welcome back"));
+		assertEquals("Final", copyState2.queryProb("current_step").getBest().toString());
+		assertEquals("Ground(Close)", system.getContent("a_m").getBest().toString());
+		assertEquals("Close", system.getContent("current_step").getBest().toString());
+		assertTrue(system.getContent("u_m").getBest().toString().contains("welcome back"));
 		system.getState().removeNodes(system.getState().getChanceNodeIds());
 		system.getState().addNetwork(copyState2);
-		assertEquals("Final", copyState2.queryProb("current_step").toDiscrete().getBest().toString());
+		assertEquals("Final", copyState2.queryProb("current_step").getBest().toString());
 		u_u.clear();
 		u_u.put("yes", 0.7);
 		system.addUserInput(u_u);
 		assertFalse(system.getState().hasChanceNode("Destination"));
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("destination?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("destination?"));
 		assertEquals(Arrays.asList("Destination^p", "a_m-prev", "current_step", "u_m","u_u"), 
 				system.getState().getChanceNodeIds().stream().sorted().collect(Collectors.toList()));
 		system.addUserInput("Oslo");
-		assertEquals("Ground(Destination,Oslo)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Ground(Destination,Oslo)", system.getContent("a_m").getBest().toString());
 		system.getState().removeNodes(system.getState().getChanceNodeIds());
 		system.getState().addNetwork(copyState1);
 		u_u.clear();
@@ -381,8 +381,8 @@ public class FlightBookingTest {
 		assertEquals("Ground(NbTickets,1)", system.getContent("a_m").
 				toDiscrete().getBest().toString());
 		assertEquals(1.0, system.getContent("current_step").getProb("LastConfirm"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("Shall I confirm"));
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("299 EUR"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("Shall I confirm"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("299 EUR"));
 		u_u.clear();
 		u_u.put("yes please", 0.5);
 		u_u.put("yellow", 0.4);
@@ -391,14 +391,14 @@ public class FlightBookingTest {
 		assertEquals(1.0, system.getContent("current_step").getProb("Final"), 0.01);
 		assertEquals("Book", system.getContent("a_m").
 				toDiscrete().getBest().toString());
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("additional tickets?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("additional tickets?"));
 		DialogueState copystate3 = system.getState().copy();
 		u_u.clear();
 		u_u.put("thanks but no thanks", 0.7);
 		system.addUserInput(u_u);
 		assertEquals(0.97, system.getContent("a_u").getProb("[Disconfirm]"), 0.01);
 		assertEquals(1.0, system.getContent("current_step").getProb("Close"), 0.01);
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("welcome back!"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("welcome back!"));
 		assertTrue(system.getModule(DialogueRecorder.class).getRecord().contains("<systemTurn><variable id=\"u_m\">"
 				+ "<value>You are ordering one round-trip ticket from Moss to Tromsø on March 16 and returning on "
 				+ "March 20 for a total cost of 299 EUR. "
@@ -418,11 +418,11 @@ public class FlightBookingTest {
 		u_u.put("yes", 0.7);
 		system.addUserInput(u_u);
 		assertFalse(system.getState().hasChanceNode("Destination"));
-		assertTrue(system.getContent("u_m").toDiscrete().getBest().toString().contains("destination?"));
+		assertTrue(system.getContent("u_m").getBest().toString().contains("destination?"));
 		assertEquals(Arrays.asList("Destination^p", "a_m-prev", "current_step", "u_m","u_u"), 
 				system.getState().getChanceNodeIds().stream().sorted().collect(Collectors.toList()));
 		system.addUserInput("Oslo");
-		assertEquals("Ground(Destination,Oslo)", system.getContent("a_m").toDiscrete().getBest().toString());
+		assertEquals("Ground(Destination,Oslo)", system.getContent("a_m").getBest().toString());
 
 
 	}

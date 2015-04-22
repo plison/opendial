@@ -97,7 +97,7 @@ public class DemoTest {
 		Set<String> updates = system.addContent(t);
 		assertTrue(updates.containsAll(Arrays.asList("a_u", "a_m", "u_m")));
 		
-		assertEquals("Hi there", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Hi there", system.getContent("u_m").getBest().toString());
 		
 		Map<String,Double> t2 = new HashMap<String,Double>();
 	 	t2.put("move forward", 0.06);
@@ -109,7 +109,7 @@ public class DemoTest {
 	 	t2.put("move forward", 0.45);
 		system.addUserInput(t2);
 		
-		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, moving Forward", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("now do that again", 0.3);
@@ -117,29 +117,29 @@ public class DemoTest {
 	 	t.addRow("move a bit to the left", 0.22);
 		system.addContent(t);
 		
-		assertEquals("Sorry, could you repeat?", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Sorry, could you repeat?", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("do that one more time", 0.65);
 		system.addContent(t);
 		
-		assertEquals("OK, moving Forward", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, moving Forward", system.getContent("u_m").getBest().toString());
 		
 		system.addContent(new CategoricalTable("perceived", "[BlueObj]"));
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("what do you see", 0.6);
 	 	t.addRow("do you see it", 0.3);
+	 	log.debug("-------------------");
 		system.addContent(t);
-		
-		assertEquals("I see a blue cylinder", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("I see a blue cylinder", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("pick up the blue object", 0.75);
 	 	t.addRow("turn left", 0.12);
 		system.addContent(t);
 		
-		assertEquals("OK, picking up the blue object", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, picking up the blue object", system.getContent("u_m").getBest().toString());
 		
 		system.addContent(new CategoricalTable("perceived", "[]"));
 		system.addContent(new CategoricalTable("carried", "[BlueObj]"));
@@ -149,46 +149,46 @@ public class DemoTest {
 	 	t.addRow("move backward a little bit", 0.13);
 		system.addContent(t);
 		
-		assertEquals("Should I move a bit forward?", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Should I move a bit forward?", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("yes", 0.8);
 	 	t.addRow("move backward", 0.1);
 		system.addContent(t);
 
-		assertEquals("OK, moving Forward a little bit", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, moving Forward a little bit", system.getContent("u_m").getBest().toString());
 
 		t = new CategoricalTable("u_u");
 	 	t.addRow("and now move forward", 0.21);
 	 	t.addRow("move backward", 0.09);
 		system.addContent(t);
 		
-		assertEquals("Should I move forward?", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Should I move forward?", system.getContent("u_m").getBest().toString());
 
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("no", 0.6);
 		system.addContent(t);
 
-		assertEquals("Should I move backward?", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Should I move backward?", system.getContent("u_m").getBest().toString());
 
 		t = new CategoricalTable("u_u");
 	 	t.addRow("yes", 0.5);
 		system.addContent(t);
 		
-		assertEquals("OK, moving Backward", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, moving Backward", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("now what can you see now?", 0.7);
 		system.addContent(t);
 		
-		assertEquals("I do not see anything", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("I do not see anything", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("please release the object", 0.5);
 		system.addContent(t);
 		
-		assertEquals("OK, putting down the object", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("OK, putting down the object", system.getContent("u_m").getBest().toString());
 		
 		t = new CategoricalTable("u_u");
 	 	t.addRow("something unexpected", 0.7);
@@ -200,7 +200,7 @@ public class DemoTest {
 	 	t.addRow("goodbye", 0.7);
 		system.addContent(t);
 		
-		assertEquals("Bye, see you next time", system.getContent("u_m").toDiscrete().getBest().toString());
+		assertEquals("Bye, see you next time", system.getContent("u_m").getBest().toString());
 		
 	}
 	

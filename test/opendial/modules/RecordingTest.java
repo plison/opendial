@@ -86,6 +86,9 @@ public class RecordingTest {
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
 				("<font size=\"4\">OK, moving Left a little bit</font>"));
 		assertEquals(6, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
+		if (StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn") != 4) {
+			Thread.sleep(250);
+		}
 		assertEquals(4, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(14, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "variable"));
 	
@@ -125,6 +128,7 @@ public class RecordingTest {
 			str += line;
 		}
 		br.close();
+		Thread.sleep(100);
 		assertEquals(26, StringUtils.countOccurrences(str, "variable"));
 		GUIMenuBar.exportContent(system, exportParams, "parameters");
 		str = "";
