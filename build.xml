@@ -68,6 +68,7 @@
 		<mkdir dir="${testreports}" />
 		<junit printsummary="yes" haltonfailure="no" haltonerror="yes" showoutput="no">
 			<classpath refid="compile.classpath" />
+			<jvmarg line="-Dfile.encoding=UTF-8" />
 			<batchtest fork="yes" todir="${testreports}">
 				<formatter type="xml" />
 				<fileset dir="${testsrc}">
@@ -102,7 +103,7 @@
 		<echo message="Starting the dialogue system..." />
 		<java classname="opendial.DialogueSystem" fork="true">
 			<classpath refid="compile.classpath" />
-			<jvmarg line="${other_args}" />
+			<jvmarg line="${other_args}  -Dfile.encoding=UTF-8" />
 			<syspropertyset>
 				<propertyref builtin="commandline" />
 			</syspropertyset>
