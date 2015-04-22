@@ -23,7 +23,6 @@
 
 package opendial.domains.rules.parameters;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 

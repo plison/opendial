@@ -355,6 +355,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @return the assignment with highest probability
 	 */
+	@Override
 	public Assignment getBest() {
 		if (table.size() > 0) {
 			MultivariateTable nbest = getNBest(1);

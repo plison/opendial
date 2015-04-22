@@ -24,7 +24,6 @@
 package opendial.bn.values;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import opendial.arch.Logger;
-import opendial.utils.StringUtils;
 
 /**
  * Factory for creating variable values

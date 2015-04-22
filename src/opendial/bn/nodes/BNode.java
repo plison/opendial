@@ -343,6 +343,7 @@ public abstract class BNode implements Comparable<BNode> {
 	/**
 	 * Returns the set of output nodes of a certain class
 	 * 
+	 * @param cls the class
 	 * @return the input node identifiers
 	 */
 	public <T extends BNode> Set<String> getOutputNodesIds(Class<T> cls) {

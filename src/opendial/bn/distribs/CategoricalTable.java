@@ -502,6 +502,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * 
 	 * @return the assignment with highest probability
 	 */
+	@Override
 	public Value getBest() {
 		if (table.size() > 0) {
 			CategoricalTable nbest = getNBest(1);

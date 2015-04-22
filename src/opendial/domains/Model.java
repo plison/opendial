@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Template;

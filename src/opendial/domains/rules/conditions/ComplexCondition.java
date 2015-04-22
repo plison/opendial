@@ -25,7 +25,6 @@ package opendial.domains.rules.conditions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +32,7 @@ import java.util.Set;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.RuleGrounding;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 
 /**
@@ -69,6 +66,7 @@ public final class ComplexCondition implements Condition {
 	 * Creates a new complex condition with a list of subconditions
 	 * 
 	 * @param subconditions the subconditions
+	 * @param operator the binary operator to employ between the conditions
 	 */
 	public ComplexCondition(List<Condition> subconditions, BinaryOperator operator) {
 		this.subconditions = subconditions;
