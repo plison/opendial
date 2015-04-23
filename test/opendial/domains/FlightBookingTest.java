@@ -23,14 +23,14 @@
 
 package opendial.domains;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
@@ -38,6 +38,8 @@ import opendial.datastructs.Assignment;
 import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
+
+import org.junit.Test;
 
 public class FlightBookingTest {
 

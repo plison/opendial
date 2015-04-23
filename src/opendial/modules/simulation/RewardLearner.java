@@ -41,8 +41,8 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.DoubleVal;
 import opendial.datastructs.Assignment;
 import opendial.inference.Query;
-import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.approximate.Sample;
+import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 

@@ -26,9 +26,9 @@ package opendial.bn.distribs;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;

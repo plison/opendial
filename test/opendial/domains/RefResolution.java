@@ -23,16 +23,16 @@
 
 package opendial.domains;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
 import opendial.DialogueSystem;
 import opendial.bn.values.ValueFactory;
 import opendial.readers.XMLDomainReader;
+
+import org.junit.Test;
 
 public class RefResolution {
 

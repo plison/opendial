@@ -26,7 +26,6 @@ package opendial.modules;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;

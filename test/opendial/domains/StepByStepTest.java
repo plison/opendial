@@ -22,11 +22,9 @@
 
 package opendial.domains;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-
-import org.junit.Test;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -35,6 +33,8 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.modules.core.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
+
+import org.junit.Test;
 
 public class StepByStepTest {
 

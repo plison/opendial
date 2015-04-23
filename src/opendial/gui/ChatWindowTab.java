@@ -160,7 +160,8 @@ public class ChatWindowTab extends JComponent {
 	} 
 	
 	
-	 protected void paintComponent(Graphics g) {
+	 @Override
+	protected void paintComponent(Graphics g) {
 		 inputField.requestFocus();
 		 inputField.requestFocusInWindow();
 	 }

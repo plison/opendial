@@ -30,9 +30,9 @@ import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.TemplateCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 /**
  * Representation of a basic effect of a rule.  A basic effect is formally

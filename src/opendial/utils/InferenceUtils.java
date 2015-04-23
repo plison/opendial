@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.stream.Collectors;
+
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;

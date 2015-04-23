@@ -23,7 +23,7 @@
 
 package opendial.modules;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;

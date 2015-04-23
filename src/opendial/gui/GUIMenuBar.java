@@ -23,10 +23,10 @@
 
 package opendial.gui;
 
-import java.awt.event.ItemEvent;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -34,6 +34,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.imageio.ImageIO;
 import javax.sound.sampled.Mixer;
 import javax.swing.ButtonGroup;

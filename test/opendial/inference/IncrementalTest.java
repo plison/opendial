@@ -25,10 +25,9 @@
 package opendial.inference;
 
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -38,6 +37,8 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
+
+import org.junit.Test;
 
 public class IncrementalTest {
 

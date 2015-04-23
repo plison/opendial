@@ -36,7 +36,6 @@ import java.util.regex.PatternSyntaxException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
-import opendial.utils.StringUtils;
 
 /**
  * Representation of a string object containing a variable number (from 0 to n) of slots
@@ -87,7 +86,7 @@ public final class Template {
 	public Template(String value) {
 
 		rawString = value;	
-		StringUtils.checkForm(rawString);
+	//	StringUtils.checkForm(rawString);
 
 		slots = constructSlots(value);
 
@@ -460,7 +459,7 @@ public final class Template {
 	 */
 	private static String constructRegex(String init) {
 		StringBuilder builder = new StringBuilder();
-		char[] charArr = init.toLowerCase().toCharArray();
+		char[] charArr = init.toCharArray();
 
 		boolean hasComplexRegex = false;
 		for(int i = 0; i < charArr.length; i++) {

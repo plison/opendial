@@ -41,9 +41,9 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
-import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import opendial.arch.DialException;

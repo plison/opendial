@@ -43,6 +43,7 @@ public final class ArrayVal implements Value {
 	
 	// the array of doubles
 	final double[] array;
+	final int hashcode;
 	
 	/**
 	 * Creates a new array of doubles
@@ -54,6 +55,7 @@ public final class ArrayVal implements Value {
 		for (int i = 0 ; i < array.length ; i++) {
 			array[i] = values[i];
 		}
+		hashcode = Arrays.hashCode(array);
 	}
 
 	/**
@@ -63,6 +65,7 @@ public final class ArrayVal implements Value {
 	 */
 	public ArrayVal(Collection<Double> values) {
 		array = values.stream().mapToDouble(d -> d).toArray();
+		hashcode = Arrays.hashCode(array);
 	}
 
 	
@@ -177,7 +180,7 @@ public final class ArrayVal implements Value {
 	 */
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(array);
+		return hashcode;
 	}
 	
 	

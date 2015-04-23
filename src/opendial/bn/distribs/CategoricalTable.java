@@ -31,11 +31,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.densityfunctions.DiscreteDensityFunction;
@@ -48,6 +43,11 @@ import opendial.datastructs.Intervals;
 import opendial.utils.InferenceUtils;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Representation of a categorical probability table P(X), where X

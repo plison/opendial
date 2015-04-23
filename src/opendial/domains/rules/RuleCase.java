@@ -35,9 +35,9 @@ import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.state.StatePruner;
 
 

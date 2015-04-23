@@ -39,6 +39,7 @@ public final class StringVal implements Value {
 
 	// the string
 	final String str;
+	final int hashcode;
 	Template template;
 	
 	/**
@@ -49,6 +50,7 @@ public final class StringVal implements Value {
 	 */
 	public StringVal(String str) { 
 		this.str = str;
+		hashcode = str.toLowerCase().hashCode();
 	};
 	
 	
@@ -58,7 +60,7 @@ public final class StringVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return str.toLowerCase().hashCode(); }
+	public int hashCode() { return hashcode; }
 	
 	
 	

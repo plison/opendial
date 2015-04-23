@@ -55,7 +55,7 @@ import opendial.arch.Logger;
 	 * @return hashcode
 	 */
 	@Override
-	public int hashCode() { return new Boolean(b).hashCode(); }
+	public int hashCode() { return (b)? -145 : +78; }
 	
 	/**
 	 * Returns true if the boolean value is similar, false otherwise

@@ -36,11 +36,11 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
-import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.effects.BasicEffect;
+import opendial.domains.rules.effects.Effect;
 
 /**
  * Representation of a probabilistic rule anchored in a particular dialogue state.
