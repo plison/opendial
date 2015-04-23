@@ -43,6 +43,7 @@ public final class DoubleVal implements Value {
 	 
 	// the double
 	final double d;
+	final int hashcode;
 
 	/**
 	 * Creates the double value
@@ -50,7 +51,10 @@ public final class DoubleVal implements Value {
 	 * 
 	 * @param d the double
 	 */
-	protected DoubleVal(double d) { this.d = d; };
+	protected DoubleVal(double d) { 
+		this.d = d;
+		hashcode = new Double(d).hashCode();
+		};
 
 	/**
 	 * Returns the hashcode for the double
@@ -58,7 +62,7 @@ public final class DoubleVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return new Double(d).hashCode(); }
+	public int hashCode() { return hashcode; }
 
 	/**
 	 * Returns true if the objects are similar, false otherwise
@@ -138,7 +142,7 @@ public final class DoubleVal implements Value {
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof DoubleVal) {
-			return (new Double(d)).compareTo(((DoubleVal)o).getDouble());
+			return Double.compare(d, ((DoubleVal)o).getDouble());
 		}
 		else {
 			return 0;

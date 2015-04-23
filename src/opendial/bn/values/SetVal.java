@@ -46,6 +46,7 @@ public final class SetVal implements Value {
 	 
 	// the set of values
 	final Set<Value> set;
+	final int hashcode;
 	
 	/**
 	 * Creates the list of values
@@ -63,6 +64,7 @@ public final class SetVal implements Value {
 				this.set.add(v);
 			}
 		}
+		hashcode = set.hashCode();
 		};
 
 	/**
@@ -80,7 +82,7 @@ public final class SetVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return set.hashCode(); }
+	public int hashCode() { return hashcode; }
 	
 	/**
 	 * Returns true if the lists are equals (contain the same elements), false
@@ -149,18 +151,6 @@ public final class SetVal implements Value {
 		}
 	}
 	
-	/**
-	 * Adds all the values in the given ListVal to this value
-	 * 
-	 * @param values the ListVal with the values to add
-	 */
-	public void addAll(SetVal values) {
-		set.addAll(values.getSet());
-	}
-	
-	public void removeAll(Collection<Value> discardValues) {
-		set.removeAll(discardValues);
-	}
 	
 	/**
 	 * Compares the list value to another value
@@ -172,13 +162,7 @@ public final class SetVal implements Value {
 		return hashCode() - o.hashCode();
 	}
 
-	public void remove(Value object) {
-		set.remove(object);
-	}
 
-	public void add(Value object) {
-		set.add(object);
-	}
 
 	/**
 	 * Returns true if subvalue is contained, and false otherwise

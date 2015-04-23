@@ -25,6 +25,7 @@ package opendial.modules;
 
 
 import java.util.Collection;
+
 import opendial.arch.DialException;
 import opendial.state.DialogueState;
 

@@ -31,12 +31,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
@@ -50,6 +46,11 @@ import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 import opendial.utils.XMLUtils;
+
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Module used to connect OpenDial to other remote clients (for instance,

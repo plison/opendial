@@ -34,9 +34,9 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -81,17 +81,17 @@ public class SettingsPanel extends JDialog {
 				BorderFactory.createTitledBorder("Inference")));
 
 		inference.add(new JLabel(" Number of samples to draw per query:     "));
-		final JFormattedTextField sampleNumber = new JFormattedTextField();
+		final JTextField sampleNumber = new JTextField();
 		sampleNumber.setText(""+Settings.nbSamples);
 		inference.add(sampleNumber);		
 
 		inference.add(new JLabel(" Maximum sampling time:     "));
-		final JFormattedTextField sampleTime = new JFormattedTextField();
+		final JTextField sampleTime = new JTextField();
 		sampleTime.setText(""+Settings.maxSamplingTime);
 		inference.add(sampleTime);	
 
 		inference.add(new JLabel(" Number of discretisation buckets:     "));
-		final JFormattedTextField discrete = new JFormattedTextField();
+		final JTextField discrete = new JTextField();
 		discrete.setText(""+Settings.discretisationBuckets);
 		inference.add(discrete);	
 
@@ -104,17 +104,17 @@ public class SettingsPanel extends JDialog {
 				BorderFactory.createTitledBorder("Graphical Interface")));
 
 		gui.add(new JLabel(" Variable label for user input:     "));
-		final JFormattedTextField userVar = new JFormattedTextField();
+		final JTextField userVar = new JTextField();
 		userVar.setText(""+ settings.userInput);
 		gui.add(userVar);		
 
 		gui.add(new JLabel(" Variable label for system output:     "));
-		final JFormattedTextField systemVar = new JFormattedTextField();
+		final JTextField systemVar = new JTextField();
 		systemVar.setText(""+settings.systemOutput);
 		gui.add(systemVar);	
 
 		gui.add(new JLabel(" Other variables to monitor in chat window:     "));
-		final JFormattedTextField toMonitor = new JFormattedTextField();
+		final JTextField toMonitor = new JTextField();
 		toMonitor.setText(""+StringUtils.join(settings.varsToMonitor, ","));
 		gui.add(toMonitor);	
 
@@ -129,17 +129,16 @@ public class SettingsPanel extends JDialog {
 						BorderFactory.createEmptyBorder(10, 0, 10, 0))));
 
 		planningBox.add(new JLabel(" Planning horizon:     "));
-		final JFormattedTextField horizon = new JFormattedTextField();
+		final JTextField horizon = new JTextField();
 		horizon.setText(""+ settings.horizon);
 		planningBox.add(horizon);		
 
 		planningBox.add(new JLabel(" Discount factor:     "));
-		final JFormattedTextField discount = new JFormattedTextField();
+		final JTextField discount = new JTextField();
 		discount.setText(""+settings.discountFactor);
 		planningBox.add(discount);
 
 		allOptions.add(planningBox);
-
 
 		contentPane.add(allOptions, BorderLayout.NORTH);
 		contentPane.add(new JLabel(" "), BorderLayout.CENTER);
@@ -174,7 +173,6 @@ public class SettingsPanel extends JDialog {
 
 			settings.fillSettings(otherStuff);
 
-			frame.getSystem().changeSettings(settings);
 			setVisible(false);
 		});
 		
@@ -184,13 +182,17 @@ public class SettingsPanel extends JDialog {
 		okcancelBox1.add(new JLabel("  "), BorderLayout.SOUTH);
 		contentPane.add(okcancelBox1, BorderLayout.SOUTH);
 
-		getRootPane().setDefaultButton(okButton);
-
 		setLocation(new Point(250, 250));
 		setMinimumSize(new Dimension(650,480));
 		setPreferredSize(new Dimension(650,480));
 		pack();
+	    
+	    getRootPane().setDefaultButton(okButton);
+		okButton.requestFocus();
+		okButton.requestFocusInWindow();
 		setVisible(true);
 	}
+	
+
 
 }

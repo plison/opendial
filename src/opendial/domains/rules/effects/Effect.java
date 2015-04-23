@@ -40,8 +40,8 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.ComplexCondition;
-import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
+import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 
 
@@ -224,9 +224,9 @@ public final class Effect implements Value {
 					for (Value v : new ArrayList<Value>(result)) {
 						if (v instanceof SetVal && ((SetVal)v).contains(e.getValue())) {
 							result.remove(v);
-							SetVal v2 = ((SetVal)v).copy();
+							Set<Value> v2 = ((SetVal)v).getSet();
 							v2.remove(e.getValue());
-							result.add(v2);
+							result.add(ValueFactory.create(v2));
 						}
 					}
 				}

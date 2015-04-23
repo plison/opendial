@@ -37,8 +37,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
@@ -539,7 +539,6 @@ public class DialogueSystem {
 
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
-			
 			// reducing the dialogue state to its relevant nodes
 			curState.reduce();	
 			

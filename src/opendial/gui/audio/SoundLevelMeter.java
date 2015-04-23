@@ -25,6 +25,7 @@ package opendial.gui.audio;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
 import javax.swing.JPanel;
 
 import opendial.arch.Logger;

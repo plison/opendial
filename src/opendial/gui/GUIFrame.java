@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -58,17 +58,17 @@ public class GUIFrame implements Module {
 
 	// tab for the state monitor
 	StateViewerTab stateMonitorTab;
-	
+
 	// tab for the chat window
 	ChatWindowTab chatTab;
-	
+
 	DialogueSystem system;		
-	
+
 	GUIMenuBar menu;
-	
+
 	boolean isSpeechEnabled = false;
 
-	
+
 	/**
 	 * Constructs (but does not yet display) a new GUI frame for OpenDial.
 	 * 
@@ -77,68 +77,68 @@ public class GUIFrame implements Module {
 	public GUIFrame(DialogueSystem system) {
 		this.system = system;
 	}
-	
-	
+
+
 	/**
 	 * Displays the GUI frame.
 	 */
 	@Override
 	public void start() {
- 
+
 
 		if (system.getSettings().showGUI) {
-		frame = new JFrame();
-		try {
-		File f = new File(ICON_PATH);
-		if (f.exists()) {
-			frame.setIconImage(ImageIO.read(f));						
-		}
-		else {
-			frame.setIconImage(ImageIO.read(GUIFrame.class.getResourceAsStream("/"+ICON_PATH.replace("//", "/"))));
-		}
-		}
-		catch (Exception e) {
-			log.debug("could not employ icon: " + e);
-		}
-		JTabbedPane tabbedPane = new JTabbedPane();
-		frame.getContentPane().add(tabbedPane);
+			frame = new JFrame();
+			try {
+				File f = new File(ICON_PATH);
+				if (f.exists()) {
+					frame.setIconImage(ImageIO.read(f));						
+				}
+				else {
+					frame.setIconImage(ImageIO.read(GUIFrame.class.getResourceAsStream("/"+ICON_PATH.replace("//", "/"))));
+				}
+			}
+			catch (Exception e) {
+				log.debug("could not employ icon: " + e);
+			}
+			JTabbedPane tabbedPane = new JTabbedPane();
+			frame.getContentPane().add(tabbedPane);
 
-		frame.setLocation(new Point(200, 200));
+			frame.setLocation(new Point(200, 200));
 
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) 
-			{ System.exit(0); }
-		}); 
-		
-		menu = new GUIMenuBar(this);
-		frame.setJMenuBar(menu);
-		
-		chatTab = new ChatWindowTab(system);
-		tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
+			frame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) 
+				{ System.exit(0); }
+			}); 
 
-		stateMonitorTab = new StateViewerTab(this);
-		tabbedPane.addTab(StateViewerTab.TAB_TITLE, null, stateMonitorTab, StateViewerTab.TAB_TIP);
-				
-		frame.setPreferredSize(new Dimension(1000,800));
-		frame.pack();
-		
-		frame.setVisible(true);	
+			menu = new GUIMenuBar(this);
+			frame.setJMenuBar(menu);
+
+			chatTab = new ChatWindowTab(system);
+			tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
+
+			stateMonitorTab = new StateViewerTab(this);
+			tabbedPane.addTab(StateViewerTab.TAB_TITLE, null, stateMonitorTab, StateViewerTab.TAB_TIP);
+
+			frame.setPreferredSize(new Dimension(1000,800));
+			frame.pack();
+
+			frame.setVisible(true);	
 		}
 		trigger(system.getState(), new ArrayList<String>());
 	}
-	
-	
+
+
 	/**
 	 * Pauses the GUI.
 	 */
 	@Override
 	public void pause(boolean pause) {
 		if (frame != null && frame.isVisible()) {
-		chatTab.updateActivation();
+			chatTab.updateActivation();
 		}
 	}
-	
+
 
 	/**
 	 * Returns the dialogue system connected to the GUI
@@ -157,19 +157,19 @@ public class GUIFrame implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (frame != null && frame.isVisible()) {
-		chatTab.trigger(state, updatedVars);
-		stateMonitorTab.refresh(state, updatedVars);
-		menu.update();
-		if (system.getDomain() == null) {
-			frame.setTitle("OpenDial toolkit");
-		}
-		else if (!frame.getTitle().contains(system.getDomain().getName())){
-			frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
-		}
+			chatTab.trigger(state, updatedVars);
+			stateMonitorTab.refresh(state, updatedVars);
+			menu.update();
+			if (system.getDomain() == null) {
+				frame.setTitle("OpenDial toolkit");
+			}
+			else if (!frame.getTitle().contains(system.getDomain().getName())){
+				frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
+			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Records a dialogue state in the component and makes it available for display
 	 * in the network selection list on the left side.  The network is associated with
@@ -179,24 +179,24 @@ public class GUIFrame implements Module {
 	 * @param state the dialogue state to record
 	 * @param name the name for the recorded network
 	 */
- 	public void recordState(DialogueState state, String name) {
+	public void recordState(DialogueState state, String name) {
 		if (frame != null) {
-		stateMonitorTab.recordState(state, name);
-		}
- 	}
-
-
- 	/**
- 	 * Adds a comment to the chat window
- 	 * 
- 	 * @param comment the comment to add
- 	 */
-	public void addComment(String comment) {
-		if (frame != null) {
-		chatTab.addComment(comment);
+			stateMonitorTab.recordState(state, name);
 		}
 	}
-	
+
+
+	/**
+	 * Adds a comment to the chat window
+	 * 
+	 * @param comment the comment to add
+	 */
+	public void addComment(String comment) {
+		if (frame != null) {
+			chatTab.addComment(comment);
+		}
+	}
+
 	/**
 	 * Returns the chat tab
 	 * 
@@ -205,7 +205,7 @@ public class GUIFrame implements Module {
 	public ChatWindowTab getChatTab() {
 		return chatTab;
 	}
-	
+
 	/**
 	 * Returns the state viewer tab
 	 * @return the state viewer
@@ -244,7 +244,7 @@ public class GUIFrame implements Module {
 	public boolean isSpeechEnabled() {
 		return isSpeechEnabled;
 	}
-	
+
 	/**
 	 * Enables or disables the speech recording functionality in the GUI
 	 * 
@@ -253,10 +253,10 @@ public class GUIFrame implements Module {
 	public void enableSpeech(boolean toEnable) {
 		isSpeechEnabled = toEnable;
 		if (chatTab != null) {
-		chatTab.enableSpeech(toEnable);
+			chatTab.enableSpeech(toEnable);
 		}
 		if (menu != null) {
-		menu.enableSpeech(toEnable);
+			menu.enableSpeech(toEnable);
 		}
 	}
 
