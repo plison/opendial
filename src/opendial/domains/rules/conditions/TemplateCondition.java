@@ -129,7 +129,7 @@ public final class TemplateCondition implements Condition {
 	}
 
 
-	
+
 	/**
 	 * Returns the slots in the variable and value template
 	 */
@@ -161,6 +161,8 @@ public final class TemplateCondition implements Condition {
 		Template expectedValue2 = expectedValue.fillSlots(input);
 		String filledVar = variable.fillSlots(input).getRawString();
 		Value actualValue = input.getValue(filledVar);
+
+		// regular expressions in the expected value
 		if (expectedValue2.isUnderspecified()) {
 			switch (relation) {	
 			case EQUAL: return expectedValue2.match(actualValue.toString()).isMatching();
@@ -173,20 +175,21 @@ public final class TemplateCondition implements Condition {
 			default: return false;
 			}
 		}
-		
-		Value filledValue = ValueFactory.create(expectedValue2.getRawString());
-		switch (relation) {	
-		case EQUAL: return actualValue.equals(filledValue);
-		case UNEQUAL: return !actualValue.equals(filledValue); 
-		case GREATER_THAN: return (actualValue.compareTo(filledValue) > 0); 
-		case LOWER_THAN: return (actualValue.compareTo(filledValue) < 0);
-		case CONTAINS: return actualValue.contains(filledValue); 
-		case NOT_CONTAINS: return !actualValue.contains(filledValue); 
-		case LENGTH: return actualValue.length() == filledValue.length();
-		case IN: return filledValue.contains(actualValue);
-		case NOT_IN: return !filledValue.contains(actualValue);
+		else {
+			Value filledValue = ValueFactory.create(expectedValue2.getRawString());
+			switch (relation) {	
+			case EQUAL: return actualValue.equals(filledValue);
+			case UNEQUAL: return !actualValue.equals(filledValue); 
+			case GREATER_THAN: return (actualValue.compareTo(filledValue) > 0); 
+			case LOWER_THAN: return (actualValue.compareTo(filledValue) < 0);
+			case CONTAINS: return actualValue.contains(filledValue); 
+			case NOT_CONTAINS: return !actualValue.contains(filledValue); 
+			case LENGTH: return actualValue.length() == filledValue.length();
+			case IN: return filledValue.contains(actualValue);
+			case NOT_IN: return !filledValue.contains(actualValue);
+			}
+			return false;
 		}
-		return false;
 	}
 
 
@@ -198,7 +201,7 @@ public final class TemplateCondition implements Condition {
 	 */
 	@Override
 	public RuleGrounding getGroundings(Assignment input) {	
-		
+
 		RuleGrounding groundings = new RuleGrounding();
 		if (!variable.getSlots().isEmpty() && !variable.isRawSlot() 
 				&& !variable.fillSlots(input).getSlots().isEmpty()) {

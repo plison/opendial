@@ -175,6 +175,9 @@ public final class ComplexCondition implements Condition {
 				
 				groundings = new RuleGrounding();
 				groundings.add(alternatives);
+				if (groundings.isFailed()) {
+					return groundings;
+				}
 			}
 		}
 		else if (operator == BinaryOperator.OR) {
