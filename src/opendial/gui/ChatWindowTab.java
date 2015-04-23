@@ -25,6 +25,7 @@ package opendial.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Insets;
 import java.io.StringReader;
 import java.util.Collection;
@@ -157,6 +158,12 @@ public class ChatWindowTab extends JComponent {
 			enableSpeech(true);
 		}
 	} 
+	
+	
+	 protected void paintComponent(Graphics g) {
+		 inputField.requestFocus();
+		 inputField.requestFocusInWindow();
+	 }
 
 
 	/**
