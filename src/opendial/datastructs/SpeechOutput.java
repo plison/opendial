@@ -201,7 +201,7 @@ public class SpeechOutput {
 				log.debug("finished the wait");
 				close();
 				log.debug("closing");
-			} 
+			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
 			} 
