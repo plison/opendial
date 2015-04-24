@@ -48,7 +48,7 @@ import opendial.utils.AudioUtils;
  * 
  * @author  Pierre Lison (plison@ifi.uio.no)
  */
-public class SpeechStream extends InputStream implements Value {
+public class SpeechInput extends InputStream implements Value {
 
 	// logger
 	public static Logger log = new Logger("SpeechStream", Logger.Level.NORMAL);
@@ -74,7 +74,7 @@ public class SpeechStream extends InputStream implements Value {
 	 * @param inputMixer the audio mixer to use
 	 * @throws DialException if the stream could not be captured from the mixer
 	 */
-	public SpeechStream(Mixer.Info inputMixer) throws DialException {
+	public SpeechInput(Mixer.Info inputMixer) throws DialException {
 		audioLine = AudioUtils.selectAudioLine(inputMixer);
 		log.debug("start recording on " + inputMixer.getName() + "...\t");
 		(new Thread(new StreamRecorder())).start();
@@ -87,7 +87,7 @@ public class SpeechStream extends InputStream implements Value {
 	 * @param stream the speech stream to copy
 
 	 */
-	private SpeechStream(SpeechStream stream) {
+	private SpeechInput(SpeechInput stream) {
 		this.audioLine = stream.audioLine;
 		this.currentPos = stream.currentPos;
 		this.data = stream.data;
@@ -233,7 +233,44 @@ public class SpeechStream extends InputStream implements Value {
 		return audioLine.getFormat();
 	}
 
+
+	/**
+	 * Returns the hashcode difference.
+	 */
+	@Override
+	public int compareTo(Value o) {
+		return hashCode() - o.hashCode();
+	}
+
+
+	/**
+	 * Returns a copy of the stream
+	 */
+	@Override
+	public SpeechInput copy() {
+		return new SpeechInput(this);
+	}
+
+
+	/**
+	 * Returns false
+	 */
+	@Override
+	public boolean contains(Value subvalue) {
+		return false;
+	}
+
+
+	/**
+	 * Returns a none value.
+	 */
+	@Override
+	public Value concatenate(Value value) {
+		return copy();
+	}
 	
+	
+
 	/**
 	 * Recorder for the stream, based on the captured audio data.
 	 */
@@ -272,41 +309,6 @@ public class SpeechStream extends InputStream implements Value {
 		}
 	}
 
-
-	/**
-	 * Returns the hashcode difference.
-	 */
-	@Override
-	public int compareTo(Value o) {
-		return hashCode() - o.hashCode();
-	}
-
-
-	/**
-	 * Returns a copy of the stream
-	 */
-	@Override
-	public SpeechStream copy() {
-		return new SpeechStream(this);
-	}
-
-
-	/**
-	 * Returns false
-	 */
-	@Override
-	public boolean contains(Value subvalue) {
-		return false;
-	}
-
-
-	/**
-	 * Returns a none value.
-	 */
-	@Override
-	public Value concatenate(Value value) {
-		return copy();
-	}
 
 
 }

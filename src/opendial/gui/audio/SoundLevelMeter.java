@@ -29,7 +29,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import opendial.arch.Logger;
-import opendial.datastructs.SpeechStream;
+import opendial.datastructs.SpeechInput;
 
 
 
@@ -55,7 +55,7 @@ public class SoundLevelMeter extends JPanel {
 	 * 
 	 * @param recording the speech stream to record
 	 */
-	public void monitorVolume(final SpeechStream recording) { 
+	public void monitorVolume(final SpeechInput recording) { 
 		(new Thread(new VolumeMonitor(recording))).start();
 	}
 
@@ -113,10 +113,10 @@ public class SoundLevelMeter extends JPanel {
 	 */
 	final class VolumeMonitor implements Runnable {
 		
-		SpeechStream stream;
+		SpeechInput stream;
 		boolean active = true;
 		
-		public VolumeMonitor(SpeechStream stream) {
+		public VolumeMonitor(SpeechInput stream) {
 			this.stream = stream;
 		}
 		

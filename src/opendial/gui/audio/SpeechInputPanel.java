@@ -39,7 +39,7 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.SpeechStream;
+import opendial.datastructs.SpeechInput;
 
 
 /**
@@ -59,7 +59,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	DialogueSystem system;
 	
 	// current speech recording
-	SpeechStream currentRecording;
+	SpeechInput currentRecording;
 	
 	// sound level meter
 	SoundLevelMeter slm;
@@ -98,7 +98,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) { 
 		try {
-		currentRecording = new SpeechStream(system.getSettings().inputMixer);
+		currentRecording = new SpeechInput(system.getSettings().inputMixer);
 		slm.monitorVolume(currentRecording);
 		system.addContent(new Assignment(system.getSettings().userSpeech, currentRecording));
 		}

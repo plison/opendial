@@ -38,12 +38,11 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.SpeechStream;
+import opendial.datastructs.SpeechInput;
+import opendial.datastructs.SpeechOutput;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
-import opendial.utils.AudioUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -140,7 +139,7 @@ public class ATTSpeech implements Module {
 			
 		// quick hack to ensure that the audio capture works 
 		try {
-		SpeechStream firstStream = new SpeechStream(system.getSettings().inputMixer);
+		SpeechInput firstStream = new SpeechInput(system.getSettings().inputMixer);
 		Thread.sleep(100);
 		firstStream.close(); 
 		}
@@ -181,9 +180,9 @@ public class ATTSpeech implements Module {
 		
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
-			if (speechVal instanceof SpeechStream) {
+			if (speechVal instanceof SpeechInput) {
 				new Thread(() -> {
-					Map<String,Double> table = recognise((SpeechStream)speechVal);
+					Map<String,Double> table = recognise((SpeechInput)speechVal);
 					if (!table.isEmpty()) {
 						system.addUserInput(table);
 					}
@@ -207,7 +206,7 @@ public class ATTSpeech implements Module {
 	 * @param grammar the recognition grammar, which can be null
 	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String,Double> recognise(SpeechStream stream) {
+	private Map<String,Double> recognise(SpeechInput stream) {
 
 		Map<String,Double> table = new HashMap<String,Double>();
 		log.info("calling AT&T server for recognition...\t");       
@@ -251,8 +250,9 @@ public class ATTSpeech implements Module {
 			log.info("calling AT&T server for synthesis...\t");       
 			APIResponse apiResponse = ttsClient.httpPost(utterance);
         int statusCode = apiResponse.getStatusCode();
-        if (statusCode == 200 || statusCode == 201) {        	
-        	AudioUtils.playAudio(apiResponse.getResponseBody(), system.getSettings().outputMixer);
+        if (statusCode == 200 || statusCode == 201) {
+        	SpeechOutput output = new SpeechOutput(apiResponse.getResponseBody());
+        	output.play(system.getSettings().outputMixer);
         	
         } else if (statusCode == 401) {
             throw new IOException("Unauthorized request.");

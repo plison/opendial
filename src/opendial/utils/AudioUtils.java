@@ -37,14 +37,13 @@ import java.util.List;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -92,43 +91,6 @@ public class AudioUtils {
 	}
 
 
-
-	/**
-	 * Plays the input stream on the standard audio input.
-	 * 
-	 * @param audioData the audio data to play
-	 * @param outputMixer the output mixer to employ
-	 * @return the audio clip
-	 */
-	public static Clip playAudio(byte[] audioData, Mixer.Info outputMixer) {
-		try {	
-			AudioPlayer player = new AudioPlayer(audioData, outputMixer);
-			(new Thread(player)).start();
-			return player.getClip();
-		}
-		catch (Exception e) {
-			throw new DialException("Audio exception " + e);
-		}
-	}
-	
-
-	/**
-	 * Plays the input stream on the standard audio input.
-	 * 
-	 * @param stream the stream to play
-	 * @param outputMixer the output mixer to employ
-	 * @return the audio clip
-	 */
-	public static Clip playAudio(AudioInputStream stream, Mixer.Info outputMixer) {
-		try {
-			AudioPlayer player = new AudioPlayer(stream, outputMixer);
-			(new Thread(player)).start();
-			return player.getClip();		
-			}
-		catch (Exception e) {
-			throw new DialException("Audio exception " + e);
-		}
-	}
 
 	/**
 	 * Returns the list of all audio mixers
@@ -205,83 +167,56 @@ public class AudioUtils {
 
 
 	/**
-	 * Thread used to play audio streams.
+	 * Returns the audio stream corresponding to the array of bytes
+	 * 
+	 * @param byteArray the byte array
+	 * @return the converted audio stream
 	 */
-	final static class AudioPlayer implements Runnable {
-
-		AudioInputStream stream;
-		Clip clip;
-
-		public AudioPlayer(AudioInputStream stream, Mixer.Info outputMixer) 
-				throws LineUnavailableException {
-			this.stream = stream;
-			clip = (outputMixer!=null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
-		}
-
-		public AudioPlayer(byte[] bytes, Mixer.Info outputMixer) 
-				throws LineUnavailableException, UnsupportedAudioFileException, IOException {
-			this(getAudioStream(bytes), outputMixer);
-		}
-		
-		public Clip getClip() {
-			return clip;
-		}
-
-
-
-		private static AudioInputStream getAudioStream(byte[] bytes) 
-				throws IOException, UnsupportedAudioFileException {
+	public static AudioInputStream getAudioStream(byte[] byteArray) throws DialException {
+		try {
 			try {
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
 			catch (UnsupportedAudioFileException e) {
-				bytes = addWavHeader(bytes);
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+				byteArray = addWavHeader(byteArray);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
 		}
-
-
-		private static byte[] addWavHeader(byte[] bytes) throws IOException {
-
-			ByteBuffer bufferWithHeader = ByteBuffer.allocate(bytes.length+44);
-			bufferWithHeader.order(ByteOrder.LITTLE_ENDIAN);
-			bufferWithHeader.put("RIFF".getBytes());
-			bufferWithHeader.putInt(bytes.length+36);
-			bufferWithHeader.put("WAVE".getBytes());
-			bufferWithHeader.put("fmt ".getBytes());
-			bufferWithHeader.putInt(16);
-			bufferWithHeader.putShort((short)1);
-			bufferWithHeader.putShort((short)1);
-			bufferWithHeader.putInt(16000);
-			bufferWithHeader.putInt(32000);
-			bufferWithHeader.putShort((short)2);
-			bufferWithHeader.putShort((short)16);
-			bufferWithHeader.put("data".getBytes());
-			bufferWithHeader.putInt(bytes.length);
-			bufferWithHeader.put(bytes);
-			return bufferWithHeader.array();
-		}
-
-		@Override
-		public void run() {
-			try {
-				clip.open(stream);
-				clip.start();
-				while (!clip.isActive()) {
-					Thread.sleep(50);
-				}
-				while (clip.isActive()) {
-					Thread.sleep(50);
-				}
-				clip.close();
-			}
-			catch (Exception e) {
-				log.severe("unable to play sound file, aborting.  Error: " + e.toString());
-			} 
+		catch (IOException|UnsupportedAudioFileException e) {
+			throw new DialException("cannot convert bytes to audio stream: " + e);
 		}
 	}
 
 
+	/**
+	 * Adds a WAV header to the byte array
+	 * @param bytes the original array of bytes
+	 * @return the new array with the header
+	 * @throws IOException if the byte array is ill-formatted
+	 */
+	private static byte[] addWavHeader(byte[] bytes) throws IOException {
+
+		ByteBuffer bufferWithHeader = ByteBuffer.allocate(bytes.length+44);
+		bufferWithHeader.order(ByteOrder.LITTLE_ENDIAN);
+		bufferWithHeader.put("RIFF".getBytes());
+		bufferWithHeader.putInt(bytes.length+36);
+		bufferWithHeader.put("WAVE".getBytes());
+		bufferWithHeader.put("fmt ".getBytes());
+		bufferWithHeader.putInt(16);
+		bufferWithHeader.putShort((short)1);
+		bufferWithHeader.putShort((short)1);
+		bufferWithHeader.putInt(16000);
+		bufferWithHeader.putInt(32000);
+		bufferWithHeader.putShort((short)2);
+		bufferWithHeader.putShort((short)16);
+		bufferWithHeader.put("data".getBytes());
+		bufferWithHeader.putInt(bytes.length);
+		bufferWithHeader.put(bytes);
+		return bufferWithHeader.array();
+	}
+
 }
+
+
