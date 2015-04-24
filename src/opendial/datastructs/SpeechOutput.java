@@ -197,8 +197,8 @@ public class SpeechOutput {
 				log.debug("starting...");
 				clip.start();
 				log.debug("started! now waiting...");
-				Thread.sleep(100);
 				wait();
+				Thread.sleep(3000);
 				log.debug("finished the wait");
 				close();
 				log.debug("closing");
