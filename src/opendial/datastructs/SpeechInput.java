@@ -51,7 +51,7 @@ import opendial.utils.AudioUtils;
 public class SpeechInput extends InputStream implements Value {
 
 	// logger
-	public static Logger log = new Logger("SpeechStream", Logger.Level.NORMAL);
+	public static Logger log = new Logger("SpeechInput", Logger.Level.NORMAL);
 
 	/** The audio line that is recorded */
 	TargetDataLine audioLine;
