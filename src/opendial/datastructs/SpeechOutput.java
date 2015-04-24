@@ -26,9 +26,11 @@ package opendial.datastructs;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.LineEvent.Type;
@@ -163,7 +165,8 @@ public class SpeechOutput {
 		 * @throws LineUnavailableException if the audio line is unavailable
 		 */
 		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException {
-			clip = (outputMixer!=null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
+			DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+			clip = (Clip)AudioSystem.getLine(info);
 			clip.addLineListener(e -> {
 				if (e.getType() == Type.STOP || e.getType() == Type.CLOSE) 
 					{synchronized (this) { notifyAll();}}
@@ -198,7 +201,6 @@ public class SpeechOutput {
 				clip.start();
 				log.debug("started! now waiting...");
 				wait();
-				Thread.sleep(3000);
 				log.debug("finished the wait");
 				close();
 				log.debug("closing");
