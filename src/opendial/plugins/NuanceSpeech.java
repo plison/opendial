@@ -25,9 +25,7 @@
 package opendial.plugins;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Arrays;
@@ -38,19 +36,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.Mixer;
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.SpeechStream;
+import opendial.datastructs.SpeechInput;
+import opendial.datastructs.SpeechOutput;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
-import opendial.utils.AudioUtils;
 import opendial.utils.InferenceUtils;
 
 import org.apache.http.HttpEntity;
@@ -95,11 +90,11 @@ public class NuanceSpeech implements Module {
 	/** file used to save the speech input (leave empty to avoid recording) */
 	public static String SAVE_SPEECH = "";
 
-	/** stack of yet-to-play synthesised audio */
-	Stack<ByteArrayOutputStream> audioToPlay = new Stack<ByteArrayOutputStream>();
+	/** stack of utterances to synthesise */
+	Stack<String> synthesisQueue;
 	
-	/** audio clip currently playing */
-	Clip currentClip;
+	/** speech output currently playing */
+	SpeechOutput currentOutput;
 	
 	/**
 	 * Creates a new plugin, attached to the dialogue system
@@ -120,6 +115,7 @@ public class NuanceSpeech implements Module {
 		if (system.getModule(GUIFrame.class) != null) {
 			system.getModule(GUIFrame.class).enableSpeech(true);
 		}
+		synthesisQueue = new Stack<String>();
 	} 
 
 	/**
@@ -135,7 +131,7 @@ public class NuanceSpeech implements Module {
 
 		// quick hack to ensure that the audio capture works 
 		try {
-			SpeechStream firstStream = new SpeechStream(system.getSettings().inputMixer);
+			SpeechInput firstStream = new SpeechInput(system.getSettings().inputMixer);
 			Thread.sleep(100);
 			firstStream.close(); 
 		}
@@ -176,9 +172,9 @@ public class NuanceSpeech implements Module {
 
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
-			if (speechVal instanceof SpeechStream) {
+			if (speechVal instanceof SpeechInput) {
 				Thread t = new Thread(() -> {
-					Map<String,Double> table = recognise((SpeechStream)speechVal);
+					Map<String,Double> table = recognise((SpeechInput)speechVal);
 					if (!table.isEmpty()) {
 						system.addUserInput(table);
 					}
@@ -208,13 +204,13 @@ public class NuanceSpeech implements Module {
 	 * @param stream the speech stream containing the audio data
 	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String,Double> recognise(SpeechStream stream) {
+	private Map<String,Double> recognise(SpeechInput stream) {
 
 		Map<String,Double> table = new HashMap<String,Double>();
-		if (currentClip != null) {
-			currentClip.stop();
+		if (currentOutput != null) {
+			currentOutput.stop();
 		}
-		audioToPlay.clear();
+		synthesisQueue.clear();
 		int sampleRate =  (int)stream.getFormat().getSampleRate();
 		log.info("calling Nuance server for recognition... "
 				+ "(sample rate: " + sampleRate + " Hz.)" );   
@@ -277,9 +273,9 @@ public class NuanceSpeech implements Module {
 	public void synthesise(String utterance) {
 
 		try {
-			log.info("calling Nuance server for synthesis...\t"); 
-			ByteArrayOutputStream rawBuffer = new ByteArrayOutputStream();
-			audioToPlay.add(rawBuffer);
+			log.info("calling Nuance server for synthesis...\t");
+			String stampedUtterance = utterance + "-" + System.currentTimeMillis();
+			synthesisQueue.add(stampedUtterance);
 			
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type",  "text/plain");
@@ -295,34 +291,19 @@ public class NuanceSpeech implements Module {
 				return;
 			}
 
-			InputStream in = resEntity.getContent();
-
-			int nRead;
-			byte[] data = new byte[1024 * 16];
-			while ((nRead = in.read(data, 0, data.length)) != -1) {
-				rawBuffer.write(data, 0, nRead);
-			}
-			rawBuffer.flush();
-			rawBuffer.close();
+			SpeechOutput output = new SpeechOutput(resEntity.getContent());
 			httppost.releaseConnection();
 			
-			while (audioToPlay.indexOf(rawBuffer) > 0) {
-				Thread.sleep(50);
+			while (synthesisQueue.indexOf(stampedUtterance) > 0) {
+				Thread.sleep(50);	
 			}
-			if (audioToPlay.isEmpty()) {
+			if (synthesisQueue.isEmpty()) {
 				return;
 			}
-			
-			Mixer.Info mixer = system.getSettings().outputMixer;
-			currentClip = AudioUtils.playAudio(rawBuffer.toByteArray(), mixer);
-			while (!currentClip.isActive()) {
-				Thread.sleep(50);
-			}
-			while (currentClip.isActive()) {
-				Thread.sleep(50);
-			}
-			audioToPlay.remove(rawBuffer);
-			
+			currentOutput = output;
+			output.play(system.getSettings().outputMixer);
+			output.waitUntilPlayed();
+			synthesisQueue.remove(stampedUtterance);	
 		}
 		catch (Exception e) {
 			e.printStackTrace();
