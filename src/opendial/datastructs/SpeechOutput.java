@@ -174,7 +174,6 @@ public class SpeechOutput {
 		 * Closes the player
 		 */
 		public void close() {
-			log.debug("close has been triggered");
 			try {
 				if (clip.isOpen()) {
 					clip.close();
@@ -192,16 +191,12 @@ public class SpeechOutput {
 		@Override
 		public synchronized void run() {
 			try {
-				log.debug("opening stream...");
 				clip.open(stream);
-				log.debug("starting...");
 				clip.start();
-				log.debug("started! now waiting...");
 				wait();
-				log.debug("finished the wait");
 				close();
 				log.debug("closing");
-			} 
+			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
 			} 
