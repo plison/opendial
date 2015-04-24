@@ -24,11 +24,8 @@
 package opendial.datastructs;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -195,18 +192,16 @@ public class SpeechOutput {
 		@Override
 		public synchronized void run() {
 			try {
-				int nb = AudioSystem.write(stream, 
-						AudioFileFormat.Type.WAVE, new FileOutputStream("test.wav"));
-
-		/**		log.debug("opening stream...");
+				log.debug("opening stream...");
 				clip.open(stream);
 				log.debug("starting...");
 				clip.start();
 				log.debug("started! now waiting...");
+				Thread.sleep(100);
 				wait();
 				log.debug("finished the wait");
 				close();
-				log.debug("closing"); */
+				log.debug("closing");
 			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
