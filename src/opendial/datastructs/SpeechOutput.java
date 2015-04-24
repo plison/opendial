@@ -26,12 +26,15 @@ package opendial.datastructs;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.LineEvent.Type;
+import javax.sound.sampled.SourceDataLine;
 
 import opendial.arch.Logger;
 import opendial.utils.AudioUtils;
@@ -153,8 +156,7 @@ public class SpeechOutput {
 	 */
 	final class StreamPlayer implements Runnable {
 
-		// the audio clip
-		Clip clip;
+		SourceDataLine line;
 
 		/**
 		 * Creates a new player for the given audio mixer.
@@ -163,11 +165,20 @@ public class SpeechOutput {
 		 * @throws LineUnavailableException if the audio line is unavailable
 		 */
 		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException {
-			clip = (outputMixer!=null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
-			clip.addLineListener(e -> {
-				if (e.getType() == Type.STOP || e.getType() == Type.CLOSE) 
-					{synchronized (this) { notifyAll();}}
-				});
+			try
+			{
+				if (outputMixer != null) {
+				line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
+				}
+				else {
+					line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat());
+				}	
+						line.open(stream.getFormat());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		/**
@@ -175,8 +186,8 @@ public class SpeechOutput {
 		 */
 		public void close() {
 			try {
-				if (clip.isOpen()) {
-					clip.close();
+				if (line.isOpen()) {
+					line.close();
 				}
 				stream.close();	
 			} 
@@ -191,15 +202,21 @@ public class SpeechOutput {
 		@Override
 		public synchronized void run() {
 			try {
-				log.debug("opening stream...");
-				clip.open(stream);
-				clip.start();
-				log.debug("started! now waiting...");
-				wait();
-				Thread.sleep(3000);
-				log.debug("finished the wait");
-				close();
-				log.debug("closing");
+				line.start();
+				int	nBytesRead = 0;
+				byte[]	abData = new byte[512];
+				while (nBytesRead != -1)
+				{
+						nBytesRead = stream.read(abData, 0, abData.length);
+					if (nBytesRead >= 0)
+					{
+						line.write(abData, 0, nBytesRead);
+					}
+				}
+				line.drain();
+				line.close();
+				stream.close();
+				notifyAll();
 			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
