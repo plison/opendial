@@ -191,8 +191,11 @@ public class SpeechOutput {
 		@Override
 		public synchronized void run() {
 			try {
+				log.debug("opening stream...");
 				clip.open(stream);
 				clip.start();
+				log.debug("started! now waiting...");
+				Thread.sleep(100);
 				wait();
 				close();
 				log.debug("closing");
