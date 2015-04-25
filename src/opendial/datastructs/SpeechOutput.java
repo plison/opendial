@@ -26,12 +26,12 @@ package opendial.datastructs;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.LineEvent.Type;
+import javax.sound.sampled.SourceDataLine;
 
 import opendial.arch.Logger;
 import opendial.utils.AudioUtils;
@@ -47,7 +47,7 @@ public class SpeechOutput {
 
 	// the audio stream to play
 	AudioInputStream stream;
-	
+
 	// the stream player
 	StreamPlayer player;
 
@@ -97,7 +97,7 @@ public class SpeechOutput {
 			log.warning("could not play speech output: " + e);
 		}
 	}
-	
+
 	/**
 	 * Blocks until the audio has finished playing.
 	 */
@@ -153,8 +153,8 @@ public class SpeechOutput {
 	 */
 	final class StreamPlayer implements Runnable {
 
-		// the audio clip
-		Clip clip;
+		// the data line
+		SourceDataLine line;
 
 		/**
 		 * Creates a new player for the given audio mixer.
@@ -162,23 +162,25 @@ public class SpeechOutput {
 		 * @param outputMixer the audio mixer to use
 		 * @throws LineUnavailableException if the audio line is unavailable
 		 */
-		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException {
-			clip = (outputMixer!=null)? AudioSystem.getClip(outputMixer) : AudioSystem.getClip();
-			clip.addLineListener(e -> {
-				if (e.getType() == Type.STOP || e.getType() == Type.CLOSE) 
-					{synchronized (this) { notifyAll();}}
-				});
+		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException  {
+			if (outputMixer != null) {
+				line = AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
+			}
+			else {
+				line = AudioSystem.getSourceDataLine(stream.getFormat());
+			}	
 		}
 
 		/**
 		 * Closes the player
 		 */
-		public void close() {
+		public synchronized void close() {
 			try {
-				if (clip.isOpen()) {
-					clip.close();
+				if (line.isOpen()) {
+					line.close();
 				}
-				stream.close();	
+				stream.close();
+				notifyAll();
 			} 
 			catch (Exception e) {
 				log.warning("unable to close output, aborting.  Error: " + e.toString());
@@ -189,16 +191,26 @@ public class SpeechOutput {
 		 * Plays the audio.
 		 */
 		@Override
-		public synchronized void run() {
+		public void run() {
 			try {
-				clip.open(stream);
-				clip.start();
-				wait();
-				close();
-			} 
+				line.open(stream.getFormat());
+				line.start();
+				int	nBytesRead = 0;
+				byte[]	abData = new byte[1024 * 16];
+				while (nBytesRead != -1)
+				{
+					nBytesRead = stream.read(abData, 0, abData.length);
+					if (nBytesRead >= 0)
+					{
+						line.write(abData, 0, nBytesRead);
+					}
+				}
+				line.drain();
+			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
 			} 
+			close();
 		}
 	}
 
