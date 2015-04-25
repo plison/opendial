@@ -50,7 +50,7 @@ public class SpeechOutput {
 
 	// the audio stream to play
 	AudioInputStream stream;
-	
+
 	// the stream player
 	StreamPlayer player;
 
@@ -100,7 +100,7 @@ public class SpeechOutput {
 			log.warning("could not play speech output: " + e);
 		}
 	}
-	
+
 	/**
 	 * Blocks until the audio has finished playing.
 	 */
@@ -164,32 +164,25 @@ public class SpeechOutput {
 		 * @param outputMixer the audio mixer to use
 		 * @throws LineUnavailableException if the audio line is unavailable
 		 */
-		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException {
-			try
-			{
-				if (outputMixer != null) {
+		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException  {
+			if (outputMixer != null) {
 				line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
-				}
-				else {
-					line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat());
-				}	
-						line.open(stream.getFormat());
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			else {
+				line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat());
+			}	
 		}
 
 		/**
 		 * Closes the player
 		 */
-		public void close() {
-			try {
+		public synchronized void close() {
+		    try {
 				if (line.isOpen()) {
 					line.close();
 				}
-				stream.close();	
+				stream.close();
+				notifyAll();
 			} 
 			catch (Exception e) {
 				log.warning("unable to close output, aborting.  Error: " + e.toString());
@@ -200,27 +193,26 @@ public class SpeechOutput {
 		 * Plays the audio.
 		 */
 		@Override
-		public synchronized void run() {
+		public void run() {
 			try {
+				line.open(stream.getFormat());
 				line.start();
 				int	nBytesRead = 0;
-				byte[]	abData = new byte[512];
+				byte[]	abData = new byte[1024 * 16];
 				while (nBytesRead != -1)
 				{
-						nBytesRead = stream.read(abData, 0, abData.length);
+					nBytesRead = stream.read(abData, 0, abData.length);
 					if (nBytesRead >= 0)
 					{
 						line.write(abData, 0, nBytesRead);
 					}
 				}
 				line.drain();
-				line.close();
-				stream.close();
-				notifyAll();
 			}  
 			catch (Exception e) {
 				log.warning("unable to play sound file, aborting.  Error: " + e.toString());
 			} 
+			close();
 		}
 	}
 
