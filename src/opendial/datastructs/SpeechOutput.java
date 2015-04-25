@@ -29,11 +29,8 @@ import java.io.InputStream;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.SourceDataLine;
 
 import opendial.arch.Logger;
@@ -156,6 +153,7 @@ public class SpeechOutput {
 	 */
 	final class StreamPlayer implements Runnable {
 
+		// the data line
 		SourceDataLine line;
 
 		/**
@@ -166,10 +164,10 @@ public class SpeechOutput {
 		 */
 		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException  {
 			if (outputMixer != null) {
-				line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
+				line = AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
 			}
 			else {
-				line = (SourceDataLine) AudioSystem.getSourceDataLine(stream.getFormat());
+				line = AudioSystem.getSourceDataLine(stream.getFormat());
 			}	
 		}
 
