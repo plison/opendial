@@ -103,7 +103,7 @@ public class SpeechOutput {
 	 */
 	public void waitUntilPlayed() {
 		try { 
-			if (player != null) {
+			if (player != null && player.isActive()) {
 				synchronized (player) {
 					player.wait(); 
 				} 
@@ -163,12 +163,15 @@ public class SpeechOutput {
 		 * @throws LineUnavailableException if the audio line is unavailable
 		 */
 		public StreamPlayer(Mixer.Info outputMixer) throws LineUnavailableException  {
+			synchronized (this) {
 			if (outputMixer != null) {
 				line = AudioSystem.getSourceDataLine(stream.getFormat(), outputMixer);
 			}
 			else {
 				line = AudioSystem.getSourceDataLine(stream.getFormat());
 			}	
+			line.open(stream.getFormat());
+			}
 		}
 
 		/**
@@ -186,6 +189,11 @@ public class SpeechOutput {
 				log.warning("unable to close output, aborting.  Error: " + e.toString());
 			} 
 		}
+		
+		
+		public synchronized boolean isActive() {
+			return line.isOpen();
+		}
 
 		/**
 		 * Plays the audio.
@@ -193,7 +201,6 @@ public class SpeechOutput {
 		@Override
 		public void run() {
 			try {
-				line.open(stream.getFormat());
 				line.start();
 				int	nBytesRead = 0;
 				byte[]	abData = new byte[1024 * 16];
