@@ -112,7 +112,7 @@ public class ComplexParameter implements Parameter {
 	 * Returns the list of unknown parameter variables
 	 */
 	@Override
-	public Collection<String> getParameterIds() {
+	public Collection<String> getVariables() {
 		return unknowns;
 	}
 

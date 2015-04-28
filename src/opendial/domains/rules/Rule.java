@@ -24,11 +24,9 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,10 +35,7 @@ import java.util.stream.Collectors;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
-import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.TemplateCondition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
@@ -70,7 +65,7 @@ public class Rule {
 
 	// cache with the outputs for a given assignment
 	Map<Assignment,RuleOutput> cache;
-	
+
 	// ===================================
 	//  RULE CONSTRUCTION
 	// ===================================
@@ -171,7 +166,7 @@ public class Rule {
 	 * @return the matched rule case.
 	 */
 	public RuleOutput getOutput (Assignment input) {
-		
+
 		if (cache != null) {
 			RuleOutput v = cache.get(input);
 			if (v != null) {
@@ -180,6 +175,7 @@ public class Rule {
 		}
 		RuleOutput output = new RuleOutput(ruleType);
 		RuleGrounding groundings = getGroundings(input);
+
 		for (Assignment g : groundings.getAlternatives()) {
 			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
 			RuleCase match = getMatchingCase(fullInput);
@@ -187,7 +183,7 @@ public class Rule {
 				output.addCase(match);
 			}
 		}
-	
+
 		if (cache != null) {
 			cache.put(input, output);
 			if (cache != null && cache.size() > 100) {
@@ -225,18 +221,25 @@ public class Rule {
 	 */
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding groundings = new RuleGrounding();
-		
 		for (RuleCase thecase :cases) {
-			groundings.add(thecase.getGroundings(input));
+			RuleGrounding caseGrounding = thecase.getGroundings(input);
+
 			if (ruleType == RuleType.UTIL) {
 				Assignment input2 = input.removePrimes();
 				for (Effect e : thecase.getEffects()) {
 					Condition co = e.convertToCondition();
-					RuleGrounding effectGrounding = co.getGroundings(input2);
-		//			effectGrounding.removeVariables(input2.getVariables());
-					groundings.add(effectGrounding);
+					if (input2.containsVars(e.getOutputVariables())) {
+						RuleGrounding effectGrounding = co.getGroundings(input2);
+						caseGrounding.add(effectGrounding);
+					}
+					else {
+						Set<String> slots = e.getAdditionalInputVariables();
+						slots.removeAll(input2.getVariables());
+						caseGrounding.add(Assignment.createOneValue(slots, ""));
+					}
 				}
 			}
+			groundings.add(caseGrounding);
 		}
 		return groundings;
 	}
@@ -264,7 +267,7 @@ public class Rule {
 		Set<String> params = new HashSet<String>();
 		for (RuleCase c : cases) {
 			for (Effect e : c.getEffects()) {
-				params.addAll(c.getParameter(e).getParameterIds());
+				params.addAll(c.getParameter(e).getVariables());
 			}
 		}
 		return params;
@@ -295,54 +298,6 @@ public class Rule {
 	}
 
 
-
-
-	/**
-	 * Returns the list of underspecified slots in the rule that appear in both
-	 * the conditions and effects of the rule and that aren't included in the
-	 * known variables.
-	 * 
-	 * @param knownVars the known variables
-	 * @return the list of slots for the rule
-	 */
-	public Set<String> getSlots(Set<String> knownVars) {
-
-		Set<String> slots = new HashSet<String>();
-		for (RuleCase c : cases) {
-			Set<String> conditionSlots = c.getCondition().getSlots();
-			conditionSlots.removeAll(knownVars);
-			Set<String> effectSlots = c.getEffects().stream()
-					.flatMap(e -> e.getSlots().stream())
-					.collect(Collectors.toSet());
-			conditionSlots.retainAll(effectSlots);
-			slots.addAll(conditionSlots);
-		}
-		return slots;
-	}
-	
-	
-	/**
-	 * Returns true if the rule contains inequalities in its conditions, and false
-	 * otherwise.
-	 * 
-	 * @return true if inequalities are there, false otherwise
-	 */
-	public boolean hasInequalities() {
-		for (RuleCase c : cases) {
-			List<Condition> conds = new LinkedList<Condition>(Arrays.asList(c.getCondition()));
-			while (!conds.isEmpty()) {
-				Condition cond = conds.remove(0);
-				if (cond instanceof TemplateCondition && 
-						((TemplateCondition)cond).getRelation() == Relation.UNEQUAL) {
-					return true;
-				}
-				else if (cond instanceof ComplexCondition) {
-					conds.addAll(((ComplexCondition)cond).getConditions());
-				}
-			}
-		}
-		return false;
-	}
 
 
 	// ===================================

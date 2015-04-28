@@ -122,7 +122,7 @@ assertEquals(ValueFactory.create("[type=ball, attr=red, attr=big, rel=left(agent
 	
 	
 	@Test
-	public void resolutionTest() {
+	public void resolutionTest() throws InterruptedException {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.startSystem();

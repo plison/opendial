@@ -143,6 +143,12 @@ public class RuleOutput extends RuleCase {
 	}
 	
 	
+	/**
+	 * Creates a new parameter out of the summation of p1 and p2
+	 * @param p1 the first parameter
+	 * @param p2 the second parameter
+	 * @return the parameter that equals p1 + p2
+	 */
 	private Parameter sumParameter (Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
 			double sum = ((FixedParameter)p1).getParameterValue() + ((FixedParameter)p2).getParameterValue();
@@ -152,12 +158,19 @@ public class RuleOutput extends RuleCase {
 			String p1str = (p1 instanceof SingleParameter)? "{"+p1 +"}" : p1.toString();
 			String p2str = (p2 instanceof SingleParameter)? "{"+p2 +"}" : p2.toString();
 			Set<String> unknowns = new HashSet<String>();
-			unknowns.addAll(p1.getParameterIds());
-			unknowns.addAll(p2.getParameterIds());
+			unknowns.addAll(p1.getVariables());
+			unknowns.addAll(p2.getVariables());
 			return new ComplexParameter (p1str + "+" + p2str, unknowns);
 		}
 	}
 	
+	
+	/**
+	 * Creates a new parameter out of the multiplication of p1 and p2
+	 * @param p1 the first parameter
+	 * @param p2 the second parameter
+	 * @return the parameter that equals p1 * p2
+	 */
 	private Parameter multiplyParameter (Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
 			double sum = ((FixedParameter)p1).getParameterValue() * ((FixedParameter)p2).getParameterValue();
@@ -167,8 +180,8 @@ public class RuleOutput extends RuleCase {
 			String p1str = (p1 instanceof SingleParameter)? "{"+p1 +"}" : p1.toString();
 			String p2str = (p2 instanceof SingleParameter)? "{"+p2 +"}" : p2.toString();
 			Set<String> unknowns = new HashSet<String>();
-			unknowns.addAll(p1.getParameterIds());
-			unknowns.addAll(p2.getParameterIds());
+			unknowns.addAll(p1.getVariables());
+			unknowns.addAll(p2.getVariables());
 		return new ComplexParameter (p1str + "*" + p2str, unknowns);
 		}
 	}

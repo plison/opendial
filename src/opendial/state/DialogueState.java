@@ -341,8 +341,8 @@ public class DialogueState extends BNetwork {
 				removeNode(r.getRuleId());
 			}
 			ProbabilityRuleNode ruleNode = new ProbabilityRuleNode(arule);
-			arule.getInputNodes().forEach(n -> ruleNode.addInputNode(n));
-			arule.getParameters().forEach(n -> ruleNode.addInputNode(n));
+			arule.getInputVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+			arule.getParameterVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 			addNode(ruleNode);
 			addOutputNodes(ruleNode);
 		}
@@ -353,8 +353,8 @@ public class DialogueState extends BNetwork {
 				removeNode(r.getRuleId());
 			}
 			UtilityRuleNode ruleNode = new UtilityRuleNode(arule);
-			arule.getInputNodes().forEach(n -> ruleNode.addInputNode(n));
-			arule.getParameters().forEach(n -> ruleNode.addInputNode(n));
+			arule.getInputVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+			arule.getParameterVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 			addNode(ruleNode);
 			addActionNodes(ruleNode);
 		}

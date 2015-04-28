@@ -129,7 +129,8 @@ public class WizardControl implements Module {
 		// if the action selection is straightforward and parameter-less, directly select the action
 		if (state.getNodes(UtilityRuleNode.class).size() == 1) {
 			UtilityRuleNode urnode = state.getNodes(UtilityRuleNode.class).stream().findFirst().get();
-			if (urnode.getInputConditions().size() == 1 && urnode.getAnchor().getParameters().isEmpty()) {
+			if (urnode.getInputConditions().size() == 1 
+					&& urnode.getAnchor().getParameterVariables().isEmpty()) {
 				system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
 				return;
 			}

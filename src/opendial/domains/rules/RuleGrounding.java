@@ -118,6 +118,22 @@ public class RuleGrounding {
 			groundings.remove(new Assignment());
 		}
 	}
+	
+
+	/**
+	 * Adds a single assignment to the list of alternative groundings
+	 * 
+	 * @param singleAssign the assignment
+	 */
+	public void add(Assignment singleAssign) {
+		if (singleAssign.isEmpty()) {
+			return;
+		}
+		groundings.add(singleAssign);
+		if (!isEmpty()) {
+			groundings.remove(new Assignment());
+		}
+	}
 
 
 	/**
@@ -249,6 +265,7 @@ public class RuleGrounding {
 			groundings.clear();
 		}
 	}
+
 }
 
 

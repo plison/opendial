@@ -239,19 +239,25 @@ public final class Effect implements Value {
 	}
 	
 	/**
-	 * Returns true if at least one of the included effect for the variable is marked
+	 * Returns true if all of the included effects for the variable are marked
 	 * as "add" (allowing multiple values).
 	 * 
 	 * @param variable the variable to check
 	 * @return true if the effect includes add effects for the variable, false otherwise
 	 */
 	public boolean isAdd(String variable) {
+		boolean foundAdd = false;
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable) && e.isAdd()) {
-				return true;
+			if (e.getVariable().equals(variable)) {
+				if (e.isAdd()) {
+					foundAdd = true;
+				}
+				else if (e.getValue().length() > 0 && !e.isNegated()){
+					return false;
+				}
 			}
 		}
-		return false;
+		return foundAdd;
 	}
 	
 	
@@ -283,6 +289,20 @@ public final class Effect implements Value {
 	@Override
 	public int length() {
 		return subeffects.size();
+	}
+	
+	/**
+	 * Returns the effect as an assignment of values. The variable labels are
+	 * ended by a prime character.
+	 * 
+	 * @return the assignment of new values to the variables
+	 */
+	public Assignment getAssignment() {
+		Assignment a = new Assignment();
+		for (BasicEffect e : subeffects) {
+			a.addPair(e.getVariable()+"'", e.getValue());
+		}
+		return a;
 	}
 	
 	// ===================================
@@ -405,6 +425,7 @@ public final class Effect implements Value {
 			}
 		}	
 	}
+
 
 
 }
