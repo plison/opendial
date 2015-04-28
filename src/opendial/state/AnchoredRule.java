@@ -24,23 +24,17 @@
 package opendial.state;
 
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
-import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleOutput;
-import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.Parameter;
 
 /**
  * Representation of a probabilistic rule anchored in a particular dialogue state.
@@ -53,28 +47,22 @@ public class AnchoredRule {
 	public static Logger log = new Logger("AnchoredRule", Logger.Level.DEBUG);
 
 	// the rule
-	Rule rule;	
-
-	// rule identifier
-	String id;
-
-	// dialogue state in which the rule is anchored
-	DialogueState state;
+	final Rule rule;	
 
 	// whether the rule is relevant
 	boolean relevant = false;
 
 	// the range of possible input values for the rule
-	ValueRange inputs;
+	final ValueRange inputs;
 
 	// the range of possible output (or action) values
-	ValueRange outputs;
+	final ValueRange outputs;
 
 	// the set of associated parameters
-	Set<String> parameters;
+	final Set<String> parameters;
 
 	// the relevant effects for the rule
-	Set<Effect> effects;
+	final Set<Effect> effects;
 
 
 	/**
@@ -92,47 +80,37 @@ public class AnchoredRule {
 	 */
 	public AnchoredRule (Rule rule, DialogueState state) {
 		this.rule = rule;
-		id = rule.getRuleId();
-		this.state = state;
-
-		// determines the input range
-		inputs = new ValueRange();
-		Set<Template> templates = rule.getInputVariables().stream()
-				.collect(Collectors.toSet());
-		for (ChanceNode inputNode : state.getMatchingNodes(templates)) {
-			inputs.addValues(inputNode.getId(), inputNode.getValues());
-		}
-
-		Set<Assignment> conditions = inputs.linearise();
-
-		// determines the set of possible effects, output values and parameters
-		// (for all possible input values)
 		effects = new HashSet<Effect>();
 		outputs = new ValueRange();
 		parameters = new HashSet<String>();
+		
+		// determines the input range
+		inputs = new ValueRange();
+		for (ChanceNode inputNode : state.getMatchingNodes(rule.getInputVariables())) {
+			inputs.addValues(inputNode.getId(), inputNode.getValues());
+		}
+
+		Set<Assignment> conditions = inputs.linearise();		
+
+		// determines the set of possible effects, output values and parameters
+		// (for all possible input values)
 		for (Assignment input : conditions) {
+			
 			RuleOutput output = rule.getOutput(input);
 			relevant = relevant || !output.getEffects().isEmpty();
-			for (Effect o : output.getEffects()) {
-				effects.add(o);
-				parameters.addAll(output.getParameter(o).getParameterIds());
-				for (BasicEffect e : o.getSubEffects()) {
-					String outputVar = e.getVariable()+"'";
-					outputs.addValue(outputVar, e.getValue());
-				}
+			
+			// looping on all alternative effects in the output
+			for (Map.Entry<Effect,Parameter> o : output.getEffectMap().entrySet()) {
+				Effect effect =o.getKey();
+				Parameter param = o.getValue();
+				effects.add(effect);
+				outputs.addAssign(effect.getAssignment());
+				param.getVariables().stream().filter(p -> state.hasChanceNode(p))
+					.forEach(p -> parameters.add(p));				
 			}
 		}
 		effects.add(new Effect());
 
-		// special case to handle corner cases with utility rules
-		if (rule.getRuleType() == RuleType.UTIL && ! rule.getSlots(state.getChanceNodeIds()).isEmpty()) {
-			parameters.addAll(rule.getParameterIds());
-			if (rule.hasInequalities()) {
-				relevant = true;
-				rule.getOutputVariables().stream().filter(v -> !v.contains("{"))
-				.forEach(v -> outputs.addValue(v+"'", ValueFactory.none())); 
-			}
-		}
 	}
 
 
@@ -157,17 +135,11 @@ public class AnchoredRule {
 	}
 
 
-	/**
-	 * Returns the list of input nodes for the anchored rule
-	 * 
-	 * @return the input nodes
-	 */
-	public List<ChanceNode> getInputNodes() {
-		return inputs.getVariables().stream()
-				.filter(v -> state.hasChanceNode(v))
-				.map(v -> state.getChanceNode(v))
-				.collect(Collectors.toList());
+
+	public Set<String> getInputVariables() {
+		return inputs.getVariables();
 	}
+
 
 	/**
 	 * Returns the output variables for the rule
@@ -214,11 +186,8 @@ public class AnchoredRule {
 	 * 
 	 * @return the set of parameter nodes
 	 */
-	public Collection<ChanceNode> getParameters() {
-		return parameters.stream()
-				.filter(v -> state.hasChanceNode(v))
-				.map(v -> state.getChanceNode(v))
-				.collect(Collectors.toList());
+	public Set<String> getParameterVariables() {
+		return parameters;
 	}
 
 

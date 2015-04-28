@@ -81,7 +81,7 @@ public class SingleParameter implements Parameter {
 	 * @return a collection with one element: the parameter distribution
 	 */
 	@Override
-	public Collection<String> getParameterIds() {
+	public Collection<String> getVariables() {
 		return Arrays.asList(paramId);
 	}
 

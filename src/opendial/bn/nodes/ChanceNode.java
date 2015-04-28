@@ -326,17 +326,15 @@ public class ChanceNode extends BNode {
 	@Override
 	public Set<Value> getValues() {
 		if (cachedValues == null) {
-			cachedValues = new HashSet<Value>();
 			ValueRange inputValues = new ValueRange();
 			for (BNode inputNode: inputNodes.values()) {
 				inputValues.addValues(inputNode.getId(), inputNode.getValues());
 			}
 			try {
-				Set<Value> outputs = distrib.getValues(inputValues);
-				cachedValues.addAll(outputs);
+				cachedValues = new HashSet<Value>(distrib.getValues(inputValues));
 			}
 			catch (DialException e) {
-				log.warning("could not extract values for " + nodeId);
+				log.warning("Could not extract values for " + nodeId);
 				cachedValues = new HashSet<Value>();
 			}
 		}

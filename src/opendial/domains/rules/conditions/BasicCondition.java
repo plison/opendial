@@ -48,10 +48,10 @@ public final class BasicCondition implements Condition {
 	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
 		GREATER_THAN, LOWER_THAN, IN, NOT_IN, LENGTH}
 
-	// variable label (can include slots to fill)
+	// variable label
 	final String variable;
 
-	// expected variable value (can include slots to fill)
+	// expected variable value
 	final Value expectedValue;
 
 	// the relation which needs to hold between the variable and the value

@@ -82,7 +82,7 @@ public class FixedParameter implements Parameter {
 	 * @return an empty set of distributions
 	 */
 	@Override
-	public Collection<String> getParameterIds() {
+	public Collection<String> getVariables() {
 		return new LinkedList<String>();
 	}
 	

@@ -53,7 +53,7 @@ public interface Parameter {
 	 * 
 	 * @return the collection of parameter labels 
 	 */
-	public Collection<String> getParameterIds();
+	public Collection<String> getVariables();
 
 	
 	

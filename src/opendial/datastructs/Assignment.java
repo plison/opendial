@@ -38,7 +38,6 @@ import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -295,7 +294,34 @@ public class Assignment {
 	}
 
 
+	/**
+	 * Creates an assignment where all variable share a single common value.
+	 * 
+	 * @param variables the variables of the assignment
+	 * @param commonValue the single value for all variables
+	 * @return the corresponding assignment
+	 */
+	public static Assignment createOneValue(Collection<String> variables, Value commonValue) {
+		Map<String,Value> oneValMap = variables.stream()
+				.collect(Collectors.toMap(v -> v, v -> commonValue));
+		return new Assignment(oneValMap);
+	}
 
+
+	/**
+	 * Creates an assignment where all variable share a single common value.
+	 * 
+	 * @param variables the variables of the assignment
+	 * @param commonValue the single value for all variables (as a string)
+	 * @return the corresponding assignment
+	 */
+	public static Assignment createOneValue(Collection<String> variables, String commonValue) {
+		Map<String,Value> oneValMap = variables.stream()
+				.collect(Collectors.toMap(v -> v, v -> ValueFactory.create(commonValue)));
+		return new Assignment(oneValMap);
+	}
+
+	
 	/**
 	 * Creates an assignment with only none values for the variable labels
 	 * given as argument.
@@ -902,6 +928,7 @@ public class Assignment {
 		return str;
 
 	}
+
 
 
 
