@@ -23,14 +23,13 @@
 
 package opendial.state.nodes;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
-import opendial.domains.rules.effects.Effect;
 import opendial.state.AnchoredRule;
 import opendial.state.distribs.RuleDistribution;
 
@@ -61,7 +60,6 @@ public class ProbabilityRuleNode extends ChanceNode {
 		super(rule.getRule().getRuleId());
 		this.rule = rule;
 		distrib = new RuleDistribution(rule);
-		
 	}
 	
 	
@@ -73,10 +71,7 @@ public class ProbabilityRuleNode extends ChanceNode {
 	@Override
 	public Set<Value> getValues() {
 		if (cachedValues == null) {
-			cachedValues = new HashSet<Value>();
-			for (Effect e : rule.getEffects()) {
-				cachedValues.add(e);
-			}
+			cachedValues = rule.getEffects().stream().collect(Collectors.toSet());
 		}
 		return cachedValues;
 	}

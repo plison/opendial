@@ -35,6 +35,7 @@ import java.util.Stack;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -337,6 +338,25 @@ public class BNetwork {
 			}
 		}
 		return nodesOfClass;
+	}
+	
+	
+
+	/**
+	 * Returns the set of chance nodes that have a particular distribution
+	 * (extending ChanceNode)
+	 * 
+	 * @param cls the class
+	 * @return the resulting set of node identifiers
+	 */
+	public <T extends ProbDistribution> Collection<String> getChanceNodesIds(Class<T> cls) {
+		Set<String> nodesOfDistrib = new HashSet<String>();
+		for (BNode n : nodes.values()) {
+			if (n instanceof ChanceNode && cls.isInstance(((ChanceNode)n).getDistrib())) {
+				nodesOfDistrib.add(n.getId());
+			}
+		}
+		return nodesOfDistrib;
 	}
 
 
