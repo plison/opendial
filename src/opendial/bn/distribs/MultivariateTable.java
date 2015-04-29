@@ -39,22 +39,23 @@ import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 
 /**
- * Representation of a multivariate categorical table P(X1,...Xn),
- * where X1,...Xn are random variables.
+ * Representation of a multivariate categorical table P(X1,...Xn), where
+ * X1,...Xn are random variables.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class MultivariateTable implements MultivariateDistribution {
 
 	// logger
-	public static Logger log = new Logger("MultivariateTable", Logger.Level.DEBUG);
+	public static Logger log = new Logger("MultivariateTable",
+			Logger.Level.DEBUG);
 
 	// the head variables
 	Set<String> headVars;
 
 	// the probability table
-	Map<Assignment,Double> table;
+	Map<Assignment, Double> table;
 
 	// probability intervals (used for binary search in sampling)
 	Intervals<Assignment> intervals;
@@ -62,30 +63,27 @@ public class MultivariateTable implements MultivariateDistribution {
 	// sampler
 	Random sampler;
 
-
 	// ===================================
-	//  TABLE CONSTRUCTION
+	// TABLE CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Constructs a new probability table, with no values
 	 */
 	public MultivariateTable() {
-		table = new HashMap<Assignment,Double>(5);
+		table = new HashMap<Assignment, Double>(5);
 		headVars = new HashSet<String>();
 		sampler = new Random();
 	}
 
 	/**
-	 * Constructs a new probability table with a mapping between head
-	 * variable assignments and probability values.  The construction
-	 * assumes that the distribution does not have any conditional
-	 * variables.
+	 * Constructs a new probability table with a mapping between head variable
+	 * assignments and probability values. The construction assumes that the
+	 * distribution does not have any conditional variables.
 	 * 
 	 * @param headTable the mapping to fill the table
 	 */
-	public MultivariateTable(Map<Assignment,Double> headTable) {
+	public MultivariateTable(Map<Assignment, Double> headTable) {
 		this();
 		double totalProb = 0.0;
 		for (Assignment a : headTable.keySet()) {
@@ -108,14 +106,13 @@ public class MultivariateTable implements MultivariateDistribution {
 		String variable = headTable.getVariable();
 		for (Value a : headTable.getValues()) {
 			double prob = headTable.getProb(a);
-			addRow(new Assignment(variable,a), prob);
+			addRow(new Assignment(variable, a), prob);
 			totalProb += prob;
 		}
 		if (totalProb < 0.99999) {
 			incrementRow(Assignment.createDefault(headVars), 1.0 - totalProb);
 		}
 	}
-
 
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
@@ -128,13 +125,13 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Adds a new row to the probability table, assuming no conditional assignment.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table, assuming no conditional
+	 * assignment. If the table already contains a probability, it is erased.
 	 * 
 	 * @param head the assignment for X1...Xn
 	 * @param prob the associated probability
 	 */
-	public synchronized void addRow (Assignment head, double prob) {
+	public synchronized void addRow(Assignment head, double prob) {
 
 		if (prob < 0.0f || prob > 1.02f) {
 			return;
@@ -142,22 +139,19 @@ public class MultivariateTable implements MultivariateDistribution {
 
 		headVars.addAll(head.getVariables());
 
-		table.put(head,prob);
+		table.put(head, prob);
 
 		double totalProb = countTotalProb();
 		if (totalProb < 0.98) {
 			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
-		}
-		else {
+		} else {
 			table.remove(Assignment.createDefault(headVars));
 		}
 	}
 
-
-
 	/**
-	 * Increments the probability specified in the table for the given head 
-	 * assignment.  If none exists, simply assign the probability.
+	 * Increments the probability specified in the table for the given head
+	 * assignment. If none exists, simply assign the probability.
 	 * 
 	 * @param head the head assignment
 	 * @param prob the probability increment
@@ -166,10 +160,9 @@ public class MultivariateTable implements MultivariateDistribution {
 		if (table.containsKey(head)) {
 			if (head.equals(Assignment.createDefault(headVars))) {
 				return;
-			} 
+			}
 			addRow(head, table.get(head) + prob);
-		}
-		else {
+		} else {
 			addRow(head, prob);
 		}
 	}
@@ -179,12 +172,11 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @param heads the mappings (head assignment, probability value)
 	 */
-	public synchronized void addRows(Map<Assignment,Double> heads) {
+	public synchronized void addRows(Map<Assignment, Double> heads) {
 		for (Assignment head : heads.keySet()) {
 			addRow(head, heads.get(head));
 		}
 	}
-
 
 	/**
 	 * Extend all rows in the table with the given value assignment
@@ -192,7 +184,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * @param assign the value assignment
 	 */
 	public synchronized void extendRows(Assignment assign) {
-		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
+		Map<Assignment, Double> newTable = new HashMap<Assignment, Double>();
 		for (Assignment row : table.keySet()) {
 			newTable.put(new Assignment(row, assign), table.get(row));
 		}
@@ -214,12 +206,9 @@ public class MultivariateTable implements MultivariateDistribution {
 		}
 	}
 
-
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the rows of the table
@@ -231,9 +220,8 @@ public class MultivariateTable implements MultivariateDistribution {
 		return table.keySet();
 	}
 
-
 	/**
-	 * Returns the probability P(head). 
+	 * Returns the probability P(head).
 	 * 
 	 * @param head the head assignment
 	 * @return the associated probability, if one exists.
@@ -252,10 +240,9 @@ public class MultivariateTable implements MultivariateDistribution {
 		return 0.0f;
 	}
 
-
 	/**
-	 * Returns the marginal distribution P(Xi) for a random variable
-	 * Xi in X1,...Xn.
+	 * Returns the marginal distribution P(Xi) for a random variable Xi in
+	 * X1,...Xn.
 	 * 
 	 * @param variable the variable Xi
 	 * @return the distribution P(Xi).
@@ -273,29 +260,28 @@ public class MultivariateTable implements MultivariateDistribution {
 		return marginal;
 	}
 
-
 	/**
 	 * returns true if the table contains a probability for the given assignment
 	 * 
 	 * @param head the assignment
-	 * @return true if the table contains a row for the assignment, false otherwise
+	 * @return true if the table contains a row for the assignment, false
+	 *         otherwise
 	 */
 	public boolean hasProb(Assignment head) {
 		Assignment trimmedHead = head.getTrimmed(headVars);
 		return table.containsKey(trimmedHead);
 	}
 
-
-
 	/**
-	 * Sample an assignment from the distribution. If no assignment can be sampled 
-	 * (due to e.g. an ill-formed distribution), returns an empty assignment.
+	 * Sample an assignment from the distribution. If no assignment can be
+	 * sampled (due to e.g. an ill-formed distribution), returns an empty
+	 * assignment.
 	 * 
 	 * @return the sampled assignment
 	 * @throws DialException if no assignment could be sampled
 	 */
 	@Override
-	public Assignment sample() throws DialException  {
+	public Assignment sample() throws DialException {
 
 		if (intervals == null) {
 			intervals = new Intervals<Assignment>(table);
@@ -308,7 +294,6 @@ public class MultivariateTable implements MultivariateDistribution {
 		return intervals.sample();
 	}
 
-
 	/**
 	 * Returns the set of variable labels used in the table
 	 * 
@@ -319,7 +304,6 @@ public class MultivariateTable implements MultivariateDistribution {
 		return new HashSet<String>(headVars);
 	}
 
-
 	/**
 	 * Returns true if the table is empty (or contains only a default
 	 * assignment), false otherwise
@@ -329,29 +313,28 @@ public class MultivariateTable implements MultivariateDistribution {
 	public boolean isEmpty() {
 		if (table.isEmpty()) {
 			return true;
-		}
-		else return (table.size() == 1 && table.keySet().iterator().next().
-				equals(Assignment.createDefault(headVars)));
+		} else
+			return (table.size() == 1 && table.keySet().iterator().next()
+					.equals(Assignment.createDefault(headVars)));
 	}
 
-
 	/**
-	 * Returns a subset of the N values in the table with the highest probability.
+	 * Returns a subset of the N values in the table with the highest
+	 * probability.
 	 * 
 	 * @param nbest the number of values to select
 	 * @return the distribution with the subset of values
 	 */
-	public MultivariateTable getNBest(int nbest)  {
+	public MultivariateTable getNBest(int nbest) {
 
-		Map<Assignment,Double> filteredTable = InferenceUtils.getNBest(table, nbest);
+		Map<Assignment, Double> filteredTable = InferenceUtils.getNBest(table,
+				nbest);
 		return new MultivariateTable(filteredTable);
 	}
 
-
-
 	/**
-	 * Returns the most likely assignment of values in the table.  If none could
-	 * be found, returns an empty assignment.  
+	 * Returns the most likely assignment of values in the table. If none could
+	 * be found, returns an empty assignment.
 	 * 
 	 * @return the assignment with highest probability
 	 */
@@ -363,19 +346,15 @@ public class MultivariateTable implements MultivariateDistribution {
 				nbest.removeRow(Assignment.createDefault(nbest.getVariables()));
 			}
 			return nbest.getValues().iterator().next();
-		}
-		else {
+		} else {
 			log.warning("table is empty, cannot extract best value");
 			return new Assignment();
 		}
 	}
 
-
-
 	// ===================================
-	//  UTILITIES
+	// UTILITIES
 	// ===================================
-
 
 	/**
 	 * Modifies the variable identifiers.
@@ -385,7 +364,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 */
 	@Override
 	public void modifyVariableId(String oldVarId, String newVarId) {
-		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
+		Map<Assignment, Double> newTable = new HashMap<Assignment, Double>();
 
 		for (Assignment head : table.keySet()) {
 			Assignment newHead = head.copy();
@@ -413,12 +392,10 @@ public class MultivariateTable implements MultivariateDistribution {
 		return table.hashCode();
 	}
 
-
-
 	/**
-	 * Returns true if the probability table is well-formed.  The method checks that all 
-	 * possible assignments for the condition and head parts are covered in the table, 
-	 * and that the probabilities add up to 1.0f.
+	 * Returns true if the probability table is well-formed. The method checks
+	 * that all possible assignments for the condition and head parts are
+	 * covered in the table, and that the probabilities add up to 1.0f.
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
@@ -426,7 +403,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	public boolean isWellFormed() {
 
 		// checks that the total probability is roughly equal to 1.0f
-		double totalProb = countTotalProb() + getProb(Assignment.createDefault(headVars));
+		double totalProb = countTotalProb()
+				+ getProb(Assignment.createDefault(headVars));
 		if (totalProb < 0.9f || totalProb > 1.1f) {
 			log.debug("total probability is " + totalProb);
 			return false;
@@ -434,8 +412,6 @@ public class MultivariateTable implements MultivariateDistribution {
 
 		return true;
 	}
-
-
 
 	/**
 	 * Returns a string representation of the probability table
@@ -445,19 +421,17 @@ public class MultivariateTable implements MultivariateDistribution {
 	@Override
 	public String toString() {
 
-		Map<Assignment,Double> sortedTable = 
-				InferenceUtils.getNBest(table, Math.max(table.size(), 1));
+		Map<Assignment, Double> sortedTable = InferenceUtils.getNBest(table,
+				Math.max(table.size(), 1));
 
-		String str = "";		
-		for (Entry<Assignment,Double> entry : sortedTable.entrySet()) {
+		String str = "";
+		for (Entry<Assignment, Double> entry : sortedTable.entrySet()) {
 			String prob = StringUtils.getShortForm(entry.getValue());
-			str += "P("+entry.getKey() + "):=" + prob + "\n";
+			str += "P(" + entry.getKey() + "):=" + prob + "\n";
 		}
 
-		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
+		return (str.length() > 0) ? str.substring(0, str.length() - 1) : str;
 	}
-
-
 
 	/**
 	 * Prunes all table values that have a probability lower than the threshold.
@@ -467,20 +441,19 @@ public class MultivariateTable implements MultivariateDistribution {
 	@Override
 	public boolean pruneValues(double threshold) {
 		boolean changed = false;
-		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
+		Map<Assignment, Double> newTable = new HashMap<Assignment, Double>();
 		for (Assignment row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
-			}
-			else {
+			} else {
 				changed = true;
 			}
 		}
 		table = newTable;
 		return changed;
 	}
-	
+
 	/**
 	 * Returns a copy of the probability table
 	 *
@@ -503,16 +476,13 @@ public class MultivariateTable implements MultivariateDistribution {
 		return this;
 	}
 
-
-	
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
-
 
 	/**
-	 * Returns the total accumulated probability for the distribution P(.|condition)
+	 * Returns the total accumulated probability for the distribution
+	 * P(.|condition)
 	 * 
 	 * @return the total probability
 	 */
@@ -526,6 +496,5 @@ public class MultivariateTable implements MultivariateDistribution {
 		}
 		return totalProb;
 	}
-
 
 }

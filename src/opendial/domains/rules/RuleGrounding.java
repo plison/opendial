@@ -43,7 +43,7 @@ public class RuleGrounding {
 	public static Logger log = new Logger("RuleGrounding", Logger.Level.DEBUG);
 
 	Set<Assignment> groundings;
-	
+
 	/**
 	 * Constructs an empty set of groundings
 	 */
@@ -51,7 +51,7 @@ public class RuleGrounding {
 		groundings = new HashSet<Assignment>();
 		groundings.add(new Assignment());
 	}
-	
+
 	/**
 	 * Constructs a grounding with a single assignment.
 	 * 
@@ -61,9 +61,10 @@ public class RuleGrounding {
 		this();
 		extend(singleAssign);
 	}
-	
+
 	/**
-	 * Constructs a set of groundings with the given collection of alternative assignments
+	 * Constructs a set of groundings with the given collection of alternative
+	 * assignments
 	 * 
 	 * @param assigns the assignments
 	 */
@@ -71,9 +72,10 @@ public class RuleGrounding {
 		this();
 		extend(assigns);
 	}
-	
+
 	/**
-	 * Adds a collection of alternative groundings.  At least one must be non-failed.
+	 * Adds a collection of alternative groundings. At least one must be
+	 * non-failed.
 	 * 
 	 * @param alternatives the alternative groundings
 	 */
@@ -89,24 +91,23 @@ public class RuleGrounding {
 			groundings.clear();
 		}
 	}
-	
-		
-	
+
 	/**
-	 * Constructs a set of groundings with the alternative values for the variable
+	 * Constructs a set of groundings with the alternative values for the
+	 * variable
 	 * 
 	 * @param variable the variable label
 	 * @param vals the alternative values
 	 */
 	public RuleGrounding(String variable, Collection<Value> vals) {
 		groundings = new HashSet<Assignment>();
-		
+
 		for (Value v : vals) {
 			groundings.add(new Assignment(variable, v));
-	
+
 		}
 	}
-	
+
 	/**
 	 * Adds a list of alternative groundings to the existing set
 	 * 
@@ -118,7 +119,6 @@ public class RuleGrounding {
 			groundings.remove(new Assignment());
 		}
 	}
-	
 
 	/**
 	 * Adds a single assignment to the list of alternative groundings
@@ -135,7 +135,6 @@ public class RuleGrounding {
 		}
 	}
 
-
 	/**
 	 * Extends the existing groundings with the provided assignment
 	 * 
@@ -145,13 +144,10 @@ public class RuleGrounding {
 		groundings.stream().forEach(g -> g.addAssignment(assign));
 	}
 
-	
-
-	
 	/**
-	 * Extends the existing groundings with the alternative groundings 
+	 * Extends the existing groundings with the alternative groundings
 	 * 
-	 * @param other the next groundings  to extend the current ones
+	 * @param other the next groundings to extend the current ones
 	 */
 	public void extend(RuleGrounding other) {
 		if (other.isFailed()) {
@@ -160,14 +156,11 @@ public class RuleGrounding {
 		}
 		extend(other.getAlternatives());
 	}
-	
-
-
 
 	/**
-	 * Extends the existing groundings with the alternative groundings 
+	 * Extends the existing groundings with the alternative groundings
 	 * 
-	 * @param alternatives the next groundings  to extend the current ones
+	 * @param alternatives the next groundings to extend the current ones
 	 */
 	public void extend(Collection<Assignment> alternatives) {
 		if (alternatives.isEmpty()) {
@@ -176,8 +169,8 @@ public class RuleGrounding {
 		Set<Assignment> newGroundings = new HashSet<Assignment>();
 		for (Assignment o : alternatives) {
 			for (Assignment g : groundings) {
-				newGroundings.add(new Assignment(o,g));
-				newGroundings.add(new Assignment(g,o));
+				newGroundings.add(new Assignment(o, g));
+				newGroundings.add(new Assignment(g, o));
 			}
 		}
 		groundings = newGroundings;
@@ -185,18 +178,16 @@ public class RuleGrounding {
 
 	/**
 	 * Returns the set of possible assignments
+	 * 
 	 * @return the possible assignments
 	 */
 	public Set<Assignment> getAlternatives() {
 		return groundings;
 	}
 
-	
-	
 	public boolean isFailed() {
 		return groundings.isEmpty();
 	}
-	
 
 	/**
 	 * Copies the groundings
@@ -204,8 +195,7 @@ public class RuleGrounding {
 	 * @return the copy
 	 */
 	public RuleGrounding copy() {
-		return new RuleGrounding(groundings.stream()
-				.map(a -> a.copy())
+		return new RuleGrounding(groundings.stream().map(a -> a.copy())
 				.collect(Collectors.toSet()));
 	}
 
@@ -216,7 +206,7 @@ public class RuleGrounding {
 	public int hashCode() {
 		return groundings.hashCode();
 	}
-	
+
 	/**
 	 * Returns a string representation of the set of assignments
 	 */
@@ -224,19 +214,19 @@ public class RuleGrounding {
 	public String toString() {
 		if (!isFailed()) {
 			return groundings.toString();
-		}
-		else {
+		} else {
 			return "failed";
 		}
 	}
 
 	/**
-	 * Returns true if o is a rule grounding with the same assignments, false otherwise
+	 * Returns true if o is a rule grounding with the same assignments, false
+	 * otherwise
 	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof RuleGrounding) {
-			return ((RuleGrounding)o).groundings.equals(groundings);
+			return ((RuleGrounding) o).groundings.equals(groundings);
 		}
 		return false;
 	}
@@ -247,19 +237,18 @@ public class RuleGrounding {
 	 * @return true if empty, false otherwise
 	 */
 	public boolean isEmpty() {
-		return groundings.isEmpty() ||
-				(groundings.size() == 1 && groundings.iterator().next().isEmpty());
+		return groundings.isEmpty()
+				|| (groundings.size() == 1 && groundings.iterator().next()
+						.isEmpty());
 	}
 
-	
-	
 	/**
 	 * Special type of rule grounding when the grounding has "failed", i.e.
 	 * there is no possible assignment of values for the condition(s).
 	 *
 	 */
 	public static final class Failed extends RuleGrounding {
-		
+
 		public Failed() {
 			super();
 			groundings.clear();
@@ -267,5 +256,3 @@ public class RuleGrounding {
 	}
 
 }
-
-

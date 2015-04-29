@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.bn.values;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
@@ -34,17 +33,17 @@ import opendial.utils.StringUtils;
 /**
  * Representation of an array of doubles.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public final class ArrayVal implements Value {
 
 	// logger
 	public static Logger log = new Logger("ArrayVal", Logger.Level.DEBUG);
-	
+
 	// the array of doubles
 	final double[] array;
 	final int hashcode;
-	
+
 	/**
 	 * Creates a new array of doubles
 	 * 
@@ -52,7 +51,7 @@ public final class ArrayVal implements Value {
 	 */
 	public ArrayVal(double[] values) {
 		this.array = new double[values.length];
-		for (int i = 0 ; i < array.length ; i++) {
+		for (int i = 0; i < array.length; i++) {
 			array[i] = values[i];
 		}
 		hashcode = Arrays.hashCode(array);
@@ -68,22 +67,20 @@ public final class ArrayVal implements Value {
 		hashcode = Arrays.hashCode(array);
 	}
 
-	
 	/**
-	 * Compares to another value.  
+	 * Compares to another value.
 	 */
 	@Override
 	public int compareTo(Value arg0) {
 		if (arg0 instanceof ArrayVal) {
-			double[] otherVector = ((ArrayVal)arg0).getArray();
+			double[] otherVector = ((ArrayVal) arg0).getArray();
 			if (array.length != otherVector.length) {
 				return array.length - otherVector.length;
-			}
-			else {
-				for (int i = 0 ; i < array.length ; i++) {
+			} else {
+				for (int i = 0; i < array.length; i++) {
 					double val1 = array[i];
 					double val2 = otherVector[i];
-					
+
 					// if the difference is very small, assume 0
 					if (Math.abs(val1 - val2) > 0.0001) {
 						return (new Double(val1).compareTo(new Double(val2)));
@@ -95,7 +92,6 @@ public final class ArrayVal implements Value {
 		return hashCode() - arg0.hashCode();
 	}
 
-	
 	/**
 	 * Copies the array
 	 */
@@ -103,8 +99,7 @@ public final class ArrayVal implements Value {
 	public Value copy() {
 		return new ArrayVal(array);
 	}
-	
-	
+
 	/**
 	 * Returns a vector with the elements of the array
 	 * 
@@ -112,12 +107,12 @@ public final class ArrayVal implements Value {
 	 */
 	public Vector<Double> getVector() {
 		Vector<Double> vector = new Vector<Double>(array.length);
-		for (int i = 0 ; i < array.length ; i++) {
+		for (int i = 0; i < array.length; i++) {
 			vector.add(array[i]);
 		}
 		return vector;
 	}
-	
+
 	/**
 	 * Returns the array length
 	 * 
@@ -127,18 +122,18 @@ public final class ArrayVal implements Value {
 	public int length() {
 		return array.length;
 	}
-	
+
 	/**
 	 * Checks for equality
 	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ArrayVal) {
-			return ((ArrayVal)o).getVector().equals(getVector());
+			return ((ArrayVal) o).getVector().equals(getVector());
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the array
 	 * 
@@ -147,9 +142,10 @@ public final class ArrayVal implements Value {
 	public double[] getArray() {
 		return array;
 	}
-	
+
 	/**
-	 * If v is an ArrayVal, returns the combined array value.  Else, returns none.
+	 * If v is an ArrayVal, returns the combined array value. Else, returns
+	 * none.
 	 * 
 	 * @param v the value to concatenate
 	 * @return the concatenated result
@@ -157,24 +153,23 @@ public final class ArrayVal implements Value {
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof ArrayVal) {
-			double[] newvals = new double[array.length + ((ArrayVal)v).getArray().length];
-			for (int i = 0 ; i < array.length ; i++) {
+			double[] newvals = new double[array.length
+					+ ((ArrayVal) v).getArray().length];
+			for (int i = 0; i < array.length; i++) {
 				newvals[i] = array[i];
 			}
-			for (int i = 0 ; i < ((ArrayVal)v).getArray().length ; i++) {
-				newvals[array.length+i] = ((ArrayVal)v).getArray()[i];
+			for (int i = 0; i < ((ArrayVal) v).getArray().length; i++) {
+				newvals[array.length + i] = ((ArrayVal) v).getArray()[i];
 			}
 			return new ArrayVal(newvals);
-		}
-		else if (v instanceof NoneVal) {
+		} else if (v instanceof NoneVal) {
 			return this;
-		}
-		else {
+		} else {
 			log.warning("cannot concatenate " + this + " with " + v);
 			return ValueFactory.noneValue;
 		}
 	}
-	
+
 	/**
 	 * Returns the hashcode for the array
 	 */
@@ -182,8 +177,7 @@ public final class ArrayVal implements Value {
 	public int hashCode() {
 		return hashcode;
 	}
-	
-	
+
 	/**
 	 * Returns a string representation of the array
 	 */
@@ -193,10 +187,9 @@ public final class ArrayVal implements Value {
 		for (Double d : getVector()) {
 			s += StringUtils.getShortForm(d) + ",";
 		}
-		return s.substring(0, s.length() -1) + "]";
+		return s.substring(0, s.length() - 1) + "]";
 	}
 
-	
 	/**
 	 * Returns false.
 	 */
@@ -204,7 +197,7 @@ public final class ArrayVal implements Value {
 	public boolean contains(Value filledValue) {
 		if (filledValue instanceof DoubleVal) {
 			for (double a : array) {
-				if (Math.abs(a - ((DoubleVal)filledValue).d) < 0.0001) {
+				if (Math.abs(a - ((DoubleVal) filledValue).d) < 0.0001) {
 					return true;
 				}
 			}
@@ -213,4 +206,3 @@ public final class ArrayVal implements Value {
 	}
 
 }
-

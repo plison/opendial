@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,31 +23,32 @@
 
 package opendial.bn.values;
 
-
 /**
  * "None" value (describing the lack of value, or an empty assignment)
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class NoneVal implements Value {
-	 
+
 	/**
-	 * Creates the none value 
-	 * (protected, use the value factory)
+	 * Creates the none value (protected, use the value factory)
 	 * 
 	 */
-	protected NoneVal() { }
-	
+	protected NoneVal() {
+	}
+
 	/**
 	 * Returns a hashcode for the value
 	 *
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return 346; }
-	
+	public int hashCode() {
+		return 346;
+	}
+
 	/**
 	 * Returns true if both values are none
 	 *
@@ -55,19 +56,20 @@ public final class NoneVal implements Value {
 	 * @return true if equals, false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
+	public boolean equals(Object o) {
 		return (o instanceof NoneVal);
 	}
-		
-	
+
 	/**
 	 * Returns its own instance
 	 *
 	 * @return its own instance
 	 */
 	@Override
-	public NoneVal copy() { return this; }
-	
+	public NoneVal copy() {
+		return this;
+	}
+
 	/**
 	 * Returns the value v provided as argument.
 	 */
@@ -75,16 +77,17 @@ public final class NoneVal implements Value {
 	public Value concatenate(Value v) {
 		return v;
 	}
-	
+
 	/**
 	 * Returns the string "None
 	 *
 	 * @return the string
 	 */
 	@Override
-	public String toString() { return "None"; }
-	
-	
+	public String toString() {
+		return "None";
+	}
+
 	/**
 	 * Compares the none value to another value
 	 * 
@@ -95,7 +98,6 @@ public final class NoneVal implements Value {
 		return hashCode() - o.hashCode();
 	}
 
-	
 	/**
 	 * Returns 0
 	 * 
@@ -105,8 +107,7 @@ public final class NoneVal implements Value {
 	public int length() {
 		return 0;
 	}
-	
-	
+
 	/**
 	 * True if subvalue is contained in the current instance, and false
 	 * otherwise
@@ -118,5 +119,5 @@ public final class NoneVal implements Value {
 	public boolean contains(Value subvalue) {
 		return false;
 	}
-	
+
 }

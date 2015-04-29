@@ -41,10 +41,10 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Main GUI frame for the OpenDial toolkit, encompassing various tabs and
- * menus to control the application
+ * Main GUI frame for the OpenDial toolkit, encompassing various tabs and menus
+ * to control the application
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class GUIFrame implements Module {
@@ -62,12 +62,11 @@ public class GUIFrame implements Module {
 	// tab for the chat window
 	ChatWindowTab chatTab;
 
-	DialogueSystem system;		
+	DialogueSystem system;
 
 	GUIMenuBar menu;
 
 	boolean isSpeechEnabled = false;
-
 
 	/**
 	 * Constructs (but does not yet display) a new GUI frame for OpenDial.
@@ -78,26 +77,24 @@ public class GUIFrame implements Module {
 		this.system = system;
 	}
 
-
 	/**
 	 * Displays the GUI frame.
 	 */
 	@Override
 	public void start() {
 
-
 		if (system.getSettings().showGUI) {
 			frame = new JFrame();
 			try {
 				File f = new File(ICON_PATH);
 				if (f.exists()) {
-					frame.setIconImage(ImageIO.read(f));						
+					frame.setIconImage(ImageIO.read(f));
+				} else {
+					frame.setIconImage(ImageIO.read(GUIFrame.class
+							.getResourceAsStream("/"
+									+ ICON_PATH.replace("//", "/"))));
 				}
-				else {
-					frame.setIconImage(ImageIO.read(GUIFrame.class.getResourceAsStream("/"+ICON_PATH.replace("//", "/"))));
-				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.debug("could not employ icon: " + e);
 			}
 			JTabbedPane tabbedPane = new JTabbedPane();
@@ -107,27 +104,29 @@ public class GUIFrame implements Module {
 
 			frame.addWindowListener(new WindowAdapter() {
 				@Override
-				public void windowClosing(WindowEvent e) 
-				{ System.exit(0); }
-			}); 
+				public void windowClosing(WindowEvent e) {
+					System.exit(0);
+				}
+			});
 
 			menu = new GUIMenuBar(this);
 			frame.setJMenuBar(menu);
 
 			chatTab = new ChatWindowTab(system);
-			tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab, ChatWindowTab.TAB_TIP);
+			tabbedPane.addTab(ChatWindowTab.TAB_TITLE, null, chatTab,
+					ChatWindowTab.TAB_TIP);
 
 			stateMonitorTab = new StateViewerTab(this);
-			tabbedPane.addTab(StateViewerTab.TAB_TITLE, null, stateMonitorTab, StateViewerTab.TAB_TIP);
+			tabbedPane.addTab(StateViewerTab.TAB_TITLE, null, stateMonitorTab,
+					StateViewerTab.TAB_TIP);
 
-			frame.setPreferredSize(new Dimension(1000,800));
+			frame.setPreferredSize(new Dimension(1000, 800));
 			frame.pack();
 
-			frame.setVisible(true);	
+			frame.setVisible(true);
 		}
 		trigger(system.getState(), new ArrayList<String>());
 	}
-
 
 	/**
 	 * Pauses the GUI.
@@ -139,7 +138,6 @@ public class GUIFrame implements Module {
 		}
 	}
 
-
 	/**
 	 * Returns the dialogue system connected to the GUI
 	 * 
@@ -150,8 +148,8 @@ public class GUIFrame implements Module {
 	}
 
 	/**
-	 * Updates the current dialogue state displayed in the component.  The current
-	 * dialogue state is name "current" in the selection list.
+	 * Updates the current dialogue state displayed in the component. The
+	 * current dialogue state is name "current" in the selection list.
 	 * 
 	 */
 	@Override
@@ -162,18 +160,18 @@ public class GUIFrame implements Module {
 			menu.update();
 			if (system.getDomain() == null) {
 				frame.setTitle("OpenDial toolkit");
-			}
-			else if (!frame.getTitle().contains(system.getDomain().getName())){
-				frame.setTitle("OpenDial toolkit - domain: " + system.getDomain().getName());
+			} else if (!frame.getTitle().contains(system.getDomain().getName())) {
+				frame.setTitle("OpenDial toolkit - domain: "
+						+ system.getDomain().getName());
 			}
 		}
 	}
 
-
 	/**
-	 * Records a dialogue state in the component and makes it available for display
-	 * in the network selection list on the left side.  The network is associated with
-	 * a specific name.  If the name already exists, the previous network is erased.
+	 * Records a dialogue state in the component and makes it available for
+	 * display in the network selection list on the left side. The network is
+	 * associated with a specific name. If the name already exists, the previous
+	 * network is erased.
 	 * 
 	 * 
 	 * @param state the dialogue state to record
@@ -184,7 +182,6 @@ public class GUIFrame implements Module {
 			stateMonitorTab.recordState(state, name);
 		}
 	}
-
 
 	/**
 	 * Adds a comment to the chat window
@@ -208,12 +205,12 @@ public class GUIFrame implements Module {
 
 	/**
 	 * Returns the state viewer tab
+	 * 
 	 * @return the state viewer
 	 */
 	public StateViewerTab getStateViewerTab() {
 		return stateMonitorTab;
 	}
-
 
 	/**
 	 * Returns the GUI frame itself.
@@ -224,7 +221,6 @@ public class GUIFrame implements Module {
 		return frame;
 	}
 
-
 	/**
 	 * Returns true if the GUI is started and not paused, and false otherwise.
 	 * 
@@ -234,7 +230,6 @@ public class GUIFrame implements Module {
 	public boolean isRunning() {
 		return (frame != null && frame.isVisible());
 	}
-
 
 	/**
 	 * Returns whether the speech recording functionality if enabled in the GUI
@@ -248,7 +243,8 @@ public class GUIFrame implements Module {
 	/**
 	 * Enables or disables the speech recording functionality in the GUI
 	 * 
-	 * @param toEnable true if the speech functionality should be enabled, else false.
+	 * @param toEnable true if the speech functionality should be enabled, else
+	 *            false.
 	 */
 	public void enableSpeech(boolean toEnable) {
 		isSpeechEnabled = toEnable;
@@ -268,6 +264,5 @@ public class GUIFrame implements Module {
 	public GUIMenuBar getMenu() {
 		return menu;
 	}
-
 
 }

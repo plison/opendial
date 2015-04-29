@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -44,12 +44,11 @@ import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 
-
 /**
- * A complex effect, represented as a combination of elementary sub-effects connected
- * via an implicit AND relation.
+ * A complex effect, represented as a combination of elementary sub-effects
+ * connected via an implicit AND relation.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class Effect implements Value {
@@ -61,10 +60,8 @@ public final class Effect implements Value {
 	final Set<BasicEffect> subeffects;
 
 	// ===================================
-	//  EFFECT CONSTRUCTION
+	// EFFECT CONSTRUCTION
 	// ===================================
-
-	
 
 	/**
 	 * Creates a new complex effect with no effect
@@ -73,7 +70,6 @@ public final class Effect implements Value {
 	public Effect() {
 		subeffects = new HashSet<BasicEffect>();
 	}
-	
 
 	/**
 	 * Creates a new complex effect with a single effect
@@ -83,7 +79,7 @@ public final class Effect implements Value {
 	public Effect(BasicEffect effect) {
 		subeffects = new HashSet<BasicEffect>(Arrays.asList(effect));
 	}
-	
+
 	/**
 	 * Creates a new complex effect with a collection of existing effects
 	 * 
@@ -92,18 +88,14 @@ public final class Effect implements Value {
 	public Effect(Collection<BasicEffect> effects) {
 		subeffects = new LinkedHashSet<BasicEffect>();
 		effects.stream()
-			.sorted((e1, e2) -> Boolean.compare(e1.negated,e2.negated))
-			.forEach(e -> subeffects.add(e));
- 	}
+				.sorted((e1, e2) -> Boolean.compare(e1.negated, e2.negated))
+				.forEach(e -> subeffects.add(e));
+	}
 
-	
-	
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
 
-	
-	
 	/**
 	 * Returns true if the effect is fully grounded, and false otherwise
 	 * 
@@ -112,7 +104,7 @@ public final class Effect implements Value {
 	public boolean isFullyGrounded() {
 		return subeffects.stream().allMatch(e -> !e.containsSlots());
 	}
-	
+
 	/**
 	 * Returns all the sub-effect included in the complex effect
 	 * 
@@ -121,7 +113,6 @@ public final class Effect implements Value {
 	public Collection<BasicEffect> getSubEffects() {
 		return subeffects;
 	}
-
 
 	/**
 	 * Grounds the effect with the given assignment.
@@ -134,26 +125,22 @@ public final class Effect implements Value {
 			return this;
 		}
 		List<BasicEffect> grounded = subeffects.stream()
-				.map(e -> e.ground(grounding))
-				.filter(e -> !e.containsSlots())
+				.map(e -> e.ground(grounding)).filter(e -> !e.containsSlots())
 				.collect(Collectors.toList());
 		return new Effect(grounded);
 	}
-	
-	
+
 	@Override
-	public Value concatenate (Value v) throws DialException {
+	public Value concatenate(Value v) throws DialException {
 		if (v instanceof Effect) {
-			Collection<BasicEffect> effects = new ArrayList<BasicEffect>(subeffects);
-			effects.addAll(((Effect)v).getSubEffects());
+			Collection<BasicEffect> effects = new ArrayList<BasicEffect>(
+					subeffects);
+			effects.addAll(((Effect) v).getSubEffects());
 			return new Effect(effects);
-		}
-		else {
+		} else {
 			throw new DialException("cannot concatenate " + this + " and " + v);
 		}
 	}
-
-	
 
 	/**
 	 * Returns the additional input variables for the complex effect
@@ -161,26 +148,22 @@ public final class Effect implements Value {
 	 * @return the set of labels for the additional input variables
 	 */
 	public Set<String> getAdditionalInputVariables() {
-		return subeffects.stream()
-				.filter(e -> e.containsSlots())
+		return subeffects.stream().filter(e -> e.containsSlots())
 				.flatMap(e -> e.getSlots().stream())
 				.collect(Collectors.toSet());
 	}
 
-	
 	/**
-	 * Returns the output variables for the complex effect
-	 * (including all the output variables for the sub-effects)
+	 * Returns the output variables for the complex effect (including all the
+	 * output variables for the sub-effects)
 	 * 
 	 * @return the set of all output variables
 	 */
 	public Set<String> getOutputVariables() {
-		return subeffects.stream()
-				.map(e -> e.getVariable())
+		return subeffects.stream().map(e -> e.getVariable())
 				.collect(Collectors.toSet());
 	}
 
-	
 	/**
 	 * Returns the underspecified slots in the effect
 	 * 
@@ -190,16 +173,16 @@ public final class Effect implements Value {
 		Set<String> slots = new HashSet<String>();
 		for (BasicEffect e : subeffects) {
 			if (e instanceof TemplateEffect) {
-				slots.addAll(((TemplateEffect)e).getSlots());
+				slots.addAll(((TemplateEffect) e).getSlots());
 			}
 		}
 		return slots;
 	}
-	
+
 	/**
-	 * Returns the set of values specified in the effect for the given variable and
-	 * effect type.  The method accepts the effect types SET, DISCARD and ADD (the
-	 * CLEAR effect does not return any value).
+	 * Returns the set of values specified in the effect for the given variable
+	 * and effect type. The method accepts the effect types SET, DISCARD and ADD
+	 * (the CLEAR effect does not return any value).
 	 * 
 	 * If several effects are defined with distinct priorities, only the effect
 	 * with highest priority is retained.
@@ -211,39 +194,39 @@ public final class Effect implements Value {
 		Set<Value> result = new HashSet<Value>();
 		int highestPriority = Integer.MAX_VALUE;
 		for (BasicEffect e : subeffects) {
-			if (e.getVariable().equals(variable)) { 
+			if (e.getVariable().equals(variable)) {
 				if (e.priority > highestPriority) {
 					continue;
-				}
-				else if (e.priority < highestPriority) {
+				} else if (e.priority < highestPriority) {
 					result = new HashSet<Value>();
 					highestPriority = e.priority;
 				}
 				if (e.isNegated()) {
 					result.remove(e.getValue());
 					for (Value v : new ArrayList<Value>(result)) {
-						if (v instanceof SetVal && ((SetVal)v).contains(e.getValue())) {
+						if (v instanceof SetVal
+								&& ((SetVal) v).contains(e.getValue())) {
 							result.remove(v);
-							Set<Value> v2 = ((SetVal)v).getSet();
+							Set<Value> v2 = ((SetVal) v).getSet();
 							v2.remove(e.getValue());
 							result.add(ValueFactory.create(v2));
 						}
 					}
-				}
-				else if (!e.getValue().equals(ValueFactory.none())) {
+				} else if (!e.getValue().equals(ValueFactory.none())) {
 					result.add(e.getValue());
 				}
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Returns true if all of the included effects for the variable are marked
 	 * as "add" (allowing multiple values).
 	 * 
 	 * @param variable the variable to check
-	 * @return true if the effect includes add effects for the variable, false otherwise
+	 * @return true if the effect includes add effects for the variable, false
+	 *         otherwise
 	 */
 	public boolean isAdd(String variable) {
 		boolean foundAdd = false;
@@ -251,18 +234,14 @@ public final class Effect implements Value {
 			if (e.getVariable().equals(variable)) {
 				if (e.isAdd()) {
 					foundAdd = true;
-				}
-				else if (e.getValue().length() > 0 && !e.isNegated()){
+				} else if (e.getValue().length() > 0 && !e.isNegated()) {
 					return false;
 				}
 			}
 		}
 		return foundAdd;
 	}
-	
-	
 
-	
 	public Condition convertToCondition() {
 		List<Condition> conditions = new ArrayList<Condition>();
 		for (BasicEffect subeffect : getSubEffects()) {
@@ -270,17 +249,14 @@ public final class Effect implements Value {
 		}
 		if (conditions.isEmpty()) {
 			return new VoidCondition();
-		}
-		else if (conditions.size() == 1) {
+		} else if (conditions.size() == 1) {
 			return conditions.get(0);
-		}
-		else {
-			return new ComplexCondition(conditions, (this.getOutputVariables().size() == 1)? 
-					BinaryOperator.OR : BinaryOperator.AND);
+		} else {
+			return new ComplexCondition(conditions, (this.getOutputVariables()
+					.size() == 1) ? BinaryOperator.OR : BinaryOperator.AND);
 		}
 	}
-	
-	
+
 	/**
 	 * Returns the number of basic effects
 	 * 
@@ -290,7 +266,7 @@ public final class Effect implements Value {
 	public int length() {
 		return subeffects.size();
 	}
-	
+
 	/**
 	 * Returns the effect as an assignment of values. The variable labels are
 	 * ended by a prime character.
@@ -300,16 +276,14 @@ public final class Effect implements Value {
 	public Assignment getAssignment() {
 		Assignment a = new Assignment();
 		for (BasicEffect e : subeffects) {
-			a.addPair(e.getVariable()+"'", e.getValue());
+			a.addPair(e.getVariable() + "'", e.getValue());
 		}
 		return a;
 	}
-	
-	// ===================================
-	//  UTILITY FUNCTIONS
-	// ===================================
 
-
+	// ===================================
+	// UTILITY FUNCTIONS
+	// ===================================
 
 	/**
 	 * Returns the hashcode for the complex effect
@@ -332,20 +306,19 @@ public final class Effect implements Value {
 		return o.hashCode() == hashCode();
 	}
 
-	
 	/**
 	 * Returns a string representation for the effect
 	 */
 	@Override
 	public String toString() {
 		String str = "";
-		for (BasicEffect e: subeffects) {
+		for (BasicEffect e : subeffects) {
 			str += e.toString() + " ^ ";
 		}
-		return (!subeffects.isEmpty())? str.substring(0, str.length()-3) : "Void";
+		return (!subeffects.isEmpty()) ? str.substring(0, str.length() - 3)
+				: "Void";
 	}
 
-	
 	/**
 	 * Returns a copy of the effect
 	 * 
@@ -353,10 +326,10 @@ public final class Effect implements Value {
 	 */
 	@Override
 	public Effect copy() {
-		return new Effect(subeffects.stream().map(e -> e.copy()).collect(Collectors.toList()));
+		return new Effect(subeffects.stream().map(e -> e.copy())
+				.collect(Collectors.toList()));
 	}
-	
-	
+
 	/**
 	 * Returns false.
 	 */
@@ -373,10 +346,9 @@ public final class Effect implements Value {
 		return hashCode() - o.hashCode();
 	}
 
-
-
 	/**
-	 * Parses the string representing the effect, and returns the corresponding effect.
+	 * Parses the string representing the effect, and returns the corresponding
+	 * effect.
 	 * 
 	 * @param str the string representing the effect
 	 * @return the corresponding effect
@@ -385,32 +357,29 @@ public final class Effect implements Value {
 		if (str.contains(" ^ ")) {
 			List<BasicEffect> effects = new ArrayList<BasicEffect>();
 			for (String split : str.split(" \\^ ")) {
-				Effect subOutput = parseEffect (split);
+				Effect subOutput = parseEffect(split);
 				effects.addAll(subOutput.getSubEffects());
 			}
 			return new Effect(effects);
-		}
-		else {
+		} else {
 			if (str.contains("Void")) {
 				return new Effect(new ArrayList<BasicEffect>());
 			}
-			
+
 			String var = "";
 			String val = "";
 			boolean add = false;
 			boolean negated = false;
-			
+
 			if (str.contains(":=")) {
 				var = str.split(":=")[0];
 				val = str.split(":=")[1];
-				val = (val.contains("{}"))? "None": val;
-			}
-			else if (str.contains("!=")) {
+				val = (val.contains("{}")) ? "None" : val;
+			} else if (str.contains("!=")) {
 				var = str.split("!=")[0];
 				val = str.split("!=")[1];
 				negated = true;
-			}
-			else if (str.contains("+=")) {
+			} else if (str.contains("+=")) {
 				var = str.split("\\+=")[0];
 				val = str.split("\\+=")[1];
 				add = true;
@@ -418,14 +387,13 @@ public final class Effect implements Value {
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, 1, add, negated));
+				return new Effect(new TemplateEffect(tvar, tval, 1, add,
+						negated));
+			} else {
+				return new Effect(new BasicEffect(var,
+						ValueFactory.create(val), 1, add, negated));
 			}
-			else {
-				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1, add, negated));
-			}
-		}	
+		}
 	}
-
-
 
 }

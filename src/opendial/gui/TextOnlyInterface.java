@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -39,27 +39,28 @@ import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**
- * Text-only interface to OpenDial, to use when no X11 display
- * is available.
+ * Text-only interface to OpenDial, to use when no X11 display is available.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class TextOnlyInterface implements Module {
 
-	public static Logger log = new Logger("TextOnlyInterface", Logger.Level.DEBUG); 
+	public static Logger log = new Logger("TextOnlyInterface",
+			Logger.Level.DEBUG);
 
 	DialogueSystem system;
 	boolean paused = true;
-	
+
 	/**
 	 * Creates a new text-only interface.
+	 * 
 	 * @param system the dialogue system
 	 */
 	public TextOnlyInterface(DialogueSystem system) {
 		this.system = system;
 	}
-	
+
 	/**
 	 * Starts the interface.
 	 */
@@ -70,17 +71,22 @@ public class TextOnlyInterface implements Module {
 		log.info("Starting text-only user interface...");
 		log.info("Local address: " + system.getLocalAddress());
 		log.info("Press Ctrl + C to exit");
-		new Thread(() -> {
-			try {Thread.sleep(500);} catch (InterruptedException e) {}
-			while (true) {
-				System.out.println("Type new input: ");
-				String input = new Scanner(System.in).nextLine();
-				Map<String,Double> table = StringUtils.getTableFromInput(input);
-				if (!paused && !table.isEmpty()) {
-					system.addUserInput(table);
-				}
-			}
-		}).start();
+		new Thread(
+				() -> {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+					}
+					while (true) {
+						System.out.println("Type new input: ");
+						String input = new Scanner(System.in).nextLine();
+						Map<String, Double> table = StringUtils
+								.getTableFromInput(input);
+						if (!paused && !table.isEmpty()) {
+							system.addUserInput(table);
+						}
+					}
+				}).start();
 	}
 
 	/**
@@ -88,15 +94,16 @@ public class TextOnlyInterface implements Module {
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		
-		for (String var : Arrays.asList(system.getSettings().userInput, 
+
+		for (String var : Arrays.asList(system.getSettings().userInput,
 				system.getSettings().systemOutput)) {
-			if (!paused && updatedVars.contains(var) && state.hasChanceNode(var)) {
-				System.out.println(getTextRendering(system.getContent(var).toDiscrete()));
+			if (!paused && updatedVars.contains(var)
+					&& state.hasChanceNode(var)) {
+				System.out.println(getTextRendering(system.getContent(var)
+						.toDiscrete()));
 			}
 		}
 	}
-	
 
 	/**
 	 * Pauses the interface
@@ -114,7 +121,6 @@ public class TextOnlyInterface implements Module {
 		return !paused;
 	}
 
-	
 	/**
 	 * Generates the text representation for the categorical table.
 	 * 
@@ -128,25 +134,25 @@ public class TextOnlyInterface implements Module {
 
 		if (baseVar.equals(system.getSettings().userInput)) {
 			textTable += "[user]\t";
-		}
-		else if (baseVar.equals(system.getSettings().systemOutput)) {
+		} else if (baseVar.equals(system.getSettings().systemOutput)) {
 			textTable += "[system]\t";
-		}
-		else {
+		} else {
 			textTable += "[" + baseVar + "]\t";
 		}
 		for (Value value : table.getValues()) {
 			if (!(value instanceof NoneVal)) {
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content += " (" + StringUtils.getShortForm(table.getProb(value)) + ")";
+					content += " ("
+							+ StringUtils.getShortForm(table.getProb(value))
+							+ ")";
 				}
 				textTable += content + "\n\t\t";
 			}
 		}
 		textTable = textTable.substring(0, textTable.length() - 3);
 
-		return textTable;		
+		return textTable;
 	}
-	
+
 }

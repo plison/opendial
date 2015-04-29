@@ -55,11 +55,10 @@ import opendial.gui.audio.SpeechInputPanel;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
-
 /**
  * GUI tab for the chat window.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 @SuppressWarnings("serial")
@@ -86,7 +85,7 @@ public class ChatWindowTab extends JComponent {
 			+ "&nbsp;&nbsp;&nbsp;where <i>var_name</i> is the variable label, and <i>the_content_to_add</i> its value(s),<br>"
 			+ "&nbsp;&nbsp;&nbsp;using the same format as the one described above for user inputs.<br><br></html>";
 
-	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG); 
+	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG);
 
 	// main chat window
 	HTMLEditorKit kit;
@@ -111,19 +110,18 @@ public class ChatWindowTab extends JComponent {
 	 * 
 	 * @param system the dialogue system
 	 */
-	public ChatWindowTab (DialogueSystem system) 
-	{
+	public ChatWindowTab(DialogueSystem system) {
 		this.system = system;
 
 		setLayout(new BorderLayout());
 		// Create the area where the utterances appear
 		lines = new JTextPane();
-		lines.setSize(30,50);
+		lines.setSize(30, 50);
 		lines.setContentType("text/html");
-		lines.setMargin(new Insets(5,5,5,5));
+		lines.setMargin(new Insets(5, 5, 5, 5));
 		lines.setEditable(false);
 		JScrollPane utterancesScrollPane = new JScrollPane(lines);
-		DefaultCaret caret = (DefaultCaret)lines.getCaret();
+		DefaultCaret caret = (DefaultCaret) lines.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		inputContainer = new Container();
@@ -132,8 +130,8 @@ public class ChatWindowTab extends JComponent {
 		inputField = new JTextField(60);
 		inputContainer.add(new JLabel("Input: "), BorderLayout.WEST);
 		inputContainer.add(inputField, BorderLayout.CENTER);
-		final JButton helpButton = new JButton( "" );
-		helpButton.putClientProperty( "JButton.buttonType", "help" );
+		final JButton helpButton = new JButton("");
+		helpButton.putClientProperty("JButton.buttonType", "help");
 
 		final BalloonTip tip = new BalloonTip(helpButton, TIP_TEXT);
 		tip.setVisible(false);
@@ -143,11 +141,11 @@ public class ChatWindowTab extends JComponent {
 
 		inputContainer.add(helpButton, BorderLayout.EAST);
 		// Add the text field and the utterances
-		add (inputContainer, BorderLayout.SOUTH);
-		add (utterancesScrollPane, BorderLayout.CENTER);
-		//	setPreferredSize(new Dimension(380,380));
+		add(inputContainer, BorderLayout.SOUTH);
+		add(utterancesScrollPane, BorderLayout.CENTER);
+		// setPreferredSize(new Dimension(380,380));
 
-		inputField.addActionListener(e -> addUtteranceToState());	
+		inputField.addActionListener(e -> addUtteranceToState());
 		kit = new HTMLEditorKit();
 		doc = new HTMLDocument();
 		lines.setEditorKit(kit);
@@ -157,18 +155,16 @@ public class ChatWindowTab extends JComponent {
 		if (system.getModule(GUIFrame.class).isSpeechEnabled) {
 			enableSpeech(true);
 		}
-	} 
-	
-	
-	 @Override
-	protected void paintComponent(Graphics g) {
-		 inputField.requestFocus();
-		 inputField.requestFocusInWindow();
-	 }
+	}
 
+	@Override
+	protected void paintComponent(Graphics g) {
+		inputField.requestFocus();
+		inputField.requestFocusInWindow();
+	}
 
 	/**
-	 * Enables or disables the speech input panel in the tab 
+	 * Enables or disables the speech input panel in the tab
 	 * 
 	 * @param toEnable true if the speech panel should be enabled, else false
 	 */
@@ -177,8 +173,7 @@ public class ChatWindowTab extends JComponent {
 			SpeechInputPanel panel = new SpeechInputPanel(system);
 			inputContainer.add(panel, BorderLayout.SOUTH);
 			repaint();
-		}
-		else if (inputContainer.getComponentCount() == 4 && !toEnable) {
+		} else if (inputContainer.getComponentCount() == 4 && !toEnable) {
 			inputContainer.remove(3);
 			repaint();
 		}
@@ -193,7 +188,6 @@ public class ChatWindowTab extends JComponent {
 		this.nBestView = nBestView;
 	}
 
-
 	/**
 	 * Returns the current number of displayed N-best elements
 	 * 
@@ -203,10 +197,6 @@ public class ChatWindowTab extends JComponent {
 		return nBestView;
 	}
 
-
-
-
-
 	/**
 	 * Adds a comment in the chat window
 	 * 
@@ -214,16 +204,12 @@ public class ChatWindowTab extends JComponent {
 	 */
 	public void addComment(String comment) {
 		try {
-			kit.insertHTML(doc, doc.getLength(),"[" +comment + "]\n", 0, 0, null);
-		}
-		catch (Exception e) {
+			kit.insertHTML(doc, doc.getLength(), "[" + comment + "]\n", 0, 0,
+					null);
+		} catch (Exception e) {
 			log.warning("text area exception: " + e);
 		}
 	}
-
-
-
-
 
 	/**
 	 * Generates the HTML representation for the categorical table.
@@ -239,23 +225,25 @@ public class ChatWindowTab extends JComponent {
 
 		if (baseVar.equals(system.getSettings().userInput)) {
 			htmlTable += "<b>[user]</b>";
-		}
-		else if (baseVar.equals(system.getSettings().systemOutput)) {
+		} else if (baseVar.equals(system.getSettings().systemOutput)) {
 			htmlTable += "<b>[system]</b>";
-		}
-		else {
+		} else {
 			htmlTable += "[" + baseVar + "]";
 		}
 		htmlTable += "</font></td>";
-		List<Value> rankedValues = table.getValues().stream()
-				.sorted((v1,v2) -> Double.compare(table.getProb(v2), table.getProb(v1)))
-				.collect(Collectors.toList());
+		List<Value> rankedValues = table
+				.getValues()
+				.stream()
+				.sorted((v1, v2) -> Double.compare(table.getProb(v2),
+						table.getProb(v1))).collect(Collectors.toList());
 		for (Value value : rankedValues) {
 			if (!(value instanceof NoneVal)) {
 				htmlTable += "<td><font size=4>";
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content += " (" + StringUtils.getShortForm(table.getProb(value)) + ")";
+					content += " ("
+							+ StringUtils.getShortForm(table.getProb(value))
+							+ ")";
 				}
 				if (system.getSettings().varsToMonitor.contains(baseVar)) {
 					content = "<i>" + content + "</i>";
@@ -263,11 +251,11 @@ public class ChatWindowTab extends JComponent {
 				htmlTable += content + "</font></td></tr><tr><td></td>";
 			}
 		}
-		htmlTable = htmlTable.substring(0, htmlTable.length() - 13) + "</table></p>\n";		
+		htmlTable = htmlTable.substring(0, htmlTable.length() - 13)
+				+ "</table></p>\n";
 
-		return htmlTable;		
+		return htmlTable;
 	}
-
 
 	/**
 	 * Updates the activation status of the chat window.
@@ -276,12 +264,12 @@ public class ChatWindowTab extends JComponent {
 		if (system.getDomain() == null) {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
-			if (lines.getText().length() <= 100 
-					&& !lines.getText().contains("No domain currently selected")) {
+			if (lines.getText().length() <= 100
+					&& !lines.getText()
+							.contains("No domain currently selected")) {
 				addComment("No domain currently selected");
 			}
-		}
-		else {
+		} else {
 			if (inputField.isEnabled() == system.isPaused()) {
 				inputField.setEnabled(!system.isPaused());
 				lines.setEnabled(!system.isPaused());
@@ -289,11 +277,10 @@ public class ChatWindowTab extends JComponent {
 		}
 	}
 
-
 	/**
-	 * Triggers the update of the chat window.  The window is updated whenever the
-	 * updated variables contains the user input, system output, or other variables
-	 * to monitor.
+	 * Triggers the update of the chat window. The window is updated whenever
+	 * the updated variables contains the user input, system output, or other
+	 * variables to monitor.
 	 * 
 	 * @param state the dialogue state
 	 * @param updatedVars the list of recently updated variables
@@ -301,23 +288,22 @@ public class ChatWindowTab extends JComponent {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		updateActivation();
 		if (updatedVars.contains(system.getSettings().userInput)
-				&& state.hasChanceNode(system.getSettings().userInput)) {	
+				&& state.hasChanceNode(system.getSettings().userInput)) {
 			CategoricalTable distrib = state.queryProb(
 					system.getSettings().userInput, false).toDiscrete();
 			showVariable(distrib);
 		}
 		if (updatedVars.contains(system.getSettings().systemOutput)
 				&& state.hasChanceNode(system.getSettings().systemOutput)) {
-			showVariable(state.queryProb(system.getSettings().systemOutput).toDiscrete());
+			showVariable(state.queryProb(system.getSettings().systemOutput)
+					.toDiscrete());
 		}
 		for (String monitorVar : system.getSettings().varsToMonitor) {
 			if (updatedVars.contains(monitorVar)) {
 				showVariable(state.queryProb(monitorVar).toDiscrete());
 			}
 		}
-	} 
-
-
+	}
 
 	/**
 	 * Displays the distribution in the chat window.
@@ -327,15 +313,14 @@ public class ChatWindowTab extends JComponent {
 	private void showVariable(CategoricalTable distrib) {
 
 		if (distrib.getBest() == ValueFactory.none()) {
-			distrib = distrib.getNBest(nBestView+1);
-		}
-		else {
+			distrib = distrib.getNBest(nBestView + 1);
+		} else {
 			distrib = distrib.getNBest(nBestView);
 		}
 		String text = getHtmlRendering(distrib);
 		String variable = distrib.getVariable();
 		try {
-			if (variable.equals(lastUpdatedVariable) 
+			if (variable.equals(lastUpdatedVariable)
 					&& (system.getState().isIncremental(variable))) {
 				doc.remove(doc.getLength() - negativeOffset, negativeOffset);
 			}
@@ -344,12 +329,10 @@ public class ChatWindowTab extends JComponent {
 			lastUpdatedVariable = variable;
 			lastUpdate = System.currentTimeMillis();
 			negativeOffset = doc.getLength() - initLength;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warning("text area exception: " + e);
 		}
 	}
-
 
 	/**
 	 * Returns the current text of the chat.
@@ -360,8 +343,6 @@ public class ChatWindowTab extends JComponent {
 		return lines.getText();
 	}
 
-
-
 	/**
 	 * Adds the utterance entered in the text field to the dialogue state
 	 * 
@@ -369,8 +350,8 @@ public class ChatWindowTab extends JComponent {
 	 * incremental inputs (where an '/' at the end represents an unfinished
 	 * input, and '/' at the beginning a follow-up to a previous unit).
 	 */
-	private void addUtteranceToState()  {
-		String rawText= inputField.getText().trim();
+	private void addUtteranceToState() {
+		String rawText = inputField.getText().trim();
 		inputField.setText("");
 		if (rawText.equals("")) {
 			return;
@@ -385,10 +366,10 @@ public class ChatWindowTab extends JComponent {
 		else if (rawText.contains("=")) {
 			addSpecialInput(rawText);
 		}
-		
+
 		// default case
 		else {
-			Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+			Map<String, Double> table = StringUtils.getTableFromInput(rawText);
 			new Thread(() -> system.addUserInput(table)).start();
 		}
 	}
@@ -404,16 +385,17 @@ public class ChatWindowTab extends JComponent {
 		boolean incomplete = rawText.endsWith("/");
 		rawText = rawText.replaceAll("/", "").trim();
 
-		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+		Map<String, Double> table = StringUtils.getTableFromInput(rawText);
 		new Thread(() -> {
-			system.addContent(new Assignment(system.getSettings().userSpeech, 
-					(incomplete)? "busy": "None"));
+			system.addContent(new Assignment(system.getSettings().userSpeech,
+					(incomplete) ? "busy" : "None"));
 			system.addIncrementalUserInput(table, followPrevious);
 			if (!incomplete) {
-				system.getState().setAsCommitted(system.getSettings().userInput);
+				system.getState()
+						.setAsCommitted(system.getSettings().userInput);
 			}
 		}).start();
-		
+
 	}
 
 	/**
@@ -425,7 +407,7 @@ public class ChatWindowTab extends JComponent {
 		String specialInput = rawText.split("=")[0].trim();
 		rawText = rawText.split("=")[1].trim();
 
-		Map<String,Double> table = StringUtils.getTableFromInput(rawText);
+		Map<String, Double> table = StringUtils.getTableFromInput(rawText);
 
 		CategoricalTable table2 = new CategoricalTable(specialInput);
 		for (String value : table.keySet()) {
@@ -433,6 +415,5 @@ public class ChatWindowTab extends JComponent {
 		}
 		new Thread(() -> system.addContent(table2)).start();
 	}
-
 
 }

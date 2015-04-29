@@ -38,7 +38,7 @@ import opendial.utils.InferenceUtils;
 /**
  * Double factor, combining probability and utility distributions
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class DoubleFactor {
@@ -51,18 +51,15 @@ public class DoubleFactor {
 	Map<Assignment, double[]> matrix;
 
 	// ===================================
-	//  CONSTRUCTION METHODS
+	// CONSTRUCTION METHODS
 	// ===================================
-
-
 
 	/**
 	 * Creates a new, empty factor, and a set of head variables
 	 */
 	public DoubleFactor() {
-		matrix = new HashMap<Assignment,double[]>();
+		matrix = new HashMap<Assignment, double[]>();
 	}
-
 
 	/**
 	 * Creates a new factor out of an existing one
@@ -70,9 +67,8 @@ public class DoubleFactor {
 	 * @param existingFactor the existing factor
 	 */
 	public DoubleFactor(DoubleFactor existingFactor) {
-		matrix = new HashMap<Assignment,double[]>(existingFactor.getMatrix());
+		matrix = new HashMap<Assignment, double[]>(existingFactor.getMatrix());
 	}
-
 
 	/**
 	 * Adds a new entry to the matrix
@@ -80,15 +76,13 @@ public class DoubleFactor {
 	 * @param a the assignment
 	 * @param value the probability value
 	 */
-	public void addProbEntry (Assignment a, double value) {
+	public void addProbEntry(Assignment a, double value) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[]{value, matrix.get(a)[1]});
-		}
-		else {
-			matrix.put(a, new double[]{value, 0.0});
+			matrix.put(a, new double[] { value, matrix.get(a)[1] });
+		} else {
+			matrix.put(a, new double[] { value, 0.0 });
 		}
 	}
-
 
 	/**
 	 * Adds a new entry to the matrix
@@ -96,19 +90,17 @@ public class DoubleFactor {
 	 * @param a the assignment
 	 * @param value the probability value
 	 */
-	public void addUtilityEntry (Assignment a, double value) {
+	public void addUtilityEntry(Assignment a, double value) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[]{matrix.get(a)[0], value});
-		}
-		else {
-			matrix.put(a, new double[]{1.0, value});
+			matrix.put(a, new double[] { matrix.get(a)[0], value });
+		} else {
+			matrix.put(a, new double[] { 1.0, value });
 		}
 	}
 
 	public void addEntry(Assignment a, double probValue, double utilityValue) {
-		matrix.put(a, new double[]{probValue, utilityValue});
+		matrix.put(a, new double[] { probValue, utilityValue });
 	}
-
 
 	/**
 	 * Increment the entry with new probability and utility values
@@ -117,17 +109,14 @@ public class DoubleFactor {
 	 * @param probIncr probability increment
 	 * @param utilIncr utility increment
 	 */
-	public void incrementEntry(Assignment a, double probIncr,
-			double utilIncr) {
+	public void incrementEntry(Assignment a, double probIncr, double utilIncr) {
 		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[]{getProbEntry(a) + probIncr, 
-					getUtilityEntry(a) + utilIncr});
-		}
-		else {
-			matrix.put(a, new double[]{probIncr, utilIncr});
+			matrix.put(a, new double[] { getProbEntry(a) + probIncr,
+					getUtilityEntry(a) + utilIncr });
+		} else {
+			matrix.put(a, new double[] { probIncr, utilIncr });
 		}
 	}
-
 
 	/**
 	 * Removes an entry from the matrix
@@ -138,35 +127,38 @@ public class DoubleFactor {
 		matrix.remove(a);
 	}
 
-
 	/**
 	 * Normalises the factor, assuming no conditional variables in the factor.
 	 * 
 	 */
-	public void normalise () {
-		Map<Assignment,Double> probMatrix = InferenceUtils.normalise(getProbMatrix());
-		Map<Assignment,Double> utilityMatrix = getUtilityMatrix();
+	public void normalise() {
+		Map<Assignment, Double> probMatrix = InferenceUtils
+				.normalise(getProbMatrix());
+		Map<Assignment, Double> utilityMatrix = getUtilityMatrix();
 
-		matrix = new HashMap<Assignment,double[]>(probMatrix.size());
+		matrix = new HashMap<Assignment, double[]>(probMatrix.size());
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
 			log.debug("prob matrix: " + probMatrix);
 			log.debug("utility matrix: " + utilityMatrix);
 		}
 		for (Assignment a : probMatrix.keySet()) {
-			matrix.put(a, new double[]{probMatrix.get(a), utilityMatrix.get(a)});
+			matrix.put(a,
+					new double[] { probMatrix.get(a), utilityMatrix.get(a) });
 		}
 	}
 
 	/**
-	 * Normalise the utilities with respect to the probabilities in the double factor.
+	 * Normalise the utilities with respect to the probabilities in the double
+	 * factor.
 	 */
 	public void normaliseUtil() {
-		Map<Assignment,double[]> newMatrix = new HashMap<Assignment, double[]>();
+		Map<Assignment, double[]> newMatrix = new HashMap<Assignment, double[]>();
 		for (Assignment a : matrix.keySet()) {
 			double[] entries = matrix.get(a);
 			if (entries[0] > 0.0) {
-				newMatrix.put(a, new double[]{entries[0], entries[1] / entries[0]});
+				newMatrix.put(a, new double[] { entries[0],
+						entries[1] / entries[0] });
 			}
 		}
 		matrix = newMatrix;
@@ -176,17 +168,22 @@ public class DoubleFactor {
 	 * Normalises the factor, with the conditional variables as argument.
 	 * 
 	 * @param condVars the conditional variables
-	 */	
+	 */
 	public void normalise(Collection<String> condVars) {
-		Map<Assignment,Double> probMatrix = InferenceUtils.normalise(getProbMatrix(), condVars);
-		Map<Assignment,Double> utilityMatrix = getUtilityMatrix();
+		Map<Assignment, Double> probMatrix = InferenceUtils.normalise(
+				getProbMatrix(), condVars);
+		Map<Assignment, Double> utilityMatrix = getUtilityMatrix();
 
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
 		}
-		matrix = probMatrix.keySet().stream()
-				.collect(Collectors.toMap(a -> a, a -> 
-				new double[]{probMatrix.get(a), utilityMatrix.get(a)}));
+		matrix = probMatrix
+				.keySet()
+				.stream()
+				.collect(
+						Collectors.toMap(a -> a,
+								a -> new double[] { probMatrix.get(a),
+										utilityMatrix.get(a) }));
 	}
 
 	/**
@@ -195,19 +192,21 @@ public class DoubleFactor {
 	 * @param headVars the variables to retain.
 	 */
 	public void trim(Collection<String> headVars) {
-		matrix = matrix.keySet().stream()
-				.collect(Collectors.toMap(a -> a.getTrimmed(headVars), a -> matrix.get(a)));
+		matrix = matrix
+				.keySet()
+				.stream()
+				.collect(
+						Collectors.toMap(a -> a.getTrimmed(headVars),
+								a -> matrix.get(a)));
 	}
 
-
 	// ===================================
-	//  GETTERS 
+	// GETTERS
 	// ===================================
-
 
 	/**
-	 * Returns true if the factor is empty, e.g. either really empty, or containing
-	 * only empty assignments.
+	 * Returns true if the factor is empty, e.g. either really empty, or
+	 * containing only empty assignments.
 	 * 
 	 * @return true if the factor is empty, false otherwise
 	 */
@@ -227,11 +226,9 @@ public class DoubleFactor {
 		return !containsRealAssign;
 	}
 
-
-
 	/**
-	 * Returns the probability for the assignment, if it is
-	 * encoded in the matrix.  Else, returns null
+	 * Returns the probability for the assignment, if it is encoded in the
+	 * matrix. Else, returns null
 	 * 
 	 * @param a the assignment
 	 * @return probability of the assignment
@@ -243,10 +240,9 @@ public class DoubleFactor {
 		return matrix.get(a)[0];
 	}
 
-
 	/**
-	 * Returns the utility for the assignment, if it is encoded
-	 * in the matrix. Else, returns null
+	 * Returns the utility for the assignment, if it is encoded in the matrix.
+	 * Else, returns null
 	 * 
 	 * @param a the assignment
 	 * @return utility for the assignment
@@ -257,7 +253,6 @@ public class DoubleFactor {
 		}
 		return matrix.get(a)[1];
 	}
-
 
 	/**
 	 * Returns the matrix included in the factor
@@ -273,22 +268,20 @@ public class DoubleFactor {
 	 * 
 	 * @return the probability matrix
 	 */
-	public Map<Assignment,Double> getProbMatrix() {
+	public Map<Assignment, Double> getProbMatrix() {
 		return matrix.keySet().stream()
 				.collect(Collectors.toMap(a -> a, a -> matrix.get(a)[0]));
 	}
-
 
 	/**
 	 * Returns the utility matrix for the factor
 	 * 
 	 * @return the utility matrix
 	 */
-	public Map<Assignment,Double> getUtilityMatrix() {
+	public Map<Assignment, Double> getUtilityMatrix() {
 		return matrix.keySet().stream()
-				.collect(Collectors.toMap(a -> a, a -> matrix.get(a)[1]));	
+				.collect(Collectors.toMap(a -> a, a -> matrix.get(a)[1]));
 	}
-
 
 	/**
 	 * Returns the set of assignments in the factor
@@ -300,21 +293,18 @@ public class DoubleFactor {
 	}
 
 	/**
-	 * Returns the set of variables used in the assignment.  It assumes
-	 * that at least one entry exists in the matrix.  Else, returns
-	 * an empty list
+	 * Returns the set of variables used in the assignment. It assumes that at
+	 * least one entry exists in the matrix. Else, returns an empty list
 	 * 
 	 * @return the set of variables
 	 */
 	public Set<String> getVariables() {
 		if (!matrix.isEmpty()) {
 			return matrix.keySet().iterator().next().getVariables();
-		}
-		else {
+		} else {
 			return new HashSet<String>();
 		}
 	}
-
 
 	/**
 	 * Returns true if the factor contains the assignment, and false otherwise
@@ -326,9 +316,8 @@ public class DoubleFactor {
 		return matrix.containsKey(a);
 	}
 
-
 	// ===================================
-	//  UTILITIES
+	// UTILITIES
 	// ===================================
 
 	/**
@@ -340,7 +329,6 @@ public class DoubleFactor {
 		return new DoubleFactor(this);
 	}
 
-
 	/**
 	 * Returns a string representation of the factor
 	 */
@@ -349,15 +337,13 @@ public class DoubleFactor {
 		String str = "";
 		for (Assignment a : matrix.keySet()) {
 			str += "P(" + a + ")=" + matrix.get(a)[0];
-			if (matrix.get(a)[1]!=0) {
-				str += " and U(" + a + ")=" + matrix.get(a)[1];				
+			if (matrix.get(a)[1] != 0) {
+				str += " and U(" + a + ")=" + matrix.get(a)[1];
 			}
-			str +="\n";
+			str += "\n";
 		}
 		return str;
 	}
-
-
 
 	/**
 	 * Returns the size of the factor
@@ -367,8 +353,5 @@ public class DoubleFactor {
 	public int size() {
 		return matrix.size();
 	}
-
-
-
 
 }

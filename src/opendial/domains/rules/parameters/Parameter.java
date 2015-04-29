@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -27,34 +27,30 @@ import java.util.Collection;
 
 import opendial.datastructs.Assignment;
 
-
 /**
  * Interface for a parameter associated with an effect
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface Parameter {
 
 	/**
-	 * Returns the actual parameter value given the inputs provided as arguments.
-	 * If the actual value cannot be retrieved (missing information), throws 
-	 * an exception.
+	 * Returns the actual parameter value given the inputs provided as
+	 * arguments. If the actual value cannot be retrieved (missing information),
+	 * throws an exception.
 	 * 
 	 * @param input the input assignment
 	 * @return the actual parameter value
 	 */
-	public double getParameterValue (Assignment input) ;
-	
-	
+	public double getParameterValue(Assignment input);
+
 	/**
-	 * Returns the (possibly empty) set of parameter identifiers used in the 
+	 * Returns the (possibly empty) set of parameter identifiers used in the
 	 * parameter object.
 	 * 
-	 * @return the collection of parameter labels 
+	 * @return the collection of parameter labels
 	 */
 	public Collection<String> getVariables();
 
-	
-	
 }

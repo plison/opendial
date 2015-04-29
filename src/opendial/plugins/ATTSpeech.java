@@ -1,7 +1,6 @@
-
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -43,6 +42,7 @@ import opendial.datastructs.SpeechOutput;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -52,18 +52,19 @@ import com.att.api.rest.RESTClient;
 import com.att.api.rest.RESTException;
 
 /**
- * Plugin to access the AT&amp;T Speech API for both speech recognition and synthesis.
- * The plugin necessitates the specification of an application ID and secret
- * [see the README file for the plugin for details].  The API offers
+ * Plugin to access the AT&amp;T Speech API for both speech recognition and
+ * synthesis. The plugin necessitates the specification of an application ID and
+ * secret [see the README file for the plugin for details]. The API offers
  * cloud-based services for AT&amp;T's WATSON system.
  * 
- * <p>To enhance the recognition accuracy, it is recommended to provide the system
+ * <p>
+ * To enhance the recognition accuracy, it is recommended to provide the system
  * with a recognition grammar, which can be specified in the GRXML format.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class ATTSpeech implements Module {
-  
+
 	// logger
 	public static Logger log = new Logger("ATTSpeech", Logger.Level.DEBUG);
 
@@ -72,19 +73,18 @@ public class ATTSpeech implements Module {
 
 	/** dialogue state */
 	DialogueSystem system;
- 
+
 	/** REST client for the speech recognition */
 	RESTClient asrClient;
-	
+
 	/** grammar file */
 	File grammarFile;
-	
+
 	/** Rest client for the speech synthesis */
 	RESTClient ttsClient;
 
 	/** whether the system is paused or active */
 	boolean paused = true;
-
 
 	/**
 	 * Creates a new plugin, attached to the dialogue system
@@ -94,37 +94,40 @@ public class ATTSpeech implements Module {
 	 */
 	public ATTSpeech(DialogueSystem system) throws DialException {
 		this.system = system;
-		List<String> missingParams = new LinkedList<String>(Arrays.asList("key", "secret"));
+		List<String> missingParams = new LinkedList<String>(Arrays.asList(
+				"key", "secret"));
 		missingParams.removeAll(system.getSettings().params.keySet());
 		if (!missingParams.isEmpty()) {
 			throw new DialException("Missing parameters: " + missingParams);
 		}
-		
+
 		buildClients();
-		
+
 		if (system.getSettings().params.containsKey("grammar")) {
-			File f = new File(system.getSettings().params.getProperty("grammar"));
+			File f = new File(
+					system.getSettings().params.getProperty("grammar"));
 			if (!f.exists()) {
-				f = new File((new File(system.getDomain().getName()).getParent() +
-						"/" + system.getSettings().params.getProperty("grammar")));
+				f = new File(
+						(new File(system.getDomain().getName()).getParent()
+								+ "/" + system.getSettings().params
+								.getProperty("grammar")));
 			}
 			if (f.exists()) {
 				grammarFile = f;
-				log.info("AT&T Speech API will be used with the grammar: " + grammarFile.getPath());
-			}
-			else {
+				log.info("AT&T Speech API will be used with the grammar: "
+						+ grammarFile.getPath());
+			} else {
 				log.warning("Grammar file " + f.getPath() + " cannot be found");
 				log.info("AT&T Speech API will be used without grammar");
 			}
-		}
-		else {
+		} else {
 			log.info("AT&T Speech API will be used without grammar");
 		}
-		
+
 		if (system.getModule(GUIFrame.class) != null) {
 			system.getModule(GUIFrame.class).enableSpeech(true);
 		}
-	} 
+	}
 
 	/**
 	 * Starts the AT&amp;T speech plugin.
@@ -134,20 +137,20 @@ public class ATTSpeech implements Module {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException("AT&T connection requires access to the GUI");
+			throw new DialException(
+					"AT&T connection requires access to the GUI");
 		}
-			
-		// quick hack to ensure that the audio capture works 
+
+		// quick hack to ensure that the audio capture works
 		try {
-		SpeechInput firstStream = new SpeechInput(system.getSettings().inputMixer);
-		Thread.sleep(100);
-		firstStream.close(); 
-		}
-		catch (Exception e) { 
+			SpeechInput firstStream = new SpeechInput(
+					system.getSettings().inputMixer);
+			Thread.sleep(100);
+			firstStream.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
- 
 
 	/**
 	 * Pauses the plugin.
@@ -157,7 +160,6 @@ public class ATTSpeech implements Module {
 		paused = toPause;
 	}
 
-
 	/**
 	 * Returns true if the plugin has been started and is not paused.
 	 */
@@ -166,30 +168,29 @@ public class ATTSpeech implements Module {
 		return !paused;
 	}
 
-
-
-
 	/**
 	 * If the system output has been updated, trigger the speech synthesis.
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		
+
 		String speechVar = system.getSettings().userSpeech;
 		String outputVar = system.getSettings().systemOutput;
-		
-		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
+
+		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar)
+				&& !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
 			if (speechVal instanceof SpeechInput) {
-				new Thread(() -> {
-					Map<String,Double> table = recognise((SpeechInput)speechVal);
-					if (!table.isEmpty()) {
-						system.addUserInput(table);
-					}
-				}).start();
+				new Thread(
+						() -> {
+							Map<String, Double> table = recognise((SpeechInput) speechVal);
+							if (!table.isEmpty()) {
+								system.addUserInput(table);
+							}
+						}).start();
 			}
-		}
-		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar) && !paused) {
+		} else if (updatedVars.contains(outputVar)
+				&& state.hasChanceNode(outputVar) && !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
 				synthesise(utteranceVal.toString());
@@ -199,20 +200,21 @@ public class ATTSpeech implements Module {
 
 	/**
 	 * Processes the audio data contained in tempFile (based on the recognition
-	 * grammar whenever provided) and returns the corresponding N-Best list
-	 * of results.
+	 * grammar whenever provided) and returns the corresponding N-Best list of
+	 * results.
 	 * 
 	 * @param stream the speech stream containing the audio data
 	 * @param grammar the recognition grammar, which can be null
 	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String,Double> recognise(SpeechInput stream) {
+	private Map<String, Double> recognise(SpeechInput stream) {
 
-		Map<String,Double> table = new HashMap<String,Double>();
-		log.info("calling AT&T server for recognition...\t");       
+		Map<String, Double> table = new HashMap<String, Double>();
+		log.info("calling AT&T server for recognition...\t");
 		try {
- 
-			APIResponse apiResponse = asrClient.httpPost(grammarFile, stream, stream.getFormat());
+
+			APIResponse apiResponse = asrClient.httpPost(grammarFile, stream,
+					stream.getFormat());
 
 			JSONObject object = new JSONObject(apiResponse.getResponseBodyStr());
 			JSONObject recognition = object.getJSONObject("Recognition");
@@ -222,7 +224,8 @@ public class ATTSpeech implements Module {
 				JSONArray nBest = recognition.getJSONArray("NBest");
 				for (int i = 0; i < nBest.length(); ++i) {
 					JSONObject nBestObject = (JSONObject) nBest.get(i);
-					if (nBestObject.has("Hypothesis") && nBestObject.has("Confidence")) {
+					if (nBestObject.has("Hypothesis")
+							&& nBestObject.has("Confidence")) {
 						String hyp = nBestObject.getString("Hypothesis");
 						Double conf = nBestObject.getDouble("Confidence");
 						table.put(hyp, conf);
@@ -232,41 +235,37 @@ public class ATTSpeech implements Module {
 
 		} catch (Exception re) {
 			re.printStackTrace();
-		} 
+		}
 		return table;
 	}
 
-
-
-
 	/**
-	 * Performs remote speech synthesis with the given utterance, and plays it on the 
-	 * standard audio output.
+	 * Performs remote speech synthesis with the given utterance, and plays it
+	 * on the standard audio output.
 	 * 
 	 * @param utterance the utterance to synthesis
 	 */
 	public void synthesise(String utterance) {
 		try {
-			log.info("calling AT&T server for synthesis...\t");       
+			log.info("calling AT&T server for synthesis...\t");
 			APIResponse apiResponse = ttsClient.httpPost(utterance);
-        int statusCode = apiResponse.getStatusCode();
-        if (statusCode == 200 || statusCode == 201) {
-        	SpeechOutput output = new SpeechOutput(apiResponse.getResponseBody());
-        	output.play(system.getSettings().outputMixer);
-        	
-        } else if (statusCode == 401) {
-            throw new IOException("Unauthorized request.");
-        } else {
-            log.warning("TTS error: " + apiResponse);
-        }
-        
-		}
-		catch (Exception e) {
+			int statusCode = apiResponse.getStatusCode();
+			if (statusCode == 200 || statusCode == 201) {
+				SpeechOutput output = new SpeechOutput(
+						apiResponse.getResponseBody());
+				output.play(system.getSettings().outputMixer);
+
+			} else if (statusCode == 401) {
+				throw new IOException("Unauthorized request.");
+			} else {
+				log.warning("TTS error: " + apiResponse);
+			}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
 	 * 
@@ -280,21 +279,21 @@ public class ATTSpeech implements Module {
 			// Create service for interacting with the Speech api
 			OAuthService osrvc = new OAuthService(FQDN, key, secret);
 			asrClient = new RESTClient(FQDN + "/speech/v3/speechToTextCustom")
-			.addAuthorizationHeader(osrvc.getToken("STTC"))
-			.addHeader("Accept", "application/json")
-			.addHeader("X-Arg", "HasMultipleNBest=true");
-			 
+					.addAuthorizationHeader(osrvc.getToken("STTC"))
+					.addHeader("Accept", "application/json")
+					.addHeader("X-Arg", "HasMultipleNBest=true");
+
 			ttsClient = new RESTClient(FQDN + "/speech/v3/textToSpeech")
-			.addAuthorizationHeader(osrvc.getToken("TTS"))
-		     .addHeader("Content-Type", "text/plain")
-	         .addHeader("Accept", "audio/x-wav");    
-			
+					.addAuthorizationHeader(osrvc.getToken("TTS"))
+					.addHeader("Content-Type", "text/plain")
+					.addHeader("Accept", "audio/x-wav");
+
 		} catch (RESTException e) {
 			log.warning("Thrown exception: " + e);
-			throw new DialException("Cannot access AT&T API with the following credentials: " + key + " --> " + secret);
+			throw new DialException(
+					"Cannot access AT&T API with the following credentials: "
+							+ key + " --> " + secret);
 		}
 	}
-	
 
 }
-

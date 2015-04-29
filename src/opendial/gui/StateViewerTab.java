@@ -69,23 +69,24 @@ import opendial.gui.stateviewer.StateViewer;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
-
 /**
- * GUI component used to view and control the Bayesian Network representing the dialogue
- * state.  
+ * GUI component used to view and control the Bayesian Network representing the
+ * dialogue state.
  * 
- * <p>The component includes functionalities for: <ul>
- * <li> rendering a full graphical version of the network, including all types of nodes 
- *      and their respective dependencies;
- * <li> zooming and translating the network in various directions;
- * <li> providing details about the random variables and their distribution;
- * <li> performing runtime inference over selected sets of random variables;
- * <li> navigating through different recorded versions of the network.
+ * <p>
+ * The component includes functionalities for:
+ * <ul>
+ * <li>rendering a full graphical version of the network, including all types of
+ * nodes and their respective dependencies;
+ * <li>zooming and translating the network in various directions;
+ * <li>providing details about the random variables and their distribution;
+ * <li>performing runtime inference over selected sets of random variables;
+ * <li>navigating through different recorded versions of the network.
  * </ul>
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
- */ 
+ */
 @SuppressWarnings("serial")
 public class StateViewerTab extends JComponent {
 
@@ -97,8 +98,13 @@ public class StateViewerTab extends JComponent {
 	public static final String TAB_TIP = "Visual monitoring as the Bayesian Network defining the dialogue state";
 
 	// directions for zooming and translating the graph
-	public static enum ZoomDirection {IN, OUT}
-	public static enum TranslationDirection {NORTH, SOUTH, EAST, WEST}
+	public static enum ZoomDirection {
+		IN, OUT
+	}
+
+	public static enum TranslationDirection {
+		NORTH, SOUTH, EAST, WEST
+	}
 
 	// the frame including the tab
 	GUIFrame mainFrame;
@@ -108,7 +114,7 @@ public class StateViewerTab extends JComponent {
 	JList<String> listBox;
 
 	// states available for visualisation
-	Map<String,DialogueState> states;
+	Map<String, DialogueState> states;
 
 	// the Bayesian Network viewer
 	StateViewer visualisation;
@@ -118,13 +124,11 @@ public class StateViewerTab extends JComponent {
 
 	public static String CURRENT_NAME = "<html><b>Current state</b></html>";
 
-
 	boolean showParameters = true;
 
-
 	/**
-	 * Creates a new GUI component for displaying and controlling the dialogue state's
-	 * Bayesian Network.
+	 * Creates a new GUI component for displaying and controlling the dialogue
+	 * state's Bayesian Network.
 	 * 
 	 * @param mainFrame the reference to the main GUI frame.
 	 * 
@@ -134,7 +138,7 @@ public class StateViewerTab extends JComponent {
 
 		this.mainFrame = mainFrame;
 
-		states = new HashMap<String,DialogueState>();
+		states = new HashMap<String, DialogueState>();
 
 		// create the left side of the window
 		JPanel leftPanel = createLeftSide();
@@ -145,13 +149,14 @@ public class StateViewerTab extends JComponent {
 		// create the logging area
 		logArea = createLogArea();
 		JScrollPane logScroll = new JScrollPane(logArea);
-		logScroll.setBorder(BorderFactory.createEmptyBorder());		
-
+		logScroll.setBorder(BorderFactory.createEmptyBorder());
 
 		// arrange the global layout
-		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,visualisation.wrapWithScrollPane());
+		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				leftPanel, visualisation.wrapWithScrollPane());
 		topPanel.setDividerLocation(250);
-		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
+		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topPanel, logScroll);
 		fullPanel.setDividerLocation(600);
 		add(fullPanel);
 
@@ -162,7 +167,6 @@ public class StateViewerTab extends JComponent {
 		listModel.add(1, "separator-current");
 	}
 
-
 	/**
 	 * Sets whether to show the parameter variables in the state viewer or not.
 	 * 
@@ -171,14 +175,14 @@ public class StateViewerTab extends JComponent {
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
 		if (states.containsKey(CURRENT_NAME)) {
-			refresh(mainFrame.getSystem().getState(), mainFrame.getSystem().getState().getParameterIds());
+			refresh(mainFrame.getSystem().getState(), mainFrame.getSystem()
+					.getState().getParameterIds());
 		}
 	}
 
-
 	/**
-	 * Returns true if the parameter variables are currently displayed in the state
-	 * viewer.  Returns false otherwise.
+	 * Returns true if the parameter variables are currently displayed in the
+	 * state viewer. Returns false otherwise.
 	 * 
 	 * @return true if parameters are shown, false otherwise.
 	 */
@@ -187,8 +191,8 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Updates the current dialogue state displayed in the component.  The current
-	 * dialogue state is named "Current state" in the selection list.
+	 * Updates the current dialogue state displayed in the component. The
+	 * current dialogue state is named "Current state" in the selection list.
 	 * 
 	 * @param state the updated Bayesian Network
 	 * @param updatedVars the updated variables
@@ -201,8 +205,7 @@ public class StateViewerTab extends JComponent {
 		if (updatedVars.contains(settings.userInput)) {
 			if (settings.recording == Recording.ALL) {
 				listModel.add(2, "separator-utterances");
-			}
-			else {
+			} else {
 				while (listModel.size() > 2) {
 					String name = listModel.remove(2);
 					states.remove(name);
@@ -210,16 +213,15 @@ public class StateViewerTab extends JComponent {
 			}
 		}
 		List<String> varsInProcessing = state.getNodeIds().stream()
-				.filter(s -> s.contains("'"))
-				.map(s -> s.replace("'", ""))
+				.filter(s -> s.contains("'")).map(s -> s.replace("'", ""))
 				.collect(Collectors.toList());
 		if (settings.recording != Recording.NONE && !varsInProcessing.isEmpty()) {
-			String title = "Updating " + StringUtils.join(varsInProcessing, ",") ;
+			String title = "Updating "
+					+ StringUtils.join(varsInProcessing, ",");
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
-			}
-			catch (DialException e) {
+			} catch (DialException e) {
 				log.warning("cannot copy state : " + e);
 			}
 		}
@@ -227,12 +229,11 @@ public class StateViewerTab extends JComponent {
 		visualisation.showBayesianNetwork(state);
 	}
 
-
-
 	/**
-	 * Records a dialogue state in the component and makes it available for display
-	 * in the network selection list on the left side.  The network is associated with
-	 * a specific name.  If the name already exists, the previous network is erased.
+	 * Records a dialogue state in the component and makes it available for
+	 * display in the network selection list on the left side. The network is
+	 * associated with a specific name. If the name already exists, the previous
+	 * network is erased.
 	 * 
 	 * 
 	 * @param state the dialogue state to record
@@ -241,32 +242,37 @@ public class StateViewerTab extends JComponent {
 	public void recordState(DialogueState state, String name) {
 		states.put(name, state);
 		if (!listModel.contains(name)) {
-			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size()) ; 
-			listModel.add(position,name);
+			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2,
+					listModel.size());
+			listModel.add(position, name);
 		}
 
 	}
 
 	/**
-	 * Writes the given distribution in the logging area at the bottom of the window
+	 * Writes the given distribution in the logging area at the bottom of the
+	 * window
 	 * 
 	 * @param distrib the distribution to write
 	 */
 	public void writeToLogArea(MultivariateDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");
+		logArea.setText("<html><font face=\"helvetica\">" + distribStr
+				+ "</font></html>");
 	}
-	
+
 	/**
-	 * Writes the given distribution in the logging area at the bottom of the window
+	 * Writes the given distribution in the logging area at the bottom of the
+	 * window
 	 * 
 	 * @param distrib the distribution to write
 	 */
 	public void writeToLogArea(UtilityFunction distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText("<html><font face=\"helvetica\">"+ distribStr + "</font></html>");
+		logArea.setText("<html><font face=\"helvetica\">" + distribStr
+				+ "</font></html>");
 	}
 
 	/**
@@ -278,12 +284,9 @@ public class StateViewerTab extends JComponent {
 		return mainFrame;
 	}
 
-
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
-
 
 	/**
 	 * Creates the panel on the left side of the window
@@ -299,9 +302,10 @@ public class StateViewerTab extends JComponent {
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listBox.addListSelectionListener(new CustomListSelectionListener());
 		JScrollPane scrollPane = new JScrollPane(listBox);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());		
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		leftPanel.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setBorder(BorderFactory.createTitledBorder("Dialogue states:"));
+		scrollPane.setBorder(BorderFactory
+				.createTitledBorder("Dialogue states:"));
 
 		JPanel controlPanel = createControlPanel();
 		leftPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -321,74 +325,90 @@ public class StateViewerTab extends JComponent {
 		Container zoomPanel = new Container();
 		zoomPanel.setLayout(new BorderLayout());
 		JButton plus = new JButton("+");
-		plus.addMouseListener(new CustomMouseListener(new ZoomAction(ZoomDirection.IN))) ;
+		plus.addMouseListener(new CustomMouseListener(new ZoomAction(
+				ZoomDirection.IN)));
 		zoomPanel.add(plus, BorderLayout.NORTH);
 		JButton minus = new JButton("-");
-		minus.addMouseListener(new CustomMouseListener(new ZoomAction(ZoomDirection.OUT))) ;
+		minus.addMouseListener(new CustomMouseListener(new ZoomAction(
+				ZoomDirection.OUT)));
 		zoomPanel.add(minus, BorderLayout.SOUTH);
 
 		controlPanel.add(zoomPanel, BorderLayout.WEST);
-		controlPanel.add(new JSeparator(SwingConstants.VERTICAL), BorderLayout.CENTER);
+		controlPanel.add(new JSeparator(SwingConstants.VERTICAL),
+				BorderLayout.CENTER);
 
 		// translation buttons
 		Container translationPanel = new Container();
 		translationPanel.setLayout(new BorderLayout());
 		JButton up = new BasicArrowButton(SwingConstants.NORTH);
-		up.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.NORTH))) ;
+		up.addMouseListener(new CustomMouseListener(new TranslationAction(
+				TranslationDirection.NORTH)));
 		translationPanel.add(up, BorderLayout.NORTH);
 		JButton west = new BasicArrowButton(SwingConstants.WEST);
-		west.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.WEST))) ;
+		west.addMouseListener(new CustomMouseListener(new TranslationAction(
+				TranslationDirection.WEST)));
 		translationPanel.add(west, BorderLayout.WEST);
 		translationPanel.add(new JLabel("        "), BorderLayout.CENTER);
 		JButton east = new BasicArrowButton(SwingConstants.EAST);
-		east.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.EAST))) ;
+		east.addMouseListener(new CustomMouseListener(new TranslationAction(
+				TranslationDirection.EAST)));
 		translationPanel.add(east, BorderLayout.EAST);
 		JButton south = new BasicArrowButton(SwingConstants.SOUTH);
-		south.addMouseListener(new CustomMouseListener(new TranslationAction(TranslationDirection.SOUTH))) ;
+		south.addMouseListener(new CustomMouseListener(new TranslationAction(
+				TranslationDirection.SOUTH)));
 		translationPanel.add(south, BorderLayout.SOUTH);
 
 		controlPanel.add(translationPanel, BorderLayout.EAST);
-		controlPanel.setBorder(new CompoundBorder(
-				BorderFactory.createTitledBorder("Controls"), 
-				BorderFactory.createEmptyBorder(5,5,10,20)));
+		controlPanel.setBorder(new CompoundBorder(BorderFactory
+				.createTitledBorder("Controls"), BorderFactory
+				.createEmptyBorder(5, 5, 10, 20)));
 
 		return controlPanel;
 	}
 
-
 	/**
-	 * Configure the keyboard inputs for zooming and translating the network
-	 * in various directions.
+	 * Configure the keyboard inputs for zooming and translating the network in
+	 * various directions.
 	 * 
 	 * (minor) todo: check that the keyboard codes are universal
 	 */
 	private void configureKeyInputs() {
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(45,0,false), ZoomDirection.IN);
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(47,0,false), ZoomDirection.OUT);
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(45, 0, false), ZoomDirection.IN);
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(47, 0, false), ZoomDirection.OUT);
 
-		// NB: the translation actions are only made available when the graph is in focus, 
+		// NB: the translation actions are only made available when the graph is
+		// in focus,
 		// to avoid conflicts with the navigation of the selection list
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(38,0,false), TranslationDirection.NORTH);
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(40,0,false), TranslationDirection.SOUTH);
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(37,0,false), TranslationDirection.WEST);
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).
-		put(KeyStroke.getKeyStroke(39,0,false), TranslationDirection.EAST);
+		visualisation
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(38, 0, false),
+						TranslationDirection.NORTH);
+		visualisation
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(40, 0, false),
+						TranslationDirection.SOUTH);
+		visualisation
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(37, 0, false),
+						TranslationDirection.WEST);
+		visualisation
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(39, 0, false),
+						TranslationDirection.EAST);
 
-		getActionMap().put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));		
+		getActionMap()
+				.put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));
 		getActionMap().put(ZoomDirection.IN, new ZoomAction(ZoomDirection.IN));
-		visualisation.getActionMap().
-		put(TranslationDirection.NORTH, new TranslationAction(TranslationDirection.NORTH));	
-		visualisation.getActionMap().
-		put(TranslationDirection.SOUTH, new TranslationAction(TranslationDirection.SOUTH));	
-		visualisation.getActionMap().
-		put(TranslationDirection.WEST, new TranslationAction(TranslationDirection.WEST));	
-		visualisation.getActionMap().
-		put(TranslationDirection.EAST, new TranslationAction(TranslationDirection.EAST));	
+		visualisation.getActionMap().put(TranslationDirection.NORTH,
+				new TranslationAction(TranslationDirection.NORTH));
+		visualisation.getActionMap().put(TranslationDirection.SOUTH,
+				new TranslationAction(TranslationDirection.SOUTH));
+		visualisation.getActionMap().put(TranslationDirection.WEST,
+				new TranslationAction(TranslationDirection.WEST));
+		visualisation.getActionMap().put(TranslationDirection.EAST,
+				new TranslationAction(TranslationDirection.EAST));
 	}
 
 	/**
@@ -396,33 +416,30 @@ public class StateViewerTab extends JComponent {
 	 * 
 	 * @return the logging area
 	 */
-	private JEditorPane createLogArea() {		
+	private JEditorPane createLogArea() {
 		JEditorPane textArea = new JEditorPane();
 		textArea.setContentType("text/html");
 		textArea.setEditable(false);
-		Insets inset = new Insets(10,5,10,10);
+		Insets inset = new Insets(10, 5, 10, 10);
 		textArea.setMargin(inset);
-		textArea.setSize(new Dimension(900,100));
+		textArea.setSize(new Dimension(900, 100));
 		return textArea;
 	}
 
-
-
 	/**
-	 * A listener for the list containing the Bayesian Networks.  Once
-	 * a network is selected, its graph is automatically displayed in the main 
-	 * window.
+	 * A listener for the list containing the Bayesian Networks. Once a network
+	 * is selected, its graph is automatically displayed in the main window.
 	 *
 	 */
 	final class CustomListSelectionListener implements ListSelectionListener {
 
-
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			@SuppressWarnings("unchecked")
-			JList<String> jl = (JList<String>)e.getSource();
+			JList<String> jl = (JList<String>) e.getSource();
 			if (jl.getMinSelectionIndex() >= 0) {
-				String selection = listModel.getElementAt(jl.getMinSelectionIndex());
+				String selection = listModel.getElementAt(jl
+						.getMinSelectionIndex());
 				if (!selection.contains("separator")) {
 					visualisation.showBayesianNetwork(states.get(selection));
 				}
@@ -430,15 +447,13 @@ public class StateViewerTab extends JComponent {
 		}
 	}
 
-
 	/**
 	 * Representation of a zooming action, which can be either IN or OUT:
 	 * 
 	 */
 	final class ZoomAction extends AbstractAction {
 
-		ZoomDirection direction ;
-
+		ZoomDirection direction;
 
 		public ZoomAction(ZoomDirection direction) {
 			this.direction = direction;
@@ -447,12 +462,15 @@ public class StateViewerTab extends JComponent {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (direction) {
-			case IN : visualisation.zoomIn(); break;
-			case OUT: visualisation.zoomOut(); break;
+			case IN:
+				visualisation.zoomIn();
+				break;
+			case OUT:
+				visualisation.zoomOut();
+				break;
 			}
-		}	
+		}
 	}
-
 
 	/**
 	 * Representation of a translation action, which can navigate in the four
@@ -461,7 +479,7 @@ public class StateViewerTab extends JComponent {
 	 */
 	final class TranslationAction extends AbstractAction {
 
-		TranslationDirection direction ;
+		TranslationDirection direction;
 
 		public TranslationAction(TranslationDirection direction) {
 			this.direction = direction;
@@ -470,20 +488,27 @@ public class StateViewerTab extends JComponent {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (direction) {
-			case NORTH : visualisation.translate(0,10);  break; 
-			case SOUTH:  visualisation.translate(0,-10); break; 
-			case WEST: visualisation.translate(-10,0); break; 
-			case EAST: visualisation.translate(10,0);break; 
+			case NORTH:
+				visualisation.translate(0, 10);
+				break;
+			case SOUTH:
+				visualisation.translate(0, -10);
+				break;
+			case WEST:
+				visualisation.translate(-10, 0);
+				break;
+			case EAST:
+				visualisation.translate(10, 0);
+				break;
 			}
-		}	
+		}
 	}
 
-
 	/**
-	 * Custom mouse listener for the control buttons.  The objective of this button
-	 * is to keep pursuing the given action (either zooming or translating) until the
-	 * button is released.  This is realised via a thread which is interrupted upon the
-	 * button release.
+	 * Custom mouse listener for the control buttons. The objective of this
+	 * button is to keep pursuing the given action (either zooming or
+	 * translating) until the button is released. This is realised via a thread
+	 * which is interrupted upon the button release.
 	 *
 	 */
 	final class CustomMouseListener implements MouseListener {
@@ -498,26 +523,33 @@ public class StateViewerTab extends JComponent {
 		}
 
 		private void resetThread() {
-			movement = new Thread() { @Override
-				public void run() { 
-				boolean continueProcess = true;
-				while (continueProcess) {
-					try {
-						action.actionPerformed(new ActionEvent(this,0,""));
-						Thread.sleep(100);
-					} 
-					catch (InterruptedException e) { continueProcess=false; } 
+			movement = new Thread() {
+				@Override
+				public void run() {
+					boolean continueProcess = true;
+					while (continueProcess) {
+						try {
+							action.actionPerformed(new ActionEvent(this, 0, ""));
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							continueProcess = false;
+						}
+					}
 				}
-			}
 			};
 		}
 
 		@Override
-		public void mouseClicked(MouseEvent e) {	}
+		public void mouseClicked(MouseEvent e) {
+		}
+
 		@Override
-		public void mouseEntered(MouseEvent e) {}
+		public void mouseEntered(MouseEvent e) {
+		}
+
 		@Override
-		public void mouseExited(MouseEvent e) {	}
+		public void mouseExited(MouseEvent e) {
+		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
@@ -531,10 +563,9 @@ public class StateViewerTab extends JComponent {
 		}
 	}
 
-
 	/**
-	 * Custom model for the list of dialogue states (employed to avoid
-	 * null pointer exceptions).
+	 * Custom model for the list of dialogue states (employed to avoid null
+	 * pointer exceptions).
 	 */
 	final class CustomListModel extends DefaultListModel<String> {
 
@@ -542,19 +573,19 @@ public class StateViewerTab extends JComponent {
 		public String getElementAt(int index) {
 			if (index < super.size()) {
 				return super.getElementAt(index);
-			}
-			else {
+			} else {
 				return "";
 			}
 		}
 	}
 
-
 	/**
 	 * Renderer for the list of dialogue states
 	 */
-	final class JlistRenderer extends JLabel implements ListCellRenderer<String> {
+	final class JlistRenderer extends JLabel implements
+			ListCellRenderer<String> {
 		JSeparator separator;
+
 		public JlistRenderer() {
 			setOpaque(true);
 			setBorder(new EmptyBorder(1, 1, 1, 1));
@@ -562,8 +593,9 @@ public class StateViewerTab extends JComponent {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(JList<? extends String> list, String value,
-				int index, boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent(
+				JList<? extends String> list, String value, int index,
+				boolean isSelected, boolean cellHasFocus) {
 			String str = (value == null) ? "" : value.toString();
 			if (str.contains("separator")) {
 				return separator;
@@ -583,6 +615,5 @@ public class StateViewerTab extends JComponent {
 			return this;
 		}
 	}
-
 
 }

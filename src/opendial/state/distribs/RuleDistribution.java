@@ -39,27 +39,26 @@ import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.AnchoredRule;
 
-
 /**
- * Discrete probability distribution based on a rule specification (which can be for
- * an update rule or a prediction rule).
+ * Discrete probability distribution based on a rule specification (which can be
+ * for an update rule or a prediction rule).
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class RuleDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleDistribution",
+			Logger.Level.DEBUG);
 
 	String id;
 
 	AnchoredRule arule;
 
 	// ===================================
-	//  DISTRIBUTION CONSTRUCTION
+	// DISTRIBUTION CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new rule-base distribution, based on an anchored rule
@@ -70,15 +69,13 @@ public class RuleDistribution implements ProbDistribution {
 	public RuleDistribution(AnchoredRule rule) throws DialException {
 		if (rule.getRule().getRuleType() == RuleType.PROB) {
 			this.arule = rule;
-		}
-		else {
-			throw new DialException("only probabilistic rules can define a " +
-					"rule-based probability distribution");
+		} else {
+			throw new DialException("only probabilistic rules can define a "
+					+ "rule-based probability distribution");
 		}
 		id = rule.getRule().getRuleId();
 
 	}
-
 
 	/**
 	 * Does nothing.
@@ -90,8 +87,6 @@ public class RuleDistribution implements ProbDistribution {
 		}
 	}
 
-
-
 	/**
 	 * Does nothing
 	 */
@@ -100,16 +95,13 @@ public class RuleDistribution implements ProbDistribution {
 		return false;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
-
 
 	/**
-	 * Returns the probability for P(head|condition), where head is 
-	 * an assignment of an output value for the rule node.
+	 * Returns the probability for P(head|condition), where head is an
+	 * assignment of an output value for the rule node.
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
@@ -117,16 +109,14 @@ public class RuleDistribution implements ProbDistribution {
 	 * @throws DialException if the probability could not be calculated.
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws DialException {
+	public double getProb(Assignment condition, Value head)
+			throws DialException {
 
 		CategoricalTable outputTable = getProbDistrib(condition);
 		double prob = outputTable.getProb(head);
 
 		return prob;
 	}
-
-
-
 
 	/**
 	 * Returns the probability table associated with the given input assignment
@@ -136,10 +126,10 @@ public class RuleDistribution implements ProbDistribution {
 	 * @throws DialException if the distribution could not be calculated.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws DialException {
 		return new MarginalDistribution(this, condition);
 	}
-
 
 	/**
 	 * Returns the possible values for the rule.
@@ -151,8 +141,6 @@ public class RuleDistribution implements ProbDistribution {
 		return new HashSet<Value>(arule.getEffects());
 	}
 
-
-
 	/**
 	 * Samples one possible output value given the input assignment
 	 * 
@@ -163,10 +151,9 @@ public class RuleDistribution implements ProbDistribution {
 	@Override
 	public Value sample(Assignment condition) throws DialException {
 
-		CategoricalTable outputTable = getProbDistrib(condition);	
+		CategoricalTable outputTable = getProbDistrib(condition);
 		return outputTable.sample();
 	}
-
 
 	/**
 	 * Returns the label of the anchored rule
@@ -178,25 +165,26 @@ public class RuleDistribution implements ProbDistribution {
 		return id;
 	}
 
-
 	@Override
-	public CategoricalTable getProbDistrib(Assignment input) throws DialException {
+	public CategoricalTable getProbDistrib(Assignment input)
+			throws DialException {
 
 		// search for the matching case
 
 		Assignment ruleInput = input.getTrimmed(arule.getInputs());
 		RuleOutput output = arule.getRule().getOutput(ruleInput);
-		
+
 		// creating the distribution
 		double totalMass = output.getTotalMass(input);
 		CategoricalTable probTable = new CategoricalTable(id, false);
 		if (totalMass < 0.99) {
 			probTable.addRow(new Effect(), 1.0 - totalMass);
 			totalMass = 1.0;
-		}	
-		
+		}
+
 		for (Effect e : output.getEffects()) {
-			double param = output.getParameter(e).getParameterValue(input) / totalMass;
+			double param = output.getParameter(e).getParameterValue(input)
+					/ totalMass;
 			if (param > 0) {
 				probTable.addRow(e, param);
 			}
@@ -204,21 +192,20 @@ public class RuleDistribution implements ProbDistribution {
 
 		if (probTable.isEmpty()) {
 			log.warning("probability table is empty (no effects) for "
-					+ "input " +	input + " and rule " + arule.toString());
-			log.debug("output was " + output + " and effect " + output.getEffects());
+					+ "input " + input + " and rule " + arule.toString());
+			log.debug("output was " + output + " and effect "
+					+ output.getEffects());
 		}
 		return probTable;
 	}
 
-
 	// ===================================
-	//  UTILITY METHODS
+	// UTILITY METHODS
 	// ===================================
-
-
 
 	/**
 	 * Returns true
+	 * 
 	 * @return true
 	 */
 	@Override
@@ -233,14 +220,14 @@ public class RuleDistribution implements ProbDistribution {
 	 */
 	@Override
 	public RuleDistribution copy() {
-		try { 
-			RuleDistribution distrib = new RuleDistribution (arule);
+		try {
+			RuleDistribution distrib = new RuleDistribution(arule);
 			return distrib;
-		} 
-		catch (DialException e) { e.printStackTrace(); return null; }
+		} catch (DialException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-
-
 
 	/**
 	 * Returns the pretty print for the rule
@@ -251,8 +238,5 @@ public class RuleDistribution implements ProbDistribution {
 	public String toString() {
 		return arule.toString();
 	}
-
-
-
 
 }

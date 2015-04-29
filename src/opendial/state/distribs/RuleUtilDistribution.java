@@ -35,25 +35,24 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.effects.Effect;
 import opendial.state.AnchoredRule;
 
-
 /**
- * Utility distribution based on a rule specification.
- *  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * Utility distribution based on a rule specification. *
+ * 
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class RuleUtilDistribution implements UtilityFunction {
 
 	// logger
-	public static Logger log = new Logger("RuleUtilDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleUtilDistribution",
+			Logger.Level.DEBUG);
 
 	// A rule
 	AnchoredRule rule;
 
 	// ===================================
-	//  DISTRIBUTION CONSTRUCTION
+	// DISTRIBUTION CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new rule-based utility distribution, based on an anchored rule
@@ -65,16 +64,12 @@ public class RuleUtilDistribution implements UtilityFunction {
 
 		if ((rule.getRule().getRuleType() == RuleType.UTIL)) {
 			this.rule = rule;
-		}
-		else {
-			throw new DialException("only utility rules can define a " +
-					"rule-based utility distribution");
+		} else {
+			throw new DialException("only utility rules can define a "
+					+ "rule-based utility distribution");
 		}
 
 	}
-
-
-
 
 	/**
 	 * Does nothing.
@@ -84,16 +79,13 @@ public class RuleUtilDistribution implements UtilityFunction {
 		return;
 	}
 
-
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
-	 * Returns the utility for Q(input), where input is the assignment
-	 * of values for both the chance nodes and the action nodes
+	 * Returns the utility for Q(input), where input is the assignment of values
+	 * for both the chance nodes and the action nodes
 	 * 
 	 * @param fullInput the value assignment
 	 * @return the corresponding utility
@@ -104,28 +96,26 @@ public class RuleUtilDistribution implements UtilityFunction {
 		Set<String> outputVars = rule.getOutputs();
 		Assignment input = fullInput.getTrimmedInverse(outputVars);
 		Assignment actions = fullInput.getTrimmed(outputVars);
-		
+
 		return getUtil(input, actions);
 	}
-	
 
 	/**
 	 * Returns the anchored rule
+	 * 
 	 * @return the rule
 	 */
 	public AnchoredRule getAnchor() {
 		return rule;
 	}
 
-
-
 	// ===================================
-	//  UTILITY METHODS
+	// UTILITY METHODS
 	// ===================================
-
 
 	/**
 	 * Returns true
+	 * 
 	 * @return true
 	 */
 	@Override
@@ -140,13 +130,14 @@ public class RuleUtilDistribution implements UtilityFunction {
 	 */
 	@Override
 	public RuleUtilDistribution copy() {
-		try { 
-			RuleUtilDistribution distrib = new RuleUtilDistribution (rule);
+		try {
+			RuleUtilDistribution distrib = new RuleUtilDistribution(rule);
 			return distrib;
-		} 
-		catch (DialException e) { e.printStackTrace(); return null; }
+		} catch (DialException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-
 
 	/**
 	 * Returns the pretty print for the rule
@@ -158,11 +149,9 @@ public class RuleUtilDistribution implements UtilityFunction {
 		return rule.toString();
 	}
 
-
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
 
 	/**
 	 * Returns the utility of the action assignment given the particular input.
@@ -173,28 +162,21 @@ public class RuleUtilDistribution implements UtilityFunction {
 	 */
 	private double getUtil(Assignment input, Assignment actions) {
 
-			Assignment ruleInput = input.getTrimmed(rule.getInputs());
-			Assignment ruleAction = actions.removePrimes();
+		Assignment ruleInput = input.getTrimmed(rule.getInputs());
+		Assignment ruleAction = actions.removePrimes();
 
-			double totalUtil = 0;
-			Assignment fullInput = new Assignment(ruleInput, actions);
-			RuleOutput output = rule.getRule().getOutput(fullInput);	
-			for (Effect effectOutput : output.getEffects()) {
-				Condition effectCondition = effectOutput.convertToCondition();
-				if (effectCondition.isSatisfiedBy(ruleAction)) {
-					totalUtil += output.getParameter(effectOutput).
-							getParameterValue(input);
-				}
+		double totalUtil = 0;
+		Assignment fullInput = new Assignment(ruleInput, actions);
+		RuleOutput output = rule.getRule().getOutput(fullInput);
+		for (Effect effectOutput : output.getEffects()) {
+			Condition effectCondition = effectOutput.convertToCondition();
+			if (effectCondition.isSatisfiedBy(ruleAction)) {
+				totalUtil += output.getParameter(effectOutput)
+						.getParameterValue(input);
 			}
+		}
 
-			return totalUtil;
+		return totalUtil;
 	}
-
-
-
-
-
-
-
 
 }

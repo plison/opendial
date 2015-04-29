@@ -21,9 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-
 package opendial.utils;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,17 +38,18 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 
 /**
  * Utility methods for processing audio data.
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * 
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class AudioUtils {
 
@@ -65,7 +64,6 @@ public class AudioUtils {
 	/** Audio format for the speech synthesis */
 	static AudioFormat OUT = new AudioFormat(16000.0F, 16, 1, true, false);
 
-
 	/**
 	 * Selects an target data line for a particular audio mixer.
 	 * 
@@ -73,24 +71,23 @@ public class AudioUtils {
 	 * @return the selected line
 	 * @throws DialException if no line could be selected
 	 */
-	public static TargetDataLine selectAudioLine(Mixer.Info mixer) throws DialException {
+	public static TargetDataLine selectAudioLine(Mixer.Info mixer)
+			throws DialException {
 
 		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 			try {
-				DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class, format);
+				DataLine.Info lineInfo = new DataLine.Info(
+						TargetDataLine.class, format);
 				if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
 					return AudioSystem.getTargetDataLine(format, mixer);
 				}
-			}
-			catch (LineUnavailableException e) {
+			} catch (LineUnavailableException e) {
 				log.warning(" line for mixer " + mixer + " is not available");
 				log.info("Available audio mixers: " + getMixers());
 			}
 		}
 		throw new DialException("Cannot obtain audio line for mixer " + mixer);
 	}
-
-
 
 	/**
 	 * Returns the list of all audio mixers
@@ -101,7 +98,7 @@ public class AudioUtils {
 		Info[] mixers = AudioSystem.getMixerInfo();
 
 		List<String> mixersStr = new LinkedList<String>();
-		for (int i = 0 ; i < mixers.length ; i++) {
+		for (int i = 0; i < mixers.length; i++) {
 			mixersStr.add(mixers[i].getName());
 		}
 		return mixersStr;
@@ -110,7 +107,7 @@ public class AudioUtils {
 
 	/**
 	 * Returns a list with all audio mixers whose input are compatible with the
-	 * two audio format IN_HIGH or IN_LOW.  
+	 * two audio format IN_HIGH or IN_LOW.
 	 * 
 	 * @return the list of all input mixers
 	 */
@@ -119,11 +116,13 @@ public class AudioUtils {
 		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
 
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
-		for (int i = 0 ; i < mixerInfos.length ; i++) {
-			for (AudioFormat format: Arrays.asList(IN_HIGH, IN_LOW)) {
-				if (!mixers.contains(mixerInfos[i]) && 
-						AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
-								new DataLine.Info(TargetDataLine.class, format))) {
+		for (int i = 0; i < mixerInfos.length; i++) {
+			for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
+				if (!mixers.contains(mixerInfos[i])
+						&& AudioSystem.getMixer(mixerInfos[i])
+								.isLineSupported(
+										new DataLine.Info(TargetDataLine.class,
+												format))) {
 					mixers.add(mixerInfos[i]);
 				}
 			}
@@ -132,10 +131,9 @@ public class AudioUtils {
 		return mixers;
 	}
 
-
 	/**
-	 * Returns the list of all audio mixers whose output is compatible with the audio
-	 * format OUT.
+	 * Returns the list of all audio mixers whose output is compatible with the
+	 * audio format OUT.
 	 * 
 	 * @return the list of all compatible output mixers
 	 */
@@ -145,16 +143,23 @@ public class AudioUtils {
 		Mixer.Info defaultMixer = null;
 
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
-		for (int i = 0 ; i < mixerInfos.length ; i++) {
+		for (int i = 0; i < mixerInfos.length; i++) {
 			if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
 					new DataLine.Info(SourceDataLine.class, OUT))) {
 
 				mixers.add(mixerInfos[i]);
-				try { if (AudioSystem.getSourceDataLine(OUT).getLineInfo().matches(
-						AudioSystem.getSourceDataLine(OUT, mixerInfos[i]).getLineInfo())) {
-					defaultMixer = mixerInfos[i];
-				} }
-				catch (Exception e) { e.printStackTrace(); }
+				try {
+					if (AudioSystem
+							.getSourceDataLine(OUT)
+							.getLineInfo()
+							.matches(
+									AudioSystem.getSourceDataLine(OUT,
+											mixerInfos[i]).getLineInfo())) {
+						defaultMixer = mixerInfos[i];
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 		}
@@ -165,52 +170,53 @@ public class AudioUtils {
 		return mixers;
 	}
 
-
 	/**
 	 * Returns the audio stream corresponding to the array of bytes
 	 * 
 	 * @param byteArray the byte array
 	 * @return the converted audio stream
 	 */
-	public static AudioInputStream getAudioStream(byte[] byteArray) throws DialException {
+	public static AudioInputStream getAudioStream(byte[] byteArray)
+			throws DialException {
 		try {
 			try {
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(
+						byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
-			}
-			catch (UnsupportedAudioFileException e) {
+			} catch (UnsupportedAudioFileException e) {
 				byteArray = addWavHeader(byteArray);
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(
+						byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
-		}
-		catch (IOException|UnsupportedAudioFileException e) {
-			throw new DialException("cannot convert bytes to audio stream: " + e);
+		} catch (IOException | UnsupportedAudioFileException e) {
+			throw new DialException("cannot convert bytes to audio stream: "
+					+ e);
 		}
 	}
 
-
 	/**
 	 * Adds a WAV header to the byte array
+	 * 
 	 * @param bytes the original array of bytes
 	 * @return the new array with the header
 	 * @throws IOException if the byte array is ill-formatted
 	 */
 	private static byte[] addWavHeader(byte[] bytes) throws IOException {
 
-		ByteBuffer bufferWithHeader = ByteBuffer.allocate(bytes.length+44);
+		ByteBuffer bufferWithHeader = ByteBuffer.allocate(bytes.length + 44);
 		bufferWithHeader.order(ByteOrder.LITTLE_ENDIAN);
 		bufferWithHeader.put("RIFF".getBytes());
-		bufferWithHeader.putInt(bytes.length+36);
+		bufferWithHeader.putInt(bytes.length + 36);
 		bufferWithHeader.put("WAVE".getBytes());
 		bufferWithHeader.put("fmt ".getBytes());
 		bufferWithHeader.putInt(16);
-		bufferWithHeader.putShort((short)1);
-		bufferWithHeader.putShort((short)1);
+		bufferWithHeader.putShort((short) 1);
+		bufferWithHeader.putShort((short) 1);
 		bufferWithHeader.putInt(16000);
 		bufferWithHeader.putInt(32000);
-		bufferWithHeader.putShort((short)2);
-		bufferWithHeader.putShort((short)16);
+		bufferWithHeader.putShort((short) 2);
+		bufferWithHeader.putShort((short) 16);
 		bufferWithHeader.put("data".getBytes());
 		bufferWithHeader.putInt(bytes.length);
 		bufferWithHeader.put(bytes);
@@ -218,5 +224,3 @@ public class AudioUtils {
 	}
 
 }
-
-

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -29,21 +29,20 @@ import java.util.LinkedList;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 
-
 /**
  * Representation of a parameter fixed to one single specific value.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class FixedParameter implements Parameter {
 
 	// logger
 	public static Logger log = new Logger("FixedParameter", Logger.Level.NORMAL);
-	
+
 	// the parameter value
 	double param;
-	
+
 	/**
 	 * Constructs a fixed parameter with the given value.
 	 * 
@@ -52,9 +51,7 @@ public class FixedParameter implements Parameter {
 	public FixedParameter(double param) {
 		this.param = param;
 	}
-	
 
-	
 	/**
 	 * Returns the parameter value
 	 * 
@@ -63,8 +60,7 @@ public class FixedParameter implements Parameter {
 	public double getParameterValue() {
 		return param;
 	}
-	
-	
+
 	/**
 	 * Returns the parameter value, ignoring the input
 	 * 
@@ -74,8 +70,7 @@ public class FixedParameter implements Parameter {
 	public double getParameterValue(Assignment input) {
 		return getParameterValue();
 	}
-	
-	
+
 	/**
 	 * Returns an empty set
 	 *
@@ -85,8 +80,7 @@ public class FixedParameter implements Parameter {
 	public Collection<String> getVariables() {
 		return new LinkedList<String>();
 	}
-	
-	
+
 	/**
 	 * Returns the parameter value as a string
 	 *
@@ -94,10 +88,9 @@ public class FixedParameter implements Parameter {
 	 */
 	@Override
 	public String toString() {
-		return""+ param;
+		return "" + param;
 	}
-	
-	
+
 	/**
 	 * Returns the hashcode for the fixed parameter
 	 *
@@ -105,8 +98,7 @@ public class FixedParameter implements Parameter {
 	 */
 	@Override
 	public int hashCode() {
-		return 2* new Double(param).hashCode();
+		return 2 * new Double(param).hashCode();
 	}
-	
 
 }

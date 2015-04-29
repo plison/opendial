@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -25,38 +25,40 @@ package opendial.bn.values;
 
 import opendial.arch.Logger;
 
-
 /**
  * Representation of a boolean value.
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
- public final class BooleanVal implements Value {
-	
-	 // logger
-	 public static Logger log = new Logger("BooleanVal", Logger.Level.DEBUG);
+public final class BooleanVal implements Value {
 
-	 // the boolean
+	// logger
+	public static Logger log = new Logger("BooleanVal", Logger.Level.DEBUG);
+
+	// the boolean
 	final boolean b;
-	
+
 	/**
-	 * Creates the boolean value
-	 * (protected, use the ValueFactory to create it)
+	 * Creates the boolean value (protected, use the ValueFactory to create it)
 	 * 
 	 * @param b the boolean
 	 */
-	protected BooleanVal(boolean b) { this.b = b; };
-	
+	protected BooleanVal(boolean b) {
+		this.b = b;
+	};
+
 	/**
 	 * Returns the hashcode of the boolean
 	 *
 	 * @return hashcode
 	 */
 	@Override
-	public int hashCode() { return (b)? -145 : +78; }
-	
+	public int hashCode() {
+		return (b) ? -145 : +78;
+	}
+
 	/**
 	 * Returns true if the boolean value is similar, false otherwise
 	 *
@@ -64,32 +66,38 @@ import opendial.arch.Logger;
 	 * @return true if similar, false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
-		return (o instanceof BooleanVal && ((BooleanVal)o).getBoolean() == getBoolean());
+	public boolean equals(Object o) {
+		return (o instanceof BooleanVal && ((BooleanVal) o).getBoolean() == getBoolean());
 	}
-	
+
 	/**
-	 * Returns the boolean value 
+	 * Returns the boolean value
 	 * 
 	 * @return the boolean value
 	 */
-	public boolean getBoolean() {return b; }
-	
+	public boolean getBoolean() {
+		return b;
+	}
+
 	/**
 	 * Copies the boolean value
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public BooleanVal copy() { return new BooleanVal(b); }
-	
+	public BooleanVal copy() {
+		return new BooleanVal(b);
+	}
+
 	/**
 	 * Returns a string representation of the boolean value
 	 *
 	 * @return the string representation
 	 */
 	@Override
-	public String toString() { return ""+b; }
+	public String toString() {
+		return "" + b;
+	}
 
 	/**
 	 * Returns 1
@@ -100,35 +108,34 @@ import opendial.arch.Logger;
 	public int length() {
 		return 1;
 	}
-	
+
 	/**
-	 * If v is a BooleanVal, returns the conjunction of the two values.  Else, returns none.
+	 * If v is a BooleanVal, returns the conjunction of the two values. Else,
+	 * returns none.
 	 */
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof BooleanVal) {
-			return new BooleanVal(b & ((BooleanVal)v).getBoolean());
-		}
-		else if (v instanceof NoneVal) {
+			return new BooleanVal(b & ((BooleanVal) v).getBoolean());
+		} else if (v instanceof NoneVal) {
 			return this;
-		}
-		else {
+		} else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
 	}
-	 
+
 	/**
 	 * Compares the boolean to another value
 	 * 
-	 * @return usual ordering, or hashcode difference if the value is not a boolean
+	 * @return usual ordering, or hashcode difference if the value is not a
+	 *         boolean
 	 */
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof BooleanVal) {
-			return (new Boolean(b)).compareTo(((BooleanVal)o).getBoolean());
-		}
-		else {
+			return (new Boolean(b)).compareTo(((BooleanVal) o).getBoolean());
+		} else {
 			return hashCode() - o.hashCode();
 		}
 	}
@@ -140,5 +147,5 @@ import opendial.arch.Logger;
 	public boolean contains(Value subvalue) {
 		return false;
 	}
-	
+
 }

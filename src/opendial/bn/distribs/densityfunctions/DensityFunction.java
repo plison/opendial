@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -32,13 +32,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Density function for a continuous probability distribution. The density function can be either
- * univariate or multivariate.
+ * Density function for a continuous probability distribution. The density
+ * function can be either univariate or multivariate.
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
- */ 
+ */
 public interface DensityFunction {
 
 	/**
@@ -48,27 +48,24 @@ public interface DensityFunction {
 	 * @return the density value for the point
 	 * @throws DialException if the density of x could not be calculated.
 	 */
-	public double getDensity(double ...x);
-	
+	public double getDensity(double... x);
 
 	/**
-	 * Returns the mean of the density function.  The size of the double array
+	 * Returns the mean of the density function. The size of the double array
 	 * corresponds to the dimensionality of the function.
 	 * 
 	 * @return the density mean.
 	 */
 	public double[] getMean();
-	
-	
+
 	/**
-	 * Returns the variance of the density function.  The size of the double array
-	 * corresponds to the dimensionality of the function.
+	 * Returns the variance of the density function. The size of the double
+	 * array corresponds to the dimensionality of the function.
 	 * 
 	 * @return the density variance
 	 */
 	public double[] getVariance();
-	
-	
+
 	/**
 	 * Returns a sampled value given the point. The size of the double array
 	 * corresponds to the dimensionality of the function.
@@ -76,8 +73,7 @@ public interface DensityFunction {
 	 * @return the sampled value.
 	 */
 	public double[] sample();
-	
-	
+
 	/**
 	 * Returns the dimensionality of the density function.
 	 * 
@@ -85,26 +81,22 @@ public interface DensityFunction {
 	 */
 	public int getDimensionality();
 
-
 	/**
-	 * Returns a discretised version of the density function.  The granularity of the 
-	 * discretisation is defined by the number of discretisation buckets.
+	 * Returns a discretised version of the density function. The granularity of
+	 * the discretisation is defined by the number of discretisation buckets.
 	 * 
 	 * @param nbBuckets the number of discretisation buckets
-	 * @return a discretised probability distribution, mapping a collection of points
-	 *         to a probability value
+	 * @return a discretised probability distribution, mapping a collection of
+	 *         points to a probability value
 	 */
-	public Map<double[],Double> discretise(int nbBuckets);
+	public Map<double[], Double> discretise(int nbBuckets);
 
-	
 	/**
 	 * Returns a copy of the density function
 	 * 
 	 * @return the copy
 	 */
 	public DensityFunction copy();
-	
-
 
 	/**
 	 * Returns the cumulative probability up to the given point x.
@@ -113,16 +105,15 @@ public interface DensityFunction {
 	 * @return the cumulative probability from 0 to x
 	 * @throws DialException if the CDF could not be extracted
 	 */
-	public double getCDF(double...x) throws DialException;
+	public double getCDF(double... x) throws DialException;
 
-
-	
 	/**
-	 * Returns the XML representation (as a list of XML elements) of the density function
+	 * Returns the XML representation (as a list of XML elements) of the density
+	 * function
 	 * 
 	 * @param doc the XML document for the node
 	 * @return the corresponding XML elements
 	 */
-	public List<Element> generateXML(Document doc)  ;
-	
+	public List<Element> generateXML(Document doc);
+
 }

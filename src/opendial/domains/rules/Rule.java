@@ -41,12 +41,12 @@ import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
-
 /**
- * Generic representation of a probabilistic rule, with an identifier and an ordered 
- * list of cases. The rule can be either a probability or a utility rule.
+ * Generic representation of a probabilistic rule, with an identifier and an
+ * ordered list of cases. The rule can be either a probability or a utility
+ * rule.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class Rule {
@@ -59,21 +59,22 @@ public class Rule {
 	// ordered list of cases
 	List<RuleCase> cases;
 
-	public enum RuleType {PROB, UTIL}
+	public enum RuleType {
+		PROB, UTIL
+	}
 
 	RuleType ruleType;
 
 	// cache with the outputs for a given assignment
-	Map<Assignment,RuleOutput> cache;
+	Map<Assignment, RuleOutput> cache;
 
 	// ===================================
-	//  RULE CONSTRUCTION
+	// RULE CONSTRUCTION
 	// ===================================
-
 
 	/**
-	 * Creates a new rule, with the given identifier and type,
-	 * and an empty list of cases
+	 * Creates a new rule, with the given identifier and type, and an empty list
+	 * of cases
 	 * 
 	 * @param id the identifier
 	 * @param ruleType the rule type
@@ -81,27 +82,24 @@ public class Rule {
 	public Rule(String id, RuleType ruleType) {
 		this.id = id;
 		this.ruleType = ruleType;
-		cases = new ArrayList<RuleCase>();	
-		cache = new HashMap<Assignment,RuleOutput>(100);
+		cases = new ArrayList<RuleCase>();
+		cache = new HashMap<Assignment, RuleOutput>(100);
 		cache = Collections.synchronizedMap(cache);
 	}
-
-
 
 	/**
 	 * Adds a new case to the abstract rule
 	 * 
 	 * @param newCase the new case to add
 	 */
-	public void addCase(RuleCase newCase) {	
-		if (!cases.isEmpty() && cases.get(cases.size()-1).getCondition() 
-				instanceof VoidCondition) {
-			log.info("new case for rule " + id + 
-					" is unreachable (previous case is trivially true)");
+	public void addCase(RuleCase newCase) {
+		if (!cases.isEmpty()
+				&& cases.get(cases.size() - 1).getCondition() instanceof VoidCondition) {
+			log.info("new case for rule " + id
+					+ " is unreachable (previous case is trivially true)");
 		}
 		cases.add(newCase);
 	}
-
 
 	/**
 	 * Sets the priority level of the rule (1 being the highest)
@@ -115,7 +113,7 @@ public class Rule {
 			for (Effect e : c.getEffects()) {
 				Parameter param = c.getParameter(e);
 				List<BasicEffect> newEffects = new ArrayList<BasicEffect>();
-				for (BasicEffect e2: e.getSubEffects()) {
+				for (BasicEffect e2 : e.getSubEffects()) {
 					newEffects.add(e2.changePriority(priority));
 				}
 				newCase.addEffect(new Effect(newEffects), param);
@@ -125,11 +123,9 @@ public class Rule {
 		cases = newCases;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the rule identifier
@@ -140,11 +136,9 @@ public class Rule {
 		return id;
 	}
 
-
-
 	/**
-	 * Returns the input variables (possibly underspecified, with slots 
-	 * to fill) for the rule
+	 * Returns the input variables (possibly underspecified, with slots to fill)
+	 * for the rule
 	 * 
 	 * @return the set of labels for the input variables
 	 */
@@ -156,16 +150,15 @@ public class Rule {
 		return new HashSet<Template>(variables);
 	}
 
-
 	/**
 	 * Returns the first case whose condition matches the input assignment
-	 * provided as argument.  The case contains the grounded list of effects
+	 * provided as argument. The case contains the grounded list of effects
 	 * associated with the satisfied condition.
 	 * 
 	 * @param input the input assignment
 	 * @return the matched rule case.
 	 */
-	public RuleOutput getOutput (Assignment input) {
+	public RuleOutput getOutput(Assignment input) {
 
 		if (cache != null) {
 			RuleOutput v = cache.get(input);
@@ -177,7 +170,8 @@ public class Rule {
 		RuleGrounding groundings = getGroundings(input);
 
 		for (Assignment g : groundings.getAlternatives()) {
-			Assignment fullInput = !(g.isEmpty())? new Assignment(input, g) : input;
+			Assignment fullInput = !(g.isEmpty()) ? new Assignment(input, g)
+					: input;
 			RuleCase match = getMatchingCase(fullInput);
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
@@ -188,19 +182,16 @@ public class Rule {
 			cache.put(input, output);
 			if (cache != null && cache.size() > 100) {
 				cache = null;
-			}			
+			}
 		}
 		return output;
 	}
 
-
 	private RuleCase getMatchingCase(Assignment input) {
 		return cases.stream()
 				.filter(c -> c.getCondition().isSatisfiedBy(input))
-				.map(c -> c.ground(input))
-				.findFirst().orElse(new RuleCase());
+				.map(c -> c.ground(input)).findFirst().orElse(new RuleCase());
 	}
-
 
 	/**
 	 * Returns the rule type
@@ -211,7 +202,6 @@ public class Rule {
 		return ruleType;
 	}
 
-
 	/**
 	 * Returns the set of groundings that can be derived from the rule and the
 	 * specific input assignment.
@@ -221,7 +211,7 @@ public class Rule {
 	 */
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding groundings = new RuleGrounding();
-		for (RuleCase thecase :cases) {
+		for (RuleCase thecase : cases) {
 			RuleGrounding caseGrounding = thecase.getGroundings(input);
 
 			if (ruleType == RuleType.UTIL) {
@@ -229,10 +219,10 @@ public class Rule {
 				for (Effect e : thecase.getEffects()) {
 					Condition co = e.convertToCondition();
 					if (input2.containsVars(e.getOutputVariables())) {
-						RuleGrounding effectGrounding = co.getGroundings(input2);
+						RuleGrounding effectGrounding = co
+								.getGroundings(input2);
 						caseGrounding.add(effectGrounding);
-					}
-					else {
+					} else {
 						Set<String> slots = e.getAdditionalInputVariables();
 						slots.removeAll(input2.getVariables());
 						caseGrounding.add(Assignment.createOneValue(slots, ""));
@@ -244,11 +234,9 @@ public class Rule {
 		return groundings;
 	}
 
-
-
 	/**
-	 * Returns the set of all (templated) output variables defined inside
-	 * the rule
+	 * Returns the set of all (templated) output variables defined inside the
+	 * rule
 	 * 
 	 * @return the set of all possible output variables
 	 */
@@ -256,7 +244,6 @@ public class Rule {
 		return cases.stream().flatMap(c -> c.getOutputVariables().stream())
 				.collect(Collectors.toSet());
 	}
-
 
 	/**
 	 * Returns the set of all parameter identifiers employed in the rule
@@ -273,7 +260,6 @@ public class Rule {
 		return params;
 	}
 
-
 	/**
 	 * Returns the set of all possible effects in the rule.
 	 * 
@@ -287,30 +273,26 @@ public class Rule {
 		return effects;
 	}
 
-
 	/**
 	 * Returns the list of conditions in the rule
 	 * 
 	 * @return the conditions
 	 */
 	public List<Condition> getConditions() {
-		return cases.stream().map(c -> c.getCondition()).collect(Collectors.toList());
+		return cases.stream().map(c -> c.getCondition())
+				.collect(Collectors.toList());
 	}
 
-
-
-
 	// ===================================
-	//  UTILITY METHODS
+	// UTILITY METHODS
 	// ===================================
-
 
 	/**
 	 * Returns a string representation for the rule
 	 */
 	@Override
 	public String toString() {
-		String str = id +": ";
+		String str = id + ": ";
 		for (RuleCase theCase : cases) {
 			if (!theCase.equals(cases.get(0))) {
 				str += "\telse ";
@@ -318,7 +300,7 @@ public class Rule {
 			str += theCase.toString() + "\n";
 		}
 		if (!cases.isEmpty()) {
-			str = str.substring(0, str.length()-1);
+			str = str.substring(0, str.length() - 1);
 		}
 		return str;
 	}
@@ -333,28 +315,21 @@ public class Rule {
 		return this.getClass().hashCode() - id.hashCode() + cases.hashCode();
 	}
 
-
 	/**
-	 * Returns true if o is a rule that has the same identifier, rule type and list of cases
-	 * than the current rule.
+	 * Returns true if o is a rule that has the same identifier, rule type and
+	 * list of cases than the current rule.
 	 * 
 	 * @param o the object to compare
 	 * @return true if the object is an identical rule, false otherwise.
 	 */
 	@Override
-	public boolean equals (Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof Rule) {
-			return id.equals(((Rule)o).getRuleId()) 
-					&& ruleType.equals(((Rule)o).getRuleType()) 
-					&& cases.equals(((Rule)o).cases);
+			return id.equals(((Rule) o).getRuleId())
+					&& ruleType.equals(((Rule) o).getRuleType())
+					&& cases.equals(((Rule) o).cases);
 		}
 		return false;
 	}
-
-
-
-
-
-
 
 }

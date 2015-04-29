@@ -23,12 +23,13 @@ import opendial.inference.Query;
 /**
  * Sampling process (based on likelihood weighting) for a particular query.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class LikelihoodWeighting {
 
 	// logger
-	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
+	public static Logger log = new Logger("LikelihoodWeighting",
+			Logger.Level.DEBUG);
 
 	// actual number of samples for the algorithm
 	int nbSamples;
@@ -45,53 +46,52 @@ public class LikelihoodWeighting {
 	List<BNode> sortedNodes;
 
 	// termination status
-	boolean isTerminated = false; 
+	boolean isTerminated = false;
 
-	//scheduled thread pool to terminate sampling once the time limit is reached
-	static ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
+	// scheduled thread pool to terminate sampling once the time limit is
+	// reached
+	static ScheduledExecutorService service = Executors
+			.newScheduledThreadPool(3);
 
 	// ===================================
-	//  PUBLIC METHODS
+	// PUBLIC METHODS
 	// ===================================
-
 
 	/**
-	 * Creates a new sampling query with the given arguments and starts
-	 * sampling (using parallel streams). 
+	 * Creates a new sampling query with the given arguments and starts sampling
+	 * (using parallel streams).
 	 * 
 	 * @param query the query to answer
 	 * @param nbSamples the number of samples to collect
 	 * @param maxSamplingTime maximum sampling time (in milliseconds)
 	 */
-	public LikelihoodWeighting(Query query,int nbSamples, long maxSamplingTime) {
+	public LikelihoodWeighting(Query query, int nbSamples, long maxSamplingTime) {
 		this.query = query;
 		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
-		
-		service.schedule(() -> isTerminated = true, 
-				maxSamplingTime, TimeUnit.MILLISECONDS);
-		
-		samples = Stream.generate(() -> this)  	// creates infinite stream
-				.parallel()						// parallelise
-				.map(p -> p.sample())			// generate a sample
-				.limit(nbSamples)				// stop when nbSamples are collected
-				.filter(s -> !s.isEmpty())		// discard empty samples	
-				.collect(Collectors.toList());	// makes a list of samples
+
+		service.schedule(() -> isTerminated = true, maxSamplingTime,
+				TimeUnit.MILLISECONDS);
+
+		samples = Stream.generate(() -> this) // creates infinite stream
+				.parallel() // parallelise
+				.map(p -> p.sample()) // generate a sample
+				.limit(nbSamples) // stop when nbSamples are collected
+				.filter(s -> !s.isEmpty()) // discard empty samples
+				.collect(Collectors.toList()); // makes a list of samples
 	}
 
-
-
-
 	/**
-	 * Returns a string representation of the query and number of collected samples
+	 * Returns a string representation of the query and number of collected
+	 * samples
 	 */
 	@Override
 	public String toString() {
-		return query.toString() + " (" + samples.size() + " samples already collected)";
+		return query.toString() + " (" + samples.size()
+				+ " samples already collected)";
 	}
-
 
 	/**
 	 * Returns the collected samples
@@ -103,12 +103,11 @@ public class LikelihoodWeighting {
 		return samples;
 	}
 
-
-
 	/**
-	 * Runs the sample collection procedure until termination (either due to a time-out 
-	 * or the collection of a number of samples = nbSamples).  The method loops until
-	 * terminate() is called, or enough samples have been collected. 
+	 * Runs the sample collection procedure until termination (either due to a
+	 * time-out or the collection of a number of samples = nbSamples). The
+	 * method loops until terminate() is called, or enough samples have been
+	 * collected.
 	 * 
 	 */
 	protected Sample sample() {
@@ -126,60 +125,59 @@ public class LikelihoodWeighting {
 				}
 
 				// if the node is an evidence node and has no input nodes
-				else if (n.getInputNodeIds().isEmpty() 
+				else if (n.getInputNodeIds().isEmpty()
 						&& query.getEvidence().containsVar(n.getId())) {
-					sample.addPair(n.getId(), query.getEvidence().getValue(n.getId()));
-				}
-				else if (n instanceof ChanceNode) {
-					sampleChanceNode((ChanceNode)n, sample);
+					sample.addPair(n.getId(),
+							query.getEvidence().getValue(n.getId()));
+				} else if (n instanceof ChanceNode) {
+					sampleChanceNode((ChanceNode) n, sample);
 				}
 
 				// if the node is an action node
 				else if (n instanceof ActionNode) {
-					sampleActionNode((ActionNode)n, sample);
+					sampleActionNode((ActionNode) n, sample);
 				}
 
 				// finally, if the node is a utility node, calculate the utility
 				else if (n instanceof UtilityNode) {
-					double newUtil = ((UtilityNode)n).getUtility(sample);
+					double newUtil = ((UtilityNode) n).getUtility(sample);
 					sample.addUtility(newUtil);
 				}
 			}
 
-			// we only add the sample if the weight is larger than a given threshold
+			// we only add the sample if the weight is larger than a given
+			// threshold
 			if (sample.getWeight() < WEIGHT_THRESHOLD) {
 				sample.clear();
 			}
 			sample.trim(query.getQueryVars());
-		}
-		catch (DialException e) {
+		} catch (DialException e) {
 			log.info("exception caught: " + e);
 			e.printStackTrace();
 		}
 		return sample;
 	}
 
-
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
-
 
 	/**
-	 * Samples the given chance node and add it to the sample.  If the variable is part
-	 * of the evidence, updates the weight.
+	 * Samples the given chance node and add it to the sample. If the variable
+	 * is part of the evidence, updates the weight.
 	 * 
 	 * @param n the chance node to sample
 	 * @param sample to weighted sample to extend
 	 * @throws DialException if the sampling operation failed
 	 */
-	private void sampleChanceNode(ChanceNode n, Sample sample) throws DialException {
+	private void sampleChanceNode(ChanceNode n, Sample sample)
+			throws DialException {
 
-		// if the node is a chance node and is not evidence, sample from the values
+		// if the node is a chance node and is not evidence, sample from the
+		// values
 		if (!query.getEvidence().containsVar(n.getId())) {
 			Value newVal = n.sample(sample);
-			sample.addPair(n.getId(), newVal);				
+			sample.addPair(n.getId(), newVal);
 		}
 
 		// if the node is an evidence node, update the weights
@@ -187,44 +185,40 @@ public class LikelihoodWeighting {
 			Value evidenceValue = query.getEvidence().getValue(n.getId());
 			double evidenceProb = 1.0;
 			if (n.getDistrib() instanceof ContinuousDistribution) {
-				evidenceProb = ((ContinuousDistribution)n.getDistrib()).
-						getProbDensity(evidenceValue);
+				evidenceProb = ((ContinuousDistribution) n.getDistrib())
+						.getProbDensity(evidenceValue);
+			} else {
+				evidenceProb = n.getProb(sample, evidenceValue);
 			}
-			else {
-				evidenceProb = n.getProb(sample, evidenceValue);	
-			}
-			sample.addLogWeight(Math.log(evidenceProb));						
+			sample.addLogWeight(Math.log(evidenceProb));
 			sample.addPair(n.getId(), evidenceValue);
 		}
 	}
 
-
 	/**
-	 * Samples the action node.  If the node is part of the evidence, simply add it to 
-	 * the sample. Else, samples an action at random.
+	 * Samples the action node. If the node is part of the evidence, simply add
+	 * it to the sample. Else, samples an action at random.
 	 * 
-	 * @param n the action node 
+	 * @param n the action node
 	 * @param sample the weighted sample to extend
 	 */
 	private void sampleActionNode(ActionNode n, Sample sample) {
 
-		if (!query.getEvidence().containsVar(n.getId()) && 
-				n.getInputNodeIds().isEmpty()) {
+		if (!query.getEvidence().containsVar(n.getId())
+				&& n.getInputNodeIds().isEmpty()) {
 			Value newVal = n.sample(sample);
 			sample.addPair(n.getId(), newVal);
-		}
-		else {
+		} else {
 			Value evidenceValue = query.getEvidence().getValue(n.getId());
 			double evidenceProb = n.getProb(evidenceValue);
-			sample.addLogWeight(Math.log(evidenceProb));						
+			sample.addLogWeight(Math.log(evidenceProb));
 			sample.addPair(n.getId(), evidenceValue);
 		}
 	}
 
-
 	/**
-	 * Redraw the samples according to their weight.  The number of redrawn samples is the same 
-	 * as the one given as argument.
+	 * Redraw the samples according to their weight. The number of redrawn
+	 * samples is the same as the one given as argument.
 	 * 
 	 * @param samples the initial samples (with their weight)
 	 * @return the redrawn samples given their weight
@@ -233,21 +227,18 @@ public class LikelihoodWeighting {
 	private void redrawSamples() {
 
 		try {
-			Intervals<Sample> intervals = new Intervals<Sample>(samples, s -> s.getWeight());
+			Intervals<Sample> intervals = new Intervals<Sample>(samples,
+					s -> s.getWeight());
 
 			Stack<Sample> newSamples = new Stack<Sample>();
 			int sampleSize = samples.size();
-			for (int j = 0 ; j < sampleSize; j++) {
+			for (int j = 0; j < sampleSize; j++) {
 				newSamples.add(intervals.sample());
 			}
 			samples = newSamples;
-		}
-		catch (DialException e) {
-			log.warning("could not redraw samples: "  +e );
+		} catch (DialException e) {
+			log.warning("could not redraw samples: " + e);
 		}
 	}
-
-
-
 
 }

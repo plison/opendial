@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -27,35 +27,33 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Utility for logging on the standard output (console).  
+ * Utility for logging on the standard output (console).
  *
- * @author  Pierre Lison plison@ifi.uio.no 
- *  
+ * @author Pierre Lison plison@ifi.uio.no
+ * 
  */
 public class Logger {
-	
+
 	/** Logging levels */
 	public static enum Level {
-		NONE, 		/* no messages are shown */
-		MIN, 		/* only severe errors are shown */
-		NORMAL, 	/* severe errors, warning and infos are shown */
-		DEBUG 		/* every message is shown, including debug */
-	}  
-	  
+		NONE, /* no messages are shown */
+		MIN, /* only severe errors are shown */
+		NORMAL, /* severe errors, warning and infos are shown */
+		DEBUG /* every message is shown, including debug */
+	}
+
 	// Label of the component to log
 	String componentLabel;
-	 
+
 	// logging level for this particular logger
 	Level level;
-	
+
 	// print streams
 	PrintStream out;
 	PrintStream err;
 
-	
 	/**
-	 * Create a new logger for the component, set at a given
-	 * logging level
+	 * Create a new logger for the component, set at a given logging level
 	 * 
 	 * @param componentLabel the label for the component
 	 * @param level the logging level
@@ -65,14 +63,13 @@ public class Logger {
 		this.level = level;
 		try {
 			out = new PrintStream(System.out, true, "UTF-8");
-		    err = new PrintStream(System.err, true, "UTF-8");
+			err = new PrintStream(System.err, true, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 	}
-	
+
 	/**
 	 * Modifies the logging level of the logger
 	 * 
@@ -81,7 +78,7 @@ public class Logger {
 	public void setLevel(Level level) {
 		this.level = level;
 	}
-	
+
 	/**
 	 * Log a severe error message
 	 * 
@@ -89,14 +86,18 @@ public class Logger {
 	 */
 	public void severe(String s) {
 		if (level != Level.NONE) {
-		err.println("["+componentLabel+"] SEVERE: " + s);
+			err.println("[" + componentLabel + "] SEVERE: " + s);
 		}
 	}
-	
-	public void severe(int nb) { severe(""+nb); }
-	public void severe(float fl) { severe(""+fl); }
 
-	
+	public void severe(int nb) {
+		severe("" + nb);
+	}
+
+	public void severe(float fl) {
+		severe("" + fl);
+	}
+
 	/**
 	 * Log a warning message
 	 * 
@@ -104,14 +105,18 @@ public class Logger {
 	 */
 	public void warning(String s) {
 		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 err.println("["+componentLabel+"] WARNING: " + s);
+			err.println("[" + componentLabel + "] WARNING: " + s);
 		}
 	}
 
-	public void warning(int nb) { warning(""+nb); }
-	public void warning(float fl) { warning(""+fl); }
+	public void warning(int nb) {
+		warning("" + nb);
+	}
 
-	
+	public void warning(float fl) {
+		warning("" + fl);
+	}
+
 	/**
 	 * Log an information message
 	 * 
@@ -119,14 +124,22 @@ public class Logger {
 	 */
 	public void info(String s) {
 		if (level == Level.NORMAL || level == Level.DEBUG) {
-		 out.println("["+componentLabel+"] INFO: " + s);
+			out.println("[" + componentLabel + "] INFO: " + s);
 		}
 	}
 
-	public void info(int nb) { info(""+nb); }
-	public void info(float fl) { info(""+fl); }
-	public void info(Object o) { info(o.toString()); }
-	
+	public void info(int nb) {
+		info("" + nb);
+	}
+
+	public void info(float fl) {
+		info("" + fl);
+	}
+
+	public void info(Object o) {
+		info(o.toString());
+	}
+
 	/**
 	 * Log a debugging message
 	 * 
@@ -134,16 +147,20 @@ public class Logger {
 	 */
 	public void debug(String s) {
 		if (level == Level.DEBUG) {
-			out.println("["+componentLabel+"] DEBUG: " + s);
+			out.println("[" + componentLabel + "] DEBUG: " + s);
 		}
 	}
-	
-	public void debug(int nb) { debug(""+nb); }
-	public void debug(float fl) { debug(""+fl); }
-	public void debug(Object o) { debug(""+o); }
 
+	public void debug(int nb) {
+		debug("" + nb);
+	}
 
+	public void debug(float fl) {
+		debug("" + fl);
+	}
+
+	public void debug(Object o) {
+		debug("" + o);
+	}
 
 }
-
-

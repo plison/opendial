@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -32,31 +32,30 @@ import opendial.bn.BNetwork;
 import opendial.state.DialogueState;
 
 /**
- * Representation of a dialogue domain, composed of (1) an initial dialogue state and
- * (2) a list of probability and utility models employed to update the dialogue state
- * upon relevant changes.
+ * Representation of a dialogue domain, composed of (1) an initial dialogue
+ * state and (2) a list of probability and utility models employed to update the
+ * dialogue state upon relevant changes.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class Domain {
 
 	static Logger log = new Logger("Domain", Logger.Level.NORMAL);
-	
+
 	// domain name
-	String domainName = "";	
-	
+	String domainName = "";
+
 	// initial dialogue state
 	DialogueState initState;
-	
+
 	BNetwork parameters;
-	
+
 	// list of models
 	List<Model> models;
-	
+
 	// settings
 	Settings settings;
-
 
 	/**
 	 * Creates a new domain with an empty dialogue state and list of models.
@@ -69,7 +68,7 @@ public class Domain {
 	}
 
 	/**
-	 * Sets the domain name 
+	 * Sets the domain name
 	 * 
 	 * @param domainName the domain name
 	 */
@@ -85,7 +84,7 @@ public class Domain {
 	public void setInitialState(DialogueState initState) {
 		this.initState = initState;
 	}
-		
+
 	/**
 	 * Adds a model to the domain
 	 * 
@@ -94,7 +93,7 @@ public class Domain {
 	public void addModel(Model model) {
 		models.add(model);
 	}
-	
+
 	/**
 	 * Returns the initial dialogue state
 	 * 
@@ -112,8 +111,7 @@ public class Domain {
 	public List<Model> getModels() {
 		return models;
 	}
-	
-	
+
 	/**
 	 * Replaces the domain-specific settings
 	 * 
@@ -122,8 +120,7 @@ public class Domain {
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
-	
-	
+
 	/**
 	 * Returns the domain-specific settings
 	 * 
@@ -132,8 +129,7 @@ public class Domain {
 	public Settings getSettings() {
 		return settings;
 	}
-	
-	
+
 	/**
 	 * Returns the domain name.
 	 */
@@ -151,7 +147,6 @@ public class Domain {
 		this.parameters = parameters;
 	}
 
-	
 	/**
 	 * Returns the prior distribution for the domain parameters
 	 * 
@@ -161,7 +156,6 @@ public class Domain {
 		return parameters;
 	}
 
-	
 	/**
 	 * Returns the domain name
 	 * 
@@ -170,6 +164,5 @@ public class Domain {
 	public String getName() {
 		return domainName;
 	}
-	
-	
+
 }

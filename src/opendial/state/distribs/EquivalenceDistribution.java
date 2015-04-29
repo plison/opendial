@@ -21,7 +21,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-
 package opendial.state.distribs;
 
 import java.util.HashSet;
@@ -42,21 +41,22 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 
-
 /**
- * Representation of an equivalence distribution (see dissertation p. 78 for details) with 
- * two possible values: true or false. The distribution is essentially defined as:
+ * Representation of an equivalence distribution (see dissertation p. 78 for
+ * details) with two possible values: true or false. The distribution is
+ * essentially defined as:
  * 
- * <p>	P(eq=true | X, X^p) = 1 when X = X^p and != None
- *                          = NONE_PROB  when X = None or X^p = None
- *                          = 0 otherwise.
+ * <p>
+ * P(eq=true | X, X^p) = 1 when X = X^p and != None = NONE_PROB when X = None or
+ * X^p = None = 0 otherwise.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class EquivalenceDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("EquivalenceDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("EquivalenceDistribution",
+			Logger.Level.DEBUG);
 
 	// the variable label
 	String baseVar;
@@ -67,7 +67,6 @@ public class EquivalenceDistribution implements ProbDistribution {
 	// probability of the equivalence variable when X or X^p have a None value.
 	public static double NONE_PROB = 0.02;
 
-
 	/**
 	 * Create a new equivalence node for the given variable.
 	 * 
@@ -75,10 +74,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 */
 	public EquivalenceDistribution(String variable) {
 		this.baseVar = variable;
-		sampler = new Random();	
+		sampler = new Random();
 	}
-
-
 
 	/**
 	 * Does nothing
@@ -96,20 +93,18 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return new EquivalenceDistribution(baseVar);
 	}
 
-
 	/**
 	 * Returns a string representation of the distribution
 	 */
 	@Override
 	public String toString() {
-		String str= "Equivalence(" + baseVar + ", " + baseVar+"^p)";
+		String str = "Equivalence(" + baseVar + ", " + baseVar + "^p)";
 		return str;
 	}
 
-
 	/**
-	 * Replaces occurrences of the old variable identifier oldId with the new identifier
-	 * newId.
+	 * Replaces occurrences of the old variable identifier oldId with the new
+	 * identifier newId.
 	 */
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
@@ -118,9 +113,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 		}
 	}
 
-
 	/**
-	 * Generates a sample from the distribution given the conditional assignment.
+	 * Generates a sample from the distribution given the conditional
+	 * assignment.
 	 */
 	@Override
 	public Value sample(Assignment condition) throws DialException {
@@ -128,12 +123,10 @@ public class EquivalenceDistribution implements ProbDistribution {
 
 		if (sampler.nextDouble() < prob) {
 			return ValueFactory.create(true);
-		}
-		else {
-			return  ValueFactory.create(false);
+		} else {
+			return ValueFactory.create(false);
 		}
 	}
-
 
 	/**
 	 * Returns the identifier for the equivalence distribution
@@ -145,13 +138,12 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return "=_" + baseVar;
 	}
 
-
 	/**
-	 * Returns the probability of P(head | condition). 
+	 * Returns the probability of P(head | condition).
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the resulting probability 
+	 * @return the resulting probability
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) {
@@ -159,50 +151,52 @@ public class EquivalenceDistribution implements ProbDistribution {
 		try {
 			double prob = getProb(condition);
 			if (head instanceof BooleanVal) {
-				boolean val = ((BooleanVal)head).getBoolean();
-				if (val) { 
+				boolean val = ((BooleanVal) head).getBoolean();
+				if (val) {
 					return prob;
-				}
-				else {
+				} else {
 					return 1 - prob;
 				}
 			}
-			log.warning("cannot extract prob for P(" + head + "|" + condition +")");
-		} 
-		catch (DialException e) { log.warning(e.toString()); } 
+			log.warning("cannot extract prob for P(" + head + "|" + condition
+					+ ")");
+		} catch (DialException e) {
+			log.warning(e.toString());
+		}
 		return 0.0;
 	}
-
 
 	/**
 	 * Returns a new equivalence distribution with the conditional assignment as
 	 * fixed input.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws DialException {
 		return new MarginalDistribution(this, condition);
 	}
 
-	
 	/**
 	 * Returns the categorical table associated with the conditional assignment.
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the corresponding categorical table on the true and false values
-	 * @throws DialException if the table could not be extracted for the condition
+	 * @throws DialException if the table could not be extracted for the
+	 *             condition
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition) throws DialException {
+	public CategoricalTable getProbDistrib(Assignment condition)
+			throws DialException {
 		double positiveProb = getProb(condition);
 		CategoricalTable table = new CategoricalTable(getVariable());
 		table.addRow(true, positiveProb);
-		table.addRow(false, 1- positiveProb);
+		table.addRow(false, 1 - positiveProb);
 		return table;
 	}
 
 	/**
-	 * Returns a set of two assignments: one with the value true, and one with the value
-	 * false.
+	 * Returns a set of two assignments: one with the value true, and one with
+	 * the value false.
 	 * 
 	 * @param range the set of possible input values (is ignored)
 	 * @return the set with the two possible assignments
@@ -215,9 +209,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return vals;
 	}
 
-
 	/**
 	 * Returns the probability of eq=true given the condition
+	 * 
 	 * @param condition the conditional assignment
 	 * @return the probability of eq=true
 	 * @throws DialException if the distribution is ill-formed
@@ -226,34 +220,31 @@ public class EquivalenceDistribution implements ProbDistribution {
 
 		Value[] coupledValues = getCoupledValues(condition);
 
-		if (coupledValues[0].equals(ValueFactory.none()) || 
-				coupledValues[1].equals(ValueFactory.none())) {	
+		if (coupledValues[0].equals(ValueFactory.none())
+				|| coupledValues[1].equals(ValueFactory.none())) {
 			return NONE_PROB;
-		}
-		else if (coupledValues[0].equals(coupledValues[1])) {
+		} else if (coupledValues[0].equals(coupledValues[1])) {
 			return 1.0;
-		}
-		else if (coupledValues[0] instanceof StringVal && coupledValues[1] instanceof StringVal) {
-			String str1 = ((StringVal)coupledValues[0]).getString();
-			String str2 = ((StringVal)coupledValues[1]).getString();
-			return (Template.match(str1, str2))? 1.0 : 0.0;
-		}
-		else if (coupledValues[0] instanceof SetVal && coupledValues[1] instanceof SetVal) {
-			Set<Value> vals0 = ((SetVal)coupledValues[0]).getSet();
-			Set<Value> vals1 = ((SetVal)coupledValues[1]).getSet();
+		} else if (coupledValues[0] instanceof StringVal
+				&& coupledValues[1] instanceof StringVal) {
+			String str1 = ((StringVal) coupledValues[0]).getString();
+			String str2 = ((StringVal) coupledValues[1]).getString();
+			return (Template.match(str1, str2)) ? 1.0 : 0.0;
+		} else if (coupledValues[0] instanceof SetVal
+				&& coupledValues[1] instanceof SetVal) {
+			Set<Value> vals0 = ((SetVal) coupledValues[0]).getSet();
+			Set<Value> vals1 = ((SetVal) coupledValues[1]).getSet();
 			if (vals0.isEmpty()) {
-				return (vals1.isEmpty())? 1.0 : 0.0;
+				return (vals1.isEmpty()) ? 1.0 : 0.0;
 			}
 			Set<Value> intersect = new HashSet<Value>(vals0);
 			intersect.retainAll(vals1);
-			return ((double)intersect.size())/vals0.size();
+			return ((double) intersect.size()) / vals0.size();
+		} else {
+			return 0.0;
 		}
-		else {
-			return 0.0;		
-		}			
 
 	}
-
 
 	/**
 	 * Returns true.
@@ -263,28 +254,25 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return true;
 	}
 
-	
-
-	private Value[] getCoupledValues(Assignment initialInput) throws DialException {
+	private Value[] getCoupledValues(Assignment initialInput)
+			throws DialException {
 
 		Value[] coupledValues = new Value[2];
 		for (String inputVar : initialInput.getVariables()) {
-			if (inputVar.equals(baseVar+"^p")) {
+			if (inputVar.equals(baseVar + "^p")) {
 				coupledValues[0] = initialInput.getValue(inputVar);
-			}
-			else if (inputVar.equals(baseVar+"'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);				
-			}
-			else if (inputVar.equals(baseVar) && !inputVar.contains(baseVar+"'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);								
+			} else if (inputVar.equals(baseVar + "'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);
+			} else if (inputVar.equals(baseVar)
+					&& !inputVar.contains(baseVar + "'")) {
+				coupledValues[1] = initialInput.getValue(inputVar);
 			}
 		}
-		if (coupledValues[0]==null || coupledValues[1]==null) {
-			throw new DialException("equivalence distribution with variable " + 
-					baseVar + " cannot handle condition " + initialInput);
+		if (coupledValues[0] == null || coupledValues[1] == null) {
+			throw new DialException("equivalence distribution with variable "
+					+ baseVar + " cannot handle condition " + initialInput);
 		}
 		return coupledValues;
 	}
-
 
 }

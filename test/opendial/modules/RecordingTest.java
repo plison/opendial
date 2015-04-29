@@ -22,7 +22,6 @@
 
 package opendial.modules;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -58,14 +57,15 @@ public class RecordingTest {
 
 	// logger
 	public static Logger log = new Logger("RecordingTest", Logger.Level.DEBUG);
-	
+
 	@Test
 	public void testRecord() throws DialException, InterruptedException {
-		
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+
+		DialogueSystem system = new DialogueSystem(
+				XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
 		system.startSystem();
-		
+
 		CategoricalTable table = new CategoricalTable("u_u");
 		table.addRow("move left", 0.3);
 		table.addRow("move a bit to the left", 0.05);
@@ -78,40 +78,58 @@ public class RecordingTest {
 		system.pause(false);
 		table = new CategoricalTable("u_u");
 		table.addRow("move left", 0.2);
-		table.addRow("move a bit to the left", 0.65);	
+		table.addRow("move a bit to the left", 0.65);
 		system.addContent(table);
-		
-		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
-				("<font size=\"4\">move a bit to the left (0.05)</font>"));
-		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat().contains
-				("<font size=\"4\">OK, moving Left a little bit</font>"));
-		assertEquals(6, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		if (StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn") != 4) {
+
+		assertTrue(system
+				.getModule(GUIFrame.class)
+				.getChatTab()
+				.getChat()
+				.contains(
+						"<font size=\"4\">move a bit to the left (0.05)</font>"));
+		assertTrue(system
+				.getModule(GUIFrame.class)
+				.getChatTab()
+				.getChat()
+				.contains(
+						"<font size=\"4\">OK, moving Left a little bit</font>"));
+		assertEquals(6, StringUtils.countOccurrences(
+				system.getModule(DialogueRecorder.class).getRecord(),
+				"userTurn"));
+		if (StringUtils.countOccurrences(
+				system.getModule(DialogueRecorder.class).getRecord(),
+				"systemTurn") != 4) {
 			Thread.sleep(250);
 		}
-		assertEquals(4, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
-		assertEquals(14, StringUtils.countOccurrences(system.getModule(DialogueRecorder.class).getRecord(), "variable"));
-	
+		assertEquals(4, StringUtils.countOccurrences(
+				system.getModule(DialogueRecorder.class).getRecord(),
+				"systemTurn"));
+		assertEquals(14, StringUtils.countOccurrences(
+				system.getModule(DialogueRecorder.class).getRecord(),
+				"variable"));
+
 		system.getModule(GUIFrame.class).getFrame().dispose();
 	}
-	
+
 	@Test
-	public void testXML() throws DialException, InterruptedException, IOException {
-		
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
+	public void testXML() throws DialException, InterruptedException,
+			IOException {
+
+		DialogueSystem system = new DialogueSystem(
+				XMLDomainReader.extractDomain(domainFile2));
 		system.getSettings().showGUI = false;
 		system.startSystem();
-		
+
 		GUIMenuBar.importContent(system, importState, "state");
 		assertEquals(12, system.getState().getChanceNodeIds().size());
 		assertEquals(0.7, system.getContent("aha").getProb("ohoho"), 0.01);
-		
+
 		GUIMenuBar.importContent(system, importParams, "parameters");
 		assertEquals(14, system.getState().getChanceNodeIds().size());
 		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof UniformDensityFunction);
-		
+
 		Settings.nbSamples = Settings.nbSamples / 100;
-		DialogueImporter importer = new DialogueImporter(system, 
+		DialogueImporter importer = new DialogueImporter(system,
 				XMLInteractionReader.extractInteraction(dialogueFile));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
@@ -140,9 +158,7 @@ public class RecordingTest {
 		br.close();
 		assertEquals(14, StringUtils.countOccurrences(str, "variable"));
 		assertEquals(5, StringUtils.countOccurrences(str, "gaussian"));
-		
+
 	}
-		
 
 }
-

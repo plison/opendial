@@ -50,37 +50,37 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Representation of a categorical probability table P(X), where X
- * is a random variable.
+ * Representation of a categorical probability table P(X), where X is a random
+ * variable.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class CategoricalTable implements IndependentProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("CategoricalTable", Logger.Level.DEBUG);
+	public static Logger log = new Logger("CategoricalTable",
+			Logger.Level.DEBUG);
 
 	// the variable name
 	String variable;
 
 	// the probability table
-	Map<Value,Double> table;
+	Map<Value, Double> table;
 
 	// probability intervals (used for binary search in sampling)
 	Intervals<Value> intervals;
 
 	// sampler
 	Random sampler;
-	
-	// whether to automatically add a default value to fill the remaining probability mass
+
+	// whether to automatically add a default value to fill the remaining
+	// probability mass
 	boolean addDefaultValue = true;
 
-
 	// ===================================
-	//  TABLE CONSTRUCTION
+	// TABLE CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Constructs a new probability table, with no values
@@ -88,19 +88,18 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * @param variable the name of the random variable
 	 */
 	public CategoricalTable(String variable) {
-		table = new HashMap<Value,Double>(5);
+		table = new HashMap<Value, Double>(5);
 		table = Collections.synchronizedMap(table);
 		this.variable = variable;
 		sampler = new Random();
 	}
-	
-	
+
 	/**
 	 * Constructs a new probability table, with no values
 	 * 
 	 * @param variable the name of the random variable
-	 * @param addDefaultValue whether to automatically add a default value 
-	 *        to fill the remaining probability mass
+	 * @param addDefaultValue whether to automatically add a default value to
+	 *            fill the remaining probability mass
 	 */
 	public CategoricalTable(String variable, boolean addDefaultValue) {
 		this(variable);
@@ -108,15 +107,14 @@ public class CategoricalTable implements IndependentProbDistribution {
 	}
 
 	/**
-	 * Constructs a new probability table with a mapping between head
-	 * variable assignments and probability values.  The construction
-	 * assumes that the distribution does not have any conditional
-	 * variables.
+	 * Constructs a new probability table with a mapping between head variable
+	 * assignments and probability values. The construction assumes that the
+	 * distribution does not have any conditional variables.
 	 * 
 	 * @param variable the name of the random variable
 	 * @param headTable the mapping to fill the table
 	 */
-	public CategoricalTable(String variable, Map<Value,Double> headTable) {
+	public CategoricalTable(String variable, Map<Value, Double> headTable) {
 		this(variable);
 		double totalProb = 0.0;
 		for (Value a : headTable.keySet()) {
@@ -127,8 +125,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 			incrementRow(ValueFactory.none(), 1.0 - totalProb);
 		}
 	}
-	
-	
+
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
 	 * 
@@ -139,7 +136,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		this(variable);
 		addRow(uniqueValue, 1.0);
 	}
-
 
 	/**
 	 * Create a categorical table with a unique value with probability 1.0.
@@ -152,87 +148,79 @@ public class CategoricalTable implements IndependentProbDistribution {
 		addRow(uniqueValue, 1.0);
 	}
 
-
 	/**
-	 * Adds a new row to the probability table.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param value the value to add
 	 * @param prob the associated probability
 	 */
-	public void addRow (Value value, double prob) {
+	public void addRow(Value value, double prob) {
 
 		if (prob < 0.0f || prob > 1.02f) {
 			return;
 		}
 
-		table.put(value,prob);
+		table.put(value, prob);
 
 		if (addDefaultValue) {
-		double totalProb = countTotalProb();
-		if (totalProb < 0.98) {
-			table.put(ValueFactory.none(), 1.0 - totalProb);
-		}
-		else {
-			table.remove(ValueFactory.none());
-		}
+			double totalProb = countTotalProb();
+			if (totalProb < 0.98) {
+				table.put(ValueFactory.none(), 1.0 - totalProb);
+			} else {
+				table.remove(ValueFactory.none());
+			}
 		}
 		intervals = null;
 	}
 
-
 	/**
-	 * Adds a new row to the probability table.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param value the value to add (as a string)
 	 * @param prob the associated probability
 	 */
-	public void addRow (String value, double prob) {
+	public void addRow(String value, double prob) {
 		addRow(ValueFactory.create(value), prob);
 	}
 
-
 	/**
-	 * Adds a new row to the probability table.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param value the value to add (as a double)
 	 * @param prob the associated probability
 	 */
-	public void addRow (double value, double prob) {
+	public void addRow(double value, double prob) {
 		addRow(ValueFactory.create(value), prob);
 	}
 
-
 	/**
-	 * Adds a new row to the probability table.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param value the value to add (as a boolean)
 	 * @param prob the associated probability
 	 */
-	public void addRow (boolean value, double prob) {
+	public void addRow(boolean value, double prob) {
 		addRow(ValueFactory.create(value), prob);
 	}
 
-
-
 	/**
-	 * Adds a new row to the probability table.
-	 * If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param value the value to add (as a double array)
 	 * @param prob the associated probability
 	 */
 	public void addRow(double[] value, double prob) {
-		addRow(ValueFactory.create(value), prob);		
+		addRow(ValueFactory.create(value), prob);
 	}
 
-
 	/**
-	 * Increments the probability specified in the table for the given head 
-	 * assignment.  If none exists, simply assign the probability.
+	 * Increments the probability specified in the table for the given head
+	 * assignment. If none exists, simply assign the probability.
 	 * 
 	 * @param head the head assignment
 	 * @param prob the probability increment
@@ -241,10 +229,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.containsKey(head)) {
 			if (head.equals(ValueFactory.none())) {
 				return;
-			} 
+			}
 			addRow(head, table.get(head) + prob);
-		}
-		else {
+		} else {
 			addRow(head, prob);
 		}
 	}
@@ -254,7 +241,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * 
 	 * @param heads the mappings (head assignment, probability value)
 	 */
-	public void addRows(Map<Value,Double> heads) {
+	public void addRows(Map<Value, Double> heads) {
 		for (Value head : heads.keySet()) {
 			addRow(head, heads.get(head));
 		}
@@ -270,35 +257,37 @@ public class CategoricalTable implements IndependentProbDistribution {
 		table.remove(head);
 
 		double totalProb = countTotalProb();
-		if (addDefaultValue && totalProb < 0.99999 && head != ValueFactory.none()) {
+		if (addDefaultValue && totalProb < 0.99999
+				&& head != ValueFactory.none()) {
 			table.put(ValueFactory.none(), 1.0 - totalProb);
 		}
 		intervals = null;
 	}
 
-
 	/**
-	 * Concatenate the values for the two tables (assuming the two tables
-	 * share the same variable).
+	 * Concatenate the values for the two tables (assuming the two tables share
+	 * the same variable).
 	 * 
 	 * @param other the table to concatenate
 	 * @return the table resulting from the concatenation
 	 */
-	public CategoricalTable concatenate (CategoricalTable other) {
+	public CategoricalTable concatenate(CategoricalTable other) {
 
 		if (!variable.equals(other.getVariable())) {
 			log.warning("can only concatenate tables with same variable");
 		}
 
-		CategoricalTable newtable = new CategoricalTable(variable, addDefaultValue);
+		CategoricalTable newtable = new CategoricalTable(variable,
+				addDefaultValue);
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
 				try {
 					Value concat = thisA.concatenate(otherA);
-					newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
-				}
-				catch (DialException e) {
-					log.warning("could not concatenated the tables " + this + " and " + other);
+					newtable.addRow(concat,
+							getProb(thisA) * other.getProb(otherA));
+				} catch (DialException e) {
+					log.warning("could not concatenated the tables " + this
+							+ " and " + other);
 					return this.copy();
 				}
 			}
@@ -306,11 +295,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return newtable;
 	}
 
-
-
 	/**
-	 * Modifies the distribution table by replace the old variable identifier
-	 * by the new one
+	 * Modifies the distribution table by replace the old variable identifier by
+	 * the new one
 	 * 
 	 * @param oldVarId the old identifier
 	 * @param newVarId the new identifier
@@ -330,14 +317,13 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 */
 	@Override
 	public boolean pruneValues(double threshold) {
-		Map<Value,Double> newTable = new HashMap<Value,Double>();
+		Map<Value, Double> newTable = new HashMap<Value, Double>();
 		boolean changed = false;
 		for (Value row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
-			}
-			else {
+			} else {
 				changed = true;
 			}
 		}
@@ -346,13 +332,12 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return changed;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
 
 	/**
-	 * Returns the probability P(val). 
+	 * Returns the probability P(val).
 	 * 
 	 * @param val the value
 	 * @return the associated probability, if one exists.
@@ -364,44 +349,49 @@ public class CategoricalTable implements IndependentProbDistribution {
 			return table.get(val);
 		}
 
-		// if the distribution has continuous values, search for the closest element
+		// if the distribution has continuous values, search for the closest
+		// element
 		else if (val instanceof DoubleVal && isContinuous()) {
-			double toFind = ((DoubleVal)val).getDouble();
-			Value closest = table.keySet().stream()
+			double toFind = ((DoubleVal) val).getDouble();
+			Value closest = table
+					.keySet()
+					.stream()
 					.filter(v -> v instanceof DoubleVal)
 					.min((v1, v2) -> Double.compare(
-							Math.abs(((DoubleVal)v1).getDouble()-toFind), 
-							Math.abs(((DoubleVal)v2).getDouble()-toFind))).get();	
+							Math.abs(((DoubleVal) v1).getDouble() - toFind),
+							Math.abs(((DoubleVal) v2).getDouble() - toFind)))
+					.get();
 			return getProb(closest);
 		}
 
 		else if (val instanceof ArrayVal && isContinuous()) {
-			double[] toFind = ((ArrayVal)val).getArray();
-			Value closest = table.keySet().stream()
+			double[] toFind = ((ArrayVal) val).getArray();
+			Value closest = table
+					.keySet()
+					.stream()
 					.filter(v -> v instanceof ArrayVal)
-					.min((v1, v2) -> Double.compare(
-							MathUtils.getDistance(((ArrayVal)v1).getArray(),toFind), 
-							MathUtils.getDistance(((ArrayVal)v2).getArray(),toFind))).get();	
+					.min((v1, v2) -> Double.compare(MathUtils.getDistance(
+							((ArrayVal) v1).getArray(), toFind), MathUtils
+							.getDistance(((ArrayVal) v2).getArray(), toFind)))
+					.get();
 			return getProb(closest);
 		}
 		return 0.0f;
 	}
 
-
 	/**
 	 * returns true if the table contains a probability for the given assignment
 	 * 
 	 * @param head the assignment
-	 * @return true if the table contains a row for the assignment, false otherwise
+	 * @return true if the table contains a row for the assignment, false
+	 *         otherwise
 	 */
 	public boolean hasProb(Value head) {
 		return table.containsKey(head);
 	}
 
-
-
 	/**
-	 * Sample a value from the distribution. If no assignment can be sampled 
+	 * Sample a value from the distribution. If no assignment can be sampled
 	 * (due to e.g. an ill-formed distribution), returns a none value.
 	 * 
 	 * @return the sampled assignment
@@ -412,9 +402,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 		if (intervals == null) {
 			if (table.isEmpty()) {
-					log.warning("creating intervals for an empty table");
-				}
-			intervals = new Intervals<Value>(table);	
+				log.warning("creating intervals for an empty table");
+			}
+			intervals = new Intervals<Value>(table);
 		}
 		if (intervals.isEmpty()) {
 			log.warning("interval is empty, table: " + table);
@@ -424,10 +414,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return intervals.sample();
 	}
 
-
 	/**
-	 * Returns the continuous probability distribution equivalent to the
-	 * current table
+	 * Returns the continuous probability distribution equivalent to the current
+	 * table
 	 * 
 	 * @return the continuous equivalent for the distribution
 	 * @throws DialException if the distribution could not be converted
@@ -436,23 +425,22 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public ContinuousDistribution toContinuous() throws DialException {
 
 		if (isContinuous()) {
-			Map<double[],Double> points = new HashMap<double[],Double>();
+			Map<double[], Double> points = new HashMap<double[], Double>();
 			for (Value v : getValues()) {
 				if (v instanceof ArrayVal) {
-					points.put(((ArrayVal)v).getArray(), getProb(v));
-				}
-				else if (v instanceof DoubleVal) {
-					points.put(new double[]{((DoubleVal)v).getDouble()}, getProb(v));
+					points.put(((ArrayVal) v).getArray(), getProb(v));
+				} else if (v instanceof DoubleVal) {
+					points.put(new double[] { ((DoubleVal) v).getDouble() },
+							getProb(v));
 				}
 			}
 			DiscreteDensityFunction fun = new DiscreteDensityFunction(points);
 			return new ContinuousDistribution(variable, fun);
 		}
 
-		throw new DialException("Distribution could not be converted to a " +
-				"continuous distribution: " + variable);
+		throw new DialException("Distribution could not be converted to a "
+				+ "continuous distribution: " + variable);
 	}
-
 
 	/**
 	 * Returns itself.
@@ -461,7 +449,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public CategoricalTable toDiscrete() {
 		return this;
 	}
-
 
 	/**
 	 * Returns the set of variable labels used in the table
@@ -473,7 +460,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return this.variable;
 	}
 
-
 	/**
 	 * Returns true if the table is empty (or contains only a default
 	 * assignment), false otherwise
@@ -483,28 +469,28 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public boolean isEmpty() {
 		if (table.isEmpty()) {
 			return true;
-		}
-		else return (table.size() == 1 && table.keySet().stream().anyMatch(v -> v.equals(ValueFactory.none())));
+		} else
+			return (table.size() == 1 && table.keySet().stream()
+					.anyMatch(v -> v.equals(ValueFactory.none())));
 	}
 
-
 	/**
-	 * Returns a subset of the N values in the table with the highest probability.
+	 * Returns a subset of the N values in the table with the highest
+	 * probability.
 	 * 
 	 * @param nbest the number of values to select
 	 * @return the distribution with the subset of values
 	 */
-	public CategoricalTable getNBest(int nbest)  {
+	public CategoricalTable getNBest(int nbest) {
 
-		Map<Value,Double> filteredTable = InferenceUtils.getNBest(table, nbest);
+		Map<Value, Double> filteredTable = InferenceUtils
+				.getNBest(table, nbest);
 		return new CategoricalTable(variable, filteredTable);
 	}
 
-
-
 	/**
-	 * Returns the most likely assignment of values in the table.  If none could
-	 * be found, returns an empty assignment.  
+	 * Returns the most likely assignment of values in the table. If none could
+	 * be found, returns an empty assignment.
 	 * 
 	 * @return the assignment with highest probability
 	 */
@@ -516,14 +502,11 @@ public class CategoricalTable implements IndependentProbDistribution {
 				nbest.removeRow(ValueFactory.none());
 			}
 			return nbest.getValues().iterator().next();
-		}
-		else {
+		} else {
 			log.warning("table is empty, cannot extract best value");
 			return ValueFactory.none();
 		}
 	}
-
-
 
 	/**
 	 * Returns the rows of the table.
@@ -535,10 +518,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return table.keySet();
 	}
 
-
-
 	// ===================================
-	//  UTILITIES
+	// UTILITIES
 	// ===================================
 
 	/**
@@ -549,12 +530,10 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return table.hashCode();
 	}
 
-
-
 	/**
-	 * Returns true if the probability table is well-formed.  The method checks that all 
-	 * possible assignments for the condition and head parts are covered in the table, 
-	 * and that the probabilities add up to 1.0f.
+	 * Returns true if the probability table is well-formed. The method checks
+	 * that all possible assignments for the condition and head parts are
+	 * covered in the table, and that the probabilities add up to 1.0f.
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
@@ -570,8 +549,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return true;
 	}
 
-
-
 	/**
 	 * Returns a string representation of the probability table
 	 * 
@@ -580,17 +557,18 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public String toString() {
 
-		Map<Value,Double> sortedTable = InferenceUtils.getNBest(table, Math.max(table.size(), 1));
+		Map<Value, Double> sortedTable = InferenceUtils.getNBest(table,
+				Math.max(table.size(), 1));
 
-		String str = "";		
-		for (Entry<Value,Double> entry : sortedTable.entrySet()) {
+		String str = "";
+		for (Entry<Value, Double> entry : sortedTable.entrySet()) {
 			String prob = StringUtils.getShortForm(entry.getValue());
-			str += "P("+variable+"="+entry.getKey() + "):=" + prob + "\n";
+			str += "P(" + variable + "=" + entry.getKey() + "):=" + prob + "\n";
 		}
 
-		return (str.length() > 0)? str.substring(0, str.length()-1) : str;
+		return (str.length() > 0) ? str.substring(0, str.length() - 1) : str;
 	}
-	
+
 	/**
 	 * Returns true if the object o is a categorical table with the same content
 	 * 
@@ -598,12 +576,12 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CategoricalTable) {
-			Set<Value> otherVals = ((CategoricalTable)o).getValues();
+			Set<Value> otherVals = ((CategoricalTable) o).getValues();
 			if (!getValues().equals(otherVals)) {
 				return false;
 			}
 			for (Value v : getValues()) {
-				if (Math.abs(((CategoricalTable)o).getProb(v) - getProb(v)) > 0.01) {
+				if (Math.abs(((CategoricalTable) o).getProb(v) - getProb(v)) > 0.01) {
 					return false;
 				}
 			}
@@ -611,8 +589,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		}
 		return false;
 	}
-
-
 
 	/**
 	 * Returns a copy of the probability table
@@ -628,14 +604,13 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return tableCopy;
 	}
 
-
 	/**
 	 * Generates the XML representation for the table, for the document doc.
 	 * 
 	 * @param doc the XML document for which to generate the XML.
 	 */
 	@Override
-	public Node generateXML(Document doc)  {
+	public Node generateXML(Document doc) {
 
 		Element var = doc.createElement("variable");
 
@@ -647,20 +622,18 @@ public class CategoricalTable implements IndependentProbDistribution {
 			Element valueNode = doc.createElement("value");
 			if (table.get(v) < 0.99) {
 				Attr prob = doc.createAttribute("prob");
-				prob.setValue(""+StringUtils.getShortForm(table.get(v)));
+				prob.setValue("" + StringUtils.getShortForm(table.get(v)));
 				valueNode.setAttributeNode(prob);
 			}
-			valueNode.setTextContent(""+v);
-			var.appendChild(valueNode);	
+			valueNode.setTextContent("" + v);
+			var.appendChild(valueNode);
 		}
 		return var;
 	}
 
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
-
 
 	/**
 	 * Returns the total accumulated probability for the distribution
@@ -673,7 +646,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 				.mapToDouble(v -> table.get(v)).sum();
 	}
 
-
 	/**
 	 * Returns true if the table can be converted to a continuous distribution,
 	 * and false otherwise.
@@ -683,7 +655,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	private boolean isContinuous() {
 		if (!table.keySet().isEmpty()) {
 			for (Value v : getValues()) {
-				if (!(v instanceof ArrayVal) && !(v instanceof DoubleVal) 
+				if (!(v instanceof ArrayVal) && !(v instanceof DoubleVal)
 						&& !(v instanceof NoneVal)) {
 					return false;
 				}
@@ -695,8 +667,4 @@ public class CategoricalTable implements IndependentProbDistribution {
 		return false;
 	}
 
-
-
 }
-
-

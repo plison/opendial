@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -30,45 +30,41 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
 
-
 /**
  * Negated condition, which is satisfied when the included condition is not.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class NegatedCondition implements Condition {
 
 	// logger
-	public static Logger log = new Logger("NegatedCondition", Logger.Level.NORMAL);
-	
+	public static Logger log = new Logger("NegatedCondition",
+			Logger.Level.NORMAL);
+
 	// condition to negate
 	final Condition initCondition;
-		
 
 	// ===================================
-	//  CONDITION CONSTRUCTIOn
+	// CONDITION CONSTRUCTIOn
 	// ===================================
 
-	
 	/**
 	 * Creates a new negated condition with the condition provided as argument
 	 * 
 	 * @param initCondition the condition to negate
 	 */
-	public NegatedCondition (Condition initCondition) {
+	public NegatedCondition(Condition initCondition) {
 		this.initCondition = initCondition;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
 
-	
 	/**
-	 * Returns the input variables for the condition (which are the same as
-	 * the ones for the condition to negate)
+	 * Returns the input variables for the condition (which are the same as the
+	 * ones for the condition to negate)
 	 * 
 	 * @return the input variables
 	 */
@@ -80,14 +76,13 @@ public final class NegatedCondition implements Condition {
 	@Override
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding g = initCondition.getGroundings(input);
-		g = (g.isFailed())? new RuleGrounding() : g;
+		g = (g.isFailed()) ? new RuleGrounding() : g;
 		return g;
 	}
 
-	
 	/**
-	 * Returns true if the condition to negate is *not* satisfied, and 
-	 * false if it is satisfied
+	 * Returns true if the condition to negate is *not* satisfied, and false if
+	 * it is satisfied
 	 * 
 	 * @param input the input assignment to verify
 	 * @return true if the included condition is false, and vice versa
@@ -105,8 +100,7 @@ public final class NegatedCondition implements Condition {
 	public Condition getInitCondition() {
 		return initCondition;
 	}
-	
-	
+
 	/**
 	 * Returns the list of slots in the condition
 	 * 
@@ -116,13 +110,11 @@ public final class NegatedCondition implements Condition {
 	public Set<String> getSlots() {
 		return initCondition.getSlots();
 	}
-	
 
 	// ===================================
-	//  UTILITY FUNCTIONS
+	// UTILITY FUNCTIONS
 	// ===================================
 
-	
 	/**
 	 * Returns the hashcode for the condition
 	 * 
@@ -130,21 +122,20 @@ public final class NegatedCondition implements Condition {
 	 */
 	@Override
 	public int hashCode() {
-		return - initCondition.hashCode();
+		return -initCondition.hashCode();
 	}
-	
+
 	/**
 	 * Returns the string representation of the condition
 	 */
 	@Override
 	public String toString() {
-		return "!"+ initCondition.toString();
+		return "!" + initCondition.toString();
 	}
-	
-	
+
 	/**
-	 * Returns true if the current instance and the object are identical,
-	 * and false otherwise
+	 * Returns true if the current instance and the object are identical, and
+	 * false otherwise
 	 *
 	 * @param o the object to compare
 	 * @return true if equal, false otherwise
@@ -152,7 +143,8 @@ public final class NegatedCondition implements Condition {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof NegatedCondition) {
-			return ((NegatedCondition)o).getInitCondition().equals(initCondition);
+			return ((NegatedCondition) o).getInitCondition().equals(
+					initCondition);
 		}
 		return false;
 	}

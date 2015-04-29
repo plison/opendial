@@ -37,57 +37,57 @@ import opendial.bn.nodes.UtilityNode;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of an inference query, which can be either a probability query,
- * a utility query, or a reduction query.  
+ * Representation of an inference query, which can be either a probability
+ * query, a utility query, or a reduction query.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public abstract class Query {
 
 	public static Logger log = new Logger("Query", Logger.Level.DEBUG);
 
 	/**
-	 * Representation of a probability query P(queryVars | evidence) on 
-	 * a specific Bayesian network.
+	 * Representation of a probability query P(queryVars | evidence) on a
+	 * specific Bayesian network.
 	 */
 	public static final class ProbQuery extends Query {
 
 		public ProbQuery(BNetwork network, Collection<String> queryVars,
 				Assignment evidence) {
 			super(network, queryVars, evidence);
-		}	
+		}
 	}
 
 	/**
-	 * Representation of an utility query U(queryVars | evidence) on 
-	 * a specific Bayesian network.
+	 * Representation of an utility query U(queryVars | evidence) on a specific
+	 * Bayesian network.
 	 */
 	public static final class UtilQuery extends Query {
 
 		public UtilQuery(BNetwork network, Collection<String> queryVars,
 				Assignment evidence) {
 			super(network, queryVars, evidence);
-		}	
+		}
 	}
 
 	/**
-	 * Representation of a reduction Query where the Bayesian network
-	 * is reduced to a new network containing only the variables queryVars,
-	 * and integrating the evidence.
+	 * Representation of a reduction Query where the Bayesian network is reduced
+	 * to a new network containing only the variables queryVars, and integrating
+	 * the evidence.
 	 */
 	public static final class ReduceQuery extends Query {
 
 		public ReduceQuery(BNetwork network, Collection<String> queryVars,
 				Assignment evidence) {
 			super(network, queryVars, evidence);
-		}	
+		}
 	}
-	
+
 	BNetwork network;
 	Collection<String> queryVars;
 	Assignment evidence;
 
-	public Query(BNetwork network, Collection<String> queryVars, 
+	public Query(BNetwork network, Collection<String> queryVars,
 			Assignment evidence) {
 
 		this.network = network;
@@ -96,9 +96,8 @@ public abstract class Query {
 
 		if (queryVars.isEmpty()) {
 			log.warning("empty set of query variables: " + toString());
-		}
-		else if (!network.getNodeIds().containsAll(queryVars)) {
-			log.warning("mismatch between query variables and network nodes: " 
+		} else if (!network.getNodeIds().containsAll(queryVars)) {
+			log.warning("mismatch between query variables and network nodes: "
 					+ queryVars + " not included in " + network.getNodeIds());
 		}
 	}
@@ -111,7 +110,7 @@ public abstract class Query {
 	public BNetwork getNetwork() {
 		return network;
 	}
-	
+
 	/**
 	 * Returns the query variables.
 	 * 
@@ -121,7 +120,6 @@ public abstract class Query {
 		return queryVars;
 	}
 
-	
 	/**
 	 * Returns the evidence for the query.
 	 * 
@@ -131,9 +129,8 @@ public abstract class Query {
 		return evidence;
 	}
 
-
 	/**
-	 * Returns a list of nodes sorted according to the ordering in 
+	 * Returns a list of nodes sorted according to the ordering in
 	 * BNetwork.getSortedNodes() and pruned from the irrelevant nodes
 	 * 
 	 * @return the ordered list of relevant nodes
@@ -149,32 +146,31 @@ public abstract class Query {
 		return filteredNodes;
 	}
 
-
-
 	/**
-	 * Assuming a particular query P(queryVars|evidence) or U(queryVars|evidence) on the 
-	 * provided Bayesian network, determines which nodes is relevant for the inference
-	 * and which one can be discarded without affecting the final result.
+	 * Assuming a particular query P(queryVars|evidence) or
+	 * U(queryVars|evidence) on the provided Bayesian network, determines which
+	 * nodes is relevant for the inference and which one can be discarded
+	 * without affecting the final result.
 	 * 
 	 */
 	private Set<String> getIrrelevantNodes() {
 
 		Set<String> irrelevantNodesIds = new HashSet<String>();
 
-		whileLoop : while (true) {
+		whileLoop: while (true) {
 			for (String nodeId : new ArrayList<String>(network.getNodeIds())) {
 				BNode node = network.getNode(nodeId);
-				if (!irrelevantNodesIds.contains(nodeId) && 
-						irrelevantNodesIds.containsAll(node.getOutputNodesIds()) && 
-						!queryVars.contains(nodeId) && 
-						!evidence.containsVar(nodeId) && 
-						!(node instanceof UtilityNode)) {
+				if (!irrelevantNodesIds.contains(nodeId)
+						&& irrelevantNodesIds.containsAll(node
+								.getOutputNodesIds())
+						&& !queryVars.contains(nodeId)
+						&& !evidence.containsVar(nodeId)
+						&& !(node instanceof UtilityNode)) {
 					irrelevantNodesIds.add(nodeId);
 					continue whileLoop;
-				}
-				else if (!(this instanceof UtilQuery)
-						&& !irrelevantNodesIds.contains(nodeId) &&
-						node instanceof UtilityNode) {
+				} else if (!(this instanceof UtilQuery)
+						&& !irrelevantNodesIds.contains(nodeId)
+						&& node instanceof UtilityNode) {
 					irrelevantNodesIds.add(nodeId);
 					continue whileLoop;
 				}
@@ -192,10 +188,10 @@ public abstract class Query {
 	public String toString() {
 		String str = "";
 		for (String q : queryVars) {
-			str+= q + ",";
+			str += q + ",";
 		}
 		if (!queryVars.isEmpty()) {
-			str = str.substring(0, str.length()-1);
+			str = str.substring(0, str.length() - 1);
 		}
 		if (!evidence.isEmpty()) {
 			str += "|";
@@ -206,17 +202,13 @@ public abstract class Query {
 		str += "";
 
 		if (this instanceof ProbQuery) {
-			return  "P(" +str +")";
-		}
-		else if (this instanceof UtilQuery) {
-			return "U("+str+")";
-		}
-		else {
-			return "Reduce("+str+")";
+			return "P(" + str + ")";
+		} else if (this instanceof UtilQuery) {
+			return "U(" + str + ")";
+		} else {
+			return "Reduce(" + str + ")";
 		}
 	}
-
-
 
 	/**
 	 * Returns the query variables in sorted order (from the base to the leaves)
@@ -234,7 +226,6 @@ public abstract class Query {
 		return sorted;
 	}
 
-
 	/**
 	 * Returns the hashcode for the query
 	 * 
@@ -242,7 +233,7 @@ public abstract class Query {
 	 */
 	@Override
 	public int hashCode() {
-		return queryVars.hashCode() +2*evidence.hashCode();
+		return queryVars.hashCode() + 2 * evidence.hashCode();
 	}
 
 }

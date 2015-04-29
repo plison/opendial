@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -38,17 +38,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Gaussian density function.  In the multivariate case, the density function is currently
- * limited to Gaussian distribution with a diagonal covariance (which are equivalent to the
- * product of univariate distributions).
+ * Gaussian density function. In the multivariate case, the density function is
+ * currently limited to Gaussian distribution with a diagonal covariance (which
+ * are equivalent to the product of univariate distributions).
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class GaussianDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("GaussianDensityFunction", Logger.Level.DEBUG);
+	public static Logger log = new Logger("GaussianDensityFunction",
+			Logger.Level.DEBUG);
 
 	// the mean of the Gaussian
 	double[] mean;
@@ -66,7 +67,6 @@ public class GaussianDensityFunction implements DensityFunction {
 	// internal objects for sampling the Gaussian
 	private double[] spare;
 
-
 	/**
 	 * Creates a new density function with the given mean and variance vector.
 	 * Only diagonal coveriance are currently supported
@@ -80,9 +80,10 @@ public class GaussianDensityFunction implements DensityFunction {
 			log.warning("different lengths for mean and variance");
 		}
 		stdDev = new double[variance.length];
-		for (int i = 0 ; i < variance.length ; i++) {
+		for (int i = 0; i < variance.length; i++) {
 			if (variance[i] < 0) {
-				log.warning("variance should not be negative, but is : " + variance);
+				log.warning("variance should not be negative, but is : "
+						+ variance);
 			}
 			stdDev[i] = Math.sqrt(variance[i]);
 		}
@@ -93,48 +94,48 @@ public class GaussianDensityFunction implements DensityFunction {
 	/**
 	 * Creates a new, univariate density function with a given mean and variance
 	 *
-	 * @param mean the Gaussian mean 
+	 * @param mean the Gaussian mean
 	 * @param variance the variance
 	 */
 	public GaussianDensityFunction(Double mean, Double variance) {
-		this.mean = new double[]{mean};
-		this.variance = new double[]{variance};
-		stdDev = new double[]{Math.sqrt(variance)};
+		this.mean = new double[] { mean };
+		this.variance = new double[] { variance };
+		stdDev = new double[] { Math.sqrt(variance) };
 		if (variance < 0) {
 			log.warning("variance should not be negative, but is : " + variance);
 		}
 		sampler = new Random();
 	}
-	
-	
+
 	public GaussianDensityFunction(List<double[]> samples) {
 		if (samples.isEmpty()) {
 			log.warning("no samples were provided for the Gaussian");
-			samples = Arrays.asList(new double[]{0.0});
+			samples = Arrays.asList(new double[] { 0.0 });
 		}
-		
+
 		this.mean = new double[samples.get(0).length];
 		this.variance = new double[samples.get(0).length];
-		for (int i = 0 ; i < mean.length ; i++) {
-			mean[i] = 0.0 ; variance[i] = 0.0;
+		for (int i = 0; i < mean.length; i++) {
+			mean[i] = 0.0;
+			variance[i] = 0.0;
 		}
 		for (double[] sample : samples) {
-			for (int i = 0 ; i < sample.length ; i++) {
+			for (int i = 0; i < sample.length; i++) {
 				mean[i] += sample[i] / samples.size();
 			}
 		}
 		for (double[] sample : samples) {
-			for (int i = 0 ; i < sample.length ; i++) {
-				variance[i] += Math.pow(sample[i] - mean[i], 2) / samples.size();
+			for (int i = 0; i < sample.length; i++) {
+				variance[i] += Math.pow(sample[i] - mean[i], 2)
+						/ samples.size();
 			}
 		}
 		stdDev = new double[variance.length];
-		for (int i = 0 ; i < variance.length ; i++) {
+		for (int i = 0; i < variance.length; i++) {
 			stdDev[i] = Math.sqrt(variance[i]);
 		}
 		sampler = new Random();
 	}
-
 
 	/**
 	 * Returns the density at the given point
@@ -143,16 +144,15 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * @return the density at the point
 	 */
 	@Override
-	public double getDensity(double... x)  {
-		double spread = 1.0/( Math.sqrt(2*Math.PI));
+	public double getDensity(double... x) {
+		double spread = 1.0 / (Math.sqrt(2 * Math.PI));
 		double insideSum = 0;
-		for (int i = 0 ; i < variance.length ; i++) {
+		for (int i = 0; i < variance.length; i++) {
 			spread /= stdDev[i];
-			insideSum -= Math.pow(x[i] - mean[i], 2) / (2*variance[i]);
+			insideSum -= Math.pow(x[i] - mean[i], 2) / (2 * variance[i]);
 		}
 		return spread * Math.exp(insideSum);
 	}
-
 
 	/**
 	 * Samples values from the Gaussian using Box-Muller's method.
@@ -163,32 +163,31 @@ public class GaussianDensityFunction implements DensityFunction {
 	public double[] sample() {
 		if (spare != null) {
 			double[] result = new double[spare.length];
-			for (int i = 0 ; i < spare.length ; i++) {
+			for (int i = 0; i < spare.length; i++) {
 				result[i] = spare[i] * stdDev[i] + mean[i];
 			}
 			return result;
-		}
-		else {
+		} else {
 			double[] result = new double[mean.length];
 			double[] spare = new double[mean.length];
-			for (int i = 0 ; i < mean.length ; i++) {			
+			for (int i = 0; i < mean.length; i++) {
 				double u, v, s;
 				do {
-					u =  sampler.nextFloat() * 2 - 1;
+					u = sampler.nextFloat() * 2 - 1;
 					v = sampler.nextFloat() * 2 - 1;
 					s = u * u + v * v;
 				} while (s >= 1 || s == 0);
 				spare[i] = v * Math.sqrt(-2.0 * Math.log(s) / s);
-				result[i] = mean[i] + stdDev[i] * u * Math.sqrt(-2.0 * Math.log(s) / s);
+				result[i] = mean[i] + stdDev[i] * u
+						* Math.sqrt(-2.0 * Math.log(s) / s);
 			}
 			return result;
 		}
 	}
 
-
 	/**
-	 * Returns a set of discrete values (of a size of nbBuckets) extracted
-	 * from the Gaussian.  The number of values is derived from 
+	 * Returns a set of discrete values (of a size of nbBuckets) extracted from
+	 * the Gaussian. The number of values is derived from
 	 * Settings.NB_DISCRETISATION_BUCKETS
 	 *
 	 * @param nbBuckets the number of buckets to employ
@@ -199,28 +198,27 @@ public class GaussianDensityFunction implements DensityFunction {
 
 		double[] minima = new double[mean.length];
 		double[] step = new double[mean.length];
-		for (int i = 0 ; i < mean.length ; i++) {
-			minima[i] = mean[i] - 4*stdDev[i];
-			step[i] = (8*stdDev[i])/nbBuckets;
+		for (int i = 0; i < mean.length; i++) {
+			minima[i] = mean[i] - 4 * stdDev[i];
+			step[i] = (8 * stdDev[i]) / nbBuckets;
 		}
 
 		Map<double[], Double> values = new HashMap<double[], Double>(nbBuckets);
 
 		double prevCdf = 0;
-		for (int i = 0 ; i < nbBuckets ; i++) {
+		for (int i = 0; i < nbBuckets; i++) {
 
 			double[] newVal = new double[mean.length];
-			for (int j = 0 ; j < mean.length ; j++) {
-				newVal[j] = minima[j]  + i*step[j] + step[j]/2.0f;
+			for (int j = 0; j < mean.length; j++) {
+				newVal[j] = minima[j] + i * step[j] + step[j] / 2.0f;
 			}
-				double curCdf = getCDF(newVal);
-				values.put(newVal, curCdf - prevCdf);
-				prevCdf = curCdf;
+			double curCdf = getCDF(newVal);
+			values.put(newVal, curCdf - prevCdf);
+			prevCdf = curCdf;
 		}
 
 		return values;
 	}
-
 
 	/**
 	 * Returns the cumulative probability up to the point x
@@ -229,22 +227,24 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * @return the cumulative density function up to the point
 	 */
 	@Override
-	public double getCDF (double... x)  {
+	public double getCDF(double... x) {
 		double product = 1;
-		for (int i = 0 ; i < mean.length ; i++) {
-			double z = (x[i]-mean[i]) /stdDev[i];
-			if (z < -8.0) return 0.0;
-			if (z >  8.0) continue;
+		for (int i = 0; i < mean.length; i++) {
+			double z = (x[i] - mean[i]) / stdDev[i];
+			if (z < -8.0)
+				return 0.0;
+			if (z > 8.0)
+				continue;
 			double sum = 0.0, term = z;
 			for (int j = 3; sum + term != sum; j += 2) {
-				sum  = sum + term;
+				sum = sum + term;
 				term = term * z * z / j;
 			}
-			product *= 0.5 + sum * Math.exp(-z*z / 2) / Math.sqrt(2 * Math.PI);
+			product *= 0.5 + sum * Math.exp(-z * z / 2)
+					/ Math.sqrt(2 * Math.PI);
 		}
 		return product;
 	}
-
 
 	/**
 	 * Returns a copy of the density function
@@ -253,9 +253,8 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public GaussianDensityFunction copy() {
-		return new GaussianDensityFunction(mean,variance);
+		return new GaussianDensityFunction(mean, variance);
 	}
-
 
 	/**
 	 * Returns a pretty print representation of the function
@@ -264,9 +263,9 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public String toString() {
-		return "N("+ValueFactory.create(mean)+"," + ValueFactory.create(variance)+")";
+		return "N(" + ValueFactory.create(mean) + ","
+				+ ValueFactory.create(variance) + ")";
 	}
-
 
 	/**
 	 * Returns the hashcode for the density function
@@ -278,7 +277,6 @@ public class GaussianDensityFunction implements DensityFunction {
 		return mean.hashCode() + variance.hashCode();
 	}
 
-
 	/**
 	 * Returns the mean of the Gaussian.
 	 * 
@@ -288,7 +286,6 @@ public class GaussianDensityFunction implements DensityFunction {
 		return mean;
 	}
 
-
 	/**
 	 * Returns the variance of the Gaussian.
 	 * 
@@ -297,7 +294,6 @@ public class GaussianDensityFunction implements DensityFunction {
 	public double[] getVariance() {
 		return variance;
 	}
-
 
 	/**
 	 * Returns the dimensionality of the Gaussian.
@@ -316,18 +312,16 @@ public class GaussianDensityFunction implements DensityFunction {
 		id.setValue("gaussian");
 		distribElement.setAttributeNode(id);
 		Element meanEl = doc.createElement("mean");
-		meanEl.setTextContent((mean.length > 1)? 
-				ValueFactory.create(mean).toString() 
-				: "" + StringUtils.getShortForm(mean[0]));
+		meanEl.setTextContent((mean.length > 1) ? ValueFactory.create(mean)
+				.toString() : "" + StringUtils.getShortForm(mean[0]));
 		distribElement.appendChild(meanEl);
 		Element varianceEl = doc.createElement("variance");
-		varianceEl.setTextContent((variance.length > 1)? 
-				ValueFactory.create(variance).toString() 
-				: "" + StringUtils.getShortForm(variance[0]));
+		varianceEl.setTextContent((variance.length > 1) ? ValueFactory.create(
+				variance).toString() : ""
+				+ StringUtils.getShortForm(variance[0]));
 		distribElement.appendChild(varianceEl);
-		
+
 		return Arrays.asList(distribElement);
 	}
-
 
 }

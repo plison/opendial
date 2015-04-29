@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 /**
  * XML reader for dialogue domains.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class XMLDomainReader {
@@ -62,7 +62,8 @@ public class XMLDomainReader {
 	 * @return the extracted dialogue domain
 	 * @throws DialException if a format error occurs
 	 */
-	public static Domain extractDomain(String topDomainFile) throws DialException {
+	public static Domain extractDomain(String topDomainFile)
+			throws DialException {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
@@ -74,30 +75,28 @@ public class XMLDomainReader {
 
 		// determine the root path and filename
 		File f = new File(topDomainFile);
-		String rootpath = f.getParent();		
+		String rootpath = f.getParent();
 
-		if (mainNode.hasAttributes() && 
-				mainNode.getAttributes().getNamedItem("name") != null) {
-			domain.setName(mainNode.getAttributes().getNamedItem("name").getNodeValue());
-		}
-		else {
+		if (mainNode.hasAttributes()
+				&& mainNode.getAttributes().getNamedItem("name") != null) {
+			domain.setName(mainNode.getAttributes().getNamedItem("name")
+					.getNodeValue());
+		} else {
 			domain.setName(topDomainFile.replace("//", "/"));
 		}
 
 		NodeList firstElements = mainNode.getChildNodes();
-		for (int j = 0 ; j < firstElements.getLength() ; j++) {
+		for (int j = 0; j < firstElements.getLength(); j++) {
 
-			Node node = firstElements.item(j);	
+			Node node = firstElements.item(j);
 			domain = extractPartialDomain(node, domain, rootpath);
 		}
 		return domain;
 	}
 
-
-
 	/**
-	 * Extracts a partially specified domain from the XML node and add its content
-	 * to the dialogue domain.
+	 * Extracts a partially specified domain from the XML node and add its
+	 * content to the dialogue domain.
 	 * 
 	 * @param mainNode main XML node
 	 * @param domain dialogue domain
@@ -105,15 +104,15 @@ public class XMLDomainReader {
 	 * @return the augmented dialogue domain
 	 * @throws DialException
 	 */
-	private static Domain extractPartialDomain (Node mainNode, Domain domain, 
+	private static Domain extractPartialDomain(Node mainNode, Domain domain,
 			String rootpath) throws DialException {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("domain")) {
 
 			NodeList firstElements = mainNode.getChildNodes();
-			for (int j = 0 ; j < firstElements.getLength() ; j++) {	
-				Node node = firstElements.item(j);	
+			for (int j = 0; j < firstElements.getLength(); j++) {
+				Node node = firstElements.item(j);
 				domain = extractPartialDomain(node, domain, rootpath);
 			}
 		}
@@ -128,13 +127,13 @@ public class XMLDomainReader {
 		else if (mainNode.getNodeName().equals("initialstate")) {
 			BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
 			domain.setInitialState(new DialogueState(state));
-			//		log.debug(state);
+			// log.debug(state);
 		}
 
 		// extracting rule-based probabilistic model
 		else if (mainNode.getNodeName().equals("model")) {
 			Model model = createModel(mainNode);
-			//		log.debug(model);
+			// log.debug(model);
 			domain.addModel(model);
 		}
 
@@ -145,18 +144,20 @@ public class XMLDomainReader {
 		}
 
 		// extracting imported references
-		else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes() && 
-				mainNode.getAttributes().getNamedItem("href") != null) {
+		else if (mainNode.getNodeName().equals("import")
+				&& mainNode.hasAttributes()
+				&& mainNode.getAttributes().getNamedItem("href") != null) {
 
-			String fileName = mainNode.getAttributes().getNamedItem("href").getNodeValue();	
-			Document subdoc = XMLUtils.getXMLDocument(rootpath+ File.separator + fileName);
-			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain, rootpath);		
+			String fileName = mainNode.getAttributes().getNamedItem("href")
+					.getNodeValue();
+			Document subdoc = XMLUtils.getXMLDocument(rootpath + File.separator
+					+ fileName);
+			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
+					rootpath);
 		}
-
 
 		return domain;
 	}
-
 
 	/**
 	 * Given an XML node, extracts the rule-based model that corresponds to it.
@@ -167,41 +168,43 @@ public class XMLDomainReader {
 	 */
 	private static Model createModel(Node topNode) throws DialException {
 		Model model = new Model();
-		for (int i = 0 ; i < topNode.getChildNodes().getLength() ; i++) {
+		for (int i = 0; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
 			if (node.getNodeName().equals("rule")) {
 				Rule rule = XMLRuleReader.getRule(node);
 				model.addRule(rule);
 			}
 		}
-		
-		if (topNode.hasAttributes() && topNode.getAttributes().getNamedItem("trigger")!= null) {
+
+		if (topNode.hasAttributes()
+				&& topNode.getAttributes().getNamedItem("trigger") != null) {
 			Pattern p = Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
 					+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
 					+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
-			Matcher m = p.matcher(topNode.getAttributes().getNamedItem("trigger").getNodeValue());
+			Matcher m = p.matcher(topNode.getAttributes()
+					.getNamedItem("trigger").getNodeValue());
 			while (m.find()) {
 				model.addTrigger(m.group());
 			}
-		}
-		else {
-			throw new DialException("each model must specify a variable trigger:" + XMLUtils.serialise(topNode));
-		}
-		
-		if (topNode.getAttributes().getNamedItem("blocking")!= null) {
-			boolean blocking = Boolean.parseBoolean(topNode.getAttributes().getNamedItem("blocking").getNodeValue());
-			model.setBlocking(blocking);	
+		} else {
+			throw new DialException(
+					"each model must specify a variable trigger:"
+							+ XMLUtils.serialise(topNode));
 		}
 
-		if (topNode.getAttributes().getNamedItem("id")!= null) {
-			String id = topNode.getAttributes().getNamedItem("id").getNodeValue();
+		if (topNode.getAttributes().getNamedItem("blocking") != null) {
+			boolean blocking = Boolean.parseBoolean(topNode.getAttributes()
+					.getNamedItem("blocking").getNodeValue());
+			model.setBlocking(blocking);
+		}
+
+		if (topNode.getAttributes().getNamedItem("id") != null) {
+			String id = topNode.getAttributes().getNamedItem("id")
+					.getNodeValue();
 			model.setId(id);
 		}
 
-
 		return model;
 	}
-
-
 
 }

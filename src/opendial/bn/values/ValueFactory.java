@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -35,7 +35,7 @@ import opendial.arch.Logger;
 /**
  * Factory for creating variable values
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class ValueFactory {
@@ -47,58 +47,58 @@ public class ValueFactory {
 	static NoneVal noneValue = new NoneVal();
 
 	// pattern to find a double value
-	public static Pattern doublePattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+	public static Pattern doublePattern = Pattern
+			.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
 	// pattern to find an array of doubles
-	static Pattern arrayPattern = Pattern.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*" +
-			"([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
+	static Pattern arrayPattern = Pattern
+			.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*"
+					+ "([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
 	static Pattern setPattern = Pattern.compile("[\\w\\-_\\.\\^\\=\\s]*"
-			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s]+[\\]\\)])?", 
+			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s]+[\\]\\)])?",
 			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
-		
+
 	/**
-	 * Creates a new value based on the provided string representation.
-	 * If the string contains a numeric value, "true", "false", "None", 
-	 * or opening and closing brackets, convert it to the appropriate
-	 * values.  Else, returns a string value.
+	 * Creates a new value based on the provided string representation. If the
+	 * string contains a numeric value, "true", "false", "None", or opening and
+	 * closing brackets, convert it to the appropriate values. Else, returns a
+	 * string value.
 	 * 
 	 * @param str the string representation for the value
 	 * @return the resulting value
 	 */
 	public static Value create(String str) {
-		
+
 		if (str == null) {
 			return noneValue;
 		}
-		
+
 		Matcher m = doublePattern.matcher(str);
 		if (m.matches()) {
 			return new DoubleVal(Double.parseDouble(str));
-		}
-		else if (str.equalsIgnoreCase("true")) {
+		} else if (str.equalsIgnoreCase("true")) {
 			return new BooleanVal(true);
-		}
-		else if (str.equalsIgnoreCase("false")) {
+		} else if (str.equalsIgnoreCase("false")) {
 			return new BooleanVal(false);
-		}
-		else if (str.equalsIgnoreCase("None")) {
+		} else if (str.equalsIgnoreCase("None")) {
 			return none();
 		}
 		// adds the converted value
 		else {
 			Matcher m2 = arrayPattern.matcher(str);
-			if (m2.matches()){
+			if (m2.matches()) {
 				List<Double> subVals = new ArrayList<Double>();
-				for (String subVal : str.replace("[", "").replace("]", "").split(",")) {
+				for (String subVal : str.replace("[", "").replace("]", "")
+						.split(",")) {
 					subVals.add(Double.parseDouble(subVal));
 				}
 				return new ArrayVal(subVals);
-			}
-			else if (str.startsWith("[") && str.endsWith("]")) {
-				
+			} else if (str.startsWith("[") && str.endsWith("]")) {
+
 				LinkedList<Value> subVals = new LinkedList<Value>();
-				Matcher m3 = setPattern.matcher(str.substring(1, str.length()-1));
+				Matcher m3 = setPattern.matcher(str.substring(1,
+						str.length() - 1));
 				while (m3.find()) {
 					String subval = m3.group(0).trim();
 					if (subval.length() > 0) {
@@ -122,7 +122,6 @@ public class ValueFactory {
 		return new DoubleVal(d);
 	}
 
-
 	public static ArrayVal create(double[] d) {
 		return new ArrayVal(d);
 	}
@@ -130,7 +129,7 @@ public class ValueFactory {
 	/**
 	 * Returns the boolean value given the boolean
 	 * 
-	 * @param b the boolean 
+	 * @param b the boolean
 	 * @return the double
 	 */
 	public static BooleanVal create(boolean b) {
@@ -143,7 +142,7 @@ public class ValueFactory {
 	 * @param vals the values
 	 * @return the set value
 	 */
-	public static SetVal create(Value...vals) {
+	public static SetVal create(Value... vals) {
 		return new SetVal(vals);
 	}
 
@@ -157,7 +156,6 @@ public class ValueFactory {
 		return new SetVal(vals);
 	}
 
-
 	/**
 	 * Returns the none value
 	 * 
@@ -169,16 +167,15 @@ public class ValueFactory {
 
 	public static Value concatenate(Value value, Value value2) {
 		if (value instanceof StringVal && value2 instanceof StringVal) {
-			return new StringVal(((StringVal)value).getString() + " " + ((StringVal)value2).getString());
-		}
-		else if (value instanceof NoneVal) {
+			return new StringVal(((StringVal) value).getString() + " "
+					+ ((StringVal) value2).getString());
+		} else if (value instanceof NoneVal) {
 			return value2;
-		}
-		else if (value2 instanceof NoneVal) {
+		} else if (value2 instanceof NoneVal) {
 			return value;
-		}
-		else {
-			log.warning("concatenation not implemented for " + value + "+" + value2);
+		} else {
+			log.warning("concatenation not implemented for " + value + "+"
+					+ value2);
 			return noneValue;
 		}
 	}

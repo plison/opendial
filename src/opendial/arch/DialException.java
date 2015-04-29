@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,26 +23,25 @@
 
 package opendial.arch;
 
-
-
 /**
  * Exception thrown in OpenDial
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
- *  
- */ 
+ * @author Pierre Lison (plison@ifi.uio.no)
+ * 
+ */
 public class DialException extends RuntimeException {
 
-	// public static Logger log = new Logger("DialException", Logger.Level.NORMAL);
+	// public static Logger log = new Logger("DialException",
+	// Logger.Level.NORMAL);
 
 	private static final long serialVersionUID = 1L;
-	
-	/** 
+
+	/**
 	 * Create a new OpenDial exception, with a given message
 	 * 
 	 * @param msg the message for the exception
 	 */
-	public DialException (String msg) {
+	public DialException(String msg) {
 		super(msg);
 	}
 

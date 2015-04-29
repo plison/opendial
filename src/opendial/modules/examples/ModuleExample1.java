@@ -22,7 +22,6 @@
 
 package opendial.modules.examples;
 
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Collection;
@@ -38,13 +37,14 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Simple example of a synchronous module for the domain specified in 
+ * Simple example of a synchronous module for the domain specified in
  * domains/examples/example-step-by-step.xml.
  * 
- * <p>The example creates a visual grid of size GRID_SIZE and updates the
- * position of the agent in accordance with the movements.
+ * <p>
+ * The example creates a visual grid of size GRID_SIZE and updates the position
+ * of the agent in accordance with the movements.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class ModuleExample1 implements Module {
 
@@ -55,53 +55,53 @@ public class ModuleExample1 implements Module {
 
 	JFrame frame;
 	boolean paused = true;
-	
-	// start the agent in the middle of the grid
-	int currentPosition = GRID_SIZE*GRID_SIZE/2;
 
-	
-	public ModuleExample1(DialogueSystem system) { }
-	
-	
+	// start the agent in the middle of the grid
+	int currentPosition = GRID_SIZE * GRID_SIZE / 2;
+
+	public ModuleExample1(DialogueSystem system) {
+	}
+
 	/**
-	 * Creates a simple visual grid of size GRID_SIZE and puts the agent 
-	 * in the middle of this grid.
+	 * Creates a simple visual grid of size GRID_SIZE and puts the agent in the
+	 * middle of this grid.
 	 */
 	@Override
 	public void start() throws DialException {
 		frame = new JFrame();
-		
+
 		frame.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE));
-		for (int i = 0 ; i < GRID_SIZE ; i++) {
-			for (int j = 0 ; j < GRID_SIZE ; j++) {
+		for (int i = 0; i < GRID_SIZE; i++) {
+			for (int j = 0; j < GRID_SIZE; j++) {
 				JLabel label = new JLabel(" ");
-			    label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			    frame.add(label);
+				label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				frame.add(label);
 			}
 		}
-		((JLabel)frame.getContentPane().getComponent(currentPosition)).setText(" HERE");
+		((JLabel) frame.getContentPane().getComponent(currentPosition))
+				.setText(" HERE");
 		frame.setSize(500, 500);
 		frame.setVisible(true);
 		paused = false;
 	}
 
-	
 	/**
-	 * If the updated variables contain the system action "a_m" and the action is a movement,
-	 * updates the visual grid in accordance with the movement.
+	 * If the updated variables contain the system action "a_m" and the action
+	 * is a movement, updates the visual grid in accordance with the movement.
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m") && !paused) {
+		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m")
+				&& !paused) {
 			String actionValue = state.queryProb("a_m").getBest().toString();
 			if (actionValue.startsWith("Move(")) {
-				String direction = actionValue.substring(5, actionValue.length()-1);
+				String direction = actionValue.substring(5,
+						actionValue.length() - 1);
 				changePosition(direction);
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Changes the position of the agent depending on the specified direction.
 	 * 
@@ -110,24 +110,22 @@ public class ModuleExample1 implements Module {
 	private void changePosition(String direction) {
 		int newPosition = 0;
 		if (direction.equals("Left")) {
-			newPosition = currentPosition -1;						
+			newPosition = currentPosition - 1;
+		} else if (direction.equals("Right")) {
+			newPosition = currentPosition + 1;
+		} else if (direction.equals("Forward")) {
+			newPosition = currentPosition - GRID_SIZE;
+		} else if (direction.equals("Backward")) {
+			newPosition = currentPosition + GRID_SIZE;
 		}
-		else if (direction.equals("Right")) {
-			newPosition = currentPosition + 1;											
-		}
-		else if (direction.equals("Forward")) {
-			newPosition = currentPosition -GRID_SIZE;											
-		}
-		else if (direction.equals("Backward")) {
-			newPosition = currentPosition + GRID_SIZE;											
-		}
-		if (newPosition >= 0 && newPosition < GRID_SIZE*GRID_SIZE) {
-			((JLabel)frame.getContentPane().getComponent(currentPosition)).setText(" ");	
+		if (newPosition >= 0 && newPosition < GRID_SIZE * GRID_SIZE) {
+			((JLabel) frame.getContentPane().getComponent(currentPosition))
+					.setText(" ");
 			currentPosition = newPosition;
-			((JLabel)frame.getContentPane().getComponent(currentPosition)).setText(" HERE");	
+			((JLabel) frame.getContentPane().getComponent(currentPosition))
+					.setText(" HERE");
 		}
 	}
-		
 
 	/**
 	 * Pauses the module.
@@ -146,4 +144,3 @@ public class ModuleExample1 implements Module {
 	}
 
 }
-

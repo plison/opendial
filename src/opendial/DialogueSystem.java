@@ -57,17 +57,20 @@ import opendial.readers.XMLSettingsReader;
 import opendial.state.DialogueState;
 
 /**
- *  <p>Dialogue system based on probabilistic rules.  A dialogue system comprises: <ul>
- *  <li> the current dialogue state
- *  <li> the dialogue domain with a list of rule-structured models
- *  <li> the list of system modules
- *  <li> the system settings. 
- *  </ul>
- *  
- *  <p>After initialising the dialogue system, the system should be started with the
- *  method startSystem(). The system can be paused or resumed at any time. 
+ * <p>
+ * Dialogue system based on probabilistic rules. A dialogue system comprises:
+ * <ul>
+ * <li>the current dialogue state
+ * <li>the dialogue domain with a list of rule-structured models
+ * <li>the list of system modules
+ * <li>the system settings.
+ * </ul>
+ * 
+ * <p>
+ * After initialising the dialogue system, the system should be started with the
+ * method startSystem(). The system can be paused or resumed at any time.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class DialogueSystem {
@@ -90,12 +93,9 @@ public class DialogueSystem {
 	// whether the system is paused or active
 	protected boolean paused = true;
 
-
-
 	// ===================================
-	//  SYSTEM INITIALISATION
+	// SYSTEM INITIALISATION
 	// ===================================
-
 
 	/**
 	 * Creates a new dialogue system with an empty dialogue system
@@ -115,7 +115,6 @@ public class DialogueSystem {
 		domain = new Domain();
 	}
 
-
 	/**
 	 * Creates a new dialogue system with the provided dialogue domain
 	 * 
@@ -127,24 +126,21 @@ public class DialogueSystem {
 		changeDomain(domain);
 	}
 
-
-
 	/**
 	 * Starts the dialogue system and its modules.
 	 */
 	public void startSystem() {
-		paused=false;
-		for (Module module :new ArrayList<Module>(modules)) {
+		paused = false;
+		for (Module module : new ArrayList<Module>(modules)) {
 			try {
 				if (!module.isRunning()) {
 					module.start();
-				}
-				else {
+				} else {
 					module.pause(false);
 				}
-			}
-			catch (DialException e) {
-				log.warning("could not start module " + module.getClass().getCanonicalName() + ": " + e);
+			} catch (DialException e) {
+				log.warning("could not start module "
+						+ module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
 			}
 		}
@@ -153,7 +149,6 @@ public class DialogueSystem {
 			update();
 		}
 	}
-
 
 	/**
 	 * Changes the dialogue domain for the dialogue domain
@@ -171,7 +166,6 @@ public class DialogueSystem {
 		}
 	}
 
-
 	/**
 	 * Attaches the module to the dialogue system.
 	 * 
@@ -179,22 +173,21 @@ public class DialogueSystem {
 	 */
 	public void attachModule(Module module) {
 		if (modules.contains(module) || getModule(module.getClass()) != null) {
-			log.info("Module " + module.getClass().getCanonicalName() + " is already attached");
+			log.info("Module " + module.getClass().getCanonicalName()
+					+ " is already attached");
 			return;
 		}
-		modules.add((!modules.isEmpty())? modules.size()-1 : 0, module);
+		modules.add((!modules.isEmpty()) ? modules.size() - 1 : 0, module);
 		if (!paused) {
 			try {
 				module.start();
-			}
-			catch (DialException e) {
-				log.warning("could not start module " + module.getClass().getCanonicalName());
+			} catch (DialException e) {
+				log.warning("could not start module "
+						+ module.getClass().getCanonicalName());
 				modules.remove(module);
 			}
 		}
 	}
-
-
 
 	/**
 	 * Attaches the module to the dialogue system.
@@ -203,22 +196,24 @@ public class DialogueSystem {
 	 */
 	public <T extends Module> void attachModule(Class<T> module) {
 		try {
-			Constructor<T> constructor = module.getConstructor(DialogueSystem.class);
+			Constructor<T> constructor = module
+					.getConstructor(DialogueSystem.class);
 			attachModule(constructor.newInstance(this));
-			displayComment("Module " + module.getSimpleName() + " successfully attached");
-		} 
-		catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException 
+			displayComment("Module " + module.getSimpleName()
+					+ " successfully attached");
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			log.warning("cannot attach " + module.getSimpleName() + ": " + e.getCause());
-			displayComment("cannot attach " + module.getSimpleName() + ": " +  e.getCause());
+			log.warning("cannot attach " + module.getSimpleName() + ": "
+					+ e.getCause());
+			displayComment("cannot attach " + module.getSimpleName() + ": "
+					+ e.getCause());
 		}
 	}
 
-
 	/**
-	 * Detaches the module of the dialogue system.  If the module is
-	 * not included in the system, does nothing.
+	 * Detaches the module of the dialogue system. If the module is not included
+	 * in the system, does nothing.
 	 * 
 	 * @param moduleClass the class of the module to detach.
 	 */
@@ -226,14 +221,13 @@ public class DialogueSystem {
 		synchronized (curState) {
 			Module module = getModule(moduleClass);
 			if (module != null) {
-		//		log.info("detaching module " + module.getClass().getSimpleName());
+				// log.info("detaching module " +
+				// module.getClass().getSimpleName());
 				module.pause(true);
 				modules.remove(module);
 			}
 		}
 	}
-
-
 
 	/**
 	 * Pauses or resumes the dialogue system.
@@ -253,21 +247,21 @@ public class DialogueSystem {
 		}
 	}
 
-
 	/**
 	 * Adds a comment on the GUI and the dialogue recorder.
 	 * 
 	 * @param comment the comment to display
 	 */
 	public void displayComment(String comment) {
-		if (getModule(GUIFrame.class)!= null && getModule(GUIFrame.class).isRunning()) {
+		if (getModule(GUIFrame.class) != null
+				&& getModule(GUIFrame.class).isRunning()) {
 			getModule(GUIFrame.class).addComment(comment);
 		}
-		if (getModule(DialogueRecorder.class)!= null && getModule(DialogueRecorder.class).isRunning()) {
+		if (getModule(DialogueRecorder.class) != null
+				&& getModule(DialogueRecorder.class).isRunning()) {
 			getModule(DialogueRecorder.class).addComment(comment);
 		}
 	}
-
 
 	/**
 	 * Changes the settings of the system
@@ -283,17 +277,16 @@ public class DialogueSystem {
 				log.info("Attaching module: " + toAttach.getCanonicalName());
 				attachModule(toAttach);
 			}
-		}	
+		}
 	}
 
 	// ===================================
-	//  STATE UPDATE
+	// STATE UPDATE
 	// ===================================
 
-
 	/**
-	 * Adds the user input (assuming a perfect confidence score) to the dialogue state
-	 * and subsequently updates it.
+	 * Adds the user input (assuming a perfect confidence score) to the dialogue
+	 * state and subsequently updates it.
 	 * 
 	 * @param userInput the user input as a string
 	 * @return the variables that were updated in the process
@@ -304,26 +297,25 @@ public class DialogueSystem {
 		return addContent(a);
 	}
 
-
 	/**
-	 * Adds the user input (as a N-best list, where each hypothesis is associated with a 
-	 * probability) to the dialogue state and subsequently updates it.
+	 * Adds the user input (as a N-best list, where each hypothesis is
+	 * associated with a probability) to the dialogue state and subsequently
+	 * updates it.
 	 * 
 	 * @param userInput the user input as an N-best list
 	 * @return the variables that were updated in the process
 	 * @throws DialException if the state could not be updated
 	 */
-	public Set<String> addUserInput(Map<String,Double> userInput) {
+	public Set<String> addUserInput(Map<String, Double> userInput) {
 		curState.setAsCommitted(settings.userInput);
-		String var = (!settings.invertedRole)? settings.userInput : settings.systemOutput;
+		String var = (!settings.invertedRole) ? settings.userInput
+				: settings.systemOutput;
 		CategoricalTable table = new CategoricalTable(var);
 		for (String input : userInput.keySet()) {
 			table.addRow(input, userInput.get(input));
 		}
 		return addContent(table);
 	}
-
-
 
 	/**
 	 * Adds the content (expressed as a categorical table over variables) to the
@@ -337,68 +329,70 @@ public class DialogueSystem {
 		if (!paused) {
 			synchronized (curState) {
 				try {
-				curState.addToState(distrib);
-				return update();
-				}
-				catch (DialException e) {
-					log.warning("cannot update state with " + distrib + ": " + e);
+					curState.addToState(distrib);
+					return update();
+				} catch (DialException e) {
+					log.warning("cannot update state with " + distrib + ": "
+							+ e);
 					return new HashSet<String>();
 				}
 			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + distrib);
+		} else {
+			log.info("system is currently paused -- ignoring content "
+					+ distrib);
 			return new HashSet<String>();
 		}
 	}
 
-
 	/**
-	 * Adds the incremental content (expressed as a distribution over variables) 
-	 * to the current dialogue state, and subsequently updates it.  If followPrevious 
-	 * is set to true, the content is concatenated with the current distribution for 
-	 * the variable. 
+	 * Adds the incremental content (expressed as a distribution over variables)
+	 * to the current dialogue state, and subsequently updates it. If
+	 * followPrevious is set to true, the content is concatenated with the
+	 * current distribution for the variable.
 	 * 
 	 * @param content the content to add / concatenate
-	 * @param followPrevious whether the results should be concatenated to the previous 
-	 *        values, or reset the content (e.g. when starting a new utterance)
+	 * @param followPrevious whether the results should be concatenated to the
+	 *            previous values, or reset the content (e.g. when starting a
+	 *            new utterance)
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the incremental update failed
 	 */
-	public Set<String> addIncrementalContent(CategoricalTable content, 
+	public Set<String> addIncrementalContent(CategoricalTable content,
 			boolean followPrevious) {
 		if (!paused) {
 			synchronized (curState) {
 				try {
 					curState.addToState_incremental(content, followPrevious);
 					return update();
-					}
-					catch (DialException e) {
-						log.warning("cannot update state with " + content + ": " + e);
-						return new HashSet<String>();
-					}
+				} catch (DialException e) {
+					log.warning("cannot update state with " + content + ": "
+							+ e);
+					return new HashSet<String>();
+				}
 			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + content);
+		} else {
+			log.info("system is currently paused -- ignoring content "
+					+ content);
 			return new HashSet<String>();
 		}
 	}
-	
+
 	/**
-	 * Adds the incremental user input (expressed as an N-best list) to the current 
-	 * dialogue state, and subsequently updates it.  If followPrevious is set to true, 
-	 * the content is concatenated with the current distribution for the variable. 
-	 * This allows (for instance) to perform incremental updates of user utterances.
+	 * Adds the incremental user input (expressed as an N-best list) to the
+	 * current dialogue state, and subsequently updates it. If followPrevious is
+	 * set to true, the content is concatenated with the current distribution
+	 * for the variable. This allows (for instance) to perform incremental
+	 * updates of user utterances.
 	 * 
 	 * 
 	 * @param userInput the user input to add / concatenate
-	 * @param followPrevious whether the results should be concatenated to the previous 
-	 *        values, or reset the content (e.g. when starting a new utterance)
+	 * @param followPrevious whether the results should be concatenated to the
+	 *            previous values, or reset the content (e.g. when starting a
+	 *            new utterance)
 	 * @return the set of variables that have been updated
 	 * @throws DialException if the incremental update failed
 	 */
-	public Set<String> addIncrementalUserInput(Map<String,Double> userInput, 
+	public Set<String> addIncrementalUserInput(Map<String, Double> userInput,
 			boolean followPrevious) {
 		CategoricalTable table = new CategoricalTable(settings.userInput);
 		for (String input : userInput.keySet()) {
@@ -407,11 +401,9 @@ public class DialogueSystem {
 		return addIncrementalContent(table, followPrevious);
 	}
 
-
-
 	/**
-	 * Adds the content (expressed as a certain assignment over variables) to the
-	 * current dialogue state, and subsequently updates the dialogue state.
+	 * Adds the content (expressed as a certain assignment over variables) to
+	 * the current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param assign the value assignment to add
 	 * @return the variables that were updated in the process
@@ -423,23 +415,21 @@ public class DialogueSystem {
 				try {
 					curState.addToState(assign);
 					return update();
-					}
-					catch (DialException e) {
-						log.warning("cannot update state with " + assign + ": " + e);
-						return new HashSet<String>();
-					}
+				} catch (DialException e) {
+					log.warning("cannot update state with " + assign + ": " + e);
+					return new HashSet<String>();
+				}
 			}
-		}
-		else {
+		} else {
 			log.info("system is currently paused -- ignoring content " + assign);
 			return new HashSet<String>();
 		}
 	}
 
-
 	/**
-	 * Adds the content (expressed as a multivariate distribution over variables) 
-	 * to the current dialogue state, and subsequently updates the dialogue state.
+	 * Adds the content (expressed as a multivariate distribution over
+	 * variables) to the current dialogue state, and subsequently updates the
+	 * dialogue state.
 	 * 
 	 * @param distrib the multivariate distribution to add
 	 * @return the variables that were updated in the process
@@ -451,28 +441,26 @@ public class DialogueSystem {
 				try {
 					curState.addToState(distrib);
 					return update();
-					}
-					catch (DialException e) {
-						log.warning("cannot update state with " + distrib + ": " + e);
-						return new HashSet<String>();
-					}
+				} catch (DialException e) {
+					log.warning("cannot update state with " + distrib + ": "
+							+ e);
+					return new HashSet<String>();
+				}
 			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + distrib);
+		} else {
+			log.info("system is currently paused -- ignoring content "
+					+ distrib);
 			return new HashSet<String>();
 		}
 	}
 
-
-	
 	/**
-	 * Merges the Bayesian network included as argument into the current one, and
-	 * updates the dialogue state.
+	 * Merges the Bayesian network included as argument into the current one,
+	 * and updates the dialogue state.
 	 * 
 	 * @param network the Bayesian network to merge into the current state
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the update failed 
+	 * @throws DialException if the update failed
 	 */
 	public Set<String> addContent(BNetwork network) throws DialException {
 		if (!paused) {
@@ -480,13 +468,12 @@ public class DialogueSystem {
 				curState.addToState(network);
 				return update();
 			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + network);
+		} else {
+			log.info("system is currently paused -- ignoring content "
+					+ network);
 			return new HashSet<String>();
 		}
 	}
-	
 
 	/**
 	 * Merges the dialogue state included as argument into the current one, and
@@ -494,7 +481,7 @@ public class DialogueSystem {
 	 * 
 	 * @param newState the state to merge into the current state
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the update failed 
+	 * @throws DialException if the update failed
 	 */
 	public Set<String> addContent(DialogueState newState) throws DialException {
 		if (!paused) {
@@ -502,24 +489,22 @@ public class DialogueSystem {
 				curState.addToState(newState);
 				return update();
 			}
-		}
-		else {
-			log.info("system is currently paused -- ignoring content " + newState);
+		} else {
+			log.info("system is currently paused -- ignoring content "
+					+ newState);
 			return new HashSet<String>();
 		}
 	}
-	
-
-
 
 	/**
-	 * Performs an update loop on the current dialogue state, by triggering 
-	 * all the models and modules attached to the system until all possible 
-	 * updates have been performed.  The dialogue state is pruned at the
-	 * end of the operation. 
+	 * Performs an update loop on the current dialogue state, by triggering all
+	 * the models and modules attached to the system until all possible updates
+	 * have been performed. The dialogue state is pruned at the end of the
+	 * operation.
 	 * 
-	 * <p>The method returns the set of variables that have been updated during
-	 * the process.
+	 * <p>
+	 * The method returns the set of variables that have been updated during the
+	 * process.
 	 * 
 	 * @return the set of updated variables
 	 */
@@ -527,11 +512,17 @@ public class DialogueSystem {
 
 		// set of variables that have been updated
 		Set<String> updatedVars = new HashSet<String>();
-		
-		// skip new update if the current thread is already processing an update loop
-		if (Stream.of(Thread.currentThread().getStackTrace()).skip(2).limit(20)
-			.anyMatch(t -> t.getClassName().equals(getClass().getCanonicalName()) 
-					&& t.getMethodName().equals("update"))) {
+
+		// skip new update if the current thread is already processing an update
+		// loop
+		if (Stream
+				.of(Thread.currentThread().getStackTrace())
+				.skip(2)
+				.limit(20)
+				.anyMatch(
+						t -> t.getClassName().equals(
+								getClass().getCanonicalName())
+								&& t.getMethodName().equals("update"))) {
 			return updatedVars;
 		}
 
@@ -540,29 +531,29 @@ public class DialogueSystem {
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
 			// reducing the dialogue state to its relevant nodes
-			curState.reduce();	
-			
-			// applying the domain models 
+			curState.reduce();
+
+			// applying the domain models
 			for (Model model : domain.getModels()) {
-				if (model.isTriggered(curState,toProcess)) {
+				if (model.isTriggered(curState, toProcess)) {
 					model.trigger(curState);
-					if (model.isBlocking() && !curState.getNewVariables().isEmpty()) {
+					if (model.isBlocking()
+							&& !curState.getNewVariables().isEmpty()) {
 						break;
 					}
 				}
 			}
-			
+
 			// applying the external modules
 			for (Module module : modules) {
 				module.trigger(curState, toProcess);
 			}
-			
+
 			updatedVars.addAll(toProcess);
 		}
 
 		return updatedVars;
 	}
-
 
 	/**
 	 * Connects to a remote client with the given IP address and port
@@ -580,9 +571,8 @@ public class DialogueSystem {
 	}
 
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the current dialogue state for the dialogue system.
@@ -615,10 +605,9 @@ public class DialogueSystem {
 		return curState.queryProb(variables);
 	}
 
-
 	/**
-	 * Returns the module attached to the dialogue system and belonging to
-	 * a particular class, if one exists.  If no module exists, returns null
+	 * Returns the module attached to the dialogue system and belonging to a
+	 * particular class, if one exists. If no module exists, returns null
 	 * 
 	 * @param cls the class.
 	 * @return the attached module of that class, if one exists.
@@ -627,12 +616,11 @@ public class DialogueSystem {
 	public <T extends Module> T getModule(Class<T> cls) {
 		for (Module mod : new ArrayList<Module>(modules)) {
 			if (cls.isAssignableFrom(mod.getClass())) {
-				return (T)mod;
+				return (T) mod;
 			}
 		}
 		return null;
 	}
-
 
 	/**
 	 * Returns true is the system is currently paused, and false otherwise
@@ -643,7 +631,6 @@ public class DialogueSystem {
 		return paused;
 	}
 
-
 	/**
 	 * Returns the settings for the dialogue system.
 	 * 
@@ -652,7 +639,6 @@ public class DialogueSystem {
 	public Settings getSettings() {
 		return settings;
 	}
-
 
 	/**
 	 * Returns the domain for the dialogue system.
@@ -672,7 +658,6 @@ public class DialogueSystem {
 		return new ArrayList<Module>(modules);
 	}
 
-	
 	/**
 	 * Returns the local address (IP and port) used by the dialogue system
 	 * 
@@ -683,20 +668,22 @@ public class DialogueSystem {
 	}
 
 	// ===================================
-	//  MAIN METHOD
+	// MAIN METHOD
 	// ===================================
 
-
 	/**
-	 * Starts the dialogue system.  The content of the args array is ignored.  Command-line
-	 * parameters can however be specified through system properties via the -D flag. All
-	 * parameters are optional.
+	 * Starts the dialogue system. The content of the args array is ignored.
+	 * Command-line parameters can however be specified through system
+	 * properties via the -D flag. All parameters are optional.
 	 * 
-	 * <p>Possible properties are:<ul>
+	 * <p>
+	 * Possible properties are:
+	 * <ul>
 	 * <li>-Ddomain=path/to/domain/file: dialogue domain file
 	 * <li>-Dsettings=path/to/settings/file: settings file
 	 * <li>-Ddialogue=path/to/recorded/dialogue: dialogue file to import
-	 * <li>-Dsimulator=path/to/simulator/domain/file: dialogue domain file for the simulator
+	 * <li>-Dsimulator=path/to/simulator/domain/file: dialogue domain file for
+	 * the simulator
 	 * </ul>
 	 * 
 	 * @param args is ignored.
@@ -712,20 +699,27 @@ public class DialogueSystem {
 			system.getSettings().fillSettings(System.getProperties());
 			if (domainFile != null) {
 				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
-				log.info("Domain from " + domainFile + " successfully extracted");
+				log.info("Domain from " + domainFile
+						+ " successfully extracted");
 			}
 			if (settingsFile != null) {
-				system.getSettings().fillSettings(XMLSettingsReader.extractMapping(settingsFile));
-				log.info("Settings from " + settingsFile + " successfully extracted");		
+				system.getSettings().fillSettings(
+						XMLSettingsReader.extractMapping(settingsFile));
+				log.info("Settings from " + settingsFile
+						+ " successfully extracted");
 			}
 			if (dialogueFile != null) {
-				List<DialogueState> dialogue = XMLInteractionReader.extractInteraction(dialogueFile);
-				log.info("Interaction from " + dialogueFile + " successfully extracted");		
+				List<DialogueState> dialogue = XMLInteractionReader
+						.extractInteraction(dialogueFile);
+				log.info("Interaction from " + dialogueFile
+						+ " successfully extracted");
 				(new DialogueImporter(system, dialogue)).start();
 			}
 			if (simulatorFile != null) {
-				Simulator simulator = new Simulator(system, XMLDomainReader.extractDomain(simulatorFile));
-				log.info("Simulator with domain " + simulatorFile + " successfully extracted");		
+				Simulator simulator = new Simulator(system,
+						XMLDomainReader.extractDomain(simulatorFile));
+				log.info("Simulator with domain " + simulatorFile
+						+ " successfully extracted");
 				system.attachModule(simulator);
 			}
 			Settings settings = system.getSettings();
@@ -733,19 +727,15 @@ public class DialogueSystem {
 			if (!settings.showGUI) {
 				system.attachModule(new TextOnlyInterface(system));
 			}
-			
+
 			if (!settings.remoteConnections.isEmpty() && settings.showGUI) {
 				system.getModule(GUIFrame.class).enableSpeech(true);
 			}
 			system.startSystem();
 			log.info("Dialogue system started!");
-		}
-		catch (DialException e) {
+		} catch (DialException e) {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
-	
-
-
 
 }

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -33,11 +33,10 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
 
-
 /**
  * Basic condition between a variable and a value
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class BasicCondition implements Condition {
@@ -45,8 +44,9 @@ public final class BasicCondition implements Condition {
 	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
 
 	// possible relations used in a basic condition
-	public static enum Relation {EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS,
-		GREATER_THAN, LOWER_THAN, IN, NOT_IN, LENGTH}
+	public static enum Relation {
+		EQUAL, UNEQUAL, CONTAINS, NOT_CONTAINS, GREATER_THAN, LOWER_THAN, IN, NOT_IN, LENGTH
+	}
 
 	// variable label
 	final String variable;
@@ -59,9 +59,8 @@ public final class BasicCondition implements Condition {
 	final Relation relation;
 
 	// ===================================
-	//  CONDITION CONSTRUCTION
+	// CONDITION CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new basic condition, given a variable label, an expected value,
@@ -77,11 +76,9 @@ public final class BasicCondition implements Condition {
 		this.relation = relation;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the relation in place for the condition
@@ -92,7 +89,6 @@ public final class BasicCondition implements Condition {
 		return relation;
 	}
 
-
 	/**
 	 * Returns the variable label for the basic condition
 	 * 
@@ -102,7 +98,6 @@ public final class BasicCondition implements Condition {
 		return variable;
 	}
 
-
 	/**
 	 * Returns the expected variable value for the basic condition
 	 * 
@@ -111,8 +106,7 @@ public final class BasicCondition implements Condition {
 	public Value getValue() {
 		return expectedValue;
 	}
-	
-	
+
 	/**
 	 * Returns an empty list
 	 * 
@@ -123,11 +117,9 @@ public final class BasicCondition implements Condition {
 		return new HashSet<String>();
 	}
 
-
-
 	/**
-	 * Returns the input variables for the condition (the main variable
-	 * itself, plus optional slots in the value to fill)
+	 * Returns the input variables for the condition (the main variable itself,
+	 * plus optional slots in the value to fill)
 	 * 
 	 * @return the input variables
 	 */
@@ -138,15 +130,12 @@ public final class BasicCondition implements Condition {
 		return inputVariables;
 	}
 
-
-
-
 	/**
 	 * Returns true if the condition is satisfied by the value assignment
 	 * provided as argument, and false otherwise
 	 * 
-	 * <p>This method uses an external ConditionCheck object to ease the
-	 * process.
+	 * <p>
+	 * This method uses an external ConditionCheck object to ease the process.
 	 *
 	 * @param input the actual assignment of values
 	 * @return true if the condition is satisfied, false otherwise
@@ -154,20 +143,28 @@ public final class BasicCondition implements Condition {
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
 		Value actualValue = input.getValue(variable);
-		switch (relation) {	
-		case EQUAL: return actualValue.equals(expectedValue);
-		case UNEQUAL: return !actualValue.equals(expectedValue); 
-		case GREATER_THAN: return (actualValue.compareTo(expectedValue) > 0); 
-		case LOWER_THAN: return (actualValue.compareTo(expectedValue) < 0);
-		case CONTAINS: return actualValue.contains(expectedValue); 
-		case NOT_CONTAINS: return !actualValue.contains(expectedValue); 
-		case LENGTH: return actualValue.length() == expectedValue.length();
-		case IN: return expectedValue.contains(actualValue); 
-		case NOT_IN: return !expectedValue.contains(actualValue); 
+		switch (relation) {
+		case EQUAL:
+			return actualValue.equals(expectedValue);
+		case UNEQUAL:
+			return !actualValue.equals(expectedValue);
+		case GREATER_THAN:
+			return (actualValue.compareTo(expectedValue) > 0);
+		case LOWER_THAN:
+			return (actualValue.compareTo(expectedValue) < 0);
+		case CONTAINS:
+			return actualValue.contains(expectedValue);
+		case NOT_CONTAINS:
+			return !actualValue.contains(expectedValue);
+		case LENGTH:
+			return actualValue.length() == expectedValue.length();
+		case IN:
+			return expectedValue.contains(actualValue);
+		case NOT_IN:
+			return !expectedValue.contains(actualValue);
 		}
 		return false;
 	}
-
 
 	/**
 	 * Returns the set of possible groundings for the given input assignment
@@ -176,25 +173,20 @@ public final class BasicCondition implements Condition {
 	 * @return the set of possible (alternative) groundings for the condition
 	 */
 	@Override
-	public RuleGrounding getGroundings(Assignment input) {	
+	public RuleGrounding getGroundings(Assignment input) {
 		if (relation == Relation.IN && expectedValue instanceof SetVal) {
-			return new RuleGrounding(variable, ((SetVal)expectedValue).getSet());
-		}
-		else if (isSatisfiedBy(input)){
+			return new RuleGrounding(variable,
+					((SetVal) expectedValue).getSet());
+		} else if (isSatisfiedBy(input)) {
 			return new RuleGrounding();
-		}
-		else {
+		} else {
 			return new RuleGrounding.Failed();
 		}
 	}
 
-
-
-
 	// ===================================
-	//  UTILITY FUNCTIONS
+	// UTILITY FUNCTIONS
 	// ===================================
-
 
 	/**
 	 * Returns a string representation of the condition
@@ -202,16 +194,26 @@ public final class BasicCondition implements Condition {
 	@Override
 	public String toString() {
 		switch (relation) {
-		case EQUAL: return variable + "=" + expectedValue ; 
-		case UNEQUAL: return variable + "!=" + expectedValue ; 
-		case GREATER_THAN: return variable + ">" + expectedValue; 
-		case LOWER_THAN : return variable + "<" + expectedValue; 
-		case CONTAINS: return expectedValue + " in " + variable; 
-		case NOT_CONTAINS: return expectedValue + " !in " + variable;
-		case LENGTH: return "length("+variable+")=" + expectedValue;
-		case IN: return variable + " in " + expectedValue; 
-		case NOT_IN: return variable + " not in " + expectedValue;
-		default: return ""; 
+		case EQUAL:
+			return variable + "=" + expectedValue;
+		case UNEQUAL:
+			return variable + "!=" + expectedValue;
+		case GREATER_THAN:
+			return variable + ">" + expectedValue;
+		case LOWER_THAN:
+			return variable + "<" + expectedValue;
+		case CONTAINS:
+			return expectedValue + " in " + variable;
+		case NOT_CONTAINS:
+			return expectedValue + " !in " + variable;
+		case LENGTH:
+			return "length(" + variable + ")=" + expectedValue;
+		case IN:
+			return variable + " in " + expectedValue;
+		case NOT_IN:
+			return variable + " not in " + expectedValue;
+		default:
+			return "";
 		}
 	}
 
@@ -220,11 +222,11 @@ public final class BasicCondition implements Condition {
 	 *
 	 * @return the hashcode
 	 */
-	@Override 
+	@Override
 	public int hashCode() {
-		return variable.hashCode() + expectedValue.hashCode() - 3*relation.hashCode();
+		return variable.hashCode() + expectedValue.hashCode() - 3
+				* relation.hashCode();
 	}
-
 
 	/**
 	 * Returns true if the given object is a condition identical to the current
@@ -234,14 +236,13 @@ public final class BasicCondition implements Condition {
 	 * @return true if the condition are equals, and false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof BasicCondition) {
-			return (((BasicCondition)o).getVariable().equals(variable) && 
-					((BasicCondition)o).getValue().equals(expectedValue) && 
-					relation == ((BasicCondition)o).getRelation());
+			return (((BasicCondition) o).getVariable().equals(variable)
+					&& ((BasicCondition) o).getValue().equals(expectedValue) && relation == ((BasicCondition) o)
+						.getRelation());
 		}
 		return false;
 	}
-
 
 }

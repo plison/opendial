@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -37,7 +37,7 @@ import org.junit.Test;
 /**
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class RuleTest1 {
@@ -51,43 +51,41 @@ public class RuleTest1 {
 	static Domain domain;
 
 	static {
-		try { 
-			domain = XMLDomainReader.extractDomain(domainFile); 
+		try {
+			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 	@Test
 	public void test1() throws DialException, InterruptedException {
-	
+
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
-	
+		system.startSystem();
+
 		inference.checkProb(system.getState(), "a_u", "Greeting", 0.8);
 		inference.checkProb(system.getState(), "a_u", "None", 0.2);
-	
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
 
-
-	@Test 
+	@Test
 	public void test2() throws DialException {
-				
+
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
-		
-		inference.checkProb(system.getState(), "i_u", "Inform", 0.7*0.8);
-		inference.checkProb(system.getState(), "i_u", "None", 1-0.7*0.8);
-		
+		system.startSystem();
+
+		inference.checkProb(system.getState(), "i_u", "Inform", 0.7 * 0.8);
+		inference.checkProb(system.getState(), "i_u", "None", 1 - 0.7 * 0.8);
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
 
@@ -95,50 +93,52 @@ public class RuleTest1 {
 	public void test3() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
-		
+
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
+		system.startSystem();
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
 		inference.checkProb(system.getState(), "direction", "right", 0.01);
-		
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
-
 
 	@Test
 	public void test4() throws DialException {
-		
+
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
-		
-		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.28);
+		system.startSystem();
+
+		inference.checkProb(system.getState(), "o", "and we have var1=value2",
+				0.3);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value1", 0.2);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value3", 0.28);
 
 		StatePruner.ENABLE_PRUNING = true;
 	}
 
-
 	@Test
 	public void test5() throws DialException {
-		
+
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
-			
+		system.startSystem();
+
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
-		inference.checkProb(system.getState(), "o2", "and value2 is over there", 0.07);
+		inference.checkProb(system.getState(), "o2",
+				"and value2 is over there", 0.07);
 		inference.checkProb(system.getState(), "o2", "value3, finally", 0.28);
-		
+
 		StatePruner.ENABLE_PRUNING = true;
 
 	}
@@ -151,18 +151,20 @@ public class RuleTest1 {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
+		system.startSystem();
 		CategoricalTable table = new CategoricalTable("var1");
 		table.addRow("value2", 0.9);
 		system.addContent(table);
-		
-		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.9);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.05);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.04);
-		
+
+		inference.checkProb(system.getState(), "o", "and we have var1=value2",
+				0.9);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value1", 0.05);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value3", 0.04);
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
-
 
 	@Test
 	public void test7() throws DialException, InterruptedException {
@@ -171,13 +173,13 @@ public class RuleTest1 {
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
-		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
+		system.startSystem();
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]",
+				0.7);
 		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
-		
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
 
-	
 }
