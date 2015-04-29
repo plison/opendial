@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -22,7 +22,6 @@
 // =================================================================                                                                   
 
 package opendial.modules;
-
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,14 +53,15 @@ public class WizardTest {
 	// logger
 	public static Logger log = new Logger("WizardTest", Logger.Level.DEBUG);
 
-	
 	public static final String interactionFile = "test//domains//woz-dialogue.xml";
 	public static final String domainFile = "test//domains//domain-woz.xml";
 
 	@Test
 	public void testWizardLearning() throws DialException {
-		List<DialogueState> interaction = XMLInteractionReader.extractInteraction(interactionFile);
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+		List<DialogueState> interaction = XMLInteractionReader
+				.extractInteraction(interactionFile);
+		DialogueSystem system = new DialogueSystem(
+				XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 
 		system.attachModule(WizardLearner.class);
@@ -69,44 +69,59 @@ public class WizardTest {
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
 		}
-		log.debug("theta 1: " + ((ContinuousDistribution)system.getState().getChanceNode
-				("theta_1").getDistrib()).getFunction().getMean()[0]);
-		assertTrue(((ContinuousDistribution)system.getState().getChanceNode
-				("theta_1").getDistrib()).getFunction().getMean()[0] > 16.0);
-		log.debug("theta 2: " + ((ContinuousDistribution)system.getState().getChanceNode
-				("theta_2").getDistrib()).getFunction().getMean()[0]);
-		assertTrue(((ContinuousDistribution)system.getState().getChanceNode("theta_2").getDistrib())
-				.getFunction().getMean()[0] < 9.0);
-		
+		log.debug("theta 1: "
+				+ ((ContinuousDistribution) system.getState()
+						.getChanceNode("theta_1").getDistrib()).getFunction()
+						.getMean()[0]);
+		assertTrue(((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_1").getDistrib()).getFunction().getMean()[0] > 16.0);
+		log.debug("theta 2: "
+				+ ((ContinuousDistribution) system.getState()
+						.getChanceNode("theta_2").getDistrib()).getFunction()
+						.getMean()[0]);
+		assertTrue(((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_2").getDistrib()).getFunction().getMean()[0] < 9.0);
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWizardControl() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+		DialogueSystem system = new DialogueSystem(
+				XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
 		system.attachModule(WizardControl.class);
 		system.startSystem();
 
-		assertEquals(2, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
+		assertEquals(2, system.getModule(GUIFrame.class).getChatTab()
+				.getComponentCount());
 		system.addContent(new Assignment("u_u", "hi"));
-		assertEquals(3, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
-		assertEquals(3, ((JList<String>)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
-				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
-		system.addContent(new Assignment("a_m", "Say(Greet)"));		
+		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
+				.getComponentCount());
+		assertEquals(
+				3,
+				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
+						.getModule(GUIFrame.class).getChatTab().getComponent(2))
+						.getComponent(0)).getComponent(0)).getComponent(0))
+						.getModel().getSize());
+		system.addContent(new Assignment("a_m", "Say(Greet)"));
 		system.addContent(new Assignment("u_u", "move left"));
-		assertEquals(3, system.getModule(GUIFrame.class).getChatTab().getComponentCount());
-		assertEquals(4, ((JList<String>)((JViewport)((JScrollPane)((Container)system.getModule(GUIFrame.class).
-				getChatTab().getComponent(2)).getComponent(0)).getComponent(0)).getComponent(0)).getModel().getSize());
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
-				+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
-				+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable>"
-				+ "<variable id=\"a_m\"><value>Say(Greet)</value></variable></systemTurn><userTurn>"
-				+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>", 
+		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
+				.getComponentCount());
+		assertEquals(
+				4,
+				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
+						.getModule(GUIFrame.class).getChatTab().getComponent(2))
+						.getComponent(0)).getComponent(0)).getComponent(0))
+						.getModel().getSize());
+		assertEquals(
+				"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
+						+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
+						+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable>"
+						+ "<variable id=\"a_m\"><value>Say(Greet)</value></variable></systemTurn><userTurn>"
+						+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>",
 				system.getModule(DialogueRecorder.class).getRecord());
 		system.getModule(GUIFrame.class).getFrame().dispose();
 	}
-	
-	
-}
 
+}

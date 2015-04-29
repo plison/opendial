@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -38,7 +38,7 @@ import opendial.datastructs.Assignment;
 /**
  * Representation of a utility node (sometimes also called utility node)
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class UtilityNode extends BNode {
@@ -50,9 +50,8 @@ public class UtilityNode extends BNode {
 	protected UtilityFunction distrib;
 
 	// ===================================
-	//  NODE CONSTRUCTION
+	// NODE CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new utility node, with an empty utility distribution
@@ -76,17 +75,16 @@ public class UtilityNode extends BNode {
 	}
 
 	/**
-	 * Adds a new utility to the node, valid for the given assignment on 
-	 * the input nodes
+	 * Adds a new utility to the node, valid for the given assignment on the
+	 * input nodes
 	 * 
 	 * @param input a value assignment on the input nodes
 	 * @param value the assigned utility
 	 */
 	public void addUtility(Assignment input, double value) {
 		if (distrib instanceof UtilityTable) {
-			((UtilityTable)distrib).setUtil(input, value);
-		}
-		else {
+			((UtilityTable) distrib).setUtil(input, value);
+		} else {
 			log.warning("utility distribution is not a table, cannot add value");
 		}
 	}
@@ -98,19 +96,15 @@ public class UtilityNode extends BNode {
 	 */
 	public void removeUtility(Assignment input) {
 		if (distrib instanceof UtilityTable) {
-			((UtilityTable)distrib).removeUtil(input);
-		}
-		else {
+			((UtilityTable) distrib).removeUtil(input);
+		} else {
 			log.warning("utility distribution is not a table, cannot remove value");
 		}
 	}
 
-
-
 	public void setDistrib(UtilityFunction distrib) {
 		this.distrib = distrib;
 	}
-
 
 	@Override
 	public void setId(String newId) {
@@ -118,15 +112,13 @@ public class UtilityNode extends BNode {
 		distrib.modifyVarId(this.nodeId, newId);
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
-	 * Returns the utility associated with the specific assignment on the
-	 * input variables of the node
+	 * Returns the utility associated with the specific assignment on the input
+	 * variables of the node
 	 * 
 	 * @param input the input assignment
 	 * @return the associated utility
@@ -154,17 +146,16 @@ public class UtilityNode extends BNode {
 		return distrib;
 	}
 
-
 	/**
-	 * Returns the factor matrix associated with the utility node, which maps
-	 * an assignment of input variable to a given utility.
+	 * Returns the factor matrix associated with the utility node, which maps an
+	 * assignment of input variable to a given utility.
 	 *
 	 * @return the factor matrix
 	 */
 	@Override
-	public Map<Assignment,Double> getFactor() {
+	public Map<Assignment, Double> getFactor() {
 
-		Map<Assignment,Double> factor = new HashMap<Assignment,Double>();
+		Map<Assignment, Double> factor = new HashMap<Assignment, Double>();
 
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
@@ -173,39 +164,35 @@ public class UtilityNode extends BNode {
 		return factor;
 	}
 
-
 	// ===================================
-	//  UTILITIES
+	// UTILITIES
 	// ===================================
-
 
 	/**
-	 * Returns a copy of the utility node. Note that only the node content is copied,
-	 * not its connection with other nodes.
+	 * Returns a copy of the utility node. Note that only the node content is
+	 * copied, not its connection with other nodes.
 	 * 
 	 * @return the copy
 	 * @throws DialException if the node could not be copied
 	 */
 	@Override
-	public UtilityNode copy() throws DialException  {
+	public UtilityNode copy() throws DialException {
 		UtilityNode copy = new UtilityNode(nodeId, distrib.copy());
 		return copy;
 	}
 
-
 	/**
-	 * Returns a string representation of the node, consisting of 
-	 * the node utility distribution
+	 * Returns a string representation of the node, consisting of the node
+	 * utility distribution
 	 */
 	@Override
 	public String toString() {
-		return distrib.toString() ;
+		return distrib.toString();
 	}
 
-
 	/**
-	 * Returns the hashcode for the value, computed from the node
-	 * identifier and the distribution
+	 * Returns the hashcode for the value, computed from the node identifier and
+	 * the distribution
 	 *
 	 * @return the hashcode
 	 */
@@ -213,7 +200,5 @@ public class UtilityNode extends BNode {
 	public int hashCode() {
 		return nodeId.hashCode() - distrib.hashCode();
 	}
-
-
 
 }

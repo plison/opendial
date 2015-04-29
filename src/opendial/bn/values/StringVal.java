@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -29,41 +29,39 @@ import opendial.datastructs.Template;
 /**
  * String value.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 
 public final class StringVal implements Value {
-	
+
 	public static Logger log = new Logger("StringVal", Logger.Level.DEBUG);
 
 	// the string
 	final String str;
 	final int hashcode;
 	Template template;
-	
+
 	/**
-	 * Creates a new string value
-	 * (protected, use the ValueFactory instead)
+	 * Creates a new string value (protected, use the ValueFactory instead)
 	 * 
 	 * @param str the string
 	 */
-	public StringVal(String str) { 
+	public StringVal(String str) {
 		this.str = str;
 		hashcode = str.toLowerCase().hashCode();
 	};
-	
-	
+
 	/**
 	 * Returns the hashcode for the string
 	 *
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return hashcode; }
-	
-	
-	
+	public int hashCode() {
+		return hashcode;
+	}
+
 	/**
 	 * Returns true if the strings are equals, false otherwise
 	 *
@@ -71,40 +69,45 @@ public final class StringVal implements Value {
 	 * @return true if equals, false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof StringVal) {
-			StringVal stringval = (StringVal)o;
+			StringVal stringval = (StringVal) o;
 			if (stringval.str.equalsIgnoreCase(str)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the string itself
 	 * 
 	 * @return the string
 	 */
-	public String getString() {return str; }
-	
+	public String getString() {
+		return str;
+	}
+
 	/**
 	 * Returns a copy of the string value
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public StringVal copy() { return new StringVal(str); }
-	
+	public StringVal copy() {
+		return new StringVal(str);
+	}
+
 	/**
 	 * Returns the string itself
 	 *
 	 * @return the string
 	 */
 	@Override
-	public String toString() { return str; }
-	
-	
+	public String toString() {
+		return str;
+	}
+
 	/**
 	 * Returns the string length
 	 * 
@@ -114,6 +117,7 @@ public final class StringVal implements Value {
 	public int length() {
 		return str.length();
 	}
+
 	/**
 	 * Compares the string value to another value
 	 * 
@@ -122,34 +126,28 @@ public final class StringVal implements Value {
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof StringVal) {
-			return str.compareTo(((StringVal)o).str);
-		}
-		else {
+			return str.compareTo(((StringVal) o).str);
+		} else {
 			return 0;
 		}
 	}
-	
-	
+
 	/**
-	 * Returns the concatenation of the two values.  
+	 * Returns the concatenation of the two values.
 	 */
 	@Override
-	public Value concatenate (Value v) {
+	public Value concatenate(Value v) {
 		if (v instanceof StringVal) {
 			return ValueFactory.create(str + " " + v.toString());
-		}
-		else if (v instanceof DoubleVal) {
-			return ValueFactory.create(str + " " + v.toString());			
-		}
-		else if (v instanceof NoneVal) {
+		} else if (v instanceof DoubleVal) {
+			return ValueFactory.create(str + " " + v.toString());
+		} else if (v instanceof NoneVal) {
 			return this;
-		}
-		else {
+		} else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
 	}
-
 
 	/**
 	 * Returns true if subvalue is a substring of the current StringVal, and
@@ -160,15 +158,14 @@ public final class StringVal implements Value {
 	@Override
 	public boolean contains(Value subvalue) {
 		if (subvalue instanceof StringVal) {
-			StringVal stringval = (StringVal)subvalue;
+			StringVal stringval = (StringVal) subvalue;
 			if (stringval.template == null) {
 				stringval.template = new Template(stringval.str);
 			}
 			return stringval.template.partialmatch(str).isMatching();
-		}
-		else {
+		} else {
 			return subvalue.toString().contains(str);
 		}
 	}
-	
+
 }

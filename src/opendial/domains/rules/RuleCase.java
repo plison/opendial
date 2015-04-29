@@ -40,13 +40,12 @@ import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
 import opendial.state.StatePruner;
 
-
 /**
- * Representation of a rule case, containing a condition and a list of alternative 
- * effects if the condition holds.  Each alternative effect has a distinct 
- * probability or utility parameter.
+ * Representation of a rule case, containing a condition and a list of
+ * alternative effects if the condition holds. Each alternative effect has a
+ * distinct probability or utility parameter.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class RuleCase {
@@ -58,35 +57,29 @@ public class RuleCase {
 	final Condition condition;
 
 	// the list of alternative effects, together with their probability/utility
-	protected Map<Effect,Parameter> effects;
-
+	protected Map<Effect, Parameter> effects;
 
 	// ===================================
-	//  CASE CONSTRUCTION
+	// CASE CONSTRUCTION
 	// ===================================
-
 
 	/**
-	 * Creates a new case, with a void condition and an empty list of
-	 * effects
+	 * Creates a new case, with a void condition and an empty list of effects
 	 */
 	public RuleCase() {
 		condition = new VoidCondition();
-		effects = new HashMap<Effect,Parameter>();
+		effects = new HashMap<Effect, Parameter>();
 	}
 
-
 	/**
-	 * Creates a new case, with the given condition and an empty list
-	 * of effects
+	 * Creates a new case, with the given condition and an empty list of effects
 	 * 
 	 * @param condition the condition for the case
 	 */
 	public RuleCase(Condition condition) {
 		this.condition = condition;
-		effects = new HashMap<Effect,Parameter>();
+		effects = new HashMap<Effect, Parameter>();
 	}
-
 
 	/**
 	 * Adds an new effect and its associated probability/utility to the case
@@ -98,8 +91,6 @@ public class RuleCase {
 		addEffect(effect, new FixedParameter(param));
 	}
 
-
-
 	/**
 	 * Adds a new effect and its associated parameter to the case
 	 * 
@@ -110,8 +101,6 @@ public class RuleCase {
 		effects.put(effect, param);
 	}
 
-
-
 	/**
 	 * Removes an effect from the rule case
 	 * 
@@ -120,7 +109,6 @@ public class RuleCase {
 	public void removeEffect(Effect e) {
 		effects.remove(e);
 	}
-
 
 	/**
 	 * Returns a grounded version of the rule case, based on the grounding
@@ -133,26 +121,21 @@ public class RuleCase {
 		RuleCase groundCase = new RuleCase();
 		for (Effect e : effects.keySet()) {
 			Effect groundedEffect = e.ground(grounding);
-			if (!groundedEffect.getSubEffects().isEmpty() || e.getSubEffects().isEmpty()) {
+			if (!groundedEffect.getSubEffects().isEmpty()
+					|| e.getSubEffects().isEmpty()) {
 				Parameter param = effects.get(e);
 				if (param instanceof ComplexParameter) {
 					param = ((ComplexParameter) param).ground(grounding);
 				}
-				groundCase.addEffect(groundedEffect,param);
+				groundCase.addEffect(groundedEffect, param);
 			}
 		}
 		return groundCase;
 	}
 
-
-
-
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
-
 
 	/**
 	 * Returns all the effects specified in the case.
@@ -163,10 +146,9 @@ public class RuleCase {
 		return effects.keySet();
 	}
 
-
 	/**
-	 * Returns the parameter associated with the effect.  If the effect is not part of
-	 * the case, returns null.
+	 * Returns the parameter associated with the effect. If the effect is not
+	 * part of the case, returns null.
 	 * 
 	 * @param e the effect
 	 * @return the parameter associated with the effect.
@@ -174,8 +156,6 @@ public class RuleCase {
 	public Parameter getParameter(Effect e) {
 		return effects.get(e);
 	}
-
-
 
 	/**
 	 * Returns the condition for the case
@@ -185,8 +165,6 @@ public class RuleCase {
 	public Condition getCondition() {
 		return condition;
 	}
-
-
 
 	/**
 	 * Returns the input variables for the case, composed of the input variables
@@ -198,16 +176,15 @@ public class RuleCase {
 		Set<Template> inputVariables = new HashSet<Template>();
 		inputVariables.addAll(condition.getInputVariables());
 		for (Effect effect : effects.keySet()) {
-			for (String inputVariable: effect.getAdditionalInputVariables()) {
+			for (String inputVariable : effect.getAdditionalInputVariables()) {
 				inputVariables.add(new Template(inputVariable));
 			}
 		}
 		return inputVariables;
 	}
 
-
 	/**
-	 * Returns the set of output variables for the case, as defined in the 
+	 * Returns the set of output variables for the case, as defined in the
 	 * effects associated with the case condition.
 	 * 
 	 * @return the set of output variables defined in the case's effects
@@ -218,10 +195,9 @@ public class RuleCase {
 				.collect(Collectors.toSet());
 	}
 
-
 	/**
-	 * Returns the possible groundings for the case, based on the provided
-	 * input assignment.
+	 * Returns the possible groundings for the case, based on the provided input
+	 * assignment.
 	 * 
 	 * @param input the input assignment
 	 * @return the set of possible groundings
@@ -235,15 +211,13 @@ public class RuleCase {
 	 * 
 	 * @return the mapping effects: parameters
 	 */
-	public Map<Effect,Parameter> getEffectMap() {
+	public Map<Effect, Parameter> getEffectMap() {
 		return effects;
 	}
 
-
 	// ===================================
-	//  UTILITY METHODS
+	// UTILITY METHODS
 	// ===================================
-
 
 	/**
 	 * Returns a string representation of the rule case.
@@ -252,9 +226,8 @@ public class RuleCase {
 	public String toString() {
 		String str = "";
 		if (!(condition instanceof VoidCondition)) {
-			str += "if (" + condition.toString() + ") then ";	
-		}
-		else {
+			str += "if (" + condition.toString() + ") then ";
+		} else {
 			str += " ";
 		}
 		for (Effect e : effects.keySet()) {
@@ -263,11 +236,10 @@ public class RuleCase {
 			str += ",";
 		}
 		if (!effects.isEmpty()) {
-			str = str.substring(0, str.length()-1);
+			str = str.substring(0, str.length() - 1);
 		}
 		return str;
 	}
-
 
 	/**
 	 * Returns the hashcode for the case
@@ -279,37 +251,30 @@ public class RuleCase {
 		return condition.hashCode() - 2 * effects.hashCode();
 	}
 
-
-
 	/**
-	 * Returns true if the object is a identical rule case, and
-	 * false otherwise.
+	 * Returns true if the object is a identical rule case, and false otherwise.
 	 */
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof RuleCase 
-				&& condition.equals(((RuleCase)o).condition) 
-				&& effects.equals(((RuleCase)o).effects));
+		return (o instanceof RuleCase
+				&& condition.equals(((RuleCase) o).condition) && effects
+					.equals(((RuleCase) o).effects));
 	}
 
-
-
 	// ===================================
-	//  PROTECTED METHODS
+	// PROTECTED METHODS
 	// ===================================
-
-
 
 	/**
-	 * Prunes all effects whose parameter is lower than the provided threshold. 
-	 * This only works for fixed parameters. 
+	 * Prunes all effects whose parameter is lower than the provided threshold.
+	 * This only works for fixed parameters.
 	 * 
 	 */
 	protected void pruneEffects() {
 		for (Effect e : new HashSet<Effect>(effects.keySet())) {
 			Parameter p = effects.get(e);
-			if (p instanceof FixedParameter 
-					&& ((FixedParameter)p).getParameterValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
+			if (p instanceof FixedParameter
+					&& ((FixedParameter) p).getParameterValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
 				effects.remove(e);
 			}
 		}
@@ -320,12 +285,13 @@ public class RuleCase {
 	 */
 	protected void addVoidEffect() {
 		double fixedMass = effects.keySet().stream()
-				.map(e -> this.getParameter(e)).filter(e -> e instanceof FixedParameter)
-				.mapToDouble(e -> ((FixedParameter)e).getParameterValue()).sum();
+				.map(e -> this.getParameter(e))
+				.filter(e -> e instanceof FixedParameter)
+				.mapToDouble(e -> ((FixedParameter) e).getParameterValue())
+				.sum();
 		if (fixedMass > 0 && fixedMass < 0.99) {
-			addEffect(new Effect(), new FixedParameter(1.0-fixedMass));
+			addEffect(new Effect(), new FixedParameter(1.0 - fixedMass));
 		}
 	}
-
 
 }

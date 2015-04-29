@@ -23,7 +23,6 @@
 
 package opendial.state;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,19 +59,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
 /**
- * Representation of a dialogue state.  A dialogue state is essentially a directed 
- * graphical model (i.e. a Bayesian or decision network) over a set of specific 
- * state variables.  Probabilistic rules can be applied on this dialogue state in 
- * order to update its content.  After applying the rules, the dialogue state
- * is usually pruned to only retain relevant state variables. 
+ * Representation of a dialogue state. A dialogue state is essentially a
+ * directed graphical model (i.e. a Bayesian or decision network) over a set of
+ * specific state variables. Probabilistic rules can be applied on this dialogue
+ * state in order to update its content. After applying the rules, the dialogue
+ * state is usually pruned to only retain relevant state variables.
  * 
  * 
- * The dialogue state may also include an assignment of evidence values. A subset of 
- * state variables can be marked as denoting parameter variables.
+ * The dialogue state may also include an assignment of evidence values. A
+ * subset of state variables can be marked as denoting parameter variables.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class DialogueState extends BNetwork {
 
@@ -89,15 +87,14 @@ public class DialogueState extends BNetwork {
 	Set<String> incrementalVars;
 
 	// ===================================
-	//  DIALOGUE STATE CONSTRUCTION
+	// DIALOGUE STATE CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new, empty dialogue state.
 	 */
 	public DialogueState() {
-		this(new BNetwork());	
+		this(new BNetwork());
 	}
 
 	/**
@@ -129,10 +126,9 @@ public class DialogueState extends BNetwork {
 		incrementalVars = new HashSet<String>();
 	}
 
-
 	/**
-	 * Resets the content of the dialogue state to the network
-	 * contained as argument (and deletes the rest).
+	 * Resets the content of the dialogue state to the network contained as
+	 * argument (and deletes the rest).
 	 * 
 	 */
 	@Override
@@ -143,24 +139,18 @@ public class DialogueState extends BNetwork {
 		evidence.removePairs(getChanceNodeIds());
 		super.reset(network);
 		if (network instanceof DialogueState) {
-			evidence.addAssignment(((DialogueState)network).getEvidence());
+			evidence.addAssignment(((DialogueState) network).getEvidence());
 		}
 	}
 
-
-
-
-
 	/**
-	 * Clear the assignment of values for the variables provided as
-	 * argument
-	 *  
+	 * Clear the assignment of values for the variables provided as argument
+	 * 
 	 * @param variables the variables for which to clear the assignment
 	 */
 	public void clearEvidence(Collection<String> variables) {
 		evidence.removePairs(variables);
 	}
-
 
 	/**
 	 * Adds a new assignment of values to the evidence
@@ -170,8 +160,6 @@ public class DialogueState extends BNetwork {
 	public void addEvidence(Assignment assignment) {
 		evidence.addAssignment(assignment);
 	}
-
-
 
 	/**
 	 * Adds a set of parameter variables to the dialogue state.
@@ -185,17 +173,13 @@ public class DialogueState extends BNetwork {
 		this.parameterVars.addAll(parameters.getChanceNodeIds());
 	}
 
-
-
-
 	// ===================================
-	//  STATE UPDATE
+	// STATE UPDATE
 	// ===================================
-
 
 	/**
-	 * Adds the content provided as argument to the dialogue state.  If the
-	 * state variables in the assignment already exist, they are erased.
+	 * Adds the content provided as argument to the dialogue state. If the state
+	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
 	 * @param assign the value assignment to add
@@ -206,40 +190,40 @@ public class DialogueState extends BNetwork {
 			addToState(new CategoricalTable(var, assign.getValue(var)));
 		}
 	}
-	
-	
+
 	/**
-	 * Adds the content provided as argument to the dialogue state.  If the
-	 * state variables in the assignment already exist, they are erased.
+	 * Adds the content provided as argument to the dialogue state. If the state
+	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
 	 * @param distrib the multivariate distribution to add
 	 * @throws DialException if the content could not be added.
 	 */
-	public void addToState(MultivariateDistribution distrib) throws DialException {
+	public void addToState(MultivariateDistribution distrib)
+			throws DialException {
 		for (String var : distrib.getVariables()) {
 			addToState(distrib.getMarginal(var));
 		}
 	}
 
-
-
 	/**
-	 * Adds the content provided as argument to the dialogue state.  If the
-	 * state variables in the categorical table already exist, they are erased.
+	 * Adds the content provided as argument to the dialogue state. If the state
+	 * variables in the categorical table already exist, they are erased.
 	 * 
-	 * <p>It should be noted that the method only adds the content to the dialogue
-	 * state but does not trigger models or modules following this change.  In order
-	 * to trigger such chain of updates, the method addContent(...) in DialogueSystem
-	 * should be used instead.
+	 * <p>
+	 * It should be noted that the method only adds the content to the dialogue
+	 * state but does not trigger models or modules following this change. In
+	 * order to trigger such chain of updates, the method addContent(...) in
+	 * DialogueSystem should be used instead.
 	 * 
 	 * @param distrib a distribution over values for particular state variables
 	 * @throws DialException if the content could not be added.
 	 */
-	public void addToState(IndependentProbDistribution distrib) throws DialException {
+	public void addToState(IndependentProbDistribution distrib)
+			throws DialException {
 
 		String variable = distrib.getVariable() + "'";
-		distrib.modifyVariableId(distrib.getVariable(),variable);
+		distrib.modifyVariableId(distrib.getVariable(), variable);
 		ChanceNode newNode = new ChanceNode(variable, distrib);
 
 		if (hasNode(variable)) {
@@ -253,33 +237,32 @@ public class DialogueState extends BNetwork {
 
 		incrementalVars.remove(variable);
 	}
-	
 
 	/**
-	 * Concatenates the current value for the new content onto the current content, if followPrevious
-	 * is true.  Else, simply overwrites the current content of the variable.
+	 * Concatenates the current value for the new content onto the current
+	 * content, if followPrevious is true. Else, simply overwrites the current
+	 * content of the variable.
 	 * 
 	 * @param distrib the distribution to add as incremental unit of content
-	 * @param followPrevious whether the results should be concatenated to the previous values,
-	 *        or reset the content (e.g. when starting a new utterance)
+	 * @param followPrevious whether the results should be concatenated to the
+	 *            previous values, or reset the content (e.g. when starting a
+	 *            new utterance)
 	 * @throws DialException if the incremental operation could not be performed
 	 */
-	public void addToState_incremental(CategoricalTable distrib, boolean followPrevious) throws DialException {
+	public void addToState_incremental(CategoricalTable distrib,
+			boolean followPrevious) throws DialException {
 
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
-			CategoricalTable newtable = ((CategoricalTable)queryProb(var))
+			CategoricalTable newtable = ((CategoricalTable) queryProb(var))
 					.concatenate(distrib);
 			getChanceNode(var).setDistrib(newtable);
 			getChanceNode(var).setId(var + "'");
-		}
-		else {
+		} else {
 			addToState(distrib);
 		}
 		incrementalVars.add(var);
 	}
-
-
 
 	/**
 	 * Merges the dialogue state included as argument into the current one.
@@ -288,12 +271,9 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
 	public void addToState(DialogueState newState) throws DialException {
-		addToState((BNetwork)newState);
+		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
-
-
-
 
 	/**
 	 * Merges the dialogue state included as argument into the current one.
@@ -302,60 +282,61 @@ public class DialogueState extends BNetwork {
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
 	public void addToState(BNetwork newState) throws DialException {
-		for (ChanceNode cn : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
-			cn.setId(cn.getId()+ "'");		
+		for (ChanceNode cn : new ArrayList<ChanceNode>(
+				newState.getChanceNodes())) {
+			cn.setId(cn.getId() + "'");
 			addNode(cn);
 			connectToPredictions(cn);
 		}
 	}
 
-
-
 	/**
-	 * Applies a (probability or utility) rule to the dialogue state: <ul>
-	 * <li> For a probability rule, the method creates a chance node containing 
-	 * the rule effects depending on the input variables of the rule, and connected 
-	 * via outgoing edges to the output variables. 
-	 * <li> For a utility rule, the method creates a utility node specifying the
-	 * utility of particular actions specified by the rule depending on the input
-	 * variables.
+	 * Applies a (probability or utility) rule to the dialogue state:
+	 * <ul>
+	 * <li>For a probability rule, the method creates a chance node containing
+	 * the rule effects depending on the input variables of the rule, and
+	 * connected via outgoing edges to the output variables.
+	 * <li>For a utility rule, the method creates a utility node specifying the
+	 * utility of particular actions specified by the rule depending on the
+	 * input variables.
 	 * </ul>
 	 * 
-	 * <p>The method creates both the rule node, its corresponding output or action 
-	 * nodes, and the directed edges resulting from the rule application.  See Pierre 
-	 * Lison's PhD thesis, Section 4.3 for details.
+	 * <p>
+	 * The method creates both the rule node, its corresponding output or action
+	 * nodes, and the directed edges resulting from the rule application. See
+	 * Pierre Lison's PhD thesis, Section 4.3 for details.
 	 * 
 	 * @param r the rule to apply.
 	 * @throws DialException if the rule could not be applied.
-	 */ 
+	 */
 	public void applyRule(Rule r) throws DialException {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
 		if (arule.isRelevant()) {
 			switch (r.getRuleType()) {
-			case PROB : addProbabilityRule(arule); break;
-			case UTIL : addUtilityRule(arule); break;
+			case PROB:
+				addProbabilityRule(arule);
+				break;
+			case UTIL:
+				addUtilityRule(arule);
+				break;
 			}
 		}
 	}
 
-
-
 	/**
-	 * Sets the dialogue state to consist of all new variables (to trigger right after
-	 * the system initialisation.
+	 * Sets the dialogue state to consist of all new variables (to trigger right
+	 * after the system initialisation.
 	 */
 	public void setAsNew() {
 		for (ChanceNode var : new ArrayList<ChanceNode>(getChanceNodes())) {
-			var.setId(var.getId()+"'");
+			var.setId(var.getId() + "'");
 		}
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the evidence associated with the dialogue state.
@@ -366,11 +347,9 @@ public class DialogueState extends BNetwork {
 		return new Assignment(evidence);
 	}
 
-
-
 	/**
-	 * Returns the probability distribution corresponding to the values
-	 * of the state variable provided as argument.
+	 * Returns the probability distribution corresponding to the values of the
+	 * state variable provided as argument.
 	 * 
 	 * @param variable the variable label to query
 	 * @return the corresponding probability distribution
@@ -380,59 +359,63 @@ public class DialogueState extends BNetwork {
 	}
 
 	/**
-	 * Returns the probability distribution corresponding to the values
-	 * of the state variable provided as argument.
+	 * Returns the probability distribution corresponding to the values of the
+	 * state variable provided as argument.
 	 * 
 	 * @param variable the variable label to query
-	 * @param includeEvidence whether to include or ignore the evidence in the dialogue state
+	 * @param includeEvidence whether to include or ignore the evidence in the
+	 *            dialogue state
 	 * @return the corresponding probability distribution
 	 */
-	public IndependentProbDistribution queryProb(String variable, boolean includeEvidence)  {
+	public IndependentProbDistribution queryProb(String variable,
+			boolean includeEvidence) {
 
 		if (hasChanceNode(variable)) {
 			ChanceNode cn = getChanceNode(variable);
 
-			// if the distribution can be retrieved without inference, we simply return it
+			// if the distribution can be retrieved without inference, we simply
+			// return it
 			if (cn.getDistrib() instanceof IndependentProbDistribution
-					&& Collections.disjoint(cn.getClique(), evidence.getVariables())) {
-				return (IndependentProbDistribution)cn.getDistrib();
+					&& Collections.disjoint(cn.getClique(),
+							evidence.getVariables())) {
+				return (IndependentProbDistribution) cn.getDistrib();
 			}
 
 			else {
 				try {
-					Assignment queryEvidence = (includeEvidence)? evidence : new Assignment();
-					return new SwitchingAlgorithm().queryProb(this, variable, queryEvidence);
-				}
-				catch (DialException e) {
-					log.warning("Error querying variable " + variable + " : " + e);
+					Assignment queryEvidence = (includeEvidence) ? evidence
+							: new Assignment();
+					return new SwitchingAlgorithm().queryProb(this, variable,
+							queryEvidence);
+				} catch (DialException e) {
+					log.warning("Error querying variable " + variable + " : "
+							+ e);
 					return new CategoricalTable(variable);
 				}
 			}
-		}
-		else {
-			log.warning("Variable " + variable + " not included in the dialogue state");
+		} else {
+			log.warning("Variable " + variable
+					+ " not included in the dialogue state");
 			return new CategoricalTable(variable);
 		}
 	}
 
-
-
-
 	/**
-	 * Returns the probability distribution corresponding to the values
-	 * of the state variables provided as argument.
+	 * Returns the probability distribution corresponding to the values of the
+	 * state variables provided as argument.
 	 * 
 	 * @param variables the variable labels to query
 	 * @return the corresponding probability distribution
 	 */
-	public MultivariateDistribution queryProb(Collection<String> variables)  {
+	public MultivariateDistribution queryProb(Collection<String> variables) {
 
 		if (!getNodeIds().containsAll(variables)) {
 			log.warning(variables + " not contained in " + getNodeIds());
 		}
 		// else, perform the inference operation
 		try {
-			return new SwitchingAlgorithm().queryProb(this, variables, evidence);
+			return new SwitchingAlgorithm()
+					.queryProb(this, variables, evidence);
 		}
 
 		// if everything fails, returns an empty table
@@ -443,9 +426,8 @@ public class DialogueState extends BNetwork {
 		}
 	}
 
-
 	/**
-	 * Returns the utility table associated with a particular set of (state or 
+	 * Returns the utility table associated with a particular set of (state or
 	 * action) variables.
 	 * 
 	 * @param variables the state or action variables to consider
@@ -453,34 +435,29 @@ public class DialogueState extends BNetwork {
 	 */
 	public UtilityTable queryUtil(Collection<String> variables) {
 		try {
-			return new SwitchingAlgorithm().queryUtil(this, variables, evidence);
-		} 
-		catch (Exception e) {
+			return new SwitchingAlgorithm()
+					.queryUtil(this, variables, evidence);
+		} catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
 			return new UtilityTable();
 		}
 	}
 
-
 	/**
-	 * Returns the total utility of the dialogue state (marginalising over all possible
-	 * state variables).
+	 * Returns the total utility of the dialogue state (marginalising over all
+	 * possible state variables).
 	 * 
 	 * @return the total utility
 	 */
 	public double queryUtil() {
 		try {
 			return (new SamplingAlgorithm()).queryUtil(this);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
 			return 0.0;
 		}
 
 	}
-
-
-
 
 	/**
 	 * Returns the chance nodes whose variable labels match the provided
@@ -495,11 +472,12 @@ public class DialogueState extends BNetwork {
 			for (String slot : t.getSlots()) {
 				if (hasChanceNode(slot)) {
 					Value bestValue = queryProb(slot).getBest();
-					t = t.fillSlots(new Assignment(slot,bestValue));
+					t = t.fillSlots(new Assignment(slot, bestValue));
 				}
 			}
 			for (String currentVar : getChanceNodeIds()) {
-				if (!currentVar.endsWith("'") && t.match(currentVar).isMatching()) {
+				if (!currentVar.endsWith("'")
+						&& t.match(currentVar).isMatching()) {
 					inputVars.add(getChanceNode(currentVar));
 				}
 			}
@@ -507,15 +485,14 @@ public class DialogueState extends BNetwork {
 		return inputVars;
 	}
 
-
 	/**
 	 * Returns the set of parameter variables in the dialogue state
+	 * 
 	 * @return the parameter variables
 	 */
 	public Set<String> getParameterIds() {
 		return parameterVars;
 	}
-
 
 	/**
 	 * Returns a sample of all the variables in the dialogue state
@@ -526,7 +503,6 @@ public class DialogueState extends BNetwork {
 	public Assignment getSample() throws DialException {
 		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
 	}
-
 
 	/**
 	 * Returns the set of updated variables in the dialogue state (that is, the
@@ -544,36 +520,37 @@ public class DialogueState extends BNetwork {
 		return newVars;
 	}
 
-
 	public boolean isIncremental(String var) {
 		return incrementalVars.contains(var.replace("'", ""));
 	}
-	
-	
+
 	/**
-	 * Returns all rule nodes in the dialogue state (both probability and utility rules)
+	 * Returns all rule nodes in the dialogue state (both probability and
+	 * utility rules)
 	 * 
 	 * @return the set of identifiers for the rule nodes
 	 */
 	public Set<String> getRuleNodes() {
-		return getNodeIds().stream().filter(i -> isRuleNode(i)).collect(Collectors.toSet());
+		return getNodeIds().stream().filter(i -> isRuleNode(i))
+				.collect(Collectors.toSet());
 	}
-	
+
 	/**
-	 * Returns true if the node identifier refers to a rule node, and false otherwise
+	 * Returns true if the node identifier refers to a rule node, and false
+	 * otherwise
 	 * 
 	 * @param id the node identifier
-	 * @return true if the node with identifier id is a (probability or utility) rule node
+	 * @return true if the node with identifier id is a (probability or utility)
+	 *         rule node
 	 */
 	public boolean isRuleNode(String id) {
 		if (hasNode(id)) {
 			BNode n = getNode(id);
-			if ((n instanceof ChanceNode) && 
-					((ChanceNode)n).getDistrib() instanceof RuleDistribution) {
+			if ((n instanceof ChanceNode)
+					&& ((ChanceNode) n).getDistrib() instanceof RuleDistribution) {
 				return true;
-			}
-			else if (n instanceof UtilityNode && 
-					((UtilityNode)n).getDistrib() instanceof RuleUtilDistribution) {
+			} else if (n instanceof UtilityNode
+					&& ((UtilityNode) n).getDistrib() instanceof RuleUtilDistribution) {
 				return true;
 			}
 		}
@@ -581,15 +558,13 @@ public class DialogueState extends BNetwork {
 	}
 
 	// ===================================
-	//  UTILITY FUNCTIONS
+	// UTILITY FUNCTIONS
 	// ===================================
-
 
 	public void setAsCommitted(String var) {
 		incrementalVars.remove(var.replace("'", ""));
 		StatePruner.prune(this);
 	}
-
 
 	/**
 	 * Prunes the dialogue state (see Section 4.4 of Pierre Lison's PhD thesis).
@@ -601,7 +576,6 @@ public class DialogueState extends BNetwork {
 		}
 	}
 
-
 	/**
 	 * Returns a copy of the dialogue state
 	 * 
@@ -609,13 +583,12 @@ public class DialogueState extends BNetwork {
 	 */
 	@Override
 	public DialogueState copy() throws DialException {
-		DialogueState sn= new DialogueState(super.copy());
+		DialogueState sn = new DialogueState(super.copy());
 		sn.addEvidence(evidence.copy());
 		sn.parameterVars = new HashSet<String>(parameterVars);
 		sn.incrementalVars = new HashSet<String>(incrementalVars);
 		return sn;
 	}
-
 
 	/**
 	 * Returns a string representation of the dialogue state
@@ -626,11 +599,10 @@ public class DialogueState extends BNetwork {
 	public String toString() {
 		String str = super.toString();
 		if (!evidence.isEmpty()) {
-			str +="[evidence=" + evidence.toString() + "]";
+			str += "[evidence=" + evidence.toString() + "]";
 		}
 		return str;
 	}
-
 
 	/**
 	 * Returns the hashcode for the dialogue state
@@ -639,9 +611,8 @@ public class DialogueState extends BNetwork {
 	 */
 	@Override
 	public int hashCode() {
-		return super.hashCode() - 2*evidence.hashCode();
+		return super.hashCode() - 2 * evidence.hashCode();
 	}
-
 
 	/**
 	 * Generates an XML element that encodes the dialogue state content.
@@ -651,7 +622,8 @@ public class DialogueState extends BNetwork {
 	 * @return the resulting XML element
 	 * @throws DialException if the XML generation failed
 	 */
-	public Element generateXML(Document doc, Collection<String> varsToRecord) throws DialException {
+	public Element generateXML(Document doc, Collection<String> varsToRecord)
+			throws DialException {
 
 		Element root = doc.createElement("state");
 		for (String nodeId : varsToRecord) {
@@ -664,12 +636,9 @@ public class DialogueState extends BNetwork {
 		return root;
 	}
 
-
-
 	// ===================================
-	//  PRIVATE METHODS
+	// PRIVATE METHODS
 	// ===================================
-
 
 	/**
 	 * Adds the probability rule to the dialogue state
@@ -683,21 +652,22 @@ public class DialogueState extends BNetwork {
 		if (hasChanceNode(ruleId)) {
 			removeNode(ruleId);
 		}
-		
+
 		ChanceNode ruleNode = new ChanceNode(ruleId);
 		ruleNode.setDistrib(new RuleDistribution(arule));
 		ruleNode.getValues();
-		
+
 		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getParameters().forEach(
+				i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);
-		
+
 		// looping on each output variable
 		for (String updatedVar : arule.getOutputs()) {
 
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
-				ChanceNode outputNode = new ChanceNode(updatedVar, 
+				ChanceNode outputNode = new ChanceNode(updatedVar,
 						new OutputDistribution(updatedVar));
 				addNode(outputNode);
 
@@ -710,13 +680,11 @@ public class DialogueState extends BNetwork {
 			}
 
 			// else, simply add an additional edge
-			else if (!getNode(updatedVar).hasInputNode(ruleNode.getId())){
+			else if (!getNode(updatedVar).hasInputNode(ruleNode.getId())) {
 				getNode(updatedVar).addInputNode(ruleNode);
 			}
 		}
 	}
-
-
 
 	/**
 	 * Adds the utility rule to the dialogue state.
@@ -724,19 +692,20 @@ public class DialogueState extends BNetwork {
 	 * @param arule the anchored rule (must be of type UTIL)
 	 * @throws DialException if the creation of new nodes fails
 	 */
-	private  void addUtilityRule(AnchoredRule arule) throws DialException {
+	private void addUtilityRule(AnchoredRule arule) throws DialException {
 
 		String ruleId = arule.getRule().getRuleId();
-		
+
 		if (hasUtilityNode(ruleId)) {
 			removeNode(ruleId);
 		}
 		UtilityNode ruleNode = new UtilityNode(ruleId);
 		ruleNode.setDistrib(new RuleUtilDistribution(arule));
 		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getParameters().forEach(
+				i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);
-		
+
 		// retrieving the set of actions and their values
 		ValueRange actions = arule.getOutputRange();
 
@@ -748,8 +717,7 @@ public class DialogueState extends BNetwork {
 			if (!hasActionNode(actionVar)) {
 				actionNode = new ActionNode(actionVar);
 				addNode(actionNode);
-			}
-			else {
+			} else {
 				actionNode = getActionNode(actionVar);
 			}
 
@@ -758,34 +726,30 @@ public class DialogueState extends BNetwork {
 		}
 	}
 
-
-
 	/**
 	 * Connects the chance node to its prior predictions (if any).
 	 * 
 	 * @param outputNode the output node to connect
 	 * @throws DialException if the connection fails
 	 */
-	private void connectToPredictions(ChanceNode outputNode) throws DialException {
+	private void connectToPredictions(ChanceNode outputNode)
+			throws DialException {
 
 		String outputVar = outputNode.getId();
 
 		// adding the connection between the predicted and observed values
 		String predictEquiv = outputVar.replace("'", "") + "^p";
-		if (hasChanceNode(predictEquiv) && 
-				!outputVar.equals(predictEquiv) && !outputVar.contains("^p")) {
-			ChanceNode equalityNode = new ChanceNode("=_" + outputVar.replace("'", ""));
+		if (hasChanceNode(predictEquiv) && !outputVar.equals(predictEquiv)
+				&& !outputVar.contains("^p")) {
+			ChanceNode equalityNode = new ChanceNode("=_"
+					+ outputVar.replace("'", ""));
 			equalityNode.addInputNode(outputNode);
 			equalityNode.addInputNode(getNode(predictEquiv));
-			equalityNode.setDistrib(new EquivalenceDistribution(outputVar.replace("'", "")));
+			equalityNode.setDistrib(new EquivalenceDistribution(outputVar
+					.replace("'", "")));
 			addEvidence(new Assignment(equalityNode.getId(), true));
 			addNode(equalityNode);
 		}
 	}
 
-
-
-
-
 }
-

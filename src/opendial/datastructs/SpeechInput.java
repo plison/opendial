@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -22,7 +22,6 @@
 // =================================================================                                                                   
 
 package opendial.datastructs;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,7 +45,7 @@ import opendial.utils.AudioUtils;
 /**
  * Representation of a input audio stream used to record speech.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class SpeechInput extends InputStream implements Value {
 
@@ -55,19 +54,21 @@ public class SpeechInput extends InputStream implements Value {
 
 	/** The audio line that is recorded */
 	TargetDataLine audioLine;
-	
+
 	/** The current position in the stream */
 	int currentPos = 0;
-	
+
 	/** The recorded data */
 	byte[] data;
-	
+
 	/** Whether the stream has been closed or not */
 	boolean isClosed = false;
 
-	/** Duration of padding silence before and after the speech (in milliseconds) */
+	/**
+	 * Duration of padding silence before and after the speech (in milliseconds)
+	 */
 	int silenceDuration = 0;
-	
+
 	/**
 	 * Creates a new speech stream on a particular input audio mixer
 	 * 
@@ -80,12 +81,11 @@ public class SpeechInput extends InputStream implements Value {
 		(new Thread(new StreamRecorder())).start();
 		data = new byte[0];
 	}
-	
+
 	/**
 	 * Creates a speech stream copied from another one
 	 * 
 	 * @param stream the speech stream to copy
-
 	 */
 	private SpeechInput(SpeechInput stream) {
 		this.audioLine = stream.audioLine;
@@ -93,7 +93,7 @@ public class SpeechInput extends InputStream implements Value {
 		this.data = stream.data;
 		this.isClosed = stream.isClosed;
 	}
-	
+
 	/**
 	 * Sets a padding silence before and after the speech stream.
 	 * 
@@ -102,7 +102,6 @@ public class SpeechInput extends InputStream implements Value {
 	public void setSilence(int silenceDuration) {
 		this.silenceDuration = silenceDuration;
 	}
-
 
 	/**
 	 * Reads one byte of the stream
@@ -113,44 +112,46 @@ public class SpeechInput extends InputStream implements Value {
 	public int read() {
 		if (currentPos < data.length) {
 			return data[currentPos++];
-		}
-		else {
+		} else {
 			if (!isClosed) {
-				try {Thread.sleep(100); }
-				catch (InterruptedException e) { }
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				return read();
 			}
-		return -1;
+			return -1;
 		}
 	}
-	
+
 	/**
 	 * Reads a buffer from the stream.
 	 * 
 	 * @param buffer the buffer in which to write
 	 * @param offset the offset in buffer from which the data should be written
-	 * @param length the maximum number of bytes to read 
+	 * @param length the maximum number of bytes to read
 	 * @return the number of bytes written into the buffer
 	 */
 	@Override
 	public int read(byte[] buffer, int offset, int length) {
 		if (currentPos >= data.length) {
 			if (!isClosed) {
-				try {Thread.sleep(100); }
-				catch (InterruptedException e) { }
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				return read(buffer, offset, length);
 			}
 			return -1;
 		}
 		int i = 0;
-		for (i = 0 ; i < length & (currentPos+i) < data.length ; i++) {
-			buffer[offset+i] = data[currentPos+i];
+		for (i = 0; i < length & (currentPos + i) < data.length; i++) {
+			buffer[offset + i] = data[currentPos + i];
 		}
 		currentPos += i;
 		return i;
 	}
-	
-	
+
 	/**
 	 * Returns the data length
 	 * 
@@ -160,9 +161,10 @@ public class SpeechInput extends InputStream implements Value {
 	public int length() {
 		return data.length;
 	}
- 
+
 	/**
 	 * Closes the stream, and notifies all waiting threads.
+	 * 
 	 * @throws IOException if the stream could not be closed
 	 */
 	@Override
@@ -172,29 +174,31 @@ public class SpeechInput extends InputStream implements Value {
 	}
 
 	/**
-	 * Generates an audio file from the stream.  The file must be a WAV file.
+	 * Generates an audio file from the stream. The file must be a WAV file.
 	 * 
 	 * @param outputFile the file in which to write the audio data
 	 * @throws DialException if the audio could not be written onto the file
 	 */
 	public void generateFile(File outputFile) throws DialException {
 		try {
-			AudioInputStream audioStream = new AudioInputStream(new ByteArrayInputStream(data), audioLine.getFormat(),
+			AudioInputStream audioStream = new AudioInputStream(
+					new ByteArrayInputStream(data), audioLine.getFormat(),
 					(data.length / audioLine.getFormat().getFrameSize()));
 			if (outputFile.getName().endsWith("wav")) {
-				int nb = AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, new FileOutputStream(outputFile));
-				log.debug("WAV file written to " + outputFile.getCanonicalPath() + " ("+(nb/1000) + " kB)");
-			}
-			else {
+				int nb = AudioSystem.write(audioStream,
+						AudioFileFormat.Type.WAVE, new FileOutputStream(
+								outputFile));
+				log.debug("WAV file written to "
+						+ outputFile.getCanonicalPath() + " (" + (nb / 1000)
+						+ " kB)");
+			} else {
 				throw new DialException("Unsupported encoding " + outputFile);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DialException("could not generate file: " + e);
 		}
 	}
 
-	
 	/**
 	 * Returns true if the stream is closed, and false otherwise
 	 * 
@@ -204,7 +208,6 @@ public class SpeechInput extends InputStream implements Value {
 		return isClosed;
 	}
 
-
 	/**
 	 * Returns the byte array for the stream
 	 * 
@@ -213,16 +216,15 @@ public class SpeechInput extends InputStream implements Value {
 	 */
 	public byte[] toByteArray(boolean includeSilence) {
 		if (includeSilence || data.length == 0) {
-		return data;
-		}
-		else {
-			int offset = silenceDuration*((int)getFormat().getFrameRate())/1000;
-			byte[] speechData = new byte[data.length-2*offset];
+			return data;
+		} else {
+			int offset = silenceDuration * ((int) getFormat().getFrameRate())
+					/ 1000;
+			byte[] speechData = new byte[data.length - 2 * offset];
 			System.arraycopy(data, offset, speechData, 0, speechData.length);
 			return speechData;
 		}
 	}
-	
 
 	/**
 	 * Returns the audio format that encodes the stream
@@ -233,7 +235,6 @@ public class SpeechInput extends InputStream implements Value {
 		return audioLine.getFormat();
 	}
 
-
 	/**
 	 * Returns the hashcode difference.
 	 */
@@ -241,7 +242,6 @@ public class SpeechInput extends InputStream implements Value {
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
 	}
-
 
 	/**
 	 * Returns a copy of the stream
@@ -251,7 +251,6 @@ public class SpeechInput extends InputStream implements Value {
 		return new SpeechInput(this);
 	}
 
-
 	/**
 	 * Returns false
 	 */
@@ -260,7 +259,6 @@ public class SpeechInput extends InputStream implements Value {
 		return false;
 	}
 
-
 	/**
 	 * Returns a none value.
 	 */
@@ -268,14 +266,19 @@ public class SpeechInput extends InputStream implements Value {
 	public Value concatenate(Value value) {
 		return copy();
 	}
-	
-	
+
+	/**
+	 * Returns a string representation of the speech input
+	 */
+	public String toString() {
+		return "SpeechInput (current size: " + data.length + " bytes))";
+	}
 
 	/**
 	 * Recorder for the stream, based on the captured audio data.
 	 */
 	final class StreamRecorder implements Runnable {
-		
+
 		@Override
 		public void run() {
 
@@ -283,33 +286,30 @@ public class SpeechInput extends InputStream implements Value {
 				audioLine.open();
 				audioLine.start();
 				audioLine.flush();
-				int frameRate = (int)getFormat().getFrameRate();
+				int frameRate = (int) getFormat().getFrameRate();
 				// we limit the stream buffer to a maximum of 20 seconds
 				ByteArrayOutputStream stream = new ByteArrayOutputStream(320000);
-				byte[] buffer = new byte[audioLine.getBufferSize()/20];
+				byte[] buffer = new byte[audioLine.getBufferSize() / 20];
 				while (!isClosed) {
 					// Read the next chunk of data from the TargetDataLine.
-					int numBytesRead =  audioLine.read(buffer, 0, buffer.length);
+					int numBytesRead = audioLine.read(buffer, 0, buffer.length);
 					// Save this chunk of data.
 					if (numBytesRead > 0) {
 						stream.write(buffer, 0, numBytesRead);
 						byte[] content = stream.toByteArray();
-						int offset = silenceDuration*frameRate/1000;
-						data = new byte[content.length + 2*offset];
-						System.arraycopy(content, 0, data, offset, content.length);
+						int offset = silenceDuration * frameRate / 1000;
+						data = new byte[content.length + 2 * offset];
+						System.arraycopy(content, 0, data, offset,
+								content.length);
 					}
 				}
 				audioLine.stop();
 				audioLine.close();
 				stream.close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-
-
 }
-

@@ -34,12 +34,11 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
 
-
 /**
  * Complex condition made up of a collection of sub-conditions connected with a
  * logical operator (AND, OR).
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class ComplexCondition implements Condition {
@@ -51,16 +50,16 @@ public final class ComplexCondition implements Condition {
 	final Collection<Condition> subconditions;
 
 	// the enumeration of possible binary operators
-	public static enum BinaryOperator {AND, OR}
+	public static enum BinaryOperator {
+		AND, OR
+	}
 
 	// the binary operator for the complex condition (default is AND)
 	final BinaryOperator operator;
 
-
 	// ===================================
-	//  CONDITION CONSTRUCTION
+	// CONDITION CONSTRUCTION
 	// ===================================
-
 
 	/**
 	 * Creates a new complex condition with a list of subconditions
@@ -68,16 +67,15 @@ public final class ComplexCondition implements Condition {
 	 * @param subconditions the subconditions
 	 * @param operator the binary operator to employ between the conditions
 	 */
-	public ComplexCondition(List<Condition> subconditions, BinaryOperator operator) {
+	public ComplexCondition(List<Condition> subconditions,
+			BinaryOperator operator) {
 		this.subconditions = subconditions;
 		this.operator = operator;
 	}
 
-
 	// ===================================
-	//  GETTERS
+	// GETTERS
 	// ===================================
-
 
 	/**
 	 * Returns the logical operator for the complex condition
@@ -96,12 +94,11 @@ public final class ComplexCondition implements Condition {
 	@Override
 	public Set<Template> getInputVariables() {
 		Set<Template> variables = new HashSet<Template>();
-		for (Condition cond: subconditions) {
+		for (Condition cond : subconditions) {
 			variables.addAll(cond.getInputVariables());
 		}
 		return variables;
 	}
-
 
 	/**
 	 * Returns the subconditions in the complex condition.
@@ -112,7 +109,6 @@ public final class ComplexCondition implements Condition {
 		return subconditions;
 	}
 
-
 	/**
 	 * Returns the list of all slots used in the conditions
 	 * 
@@ -121,20 +117,19 @@ public final class ComplexCondition implements Condition {
 	@Override
 	public Set<String> getSlots() {
 		Set<String> slots = new HashSet<String>();
-		for (Condition cond: subconditions) {
+		for (Condition cond : subconditions) {
 			slots.addAll(cond.getSlots());
 		}
 		return slots;
 	}
 
-
-
 	/**
-	 * Returns true if the complex condition is satisfied by the input assignment,
-	 * and false otherwise. 
+	 * Returns true if the complex condition is satisfied by the input
+	 * assignment, and false otherwise.
 	 * 
-	 * <p>If the logical operator is AND, all the subconditions must be satisfied.  If
-	 * the operator is OR, at least one must be satisfied.
+	 * <p>
+	 * If the logical operator is AND, all the subconditions must be satisfied.
+	 * If the operator is OR, at least one must be satisfied.
 	 * 
 	 * @param input the input assignment
 	 * @return true if the conditions are satisfied, false otherwise
@@ -144,8 +139,8 @@ public final class ComplexCondition implements Condition {
 		for (Condition cond : subconditions) {
 			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input)) {
 				return false;
-			}
-			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input)) {
+			} else if (operator == BinaryOperator.OR
+					&& cond.isSatisfiedBy(input)) {
 				return true;
 			}
 		}
@@ -153,8 +148,8 @@ public final class ComplexCondition implements Condition {
 	}
 
 	/**
-	 * Returns the groundings for the complex condition (which is the union of the groundings
-	 * for all basic conditions).
+	 * Returns the groundings for the complex condition (which is the union of
+	 * the groundings for all basic conditions).
 	 * 
 	 * @return the full set of groundings
 	 */
@@ -168,38 +163,35 @@ public final class ComplexCondition implements Condition {
 
 				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 				for (Assignment g : groundings.getAlternatives()) {
-					RuleGrounding newGround = cond.getGroundings(new Assignment(input, g));
+					RuleGrounding newGround = cond
+							.getGroundings(new Assignment(input, g));
 					newGround.extend(g);
 					alternatives.add(newGround);
 				}
-				
+
 				groundings = new RuleGrounding();
 				groundings.add(alternatives);
 				if (groundings.isFailed()) {
 					return groundings;
 				}
 			}
-		}
-		else if (operator == BinaryOperator.OR) {
-				
+		} else if (operator == BinaryOperator.OR) {
+
 			List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 			for (Condition cond : subconditions) {
 				RuleGrounding newGround = cond.getGroundings(input);
 				alternatives.add(newGround);
 			}
 			groundings.add(alternatives);
-			
+
 		}
 
 		return groundings;
 	}
 
-
-
 	// ===================================
-	//  UTILITY FUNCTIONS
+	// UTILITY FUNCTIONS
 	// ===================================
-
 
 	/**
 	 * Returns a string representation of the complex condition
@@ -207,16 +199,19 @@ public final class ComplexCondition implements Condition {
 	@Override
 	public String toString() {
 		String str = "";
-		for (Condition cond: subconditions) {
-			str += cond.toString() ;
+		for (Condition cond : subconditions) {
+			str += cond.toString();
 			switch (operator) {
-			case AND : str += " ^ "; break;
-			case OR: str += " v "; break;
+			case AND:
+				str += " ^ ";
+				break;
+			case OR:
+				str += " v ";
+				break;
 			}
 		}
-		return str.substring(0, str.length()-3);
+		return str.substring(0, str.length() - 3);
 	}
-
 
 	/**
 	 * Returns the hashcode for the condition
@@ -228,7 +223,6 @@ public final class ComplexCondition implements Condition {
 		return subconditions.hashCode() - operator.hashCode();
 	}
 
-
 	/**
 	 * Returns true if the complex conditions are equal, false otherwise
 	 *
@@ -239,7 +233,5 @@ public final class ComplexCondition implements Condition {
 	public boolean equals(Object o) {
 		return this.hashCode() == o.hashCode();
 	}
-
-
 
 }

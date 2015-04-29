@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -33,20 +33,24 @@ import org.junit.Test;
 /**
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class AssignmentTest {
 
 	// logger
 	public static Logger log = new Logger("AssignmentTest", Logger.Level.NORMAL);
-	
+
 	@Test
 	public void testAssignInterchance() {
-		Assignment a1 = new Assignment(new Assignment("Burglary", true), "Earthquake", ValueFactory.create(false));
-		Assignment a1bis = new Assignment(new Assignment("Earthquake", false), "Burglary", ValueFactory.create(true));
-		Assignment a2 = new Assignment(new Assignment("Burglary", false), "Earthquake", ValueFactory.create(true));
-		Assignment a2bis = new Assignment(new Assignment("Earthquake", true), "Burglary", ValueFactory.create(false));
+		Assignment a1 = new Assignment(new Assignment("Burglary", true),
+				"Earthquake", ValueFactory.create(false));
+		Assignment a1bis = new Assignment(new Assignment("Earthquake", false),
+				"Burglary", ValueFactory.create(true));
+		Assignment a2 = new Assignment(new Assignment("Burglary", false),
+				"Earthquake", ValueFactory.create(true));
+		Assignment a2bis = new Assignment(new Assignment("Earthquake", true),
+				"Burglary", ValueFactory.create(false));
 		assertFalse(a1.equals(a2));
 		assertFalse(a1.hashCode() == a2.hashCode());
 		assertFalse(a1bis.equals(a2bis));

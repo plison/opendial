@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -40,9 +40,10 @@ public class ConnectorTest {
 
 	// logger
 	public static Logger log = new Logger("ConnectorTest", Logger.Level.DEBUG);
-	
+
 	@Test
-	public void remoteConnection() throws DialException, UnknownHostException, InterruptedException {
+	public void remoteConnection() throws DialException, UnknownHostException,
+			InterruptedException {
 		DialogueSystem system1 = new DialogueSystem();
 		system1.getSettings().showGUI = false;
 		DialogueSystem system2 = new DialogueSystem();
@@ -50,7 +51,8 @@ public class ConnectorTest {
 		String address = system1.getLocalAddress();
 		system1.startSystem();
 		system2.startSystem();
-		system2.connectTo(address.split(":")[0], Integer.parseInt(address.split(":")[1]));
+		system2.connectTo(address.split(":")[0],
+				Integer.parseInt(address.split(":")[1]));
 		system2.getSettings().invertedRole = true;
 		Thread.sleep(200);
 		system1.addUserInput("hello, world!");
@@ -60,22 +62,24 @@ public class ConnectorTest {
 		String record2 = system2.getModule(DialogueRecorder.class).getRecord();
 		record2 = record2.replaceAll(system1.getLocalAddress(), "");
 		assertEquals(record1, record2);
-		Map<String,Double> response = new HashMap<String,Double>();
+		Map<String, Double> response = new HashMap<String, Double>();
 		response.put("hello back", 0.7);
 		response.put("elbow black", 0.1);
 		system2.addUserInput(response);
 		Thread.sleep(200);
 		record1 = system1.getModule(DialogueRecorder.class).getRecord();
 		record1 = record1.replaceAll(system2.getLocalAddress(), "");
-		assertEquals(record1, "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
-				+ "<interaction><!--Connected to --><userTurn>"
-				+ "<variable id=\"u_u\"><value>hello, world!</value></variable></userTurn>"
-				+ "<systemTurn><variable id=\"u_m\"><value prob=\"0.7\">hello back</value>"
-				+ "<value prob=\"0.1\">elbow black</value><value prob=\"0.2\">None</value></variable>"
-				+ "</systemTurn></interaction>");
+		assertEquals(
+				record1,
+				"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
+						+ "<interaction><!--Connected to --><userTurn>"
+						+ "<variable id=\"u_u\"><value>hello, world!</value></variable></userTurn>"
+						+ "<systemTurn><variable id=\"u_m\"><value prob=\"0.7\">hello back</value>"
+						+ "<value prob=\"0.1\">elbow black</value><value prob=\"0.2\">None</value></variable>"
+						+ "</systemTurn></interaction>");
 		record2 = system2.getModule(DialogueRecorder.class).getRecord();
 		record2 = record2.replaceAll(system1.getLocalAddress(), "");
 		assertEquals(record1, record2);
-		
+
 	}
 }

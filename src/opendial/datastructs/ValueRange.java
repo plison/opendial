@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.datastructs;
 
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,27 +33,25 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
 
-
 /**
  * Representation of a range of alternative values for a set of variables.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class ValueRange {
 
 	// logger
 	public static Logger log = new Logger("ValueRange", Logger.Level.NORMAL);
-	
-	Map<String,Set<Value>> range;
-	
-	
+
+	Map<String, Set<Value>> range;
+
 	/**
 	 * Constructs a new, empty range of values.
 	 */
 	public ValueRange() {
-		range = new HashMap<String,Set<Value>>();
+		range = new HashMap<String, Set<Value>>();
 	}
-	
+
 	/**
 	 * Constructs a new range that is the union of two existing ranges
 	 * 
@@ -66,16 +63,15 @@ public class ValueRange {
 		addRange(range1);
 		addRange(range2);
 	}
-	
-	
+
 	/**
-	 * Constructs a range of values based on the mapping between variables
-	 * and sets of values
+	 * Constructs a range of values based on the mapping between variables and
+	 * sets of values
 	 * 
 	 * @param range the range (as a map)
 	 */
-	public ValueRange(Map<String,Set<Value>> range) {
-		this.range = new HashMap<String,Set<Value>>(range);
+	public ValueRange(Map<String, Set<Value>> range) {
+		this.range = new HashMap<String, Set<Value>>(range);
 	}
 
 	/**
@@ -91,9 +87,9 @@ public class ValueRange {
 		range.get(variable).add(val);
 	}
 
-	
 	/**
 	 * Adds a set of values for the variable
+	 * 
 	 * @param variable the variable
 	 * @param values the values to add
 	 */
@@ -124,19 +120,16 @@ public class ValueRange {
 			addValues(var, newRange.getValues(var));
 		}
 	}
-	
-	
+
 	/**
-	 * Extracts all alternative assignments of values for the variables
-	 * in the range.  This operation can be computational expensive,
-	 * use with caution.
+	 * Extracts all alternative assignments of values for the variables in the
+	 * range. This operation can be computational expensive, use with caution.
 	 * 
 	 * @return the set of alternative assignments
 	 */
 	public Set<Assignment> linearise() {
 		return CombinatoricsUtils.getAllCombinations(range);
 	}
-
 
 	/**
 	 * Returns the set of variables with a non-empty range of values
@@ -146,11 +139,10 @@ public class ValueRange {
 	public Set<String> getVariables() {
 		return range.keySet();
 	}
-	
-	
+
 	/**
-	 * Returns the set of values for the variable in the range (if defined).
-	 * If the variable is not defined in the range, returns null
+	 * Returns the set of values for the variable in the range (if defined). If
+	 * the variable is not defined in the range, returns null
 	 * 
 	 * @param variable the variable
 	 * @return its set of alternative values
@@ -159,7 +151,6 @@ public class ValueRange {
 		return range.get(variable);
 	}
 
-	
 	/**
 	 * Returns a string representation for the range
 	 */
@@ -167,8 +158,7 @@ public class ValueRange {
 	public String toString() {
 		return range.toString();
 	}
-	
-	
+
 	/**
 	 * Returns the hashcode for the range of values
 	 */
@@ -177,7 +167,6 @@ public class ValueRange {
 		return range.hashCode() - 1;
 	}
 
-	
 	/**
 	 * Returns true if the range is empty (contains no variables).
 	 * 
@@ -188,8 +177,8 @@ public class ValueRange {
 	}
 
 	/**
-	 * Intersects the range with the existing one (only retains
-	 * the values defined in both ranges).
+	 * Intersects the range with the existing one (only retains the values
+	 * defined in both ranges).
 	 * 
 	 * @param otherRange the range to intersect with the existing one
 	 */
@@ -197,8 +186,7 @@ public class ValueRange {
 		for (String id : otherRange.getVariables()) {
 			if (range.containsKey(id)) {
 				range.get(id).retainAll(otherRange.getValues(id));
-			}
-			else {
+			} else {
 				addValues(id, otherRange.getValues(id));
 			}
 		}
@@ -225,4 +213,3 @@ public class ValueRange {
 		return copy;
 	}
 }
-

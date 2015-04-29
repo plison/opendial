@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -29,10 +29,10 @@ import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of a multivariate probability distribution P(X1,...Xn),
- * where X1,...Xn are random variables.
+ * Representation of a multivariate probability distribution P(X1,...Xn), where
+ * X1,...Xn are random variables.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface MultivariateDistribution {
@@ -43,14 +43,14 @@ public interface MultivariateDistribution {
 	 * @return the set of variable names.
 	 */
 	public Set<String> getVariables();
-	
+
 	/**
 	 * Returns the set of possible assignments for the random variables.
 	 * 
 	 * @return the set of possible assignment
 	 */
 	public Set<Assignment> getValues();
-	
+
 	/**
 	 * Returns the probability of a particular assignment of values.
 	 * 
@@ -58,7 +58,7 @@ public interface MultivariateDistribution {
 	 * @return the corresponding probability
 	 */
 	public double getProb(Assignment values);
-	
+
 	/**
 	 * Returns a sample assignment for X1,...Xn.
 	 * 
@@ -66,10 +66,10 @@ public interface MultivariateDistribution {
 	 * @throws DialException if no sample could be extracted
 	 */
 	public Assignment sample() throws DialException;
-	
+
 	/**
-	 * Returns the marginal probability distribution P(Xi) for a
-	 * random variable Xi in X1,...Xn.
+	 * Returns the marginal probability distribution P(Xi) for a random variable
+	 * Xi in X1,...Xn.
 	 * 
 	 * @param variable the random variable Xi
 	 * @return the marginal distribution P(Xi)
@@ -78,6 +78,7 @@ public interface MultivariateDistribution {
 
 	/**
 	 * Modifies the variable identifier in the distribution
+	 * 
 	 * @param oldId the old identifier
 	 * @param newId the new identifier
 	 */
@@ -104,7 +105,6 @@ public interface MultivariateDistribution {
 	 */
 	public MultivariateDistribution copy();
 
-	
 	/**
 	 * Prunes all values assignment whose probability falls below the threshold.
 	 * 
@@ -112,13 +112,12 @@ public interface MultivariateDistribution {
 	 * @return true if at least one value has been removed, false otherwise
 	 */
 	public boolean pruneValues(double threshold);
-	
-	
+
 	/**
 	 * Returns the value with maximum probability.
-	 *  
+	 * 
 	 * @return the value with maximum probability
 	 */
 	public Assignment getBest();
-	
+
 }

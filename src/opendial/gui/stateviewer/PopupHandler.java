@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -42,15 +42,15 @@ import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 /**
  * Mouse plugin to handle the right-click popup after selecting nodes
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class PopupHandler extends AbstractPopupGraphMousePlugin 
-implements MouseListener {
+public class PopupHandler extends AbstractPopupGraphMousePlugin implements
+		MouseListener {
 
 	// logger
-	public static Logger log = new Logger("GraphViewerPopupMenu", Logger.Level.DEBUG);
-
+	public static Logger log = new Logger("GraphViewerPopupMenu",
+			Logger.Level.DEBUG);
 
 	private StateViewer viewer;
 
@@ -64,85 +64,85 @@ implements MouseListener {
 		this.viewer = viewer;
 	}
 
-
 	/**
 	 * Creates the popup with relevant action items
 	 *
 	 * @param e the mouse event
-	 */ 
+	 */
 	@Override
 	protected void handlePopup(MouseEvent e) {
-		super.mouseClicked(e);	
-		
+		super.mouseClicked(e);
+
 		List<String> pickedVertices = getPickedVertices();
 		DialogueState state = viewer.getState();
-		
+
 		JPopupMenu popup = new JPopupMenu();
 		if (!pickedVertices.isEmpty() && state.hasChanceNodes(pickedVertices)) {
-			JMenuItem marginalItem = new JMenuItem("Calculate marginal distribution");
-			
-			marginalItem.addActionListener( ev -> {
-				MultivariateDistribution distrib = state.queryProb(pickedVertices);
+			JMenuItem marginalItem = new JMenuItem(
+					"Calculate marginal distribution");
+
+			marginalItem.addActionListener(ev -> {
+				MultivariateDistribution distrib = state
+						.queryProb(pickedVertices);
 				viewer.getStateMonitorTab().writeToLogArea(distrib);
 				resetPickedVertices();
 			});
-			
+
 			popup.add(marginalItem);
 		}
-		if (pickedVertices.size() == 1 && state.hasChanceNode(pickedVertices.get(0))) {
+		if (pickedVertices.size() == 1
+				&& state.hasChanceNode(pickedVertices.get(0))) {
 			JMenuItem distribItem = new JMenuItem("Show distribution chart");
-			
-			distribItem.addActionListener( ev -> {
+
+			distribItem.addActionListener(ev -> {
 				viewer.displayDistrib(pickedVertices.iterator().next());
 				resetPickedVertices();
 			});
-			
+
 			popup.add(distribItem);
 		}
 		if (!pickedVertices.isEmpty() && !state.getUtilityNodeIds().isEmpty()) {
 			JMenuItem utilityItem = new JMenuItem("Calculate utility");
-			
+
 			utilityItem.addActionListener(ev -> {
-				
-				UtilityFunction result = viewer.getState().queryUtil(pickedVertices);
+
+				UtilityFunction result = viewer.getState().queryUtil(
+						pickedVertices);
 				viewer.getStateMonitorTab().writeToLogArea(result);
 				resetPickedVertices();
 			});
-	
+
 			popup.add(utilityItem);
-			
+
 		}
-		
+
 		// other action: draw outgoing dependency
 
 		if (popup.getComponentCount() == 0 && !pickedVertices.isEmpty()) {
-			popup.add(new JLabel("  No action available for the selected node(s)  "));
+			popup.add(new JLabel(
+					"  No action available for the selected node(s)  "));
 		}
 		if (popup.getComponentCount() > 0) {
 			popup.show(viewer, e.getX(), e.getY());
 		}
 	}
 
-	
 	private List<String> getPickedVertices() {
 		DialogueState state = viewer.getState();
 		List<String> pickedVertices = new LinkedList<String>();
 		for (String vertice : viewer.getPickedVertexState().getPicked()) {
 			if (viewer.getBNode(vertice) != null) {
-			pickedVertices.add(viewer.getBNode(vertice).getId());
+				pickedVertices.add(viewer.getBNode(vertice).getId());
 			}
 		}
 		pickedVertices.removeAll(state.getUtilityNodeIds());
 		return pickedVertices;
 	}
-	
-	
+
 	private void resetPickedVertices() {
-		for (String queryVariable: new LinkedList<String>(getPickedVertices())) {
+		for (String queryVariable : new LinkedList<String>(getPickedVertices())) {
 			viewer.getPickedVertexState().pick(queryVariable, false);
 		}
 	}
-	
-	
 
 }

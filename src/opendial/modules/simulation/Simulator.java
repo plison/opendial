@@ -22,7 +22,6 @@
 
 package opendial.modules.simulation;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,10 +42,10 @@ import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**
- * Simulator for the user/environment.  The simulator generated new environment observations
- * and user utterances based on a dialogue domain.
+ * Simulator for the user/environment. The simulator generated new environment
+ * observations and user utterances based on a dialogue domain.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class Simulator implements Module {
 
@@ -60,23 +59,24 @@ public class Simulator implements Module {
 	// the main system (to which the simulator is attached)
 	DialogueSystem system;
 
-
 	/**
 	 * Creates a new user/environment simulator.
 	 * 
-	 * @param system the main dialogue system to which the simulator should connect
+	 * @param system the main dialogue system to which the simulator should
+	 *            connect
 	 * @param simulatorDomain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
-	public Simulator(DialogueSystem system, String simulatorDomain) throws DialException  {
+	public Simulator(DialogueSystem system, String simulatorDomain)
+			throws DialException {
 		this(system, extractDomain(simulatorDomain));
 	}
-
 
 	/**
 	 * Creates a new user/environment simulator.
 	 * 
-	 * @param system the main dialogue system to which the simulator should connect
+	 * @param system the main dialogue system to which the simulator should
+	 *            connect
 	 * @param domain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
@@ -88,24 +88,20 @@ public class Simulator implements Module {
 		this.system.changeSettings(domain.getSettings());
 	}
 
-
-
-
 	/**
 	 * Adds an empty action to the dialogue system to start the interaction.
 	 */
 	@Override
 	public void start() throws DialException {
-		Assignment emptyAction = new Assignment(system.getSettings().systemOutput, ValueFactory.none());
+		Assignment emptyAction = new Assignment(
+				system.getSettings().systemOutput, ValueFactory.none());
 		if (system.isPaused()) {
 			system.getState().addToState(emptyAction);
-		}
-		else {
+		} else {
 			system.addContent(emptyAction);
 		}
 		system.attachModule(RewardLearner.class);
 	}
-
 
 	/**
 	 * Returns true if the system is not paused, and false otherwise
@@ -116,33 +112,32 @@ public class Simulator implements Module {
 	}
 
 	@Override
-	public void pause(boolean toPause) {	}
-
+	public void pause(boolean toPause) {
+	}
 
 	/**
-	 * Triggers the simulator by updating the simulator state and generating new observations
-	 * and user inputs.
+	 * Triggers the simulator by updating the simulator state and generating new
+	 * observations and user inputs.
 	 * 
 	 * @param systemState the dialogue state of the main dialogue system
 	 * @param updatedVars the updated variables in the dialogue system
 	 */
 	@Override
-	public void trigger(final DialogueState systemState, Collection<String> updatedVars) {
+	public void trigger(final DialogueState systemState,
+			Collection<String> updatedVars) {
 		if (updatedVars.contains(system.getSettings().systemOutput)) {
 			(new Thread(() -> performTurn())).start();
 		}
 	}
 
-
-
-	private static Domain extractDomain(String simulatorDomain) throws DialException {
+	private static Domain extractDomain(String simulatorDomain)
+			throws DialException {
 		if (simulatorDomain == null) {
 			throw new DialException("Required parameter: simulatorDomain");
 		}
 		return XMLDomainReader.extractDomain(simulatorDomain);
 	}
-	
-	
+
 	private void performTurn() {
 		DialogueState systemState = system.getState();
 		final String outputVar = system.getSettings().systemOutput;
@@ -156,40 +151,42 @@ public class Simulator implements Module {
 
 				log.debug("Simulator input: " + systemAction);
 				boolean turnPerformed = performTurn(systemAction);
-				int repeat = 0 ;
-				while (!turnPerformed && repeat < 5 && system.getModules().contains(this)) {
+				int repeat = 0;
+				while (!turnPerformed && repeat < 5
+						&& system.getModules().contains(this)) {
 					turnPerformed = performTurn(systemAction);
 					repeat++;
 				}
 			}
-		}
-		catch (DialException e) {
+		} catch (DialException e) {
 			log.debug("cannot update simulator: " + e);
 		}
 	}
 
-	
 	/**
 	 * Performs the dialogue turn in the simulator.
 	 * 
 	 * @param systemAction the last system action.
 	 * @throws DialException
 	 */
-	private synchronized boolean performTurn(Value systemAction) throws DialException {
+	private synchronized boolean performTurn(Value systemAction)
+			throws DialException {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
-		Assignment systemAssign = new Assignment(system.getSettings().systemOutput, systemAction);
+		Assignment systemAssign = new Assignment(
+				system.getSettings().systemOutput, systemAction);
 		simulatorState.addToState(systemAssign);
 
 		while (!simulatorState.getNewVariables().isEmpty()) {
 			Set<String> toProcess = simulatorState.getNewVariables();
-			simulatorState.reduce();	
+			simulatorState.reduce();
 
 			for (Model model : domain.getModels()) {
-				if (model.isTriggered(simulatorState,toProcess)) {
+				if (model.isTriggered(simulatorState, toProcess)) {
 					model.trigger(simulatorState);
-					if (model.isBlocking() && !simulatorState.getNewVariables().isEmpty()) {
+					if (model.isBlocking()
+							&& !simulatorState.getNewVariables().isEmpty()) {
 						break;
 					}
 				}
@@ -200,8 +197,9 @@ public class Simulator implements Module {
 				String comment = "Reward: " + StringUtils.getShortForm(reward);
 				system.displayComment(comment);
 				log.debug(comment);
-				system.getState().addEvidence(new Assignment(
-						"R(" + systemAssign.addPrimes()+")", reward));
+				system.getState().addEvidence(
+						new Assignment("R(" + systemAssign.addPrimes() + ")",
+								reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 
@@ -214,11 +212,10 @@ public class Simulator implements Module {
 		return turnPerformed;
 	}
 
-
 	/**
-	 * Generates new simulated observations and adds them to the dialogue state. The 
-	 * method returns true when a new user input has been generated, and false 
-	 * otherwise.
+	 * Generates new simulated observations and adds them to the dialogue state.
+	 * The method returns true when a new user input has been generated, and
+	 * false otherwise.
 	 * 
 	 * @return whether a user input has been generated
 	 * @throws DialException
@@ -226,25 +223,30 @@ public class Simulator implements Module {
 	private boolean addNewObservations() throws DialException {
 		List<String> newObsVars = new ArrayList<String>();
 		for (String var : simulatorState.getChanceNodeIds()) {
-			if (var.contains("^o'")){
+			if (var.contains("^o'")) {
 				newObsVars.add(var);
 			}
-		}		
+		}
 		if (!newObsVars.isEmpty()) {
-			MultivariateDistribution newObs = simulatorState.queryProb(newObsVars);
+			MultivariateDistribution newObs = simulatorState
+					.queryProb(newObsVars);
 			for (String newObsVar : newObsVars) {
 				newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
 			}
 			while (system.isPaused()) {
-				try { Thread.sleep(50); } catch (InterruptedException e) { }
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+				}
 			}
 			if (!newObs.getValues().isEmpty()) {
-				if (newObs.getVariables().contains(system.getSettings().userInput)) {
-					log.debug("Simulator output: " + newObs + "\n --------------");
+				if (newObs.getVariables().contains(
+						system.getSettings().userInput)) {
+					log.debug("Simulator output: " + newObs
+							+ "\n --------------");
 					system.addContent(newObs);
 					return true;
-				}
-				else {
+				} else {
 					log.debug("Contextual variables: " + newObs);
 					system.addContent(newObs);
 				}
@@ -254,4 +256,3 @@ public class Simulator implements Module {
 	}
 
 }
-

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -26,13 +26,13 @@ package opendial.inference.approximate;
 import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 
-
 /**
- * Representation of a (possibly weighted) sample, which consists of an assignment
- * of values together with a weight (here in logarithmic form) and utility.
+ * Representation of a (possibly weighted) sample, which consists of an
+ * assignment of values together with a weight (here in logarithmic form) and
+ * utility.
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class Sample extends Assignment implements Comparable<Sample> {
@@ -52,7 +52,7 @@ public class Sample extends Assignment implements Comparable<Sample> {
 	public Sample() {
 		super();
 	}
-	
+
 	/**
 	 * Creates a new sample
 	 * 
@@ -61,7 +61,7 @@ public class Sample extends Assignment implements Comparable<Sample> {
 	public Sample(Assignment a) {
 		super(a);
 	}
-	
+
 	/**
 	 * Creates a new sample with an existing weight and utility
 	 * 
@@ -74,8 +74,7 @@ public class Sample extends Assignment implements Comparable<Sample> {
 		this.logWeight = logWeight;
 		this.utility = utility;
 	}
-	
-	
+
 	/**
 	 * Adds a logarithmic weight to the current one
 	 * 
@@ -103,7 +102,6 @@ public class Sample extends Assignment implements Comparable<Sample> {
 		return Math.exp(logWeight);
 	}
 
-	
 	/**
 	 * Adds a utility to the sample
 	 * 
@@ -121,21 +119,19 @@ public class Sample extends Assignment implements Comparable<Sample> {
 	public double getUtility() {
 		return utility;
 	}
-	
-
 
 	/**
 	 * Returns a string representation of the weighted sample
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + " (w=" + getWeight() + ", util=" + utility+")";
+		return super.toString() + " (w=" + getWeight() + ", util=" + utility
+				+ ")";
 	}
 
-	
 	@Override
 	public int compareTo(Sample arg0) {
-		return (int)((utility - arg0.getUtility())*1000);
+		return (int) ((utility - arg0.getUtility()) * 1000);
 	}
 
 }

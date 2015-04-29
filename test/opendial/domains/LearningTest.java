@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -41,46 +41,47 @@ public class LearningTest {
 	// logger
 	public static Logger log = new Logger("LearningTest", Logger.Level.DEBUG);
 
-
 	public static final String domainFile = "test//domains//domain-is.xml";
 	public static final String parametersFile = "test//domains/params-is.xml";
 
 	@Test
 	public void testIS2013() throws DialException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
-		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile, "parameters");
+		BNetwork params = XMLStateReader.extractBayesianNetwork(parametersFile,
+				"parameters");
 		domain.setParameters(params);
-	//	Settings.guiSettings.showGUI = true;
-	DialogueSystem system = new DialogueSystem(domain);
-	system.getSettings().showGUI = false;
-	system.detachModule(ForwardPlanner.class);
-	Settings.nbSamples = Settings.nbSamples*3;
-	Settings.maxSamplingTime = Settings.maxSamplingTime*10;
-	system.startSystem(); 
-	
-	double[] initMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
+		// Settings.guiSettings.showGUI = true;
+		DialogueSystem system = new DialogueSystem(domain);
+		system.getSettings().showGUI = false;
+		system.detachModule(ForwardPlanner.class);
+		Settings.nbSamples = Settings.nbSamples * 3;
+		Settings.maxSamplingTime = Settings.maxSamplingTime * 10;
+		system.startSystem();
 
-	CategoricalTable table = new CategoricalTable("a_u");
-	table.addRow("Move(Left)", 1.0);
-	table.addRow("Move(Right)", 0.0);
-	table.addRow("None", 0.0);
-	system.addContent(table);
-	system.getState().removeNodes(system.getState().getUtilityNodeIds());
-	system.getState().removeNodes(system.getState().getActionNodeIds());
-	
-	double[] afterMean = system.getContent("theta_1").toContinuous().getFunction().getMean();
+		double[] initMean = system.getContent("theta_1").toContinuous()
+				.getFunction().getMean();
 
-	assertTrue(afterMean[0] - initMean[0] > 0.04);
-	assertTrue(afterMean[1] - initMean[1] < 0.04);
-	assertTrue(afterMean[2] - initMean[2] < 0.04);
-	assertTrue(afterMean[3] - initMean[3] < 0.04);
-	assertTrue(afterMean[4] - initMean[4] < 0.04);
-	assertTrue(afterMean[5] - initMean[5] < 0.04);
-	assertTrue(afterMean[6] - initMean[6] < 0.04);
-	assertTrue(afterMean[7] - initMean[7] < 0.04);
-	
-	Settings.nbSamples = Settings.nbSamples/3;
-	Settings.maxSamplingTime = Settings.maxSamplingTime/10;	
+		CategoricalTable table = new CategoricalTable("a_u");
+		table.addRow("Move(Left)", 1.0);
+		table.addRow("Move(Right)", 0.0);
+		table.addRow("None", 0.0);
+		system.addContent(table);
+		system.getState().removeNodes(system.getState().getUtilityNodeIds());
+		system.getState().removeNodes(system.getState().getActionNodeIds());
+
+		double[] afterMean = system.getContent("theta_1").toContinuous()
+				.getFunction().getMean();
+
+		assertTrue(afterMean[0] - initMean[0] > 0.04);
+		assertTrue(afterMean[1] - initMean[1] < 0.04);
+		assertTrue(afterMean[2] - initMean[2] < 0.04);
+		assertTrue(afterMean[3] - initMean[3] < 0.04);
+		assertTrue(afterMean[4] - initMean[4] < 0.04);
+		assertTrue(afterMean[5] - initMean[5] < 0.04);
+		assertTrue(afterMean[6] - initMean[6] < 0.04);
+		assertTrue(afterMean[7] - initMean[7] < 0.04);
+
+		Settings.nbSamples = Settings.nbSamples / 3;
+		Settings.maxSamplingTime = Settings.maxSamplingTime / 10;
 	}
 }
-

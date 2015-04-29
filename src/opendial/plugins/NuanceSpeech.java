@@ -1,4 +1,3 @@
-
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
 
@@ -58,15 +57,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
- * Plugin to access the Nuance Speech API for both speech recognition and synthesis.
- * The plugin necessitates the specification of an application ID and key
- * [see the README file for the plugin for details].  The API offers
- * a cloud-based access to the Nuance Mobile developer platform.
+ * Plugin to access the Nuance Speech API for both speech recognition and
+ * synthesis. The plugin necessitates the specification of an application ID and
+ * key [see the README file for the plugin for details]. The API offers a
+ * cloud-based access to the Nuance Mobile developer platform.
  * 
- * <p>To enhance the recognition accuracy, it is recommended to provide the system
+ * <p>
+ * To enhance the recognition accuracy, it is recommended to provide the system
  * with custom vocabularies (see the documentation on the Nuance website).
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class NuanceSpeech implements Module {
 
@@ -92,10 +92,10 @@ public class NuanceSpeech implements Module {
 
 	/** stack of utterances to synthesise */
 	Stack<String> synthesisQueue;
-	
+
 	/** speech output currently playing */
 	SpeechOutput currentOutput;
-	
+
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
@@ -104,7 +104,8 @@ public class NuanceSpeech implements Module {
 	 */
 	public NuanceSpeech(DialogueSystem system) throws DialException {
 		this.system = system;
-		List<String> missingParams = new LinkedList<String>(Arrays.asList("id", "key", "lang"));
+		List<String> missingParams = new LinkedList<String>(Arrays.asList("id",
+				"key", "lang"));
 		missingParams.removeAll(system.getSettings().params.keySet());
 		if (!missingParams.isEmpty()) {
 			throw new DialException("Missing parameters: " + missingParams);
@@ -116,7 +117,7 @@ public class NuanceSpeech implements Module {
 			system.getModule(GUIFrame.class).enableSpeech(true);
 		}
 		synthesisQueue = new Stack<String>();
-	} 
+	}
 
 	/**
 	 * Starts the Nuance speech plugin.
@@ -126,20 +127,20 @@ public class NuanceSpeech implements Module {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException("Nuance connection requires access to the GUI");
+			throw new DialException(
+					"Nuance connection requires access to the GUI");
 		}
 
-		// quick hack to ensure that the audio capture works 
+		// quick hack to ensure that the audio capture works
 		try {
-			SpeechInput firstStream = new SpeechInput(system.getSettings().inputMixer);
+			SpeechInput firstStream = new SpeechInput(
+					system.getSettings().inputMixer);
 			Thread.sleep(100);
-			firstStream.close(); 
-		}
-		catch (Exception e) { 
+			firstStream.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	/**
 	 * Pauses the plugin.
@@ -149,7 +150,6 @@ public class NuanceSpeech implements Module {
 		paused = toPause;
 	}
 
-
 	/**
 	 * Returns true if the plugin has been started and is not paused.
 	 */
@@ -157,9 +157,6 @@ public class NuanceSpeech implements Module {
 	public boolean isRunning() {
 		return !paused;
 	}
-
-
-
 
 	/**
 	 * If the system output has been updated, trigger the speech synthesis.
@@ -170,20 +167,22 @@ public class NuanceSpeech implements Module {
 		String speechVar = system.getSettings().userSpeech;
 		String outputVar = system.getSettings().systemOutput;
 
-		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar) && !paused) {
+		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar)
+				&& !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
 			if (speechVal instanceof SpeechInput) {
-				Thread t = new Thread(() -> {
-					Map<String,Double> table = recognise((SpeechInput)speechVal);
-					if (!table.isEmpty()) {
-						system.addUserInput(table);
-					}
-				});
+				Thread t = new Thread(
+						() -> {
+							Map<String, Double> table = recognise((SpeechInput) speechVal);
+							if (!table.isEmpty()) {
+								system.addUserInput(table);
+							}
+						});
 				t.start();
-				
+
 			}
-		}
-		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar) && !paused) {
+		} else if (updatedVars.contains(outputVar)
+				&& state.hasChanceNode(outputVar) && !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
 				Thread t = new Thread(() -> {
@@ -194,29 +193,27 @@ public class NuanceSpeech implements Module {
 		}
 	}
 
-
-
 	/**
 	 * Processes the audio data contained in tempFile (based on the recognition
-	 * grammar whenever provided) and returns the corresponding N-Best list
-	 * of results.
+	 * grammar whenever provided) and returns the corresponding N-Best list of
+	 * results.
 	 * 
 	 * @param stream the speech stream containing the audio data
 	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String,Double> recognise(SpeechInput stream) {
+	private Map<String, Double> recognise(SpeechInput stream) {
 
-		Map<String,Double> table = new HashMap<String,Double>();
+		Map<String, Double> table = new HashMap<String, Double>();
 		if (currentOutput != null) {
 			currentOutput.stop();
 		}
 		synthesisQueue.clear();
-		int sampleRate =  (int)stream.getFormat().getSampleRate();
-		log.info("calling Nuance server for recognition... "
-				+ "(sample rate: " + sampleRate + " Hz.)" );   
+		int sampleRate = (int) stream.getFormat().getSampleRate();
+		log.info("calling Nuance server for recognition... " + "(sample rate: "
+				+ sampleRate + " Hz.)");
 		stream.setSilence(50);
 		try {
-		//	stream.setSilence(200);
+			// stream.setSilence(200);
 			// wait until the stream is closed to save the audio data
 			if (SAVE_SPEECH != null && SAVE_SPEECH.length() > 0) {
 				while (!stream.isClosed()) {
@@ -225,48 +222,45 @@ public class NuanceSpeech implements Module {
 				stream.generateFile(new File(SAVE_SPEECH));
 			}
 			HttpPost httppost = new HttpPost(asrURI);
-			String format = "audio/x-wav;codec=pcm;bit="+stream.getFormat().getFrameSize()*8 
-					+ ";rate=" + sampleRate;
+			String format = "audio/x-wav;codec=pcm;bit="
+					+ stream.getFormat().getFrameSize() * 8 + ";rate="
+					+ sampleRate;
 			String lang = system.getSettings().params.getProperty("lang");
-			httppost.addHeader("Content-Type",  format);
-			httppost.addHeader("Accept",  "application/xml");
+			httppost.addHeader("Content-Type", format);
+			httppost.addHeader("Accept", "application/xml");
 			httppost.addHeader("Accept-Language", lang);
-			InputStreamEntity reqEntity  = new InputStreamEntity(stream);
+			InputStreamEntity reqEntity = new InputStreamEntity(stream);
 			reqEntity.setContentType(format);
-			httppost.setEntity(reqEntity);			
-			
+			httppost.setEntity(reqEntity);
+
 			HttpResponse response = asrClient.execute(httppost);
-			
+
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity== null || response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null
+					|| response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());
-			}
-			else {
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(resEntity.getContent()));
-			String sentence;
-			Map<String, Double> lines = new HashMap<String, Double>();
-			while((sentence = reader.readLine()) != null){
-				lines.put(sentence, 1.0/(lines.size()+1));
-			}
-			table.putAll(InferenceUtils.normalise(lines));
-			log.debug("recognition results: " + table);
-			reader.close();
+			} else {
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(resEntity.getContent()));
+				String sentence;
+				Map<String, Double> lines = new HashMap<String, Double>();
+				while ((sentence = reader.readLine()) != null) {
+					lines.put(sentence, 1.0 / (lines.size() + 1));
+				}
+				table.putAll(InferenceUtils.normalise(lines));
+				log.debug("recognition results: " + table);
+				reader.close();
 			}
 			httppost.releaseConnection();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.warning("could not extract ASR results: " + e);
 		}
 		return table;
 	}
 
-
-
-
 	/**
-	 * Performs remote speech synthesis with the given utterance, and plays it on the 
-	 * standard audio output.
+	 * Performs remote speech synthesis with the given utterance, and plays it
+	 * on the standard audio output.
 	 * 
 	 * @param utterance the utterance to synthesis
 	 */
@@ -274,28 +268,32 @@ public class NuanceSpeech implements Module {
 
 		try {
 			log.info("calling Nuance server for synthesis...\t");
-			String stampedUtterance = utterance + "-" + System.currentTimeMillis();
+			String stampedUtterance = utterance + "-"
+					+ System.currentTimeMillis();
 			synthesisQueue.add(stampedUtterance);
-			
+
 			HttpPost httppost = new HttpPost(ttsURI);
-			httppost.addHeader("Content-Type",  "text/plain");
-			httppost.addHeader("Accept", "audio/x-wav;codec=pcm;bit=16;rate=16000");
-			HttpEntity entity = new StringEntity(utterance, "utf-8");;
+			httppost.addHeader("Content-Type", "text/plain");
+			httppost.addHeader("Accept",
+					"audio/x-wav;codec=pcm;bit=16;rate=16000");
+			HttpEntity entity = new StringEntity(utterance, "utf-8");
+			;
 			httppost.setEntity(entity);
 
 			HttpResponse response = ttsClient.execute(httppost);
 
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity== null || response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null
+					|| response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());
 				return;
 			}
 
 			SpeechOutput output = new SpeechOutput(resEntity.getContent());
 			httppost.releaseConnection();
-			
+
 			while (synthesisQueue.indexOf(stampedUtterance) > 0) {
-				Thread.sleep(50);	
+				Thread.sleep(50);
 			}
 			if (synthesisQueue.isEmpty()) {
 				return;
@@ -303,13 +301,11 @@ public class NuanceSpeech implements Module {
 			currentOutput = output;
 			output.play(system.getSettings().outputMixer);
 			output.waitUntilPlayed();
-			synthesisQueue.remove(stampedUtterance);	
-		}
-		catch (Exception e) {
+			synthesisQueue.remove(stampedUtterance);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
@@ -329,22 +325,22 @@ public class NuanceSpeech implements Module {
 			builder.setHost("dictation.nuancemobility.net");
 			builder.setPort(443);
 			builder.setPath("/NMDPAsrCmdServlet/dictation");
-			builder.setParameter("appId", system.getSettings().params.getProperty("id"));
-			builder.setParameter("appKey", system.getSettings().params.getProperty("key"));
-			builder.setParameter("id", system.getSettings().params.getProperty("0000"));
+			builder.setParameter("appId",
+					system.getSettings().params.getProperty("id"));
+			builder.setParameter("appKey",
+					system.getSettings().params.getProperty("key"));
+			builder.setParameter("id",
+					system.getSettings().params.getProperty("0000"));
 			asrURI = builder.build();
 			builder.setHost("tts.nuancemobility.net");
 			builder.setPath("/NMDPTTSCmdServlet/tts");
-			builder.setParameter("ttsLang", system.getSettings().params.getProperty("lang"));
+			builder.setParameter("ttsLang",
+					system.getSettings().params.getProperty("lang"));
 			ttsURI = builder.build();
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			throw new DialException("cannot build client: " + e);
 		}
 	}
 
-
-
 }
-

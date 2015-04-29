@@ -23,7 +23,6 @@
 
 package opendial.inference;
 
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
@@ -35,26 +34,31 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.VariableElimination;
 
-
 /**
- * Switching algorithms that alternative between an exact algorithm (variable elimination) and
- * an approximate algorithm (likelihood weighting) depending on the query.
+ * Switching algorithms that alternative between an exact algorithm (variable
+ * elimination) and an approximate algorithm (likelihood weighting) depending on
+ * the query.
  * 
- * <p>The switching mechanism is defined via three thresholds: <ul>
- * <li> one threshold on the maximum branching factor of the network
- * <li> one threshold on the maximum number of query variables 
- * <li> one threshold on the maximum number of continuous variables
+ * <p>
+ * The switching mechanism is defined via three thresholds:
+ * <ul>
+ * <li>one threshold on the maximum branching factor of the network
+ * <li>one threshold on the maximum number of query variables
+ * <li>one threshold on the maximum number of continuous variables
  * </ul>
  * 
- * <p>If at least one of these thresholds is exceeded, the selected algorithm will be likelihood
- * weighting.  Variable elimination is selected in the remaining cases.
+ * <p>
+ * If at least one of these thresholds is exceeded, the selected algorithm will
+ * be likelihood weighting. Variable elimination is selected in the remaining
+ * cases.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SwitchingAlgorithm",
+			Logger.Level.DEBUG);
 
 	// maximum branching factor (in-degree) for VE
 	public static int MAX_BRANCHING_FACTOR = 10;
@@ -78,7 +82,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public MultivariateDistribution queryProb(Query.ProbQuery query) throws DialException {
+	public MultivariateDistribution queryProb(Query.ProbQuery query)
+			throws DialException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
@@ -96,16 +101,16 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		return algo.queryUtil(query);
 	}
 
-
 	/**
-	 * Reduces a Bayesian network to a subset of variables.  The method is divided in 
-	 * three steps: <ul>
-	 * <li> The method first checks whether inference is necessary at all or whether 
-	 * the current network can be returned as it is.  
-	 * <li> If inference is necessary, the algorithm divides the network into cliques
-	 * and performs inference on each clique separately.
-	 * <li> Finally, if only one clique is present, the reduction selects the best
-	 * algorithm and return the result of the reduction process.
+	 * Reduces a Bayesian network to a subset of variables. The method is
+	 * divided in three steps:
+	 * <ul>
+	 * <li>The method first checks whether inference is necessary at all or
+	 * whether the current network can be returned as it is.
+	 * <li>If inference is necessary, the algorithm divides the network into
+	 * cliques and performs inference on each clique separately.
+	 * <li>Finally, if only one clique is present, the reduction selects the
+	 * best algorithm and return the result of the reduction process.
 	 * </ul>
 	 * 
 	 * @param query the reduction query
@@ -119,10 +124,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 		return result;
 	}
 
-
-
-
-	public InferenceAlgorithm selectBestAlgorithm (Query query) {
+	public InferenceAlgorithm selectBestAlgorithm(Query query) {
 
 		for (BNode node : query.getFilteredSortedNodes()) {
 			if (node.getInputNodeIds().size() > MAX_BRANCHING_FACTOR) {
@@ -140,10 +142,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 					return lw;
 				}
 			}
-		}	
+		}
 		return ve;
 	}
 
-
 }
-

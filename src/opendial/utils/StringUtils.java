@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -32,18 +32,16 @@ import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
 
-
 /**
  * Various utilities for manipulating strings
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class StringUtils {
 
 	// logger
 	public static Logger log = new Logger("StringUtils", Logger.Level.DEBUG);
-	
 
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
@@ -52,16 +50,16 @@ public class StringUtils {
 	 * @return the string
 	 */
 	public static String getShortForm(double value) {
-		String rounded = "" + Math.round(value*10000.0)/10000.0;
+		String rounded = "" + Math.round(value * 10000.0) / 10000.0;
 		if (rounded.endsWith(".0")) {
-			rounded = rounded.substring(0, rounded.length()-2);
+			rounded = rounded.substring(0, rounded.length() - 2);
 		}
 		return rounded;
 	}
 
-
 	/**
-	 * Returns a HTML-compatible rendering of the raw string provided as argument
+	 * Returns a HTML-compatible rendering of the raw string provided as
+	 * argument
 	 * 
 	 * @param str the raw string
 	 * @return the formatted string
@@ -73,26 +71,28 @@ public class StringUtils {
 		Matcher matcher = Pattern.compile("_\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher.find()) {
 			String subscript = matcher.group(1);
-			str = str.replace("_{"+subscript+"}", "<sub>"+subscript+"</sub>");
+			str = str.replace("_{" + subscript + "}", "<sub>" + subscript
+					+ "</sub>");
 		}
 		Matcher matcher2 = Pattern.compile("_(\\p{Alnum}*)").matcher(str);
 		while (matcher2.find()) {
 			String subscript = matcher2.group(1);
-			str = str.replace("_"+subscript, "<sub>"+subscript+"</sub>");
+			str = str.replace("_" + subscript, "<sub>" + subscript + "</sub>");
 		}
-		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(str);
+		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(
+				str);
 		while (matcher3.find()) {
 			String subscript = matcher3.group(1);
-			str = str.replace("^{"+subscript+"}", "<sup>"+subscript+"</sup>");
+			str = str.replace("^{" + subscript + "}", "<sup>" + subscript
+					+ "</sup>");
 		}
 		Matcher matcher4 = Pattern.compile("\\^([\\w\\-\\^]+)").matcher(str);
 		while (matcher4.find()) {
 			String subscript = matcher4.group(1);
-			str = str.replace("^"+subscript, "<sup>"+subscript+"</sup>");
+			str = str.replace("^" + subscript, "<sup>" + subscript + "</sup>");
 		}
 		return str;
 	}
-	
 
 	/**
 	 * Returns the total number of occurrences of the character in the string.
@@ -106,30 +106,33 @@ public class StringUtils {
 	}
 
 	/**
-	 * Checks the form of the string to ensure that all parentheses, braces and brackets
-	 * are balanced.  Logs warning messages if problems are detected.
+	 * Checks the form of the string to ensure that all parentheses, braces and
+	 * brackets are balanced. Logs warning messages if problems are detected.
 	 * 
 	 * @param str the string
 	 */
 	public static void checkForm(String str) {
 
 		if (countNbOccurrences(str, '(') != countNbOccurrences(str, ')')) {
-			log.warning("Unequal number of parenthesis in string: " + str + ", Problems ahead!");
+			log.warning("Unequal number of parenthesis in string: " + str
+					+ ", Problems ahead!");
 		}
 		if (countNbOccurrences(str, '{') != countNbOccurrences(str, '}')) {
-			log.warning("Unequal number of braces in string: " + str + ", Problems ahead!");
+			log.warning("Unequal number of braces in string: " + str
+					+ ", Problems ahead!");
 		}
 		if (countNbOccurrences(str, '[') != countNbOccurrences(str, ']')) {
-			log.warning("Unequal number of brackets in string: " + str + ", Problems ahead!");
+			log.warning("Unequal number of brackets in string: " + str
+					+ ", Problems ahead!");
 		}
-		
+
 	}
 
-
 	/**
-	 * Performs a lexicographic comparison of the two identifiers.  If there is a difference
-	 * between the number of primes in the two identifiers, returns it.  Else, returns +1
-	 * if id1.compareTo(id2) is higher than 0, and -1 otherwise.
+	 * Performs a lexicographic comparison of the two identifiers. If there is a
+	 * difference between the number of primes in the two identifiers, returns
+	 * it. Else, returns +1 if id1.compareTo(id2) is higher than 0, and -1
+	 * otherwise.
 	 * 
 	 * @param id1 the first identifier
 	 * @param id2 the second identifier
@@ -146,47 +149,47 @@ public class StringUtils {
 		return (id1.compareTo(id2) < 0) ? +1 : -1;
 	}
 
-	
 	/**
-	 * Joins the string elements into a single string where the elements
-	 * are joined by a specific string.
+	 * Joins the string elements into a single string where the elements are
+	 * joined by a specific string.
 	 * 
 	 * @param elements the string elements
 	 * @param jointure the string used to join the elements
 	 * @return the concatenated string.
 	 */
-	public static String join(Collection<? extends Object> elements, String jointure) {
-		return elements.stream().map(o -> o.toString()).collect(Collectors.joining(jointure));
+	public static String join(Collection<? extends Object> elements,
+			String jointure) {
+		return elements.stream().map(o -> o.toString())
+				.collect(Collectors.joining(jointure));
 	}
 
-
 	/**
-	 * Returns a table with probabilities from the provided GUI input 
+	 * Returns a table with probabilities from the provided GUI input
 	 * 
 	 * @param rawText the raw text expressing the table
 	 * @return the string values together with their probabilities
 	 */
-	public static Map<String,Double> getTableFromInput(String rawText) {
+	public static Map<String, Double> getTableFromInput(String rawText) {
 
-		Map<String,Double> table = new HashMap<String,Double>();
+		Map<String, Double> table = new HashMap<String, Double>();
 
-		Pattern p = Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
+		Pattern p = Pattern
+				.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
-		for (String split : rawText.split(";")) {	
+		for (String split : rawText.split(";")) {
 			Matcher m = p.matcher(split);
 			if (m.find()) {
 				String probValueStr = m.group(1);
 				double probValue = Double.parseDouble(probValueStr);
-				String remainingStr = split.replace("(" + probValueStr + ")", "").trim();
+				String remainingStr = split.replace("(" + probValueStr + ")",
+						"").trim();
 				table.put(remainingStr, probValue);
-			}
-			else {
+			} else {
 				table.put(split.trim(), 1.0);
 			}
 		}
 		return table;
 	}
-
 
 	/**
 	 * Counts the occurrences of a particular pattern in the string.
@@ -197,20 +200,18 @@ public class StringUtils {
 	 */
 	public static int countOccurrences(String fullString, String pattern) {
 		int lastIndex = 0;
-		int count =0;
+		int count = 0;
 
-		while(lastIndex != -1){
+		while (lastIndex != -1) {
 
-		       lastIndex = fullString.indexOf(pattern,lastIndex);
+			lastIndex = fullString.indexOf(pattern, lastIndex);
 
-		       if( lastIndex != -1){
-		             count ++;
-		             lastIndex+=pattern.length();
-		      }
+			if (lastIndex != -1) {
+				count++;
+				lastIndex += pattern.length();
+			}
 		}
 		return count;
 	}
 
-
-	
 }

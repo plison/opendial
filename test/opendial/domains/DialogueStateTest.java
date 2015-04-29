@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.domains;
 
-
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -39,36 +38,35 @@ import org.junit.Test;
 public class DialogueStateTest {
 
 	// logger
-	public static Logger log = new Logger("DialogueStateTest", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueStateTest",
+			Logger.Level.DEBUG);
 
 	public static final String domainFile = "test//domains//domain1.xml";
- 
+
 	static Domain domain;
 	static InferenceChecks inference;
 
 	static {
-		try { 
-			domain = XMLDomainReader.extractDomain(domainFile); 
+		try {
+			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
-		} 
-		catch (DialException e) {
+		} catch (DialException e) {
 			e.printStackTrace();
 		}
 	}
 
-
 	@Test
 	public void testStateCopy() throws DialException, InterruptedException {
-	
-		DialogueSystem	system = new DialogueSystem(domain);
+
+		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
 		StatePruner.ENABLE_PRUNING = false;
-		
+
 		system.getSettings().showGUI = false;
-		system.startSystem(); 
+		system.startSystem();
 
 		DialogueState initialState = system.getState().copy();
-		
+
 		String ruleId = "";
 		for (String id : system.getState().getNode("u_u2").getOutputNodesIds()) {
 			if (system.getContent(id).toString().contains("+=HowAreYou")) {
@@ -76,35 +74,34 @@ public class DialogueStateTest {
 			}
 		}
 
-		inference.checkProb(initialState, ruleId, Effect.parseEffect("a_u2+=HowAreYou"), 0.9);
-		inference.checkProb(initialState, ruleId, Effect.parseEffect("Void"), 0.1);
+		inference.checkProb(initialState, ruleId,
+				Effect.parseEffect("a_u2+=HowAreYou"), 0.9);
+		inference.checkProb(initialState, ruleId, Effect.parseEffect("Void"),
+				0.1);
 
 		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
 		inference.checkProb(initialState, "a_u2", "[Greet, HowAreYou]", 0.7);
-		inference.checkProb(initialState, "a_u2", "[]", 0.1); 	
-		
+		inference.checkProb(initialState, "a_u2", "[]", 0.1);
+
 		StatePruner.ENABLE_PRUNING = true;
 	}
-
 
 	@Test
 	public void testStateCopy2() throws DialException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.08;
 
-		DialogueSystem	system = new DialogueSystem(domain);
+		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.detachModule(ForwardPlanner.class);
-		system.startSystem(); 
+		system.startSystem();
 
 		DialogueState initialState = system.getState().copy();
 
 		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
 		inference.checkProb(initialState, "a_u2", "[Greet, HowAreYou]", 0.7);
-		inference.checkProb(initialState, "a_u2", "[]", 0.1); 
-		
-		
+		inference.checkProb(initialState, "a_u2", "[]", 0.1);
+
 	}
 
 }
-

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -22,7 +22,6 @@
 // =================================================================                                                                   
 
 package opendial.domains;
-
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,73 +53,70 @@ public class PruningTest {
 	static Domain domain;
 	static InferenceChecks inference;
 	static DialogueSystem system;
-	
+
 	static {
 		MathUtils.log.setLevel(Level.DEBUG);
-		try { 
-		domain = XMLDomainReader.extractDomain(domainFile); 
-		inference = new InferenceChecks();
-		inference.EXACT_THRESHOLD = 0.1;
-		inference.SAMPLING_THRESHOLD = 0.1;
+		try {
+			domain = XMLDomainReader.extractDomain(domainFile);
+			inference = new InferenceChecks();
+			inference.EXACT_THRESHOLD = 0.1;
+			inference.SAMPLING_THRESHOLD = 0.1;
 			system = new DialogueSystem(domain);
 			system.getSettings().showGUI = false;
 
-			system.startSystem(); 
-		} 
-		catch (DialException e) {
+			system.startSystem();
+		} catch (DialException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	@Test
 	public void testPruning0() throws DialException, InterruptedException {
-	
+
 		assertEquals(15, system.getState().getNodeIds().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
 	}
-	
 
 	@Test
 	public void testPruning1() throws DialException, InterruptedException {
 
-		
 		inference.checkProb(system.getState(), "a_u", "Greeting", 0.8);
 		inference.checkProb(system.getState(), "a_u", "None", 0.2);
 	}
 
-
-	@Test 
+	@Test
 	public void testPruning2() throws DialException {
-		
-		inference.checkProb(system.getState(), "i_u", "Inform", 0.7*0.8);
-		inference.checkProb(system.getState(), "i_u", "None", 1-0.7*0.8);
+
+		inference.checkProb(system.getState(), "i_u", "Inform", 0.7 * 0.8);
+		inference.checkProb(system.getState(), "i_u", "None", 1 - 0.7 * 0.8);
 	}
 
 	@Test
 	public void testPruning3() throws DialException {
-		
+
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
 		inference.checkProb(system.getState(), "direction", "right", 0.01);
-		
-	}
 
+	}
 
 	@Test
 	public void testPruning4() throws DialException {
 
-		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.31);
+		inference.checkProb(system.getState(), "o", "and we have var1=value2",
+				0.3);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value1", 0.2);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value3", 0.31);
 	}
-
 
 	@Test
 	public void testPruning5() throws DialException {
-	
+
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
-		inference.checkProb(system.getState(), "o2", "and value2 is over there", 0.07);
+		inference.checkProb(system.getState(), "o2",
+				"and value2 is over there", 0.07);
 		inference.checkProb(system.getState(), "o2", "value3, finally", 0.28);
 
 	}
@@ -129,24 +125,27 @@ public class PruningTest {
 	public void testPruning6() throws DialException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
-		
-	 	CategoricalTable table = new CategoricalTable("var1");
+
+		CategoricalTable table = new CategoricalTable("var1");
 		table.addRow("value2", 0.9);
 		system.getState().addToState(table);
-		
-		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o", "and we have localvar=value3", 0.31);
-		
+
+		inference.checkProb(system.getState(), "o", "and we have var1=value2",
+				0.3);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value1", 0.2);
+		inference.checkProb(system.getState(), "o",
+				"and we have localvar=value3", 0.31);
+
 		system.getState().reset(initialState);
 
 	}
 
-
 	@Test
 	public void testPruning7() throws DialException, InterruptedException {
-		
-		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
+
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]",
+				0.7);
 		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 
@@ -156,9 +155,9 @@ public class PruningTest {
 	public void testPruning8() throws DialException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
-		
+
 		SortedSet<String> createdNodes = new TreeSet<String>();
-		for (String nodeId: system.getState().getNodeIds()) {
+		for (String nodeId : system.getState().getNodeIds()) {
 			if (nodeId.contains("a_u3^")) {
 				createdNodes.add(nodeId);
 			}
@@ -168,24 +167,26 @@ public class PruningTest {
 
 		String greetNode = "";
 		String howareyouNode = "";
-		Set<Value> values = system.getState().getNode(createdNodes.first()+"").getValues();
+		Set<Value> values = system.getState()
+				.getNode(createdNodes.first() + "").getValues();
 		if (values.contains(ValueFactory.create("Greet"))) {
 			greetNode = createdNodes.first();
 			howareyouNode = createdNodes.last();
-		}
-		else {
+		} else {
 			greetNode = createdNodes.last();
 			howareyouNode = createdNodes.first();
 		}
 
-		inference.checkProb(system.getState(),"a_u3", "["+howareyouNode +"," + greetNode +"]", 0.7);
-		inference.checkProb(system.getState(),"a_u3", "none", 0.1);
-		inference.checkProb(system.getState(),"a_u3", "[" + howareyouNode + "]", 0.2);
-		inference.checkProb(system.getState(),greetNode+"", "Greet", 0.7);
-		inference.checkProb(system.getState(),howareyouNode+"", "HowAreYou", 0.9);
-		
+		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode
+				+ "," + greetNode + "]", 0.7);
+		inference.checkProb(system.getState(), "a_u3", "none", 0.1);
+		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode
+				+ "]", 0.2);
+		inference.checkProb(system.getState(), greetNode + "", "Greet", 0.7);
+		inference.checkProb(system.getState(), howareyouNode + "", "HowAreYou",
+				0.9);
+
 		system.getState().reset(initialState);
 
 	}
 }
-

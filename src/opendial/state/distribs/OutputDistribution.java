@@ -42,27 +42,25 @@ import opendial.datastructs.ValueRange;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 
-
 /**
- * Representation of an output distribution (see Pierre Lison's PhD thesis, page 70
- * for details), which is a reflection of the combination of effects specified in the 
- * parent rules.
+ * Representation of an output distribution (see Pierre Lison's PhD thesis, page
+ * 70 for details), which is a reflection of the combination of effects
+ * specified in the parent rules.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class OutputDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
+	public static Logger log = new Logger("OutputDistribution",
+			Logger.Level.DEBUG);
 
-	// output variables	
+	// output variables
 	String baseVar;
 
 	// primes attached to the variable label
 	String primes;
-
-
 
 	/**
 	 * Creates the output distribution for the output variable label
@@ -74,8 +72,6 @@ public class OutputDistribution implements ProbDistribution {
 		this.primes = var.replace(baseVar, "");
 	}
 
-
-
 	/**
 	 * Modifies the label of the output variable.
 	 * 
@@ -84,13 +80,11 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public void modifyVariableId(String oldId, String newId) {
-		if ((baseVar+primes).equals(oldId)) {
+		if ((baseVar + primes).equals(oldId)) {
 			this.baseVar = newId.replace("'", "");
 			this.primes = newId.replace(baseVar, "");
 		}
 	}
-
-
 
 	/**
 	 * Samples a particular value for the output variable.
@@ -104,9 +98,7 @@ public class OutputDistribution implements ProbDistribution {
 		CategoricalTable result = getProbDistrib(condition);
 		return result.sample();
 	}
-	
-	
-	
+
 	/**
 	 * Does nothing.
 	 */
@@ -114,9 +106,6 @@ public class OutputDistribution implements ProbDistribution {
 	public boolean pruneValues(double threshold) {
 		return false;
 	}
-
-
-
 
 	/**
 	 * Returns the probability associated with the given conditional and head
@@ -132,8 +121,6 @@ public class OutputDistribution implements ProbDistribution {
 		return result.getProb(head);
 	}
 
-
-
 	/**
 	 * Fills the cache with the resulting table for the given condition
 	 * 
@@ -143,13 +130,14 @@ public class OutputDistribution implements ProbDistribution {
 	public CategoricalTable getProbDistrib(Assignment condition) {
 
 		// creating the table
-		CategoricalTable probTable = new CategoricalTable(baseVar+primes, false);
+		CategoricalTable probTable = new CategoricalTable(baseVar + primes,
+				false);
 
 		// combining all effects
 		List<BasicEffect> fullEffects = new ArrayList<BasicEffect>();
 		for (Value inputVal : condition.getValues()) {
 			if (inputVal instanceof Effect) {
-				fullEffects.addAll(((Effect)inputVal).getSubEffects());
+				fullEffects.addAll(((Effect) inputVal).getSubEffects());
 			}
 		}
 		Effect fullEffect = new Effect(fullEffects);
@@ -160,14 +148,14 @@ public class OutputDistribution implements ProbDistribution {
 			SetVal addVal = ValueFactory.create(values);
 			probTable.addRow(addVal, 1.0);
 		}
-		
+
 		// case 2 (most common): classical set operations
-		else if (!values.isEmpty()) {	
+		else if (!values.isEmpty()) {
 			for (Value v : values) {
 				probTable.addRow(v, (1.0 / values.size()));
-			}	
+			}
 		}
-		
+
 		// case 3: set to none value
 		else {
 			probTable.addRow(ValueFactory.none(), 1.0);
@@ -183,15 +171,13 @@ public class OutputDistribution implements ProbDistribution {
 	 * @return the resulting probability table
 	 */
 	@Override
-	public MarginalDistribution getPosterior(Assignment condition)  {
+	public MarginalDistribution getPosterior(Assignment condition) {
 		return new MarginalDistribution(this, condition);
 	}
 
-
-
 	/**
-	 * Returns the possible outputs values given the input range in the parent nodes
-	 * (probability rule nodes and previous version of the variable)
+	 * Returns the possible outputs values given the input range in the parent
+	 * nodes (probability rule nodes and previous version of the variable)
 	 * 
 	 * @param range the range of values for the parents
 	 * @return the possible values for the output
@@ -203,30 +189,27 @@ public class OutputDistribution implements ProbDistribution {
 
 		for (String var : range.getVariables()) {
 			for (Value val : range.getValues(var)) {
-				
+
 				if (val instanceof Effect) {
 
-					if (((Effect)val).isAdd(baseVar)) {
+					if (((Effect) val).isAdd(baseVar)) {
 						return getValues_linearise(range);
 					}
 
-					Set<Value> setValues = ((Effect)val).getValues(baseVar);		
+					Set<Value> setValues = ((Effect) val).getValues(baseVar);
 					values.addAll(setValues);
 					if (setValues.isEmpty()) {
 						values.add(ValueFactory.none());
 					}
 				}
 			}
-		}	
+		}
 
 		if (values.isEmpty()) {
 			values.add(ValueFactory.none());
 		}
 		return values;
 	}
-	
-	
-
 
 	/**
 	 * Returns a singleton set with the label of the output
@@ -235,7 +218,7 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public String getVariable() {
-		return baseVar+primes;
+		return baseVar + primes;
 	}
 
 	/**
@@ -246,8 +229,6 @@ public class OutputDistribution implements ProbDistribution {
 		return true;
 	}
 
-
-
 	/**
 	 * Returns a copy of the distribution
 	 */
@@ -255,8 +236,6 @@ public class OutputDistribution implements ProbDistribution {
 	public OutputDistribution copy() {
 		return new OutputDistribution(baseVar + primes);
 	}
-
-
 
 	/**
 	 * Returns "(output)".
@@ -266,16 +245,16 @@ public class OutputDistribution implements ProbDistribution {
 		return "(output)";
 	}
 
-
 	/**
-	 * Calculates the possible values for the output distribution via linearisation
-	 * (more costly operation, but necessary in case of add effects).
+	 * Calculates the possible values for the output distribution via
+	 * linearisation (more costly operation, but necessary in case of add
+	 * effects).
 	 * 
 	 * @param range the value range to linearise
 	 * @return the set of possible output values
 	 */
-	private Set<Value> getValues_linearise (ValueRange range) {
-		
+	private Set<Value> getValues_linearise(ValueRange range) {
+
 		Set<Value> values = range.linearise().stream()
 				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
 				.collect(Collectors.toSet());

@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -43,14 +43,14 @@ import org.junit.Test;
 /**
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
- */  
+ */
 public class NetworkReductionTest {
 
 	// logger
 	public static Logger log = new Logger("PruningTest", Logger.Level.DEBUG);
-  
+
 	BNetwork network;
 
 	VariableElimination ve;
@@ -67,253 +67,283 @@ public class NetworkReductionTest {
 		sw = new SwitchingAlgorithm();
 	}
 
-
 	@Test
 	public void test1() throws DialException, InterruptedException {
-		
-		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet2 = naive.reduce(network, Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet3 = is.reduce(network, Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet4 = sw.reduce(network, Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+
+		BNetwork reducedNet = ve.reduce(network,
+				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet2 = naive.reduce(network,
+				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet3 = is.reduce(network,
+				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet4 = sw.reduce(network,
+				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
 
 		assertEquals(3, reducedNet.getNodes().size());
 		assertEquals(3, reducedNet2.getNodes().size());
 		assertEquals(3, reducedNet3.getNodes().size());
 		assertEquals(3, reducedNet4.getNodes().size());
 
-		assertEquals(ve.queryProb(network, Arrays.asList("MaryCalls"),
-				new Assignment("Burglary")).getProb(new Assignment("MaryCalls")), 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("MaryCalls"),
+						new Assignment("Burglary")).getProb(
+						new Assignment("MaryCalls")),
 				ve.queryProb(reducedNet, Arrays.asList("MaryCalls"),
-						new Assignment("Burglary")).getProb( 
+						new Assignment("Burglary")).getProb(
 						new Assignment("MaryCalls")), 0.0001);
-		
-		assertEquals(ve.queryProb(network, Arrays.asList("MaryCalls"),
-				new Assignment("Burglary")).getProb( 
-				new Assignment("MaryCalls")), 
+
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("MaryCalls"),
+						new Assignment("Burglary")).getProb(
+						new Assignment("MaryCalls")),
 				ve.queryProb(reducedNet2, Arrays.asList("MaryCalls"),
-						new Assignment("Burglary")).getProb( 
+						new Assignment("Burglary")).getProb(
 						new Assignment("MaryCalls")), 0.0001);
-			
-		assertEquals(ve.queryProb(network, Arrays.asList("MaryCalls"),
-				new Assignment("Burglary")).getProb( 
-				new Assignment("MaryCalls")), 
+
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("MaryCalls"),
+						new Assignment("Burglary")).getProb(
+						new Assignment("MaryCalls")),
 				is.queryProb(reducedNet3, Arrays.asList("MaryCalls"),
-						new Assignment("Burglary")).getProb( 
-						new Assignment("MaryCalls")), 0.1);
-		
-		assertEquals(ve.queryProb(network, Arrays.asList("MaryCalls"),
-				new Assignment("Burglary")).getProb( 
-				new Assignment("MaryCalls")), 
-				is.queryProb(reducedNet4, Arrays.asList("MaryCalls"),
-						new Assignment("Burglary")).getProb( 
+						new Assignment("Burglary")).getProb(
 						new Assignment("MaryCalls")), 0.1);
 
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Earthquake")), 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("MaryCalls"),
+						new Assignment("Burglary")).getProb(
+						new Assignment("MaryCalls")),
+				is.queryProb(reducedNet4, Arrays.asList("MaryCalls"),
+						new Assignment("Burglary")).getProb(
+						new Assignment("MaryCalls")), 0.1);
+
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Earthquake")),
 				ve.queryProb(reducedNet, Arrays.asList("Earthquake"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Earthquake")), 0.0001);
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Earthquake")), 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Earthquake")),
 				ve.queryProb(reducedNet2, Arrays.asList("Earthquake"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Earthquake")), 0.0001);
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Earthquake")), 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Earthquake")),
 				is.queryProb(reducedNet3, Arrays.asList("Earthquake"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Earthquake")), 0.05);
-		
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Earthquake")), 
+
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Earthquake")),
 				is.queryProb(reducedNet4, Arrays.asList("Earthquake"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Earthquake")), 0.05);
 
 	}
 
-
-
 	@Test
 	public void test2() throws DialException, InterruptedException {
 
-		BNetwork reducedNet = ve.reduce(network, 
-				Arrays.asList("Burglary", "MaryCalls"), new Assignment("!Earthquake"));
-		BNetwork reducedNet2 = naive.reduce(network, 
-				Arrays.asList("Burglary", "MaryCalls"), new Assignment("!Earthquake"));
-		BNetwork reducedNet3 = is.reduce(network, 
-				Arrays.asList("Burglary", "MaryCalls"), new Assignment("!Earthquake"));
-		BNetwork reducedNet4 = sw.reduce(network, 
-				Arrays.asList("Burglary", "MaryCalls"), new Assignment("!Earthquake"));
+		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary",
+				"MaryCalls"), new Assignment("!Earthquake"));
+		BNetwork reducedNet2 = naive.reduce(network, Arrays.asList("Burglary",
+				"MaryCalls"), new Assignment("!Earthquake"));
+		BNetwork reducedNet3 = is.reduce(network, Arrays.asList("Burglary",
+				"MaryCalls"), new Assignment("!Earthquake"));
+		BNetwork reducedNet4 = sw.reduce(network, Arrays.asList("Burglary",
+				"MaryCalls"), new Assignment("!Earthquake"));
 
 		assertEquals(2, reducedNet.getNodes().size());
 		assertEquals(2, reducedNet2.getNodes().size());
 		assertEquals(2, reducedNet3.getNodes().size());
 		assertEquals(2, reducedNet4.getNodes().size());
 
-		assertEquals(ve.queryProb(network, Arrays.asList("MaryCalls"),
-				new Assignment("!Earthquake")).getProb( 
-				new Assignment("MaryCalls")), 
-				ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb( 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("MaryCalls"),
+						new Assignment("!Earthquake")).getProb(
+						new Assignment("MaryCalls")),
+				ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb(
 						new Assignment("MaryCalls")), 0.0001);
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb( 
-				new Assignment("MaryCalls")), 
-				naive.queryProb(reducedNet2, Arrays.asList("MaryCalls")).getProb( 
-						new Assignment("MaryCalls")), 0.0001);
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb( 
-				new Assignment("MaryCalls")), 
-				is.queryProb(reducedNet3, Arrays.asList("MaryCalls")).getProb( 
-						new Assignment("MaryCalls")), 0.05);
-		
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb( 
-				new Assignment("MaryCalls")), 
-				is.queryProb(reducedNet4, Arrays.asList("MaryCalls")).getProb( 
+		assertEquals(ve.queryProb(reducedNet, Arrays.asList("MaryCalls"))
+				.getProb(new Assignment("MaryCalls")),
+				naive.queryProb(reducedNet2, Arrays.asList("MaryCalls"))
+						.getProb(new Assignment("MaryCalls")), 0.0001);
+		assertEquals(
+				ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb(
+						new Assignment("MaryCalls")),
+				is.queryProb(reducedNet3, Arrays.asList("MaryCalls")).getProb(
 						new Assignment("MaryCalls")), 0.05);
 
+		assertEquals(
+				ve.queryProb(reducedNet, Arrays.asList("MaryCalls")).getProb(
+						new Assignment("MaryCalls")),
+				is.queryProb(reducedNet4, Arrays.asList("MaryCalls")).getProb(
+						new Assignment("MaryCalls")), 0.05);
 
-		assertEquals(ve.queryProb(network, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("!MaryCalls", "!Earthquake"))).getProb( 
-				new Assignment("Burglary")), 
+		assertEquals(
+				ve.queryProb(
+						network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("!MaryCalls",
+								"!Earthquake"))).getProb(
+						new Assignment("Burglary")),
 				ve.queryProb(reducedNet, Arrays.asList("Burglary"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Burglary")), 0.0001);
-		assertEquals(ve.queryProb(network, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("!MaryCalls", "!Earthquake"))).getProb( 
-				new Assignment("Burglary")), 
+		assertEquals(
+				ve.queryProb(
+						network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("!MaryCalls",
+								"!Earthquake"))).getProb(
+						new Assignment("Burglary")),
 				naive.queryProb(reducedNet2, Arrays.asList("Burglary"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Burglary")), 0.0001);
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Burglary"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Burglary")), 
+		assertEquals(
+				ve.queryProb(reducedNet, Arrays.asList("Burglary"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Burglary")),
 				is.queryProb(reducedNet3, Arrays.asList("Burglary"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Burglary")), 0.05);
 
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Burglary"),
-				new Assignment("!MaryCalls")).getProb( 
-				new Assignment("Burglary")), 
+		assertEquals(
+				ve.queryProb(reducedNet, Arrays.asList("Burglary"),
+						new Assignment("!MaryCalls")).getProb(
+						new Assignment("Burglary")),
 				is.queryProb(reducedNet4, Arrays.asList("Burglary"),
-						new Assignment("!MaryCalls")).getProb( 
+						new Assignment("!MaryCalls")).getProb(
 						new Assignment("Burglary")), 0.05);
 	}
 
 	@Test
 	public void test3() throws DialException, InterruptedException {
 
-		BNetwork reducedNet = ve.reduce(network, 
-				Arrays.asList("Burglary", "Earthquake"), new Assignment("JohnCalls"));
-		BNetwork reducedNet2 = naive.reduce(network, 
-				Arrays.asList("Burglary", "Earthquake"), new Assignment("JohnCalls"));
-		BNetwork reducedNet3 = is.reduce(network, 
-				Arrays.asList("Burglary", "Earthquake"), new Assignment("JohnCalls"));
-		BNetwork reducedNet4 = sw.reduce(network, 
-				Arrays.asList("Burglary", "Earthquake"), new Assignment("JohnCalls"));
+		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary",
+				"Earthquake"), new Assignment("JohnCalls"));
+		BNetwork reducedNet2 = naive.reduce(network, Arrays.asList("Burglary",
+				"Earthquake"), new Assignment("JohnCalls"));
+		BNetwork reducedNet3 = is.reduce(network, Arrays.asList("Burglary",
+				"Earthquake"), new Assignment("JohnCalls"));
+		BNetwork reducedNet4 = sw.reduce(network, Arrays.asList("Burglary",
+				"Earthquake"), new Assignment("JohnCalls"));
 
 		assertEquals(2, reducedNet.getNodes().size());
 		assertEquals(2, reducedNet2.getNodes().size());
 		assertEquals(2, reducedNet3.getNodes().size());
 		assertEquals(2, reducedNet4.getNodes().size());
 
-		assertEquals(ve.queryProb(network, Arrays.asList("Burglary"),
-				new Assignment("JohnCalls")).getProb( 
-				new Assignment("Burglary")), 
-				is.queryProb(reducedNet, Arrays.asList("Burglary")).getProb( 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Burglary"),
+						new Assignment("JohnCalls")).getProb(
+						new Assignment("Burglary")),
+				is.queryProb(reducedNet, Arrays.asList("Burglary")).getProb(
 						new Assignment("Burglary")), 0.1);
-		assertEquals(ve.queryProb(network, Arrays.asList("Burglary"),
-				new Assignment("JohnCalls")).getProb( 
-				new Assignment("Burglary")), 
-				naive.queryProb(reducedNet2, Arrays.asList("Burglary")).getProb( 
-						new Assignment("Burglary")), 0.0001);
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Burglary")).getProb( 
-				new Assignment("Burglary")), 
-				naive.queryProb(reducedNet3, Arrays.asList("Burglary")).getProb( 
-						new Assignment("Burglary")), 0.08);
-		assertEquals(ve.queryProb(reducedNet2, Arrays.asList("Burglary")).getProb( 
-				new Assignment("Burglary")), 
-				naive.queryProb(reducedNet4, Arrays.asList("Burglary")).getProb( 
-						new Assignment("Burglary")), 0.05);
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Burglary"),
+						new Assignment("JohnCalls")).getProb(
+						new Assignment("Burglary")),
+				naive.queryProb(reducedNet2, Arrays.asList("Burglary"))
+						.getProb(new Assignment("Burglary")), 0.0001);
+		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Burglary"))
+				.getProb(new Assignment("Burglary")),
+				naive.queryProb(reducedNet3, Arrays.asList("Burglary"))
+						.getProb(new Assignment("Burglary")), 0.08);
+		assertEquals(ve.queryProb(reducedNet2, Arrays.asList("Burglary"))
+				.getProb(new Assignment("Burglary")),
+				naive.queryProb(reducedNet4, Arrays.asList("Burglary"))
+						.getProb(new Assignment("Burglary")), 0.05);
 
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment(Arrays.asList("JohnCalls"))).getProb( 
-				new Assignment("Earthquake")), 
-				ve.queryProb(reducedNet, Arrays.asList("Earthquake")).getProb( 
-						new Assignment("Earthquake")), 0.0001);	
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Earthquake")).getProb( 
-				new Assignment("Earthquake")), 
-				is.queryProb(reducedNet2, Arrays.asList("Earthquake")).getProb( 
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment(Arrays.asList("JohnCalls"))).getProb(
+						new Assignment("Earthquake")),
+				ve.queryProb(reducedNet, Arrays.asList("Earthquake")).getProb(
+						new Assignment("Earthquake")), 0.0001);
+		assertEquals(
+				ve.queryProb(reducedNet, Arrays.asList("Earthquake")).getProb(
+						new Assignment("Earthquake")),
+				is.queryProb(reducedNet2, Arrays.asList("Earthquake")).getProb(
 						new Assignment("Earthquake")), 0.07);
-		assertEquals(ve.queryProb(network, Arrays.asList("Earthquake"),
-				new Assignment(Arrays.asList("JohnCalls"))).getProb( 
-				new Assignment("Earthquake")), 
-				naive.queryProb(reducedNet3, Arrays.asList("Earthquake")).getProb( 
-						new Assignment("Earthquake")), 0.07);
-		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Earthquake")).getProb( 
-				new Assignment("Earthquake")), 
-				naive.queryProb(reducedNet4, Arrays.asList("Earthquake")).getProb( 
-						new Assignment("Earthquake")), 0.07);
+		assertEquals(
+				ve.queryProb(network, Arrays.asList("Earthquake"),
+						new Assignment(Arrays.asList("JohnCalls"))).getProb(
+						new Assignment("Earthquake")),
+				naive.queryProb(reducedNet3, Arrays.asList("Earthquake"))
+						.getProb(new Assignment("Earthquake")), 0.07);
+		assertEquals(ve.queryProb(reducedNet, Arrays.asList("Earthquake"))
+				.getProb(new Assignment("Earthquake")),
+				naive.queryProb(reducedNet4, Arrays.asList("Earthquake"))
+						.getProb(new Assignment("Earthquake")), 0.07);
 
 	}
 
-	
 	@Test
 	public void test5() throws DialException {
-		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary"), 
+		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary"),
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		BNetwork reducedNet2 = is.reduce(network, Arrays.asList("Burglary"), 
+		BNetwork reducedNet2 = is.reduce(network, Arrays.asList("Burglary"),
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		
+
 		reducedNet.addNode(network.getNode("Action").copy());
 		reducedNet.addNode(network.getNode("Util1").copy());
 		reducedNet.addNode(network.getNode("Util2").copy());
-		reducedNet.getNode("Util1").addInputNode(reducedNet.getNode("Burglary"));
+		reducedNet.getNode("Util1")
+				.addInputNode(reducedNet.getNode("Burglary"));
 		reducedNet.getNode("Util1").addInputNode(reducedNet.getNode("Action"));
-		reducedNet.getNode("Util2").addInputNode(reducedNet.getNode("Burglary"));
+		reducedNet.getNode("Util2")
+				.addInputNode(reducedNet.getNode("Burglary"));
 		reducedNet.getNode("Util2").addInputNode(reducedNet.getNode("Action"));
-		
+
 		UtilityTable table1 = ve.queryUtil(reducedNet, "Action");
-		UtilityTable table2 = ve.queryUtil(network, Arrays.asList("Action"), 
+		UtilityTable table2 = ve.queryUtil(network, Arrays.asList("Action"),
 				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		
+
 		for (Assignment a : table1.getTable().keySet()) {
 			assertEquals(table1.getUtil(a), table2.getUtil(a), 0.01);
 		}
-		
+
 		reducedNet2.addNode(network.getNode("Action").copy());
 		reducedNet2.addNode(network.getNode("Util1").copy());
 		reducedNet2.addNode(network.getNode("Util2").copy());
-		reducedNet2.getNode("Util1").addInputNode(reducedNet2.getNode("Burglary"));
-		reducedNet2.getNode("Util1").addInputNode(reducedNet2.getNode("Action"));
-		reducedNet2.getNode("Util2").addInputNode(reducedNet2.getNode("Burglary"));
-		reducedNet2.getNode("Util2").addInputNode(reducedNet2.getNode("Action"));
-		
+		reducedNet2.getNode("Util1").addInputNode(
+				reducedNet2.getNode("Burglary"));
+		reducedNet2.getNode("Util1")
+				.addInputNode(reducedNet2.getNode("Action"));
+		reducedNet2.getNode("Util2").addInputNode(
+				reducedNet2.getNode("Burglary"));
+		reducedNet2.getNode("Util2")
+				.addInputNode(reducedNet2.getNode("Action"));
+
 		UtilityTable table3 = ve.queryUtil(reducedNet2, "Action");
-		
+
 		for (Assignment a : table1.getTable().keySet()) {
 			assertEquals(table1.getUtil(a), table3.getUtil(a), 0.8);
 		}
 	}
-	
-	
+
 	@Test
 	public void test6() throws DialException, InterruptedException {
 		BNetwork old = network.copy();
-		
+
 		network.getNode("Alarm").removeInputNode("Earthquake");
 		network.getNode("Alarm").removeInputNode("Burglary");
-		network.getChanceNode("Alarm").setDistrib(new CategoricalTable("Alarm", "False"));
-		
+		network.getChanceNode("Alarm").setDistrib(
+				new CategoricalTable("Alarm", "False"));
+
 		test1();
 		test2();
 		test3();
-		
+
 		network = old;
 	}
-	
-	
 
 }

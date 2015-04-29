@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -32,16 +32,17 @@ import java.util.function.Function;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 
-
 /**
  * Representation of a collection of intervals, each of which is associated with
- * a content object, and start and end values. The difference between the start and
- * end values of an interval can for instance represent the object probability.
+ * a content object, and start and end values. The difference between the start
+ * and end values of an interval can for instance represent the object
+ * probability.
  * 
- * <p>The intervals can then be used for sampling a content object according to 
- * the defined intervals.
+ * <p>
+ * The intervals can then be used for sampling a content object according to the
+ * defined intervals.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class Intervals<T> {
@@ -53,20 +54,20 @@ public class Intervals<T> {
 	Interval<T>[] intervals;
 
 	// sampler for the interval collection
-	Random sampler ;
+	Random sampler;
 
 	// total probability for the table
 	double totalProb;
 
- 
 	/**
-	 * Creates a new interval collection with a set of (content,probability) pairs
+	 * Creates a new interval collection with a set of (content,probability)
+	 * pairs
 	 * 
 	 * @param table the tables from which to create the intervals
-	 * @throws DialException  if the intervals could not be created
+	 * @throws DialException if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Map<T,Double> table) throws DialException {
+	public Intervals(Map<T, Double> table) throws DialException {
 
 		intervals = new Interval[table.size()];
 		int i = 0;
@@ -77,7 +78,7 @@ public class Intervals<T> {
 			if (prob == Double.NaN) {
 				throw new DialException("probability is NaN: " + table);
 			}
-			intervals[i++] = new Interval<T>(a,totalProb, totalProb+prob);
+			intervals[i++] = new Interval<T>(a, totalProb, totalProb + prob);
 			totalProb += prob;
 		}
 
@@ -86,18 +87,18 @@ public class Intervals<T> {
 		}
 		sampler = new Random();
 	}
-	
 
 	/**
-	 * Creates a new interval collection with a collection of values and a function
-	 * specifying the probability of each value
+	 * Creates a new interval collection with a collection of values and a
+	 * function specifying the probability of each value
 	 * 
 	 * @param content the collection of content objects
 	 * @param probs the function associating a weight to each object
-	 * @throws DialException  if the intervals could not be created
+	 * @throws DialException if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Collection<T> content, Function<T,Double> probs) throws DialException {
+	public Intervals(Collection<T> content, Function<T, Double> probs)
+			throws DialException {
 
 		intervals = new Interval[content.size()];
 		int i = 0;
@@ -108,7 +109,7 @@ public class Intervals<T> {
 			if (prob == Double.NaN) {
 				throw new DialException("probability is NaN: " + a);
 			}
-			intervals[i++] = new Interval<T>(a,totalProb, totalProb+prob);
+			intervals[i++] = new Interval<T>(a, totalProb, totalProb + prob);
 			totalProb += prob;
 		}
 
@@ -117,11 +118,10 @@ public class Intervals<T> {
 		}
 		sampler = new Random();
 	}
-	
-	
+
 	/**
-	 * Samples an object from the interval collection, using a simple
-	 * binary search procedure.
+	 * Samples an object from the interval collection, using a simple binary
+	 * search procedure.
 	 * 
 	 * @return the sampled object
 	 * @throws DialException if the sampling could not be performed
@@ -129,40 +129,45 @@ public class Intervals<T> {
 	public T sample() throws DialException {
 
 		if (intervals.length == 0) {
-			throw new DialException("could not sample: empty interval");	
+			throw new DialException("could not sample: empty interval");
 		}
 
 		if (sampler == null) {
 			log.debug("sampler is null");
 			sampler = new Random();
 		}
-		
-		double rand = sampler.nextDouble()*totalProb;
+
+		double rand = sampler.nextDouble() * totalProb;
 
 		int min = 0;
-		int max = intervals.length ;
+		int max = intervals.length;
 		while (min <= max) {
 			int mid = min + (max - min) / 2;
 			switch (intervals[mid].compareTo(rand)) {
-			case +1: max = mid - 1; break;
-			case 0: return intervals[mid].getObject(); 
-			case -1 : min = mid + 1; break;
+			case +1:
+				max = mid - 1;
+				break;
+			case 0:
+				return intervals[mid].getObject();
+			case -1:
+				min = mid + 1;
+				break;
 			}
 		}
 
-		throw new DialException("could not sample given the intervals: " + toString());
+		throw new DialException("could not sample given the intervals: "
+				+ toString());
 
 	}
-
 
 	/**
 	 * Returns a string representation of the intervals
 	 */
 	@Override
 	public String toString() {
-		String s =  "";
-		for (int i=0; i< intervals.length ; i++) {
-			s += intervals[i].toString()  + "\n";
+		String s = "";
+		for (int i = 0; i < intervals.length; i++) {
+			s += intervals[i].toString() + "\n";
 		}
 		return s;
 	}
@@ -178,20 +183,19 @@ public class Intervals<T> {
 
 }
 
-
 /**
- * Representation of a single interval, made of an object, a start value,
- * and an end value
+ * Representation of a single interval, made of an object, a start value, and an
+ * end value
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  * @param <T>
  */
 final class Interval<T> {
 
 	// the interval content
-	T a ;
+	T a;
 
 	// the start value
 	double start;
@@ -222,22 +226,21 @@ final class Interval<T> {
 	}
 
 	/**
-	 * Returns the position of the double value in comparison with 
-	 * the start and end values of the interval
+	 * Returns the position of the double value in comparison with the start and
+	 * end values of the interval
 	 * 
 	 * @param value the value to compare
-	 * @return +1 if value < start, 0 if start <= value <= end, -1 if value > end
+	 * @return +1 if value < start, 0 if start <= value <= end, -1 if value >
+	 *         end
 	 */
 	public int compareTo(double value) {
 		if (value >= start) {
 			if (value < end) {
 				return 0;
-			}
-			else {
+			} else {
 				return -1;
 			}
-		}
-		else {
+		} else {
 			return +1;
 		}
 

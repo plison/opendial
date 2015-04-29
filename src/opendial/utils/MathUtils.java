@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.utils;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,28 +32,26 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import opendial.arch.Logger;
 
-
 /**
  * Math utilities.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class MathUtils {
 
 	// logger
 	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
 
-    
 	/**
-	 * Returns true is all elements in the array a have a lower value than
-	 * the corresponding elements in the array b
+	 * Returns true is all elements in the array a have a lower value than the
+	 * corresponding elements in the array b
 	 * 
 	 * @param a the first array
 	 * @param b the second array
 	 * @return true is a is lower than b in all dimensions, and false otherwise
 	 */
 	public static boolean isLower(double[] a, double[] b) {
-		for (int i = 0 ; i < a.length  ; i++) {
+		for (int i = 0; i < a.length; i++) {
 			if (a[i] > b[i]) {
 				return false;
 			}
@@ -74,17 +71,13 @@ public class MathUtils {
 			return Double.MAX_VALUE;
 		}
 		double dist = IntStream.range(0, point1.length)
-				.mapToDouble(i -> Math.pow(point1[i]-point2[i], 2))
-				.sum();
+				.mapToDouble(i -> Math.pow(point1[i] - point2[i], 2)).sum();
 		return Math.sqrt(dist);
 	}
 
-
-
-
 	/**
-	 * Returns the minimal Euclidian distance between any two pairs of points
-	 * in the collection of points provided as argument.
+	 * Returns the minimal Euclidian distance between any two pairs of points in
+	 * the collection of points provided as argument.
 	 * 
 	 * @param points the collection of points
 	 * @return the minimum distance between all possible pairs of points
@@ -92,9 +85,9 @@ public class MathUtils {
 	public static double getMinEuclidianDistance(Collection<double[]> points) {
 		double minDistance = Double.MAX_VALUE;
 		List<double[]> l = new ArrayList<double[]>(points);
-		for (int i = 0 ; i < points.size()-1 ; i++) {
+		for (int i = 0; i < points.size() - 1; i++) {
 			double[] first = l.get(i);
-			for (int j = i+1 ; j < points.size() ; j++) {
+			for (int j = i + 1; j < points.size(); j++) {
 				double[] second = l.get(j);
 				double dist = getDistance(first, second);
 				if (dist < minDistance) {
@@ -105,49 +98,45 @@ public class MathUtils {
 		return minDistance;
 	}
 
-	
 	/**
-	 * Parse basic mathematical expressions comprised of two numbers joined by
-	 * a binary operator, such as 1+1, 3-2,3*7 or 6/2.
+	 * Parse basic mathematical expressions comprised of two numbers joined by a
+	 * binary operator, such as 1+1, 3-2,3*7 or 6/2.
 	 * 
 	 * @param expression the mathematical expression as a string
 	 * @return the result of the evaluation
 	 */
 	public static double evaluateExpression(String expression) {
-		
+
 		Expression e = new ExpressionBuilder(expression).build();
 		return e.evaluate();
 	}
 
-	
 	/**
 	 * Returns the log-gamma value using Lanczos approximation formula
 	 * 
 	 * Reference: http://introcs.cs.princeton.edu/java/91float/Gamma.java
 	 * 
 	 * @param x the point
-	 * @return  the log-gamma value for the point
+	 * @return the log-gamma value for the point
 	 */
 	static double logGamma(double x) {
-	      double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
-	      double ser = 1.0 + 76.18009173    / (x + 0)   - 86.50532033    / (x + 1)
-	                       + 24.01409822    / (x + 2)   -  1.231739516   / (x + 3)
-	                       +  0.00120858003 / (x + 4)   -  0.00000536382 / (x + 5);
-	      return tmp + Math.log(ser * Math.sqrt(2 * Math.PI));
-	   }
-	  
-	
+		double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
+		double ser = 1.0 + 76.18009173 / (x + 0) - 86.50532033 / (x + 1)
+				+ 24.01409822 / (x + 2) - 1.231739516 / (x + 3) + 0.00120858003
+				/ (x + 4) - 0.00000536382 / (x + 5);
+		return tmp + Math.log(ser * Math.sqrt(2 * Math.PI));
+	}
+
 	/**
-	 * Returns the value of the gamma function: 
-	 * 	Gamma(x) = integral( t^(x-1) e^(-t), t = 0 .. infinity)
+	 * Returns the value of the gamma function: Gamma(x) = integral( t^(x-1)
+	 * e^(-t), t = 0 .. infinity)
 	 * 
 	 * @param x the point
 	 * @return the gamma value fo the point
 	 */
-	public  static double gamma(double x) { 
-		   return Math.exp(logGamma(x)); 
-		 }
-	
+	public static double gamma(double x) {
+		return Math.exp(logGamma(x));
+	}
 
 	/**
 	 * Returns the volume of an N-ball of a certain radius.
@@ -157,10 +146,9 @@ public class MathUtils {
 	 * @return the resulting volume
 	 */
 	public static double getVolume(double radius, int dimension) {
-		double numerator = Math.pow(Math.PI,dimension/2.0);
-		double denum = gamma((dimension/2.0) + 1);
+		double numerator = Math.pow(Math.PI, dimension / 2.0);
+		double denum = gamma((dimension / 2.0) + 1);
 		double radius2 = Math.pow(radius, dimension);
-		return radius2*numerator/denum;
-	} 
+		return radius2 * numerator / denum;
+	}
 }
-

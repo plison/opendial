@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.bn.distribs.densityfunctions;
 
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,10 +40,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Density function for a Dirichlet distribution.  The distribution is defined through an array
- * of alpha hyper-parameters. 
+ * Density function for a Dirichlet distribution. The distribution is defined
+ * through an array of alpha hyper-parameters.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class DirichletDensityFunction implements DensityFunction {
 
@@ -57,12 +56,14 @@ public class DirichletDensityFunction implements DensityFunction {
 
 	// normalisation factor
 	double C;
-	
+
 	// random number generator
-	Random rng = new Random(Calendar.getInstance().getTimeInMillis() + Thread.currentThread().getId());
+	Random rng = new Random(Calendar.getInstance().getTimeInMillis()
+			+ Thread.currentThread().getId());
 
 	/**
-	 * Create a new Dirichlet density function with the provided alpha parameters
+	 * Create a new Dirichlet density function with the provided alpha
+	 * parameters
 	 * 
 	 * @param alphas the hyper-parameters for the density function
 	 */
@@ -71,7 +72,7 @@ public class DirichletDensityFunction implements DensityFunction {
 		if (alphas.length < 2) {
 			log.warning("must have at least 2 alphas");
 		}
-		for (int i = 0 ; i < alphas.length ; i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			if (alphas[i] <= 0) {
 				log.warning("alphas of the Dirichlet distribution are not well formed");
 			}
@@ -80,8 +81,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Returns the density for a given point x.  The dimensionality of x must correspond to
-	 * the dimensionality of the density function.
+	 * Returns the density for a given point x. The dimensionality of x must
+	 * correspond to the dimensionality of the density function.
 	 * 
 	 * @param x a given point
 	 * @return the density for the point
@@ -91,9 +92,10 @@ public class DirichletDensityFunction implements DensityFunction {
 		if (x.length == alphas.length) {
 
 			double sum = 0;
-			for (int i = 0; i < x.length ; i++) {
-				if (x[i] <0 || x[i] > 1) {
-					log.warning(new ArrayVal(x) + " does not satisfy the constraints >= 0 and <= 1");
+			for (int i = 0; i < x.length; i++) {
+				if (x[i] < 0 || x[i] > 1) {
+					log.warning(new ArrayVal(x)
+							+ " does not satisfy the constraints >= 0 and <= 1");
 				}
 				sum += x[i];
 			}
@@ -102,15 +104,14 @@ public class DirichletDensityFunction implements DensityFunction {
 			}
 
 			double result = C;
-			for (int i = 0; i < x.length ; i++) {
-				result *= Math.pow(x[i], alphas[i]-1);
+			for (int i = 0; i < x.length; i++) {
+				result *= Math.pow(x[i], alphas[i] - 1);
 			}
 			return result;
 		}
 		log.warning("incompatible sizes: " + x.length + "!=" + alphas.length);
 		return 0.0;
 	}
-
 
 	/**
 	 * Returns the dimensionality of the density function
@@ -122,7 +123,6 @@ public class DirichletDensityFunction implements DensityFunction {
 		return alphas.length;
 	}
 
-	
 	/**
 	 * Returns a sampled value for the density function.
 	 * 
@@ -133,17 +133,16 @@ public class DirichletDensityFunction implements DensityFunction {
 
 		double sum = 0;
 		double[] sample = new double[alphas.length];
-		for (int i = 0 ; i < alphas.length ; i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			sample[i] = sampleFromGamma(alphas[i], 1);
 			sum += sample[i];
 		}
-		for (int i = 0 ; i < alphas.length ; i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			sample[i] = sample[i] / sum;
 		}
-		return sample;		
+		return sample;
 	}
 
-	
 	/**
 	 * Copies the density function (keeping the same alpha-values).
 	 * 
@@ -172,87 +171,83 @@ public class DirichletDensityFunction implements DensityFunction {
 	private double calculateC() {
 		double alphaSum = 0;
 		double denominator = 1;
-		for (int i = 0 ; i < alphas.length ;i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			alphaSum += alphas[i];
 			denominator *= MathUtils.gamma(alphas[i]);
 		}
 		double numerator = MathUtils.gamma(alphaSum);
 		if (denominator != 0.0) {
-		return numerator / denominator;
-		}
-		else {
+			return numerator / denominator;
+		} else {
 			return Double.MAX_VALUE;
 		}
 	}
-	
-	   
+
 	/**
-	 * Samples a value from a gamma distribution with parameters k and theta. Reference: 
-	 * Non-Uniform Random Variate Generation, Devroye.
-	 * (URL: http://cgm.cs.mcgill.ca/~luc/rnbookindex.html).
+	 * Samples a value from a gamma distribution with parameters k and theta.
+	 * Reference: Non-Uniform Random Variate Generation, Devroye. (URL:
+	 * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html).
 	 * 
 	 * @param k the parameter k
 	 * @param theta the parameter theta
 	 * @return the sample distribution
 	 */
 	private double sampleFromGamma(double k, double theta) {
-		 boolean accept = false;
-		    if (k < 1) {
-		 // Weibull algorithm
-		 double c = (1 / k);
-		 double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
-		 double u, v, z, e, x;
-		 do {
-		  u = rng.nextDouble();
-		  v = rng.nextDouble();
-		  z = -Math.log(u);
-		  e = -Math.log(v);
-		  x = Math.pow(z, c);
-		  if ((z + e) >= (d + x)) {
-		   accept = true;
-		  }
-		 } while (!accept);
-		 return (x * theta);
-		    } else {
-		 // Cheng's algorithm
-		 double b = (k - Math.log(4));
-		 double c = (k + Math.sqrt(2 * k - 1));
-		 double lam = Math.sqrt(2 * k - 1);
-		 double cheng = (1 + Math.log(4.5));
-		 double u, v, x, y, z, r;
-		 do {
-		  u = rng.nextDouble();
-		  v = rng.nextDouble();
-		  y = ((1 / lam) * Math.log(v / (1 - v)));
-		  x = (k * Math.exp(y));
-		  z = (u * v * v);
-		  r = (b + (c * y) - x);
-		  if ((r >= ((4.5 * z) - cheng)) ||
-		                    (r >= Math.log(z))) {
-		   accept = true;
-		  }
-		 } while (!accept);
-		 return (x * theta);
-		    }
-		  }
+		boolean accept = false;
+		if (k < 1) {
+			// Weibull algorithm
+			double c = (1 / k);
+			double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
+			double u, v, z, e, x;
+			do {
+				u = rng.nextDouble();
+				v = rng.nextDouble();
+				z = -Math.log(u);
+				e = -Math.log(v);
+				x = Math.pow(z, c);
+				if ((z + e) >= (d + x)) {
+					accept = true;
+				}
+			} while (!accept);
+			return (x * theta);
+		} else {
+			// Cheng's algorithm
+			double b = (k - Math.log(4));
+			double c = (k + Math.sqrt(2 * k - 1));
+			double lam = Math.sqrt(2 * k - 1);
+			double cheng = (1 + Math.log(4.5));
+			double u, v, x, y, z, r;
+			do {
+				u = rng.nextDouble();
+				v = rng.nextDouble();
+				y = ((1 / lam) * Math.log(v / (1 - v)));
+				x = (k * Math.exp(y));
+				z = (u * v * v);
+				r = (b + (c * y) - x);
+				if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
+					accept = true;
+				}
+			} while (!accept);
+			return (x * theta);
+		}
+	}
 
-	
 	/**
-	 * Returns a discretised version of the Dirichlet.  The discretised table
-	 * is simply a list of X sampled values from the Dirichlet, each value having
-	 * a probability 1/X. 
+	 * Returns a discretised version of the Dirichlet. The discretised table is
+	 * simply a list of X sampled values from the Dirichlet, each value having a
+	 * probability 1/X.
 	 * 
 	 * @return the discretised version of the density function.
 	 */
 	@Override
 	public Map<double[], Double> discretise(int nbBuckets) {
 		Map<double[], Double> table = new HashMap<double[], Double>();
-		for (int i = 0 ; i < nbBuckets ; i++) {
-			table.put(sample(), 1.0/nbBuckets);
+		for (int i = 0; i < nbBuckets; i++) {
+			table.put(sample(), 1.0 / nbBuckets);
 		}
 		return table;
 	}
-	
+
 	/**
 	 * Returns the mean of the Dirichlet.
 	 * 
@@ -261,15 +256,14 @@ public class DirichletDensityFunction implements DensityFunction {
 	@Override
 	public double[] getMean() {
 		double[] mean = new double[alphas.length];
-		for (int i = 0 ; i < alphas.length ; i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			mean[i] = alphas[i] / getAlphaSum();
 		}
 		return mean;
 	}
-	
-	
+
 	/**
-	 * Returns the variance of the Dirichlet. 
+	 * Returns the variance of the Dirichlet.
 	 * 
 	 * @return the variance.
 	 */
@@ -277,27 +271,24 @@ public class DirichletDensityFunction implements DensityFunction {
 	public double[] getVariance() {
 		double[] variance = new double[alphas.length];
 		double denominator = Math.pow(getAlphaSum(), 2) * (getAlphaSum() + 1);
-		for (int j = 0 ; j < alphas.length ; j++) {
-			double numerator = alphas[j]*(getAlphaSum() - alphas[j]);
+		for (int j = 0; j < alphas.length; j++) {
+			double numerator = alphas[j] * (getAlphaSum() - alphas[j]);
 			variance[j] = numerator / denominator;
 		}
 		return variance;
 	}
-	
-	
+
 	/**
-	 * Throws an exception (calculating the CDF of a Dirichlet is quite hard and not
-	 * currently implemented).
+	 * Throws an exception (calculating the CDF of a Dirichlet is quite hard and
+	 * not currently implemented).
 	 * 
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
-		throw new DialException("currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
+		throw new DialException(
+				"currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
 	}
 
-
-
-	
 	/**
 	 * Returns the hashcode for the distribution.
 	 * 
@@ -307,18 +298,15 @@ public class DirichletDensityFunction implements DensityFunction {
 	public int hashCode() {
 		return -32 + alphas.hashCode();
 	}
-	
-	
+
 	private double getAlphaSum() {
 		double sum = 0;
-		for (int j = 0 ; j < alphas.length ; j++) {
+		for (int j = 0; j < alphas.length; j++) {
 			sum += alphas[j];
 		}
 		return sum;
 	}
 
-	
-	
 	@Override
 	public List<Element> generateXML(Document doc) {
 		Element distribElement = doc.createElement("distrib");
@@ -326,16 +314,13 @@ public class DirichletDensityFunction implements DensityFunction {
 		Attr id = doc.createAttribute("type");
 		id.setValue("dirichlet");
 		distribElement.setAttributeNode(id);
-		for (int i = 0 ; i < alphas.length ; i++) {
+		for (int i = 0; i < alphas.length; i++) {
 			Element alphaElement = doc.createElement("alpha");
-			alphaElement.setTextContent(""+alphas[i]);
+			alphaElement.setTextContent("" + alphas[i]);
 			distribElement.appendChild(alphaElement);
 		}
-		
+
 		return Arrays.asList(distribElement);
 	}
 
-	
-	
 }
-

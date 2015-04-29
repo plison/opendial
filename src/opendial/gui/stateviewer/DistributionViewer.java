@@ -63,34 +63,38 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**
- * GUI window displaying a (discrete or continuous) distribution as a chart. The  graphical
- * layout of the chart is based on JFreeChart.
+ * GUI window displaying a (discrete or continuous) distribution as a chart. The
+ * graphical layout of the chart is based on JFreeChart.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 @SuppressWarnings({ "deprecation", "serial" })
 public class DistributionViewer extends JDialog {
 
 	// logger
-	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DistributionViewer",
+			Logger.Level.DEBUG);
 
 	String queryVar;
 	IndependentProbDistribution lastDistrib;
 
 	/**
-	 * Constructs a new viewer for the given distribution, connected to the state viewer component.
+	 * Constructs a new viewer for the given distribution, connected to the
+	 * state viewer component.
 	 * 
 	 * @param currentState the current dialogue state
 	 * @param queryVar the variable to display
 	 * @param viewer the state viewer component
 	 */
-	public DistributionViewer(final DialogueState currentState, final String queryVar, final StateViewer viewer) {
-		super(viewer.tab.getMainFrame().getFrame(),Dialog.ModalityType.MODELESS);
+	public DistributionViewer(final DialogueState currentState,
+			final String queryVar, final StateViewer viewer) {
+		super(viewer.tab.getMainFrame().getFrame(),
+				Dialog.ModalityType.MODELESS);
 		setTitle("Distribution Viewer");
 		this.queryVar = queryVar;
 		update(currentState);
 
-		addWindowListener( new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				super.windowClosing(e);
@@ -99,8 +103,6 @@ public class DistributionViewer extends JDialog {
 
 		});
 	}
-
-
 
 	/**
 	 * Constructs or update the current viewer with the distribution.
@@ -111,8 +113,9 @@ public class DistributionViewer extends JDialog {
 
 		if (!currentState.hasChanceNode(queryVar)) {
 			return;
-		}
-		else if (lastDistrib != null && this.lastDistrib.equals(currentState.getChanceNode(queryVar).getDistrib())) {
+		} else if (lastDistrib != null
+				&& this.lastDistrib.equals(currentState.getChanceNode(queryVar)
+						.getDistrib())) {
 			return;
 		}
 		this.lastDistrib = currentState.queryProb(queryVar);
@@ -125,15 +128,16 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
 		try {
-			IndependentProbDistribution indepDistrib = currentState.queryProb(queryVar);
+			IndependentProbDistribution indepDistrib = currentState
+					.queryProb(queryVar);
 			if (indepDistrib instanceof ContinuousDistribution) {
-				container.add(generatePanel(indepDistrib.toContinuous()), BorderLayout.CENTER);				
+				container.add(generatePanel(indepDistrib.toContinuous()),
+						BorderLayout.CENTER);
+			} else {
+				container.add(generatePanel(indepDistrib.toDiscrete()),
+						BorderLayout.CENTER);
 			}
-			else {
-				container.add(generatePanel(indepDistrib.toDiscrete()), BorderLayout.CENTER);
-			}
-		}
-		catch (DialException e) {
+		} catch (DialException e) {
 			log.warning("could not generate distribution viewer: " + e);
 		}
 		setContentPane(container);
@@ -141,12 +145,10 @@ public class DistributionViewer extends JDialog {
 			pack();
 			setLocation(new Random().nextInt(500), (new Random()).nextInt(500));
 			setVisible(true);
-		}
-		else {
+		} else {
 			validate();
 		}
 	}
-
 
 	/**
 	 * Generates a chart panel for the categorical table.
@@ -157,35 +159,36 @@ public class DistributionViewer extends JDialog {
 	private ChartPanel generatePanel(CategoricalTable distrib) {
 		final String variableName = distrib.getVariable();
 
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
 		distrib.getValues().stream()
-		.forEach(d -> dataset.addValue(distrib.getProb(d), "", ""+d));
+				.forEach(d -> dataset.addValue(distrib.getProb(d), "", "" + d));
 
 		JFreeChart chart = ChartFactory.createBarChart(
-				"Probability distribution P(" + variableName + ")", // chart title 
-				"Value", // domain axis label 
+				"Probability distribution P(" + variableName + ")", // chart
+																	// title
+				"Value", // domain axis label
 				"Probability", // range axis label
-				dataset, // data 
+				dataset, // data
 				PlotOrientation.VERTICAL, // orientation
-				false, // include legend 
+				false, // include legend
 				true, // tooltips
 				false); // URLs
 
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
-		BarRenderer renderer = (BarRenderer) plot.getRenderer(); 
-		renderer.setToolTipGenerator((d,s,c) -> {
-			return "P("+variableName + "=" + d.getColumnKeys().get(c) + ") = "+ d.getValue(s, c); 
+		BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		renderer.setToolTipGenerator((d, s, c) -> {
+			return "P(" + variableName + "=" + d.getColumnKeys().get(c)
+					+ ") = " + d.getValue(s, c);
 		});
 
 		renderer.setBarPainter(new StandardBarPainter());
 		renderer.setDrawBarOutline(false);
-		renderer.setSeriesPaint(0, new Color(5,100,30)); 
+		renderer.setSeriesPaint(0, new Color(5, 100, 30));
 
-		return new ChartPanel(chart, true, true, true, true, true); 
+		return new ChartPanel(chart, true, true, true, true, true);
 
 	}
-
 
 	/**
 	 * Constructs a chart panel for the continuous distribution.
@@ -194,80 +197,83 @@ public class DistributionViewer extends JDialog {
 	 * @return the generated chart panel
 	 * @throws DialException if the distribution could not be displayed
 	 */
-	private ChartPanel generatePanel(ContinuousDistribution distrib) throws DialException {
+	private ChartPanel generatePanel(ContinuousDistribution distrib)
+			throws DialException {
 
 		final String variableName = distrib.getVariable();
 
 		List<XYSeries> series = extractSeries(distrib.getFunction());
 
-		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis("Value"));
+		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(
+				new NumberAxis("Value"));
 		for (XYSeries serie : series) {
 
-			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title 
-					"Value", // domain axis label 
+			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title
+					"Value", // domain axis label
 					"Density", // range axis label
-					new XYSeriesCollection(serie), // data 
+					new XYSeriesCollection(serie), // data
 					PlotOrientation.VERTICAL, // orientation
-					(distrib.getFunction().getDimensionality() > 1), // include legend 
-					true, // tooltips? 
+					(distrib.getFunction().getDimensionality() > 1), // include
+																		// legend
+					true, // tooltips?
 					false); // URLs?
 
 			XYPlot plot = (XYPlot) chart.getPlot();
 			combined.add(plot);
-			plot.setBackgroundPaint(Color.white); plot.setRangeGridlinePaint(Color.white);			
-		}	
+			plot.setBackgroundPaint(Color.white);
+			plot.setRangeGridlinePaint(Color.white);
+		}
 
-		return new ChartPanel(new JFreeChart("Probability distribution P(" + variableName + ")", 
-				JFreeChart.DEFAULT_TITLE_FONT, combined, true), false); 
+		return new ChartPanel(new JFreeChart("Probability distribution P("
+				+ variableName + ")", JFreeChart.DEFAULT_TITLE_FONT, combined,
+				true), false);
 	}
 
+	private List<XYSeries> extractSeries(DensityFunction function)
+			throws DialException {
 
+		List<XYSeries> series = new ArrayList<XYSeries>();
 
-	private List<XYSeries>extractSeries(DensityFunction function) throws DialException {
-
-		List<XYSeries> series =new ArrayList<XYSeries>();
-
-		for (int i = 0 ; i < function.getDimensionality() ; i++) {
+		for (int i = 0; i < function.getDimensionality(); i++) {
 			series.add(new XYSeries("dimension " + i));
 		}
 
 		Consumer<double[]> addToSeries = p -> {
 			double density = function.getDensity(p);
-			for (int d = 0 ; d < p.length ; d++) {
+			for (int d = 0; d < p.length; d++) {
 				series.get(d).add(p[d], density);
 			}
 		};
 
 		Set<double[]> points = function.discretise(500).keySet();
 		points.stream().forEach(addToSeries);
-		
-		
+
 		for (XYSeries serie : series) {
-			boolean doSmoothing = (function instanceof KernelDensityFunction) 
+			boolean doSmoothing = (function instanceof KernelDensityFunction)
 					|| (function instanceof DirichletDensityFunction);
 			while (doSmoothing) {
 				int nbFluctuations = 0;
 				double prevPrevY = serie.getY(0).doubleValue();
 				double prevY = serie.getY(1).doubleValue();
-				for (int i = 2 ; i < serie.getItemCount(); i++) {
+				for (int i = 2; i < serie.getItemCount(); i++) {
 					double currentY = serie.getY(i).doubleValue();
-					if (Math.signum(prevY - prevPrevY) != Math.signum(currentY - prevY)) {
-						double avg = (prevPrevY + prevY + currentY)/3.0;
-						serie.updateByIndex(i-2, avg);
-						serie.updateByIndex(i-1, avg);
+					if (Math.signum(prevY - prevPrevY) != Math.signum(currentY
+							- prevY)) {
+						double avg = (prevPrevY + prevY + currentY) / 3.0;
+						serie.updateByIndex(i - 2, avg);
+						serie.updateByIndex(i - 1, avg);
 						serie.updateByIndex(i, avg);
 						nbFluctuations++;
 					}
 					prevPrevY = prevY;
 					prevY = currentY;
 				}
-				doSmoothing = (nbFluctuations> points.size()/2)? true : false;
+				doSmoothing = (nbFluctuations > points.size() / 2) ? true
+						: false;
 			}
 
 		}
 		return series;
 	}
-
-
 
 }

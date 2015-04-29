@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -26,35 +26,31 @@ package opendial.bn.values;
 import opendial.arch.Logger;
 import opendial.utils.StringUtils;
 
-
 /**
  * Representation of a double value
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 
-
 public final class DoubleVal implements Value {
 
-	 // logger
-	 public static Logger log = new Logger("DoubleVal", Logger.Level.DEBUG);
+	// logger
+	public static Logger log = new Logger("DoubleVal", Logger.Level.DEBUG);
 
-	 
 	// the double
 	final double d;
 	final int hashcode;
 
 	/**
-	 * Creates the double value
-	 * (protected, use the ValueFactory instead)
+	 * Creates the double value (protected, use the ValueFactory instead)
 	 * 
 	 * @param d the double
 	 */
-	protected DoubleVal(double d) { 
+	protected DoubleVal(double d) {
 		this.d = d;
 		hashcode = new Double(d).hashCode();
-		};
+	};
 
 	/**
 	 * Returns the hashcode for the double
@@ -62,7 +58,9 @@ public final class DoubleVal implements Value {
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return hashcode; }
+	public int hashCode() {
+		return hashcode;
+	}
 
 	/**
 	 * Returns true if the objects are similar, false otherwise
@@ -71,9 +69,9 @@ public final class DoubleVal implements Value {
 	 * @return true if similar, false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
-		boolean result = (o instanceof DoubleVal && 
-				Math.abs(((DoubleVal)o).getDouble() - getDouble()) < 0.000001);
+	public boolean equals(Object o) {
+		boolean result = (o instanceof DoubleVal && Math.abs(((DoubleVal) o)
+				.getDouble() - getDouble()) < 0.000001);
 		return result;
 	}
 
@@ -82,17 +80,19 @@ public final class DoubleVal implements Value {
 	 * 
 	 * @return the double value
 	 */
-	public Double getDouble() {return d; }
+	public Double getDouble() {
+		return d;
+	}
 
-
-	
 	/**
 	 * Returns a copy of the double value
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public DoubleVal copy() { return new DoubleVal(d); }
+	public DoubleVal copy() {
+		return new DoubleVal(d);
+	}
 
 	/**
 	 * Returns a string representation of the double
@@ -100,7 +100,7 @@ public final class DoubleVal implements Value {
 	 * @return the string representation
 	 */
 	@Override
-	public String toString() { 
+	public String toString() {
 		return "" + StringUtils.getShortForm(d);
 	}
 
@@ -113,38 +113,37 @@ public final class DoubleVal implements Value {
 	public int length() {
 		return 1;
 	}
+
 	/**
-	 * If v is a DoubleVal, returns the addition of the two values.  If v is a StringVal,
-	 * returns the string concatenation of the two.  Else, returns none.
+	 * If v is a DoubleVal, returns the addition of the two values. If v is a
+	 * StringVal, returns the string concatenation of the two. Else, returns
+	 * none.
 	 */
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof DoubleVal) {
-			return new DoubleVal(d + ((DoubleVal)v).getDouble());
-		}
-		else if (v instanceof StringVal) {
+			return new DoubleVal(d + ((DoubleVal) v).getDouble());
+		} else if (v instanceof StringVal) {
 			return ValueFactory.create(toString() + " " + v.toString());
-		}
-		else if (v instanceof NoneVal) {
+		} else if (v instanceof NoneVal) {
 			return this;
-		}
-		else {
+		} else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
 	}
-	
+
 	/**
 	 * Compares the double value to another value
 	 * 
-	 * @return usual ordering, or hashcode difference if the value is not a double
+	 * @return usual ordering, or hashcode difference if the value is not a
+	 *         double
 	 */
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof DoubleVal) {
-			return Double.compare(d, ((DoubleVal)o).getDouble());
-		}
-		else {
+			return Double.compare(d, ((DoubleVal) o).getDouble());
+		} else {
 			return 0;
 		}
 	}
@@ -156,5 +155,5 @@ public final class DoubleVal implements Value {
 	public boolean contains(Value subvalue) {
 		return equals(subvalue);
 	}
-	
+
 }

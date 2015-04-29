@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,41 +23,44 @@
 
 package opendial.modules;
 
-
 import java.util.Collection;
 
 import opendial.arch.DialException;
 import opendial.state.DialogueState;
 
-
 /**
- * Representation of a system module.  A module is connected to the dialogue system and
- * can read and write to its dialogue state.  It can also be paused/resumed.
+ * Representation of a system module. A module is connected to the dialogue
+ * system and can read and write to its dialogue state. It can also be
+ * paused/resumed.
  * 
- * <p>Two distinct families of modules can be distinguished: <ol>
- * <li>Asynchronous modules run independently of the dialogue system (once initiated by
- * the method start().
- * <li>Synchronous modules are triggered upon an update of the dialogue state via the method
- * trigger(state, updatedVars).  
+ * <p>
+ * Two distinct families of modules can be distinguished:
+ * <ol>
+ * <li>Asynchronous modules run independently of the dialogue system (once
+ * initiated by the method start().
+ * <li>Synchronous modules are triggered upon an update of the dialogue state
+ * via the method trigger(state, updatedVars).
  * </ol>
  * 
- * <p>Of course, nothing prevents in practice a module to operate both in synchronous and 
- * asynchronous mode.
+ * <p>
+ * Of course, nothing prevents in practice a module to operate both in
+ * synchronous and asynchronous mode.
  * 
- * <p> In order to make the module easy to load into the system (via e.g. the "&lt;modules&gt;" 
- * parameters in system settings or the command line), it is a good idea to ensure that implement 
- * each module with a constructor with a single argument: the DialogueSystem object to which it 
- * should be connected. Additional arguments can in this case be specified through parameters 
- * in the system settings. 
+ * <p>
+ * In order to make the module easy to load into the system (via e.g. the
+ * "&lt;modules&gt;" parameters in system settings or the command line), it is a
+ * good idea to ensure that implement each module with a constructor with a
+ * single argument: the DialogueSystem object to which it should be connected.
+ * Additional arguments can in this case be specified through parameters in the
+ * system settings.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface Module {
 
-
 	/**
-	 * Starts the module. 
+	 * Starts the module.
 	 * 
 	 * @throws DialException if the initialisation fails
 	 */
@@ -78,7 +81,6 @@ public interface Module {
 	 */
 	public void pause(boolean toPause);
 
-	
 	/**
 	 * Returns true if the module is running (i.e. started and not paused), and
 	 * false otherwise
@@ -86,6 +88,5 @@ public interface Module {
 	 * @return whether the module is running or not
 	 */
 	public boolean isRunning();
-
 
 }

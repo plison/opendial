@@ -62,7 +62,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Utility functions for manipulating XML content
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class XMLUtils {
@@ -77,28 +77,26 @@ public class XMLUtils {
 	 * @return the XML document
 	 * @throws DialException if the XML document could not be read.
 	 */
-	public static Document getXMLDocument (String filename) throws DialException {
+	public static Document getXMLDocument(String filename) throws DialException {
 		InputStream is = null;
 		if (new File(filename).exists()) {
 			try {
 				is = new FileInputStream(filename);
-				} 
-				catch (IOException e) {
-					log.warning(e.getMessage());
-					throw new DialException(e.getMessage());
-				}
-		}
-		else {
-			is = XMLUtils.class.getResourceAsStream("/"+filename.replace("//", "/"));
+			} catch (IOException e) {
+				log.warning(e.getMessage());
+				throw new DialException(e.getMessage());
+			}
+		} else {
+			is = XMLUtils.class.getResourceAsStream("/"
+					+ filename.replace("//", "/"));
 			if (is == null) {
 				throw new DialException("Resource cannot be found: " + filename);
 			}
 		}
-				
+
 		return getXMLDocument(new InputSource(new InputStreamReader(is)));
-		
+
 	}
-	
 
 	/**
 	 * Opens the XML document referenced by the input source, and returns it
@@ -107,7 +105,7 @@ public class XMLUtils {
 	 * @return the XML document
 	 * @throws DialException if the XML document could not be read.
 	 */
-	public static Document getXMLDocument (InputSource is) throws DialException {
+	public static Document getXMLDocument(InputSource is) throws DialException {
 		log.debug("parsing file: " + is);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -115,23 +113,19 @@ public class XMLUtils {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			builder.setErrorHandler(new XMLErrorHandler());
 			Document doc = builder.parse(is);
-			//		log.info("XML parsing of file: " + filename + " successful!");
+			// log.info("XML parsing of file: " + filename + " successful!");
 			return doc;
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			log.warning("Reading aborted: \n" + e.getMessage());
 			throw new DialException(e.getMessage());
-		} 
-		catch (ParserConfigurationException e) {
+		} catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			throw new DialException(e.getMessage());
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.warning(e.getMessage());
 			throw new DialException(e.getMessage());
 		}
 	}
-
 
 	/**
 	 * Serialises the XML node into a string.
@@ -141,12 +135,13 @@ public class XMLUtils {
 	 */
 	public static String serialise(Node node) {
 		try {
-			DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-			DOMImplementationLS lsImpl = (DOMImplementationLS)registry.getDOMImplementation("LS");
+			DOMImplementationRegistry registry = DOMImplementationRegistry
+					.newInstance();
+			DOMImplementationLS lsImpl = (DOMImplementationLS) registry
+					.getDOMImplementation("LS");
 			LSSerializer serializer = lsImpl.createLSSerializer();
 			return serializer.writeToString(node);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.debug("could not serialise XML node: " + e);
 			return "";
 		}
@@ -172,19 +167,21 @@ public class XMLUtils {
 		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			throw new DialException("cannot create XML file");
-		} 	
+		}
 	}
-
 
 	/**
 	 * Writes the XML document to the particular file specified as argument
+	 * 
 	 * @param doc the document
 	 * @param filename the path to the file in which to write the XML data
 	 * @throws DialException if the writing operation fails
 	 */
-	public static void writeXMLDocument(Document doc, String filename) throws DialException {
+	public static void writeXMLDocument(Document doc, String filename)
+			throws DialException {
 		try {
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
 			Transformer transformer;
 			transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -192,17 +189,15 @@ public class XMLUtils {
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 			log.info("writing operation to " + filename + " successful!");
-		} 
-		catch (TransformerConfigurationException e) {
+		} catch (TransformerConfigurationException e) {
 			log.warning(e.getMessage());
 		} catch (TransformerException e) {
 			log.warning(e.getMessage());
 		}
 	}
 
-
-	public static Document loadXMLFromString(String xml) throws ParserConfigurationException, SAXException, IOException
-	{
+	public static Document loadXMLFromString(String xml)
+			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		InputSource is = new InputSource(new StringReader(xml));
@@ -216,17 +211,16 @@ public class XMLUtils {
 	 * @return the main node
 	 * @throws DialException if node is ill-formatted
 	 */
-	public static Node getMainNode (Document doc) throws DialException {
-		for (int i = 0 ; i < doc.getChildNodes().getLength(); i++) {
+	public static Node getMainNode(Document doc) throws DialException {
+		for (int i = 0; i < doc.getChildNodes().getLength(); i++) {
 			Node node = doc.getChildNodes().item(i);
-			if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")) {
+			if (!node.getNodeName().equals("#text")
+					&& !node.getNodeName().equals("#comment")) {
 				return node;
 			}
 		}
 		throw new DialException("main node in XML file could not be retrieved");
 	}
-
-
 
 	/**
 	 * Validates a XML document containing a specification of a dialogue domain.
@@ -237,14 +231,18 @@ public class XMLUtils {
 	 * @return true if document is validated, false otherwise
 	 * @throws DialException if problem appears when parsing XML
 	 */
-	public static boolean validateXML(String dialSpecs, String schemaFile) throws DialException {
+	public static boolean validateXML(String dialSpecs, String schemaFile)
+			throws DialException {
 
-		log.debug ("Checking the validation of file " + dialSpecs + " against XML schema " + schemaFile + "...");
+		log.debug("Checking the validation of file " + dialSpecs
+				+ " against XML schema " + schemaFile + "...");
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
-			SchemaFactory schema = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-			factory.setSchema(schema.newSchema(new Source[] {new StreamSource(schemaFile)}));
+			SchemaFactory schema = SchemaFactory
+					.newInstance("http://www.w3.org/2001/XMLSchema");
+			factory.setSchema(schema.newSchema(new Source[] { new StreamSource(
+					schemaFile) }));
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
 			try {
@@ -253,34 +251,32 @@ public class XMLUtils {
 				log.debug("XML parsing of file: " + dialSpecs + " successful!");
 
 				// extracting included files, and validating them as well
-				String rootpath = dialSpecs.substring(0, dialSpecs.lastIndexOf("//")+1);
+				String rootpath = dialSpecs.substring(0,
+						dialSpecs.lastIndexOf("//") + 1);
 				Vector<String> includedFiles = extractIncludedFiles(doc);
 				for (String file : includedFiles) {
-					boolean validation = validateXML(rootpath+file, schemaFile);
+					boolean validation = validateXML(rootpath + file,
+							schemaFile);
 					if (!validation) {
 						return false;
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				throw new DialException(e.getMessage());
 			}
 			return true;
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			log.warning("Validation aborted: \n" + e.getMessage());
 			return false;
 		} catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			return false;
-		} 
+		}
 	}
 
-
-
 	/**
-	 * Extract included filenames in the XML document, assuming that filenames are provided
-	 * with the attribute "href".
+	 * Extract included filenames in the XML document, assuming that filenames
+	 * are provided with the attribute "href".
 	 * 
 	 * @param xmlDocument the XML document
 	 * @return the filenames to include
@@ -290,15 +286,17 @@ public class XMLUtils {
 		Vector<String> includedFiles = new Vector<String>();
 
 		NodeList top = xmlDocument.getChildNodes();
-		for (int i = 0 ; i < top.getLength(); i++) {
+		for (int i = 0; i < top.getLength(); i++) {
 			Node topNode = top.item(i);
 			NodeList firstElements = topNode.getChildNodes();
-			for (int j = 0 ; j < firstElements.getLength() ; j++) {
+			for (int j = 0; j < firstElements.getLength(); j++) {
 				Node midNode = firstElements.item(j);
-				for (int k = 0 ; k < midNode.getChildNodes().getLength() ; k++) {
+				for (int k = 0; k < midNode.getChildNodes().getLength(); k++) {
 					Node node = midNode.getChildNodes().item(k);
-					if (node.hasAttributes() && node.getAttributes().getNamedItem("href") != null) {
-						String fileName = node.getAttributes().getNamedItem("href").getNodeValue();
+					if (node.hasAttributes()
+							&& node.getAttributes().getNamedItem("href") != null) {
+						String fileName = node.getAttributes()
+								.getNamedItem("href").getNodeValue();
 						includedFiles.add(fileName);
 					}
 				}
@@ -312,7 +310,7 @@ public class XMLUtils {
 /**
  * Small error handler for XML syntax errors.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 final class XMLErrorHandler extends DefaultHandler {
@@ -320,20 +318,20 @@ final class XMLErrorHandler extends DefaultHandler {
 	static Logger log = new Logger("XMLErrorHandler", Logger.Level.NORMAL);
 
 	@Override
-	public void error (SAXParseException e) throws SAXParseException { 
-		log.warning("Parsing error: "+e.getMessage());
+	public void error(SAXParseException e) throws SAXParseException {
+		log.warning("Parsing error: " + e.getMessage());
 		throw e;
 	}
 
 	@Override
-	public void warning (SAXParseException e) { 
-		log.warning("Parsing problem: "+e.getMessage());
+	public void warning(SAXParseException e) {
+		log.warning("Parsing problem: " + e.getMessage());
 	}
 
 	@Override
-	public void fatalError (SAXParseException e) { 
-		log.severe("Parsing error: "+e.getMessage()); 
-		log.severe("Cannot continue."); 
+	public void fatalError(SAXParseException e) {
+		log.severe("Parsing error: " + e.getMessage());
+		log.severe("Cannot continue.");
 		System.exit(1);
 	}
 

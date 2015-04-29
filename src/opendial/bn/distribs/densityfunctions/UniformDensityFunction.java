@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -40,23 +40,24 @@ import org.w3c.dom.Element;
 /**
  * (Univariate) uniform density function, with a minimum and maximum.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class UniformDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("UniformDensityFunction", Logger.Level.NORMAL);
-	
+	public static Logger log = new Logger("UniformDensityFunction",
+			Logger.Level.NORMAL);
+
 	// minimum threshold
 	double minimum;
-	
+
 	// maximum threshold
 	double maximum;
-	
+
 	// sampler
 	Random sampler;
-	
+
 	/**
 	 * Creates a new uniform density function with the given minimum and maximum
 	 * threshold
@@ -69,8 +70,7 @@ public class UniformDensityFunction implements DensityFunction {
 		this.maximum = maximum;
 		sampler = new Random();
 	}
-	
-	
+
 	/**
 	 * Returns the density at the given point
 	 *
@@ -80,26 +80,23 @@ public class UniformDensityFunction implements DensityFunction {
 	@Override
 	public double getDensity(double... x) {
 		if (x[0] >= minimum && x[0] <= maximum) {
-			return 1.0f/(maximum-minimum);
-		}
-		else {
+			return 1.0f / (maximum - minimum);
+		} else {
 			return 0.0f;
 		}
 	}
 
-	
 	/**
-	 * Samples the density function 
+	 * Samples the density function
 	 * 
 	 * @return the sampled point
 	 */
 	@Override
 	public double[] sample() {
 		double length = maximum - minimum;
-		return new double[]{sampler.nextFloat()*length + minimum};
+		return new double[] { sampler.nextFloat() * length + minimum };
 	}
 
-	
 	/**
 	 * Returns a set of discrete values for the distribution
 	 * 
@@ -107,42 +104,40 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return the discretised values and their probability mass.
 	 */
 	@Override
-	public Map<double[],Double> discretise(int nbBuckets) {
-		Map<double[], Double> values = new HashMap<double[],Double>(nbBuckets);
-		double step = (maximum-minimum)/nbBuckets;
-		for (int i = 0 ; i < nbBuckets ; i++) {
-			double value = minimum  + i*step + step/2.0f;
-			values.put(new double[]{value}, 1.0/nbBuckets);
+	public Map<double[], Double> discretise(int nbBuckets) {
+		Map<double[], Double> values = new HashMap<double[], Double>(nbBuckets);
+		double step = (maximum - minimum) / nbBuckets;
+		for (int i = 0; i < nbBuckets; i++) {
+			double value = minimum + i * step + step / 2.0f;
+			values.put(new double[] { value }, 1.0 / nbBuckets);
 		}
 		return values;
 	}
-	
-	
+
 	/**
 	 * Returns the cumulative probability up to the given point
 	 *
 	 * @param x the point
-	 * @return the cumulative probability 
-	 * @throws DialException if the dimensionality of the point is greater than 1
+	 * @return the cumulative probability
+	 * @throws DialException if the dimensionality of the point is greater than
+	 *             1
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
 		if (x.length != 1) {
-			throw new DialException("Uniform distribution currently only accepts a dimensionality == 1");
+			throw new DialException(
+					"Uniform distribution currently only accepts a dimensionality == 1");
 		}
-		
+
 		if (x[0] < minimum) {
 			return 0.0;
-		}
-		else if (x[0] > maximum) {
+		} else if (x[0] > maximum) {
 			return 1.0;
-		}
-		else {
-			return (x[0]-minimum) / (maximum-minimum);
+		} else {
+			return (x[0] - minimum) / (maximum - minimum);
 		}
 	}
 
-	
 	/**
 	 * Returns a copy of the density function
 	 * 
@@ -150,10 +145,9 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public UniformDensityFunction copy() {
-		return new UniformDensityFunction(minimum,maximum);
+		return new UniformDensityFunction(minimum, maximum);
 	}
 
-	
 	/**
 	 * Returns a pretty print for the density function
 	 * 
@@ -164,7 +158,6 @@ public class UniformDensityFunction implements DensityFunction {
 		return "Uniform(+" + minimum + "," + maximum + ")";
 	}
 
-	
 	/**
 	 * Returns the hashcode for the function
 	 *
@@ -172,9 +165,9 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public int hashCode() {
-		return (new Double(maximum)).hashCode() - (new Double(minimum)).hashCode();
+		return (new Double(maximum)).hashCode()
+				- (new Double(minimum)).hashCode();
 	}
-
 
 	/**
 	 * Returns the mean of the distribution
@@ -183,7 +176,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] getMean() {
-		return new double[]{(minimum + maximum)/2.0};
+		return new double[] { (minimum + maximum) / 2.0 };
 	}
 
 	/**
@@ -193,10 +186,8 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] getVariance() {
-		return new double[]{Math.pow(maximum - minimum, 2) / 12.0};
+		return new double[] { Math.pow(maximum - minimum, 2) / 12.0 };
 	}
-
-
 
 	/**
 	 * Returns the dimensionality (constrained here to 1).
@@ -208,7 +199,6 @@ public class UniformDensityFunction implements DensityFunction {
 		return 1;
 	}
 
-
 	@Override
 	public List<Element> generateXML(Document doc) {
 		Element distribElement = doc.createElement("distrib");
@@ -217,14 +207,13 @@ public class UniformDensityFunction implements DensityFunction {
 		id.setValue("uniform");
 		distribElement.setAttributeNode(id);
 		Element minEl = doc.createElement("min");
-		minEl.setTextContent(""+ValueFactory.create(minimum));
+		minEl.setTextContent("" + ValueFactory.create(minimum));
 		distribElement.appendChild(minEl);
 		Element maxEl = doc.createElement("max");
-		maxEl.setTextContent(""+ValueFactory.create(maximum));
+		maxEl.setTextContent("" + ValueFactory.create(maximum));
 		distribElement.appendChild(maxEl);
-		
+
 		return Arrays.asList(distribElement);
 	}
-	
-}
 
+}

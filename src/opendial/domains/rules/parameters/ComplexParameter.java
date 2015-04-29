@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -37,7 +37,7 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 
 /**
- * Representation of a complex parameter expression.  The class uses the exp4j
+ * Representation of a complex parameter expression. The class uses the exp4j
  * package to dynamically evaluate the result of the expression.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
@@ -46,54 +46,57 @@ import opendial.datastructs.Template;
 public class ComplexParameter implements Parameter {
 
 	// logger
-	public static Logger log = new Logger("TemplateParameter", Logger.Level.DEBUG);
+	public static Logger log = new Logger("TemplateParameter",
+			Logger.Level.DEBUG);
 
 	// template expression for the parameter
 	Template template;
-	
+
 	// mathematical expression
 	Expression expression;
-	
+
 	// unknown parameter variables
 	Set<String> unknowns;
-	
 
 	/**
-	 * Constructs a new complex parameter with the given expression, and the list
-	 * of unknown parameter variables whose values must be provided.
+	 * Constructs a new complex parameter with the given expression, and the
+	 * list of unknown parameter variables whose values must be provided.
 	 * 
-	 * @param expression the expression 
+	 * @param expression the expression
 	 * @param unknowns the list of unknown parameter variables
 	 */
 	public ComplexParameter(String expression, Collection<String> unknowns) {
 		template = new Template(expression);
-		this.expression = new ExpressionBuilder(template.getStringWithoutBraces())
-			.variables(template.getSlots()).build();
+		this.expression = new ExpressionBuilder(
+				template.getStringWithoutBraces()).variables(
+				template.getSlots()).build();
 		this.unknowns = new HashSet<String>(unknowns);
 	}
-	
-	
+
 	/**
-	 * Returns the parameter value corresponding to the expression and the assignment
-	 * of values to the unknown parameters.
+	 * Returns the parameter value corresponding to the expression and the
+	 * assignment of values to the unknown parameters.
 	 */
 	@Override
 	public double getParameterValue(Assignment input) {
 		if (template.isFilledBy(input)) {
-		Map<String,Double> valueMap = input.getEntrySet().stream()
-				.filter(e -> e.getValue() instanceof DoubleVal)
-				.collect(Collectors.toMap(e -> e.getKey(), e -> ((DoubleVal)e.getValue()).getDouble()));
-		return expression.setVariables(valueMap).evaluate();
-		}
-		else {
+			Map<String, Double> valueMap = input
+					.getEntrySet()
+					.stream()
+					.filter(e -> e.getValue() instanceof DoubleVal)
+					.collect(
+							Collectors.toMap(e -> e.getKey(),
+									e -> ((DoubleVal) e.getValue()).getDouble()));
+			return expression.setVariables(valueMap).evaluate();
+		} else {
 			log.warning("cannot evaluate parameter " + this + " given " + input);
 			return 0.0;
 		}
 	}
-	
+
 	/**
-	 * Grounds the parameter by assigning the values in the assignment to the unknown
-	 * variables
+	 * Grounds the parameter by assigning the values in the assignment to the
+	 * unknown variables
 	 * 
 	 * @param input the grounding assignment
 	 * @return the grounded parameter
@@ -101,13 +104,12 @@ public class ComplexParameter implements Parameter {
 	public Parameter ground(Assignment input) {
 		if (template.isFilledBy(input)) {
 			return new FixedParameter(getParameterValue(input));
-		}
-		else {
-			return new ComplexParameter(template.fillSlots(input).toString(), unknowns);
+		} else {
+			return new ComplexParameter(template.fillSlots(input).toString(),
+					unknowns);
 		}
 	}
 
-	
 	/**
 	 * Returns the list of unknown parameter variables
 	 */
@@ -116,8 +118,6 @@ public class ComplexParameter implements Parameter {
 		return unknowns;
 	}
 
-	
-	
 	/**
 	 * Returns the parameter template as a string
 	 *
@@ -127,8 +127,7 @@ public class ComplexParameter implements Parameter {
 	public String toString() {
 		return template.toString();
 	}
-	
-	
+
 	/**
 	 * Returns the hashcode for the parameter
 	 *
@@ -136,7 +135,7 @@ public class ComplexParameter implements Parameter {
 	 */
 	@Override
 	public int hashCode() {
-		return -3* expression.hashCode();
+		return -3 * expression.hashCode();
 	}
 
 }

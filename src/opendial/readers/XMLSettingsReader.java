@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -48,7 +48,6 @@ public class XMLSettingsReader {
 	// TOP DOMAIN
 	// ===================================
 
-	
 	/**
 	 * Extract the settings from the XML file.
 	 * 
@@ -60,14 +59,12 @@ public class XMLSettingsReader {
 			Document doc = XMLUtils.getXMLDocument(settingsFile);
 			Properties mapping = extractMapping(XMLUtils.getMainNode(doc));
 			return mapping;
-		}
-		catch (DialException e) {
+		} catch (DialException e) {
 			log.warning("error extracting the settings: " + e);
 			return new Properties();
 		}
 	}
-	
-	
+
 	/**
 	 * Extract the settings from the XML node.
 	 * 
@@ -75,7 +72,7 @@ public class XMLSettingsReader {
 	 * @return the resulting list of properties
 	 */
 	static Properties extractMapping(Node mainNode) {
-		
+
 		Properties settings = new Properties();
 
 		NodeList firstElements = mainNode.getChildNodes();
@@ -83,15 +80,13 @@ public class XMLSettingsReader {
 
 			Node node = firstElements.item(j);
 
-			if (!node.getNodeName().equals("#text") && !node.getNodeName().equals("#comment")){
+			if (!node.getNodeName().equals("#text")
+					&& !node.getNodeName().equals("#comment")) {
 				settings.put(node.getNodeName().trim(), node.getTextContent());
 			}
 		}
 
 		return settings;
 	}
-	
-	
-	
 
 }

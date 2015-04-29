@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -30,60 +30,59 @@ import java.util.Set;
 
 import opendial.arch.Logger;
 
-
 /**
  * Value that is defined as a set of values.
  * 
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class SetVal implements Value {
-	
-	 // logger
-	 public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
 
-	 
+	// logger
+	public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
+
 	// the set of values
 	final Set<Value> set;
 	final int hashcode;
-	
+
 	/**
-	 * Creates the list of values
-	 * (protected, should be created via ValueFactory)
+	 * Creates the list of values (protected, should be created via
+	 * ValueFactory)
 	 * 
 	 * @param values the values
 	 */
 	protected SetVal(Collection<Value> values) {
-		this.set = new HashSet<Value>(); 
+		this.set = new HashSet<Value>();
 		for (Value v : values) {
 			if (v instanceof SetVal) {
-				this.set.addAll(((SetVal)v).getSet());
-			}
-			else {
+				this.set.addAll(((SetVal) v).getSet());
+			} else {
 				this.set.add(v);
 			}
 		}
 		hashcode = set.hashCode();
-		};
+	};
 
 	/**
-	 * Creates the set of values
-	 * (protected, should be created via ValueFactory)
+	 * Creates the set of values (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
-	protected SetVal(Value...values) { this(Arrays.asList(values)) ;};
-	
-	
+	protected SetVal(Value... values) {
+		this(Arrays.asList(values));
+	};
+
 	/**
 	 * Returns the hashcode for the list
 	 *
 	 * @return the hashcode
 	 */
 	@Override
-	public int hashCode() { return hashcode; }
-	
+	public int hashCode() {
+		return hashcode;
+	}
+
 	/**
 	 * Returns true if the lists are equals (contain the same elements), false
 	 * otherwise
@@ -92,11 +91,10 @@ public final class SetVal implements Value {
 	 * @return true if equal, false otherwise
 	 */
 	@Override
-	public boolean equals (Object o) {
-		return ((o instanceof SetVal && ((SetVal)o).getSet().equals(getSet())));
+	public boolean equals(Object o) {
+		return ((o instanceof SetVal && ((SetVal) o).getSet().equals(getSet())));
 	}
-	
-	
+
 	/**
 	 * Returns the set length
 	 * 
@@ -106,52 +104,53 @@ public final class SetVal implements Value {
 	public int length() {
 		return set.size();
 	}
-	
+
 	/**
 	 * Returns the set of values
-	 *  
+	 * 
 	 * @return the set
 	 */
-	public Set<Value> getSet() {return set; }
-	
+	public Set<Value> getSet() {
+		return set;
+	}
+
 	/**
 	 * Returns a copy of the list
 	 *
 	 * @return the copy
 	 */
 	@Override
-	public SetVal copy() { return new SetVal(set); }
-	
+	public SetVal copy() {
+		return new SetVal(set);
+	}
+
 	/**
 	 * Returns a string representation of the set
 	 *
 	 * @return the string
 	 */
 	@Override
-	public String toString() { 
-		return ""+set.toString();
+	public String toString() {
+		return "" + set.toString();
 	}
 
 	/**
-	 * Concatenates the two sets. 
+	 * Concatenates the two sets.
 	 */
 	@Override
-	public Value concatenate (Value v) {
+	public Value concatenate(Value v) {
 		if (v instanceof SetVal) {
 			Set<Value> newSet = new HashSet<Value>(set);
-			newSet.addAll(((SetVal)v).getSet());
+			newSet.addAll(((SetVal) v).getSet());
 			return new SetVal(newSet);
-		}
-		else if (v instanceof NoneVal) {
+		} else if (v instanceof NoneVal) {
 			return this;
-		}
-		else {
-			log.warning("cannot concatenate " + this + " and " +  v);
+		} else {
+			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
 	}
-	
-	
+
 	/**
 	 * Compares the list value to another value
 	 * 
@@ -161,8 +160,6 @@ public final class SetVal implements Value {
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
 	}
-
-
 
 	/**
 	 * Returns true if subvalue is contained, and false otherwise
@@ -178,6 +175,4 @@ public final class SetVal implements Value {
 		return set.isEmpty();
 	}
 
-
-	
 }

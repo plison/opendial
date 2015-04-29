@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -34,7 +34,7 @@ import opendial.domains.rules.RuleGrounding;
 /**
  * Representation of a void condition, which is always true.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public final class VoidCondition implements Condition {
@@ -43,9 +43,9 @@ public final class VoidCondition implements Condition {
 	static Logger log = new Logger("VoidCondition", Logger.Level.NORMAL);
 
 	static VoidCondition instance;
-	
+
 	/**
-	 * Return an empty set 
+	 * Return an empty set
 	 * 
 	 * @return an empty set
 	 */
@@ -53,7 +53,6 @@ public final class VoidCondition implements Condition {
 	public Set<Template> getInputVariables() {
 		return new HashSet<Template>();
 	}
-
 
 	/**
 	 * Returns true (condition is always trivially satisfied)
@@ -65,7 +64,7 @@ public final class VoidCondition implements Condition {
 	public boolean isSatisfiedBy(Assignment input) {
 		return true;
 	}
-	
+
 	/**
 	 * Returns an empty set of groundings
 	 */
@@ -73,9 +72,7 @@ public final class VoidCondition implements Condition {
 	public RuleGrounding getGroundings(Assignment input) {
 		return new RuleGrounding();
 	}
-	
-	
-	
+
 	/**
 	 * Returns an empty list
 	 * 
@@ -85,11 +82,10 @@ public final class VoidCondition implements Condition {
 	public Set<String> getSlots() {
 		return new HashSet<String>();
 	}
-	
-	
+
 	/**
-	 * Returns the string "true" indicating that the condition is
-	 * always trivially true
+	 * Returns the string "true" indicating that the condition is always
+	 * trivially true
 	 *
 	 * @return true
 	 */
@@ -97,7 +93,7 @@ public final class VoidCondition implements Condition {
 	public String toString() {
 		return "true";
 	}
-	
+
 	/**
 	 * Returns a constant representing the hashcode for the void condition
 	 *
@@ -107,7 +103,7 @@ public final class VoidCondition implements Condition {
 	public int hashCode() {
 		return 36;
 	}
-	
+
 	/**
 	 * Returns true if o is also a void condition
 	 *

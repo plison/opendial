@@ -42,20 +42,17 @@ import opendial.arch.Logger;
 import opendial.arch.Settings;
 import opendial.utils.StringUtils;
 
-
 /**
  * Panel to modify the system preferences.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class SettingsPanel extends JDialog {
 
-
 	private static final long serialVersionUID = 1L;
 	// logger
 	public static Logger log = new Logger("SettingsPanel", Logger.Level.DEBUG);
-
 
 	/**
 	 * Creates a new settings panel attached to the GUI frame.
@@ -63,7 +60,7 @@ public class SettingsPanel extends JDialog {
 	 * @param frame the GUI frame.
 	 */
 	public SettingsPanel(final GUIFrame frame) {
-		super(frame.getFrame(),Dialog.ModalityType.DOCUMENT_MODAL);
+		super(frame.getFrame(), Dialog.ModalityType.DOCUMENT_MODAL);
 		final Settings settings = frame.getSystem().getSettings();
 		setTitle("System Settings");
 
@@ -75,67 +72,67 @@ public class SettingsPanel extends JDialog {
 		allOptions.setLayout(new BoxLayout(allOptions, BoxLayout.PAGE_AXIS));
 
 		JPanel inference = new JPanel();
-		inference.setLayout(new GridLayout(3,2));
+		inference.setLayout(new GridLayout(3, 2));
 		inference.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createEmptyBorder(10, 10, 10, 10),
 				BorderFactory.createTitledBorder("Inference")));
 
 		inference.add(new JLabel(" Number of samples to draw per query:     "));
 		final JTextField sampleNumber = new JTextField();
-		sampleNumber.setText(""+Settings.nbSamples);
-		inference.add(sampleNumber);		
+		sampleNumber.setText("" + Settings.nbSamples);
+		inference.add(sampleNumber);
 
 		inference.add(new JLabel(" Maximum sampling time:     "));
 		final JTextField sampleTime = new JTextField();
-		sampleTime.setText(""+Settings.maxSamplingTime);
-		inference.add(sampleTime);	
+		sampleTime.setText("" + Settings.maxSamplingTime);
+		inference.add(sampleTime);
 
 		inference.add(new JLabel(" Number of discretisation buckets:     "));
 		final JTextField discrete = new JTextField();
-		discrete.setText(""+Settings.discretisationBuckets);
-		inference.add(discrete);	
+		discrete.setText("" + Settings.discretisationBuckets);
+		inference.add(discrete);
 
 		allOptions.add(inference);
 
 		JPanel gui = new JPanel();
-		gui.setLayout(new GridLayout(3,2));
+		gui.setLayout(new GridLayout(3, 2));
 		gui.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createEmptyBorder(10, 10, 10, 10),
 				BorderFactory.createTitledBorder("Graphical Interface")));
 
 		gui.add(new JLabel(" Variable label for user input:     "));
 		final JTextField userVar = new JTextField();
-		userVar.setText(""+ settings.userInput);
-		gui.add(userVar);		
+		userVar.setText("" + settings.userInput);
+		gui.add(userVar);
 
 		gui.add(new JLabel(" Variable label for system output:     "));
 		final JTextField systemVar = new JTextField();
-		systemVar.setText(""+settings.systemOutput);
-		gui.add(systemVar);	
+		systemVar.setText("" + settings.systemOutput);
+		gui.add(systemVar);
 
 		gui.add(new JLabel(" Other variables to monitor in chat window:     "));
 		final JTextField toMonitor = new JTextField();
-		toMonitor.setText(""+StringUtils.join(settings.varsToMonitor, ","));
-		gui.add(toMonitor);	
+		toMonitor.setText("" + StringUtils.join(settings.varsToMonitor, ","));
+		gui.add(toMonitor);
 
 		allOptions.add(gui);
 
 		JPanel planningBox = new JPanel();
-		planningBox.setLayout(new GridLayout(2,2));
-		planningBox.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createEmptyBorder(10, 10, 10, 10),
-				BorderFactory.createCompoundBorder(
-						BorderFactory.createTitledBorder(" Planning "), 
+		planningBox.setLayout(new GridLayout(2, 2));
+		planningBox.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createEmptyBorder(10, 10, 10, 10), BorderFactory
+				.createCompoundBorder(
+						BorderFactory.createTitledBorder(" Planning "),
 						BorderFactory.createEmptyBorder(10, 0, 10, 0))));
 
 		planningBox.add(new JLabel(" Planning horizon:     "));
 		final JTextField horizon = new JTextField();
-		horizon.setText(""+ settings.horizon);
-		planningBox.add(horizon);		
+		horizon.setText("" + settings.horizon);
+		planningBox.add(horizon);
 
 		planningBox.add(new JLabel(" Discount factor:     "));
 		final JTextField discount = new JTextField();
-		discount.setText(""+settings.discountFactor);
+		discount.setText("" + settings.discountFactor);
 		planningBox.add(discount);
 
 		allOptions.add(planningBox);
@@ -156,13 +153,14 @@ public class SettingsPanel extends JDialog {
 		okButton.addActionListener(e -> {
 			try {
 				Settings.nbSamples = Integer.parseInt(sampleNumber.getText());
-				Settings.maxSamplingTime = Integer.parseInt(sampleTime.getText());
-				Settings.discretisationBuckets = Integer.parseInt(discrete.getText());
+				Settings.maxSamplingTime = Integer.parseInt(sampleTime
+						.getText());
+				Settings.discretisationBuckets = Integer.parseInt(discrete
+						.getText());
 				settings.horizon = Integer.parseInt(horizon.getText());
 				settings.discountFactor = Double.parseDouble(discount.getText());
-			}
-			catch (Exception f) {
-				log.warning("invalid number format in settings" );
+			} catch (Exception f) {
+				log.warning("invalid number format in settings");
 			}
 			settings.userInput = userVar.getText();
 			settings.systemOutput = systemVar.getText();
@@ -175,7 +173,7 @@ public class SettingsPanel extends JDialog {
 
 			setVisible(false);
 		});
-		
+
 		okcancelBox.add(okButton, BorderLayout.CENTER);
 		okcancelBox.add(new JLabel("  "), BorderLayout.EAST);
 		okcancelBox1.add(okcancelBox, BorderLayout.EAST);
@@ -183,16 +181,14 @@ public class SettingsPanel extends JDialog {
 		contentPane.add(okcancelBox1, BorderLayout.SOUTH);
 
 		setLocation(new Point(250, 250));
-		setMinimumSize(new Dimension(650,480));
-		setPreferredSize(new Dimension(650,480));
+		setMinimumSize(new Dimension(650, 480));
+		setPreferredSize(new Dimension(650, 480));
 		pack();
-	    
-	    getRootPane().setDefaultButton(okButton);
+
+		getRootPane().setDefaultButton(okButton);
 		okButton.requestFocus();
 		okButton.requestFocusInWindow();
 		setVisible(true);
 	}
-	
-
 
 }

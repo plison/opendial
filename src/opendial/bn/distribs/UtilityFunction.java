@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,44 +23,45 @@
 
 package opendial.bn.distribs;
 
-
 import opendial.datastructs.Assignment;
 
 /**
  * Generic interface for a utility function (also called value function),
- * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).  
+ * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).
  * 
- * <p>Typically, at least one of these X1, ..., Xn variables consist of a decision variable.
+ * <p>
+ * Typically, at least one of these X1, ..., Xn variables consist of a decision
+ * variable.
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface UtilityFunction {
 
 	/**
 	 * Returns the utility associated with the specific assignment of values for
-	 * the input nodes.  If none exists, returns 0.0f.
+	 * the input nodes. If none exists, returns 0.0f.
 	 * 
 	 * @param input the value assignment for the input chance nodes
 	 * @return the associated utility
 	 */
 	public double getUtil(Assignment input);
-	
+
 	/**
-	 * Checks that the utility function is well-formed (all assignments are covered)
+	 * Checks that the utility function is well-formed (all assignments are
+	 * covered)
 	 * 
 	 * @return true is the distribution is well-formed, false otherwise
 	 */
-	
+
 	public boolean isWellFormed();
-	
+
 	/**
 	 * Creates a copy of the utility distribution
 	 * 
 	 * @return the copy
 	 */
 	public UtilityFunction copy();
-
 
 	/**
 	 * Changes the variable label
@@ -69,7 +70,5 @@ public interface UtilityFunction {
 	 * @param newId the new variable label
 	 */
 	public void modifyVarId(String oldId, String newId);
-	
-	
-	
+
 }

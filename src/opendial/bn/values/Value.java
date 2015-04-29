@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -26,20 +26,24 @@ package opendial.bn.values;
 import opendial.arch.DialException;
 
 /**
- * Generic class for a variable value.  The value can be:<ol>
+ * Generic class for a variable value. The value can be:
+ * <ol>
  * <li>compared to other values
  * <li>copied in a new value
  * <li>check if it contains a sub-value
- * <li>concatenated with another value.</ol>.
+ * <li>concatenated with another value.
+ * </ol>
+ * .
  * 
- * <p><b>IMPORTANT</b>: all implementations of Value <i>must</i> implement
- * the three core methods equals(Object o), toString() and hashCode().
+ * <p>
+ * <b>IMPORTANT</b>: all implementations of Value <i>must</i> implement the
+ * three core methods equals(Object o), toString() and hashCode().
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface Value extends Comparable<Value> {
-	
+
 	/**
 	 * Copies the value
 	 * 
@@ -47,7 +51,6 @@ public interface Value extends Comparable<Value> {
 	 */
 	public Value copy();
 
-	
 	/**
 	 * Return true if the value contains the value given as argument
 	 * 
@@ -56,16 +59,14 @@ public interface Value extends Comparable<Value> {
 	 */
 	public boolean contains(Value subvalue);
 
-
 	/**
 	 * Returns a value that is the concatenation of the two values
 	 * 
 	 * @param value the value to concatenate with the current one
 	 * @return the concatenated result
-	 * @throws DialException if the values could not be concatenated 
+	 * @throws DialException if the values could not be concatenated
 	 */
 	public Value concatenate(Value value) throws DialException;
-	
 
 	/**
 	 * Returns the length of the value
@@ -73,7 +74,7 @@ public interface Value extends Comparable<Value> {
 	 * @return the value length
 	 */
 	public int length();
-	
+
 	/**
 	 * Returns the hash code for the value
 	 * 
@@ -81,7 +82,7 @@ public interface Value extends Comparable<Value> {
 	 */
 	@Override
 	public int hashCode();
-	
+
 	/**
 	 * Returns the string representation of the value
 	 * 
@@ -89,7 +90,7 @@ public interface Value extends Comparable<Value> {
 	 */
 	@Override
 	public String toString();
-	
+
 	/**
 	 * Returns true if o and the current object are equal, and false otherwise
 	 * 
@@ -99,6 +100,4 @@ public interface Value extends Comparable<Value> {
 	@Override
 	public boolean equals(Object o);
 
-
-	
 }

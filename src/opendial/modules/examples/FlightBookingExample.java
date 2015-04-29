@@ -33,22 +33,25 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Example of simple external module used for the flight-booking dialogue domain.
- * The module monitors for two particular values for the system action:<ol>
- * <li>"FindOffer" checks the (faked) price of the user order and returns MakeOffer(price)
+ * Example of simple external module used for the flight-booking dialogue
+ * domain. The module monitors for two particular values for the system action:
+ * <ol>
+ * <li>"FindOffer" checks the (faked) price of the user order and returns
+ * MakeOffer(price)
  * <li>"Book" simulates the booking of the user order.
  * </ol>
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class FlightBookingExample implements Module {
 
 	// logger
-	public static Logger log = new Logger("FlightBookingExample", Logger.Level.DEBUG);
+	public static Logger log = new Logger("FlightBookingExample",
+			Logger.Level.DEBUG);
 
 	// the dialogue system
 	DialogueSystem system;
-	
+
 	// whether the module is paused or active
 	boolean paused = true;
 
@@ -70,11 +73,12 @@ public class FlightBookingExample implements Module {
 	}
 
 	/**
-	 * Checks whether the updated variables contains the system action and (if yes)
-	 * whether the system action value is "FindOffer" or "Book".  If the value is 
-	 * "FindOffer", checks the price of the order (faked here to 179 or 299 EUR) 
-	 * and adds the new action "MakeOffer(price)" to the dialogue state.  If the
-	 * value is "Book", simply write down the order on the system output.
+	 * Checks whether the updated variables contains the system action and (if
+	 * yes) whether the system action value is "FindOffer" or "Book". If the
+	 * value is "FindOffer", checks the price of the order (faked here to 179 or
+	 * 299 EUR) and adds the new action "MakeOffer(price)" to the dialogue
+	 * state. If the value is "Book", simply write down the order on the system
+	 * output.
 	 * 
 	 * @param state the current dialogue state
 	 * @param updatedVars the updated variables in the state
@@ -83,29 +87,44 @@ public class FlightBookingExample implements Module {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m")) {
 			String action = state.queryProb("a_m").getBest().toString();
-			
+
 			if (action.equals("FindOffer")) {
-				String returndate = state.queryProb("ReturnDate").getBest().toString();
-				
-				// here, we fake the price estimation by making up numbers.  Obviously,
-				// the prices should be derived from a database in a real system.
-				int price = (returndate.equals("NoReturn"))? 179 : 299;
-				String newAction="MakeOffer(" + price + ")";
+				String returndate = state.queryProb("ReturnDate").getBest()
+						.toString();
+
+				// here, we fake the price estimation by making up numbers.
+				// Obviously,
+				// the prices should be derived from a database in a real
+				// system.
+				int price = (returndate.equals("NoReturn")) ? 179 : 299;
+				String newAction = "MakeOffer(" + price + ")";
 				system.addContent(new Assignment("a_m", newAction));
-			}
-			else if (action.equals("Book")) {
-					
-				String departure = state.queryProb("Departure").getBest().toString();
-				String destination = state.queryProb("Destination").getBest().toString();
+			} else if (action.equals("Book")) {
+
+				String departure = state.queryProb("Departure").getBest()
+						.toString();
+				String destination = state.queryProb("Destination").getBest()
+						.toString();
 				String date = state.queryProb("Date").getBest().toString();
-				String returndate = state.queryProb("ReturnDate").getBest().toString();
-				String nbtickets = state.queryProb("NbTickets").getBest().toString();
-				
-				// In a real system, the system database should be modified here to 
-				// actually perform the booking.  Here, we just print a small message.
-				String info = "Booked " + nbtickets + " tickets from " + departure + " to " 
-						+ destination + " on " + date 
-						+ ((returndate.equals("NoReturn"))? " and return on " + returndate : "");
+				String returndate = state.queryProb("ReturnDate").getBest()
+						.toString();
+				String nbtickets = state.queryProb("NbTickets").getBest()
+						.toString();
+
+				// In a real system, the system database should be modified here
+				// to
+				// actually perform the booking. Here, we just print a small
+				// message.
+				String info = "Booked "
+						+ nbtickets
+						+ " tickets from "
+						+ departure
+						+ " to "
+						+ destination
+						+ " on "
+						+ date
+						+ ((returndate.equals("NoReturn")) ? " and return on "
+								+ returndate : "");
 				log.info(info);
 			}
 		}
@@ -121,7 +140,7 @@ public class FlightBookingExample implements Module {
 	public void pause(boolean toPause) {
 		paused = toPause;
 	}
-	
+
 	/**
 	 * Returns whether the module is currently running or not.
 	 * 

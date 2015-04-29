@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,7 +23,6 @@
 
 package opendial.inference;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -35,43 +34,42 @@ import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 
 /**
- * Generic interface for probabilistic inference algorithms. Three distinct types of queries
- * are possible: <ul>
- * <li> probability queries of the form P(X1,...,Xn)
- * <li> utility queries of the form U(X1,...,Xn)
- * <li> reduction queries where a Bayesian network is reduced to a subset of variables X1,...,Xn
+ * Generic interface for probabilistic inference algorithms. Three distinct
+ * types of queries are possible:
+ * <ul>
+ * <li>probability queries of the form P(X1,...,Xn)
+ * <li>utility queries of the form U(X1,...,Xn)
+ * <li>reduction queries where a Bayesian network is reduced to a subset of
+ * variables X1,...,Xn
  * </ul>
  * 
- * The interface contains 3 abstract methods (queryProb, queryUtil and reduce) that must be
- * specified by all implementing classes.  In addition, a set of default methods provide 
- * alternative ways to call the inference process (e.g. with one or several query variables, 
- * with or without evidence, etc.).
+ * The interface contains 3 abstract methods (queryProb, queryUtil and reduce)
+ * that must be specified by all implementing classes. In addition, a set of
+ * default methods provide alternative ways to call the inference process (e.g.
+ * with one or several query variables, with or without evidence, etc.).
  *
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public interface InferenceAlgorithm {
 
-	
-
 	// ===================================
-	//  PROBABILITY QUERIES
+	// PROBABILITY QUERIES
 	// ===================================
 
-	
 	/**
-	 * Computes the probability distribution for the query variables given the 
+	 * Computes the probability distribution for the query variables given the
 	 * provided evidence, all specified in the query
 	 * 
 	 * @param query the full query
 	 * @return the resulting probability distribution
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public MultivariateDistribution queryProb (Query.ProbQuery query) throws DialException;
-	
+	public MultivariateDistribution queryProb(Query.ProbQuery query)
+			throws DialException;
 
 	/**
-	 * Computes the probability distribution for the query variables given the 
+	 * Computes the probability distribution for the query variables given the
 	 * provided evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
@@ -80,8 +78,9 @@ public interface InferenceAlgorithm {
 	 * @return the resulting probability distribution
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default MultivariateDistribution queryProb (BNetwork network, Collection<String> queryVars,
-			Assignment evidence) throws DialException {
+	public default MultivariateDistribution queryProb(BNetwork network,
+			Collection<String> queryVars, Assignment evidence)
+			throws DialException {
 		return queryProb(new Query.ProbQuery(network, queryVars, evidence));
 	}
 
@@ -94,13 +93,14 @@ public interface InferenceAlgorithm {
 	 * @return the resulting probability distribution
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default MultivariateDistribution queryProb (BNetwork network, Collection<String> queryVars) 
-			throws DialException {
-		return queryProb(new Query.ProbQuery(network, queryVars, new Assignment()));
+	public default MultivariateDistribution queryProb(BNetwork network,
+			Collection<String> queryVars) throws DialException {
+		return queryProb(new Query.ProbQuery(network, queryVars,
+				new Assignment()));
 	}
-	
+
 	/**
-	 * Computes the probability distribution for the query variable given the 
+	 * Computes the probability distribution for the query variable given the
 	 * provided evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
@@ -108,47 +108,45 @@ public interface InferenceAlgorithm {
 	 * @param evidence the evidence
 	 * @return the resulting probability distribution for the variable
 	 * @throws DialException if the inference process failed to deliver a result
-	 */	
-	public default IndependentProbDistribution queryProb (BNetwork network, String queryVar, 
-			Assignment evidence) throws DialException {
-		return queryProb(new Query.ProbQuery(network, Arrays.asList(queryVar), evidence))
+	 */
+	public default IndependentProbDistribution queryProb(BNetwork network,
+			String queryVar, Assignment evidence) throws DialException {
+		return queryProb(
+				new Query.ProbQuery(network, Arrays.asList(queryVar), evidence))
 				.getMarginal(queryVar);
 	}
-	
 
 	/**
-	 * Computes the probability distribution for the query variable, assuming
-	 * no additional evidence.
+	 * Computes the probability distribution for the query variable, assuming no
+	 * additional evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the (unique) query variable
 	 * @return the resulting probability distribution for the variable
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default IndependentProbDistribution queryProb (BNetwork network, String queryVar) 
-			throws DialException {
+	public default IndependentProbDistribution queryProb(BNetwork network,
+			String queryVar) throws DialException {
 		return queryProb(network, queryVar, new Assignment());
 	}
-	
-	
+
 	// ===================================
-	//  UTILITY QUERIES
+	// UTILITY QUERIES
 	// ===================================
 
-	
 	/**
-	 * Computes the utility table for the query variables (typically action variables), 
-	 * given the provided evidence.
+	 * Computes the utility table for the query variables (typically action
+	 * variables), given the provided evidence.
 	 * 
 	 * @param query the full query
 	 * @return the resulting utility table
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public UtilityTable queryUtil (Query.UtilQuery query) throws DialException;
+	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException;
 
 	/**
-	 * Computes the utility table for the query variables (typically action variables), 
-	 * given the provided evidence.
+	 * Computes the utility table for the query variables (typically action
+	 * variables), given the provided evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the query variables (usually action variables)
@@ -156,42 +154,45 @@ public interface InferenceAlgorithm {
 	 * @return the resulting utility table for the query variables
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default UtilityTable queryUtil (BNetwork network, Collection<String> queryVars,
-			Assignment evidence) throws DialException {
+	public default UtilityTable queryUtil(BNetwork network,
+			Collection<String> queryVars, Assignment evidence)
+			throws DialException {
 		return queryUtil(new Query.UtilQuery(network, queryVars, evidence));
 	}
-	
+
 	/**
-	 * Computes the utility table for the query variables (typically action variables), 
-	 * assuming no additional evidence.
+	 * Computes the utility table for the query variables (typically action
+	 * variables), assuming no additional evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the query variables (usually action variables)
 	 * @return the resulting utility table for the query variables
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default UtilityTable queryUtil (BNetwork network, Collection<String> queryVars) 
-			throws DialException {
-		return queryUtil(new Query.UtilQuery(network, queryVars, new Assignment()));
+	public default UtilityTable queryUtil(BNetwork network,
+			Collection<String> queryVars) throws DialException {
+		return queryUtil(new Query.UtilQuery(network, queryVars,
+				new Assignment()));
 	}
 
 	/**
-	 * Computes the utility table for the query variable (typically an action variable), 
-	 * assuming no additional evidence.
+	 * Computes the utility table for the query variable (typically an action
+	 * variable), assuming no additional evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the query variable
 	 * @return the resulting utility table for the query variable
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default UtilityTable queryUtil (BNetwork network, String queryVar) 
+	public default UtilityTable queryUtil(BNetwork network, String queryVar)
 			throws DialException {
-		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar), new Assignment()));
+		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar),
+				new Assignment()));
 	}
-	
+
 	/**
-	 * Computes the utility table for the query variable (typically an action variable), 
-	 * given the provided evidence
+	 * Computes the utility table for the query variable (typically an action
+	 * variable), given the provided evidence
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the query variable
@@ -199,16 +200,16 @@ public interface InferenceAlgorithm {
 	 * @return the resulting utility table for the query variable
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default UtilityTable queryUtil (BNetwork network, String queryVar, 
+	public default UtilityTable queryUtil(BNetwork network, String queryVar,
 			Assignment evidence) throws DialException {
-		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar), evidence));
+		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar),
+				evidence));
 	}
-	
+
 	// ===================================
-	//  REDUCTION QUERIES
+	// REDUCTION QUERIES
 	// ===================================
 
-	
 	/**
 	 * Generates a new Bayesian network that only contains a subset of variables
 	 * in the original network and integrates the provided evidence.
@@ -218,8 +219,7 @@ public interface InferenceAlgorithm {
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	public BNetwork reduce(Query.ReduceQuery query) throws DialException;
-	
-	
+
 	/**
 	 * Generates a new Bayesian network that only contains a subset of variables
 	 * in the original network and integrates the provided evidence.
@@ -230,12 +230,12 @@ public interface InferenceAlgorithm {
 	 * @return the new, reduced Bayesian network
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default BNetwork reduce (BNetwork network, Collection<String> queryVars,
-			Assignment evidence) throws DialException {
+	public default BNetwork reduce(BNetwork network,
+			Collection<String> queryVars, Assignment evidence)
+			throws DialException {
 		return reduce(new Query.ReduceQuery(network, queryVars, evidence));
 	}
-	
-	
+
 	/**
 	 * Generates a new Bayesian network that only contains a subset of variables
 	 * in the original network, assuming no additional evidence.
@@ -245,9 +245,10 @@ public interface InferenceAlgorithm {
 	 * @return the new, reduced Bayesian network
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default BNetwork reduce (BNetwork network, Collection<String> queryVars) 
-			throws DialException {
-		return reduce(new Query.ReduceQuery(network, queryVars, new Assignment()));
+	public default BNetwork reduce(BNetwork network,
+			Collection<String> queryVars) throws DialException {
+		return reduce(new Query.ReduceQuery(network, queryVars,
+				new Assignment()));
 	}
-	
+
 }

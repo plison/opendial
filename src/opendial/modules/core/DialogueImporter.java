@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -23,34 +23,33 @@
 
 package opendial.modules.core;
 
-
 import java.util.List;
 
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.state.DialogueState;
- 
+
 /**
- * Functionality to import a previously recorded dialogue in the dialogue system.  The 
- * import essentially "replays" the previous interaction, including all state update
- * operations.
+ * Functionality to import a previously recorded dialogue in the dialogue
+ * system. The import essentially "replays" the previous interaction, including
+ * all state update operations.
  * 
- * @author  Pierre Lison (plison@ifi.uio.no)
+ * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class DialogueImporter extends Thread {
 
 	// logger
-	public static Logger log = new Logger("DialogueImporter", Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueImporter",
+			Logger.Level.DEBUG);
 
-	
 	DialogueSystem system;
 	List<DialogueState> turns;
 	boolean wizardOfOzMode = false;
 
 	/**
-	 * Creates a new dialogue importer attached to a particular dialogue system, and
-	 * with an ordered list of turns (encoded by their dialogue state).
+	 * Creates a new dialogue importer attached to a particular dialogue system,
+	 * and with an ordered list of turns (encoded by their dialogue state).
 	 * 
 	 * @param system the dialogue system
 	 * @param turns the sequence of turns
@@ -59,9 +58,9 @@ public class DialogueImporter extends Thread {
 		this.system = system;
 		this.turns = turns;
 	}
-	
+
 	/**
-	 * Sets whether the import should consider the system actions as "expert" 
+	 * Sets whether the import should consider the system actions as "expert"
 	 * Wizard-of-Oz actions to imitate.
 	 * 
 	 * @param isWizardOfOz whether the system actions are wizard-of-Oz examples
@@ -69,42 +68,44 @@ public class DialogueImporter extends Thread {
 	public void setWizardOfOzMode(boolean isWizardOfOz) {
 		wizardOfOzMode = isWizardOfOz;
 	}
-	
+
 	/**
 	 * Runs the import operation.
 	 */
 	@Override
 	public void run() {
-		
+
 		if (wizardOfOzMode) {
 			system.attachModule(WizardLearner.class);
 			for (final DialogueState turn : turns) {
 				addTurn(turn);
 			}
-		}
-		else {
+		} else {
 			system.detachModule(ForwardPlanner.class);
 			for (final DialogueState turn : turns) {
 				addTurn(turn);
-				system.getState().removeNodes(system.getState().getActionNodeIds());
-				system.getState().removeNodes(system.getState().getUtilityNodeIds());
+				system.getState().removeNodes(
+						system.getState().getActionNodeIds());
+				system.getState().removeNodes(
+						system.getState().getUtilityNodeIds());
 			}
-			system.attachModule(ForwardPlanner.class);			
+			system.attachModule(ForwardPlanner.class);
 		}
 	}
-	
+
 	private void addTurn(DialogueState turn) {
 		try {
-			while (system.isPaused() || !system.getModule(DialogueRecorder.class).isRunning()) {
-				try { Thread.sleep(100); } catch (Exception e) { }
+			while (system.isPaused()
+					|| !system.getModule(DialogueRecorder.class).isRunning()) {
+				try {
+					Thread.sleep(100);
+				} catch (Exception e) {
+				}
 			}
 			system.addContent(turn.copy());
-		} 
-		catch (DialException e) {	
-			log.warning("could not add content: " + e);	
+		} catch (DialException e) {
+			log.warning("could not add content: " + e);
 		}
 	}
 
-
 }
-
