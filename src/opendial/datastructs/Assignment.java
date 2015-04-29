@@ -65,8 +65,10 @@ public class Assignment {
 	final Map<String, Value> map;
 
 	// the initial size of the hash
-	public static final int MAP_SIZE = 3;
+	public static final int MAP_SIZE = 5;
 
+	int cachedHash = 0 ;
+	
 	// ===================================
 	// CONSTRUCTORS
 	// ===================================
@@ -84,8 +86,7 @@ public class Assignment {
 	 * @param a the assignment to copy
 	 */
 	public Assignment(Assignment a) {
-		this();
-		addAssignment(a);
+		map = new HashMap<String, Value>(a.map);
 	}
 
 	/**
@@ -95,7 +96,7 @@ public class Assignment {
 	 * @param val the value
 	 */
 	public Assignment(String var, Value val) {
-		this();
+		map = new HashMap<String, Value>(MAP_SIZE);
 		map.put(var, val);
 	}
 
@@ -296,22 +297,6 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment where all variable share a single common value.
-	 * 
-	 * @param variables the variables of the assignment
-	 * @param commonValue the single value for all variables (as a string)
-	 * @return the corresponding assignment
-	 */
-	public static Assignment createOneValue(Collection<String> variables,
-			String commonValue) {
-		Map<String, Value> oneValMap = variables.stream()
-				.collect(
-						Collectors.toMap(v -> v,
-								v -> ValueFactory.create(commonValue)));
-		return new Assignment(oneValMap);
-	}
-
-	/**
 	 * Creates an assignment with only none values for the variable labels given
 	 * as argument.
 	 * 
@@ -352,6 +337,7 @@ public class Assignment {
 	 */
 	public void addPair(String var, Value val) {
 		map.put(var, val);
+		cachedHash = 0;
 	}
 
 	/**
@@ -362,6 +348,7 @@ public class Assignment {
 	 */
 	public void addPair(String var, String val) {
 		map.put(var, ValueFactory.create(val));
+		cachedHash = 0;
 	}
 
 	/**
@@ -372,6 +359,7 @@ public class Assignment {
 	 */
 	public void addPair(String var, double val) {
 		map.put(var, ValueFactory.create(val));
+		cachedHash = 0;
 	}
 
 	/**
@@ -382,6 +370,7 @@ public class Assignment {
 	 */
 	public void addPair(String var, boolean val) {
 		map.put(var, ValueFactory.create(val));
+		cachedHash = 0;
 	}
 
 	/**
@@ -392,6 +381,7 @@ public class Assignment {
 	 */
 	public void addPair(String var, double[] val) {
 		map.put(var, ValueFactory.create(val));
+		cachedHash = 0;
 	}
 
 	/**
@@ -417,6 +407,7 @@ public class Assignment {
 	 */
 	public void addPairs(Map<String, Value> pairs) {
 		pairs.keySet().stream().forEach(v -> map.put(v, pairs.get(v)));
+		cachedHash = 0;
 	}
 
 	/**
@@ -436,7 +427,9 @@ public class Assignment {
 	 * @return the removed value
 	 */
 	public Value removePair(String var) {
-		return map.remove(var);
+		Value v= map.remove(var);
+		cachedHash = 0;
+		return v;
 	}
 
 	/**
@@ -446,6 +439,7 @@ public class Assignment {
 	 */
 	public void removePairs(Collection<String> vars) {
 		vars.stream().forEach(v -> map.remove(v));
+		cachedHash = 0;
 	}
 
 	/**
@@ -462,13 +456,43 @@ public class Assignment {
 				a.addPair(var, v);
 			}
 		}
-		return a;
+		cachedHash = 0;
+	return a;
 	}
 
 	public void clear() {
 		map.clear();
+		cachedHash = 0;
 	}
 
+
+	/**
+	 * Trims the assignment, where only the variables given as parameters are
+	 * considered
+	 * 
+	 * @param variables the variables to consider
+	 */
+	public void trim(Collection<String> variables) {
+		map.keySet().retainAll(variables);
+		cachedHash = 0;
+	}
+
+	/**
+	 * Trims the assignment, where only the variables given as parameters are
+	 * considered
+	 * 
+	 * @param variables the variables to consider
+	 */
+	public void removeAll(Collection<String> variables) {
+		map.keySet().removeAll(variables);
+		cachedHash = 0;
+	}
+
+	// ===================================
+	// GETTERS
+	// ===================================
+
+	
 	/**
 	 * Returns the intersection of the two assignments
 	 * 
@@ -485,11 +509,7 @@ public class Assignment {
 		}
 		return intersect;
 	}
-
-	// ===================================
-	// GETTERS
-	// ===================================
-
+	
 	/**
 	 * Returns a new assignment with the primes removed.
 	 * 
@@ -600,25 +620,6 @@ public class Assignment {
 		return new Assignment(newMap);
 	}
 
-	/**
-	 * Trims the assignment, where only the variables given as parameters are
-	 * considered
-	 * 
-	 * @param variables the variables to consider
-	 */
-	public void trim(Collection<String> variables) {
-		map.keySet().retainAll(variables);
-	}
-
-	/**
-	 * Trims the assignment, where only the variables given as parameters are
-	 * considered
-	 * 
-	 * @param variables the variables to consider
-	 */
-	public void removeAll(Collection<String> variables) {
-		map.keySet().removeAll(variables);
-	}
 
 	/**
 	 * Returns a trimmed version of the assignment, where only the variables NOT
@@ -666,7 +667,9 @@ public class Assignment {
 	 * @return the copy
 	 */
 	public Assignment copy() {
-		return new Assignment(this);
+		Assignment c = new Assignment(this);
+		c.cachedHash = cachedHash;
+		return c;
 	}
 
 	/**
@@ -798,7 +801,10 @@ public class Assignment {
 	 */
 	@Override
 	public int hashCode() {
-		return map.hashCode();
+		if (cachedHash == 0) {
+			cachedHash = map.hashCode();
+		}
+		return cachedHash;
 	}
 
 	/**

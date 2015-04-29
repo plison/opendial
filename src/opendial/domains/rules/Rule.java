@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
@@ -68,6 +69,9 @@ public class Rule {
 	// cache with the outputs for a given assignment
 	Map<Assignment, RuleOutput> cache;
 
+	// input variables for the rule
+	Set<Template> inputVars;
+	
 	// ===================================
 	// RULE CONSTRUCTION
 	// ===================================
@@ -85,6 +89,7 @@ public class Rule {
 		cases = new ArrayList<RuleCase>();
 		cache = new HashMap<Assignment, RuleOutput>(100);
 		cache = Collections.synchronizedMap(cache);
+		inputVars = new HashSet<Template>();
 	}
 
 	/**
@@ -99,6 +104,7 @@ public class Rule {
 					+ " is unreachable (previous case is trivially true)");
 		}
 		cases.add(newCase);
+		inputVars.addAll(newCase.getInputVariables());
 	}
 
 	/**
@@ -143,11 +149,7 @@ public class Rule {
 	 * @return the set of labels for the input variables
 	 */
 	public Set<Template> getInputVariables() {
-		Set<Template> variables = new HashSet<Template>();
-		for (RuleCase thecase : cases) {
-			variables.addAll(thecase.getInputVariables());
-		}
-		return new HashSet<Template>(variables);
+		return inputVars;
 	}
 
 	/**
@@ -170,9 +172,13 @@ public class Rule {
 		RuleGrounding groundings = getGroundings(input);
 
 		for (Assignment g : groundings.getAlternatives()) {
-			Assignment fullInput = !(g.isEmpty()) ? new Assignment(input, g)
-					: input;
-			RuleCase match = getMatchingCase(fullInput);
+			Assignment full = !(g.isEmpty()) ? new Assignment(input, g): input;
+			
+			RuleCase match = cases.stream()
+					.filter(c -> c.getCondition().isSatisfiedBy(full))
+					.map(c -> c.ground(full))
+					.findFirst().orElse(new RuleCase());
+			
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
 			}
@@ -187,11 +193,6 @@ public class Rule {
 		return output;
 	}
 
-	private RuleCase getMatchingCase(Assignment input) {
-		return cases.stream()
-				.filter(c -> c.getCondition().isSatisfiedBy(input))
-				.map(c -> c.ground(input)).findFirst().orElse(new RuleCase());
-	}
 
 	/**
 	 * Returns the rule type
@@ -225,7 +226,7 @@ public class Rule {
 					} else {
 						Set<String> slots = e.getAdditionalInputVariables();
 						slots.removeAll(input2.getVariables());
-						caseGrounding.add(Assignment.createOneValue(slots, ""));
+						caseGrounding.add(Assignment.createOneValue(slots, ValueFactory.create("")));
 					}
 				}
 			}

@@ -43,6 +43,19 @@ public class StringUtils {
 	// logger
 	public static Logger log = new Logger("StringUtils", Logger.Level.DEBUG);
 
+
+	// regular expression to detect algebraic expressions
+	final static Pattern mathExpression = Pattern
+			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
+
+	// regular expression with * characters
+	final static Pattern simpleRegex = Pattern.compile("\\*");
+
+	// regular expression with alternative or optional elements
+	final static Pattern complexRegex = Pattern
+			.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
+
+
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
 	 * 
@@ -213,5 +226,149 @@ public class StringUtils {
 		}
 		return count;
 	}
+
+
+	/**
+	 * Returns true if the string corresponds to an arithmetic expression, and false
+	 * otherwise
+	 * 
+	 * @param exp the string to check
+	 * @return true if the string is an arithmetic expression, false otherwise
+	 */
+	public static boolean isArithmeticExpression(String exp) {
+		return !exp.contains("{") && mathExpression.matcher(exp).matches();
+	}
+
+
+
+	public static String escape(String init) {
+		StringBuilder builder = new StringBuilder();
+		char[] charArr = init.toCharArray();
+
+		for (int i = 0; i < charArr.length; i++) {
+			if (charArr[i] == '(') {
+				builder.append("\\(");
+			} else if (charArr[i] == ')') {
+				builder.append("\\)");
+			} else if (charArr[i] == '[') {
+				builder.append("\\[");
+			} else if (charArr[i] == ']') {
+				builder.append("\\]");
+			} else if (charArr[i] == '?') {
+				builder.append("\\?");
+			} else if (charArr[i] == ' ') {
+				builder.append(" ");
+				for (int j = i + 1; j < charArr.length; j++) {
+					if (charArr[j] == ' ') { i++; } 
+					else { break; }
+				}
+			} else if (charArr[i] == '.') {
+				builder.append("\\.");
+			} else if (charArr[i] == '!') {
+				builder.append("\\!");
+			} else if (charArr[i] == '^') {
+				builder.append("\\^");
+			}
+			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
+				builder.append("\\{\\}");
+				i++;
+			} else {
+				builder.append(charArr[i]);
+			}
+		}
+		return builder.toString();
+	}
+
+
+	/**
+	 * Formats the regular expression corresponding to the provided string
+	 * 
+	 * @param init the initial string
+	 * @return the corresponding expression
+	 */
+	public static String constructRegex(String init) {
+
+		boolean hasStars = init.chars().anyMatch(c -> c=='*');
+		boolean hasAlternatives = init.chars().anyMatch(c -> c=='|'|c=='?');
+		
+		init = (hasStars)? replaceStars(init) : init;
+		init = (hasAlternatives)? replaceComplex(init) : init;
+		
+		return init;		
+	}
+
+
+	/**
+	 * Replaces the * characters in the string by a proper regular expression
+	 * 
+	 * @param init the initial string
+	 * @return the formatted expression
+	 */
+	private static String replaceStars(String init) {
+		StringBuilder builder = new StringBuilder();
+		char[] chars = init.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == '*' && i == 0 && chars.length > 1
+					&& chars[i + 1] == ' ') {
+				builder.append("(?:.+ |)");
+				i++;
+			} else if (chars[i] == '*' && i < (chars.length - 1) && i > 0
+					&& chars[i + 1] == ' ' && chars[i - 1] == ' ') {
+				builder.deleteCharAt(builder.length() - 1);
+				builder.append("(?:.+|)");
+			} else if (chars[i] == '*' && i == (chars.length - 1) && i > 0
+					&& chars[i - 1] == ' ') {
+				builder.deleteCharAt(builder.length() - 1);
+				builder.append("(?: .+|)");
+			} else if (chars[i] == '*') {
+				builder.append("(?:.*)");
+			}
+			else {
+				builder.append(chars[i]);
+			}
+		}
+		return builder.toString();
+	}
+
+
+	/**
+	 * Replace the alternative or optional elements by a proper regular expression
+	 * 
+	 * @param init the initial string
+	 * @return the formatted expression
+	 */
+	private static String replaceComplex(String init) {
+
+		StringBuilder builder = new StringBuilder(init);
+		Matcher m = complexRegex.matcher(builder.toString());
+		while (m.find()) {
+			String core = m.group(1);
+			if (m.group(0).endsWith("?")) {
+				// need to remove whitespaces at specific positions
+				if (m.end() < builder.length()
+						&& builder.charAt(m.end()) == ' ') {
+					String replace = "(?:" + core.replaceAll("\\|", " \\|")
+							+ " )?";
+					builder = builder.replace(m.start(), m.end() + 1,
+							replace);
+				} else if (m.end() >= builder.length() && m.start() > 0
+						&& builder.charAt(m.start() - 1) == ' ') {
+					String replace = "(?: "
+							+ core.replaceAll("\\|", "\\| ") + ")?";
+					builder = builder.replace(m.start() - 1, m.end(),
+							replace);
+				} else {
+					builder = builder.replace(m.start(), m.end(), "(?:"
+							+ core + ")?");
+				}
+			} else {
+				builder = builder.replace(m.start(), m.end(), "(?:" + core
+						+ ")");
+			}
+			m = complexRegex.matcher(builder.toString());
+		}
+		return builder.toString();
+	}
+
 
 }

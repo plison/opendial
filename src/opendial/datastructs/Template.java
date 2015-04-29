@@ -36,6 +36,7 @@ import java.util.regex.PatternSyntaxException;
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of a string object containing a variable number (from 0 to n)
@@ -66,14 +67,6 @@ public final class Template {
 	// the slots, as a mapping between slot labels and their
 	// group number in the pattern
 	final Map<String, Integer> slots;
-
-	// regular expression to detect algebraic expressions
-	final static Pattern mathExpression = Pattern
-			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
-
-	// regular expression for complex regex (alternatives, optional elements)
-	final static Pattern complexRegex = Pattern
-			.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
 
 	// ===================================
 	// TEMPLATE CONSTRUCTION
@@ -299,9 +292,9 @@ public final class Template {
 			}
 		}
 
-		if (!filledTemplate.contains("{")
-				&& mathExpression.matcher(filledTemplate).matches()) {
-			filledTemplate = "" + MathUtils.evaluateExpression(filledTemplate);
+		if (StringUtils.isArithmeticExpression(filledTemplate)) {
+			double result = MathUtils.evaluateExpression(filledTemplate);		
+			filledTemplate = StringUtils.getShortForm(result);
 		}
 		return new Template(filledTemplate);
 
@@ -413,9 +406,10 @@ public final class Template {
 	 * @return the corresponding pattern
 	 */
 	private static Pattern constructPattern(String str, Collection<String> slots) {
-		String regex = constructRegex(str);
+		String escaped = StringUtils.escape(str);
+		String regex = StringUtils.constructRegex(escaped);
 		for (String slot : slots) {
-			regex = regex.replace("{" + constructRegex(slot) + "}", "(.+)");
+			regex = regex.replace("{" + StringUtils.escape(slot) + "}", "(.+)");
 		}
 
 		// compiling the associated pattern
@@ -426,105 +420,6 @@ public final class Template {
 			log.warning("illegal pattern syntax: " + regex);
 			return Pattern.compile("bogus pattern");
 		}
-	}
-
-	/**
-	 * Constructs the regular expression corresponding to the initial string
-	 * 
-	 * @param init the initial string
-	 * @return the formatted string for the regular expression.
-	 */
-	private static String constructRegex(String init) {
-		StringBuilder builder = new StringBuilder();
-		char[] charArr = init.toCharArray();
-
-		boolean hasComplexRegex = false;
-		for (int i = 0; i < charArr.length; i++) {
-			if (charArr[i] == '(') {
-				builder.append("\\(");
-			} else if (charArr[i] == ')') {
-				builder.append("\\)");
-			} else if (charArr[i] == '[') {
-				builder.append("\\[");
-			} else if (charArr[i] == ']') {
-				builder.append("\\]");
-			} else if (charArr[i] == '?') {
-				builder.append("\\?");
-			} else if (charArr[i] == ' ') {
-				builder.append(" ");
-				for (int j = i + 1; j < charArr.length; j++) {
-					if (charArr[j] == ' ') {
-						i++;
-					} else {
-						break;
-					}
-				}
-			} else if (charArr[i] == '.') {
-				builder.append("\\.");
-			} else if (charArr[i] == '!') {
-				builder.append("\\!");
-			} else if (charArr[i] == '^') {
-				builder.append("\\^");
-			}
-
-			else if (charArr[i] == '*' && i == 0 && charArr.length > 1
-					&& charArr[i + 1] == ' ') {
-				builder.append("(?:.+ |)");
-				i++;
-			} else if (charArr[i] == '*' && i < (charArr.length - 1) && i > 0
-					&& charArr[i + 1] == ' ' && charArr[i - 1] == ' ') {
-				builder.deleteCharAt(builder.length() - 1);
-				builder.append("(?:.+|)");
-			} else if (charArr[i] == '*' && i == (charArr.length - 1) && i > 0
-					&& charArr[i - 1] == ' ') {
-				builder.deleteCharAt(builder.length() - 1);
-				builder.append("(?: .+|)");
-			} else if (charArr[i] == '*') {
-				builder.append("(?:.*)");
-			}
-
-			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
-				builder.append("\\{\\}");
-				i++;
-			} else {
-				builder.append(charArr[i]);
-			}
-			if (charArr[i] == '|'
-					|| (charArr[i] == '?' && i > 0 && charArr[i - 1] == ')')) {
-				hasComplexRegex = true;
-			}
-		}
-
-		if (hasComplexRegex) {
-			Matcher m = complexRegex.matcher(builder.toString());
-			while (m.find()) {
-				String core = m.group(1);
-				if (m.group(0).endsWith("?")) {
-					// need to remove whitespaces at specific positions
-					if (m.end() < builder.length()
-							&& builder.charAt(m.end()) == ' ') {
-						String replace = "(?:" + core.replaceAll("\\|", " \\|")
-								+ " )?";
-						builder = builder.replace(m.start(), m.end() + 1,
-								replace);
-					} else if (m.end() >= builder.length() && m.start() > 0
-							&& builder.charAt(m.start() - 1) == ' ') {
-						String replace = "(?: "
-								+ core.replaceAll("\\|", "\\| ") + ")?";
-						builder = builder.replace(m.start() - 1, m.end(),
-								replace);
-					} else {
-						builder = builder.replace(m.start(), m.end(), "(?:"
-								+ core + ")?");
-					}
-				} else {
-					builder = builder.replace(m.start(), m.end(), "(?:" + core
-							+ ")");
-				}
-				m = complexRegex.matcher(builder.toString());
-			}
-		}
-		return builder.toString();
 	}
 
 	/**
