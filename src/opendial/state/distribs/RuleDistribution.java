@@ -96,8 +96,8 @@ public class RuleDistribution implements ProbDistribution {
 	 * Does nothing
 	 */
 	@Override
-	public void pruneValues(double threshold) {
-		return;
+	public boolean pruneValues(double threshold) {
+		return false;
 	}
 
 
@@ -184,7 +184,7 @@ public class RuleDistribution implements ProbDistribution {
 
 		// search for the matching case
 
-		Assignment ruleInput = input.getTrimmed(arule.getInputs().getVariables());
+		Assignment ruleInput = input.getTrimmed(arule.getInputs());
 		RuleOutput output = arule.getRule().getOutput(ruleInput);
 		
 		// creating the distribution

@@ -101,12 +101,23 @@ public class RuleUtilDistribution implements UtilityFunction {
 	@Override
 	public double getUtil(Assignment fullInput) {
 
-		Set<String> outputVars = rule.getOutputVariables();
+		Set<String> outputVars = rule.getOutputs();
 		Assignment input = fullInput.getTrimmedInverse(outputVars);
 		Assignment actions = fullInput.getTrimmed(outputVars);
 		
 		return getUtil(input, actions);
 	}
+	
+
+	/**
+	 * Returns the anchored rule
+	 * @return the rule
+	 */
+	public AnchoredRule getAnchor() {
+		return rule;
+	}
+
+
 
 	// ===================================
 	//  UTILITY METHODS
@@ -162,7 +173,7 @@ public class RuleUtilDistribution implements UtilityFunction {
 	 */
 	private double getUtil(Assignment input, Assignment actions) {
 
-			Assignment ruleInput = input.getTrimmed(rule.getInputs().getVariables());
+			Assignment ruleInput = input.getTrimmed(rule.getInputs());
 			Assignment ruleAction = actions.removePrimes();
 
 			double totalUtil = 0;
@@ -178,6 +189,10 @@ public class RuleUtilDistribution implements UtilityFunction {
 
 			return totalUtil;
 	}
+
+
+
+
 
 
 

@@ -130,13 +130,13 @@ public class AnchoredRule {
 	 * 
 	 * @return the input range
 	 */
-	public ValueRange getInputs() {
+	public ValueRange getInputRange() {
 		return inputs;
 	}
 
 
 
-	public Set<String> getInputVariables() {
+	public Set<String> getInputs() {
 		return inputs.getVariables();
 	}
 
@@ -146,7 +146,7 @@ public class AnchoredRule {
 	 * 
 	 * @return the output variables
 	 */
-	public Set<String> getOutputVariables() {
+	public Set<String> getOutputs() {
 		return outputs.getVariables();
 	}
 
@@ -155,7 +155,7 @@ public class AnchoredRule {
 	 * 
 	 * @return the output range
 	 */
-	public ValueRange getOutputs() {
+	public ValueRange getOutputRange() {
 		return outputs;
 	}
 
@@ -186,7 +186,7 @@ public class AnchoredRule {
 	 * 
 	 * @return the set of parameter nodes
 	 */
-	public Set<String> getParameterVariables() {
+	public Set<String> getParameters() {
 		return parameters;
 	}
 

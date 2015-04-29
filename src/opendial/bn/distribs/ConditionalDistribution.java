@@ -138,10 +138,12 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @param threshold the threshold to apply
 	 */
 	@Override
-	public void pruneValues(double threshold) {
+	public boolean pruneValues(double threshold) {
+		boolean changed = false;
 		for (Assignment condition : table.keySet()) {
-			table.get(condition).pruneValues(threshold);
+			changed = changed || table.get(condition).pruneValues(threshold);
 		}
+		return changed;
 	}
 	
 	// ===================================

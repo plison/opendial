@@ -463,7 +463,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * @param threshold the frequency threshold
 	 */
 	@Override
-	public void pruneValues(double threshold) {
+	public boolean pruneValues(double threshold) {
 		
 		Map<String,Map<Value,Integer>> frequencies = 
 				new HashMap<String,Map<Value,Integer>>();
@@ -484,18 +484,21 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			}
 		}
 		
+		boolean changed = false;
 		int minNumber = (int) (samples.size()*threshold);
 		for (int i= 0; i < samples.size() ; i++) {
 			Assignment sample = samples.get(i);
 			for (String var : sample.getVariables()) {
 				if (frequencies.get(var).get(sample.getValue(var)) < minNumber) {
 					samples.remove(i);
+					changed = true;
 					continue;
 				}
 			}
 		}
 		discreteCache = null;
 		continuousCache = null;
+		return changed;
 	}
 
 

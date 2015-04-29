@@ -112,8 +112,9 @@ public interface ProbDistribution  {
 	 * Prunes values whose frequency in the distribution is lower than the given threshold. 
 	 * 
 	 * @param threshold the threshold to apply for the pruning
+	 * @return true if at least one value has been removed, false otherwise
 	 */
-	public void pruneValues(double threshold);
+	public boolean pruneValues(double threshold);
 	
 	
 

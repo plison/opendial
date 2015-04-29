@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -81,9 +81,24 @@ public class BNetwork {
 		actionNodes = new HashMap<String,ActionNode>();
 	}
 
+	/**
+	 * Creates a network with the provided list of nodes
+	 * 
+	 * @param nodes the nodes to add
+	 */
 	public BNetwork(BNode... nodes) {
 		this();
 		addNodes(Arrays.asList(nodes));
+	}
+	
+	/**
+	 * Creates a network with the provided list of nodes
+	 * 
+	 * @param nodes the nodes to add
+	 */
+	public BNetwork(Collection<BNode> nodes) {
+		this();
+		addNodes(nodes);
 	}
 
 	/**
@@ -95,12 +110,6 @@ public class BNetwork {
 	public void addNode(BNode node) {
 		if (nodes.containsKey(node.getId())) {
 			log.warning("network already contains a node with identifier " + node.getId());
-			try {
-				Thread.sleep(1000000000);
-			}
-			catch (InterruptedException e) {
-				
-			}
 		}
 		nodes.put(node.getId(), node);
 		node.setNetwork(this);
@@ -303,6 +312,12 @@ public class BNetwork {
 		return nodes.values();
 	}
 	
+	public Collection<BNode> getNodes(Collection<String> ids) {
+		return nodes.keySet().stream()
+				.filter(k -> ids.contains(k))
+				.map(k -> nodes.get(k)).collect(Collectors.toSet());
+	}
+	
 	
 
 	/**
@@ -340,25 +355,6 @@ public class BNetwork {
 		return nodesOfClass;
 	}
 	
-	
-
-	/**
-	 * Returns the set of chance nodes that have a particular distribution
-	 * (extending ChanceNode)
-	 * 
-	 * @param cls the class
-	 * @return the resulting set of node identifiers
-	 */
-	public <T extends ProbDistribution> Collection<String> getChanceNodesIds(Class<T> cls) {
-		Set<String> nodesOfDistrib = new HashSet<String>();
-		for (BNode n : nodes.values()) {
-			if (n instanceof ChanceNode && cls.isInstance(((ChanceNode)n).getDistrib())) {
-				nodesOfDistrib.add(n.getId());
-			}
-		}
-		return nodesOfDistrib;
-	}
-
 
 	/**
 	 * Returns true if the network contains a chance node with the given
@@ -732,6 +728,8 @@ public class BNetwork {
 		}
 		return s;
 	}
+
+
 
 
 	

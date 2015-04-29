@@ -465,15 +465,20 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * @param threshold the threshold
 	 */
 	@Override
-	public void pruneValues(double threshold) {
+	public boolean pruneValues(double threshold) {
+		boolean changed = false;
 		Map<Assignment,Double> newTable = new HashMap<Assignment,Double>();
 		for (Assignment row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
 			}
+			else {
+				changed = true;
+			}
 		}
 		table = newTable;
+		return changed;
 	}
 	
 	/**

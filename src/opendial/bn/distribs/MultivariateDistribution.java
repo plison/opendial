@@ -109,8 +109,9 @@ public interface MultivariateDistribution {
 	 * Prunes all values assignment whose probability falls below the threshold.
 	 * 
 	 * @param threshold the threshold to apply
+	 * @return true if at least one value has been removed, false otherwise
 	 */
-	public void pruneValues(double threshold);
+	public boolean pruneValues(double threshold);
 	
 	
 	/**

@@ -43,7 +43,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.state.distribs.EquivalenceDistribution;
-import opendial.state.nodes.ProbabilityRuleNode;
+import opendial.state.distribs.RuleDistribution;
 
 
 /**
@@ -121,7 +121,7 @@ public class StatePruner {
 					|| node.getId().endsWith("^o")) {
 				continue;
 			}
-			else if (ENABLE_PRUNING & node instanceof ProbabilityRuleNode) {
+			else if (ENABLE_PRUNING & node.getDistrib() instanceof RuleDistribution) {
 				continue;
 			}
 			else if (node.getInputNodeIds().size() < 3 
@@ -147,7 +147,9 @@ public class StatePruner {
 
 			if (state.getParameterIds().contains(node.getId())
 					&& !node.hasDescendant(state.getEvidence().getVariables())) {
-				nodesToKeep.addAll(node.getOutputNodesIds(ProbabilityRuleNode.class));				
+				node.getOutputNodes(ChanceNode.class).stream()
+					.filter(n -> n.getDistrib() instanceof RuleDistribution)
+					.forEach(n -> nodesToKeep.add(n.getId()));		
 			} 
 		} 
 		return nodesToKeep;
@@ -211,8 +213,7 @@ public class StatePruner {
 			return fullState;
 		}
 		
-		else if (!Collections.disjoint(nodesToKeep, 
-				state.getNodesIds(ProbabilityRuleNode.class))) {
+		else if (!Collections.disjoint(nodesToKeep, state.getRuleNodes())) {
 			return reduce_light(state, nodesToKeep);
 		}
 

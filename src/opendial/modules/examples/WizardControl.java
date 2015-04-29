@@ -47,14 +47,16 @@ import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.nodes.ActionNode;
+import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.modules.core.ForwardPlanner;
 import opendial.modules.core.WizardLearner;
+import opendial.state.AnchoredRule;
 import opendial.state.DialogueState;
-import opendial.state.nodes.UtilityRuleNode;
+import opendial.state.distribs.RuleUtilDistribution;
 
 
 /**
@@ -127,13 +129,17 @@ public class WizardControl implements Module {
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 	
 		// if the action selection is straightforward and parameter-less, directly select the action
-		if (state.getNodes(UtilityRuleNode.class).size() == 1) {
-			UtilityRuleNode urnode = state.getNodes(UtilityRuleNode.class).stream().findFirst().get();
-			if (urnode.getInputConditions().size() == 1 
-					&& urnode.getAnchor().getParameterVariables().isEmpty()) {
-				system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
-				return;
+		if (state.getUtilityNodes().size() == 1) {
+			UtilityNode urnode = state.getUtilityNodes().stream().findFirst().get();
+			if (urnode.getDistrib() instanceof RuleUtilDistribution) {
+				AnchoredRule arule = ((RuleUtilDistribution)urnode.getDistrib()).getAnchor();
+				if (arule.getInputRange().linearise().size() == 1 
+						&& arule.getParameters().isEmpty()) {
+					system.getModule(ForwardPlanner.class).trigger(state, updatedVars);
+					return;
+				}
 			}
+			
 		}
 		try {
 			for (ActionNode action : state.getActionNodes()) {
