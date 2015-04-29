@@ -64,7 +64,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int MAX_BRANCHING_FACTOR = 10;
 
 	// maximum number of values to use VE
-	public static int MAX_NBVALUES = 300;
+	public static int MAX_NBVALUES = 100000;
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;

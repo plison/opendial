@@ -1,5 +1,6 @@
 package opendial.inference.approximate;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -12,11 +13,13 @@ import java.util.stream.Stream;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
 import opendial.inference.Query;
 
@@ -41,7 +44,9 @@ public class LikelihoodWeighting {
 
 	// the query
 	Query query;
-
+	Collection<String> queryVars;
+	Assignment evidence;
+	
 	// sorted nodes in the network
 	List<BNode> sortedNodes;
 
@@ -67,6 +72,9 @@ public class LikelihoodWeighting {
 	 */
 	public LikelihoodWeighting(Query query, int nbSamples, long maxSamplingTime) {
 		this.query = query;
+		this.evidence = query.getEvidence();
+		this.queryVars = query.getQueryVars();
+		
 		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
@@ -118,17 +126,14 @@ public class LikelihoodWeighting {
 		}
 		try {
 			for (BNode n : sortedNodes) {
-
-				// if the value is already part of the sample, skip to next one
-				if (sample.containsVar(n.getId())) {
-					continue;
-				}
-
+				String id = n.getId();
+				
 				// if the node is an evidence node and has no input nodes
-				else if (n.getInputNodeIds().isEmpty()
-						&& query.getEvidence().containsVar(n.getId())) {
-					sample.addPair(n.getId(),
-							query.getEvidence().getValue(n.getId()));
+				if (n.getInputNodeIds().isEmpty()
+						&& evidence.containsVar(id)) {
+					sample.addPair(id,evidence.getValue(id));
+					
+				
 				} else if (n instanceof ChanceNode) {
 					sampleChanceNode((ChanceNode) n, sample);
 				}
@@ -150,7 +155,7 @@ public class LikelihoodWeighting {
 			if (sample.getWeight() < WEIGHT_THRESHOLD) {
 				sample.clear();
 			}
-			sample.trim(query.getQueryVars());
+			sample.trim(queryVars);
 		} catch (DialException e) {
 			log.info("exception caught: " + e);
 			e.printStackTrace();
@@ -173,25 +178,25 @@ public class LikelihoodWeighting {
 	private void sampleChanceNode(ChanceNode n, Sample sample)
 			throws DialException {
 
-		// if the node is a chance node and is not evidence, sample from the
-		// values
-		if (!query.getEvidence().containsVar(n.getId())) {
+		String id = n.getId();
+		// if the node is chance node and not evidence, sample from the values
+		if (!evidence.containsVar(id)) {
 			Value newVal = n.sample(sample);
-			sample.addPair(n.getId(), newVal);
+			sample.addPair(id, newVal);
 		}
 
 		// if the node is an evidence node, update the weights
 		else {
-			Value evidenceValue = query.getEvidence().getValue(n.getId());
+			Value evidenceValue = evidence.getValue(id);
+			ProbDistribution distrib = n.getDistrib();
 			double evidenceProb = 1.0;
-			if (n.getDistrib() instanceof ContinuousDistribution) {
-				evidenceProb = ((ContinuousDistribution) n.getDistrib())
-						.getProbDensity(evidenceValue);
+			if (distrib instanceof ContinuousDistribution) {
+				evidenceProb = ((ContinuousDistribution)distrib).getProbDensity(evidenceValue);
 			} else {
 				evidenceProb = n.getProb(sample, evidenceValue);
 			}
 			sample.addLogWeight(Math.log(evidenceProb));
-			sample.addPair(n.getId(), evidenceValue);
+			sample.addPair(id, evidenceValue);
 		}
 	}
 
@@ -204,15 +209,15 @@ public class LikelihoodWeighting {
 	 */
 	private void sampleActionNode(ActionNode n, Sample sample) {
 
-		if (!query.getEvidence().containsVar(n.getId())
-				&& n.getInputNodeIds().isEmpty()) {
+		String id = n.getId();
+		if (!evidence.containsVar(id) && n.getInputNodeIds().isEmpty()) {
 			Value newVal = n.sample(sample);
-			sample.addPair(n.getId(), newVal);
+			sample.addPair(id, newVal);
 		} else {
-			Value evidenceValue = query.getEvidence().getValue(n.getId());
+			Value evidenceValue = evidence.getValue(id);
 			double evidenceProb = n.getProb(evidenceValue);
 			sample.addLogWeight(Math.log(evidenceProb));
-			sample.addPair(n.getId(), evidenceValue);
+			sample.addPair(id, evidenceValue);
 		}
 	}
 
