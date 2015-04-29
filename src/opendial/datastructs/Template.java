@@ -63,10 +63,15 @@ public final class Template {
 
 	// the regular expression pattern corresponding to the template
 	final Pattern pattern;
+	
+	// whether the template allows for multiple values
+	final boolean underspecified;
 
 	// the slots, as a mapping between slot labels and their
 	// group number in the pattern
 	final Map<String, Integer> slots;
+
+	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
 
 	// ===================================
 	// TEMPLATE CONSTRUCTION
@@ -89,6 +94,8 @@ public final class Template {
 		// string processing to avoid special characters for the pattern
 		pattern = constructPattern(rawString, slots.keySet());
 
+		underspecified = !slots.isEmpty() || pattern.toString().contains("(?:");
+	
 	}
 
 	protected Pattern getPattern() {
@@ -116,18 +123,16 @@ public final class Template {
 	public Set<String> getSlots() {
 		return slots.keySet();
 	}
-
+	
+	
 	/**
-	 * Returns true if the template contains an underspecified element (slot to
-	 * fill or wildcard), and false otherwise.
+	 * Returns true if the template is an actual template, i.e. can match
+	 * multiple values (due to slots or alternative/optional elements)
 	 * 
-	 * @return true if the template is underspecified, false otherwsie
+	 * @return true if underspecified, false otherwise
 	 */
 	public boolean isUnderspecified() {
-		return pattern.toString().contains(".*")
-				|| pattern.toString().contains(".+")
-				|| pattern.toString().contains("(?:")
-				|| pattern.toString().contains("|");
+		return underspecified;
 	}
 
 	/**
@@ -141,13 +146,14 @@ public final class Template {
 	 */
 	public MatchResult match(String str) {
 		String input = str.trim();
-		if (!isUnderspecified()) {
+		if (!underspecified) {
 			if (input.equalsIgnoreCase(rawString)) {
 				return new MatchResult(0, rawString.length(), new Assignment());
 			} else {
 				return new MatchResult();
 			}
 		}
+		
 		Matcher matcher = pattern.matcher(input);
 		if ((matcher.matches())) {
 			int start = input.indexOf(matcher.group(0));
@@ -366,8 +372,7 @@ public final class Template {
 
 		Map<String, Integer> vars = new HashMap<String, Integer>();
 
-		Pattern p = Pattern.compile("\\{(.+?)\\}");
-		Matcher m = p.matcher(str);
+		Matcher m = slotPattern.matcher(str);
 		int incr = 0;
 		while (m.find()) {
 			String var = m.group(1);
