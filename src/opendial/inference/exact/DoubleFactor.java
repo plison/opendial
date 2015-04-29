@@ -23,6 +23,7 @@
 
 package opendial.inference.exact;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -153,15 +154,13 @@ public class DoubleFactor {
 	 * factor.
 	 */
 	public void normaliseUtil() {
-		Map<Assignment, double[]> newMatrix = new HashMap<Assignment, double[]>();
-		for (Assignment a : matrix.keySet()) {
+		for (Assignment a : new ArrayList<Assignment>(matrix.keySet())) {
 			double[] entries = matrix.get(a);
-			if (entries[0] > 0.0) {
-				newMatrix.put(a, new double[] { entries[0],
+			if (entries[0] > 0.0 && entries[1] != 0 && entries[0] != 1) {
+				matrix.put(a, new double[] { entries[0],
 						entries[1] / entries[0] });
 			}
 		}
-		matrix = newMatrix;
 	}
 
 	/**
@@ -172,18 +171,10 @@ public class DoubleFactor {
 	public void normalise(Collection<String> condVars) {
 		Map<Assignment, Double> probMatrix = InferenceUtils.normalise(
 				getProbMatrix(), condVars);
-		Map<Assignment, Double> utilityMatrix = getUtilityMatrix();
 
-		if (probMatrix.size() != utilityMatrix.size()) {
-			log.warning("prob. and utility matrices have different sizes");
-		}
-		matrix = probMatrix
-				.keySet()
-				.stream()
-				.collect(
-						Collectors.toMap(a -> a,
-								a -> new double[] { probMatrix.get(a),
-										utilityMatrix.get(a) }));
+		matrix = probMatrix.keySet().stream()
+				.collect(Collectors.toMap(a -> a,a -> new double[] { probMatrix.get(a),
+										matrix.get(a)[1] }));
 	}
 
 	/**
@@ -192,11 +183,8 @@ public class DoubleFactor {
 	 * @param headVars the variables to retain.
 	 */
 	public void trim(Collection<String> headVars) {
-		matrix = matrix
-				.keySet()
-				.stream()
-				.collect(
-						Collectors.toMap(a -> a.getTrimmed(headVars),
+		matrix = matrix.keySet().stream()
+				.collect(Collectors.toMap(a -> a.getTrimmed(headVars),
 								a -> matrix.get(a)));
 	}
 
@@ -214,18 +202,20 @@ public class DoubleFactor {
 		if (matrix == null) {
 			return true;
 		}
-		boolean containsRealAssign = false;
-		Iterator<Assignment> it = matrix.keySet().iterator();
-		while (it.hasNext() && !containsRealAssign) {
-			Assignment a = it.next();
+		for (Assignment a : matrix.keySet()) {
 			if (!a.isEmpty()) {
-				containsRealAssign = true;
+				return false;
 			}
 		}
 
-		return !containsRealAssign;
+		return true;
 	}
 
+	
+	public double[] getEntry(Assignment a) {
+		return matrix.get(a);
+	}
+	
 	/**
 	 * Returns the probability for the assignment, if it is encoded in the
 	 * matrix. Else, returns null
@@ -234,9 +224,6 @@ public class DoubleFactor {
 	 * @return probability of the assignment
 	 */
 	public double getProbEntry(Assignment a) {
-		if (!matrix.containsKey(a)) {
-			log.debug("assignment FAILURE: " + a);
-		}
 		return matrix.get(a)[0];
 	}
 
@@ -248,9 +235,6 @@ public class DoubleFactor {
 	 * @return utility for the assignment
 	 */
 	public double getUtilityEntry(Assignment a) {
-		if (!matrix.containsKey(a)) {
-			log.debug("assignment FAILURE: " + a);
-		}
 		return matrix.get(a)[1];
 	}
 
