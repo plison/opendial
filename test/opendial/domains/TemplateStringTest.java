@@ -223,7 +223,7 @@ public class TemplateStringTest {
 		assertEquals(MathUtils.evaluateExpression("1+2"), 3.0, 0.001);
 		assertEquals(MathUtils.evaluateExpression("-1.2*3"), -3.6, 0.001);
 		Template t = new Template("{X}+2");
-		assertEquals(t.fillSlots(new Assignment("X", "3")).toString(), "5.0");
+		assertEquals(t.fillSlots(new Assignment("X", "3")).toString(), "5");
 	}
 
 	@Test

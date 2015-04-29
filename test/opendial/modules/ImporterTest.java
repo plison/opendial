@@ -143,7 +143,7 @@ public class ImporterTest {
 		assertEquals(
 				((ContinuousDistribution) system.getState()
 						.getChanceNode("theta_repeat").getDistrib())
-						.getFunction().getMean()[0], 1.35, 0.25);
+						.getFunction().getMean()[0], 1.35, 0.3);
 		Settings.nbSamples = Settings.nbSamples / 3;
 		Settings.maxSamplingTime = Settings.maxSamplingTime / 3;
 	}
