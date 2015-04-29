@@ -239,8 +239,8 @@ public final class BasicCondition implements Condition {
 	public boolean equals(Object o) {
 		if (o instanceof BasicCondition) {
 			return (((BasicCondition) o).getVariable().equals(variable)
-					&& ((BasicCondition) o).getValue().equals(expectedValue) && relation == ((BasicCondition) o)
-						.getRelation());
+					&& ((BasicCondition) o).getValue().equals(expectedValue) 
+					&& relation == ((BasicCondition) o).getRelation());
 		}
 		return false;
 	}

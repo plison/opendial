@@ -52,10 +52,7 @@ import opendial.inference.Query;
 import org.apache.commons.collections15.ListUtils;
 
 /**
- * Implementation of the Variable Elimination algorithm
- *
- * NB: make this more efficient by discarding irrelevant variables! also see
- * Koller's book to compare the algorithm
+ * Implementation of the Variable Elimination algorithm.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -187,12 +184,10 @@ public class VariableElimination implements InferenceAlgorithm {
 		for (Assignment a : factor.getValues()) {
 			Assignment reducedA = new Assignment(a);
 			reducedA.removePair(nodeId);
-
-			double sumProbIncrement = factor.getProbEntry(a);
-			double sumUtilityIncrement = factor.getProbEntry(a)
-					* factor.getUtilityEntry(a);
-			sumFactor.incrementEntry(reducedA, sumProbIncrement,
-					sumUtilityIncrement);
+			double[] entry = factor.getEntry(a);
+			double prob = entry[0];
+			double util = entry[1];
+			sumFactor.incrementEntry(reducedA, prob, prob*util);
 		}
 
 		sumFactor.normaliseUtil();
@@ -222,17 +217,19 @@ public class VariableElimination implements InferenceAlgorithm {
 
 			for (Assignment a : f.getValues()) {
 
-				double probVal = f.getProbEntry(a);
-				double utilityVal = f.getUtilityEntry(a);
+				double[] entry = f.getEntry(a);
+				double prob = entry[0];
+				double util = entry[1];
 
 				for (Assignment b : factor.getValues()) {
 					if (b.consistentWith(a)) {
-						double productProb = probVal * factor.getProbEntry(b);
-						double sumUtility = utilityVal
-								+ factor.getUtilityEntry(b);
+						double[] entry2 = factor.getEntry(b);
+						double prob2 = entry2[0];
+						double util2 = entry2[1];
+						double product = prob * prob2;
+						double sum = util + util2;
 
-						tempFactor.addEntry(new Assignment(a, b), productProb,
-								sumUtility);
+						tempFactor.addEntry(new Assignment(a, b), product,sum);
 					}
 				}
 			}
