@@ -194,9 +194,10 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @param threshold the threshold to apply
 	 */
 	@Override
-	public synchronized void pruneValues(double threshold) {
-		condDistrib.pruneValues(threshold);
-		uncondDistrib.pruneValues(threshold);
+	public synchronized boolean pruneValues(double threshold) {
+		boolean changed = condDistrib.pruneValues(threshold);
+		boolean changed2 = uncondDistrib.pruneValues(threshold);
+		return changed || changed2;
 	}
 
 	/**

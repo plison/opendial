@@ -120,7 +120,6 @@ public class ChanceNode extends BNode {
 	@Override
 	public void addInputNode(BNode inputNode) throws DialException {
 		super.addInputNode(inputNode);
-		cachedValues = null;
 	}
 
 
@@ -205,8 +204,9 @@ public class ChanceNode extends BNode {
 	 * @param threshold the probability threshold
 	 */
 	public void pruneValues(double threshold) {
-		distrib.pruneValues(threshold);
-		cachedValues = null;
+		if (distrib.pruneValues(threshold)) {
+			cachedValues = null;
+		}
 	}
 
 
@@ -408,7 +408,11 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public ChanceNode copy() throws DialException {
-		return new ChanceNode(nodeId, distrib.copy());
+		ChanceNode cn= new ChanceNode(nodeId, distrib.copy());
+		if (cachedValues != null) {
+			cn.cachedValues = new HashSet<Value>(cachedValues);
+		}
+		return cn;
 	}
 
 

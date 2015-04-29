@@ -36,17 +36,16 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.ToolTipManager;
 
 import opendial.arch.Logger;
-import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -54,8 +53,7 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.gui.StateViewerTab;
 import opendial.state.DialogueState;
-import opendial.state.nodes.ProbabilityRuleNode;
-import opendial.state.nodes.UtilityRuleNode;
+import opendial.state.distribs.RuleDistribution;
 import opendial.utils.StringUtils;
 
 import org.apache.commons.collections15.Transformer;
@@ -405,7 +403,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 				BNode node = getBNode((String)arg4);
 				if (node!=null) {
 					String str = StringUtils.getHtmlRendering(node.getId());
-					if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
+					if (currentState.isRuleNode(node.getId())) {
 						str = "<font size=\"6\" color=\"gray\">" + str + "</font>";
 					}
 					JLabel jlabel = new JLabel("<html>" +str + "</html>");
@@ -456,11 +454,13 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 		@Override
 		public Shape transform(String arg0) {
 			BNode node = getBNode(arg0);
-			if (node instanceof ProbabilityRuleNode) {
-				return new Ellipse2D.Double(-5.0,-5.0,20.0,20.0);
-			}
-			else if (node instanceof ChanceNode) {
-				return new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
+			if (node instanceof ChanceNode) {
+				if (((ChanceNode)node).getDistrib() instanceof RuleDistribution) {
+					return new Ellipse2D.Double(-5.0,-5.0,20.0,20.0);
+				}
+				else {
+					return new Ellipse2D.Double(-15.0,-15.0,30.0,30.0);
+				}
 			}
 			else if (node instanceof UtilityNode) {
 				GeneralPath p0 = new GeneralPath();
@@ -489,7 +489,7 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 
 		Map<BNode,Point2D> positions;
 
-		public CustomLayoutTransformer(BNetwork network) {
+		public CustomLayoutTransformer(DialogueState network) {
 			positions = new HashMap<BNode, Point2D>();
 			Point current = new Point(0, 0);
 			
@@ -505,19 +505,18 @@ public class StateViewer extends VisualizationViewer<String,Integer> {
 					catch (InterruptedException e1) {	e1.printStackTrace();}
 				}
 			}
+			Collection<String> ruleNodes = network.getRuleNodes();
 			for (BNode node : nodes) {
 				if (!node.getId().contains("'") && !node.getId().contains("=") 
-						&& (node instanceof ChanceNode) && !(node instanceof ProbabilityRuleNode)) {
+						&& (node instanceof ChanceNode) && !ruleNodes.contains(node.getId())) {
 					positions.put(node, current);
 					current = incrementPoint(current);
 				}
 			}
 			current = new Point(current.x + 200, 0);
-			for (BNode node : nodes) {
-				if (node instanceof ProbabilityRuleNode || node instanceof UtilityRuleNode) {
+			for (BNode node : network.getNodes(ruleNodes)) {
 					positions.put(node, current);
 					current = incrementPoint(current);
-				}
 			}
 
 			current = new Point(current.x + 200, 0);

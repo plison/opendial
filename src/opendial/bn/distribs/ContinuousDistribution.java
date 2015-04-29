@@ -84,8 +84,8 @@ public class ContinuousDistribution implements  IndependentProbDistribution {
 	 * Does nothing.
 	 */
 	@Override
-	public void pruneValues(double frequencyThreshold) {
-		return;
+	public boolean pruneValues(double frequencyThreshold) {
+		return false;
 	}
 
 	// ===================================

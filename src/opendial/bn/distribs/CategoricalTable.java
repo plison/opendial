@@ -326,18 +326,24 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Prunes all table values that have a probability lower than the threshold.
 	 * 
 	 * @param threshold the threshold
+	 * @return true if at least one value has been pruned, false otherwise
 	 */
 	@Override
-	public void pruneValues(double threshold) {
+	public boolean pruneValues(double threshold) {
 		Map<Value,Double> newTable = new HashMap<Value,Double>();
+		boolean changed = false;
 		for (Value row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
 			}
+			else {
+				changed = true;
+			}
 		}
 		table = InferenceUtils.normalise(newTable);
 		intervals = null;
+		return changed;
 	}
 
 

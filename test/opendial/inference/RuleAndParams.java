@@ -9,7 +9,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
-import opendial.state.nodes.ProbabilityRuleNode;
+import opendial.state.distribs.RuleDistribution;
 
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class RuleAndParams {
 		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.12, 0.03);
 		assertEquals(system.getState().getChanceNode("theta_moves").getOutputNodesIds().size(), 1);
 		assertTrue(system.getState().hasChanceNode("movements"));
-		assertTrue(system.getState().getChanceNode("movements") instanceof ProbabilityRuleNode);
+		assertTrue(system.getState().getChanceNode("movements").getDistrib() instanceof RuleDistribution);
 		CategoricalTable t = new CategoricalTable("a_u");
 		t.addRow("I want left", 0.8);
 		t.addRow("I want forward", 0.1);

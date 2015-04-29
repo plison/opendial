@@ -84,8 +84,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Does nothing
 	 */
 	@Override
-	public void pruneValues(double threshold) {
-		return;
+	public boolean pruneValues(double threshold) {
+		return false;
 	}
 
 	/**

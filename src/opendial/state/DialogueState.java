@@ -43,18 +43,18 @@ import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
+import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
-import opendial.domains.rules.Rule.RuleType;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.OutputDistribution;
-import opendial.state.nodes.ProbabilityRuleNode;
-import opendial.state.nodes.UtilityRuleNode;
+import opendial.state.distribs.RuleDistribution;
+import opendial.state.distribs.RuleUtilDistribution;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -331,32 +331,11 @@ public class DialogueState extends BNetwork {
 	public void applyRule(Rule r) throws DialException {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
-
-		// first case: new probability rule
-		if (r.getRuleType() == RuleType.PROB && arule.isRelevant()) {
-			if (hasChanceNode(r.getRuleId())) {
-				getChanceNode(r.getRuleId()).getOutputNodes().stream()
-					.filter(n -> !n.getId().endsWith("'") && !hasChanceNode(n.getId()+"'"))
-					.forEach(n -> n.setId(n.getId()+"'"));
-				removeNode(r.getRuleId());
+		if (arule.isRelevant()) {
+			switch (r.getRuleType()) {
+			case PROB : addProbabilityRule(arule); break;
+			case UTIL : addUtilityRule(arule); break;
 			}
-			ProbabilityRuleNode ruleNode = new ProbabilityRuleNode(arule);
-			arule.getInputVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-			arule.getParameterVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-			addNode(ruleNode);
-			addOutputNodes(ruleNode);
-		}
-
-		// third case: utility rule
-		else if (r.getRuleType() == RuleType.UTIL && arule.isRelevant()){
-			if (hasUtilityNode(r.getRuleId())) {
-				removeNode(r.getRuleId());
-			}
-			UtilityRuleNode ruleNode = new UtilityRuleNode(arule);
-			arule.getInputVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-			arule.getParameterVariables().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
-			addNode(ruleNode);
-			addActionNodes(ruleNode);
 		}
 	}
 
@@ -569,6 +548,37 @@ public class DialogueState extends BNetwork {
 	public boolean isIncremental(String var) {
 		return incrementalVars.contains(var.replace("'", ""));
 	}
+	
+	
+	/**
+	 * Returns all rule nodes in the dialogue state (both probability and utility rules)
+	 * 
+	 * @return the set of identifiers for the rule nodes
+	 */
+	public Set<String> getRuleNodes() {
+		return getNodeIds().stream().filter(i -> isRuleNode(i)).collect(Collectors.toSet());
+	}
+	
+	/**
+	 * Returns true if the node identifier refers to a rule node, and false otherwise
+	 * 
+	 * @param id the node identifier
+	 * @return true if the node with identifier id is a (probability or utility) rule node
+	 */
+	public boolean isRuleNode(String id) {
+		if (hasNode(id)) {
+			BNode n = getNode(id);
+			if ((n instanceof ChanceNode) && 
+					((ChanceNode)n).getDistrib() instanceof RuleDistribution) {
+				return true;
+			}
+			else if (n instanceof UtilityNode && 
+					((UtilityNode)n).getDistrib() instanceof RuleUtilDistribution) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	// ===================================
 	//  UTILITY FUNCTIONS
@@ -662,16 +672,28 @@ public class DialogueState extends BNetwork {
 
 
 	/**
-	 * Adds the output nodes specified in the rule node and connects them to the
-	 * rule node.
+	 * Adds the probability rule to the dialogue state
 	 * 
-	 * @param ruleNode the rule node from which the outputs "spawn"
+	 * @param arule the anchored rule (must be of type PROB)
 	 * @throws DialException if the creation of new nodes fails
 	 */
-	private void addOutputNodes(ProbabilityRuleNode ruleNode) throws DialException {
+	private void addProbabilityRule(AnchoredRule arule) throws DialException {
 
+		String ruleId = arule.getRule().getRuleId();
+		if (hasChanceNode(ruleId)) {
+			removeNode(ruleId);
+		}
+		
+		ChanceNode ruleNode = new ChanceNode(ruleId);
+		ruleNode.setDistrib(new RuleDistribution(arule));
+		ruleNode.getValues();
+		
+		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		addNode(ruleNode);
+		
 		// looping on each output variable
-		for (String updatedVar : ruleNode.getAnchor().getOutputVariables()) {
+		for (String updatedVar : arule.getOutputs()) {
 
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
@@ -685,11 +707,6 @@ public class DialogueState extends BNetwork {
 				// adding dependency edge
 				outputNode.addInputNode(ruleNode);
 
-				// safety check
-				if (ruleNode.getId().contains("^2") && outputNode.getInputNodeIds().
-						contains(ruleNode.getId().replace("^2", ""))) {
-					log.warning("node " + outputNode.getId() + " has duplicates: " + ruleNode.getId());
-				}
 			}
 
 			// else, simply add an additional edge
@@ -702,37 +719,42 @@ public class DialogueState extends BNetwork {
 
 
 	/**
-	 * Adds the action nodes specified in the rule node and connects them to the
-	 * rule node.
+	 * Adds the utility rule to the dialogue state.
 	 * 
-	 * @param ruleNode the utility rule node to which the action node points
+	 * @param arule the anchored rule (must be of type UTIL)
 	 * @throws DialException if the creation of new nodes fails
 	 */
-	private  void addActionNodes(UtilityRuleNode ruleNode) throws DialException {
+	private  void addUtilityRule(AnchoredRule arule) throws DialException {
 
+		String ruleId = arule.getRule().getRuleId();
+		
+		if (hasUtilityNode(ruleId)) {
+			removeNode(ruleId);
+		}
+		UtilityNode ruleNode = new UtilityNode(ruleId);
+		ruleNode.setDistrib(new RuleUtilDistribution(arule));
+		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		addNode(ruleNode);
+		
 		// retrieving the set of actions and their values
-		ValueRange actions = ruleNode.getAnchor().getOutputs();
+		ValueRange actions = arule.getOutputRange();
 
 		// looping on every action variable
 		for (String actionVar : actions.getVariables()) {
 
+			ActionNode actionNode;
 			// if the action variable does not yet exist, create it
 			if (!hasActionNode(actionVar)) {
-				ActionNode actionNode = new ActionNode(actionVar);
+				actionNode = new ActionNode(actionVar);
 				addNode(actionNode);
-				ruleNode.addInputNode(actionNode);
 			}
-
-			// else, simply connect it to the rule node
 			else {
-				ruleNode.addInputNode(getNode(actionVar));
+				actionNode = getActionNode(actionVar);
 			}
 
-			// and add the values specified in the utility rule to the variable
-			// (and removing underspecified values)
-			Set<Value> actionValues = actions.getValues(actionVar).stream()
-					.filter(v -> !v.toString().contains("*")).collect(Collectors.toSet());
-			getActionNode(actionVar).addValues(actionValues);
+			ruleNode.addInputNode(actionNode);
+			actionNode.addValues(actions.getValues(actionVar));
 		}
 	}
 
@@ -760,6 +782,7 @@ public class DialogueState extends BNetwork {
 			addNode(equalityNode);
 		}
 	}
+
 
 
 
