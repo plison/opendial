@@ -250,6 +250,10 @@ public class DialogueState extends BNetwork {
 	public synchronized void addToState_incremental(CategoricalTable distrib,
 			boolean followPrevious) throws DialException {
 
+		if (!followPrevious) {
+			setAsCommitted(distrib.getVariable());
+		}
+
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
 			CategoricalTable newtable = ((CategoricalTable) queryProb(var))
@@ -503,11 +507,11 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @return the list of updated variables
 	 */
-	public Set<String> getNewVariables() {
+	public synchronized Set<String> getNewVariables() {
 		Set<String> newVars = new HashSet<String>();
 		for (String var : getChanceNodeIds()) {
-			if (var.contains("'")) {
-				newVars.add(var.replace("'", ""));
+			if (var.endsWith("'")) {
+				newVars.add(var.substring(0,var.length()-1));
 			}
 		}
 		return newVars;
@@ -555,8 +559,11 @@ public class DialogueState extends BNetwork {
 	// ===================================
 
 	public void setAsCommitted(String var) {
-		incrementalVars.remove(var.replace("'", ""));
-		StatePruner.prune(this);
+		String baseVar = var.replace("'", "");
+		if (incrementalVars.contains(baseVar)) {
+			incrementalVars.remove(baseVar);
+			StatePruner.prune(this);
+		}
 	}
 
 	/**
@@ -733,18 +740,18 @@ public class DialogueState extends BNetwork {
 		String outputVar = outputNode.getId();
 
 		// adding the connection between the predicted and observed values
-		String predictEquiv = outputVar.replace("'", "") + "^p";
+		String baseVar = outputVar.substring(0, outputVar.length()-1);
+		String predictEquiv = baseVar + "^p";
 		if (hasChanceNode(predictEquiv) && !outputVar.equals(predictEquiv)
 				&& !outputVar.contains("^p")) {
-			ChanceNode equalityNode = new ChanceNode("=_"
-					+ outputVar.replace("'", ""));
+			ChanceNode equalityNode = new ChanceNode("=_" + baseVar);
 			equalityNode.addInputNode(outputNode);
 			equalityNode.addInputNode(getNode(predictEquiv));
-			equalityNode.setDistrib(new EquivalenceDistribution(outputVar
-					.replace("'", "")));
+			equalityNode.setDistrib(new EquivalenceDistribution(baseVar));
 			addEvidence(new Assignment(equalityNode.getId(), true));
 			addNode(equalityNode);
 		}
+		
 	}
 
 }

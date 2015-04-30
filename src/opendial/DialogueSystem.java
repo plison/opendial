@@ -484,11 +484,12 @@ public class DialogueSystem {
 		}
 
 		updating = true;
+		
+		// finding the new variables that must be processed
 		Set<String> toProcess = curState.getNewVariables();
 		while (!toProcess.isEmpty()) {
 
 			synchronized (curState) {
-				// finding the new variables that must be processed
 
 				// reducing the dialogue state to its relevant nodes
 				curState.reduce();
