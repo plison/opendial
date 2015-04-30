@@ -142,14 +142,15 @@ public final class TemplateEffect extends BasicEffect {
 	}
 
 	/**
-	 * Converts the basic effect into an equivalent condition.
+	 * Converts the effect into an equivalent condition
 	 * 
-	 * @return the equivalent (basic or template-based) condition
+	 * @return the corresponding condition
 	 */
 	@Override
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(labelTemplate.getRawString(), valueTemplate.getRawString(), r);
+		return new BasicCondition(labelTemplate.getRawString(),
+				valueTemplate.getRawString(), r);
 	}
 
 	/**

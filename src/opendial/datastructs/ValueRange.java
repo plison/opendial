@@ -131,7 +131,8 @@ public class ValueRange {
 	public Set<Assignment> linearise() {
 		if (range.size() == 1) {
 			String var = range.keySet().iterator().next();
-			return range.get(var).stream().map(v -> new Assignment(var,v)).collect(Collectors.toSet());
+			return range.get(var).stream().map(v -> new Assignment(var, v))
+					.collect(Collectors.toSet());
 		}
 		return CombinatoricsUtils.getAllCombinations(range);
 	}

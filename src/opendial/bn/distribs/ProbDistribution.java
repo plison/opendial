@@ -81,8 +81,8 @@ public interface ProbDistribution {
 	public Value sample(Assignment condition) throws DialException;
 
 	/**
-	 * Returns the set of possible values for the distribution. If the distribution 
-	 * is continuous, the method returns a discretised set.
+	 * Returns the set of possible values for the distribution. If the
+	 * distribution is continuous, the method returns a discretised set.
 	 * 
 	 * @throws DialException if the values could not be extracted
 	 */

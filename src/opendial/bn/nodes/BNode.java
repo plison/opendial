@@ -99,8 +99,8 @@ public abstract class BNode implements Comparable<BNode> {
 			log.warning("cannot add itself: " + nodeId);
 		}
 		if (containsCycles(inputNode)) {
-			log.warning("there is a cycle between "
-					+ inputNode.getId() + " and " + nodeId);
+			log.warning("there is a cycle between " + inputNode.getId()
+					+ " and " + nodeId);
 		}
 
 		if (this instanceof ActionNode) {
@@ -109,7 +109,7 @@ public abstract class BNode implements Comparable<BNode> {
 
 		if (inputNode instanceof UtilityNode) {
 			log.warning("an utility node cannot be the input of any other node ("
-							+ inputNode.getId() + " -> " + nodeId + ")");
+					+ inputNode.getId() + " -> " + nodeId + ")");
 		}
 
 		addInputNode_internal(inputNode);
@@ -324,7 +324,6 @@ public abstract class BNode implements Comparable<BNode> {
 		return result;
 	}
 
-
 	/**
 	 * Returns the identifiers for the set of output nodes
 	 * 
@@ -334,7 +333,6 @@ public abstract class BNode implements Comparable<BNode> {
 		return new HashSet<String>(outputNodes.keySet());
 	}
 
-	
 	/**
 	 * Returns an ordered list of nodes which are the ancestors (via the
 	 * relations) of the current node. The ordering puts the closest ancestors

@@ -551,21 +551,14 @@ public class BNetwork {
 		}
 
 		// sanity check
-		/** for (Set<String> cluster1 : cliques) {
-			for (Set<String> cluster2 : cliques) {
-				if (!cluster1.equals(cluster2)) {
-					for (String elInCluster1 : cluster1) {
-						if (cluster2.contains(elInCluster1)) {
-							log.warning("cluster 1:" + cluster1
-									+ ", cluster 2:" + cluster2);
-							log.warning("network to cluster: " + getNodeIds());
-							log.warning("network to cluster2: "
-									+ nodes.keySet());
-						}
-					}
-				}
-			}
-		} */
+		/**
+		 * for (Set<String> cluster1 : cliques) { for (Set<String> cluster2 :
+		 * cliques) { if (!cluster1.equals(cluster2)) { for (String elInCluster1
+		 * : cluster1) { if (cluster2.contains(elInCluster1)) {
+		 * log.warning("cluster 1:" + cluster1 + ", cluster 2:" + cluster2);
+		 * log.warning("network to cluster: " + getNodeIds());
+		 * log.warning("network to cluster2: " + nodes.keySet()); } } } } }
+		 */
 		Collections.sort(cliques, (s1, s2) -> s1.hashCode() - s2.hashCode());
 
 		return cliques;

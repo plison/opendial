@@ -46,7 +46,7 @@ public class LikelihoodWeighting {
 	Query query;
 	Collection<String> queryVars;
 	Assignment evidence;
-	
+
 	// sorted nodes in the network
 	List<BNode> sortedNodes;
 
@@ -74,7 +74,7 @@ public class LikelihoodWeighting {
 		this.query = query;
 		this.evidence = query.getEvidence();
 		this.queryVars = query.getQueryVars();
-		
+
 		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
@@ -127,13 +127,11 @@ public class LikelihoodWeighting {
 		try {
 			for (BNode n : sortedNodes) {
 				String id = n.getId();
-				
+
 				// if the node is an evidence node and has no input nodes
-				if (n.getInputNodeIds().isEmpty()
-						&& evidence.containsVar(id)) {
-					sample.addPair(id,evidence.getValue(id));
-					
-				
+				if (n.getInputNodeIds().isEmpty() && evidence.containsVar(id)) {
+					sample.addPair(id, evidence.getValue(id));
+
 				} else if (n instanceof ChanceNode) {
 					sampleChanceNode((ChanceNode) n, sample);
 				}
@@ -191,7 +189,8 @@ public class LikelihoodWeighting {
 			ProbDistribution distrib = n.getDistrib();
 			double evidenceProb = 1.0;
 			if (distrib instanceof ContinuousDistribution) {
-				evidenceProb = ((ContinuousDistribution)distrib).getProbDensity(evidenceValue);
+				evidenceProb = ((ContinuousDistribution) distrib)
+						.getProbDensity(evidenceValue);
 			} else {
 				evidenceProb = n.getProb(sample, evidenceValue);
 			}

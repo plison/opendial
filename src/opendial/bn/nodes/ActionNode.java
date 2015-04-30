@@ -174,11 +174,11 @@ public class ActionNode extends BNode {
 	public Value sample() {
 		int index = sampler.nextInt(actionValues.size());
 		if (actionValuesAsArray == null) {
-			actionValuesAsArray = actionValues.toArray(new Value[actionValues.size()]);
+			actionValuesAsArray = actionValues.toArray(new Value[actionValues
+					.size()]);
 		}
 		return actionValuesAsArray[index];
 	}
-
 
 	// ===================================
 	// UTILITIES

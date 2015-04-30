@@ -134,9 +134,9 @@ public class BasicEffect {
 	}
 
 	/**
-	 * Converts the basic effect into an equivalent condition.
+	 * Converts the effect into an equivalent condition
 	 * 
-	 * @return the equivalent (basic or template-based) condition
+	 * @return the corresponding condition
 	 */
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;

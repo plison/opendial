@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
@@ -71,7 +70,7 @@ public class Rule {
 
 	// input variables for the rule
 	Set<Template> inputVars;
-	
+
 	// ===================================
 	// RULE CONSTRUCTION
 	// ===================================
@@ -172,13 +171,13 @@ public class Rule {
 		RuleGrounding groundings = getGroundings(input);
 
 		for (Assignment g : groundings.getAlternatives()) {
-			Assignment full = !(g.isEmpty()) ? new Assignment(input, g): input;
-			
+			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
+
 			RuleCase match = cases.stream()
 					.filter(c -> c.getCondition().isSatisfiedBy(full))
-					.map(c -> c.ground(full))
-					.findFirst().orElse(new RuleCase());
-			
+					.map(c -> c.ground(full)).findFirst()
+					.orElse(new RuleCase());
+
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
 			}
@@ -192,7 +191,6 @@ public class Rule {
 		}
 		return output;
 	}
-
 
 	/**
 	 * Returns the rule type
@@ -212,24 +210,9 @@ public class Rule {
 	 */
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding groundings = new RuleGrounding();
-		for (RuleCase thecase : cases) {
-			RuleGrounding caseGrounding = thecase.getGroundings(input);
-
-			if (ruleType == RuleType.UTIL) {
-				Assignment input2 = input.removePrimes();
-				for (Effect e : thecase.getEffects()) {
-					Condition co = e.convertToCondition();
-					if (input2.containsVars(e.getOutputVariables())) {
-						RuleGrounding effectGrounding = co
-								.getGroundings(input2);
-						caseGrounding.add(effectGrounding);
-					} else {
-						Set<String> slots = e.getAdditionalInputVariables();
-						slots.removeAll(input2.getVariables());
-						caseGrounding.add(Assignment.createOneValue(slots, ValueFactory.create("")));
-					}
-				}
-			}
+		for (RuleCase c : cases) {
+			RuleGrounding caseGrounding = c.getGroundings(input,
+					ruleType == RuleType.UTIL);
 			groundings.add(caseGrounding);
 		}
 		return groundings;

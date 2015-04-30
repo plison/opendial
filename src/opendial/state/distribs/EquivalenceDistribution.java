@@ -231,7 +231,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 			throw new DialException("equivalence distribution with variable "
 					+ baseVar + " cannot handle condition " + condition);
 		}
-		
+
 		if (predicted.equals(ValueFactory.none())
 				|| actual.equals(ValueFactory.none())) {
 			return NONE_PROB;
@@ -242,8 +242,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 			String str1 = ((StringVal) predicted).getString();
 			String str2 = ((StringVal) actual).getString();
 			return (Template.match(str1, str2)) ? 1.0 : 0.0;
-		} else if (predicted instanceof SetVal
-				&& actual instanceof SetVal) {
+		} else if (predicted instanceof SetVal && actual instanceof SetVal) {
 			Set<Value> vals0 = ((SetVal) predicted).getSet();
 			Set<Value> vals1 = ((SetVal) actual).getSet();
 			if (vals0.isEmpty()) {
@@ -265,7 +264,5 @@ public class EquivalenceDistribution implements ProbDistribution {
 	public boolean isWellFormed() {
 		return true;
 	}
-
-
 
 }

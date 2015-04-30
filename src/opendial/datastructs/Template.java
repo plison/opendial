@@ -62,16 +62,16 @@ public class Template {
 
 	// the regular expression pattern corresponding to the template
 	final Pattern pattern;
-	
+
 	// whether the template allows for multiple values
-	protected final boolean underspecified ;
+	protected final boolean underspecified;
 
 	// the slots, as a mapping between slot labels and their
 	// group number in the pattern
 	final Map<String, Integer> slots;
 
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
-	
+
 	// ===================================
 	// TEMPLATE CONSTRUCTION
 	// ===================================
@@ -94,10 +94,8 @@ public class Template {
 		pattern = constructPattern(rawString);
 
 		underspecified = !slots.isEmpty() || pattern.toString().contains("(?:");
-	
+
 	}
-	
-	
 
 	protected Pattern getPattern() {
 		return pattern;
@@ -124,8 +122,7 @@ public class Template {
 	public Set<String> getSlots() {
 		return slots.keySet();
 	}
-	
-	
+
 	/**
 	 * Returns true if the template is an actual template, i.e. can match
 	 * multiple values (due to slots or alternative/optional elements)
@@ -154,7 +151,7 @@ public class Template {
 				return new MatchResult();
 			}
 		}
-		
+
 		Matcher matcher = pattern.matcher(input);
 		if ((matcher.matches())) {
 			int start = input.indexOf(matcher.group(0));
@@ -204,7 +201,7 @@ public class Template {
 		Matcher matcher = pattern.matcher(input);
 		List<MatchResult> results = new ArrayList<MatchResult>();
 		while ((matcher.find())) {
-			
+
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0))
 					+ matcher.group(0).length();
@@ -300,7 +297,7 @@ public class Template {
 		}
 
 		if (StringUtils.isArithmeticExpression(filledTemplate)) {
-			double result = MathUtils.evaluateExpression(filledTemplate);		
+			double result = MathUtils.evaluateExpression(filledTemplate);
 			filledTemplate = StringUtils.getShortForm(result);
 		}
 		return filledTemplate;
@@ -420,7 +417,8 @@ public class Template {
 			return Pattern.compile(regex, Pattern.CASE_INSENSITIVE
 					| Pattern.UNICODE_CASE);
 		} catch (PatternSyntaxException e) {
-			log.warning("illegal pattern syntax: " + regex + " (from " + str+")");
+			log.warning("illegal pattern syntax: " + regex + " (from " + str
+					+ ")");
 			return Pattern.compile("bogus pattern");
 		}
 	}

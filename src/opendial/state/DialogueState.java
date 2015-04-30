@@ -268,7 +268,8 @@ public class DialogueState extends BNetwork {
 	 * @param newState the state to merge into the current state
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
-	public synchronized void addToState(DialogueState newState) throws DialException {
+	public synchronized void addToState(DialogueState newState)
+			throws DialException {
 		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
@@ -659,7 +660,7 @@ public class DialogueState extends BNetwork {
 
 			ChanceNode outputNode;
 			OutputDistribution outputDistrib;
-	
+
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
 				outputDistrib = new OutputDistribution(updatedVar);
@@ -670,13 +671,13 @@ public class DialogueState extends BNetwork {
 				connectToPredictions(outputNode);
 			}
 			// else, simply add an additional edge
-			else  {
+			else {
 				outputNode = getChanceNode(updatedVar);
 				outputDistrib = (OutputDistribution) outputNode.getDistrib();
 			}
 			outputNode.addInputNode(ruleNode);
 			outputDistrib.addEffects(arule.getEffects());
-			
+
 		}
 	}
 

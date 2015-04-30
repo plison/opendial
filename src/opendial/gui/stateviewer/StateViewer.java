@@ -169,20 +169,22 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				}
 			}
 
-			CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
+			CustomLayoutTransformer transformer = new CustomLayoutTransformer(
+					ds);
 			StaticLayout<String, Integer> layout = new StaticLayout<String, Integer>(
 					f, transformer);
 
 			layout.setSize(new Dimension(600, 600));
 
 			return layout;
-		}		
-		catch (ConcurrentModificationException|NullPointerException e) {
-			try {Thread.sleep(50);} catch (InterruptedException e1) {}
+		} catch (ConcurrentModificationException | NullPointerException e) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e1) {
+			}
 			return getGraphLayout(ds, showParameters);
 		}
 	}
-
 
 	/**
 	 * Returns the graph identifier associated with the node
@@ -215,8 +217,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		// log.warning("node corresponding to " + verticeID + " not found");
 		return null;
 	}
-	
-	
+
 	/**
 	 * Returns the node associated with the graph identifier (inverse operation
 	 * of getGraphId)
@@ -240,9 +241,10 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				isUpdating = true;
 				if (tab.getMainFrame().getSystem().isPaused()) {
 					update();
-				}
-				else {	
-				synchronized (currentState) { update(); }
+				} else {
+					synchronized (currentState) {
+						update();
+					}
 				}
 				isUpdating = false;
 			}).start();
@@ -381,11 +383,11 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 						.replace("if", "<b>if</b>")
 						.replace("then",
 								"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-								.replace("else",
-										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-										.replace(
-												"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
-												"<b>else if</b>");
+						.replace("else",
+								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+						.replace(
+								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
+								"<b>else if</b>");
 				return StringUtils.getHtmlRendering(htmlDistrib);
 			} else {
 				return "";
@@ -424,7 +426,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * Renderer for the vertice colour
 	 */
 	final class CustomVertexColourRenderer implements
-	Transformer<String, Paint> {
+			Transformer<String, Paint> {
 
 		@Override
 		public Paint transform(String arg0) {
@@ -497,8 +499,11 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 					allNodes.addAll(network.getNodeIds());
 					ruleNodes.addAll(network.getRuleNodeIds());
 					break;
-				} catch (ConcurrentModificationException|NullPointerException e) {
-					try {Thread.sleep(50);} catch (InterruptedException e1) {}
+				} catch (ConcurrentModificationException | NullPointerException e) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e1) {
+					}
 				}
 			}
 			for (String node : allNodes) {
@@ -533,7 +538,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 
 		@Override
 		public Point2D transform(String id) {
-			String id2= getBNodeId(id);
+			String id2 = getBNodeId(id);
 			return positions.get(id2);
 		}
 

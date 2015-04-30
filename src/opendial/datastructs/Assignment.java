@@ -67,8 +67,8 @@ public class Assignment {
 	// the initial size of the hash
 	public static final int MAP_SIZE = 5;
 
-	int cachedHash = 0 ;
-	
+	int cachedHash = 0;
+
 	// ===================================
 	// CONSTRUCTORS
 	// ===================================
@@ -427,7 +427,7 @@ public class Assignment {
 	 * @return the removed value
 	 */
 	public Value removePair(String var) {
-		Value v= map.remove(var);
+		Value v = map.remove(var);
 		cachedHash = 0;
 		return v;
 	}
@@ -457,14 +457,13 @@ public class Assignment {
 			}
 		}
 		cachedHash = 0;
-	return a;
+		return a;
 	}
 
 	public void clear() {
 		map.clear();
 		cachedHash = 0;
 	}
-
 
 	/**
 	 * Trims the assignment, where only the variables given as parameters are
@@ -492,7 +491,6 @@ public class Assignment {
 	// GETTERS
 	// ===================================
 
-	
 	/**
 	 * Returns the intersection of the two assignments
 	 * 
@@ -509,7 +507,7 @@ public class Assignment {
 		}
 		return intersect;
 	}
-	
+
 	/**
 	 * Returns a new assignment with the primes removed.
 	 * 
@@ -619,7 +617,6 @@ public class Assignment {
 				.collect(Collectors.toMap(var -> var, var -> map.get(var)));
 		return new Assignment(newMap);
 	}
-
 
 	/**
 	 * Returns a trimmed version of the assignment, where only the variables NOT

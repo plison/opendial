@@ -61,7 +61,7 @@ public final class Effect implements Value {
 
 	// "equivalent" condition (inverse view)
 	Condition equivalentCondition;
-	
+
 	// ===================================
 	// EFFECT CONSTRUCTION
 	// ===================================
@@ -245,6 +245,11 @@ public final class Effect implements Value {
 		return foundAdd;
 	}
 
+	/**
+	 * Converts the effect into a condition.
+	 * 
+	 * @return the corresponding condition
+	 */
 	public Condition convertToCondition() {
 		if (equivalentCondition == null) {
 			List<Condition> conditions = new ArrayList<Condition>();
@@ -256,8 +261,9 @@ public final class Effect implements Value {
 			} else if (conditions.size() == 1) {
 				equivalentCondition = conditions.get(0);
 			} else {
-				equivalentCondition = new ComplexCondition(conditions, (this.getOutputVariables()
-						.size() == 1) ? BinaryOperator.OR : BinaryOperator.AND);
+				equivalentCondition = new ComplexCondition(conditions, (this
+						.getOutputVariables().size() == 1) ? BinaryOperator.OR
+						: BinaryOperator.AND);
 			}
 		}
 		return equivalentCondition;

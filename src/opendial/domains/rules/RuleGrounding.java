@@ -188,7 +188,6 @@ public class RuleGrounding {
 	public boolean isFailed() {
 		return groundings.isEmpty();
 	}
-	
 
 	/**
 	 * Removes the given variables from the assignments
@@ -200,7 +199,6 @@ public class RuleGrounding {
 			a.removeAll(variables);
 		}
 	}
-	
 
 	/**
 	 * Removes the given value from the assignments
@@ -212,8 +210,6 @@ public class RuleGrounding {
 			a.removeValues(value);
 		}
 	}
-
-	
 
 	/**
 	 * Copies the groundings

@@ -240,7 +240,8 @@ public class XMLRuleReader {
 				String variable2 = node.getAttributes().getNamedItem("var2")
 						.getNodeValue();
 				Relation relation = getRelation(node);
-				condition = new BasicCondition(variable, "{"+ variable2 + "}", relation);
+				condition = new BasicCondition(variable, "{" + variable2 + "}",
+						relation);
 			} else {
 				throw new DialException("unrecognized format for condition ");
 			}
