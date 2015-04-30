@@ -23,10 +23,8 @@
 
 package opendial.bn.nodes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -50,7 +48,7 @@ public class ActionNode extends BNode {
 
 	// the list of values for the node
 	private Set<Value> actionValues;
-	private List<Value> cachedList;
+	private Value[] actionValuesAsArray;
 
 	Random sampler;
 
@@ -93,7 +91,7 @@ public class ActionNode extends BNode {
 	 */
 	public void addValue(Value value) {
 		actionValues.add(value);
-		cachedList = null;
+		actionValuesAsArray = null;
 	}
 
 	/**
@@ -114,7 +112,7 @@ public class ActionNode extends BNode {
 	 */
 	public void removeValue(Value value) {
 		actionValues.remove(value);
-		cachedList = null;
+		actionValuesAsArray = null;
 	}
 
 	/**
@@ -175,22 +173,12 @@ public class ActionNode extends BNode {
 	 */
 	public Value sample() {
 		int index = sampler.nextInt(actionValues.size());
-		if (cachedList == null) {
-			cachedList = new ArrayList<Value>(actionValues);
+		if (actionValuesAsArray == null) {
+			actionValuesAsArray = actionValues.toArray(new Value[actionValues.size()]);
 		}
-		return cachedList.get(index);
+		return actionValuesAsArray[index];
 	}
 
-	/**
-	 * Returns a sample point for the action, assuming a uniform distribution
-	 * over the action values
-	 * 
-	 * @param input the input assignment
-	 * @return the sample value
-	 */
-	public Value sample(Assignment input) {
-		return sample();
-	}
 
 	// ===================================
 	// UTILITIES

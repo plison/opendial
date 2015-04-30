@@ -59,6 +59,9 @@ public final class Effect implements Value {
 	// the sub-effects included in the effect
 	final Set<BasicEffect> subeffects;
 
+	// "equivalent" condition (inverse view)
+	Condition equivalentCondition;
+	
 	// ===================================
 	// EFFECT CONSTRUCTION
 	// ===================================
@@ -243,18 +246,21 @@ public final class Effect implements Value {
 	}
 
 	public Condition convertToCondition() {
-		List<Condition> conditions = new ArrayList<Condition>();
-		for (BasicEffect subeffect : getSubEffects()) {
-			conditions.add(subeffect.convertToCondition());
+		if (equivalentCondition == null) {
+			List<Condition> conditions = new ArrayList<Condition>();
+			for (BasicEffect subeffect : getSubEffects()) {
+				conditions.add(subeffect.convertToCondition());
+			}
+			if (conditions.isEmpty()) {
+				equivalentCondition = new VoidCondition();
+			} else if (conditions.size() == 1) {
+				equivalentCondition = conditions.get(0);
+			} else {
+				equivalentCondition = new ComplexCondition(conditions, (this.getOutputVariables()
+						.size() == 1) ? BinaryOperator.OR : BinaryOperator.AND);
+			}
 		}
-		if (conditions.isEmpty()) {
-			return new VoidCondition();
-		} else if (conditions.size() == 1) {
-			return conditions.get(0);
-		} else {
-			return new ComplexCondition(conditions, (this.getOutputVariables()
-					.size() == 1) ? BinaryOperator.OR : BinaryOperator.AND);
-		}
+		return equivalentCondition;
 	}
 
 	/**

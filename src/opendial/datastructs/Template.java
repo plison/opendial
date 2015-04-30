@@ -24,7 +24,6 @@
 package opendial.datastructs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ import opendial.utils.StringUtils;
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public final class Template {
+public class Template {
 
 	// logger
 	public static Logger log = new Logger("Template", Logger.Level.DEBUG);
@@ -65,14 +64,14 @@ public final class Template {
 	final Pattern pattern;
 	
 	// whether the template allows for multiple values
-	final boolean underspecified;
+	protected final boolean underspecified ;
 
 	// the slots, as a mapping between slot labels and their
 	// group number in the pattern
 	final Map<String, Integer> slots;
 
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
-
+	
 	// ===================================
 	// TEMPLATE CONSTRUCTION
 	// ===================================
@@ -92,11 +91,13 @@ public final class Template {
 		slots = constructSlots(value);
 
 		// string processing to avoid special characters for the pattern
-		pattern = constructPattern(rawString, slots.keySet());
+		pattern = constructPattern(rawString);
 
 		underspecified = !slots.isEmpty() || pattern.toString().contains("(?:");
 	
 	}
+	
+	
 
 	protected Pattern getPattern() {
 		return pattern;
@@ -203,7 +204,7 @@ public final class Template {
 		Matcher matcher = pattern.matcher(input);
 		List<MatchResult> results = new ArrayList<MatchResult>();
 		while ((matcher.find())) {
-
+			
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0))
 					+ matcher.group(0).length();
@@ -283,12 +284,12 @@ public final class Template {
 	 * number.
 	 * 
 	 * @param fillers the content associated with each slot.
-	 * @return the template filled with the given content
+	 * @return the string filled with the given content
 	 */
-	public Template fillSlots(Assignment fillers) {
+	public String fillSlots(Assignment fillers) {
 
 		if (slots.isEmpty()) {
-			return this;
+			return rawString;
 		}
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
@@ -302,7 +303,7 @@ public final class Template {
 			double result = MathUtils.evaluateExpression(filledTemplate);		
 			filledTemplate = StringUtils.getShortForm(result);
 		}
-		return new Template(filledTemplate);
+		return filledTemplate;
 
 	}
 
@@ -410,19 +411,16 @@ public final class Template {
 	 * @param slots the slots
 	 * @return the corresponding pattern
 	 */
-	private static Pattern constructPattern(String str, Collection<String> slots) {
+	private static Pattern constructPattern(String str) {
 		String escaped = StringUtils.escape(str);
 		String regex = StringUtils.constructRegex(escaped);
-		for (String slot : slots) {
-			regex = regex.replace("{" + StringUtils.escape(slot) + "}", "(.+)");
-		}
 
 		// compiling the associated pattern
 		try {
 			return Pattern.compile(regex, Pattern.CASE_INSENSITIVE
 					| Pattern.UNICODE_CASE);
 		} catch (PatternSyntaxException e) {
-			log.warning("illegal pattern syntax: " + regex);
+			log.warning("illegal pattern syntax: " + regex + " (from " + str+")");
 			return Pattern.compile("bogus pattern");
 		}
 	}

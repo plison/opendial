@@ -195,13 +195,13 @@ public class Intervals<T> {
 final class Interval<T> {
 
 	// the interval content
-	T a;
+	final T a;
 
 	// the start value
-	double start;
+	final double start;
 
 	// the end value
-	double end;
+	final double end;
 
 	/**
 	 * Creates a new interval

@@ -163,12 +163,10 @@ public final class ComplexCondition implements Condition {
 
 				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 				for (Assignment g : groundings.getAlternatives()) {
-					RuleGrounding newGround = cond
-							.getGroundings(new Assignment(input, g));
+					RuleGrounding newGround = cond.getGroundings(new Assignment(input, g));
 					newGround.extend(g);
 					alternatives.add(newGround);
 				}
-
 				groundings = new RuleGrounding();
 				groundings.add(alternatives);
 				if (groundings.isFailed()) {

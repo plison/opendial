@@ -188,6 +188,32 @@ public class RuleGrounding {
 	public boolean isFailed() {
 		return groundings.isEmpty();
 	}
+	
+
+	/**
+	 * Removes the given variables from the assignments
+	 * 
+	 * @param variables the variable labels
+	 */
+	public void removeVariables(Set<String> variables) {
+		for (Assignment a : groundings) {
+			a.removeAll(variables);
+		}
+	}
+	
+
+	/**
+	 * Removes the given value from the assignments
+	 * 
+	 * @param value the variable value
+	 */
+	public void removeValue(Value value) {
+		for (Assignment a : groundings) {
+			a.removeValues(value);
+		}
+	}
+
+	
 
 	/**
 	 * Copies the groundings

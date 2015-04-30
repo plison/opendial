@@ -30,9 +30,9 @@ import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
-import opendial.domains.rules.conditions.TemplateCondition;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 
 /**
  * Representation of a basic effect of a rule. A basic effect is formally
@@ -102,8 +102,8 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public BasicEffect ground(Assignment grounding) {
-		Template newT = labelTemplate.fillSlots(grounding);
-		Template newV = valueTemplate.fillSlots(grounding);
+		Template newT = new Template(labelTemplate.fillSlots(grounding));
+		Template newV = new Template(valueTemplate.fillSlots(grounding));
 		if (newT.isUnderspecified() || (!newV.getSlots().isEmpty())) {
 			return new TemplateEffect(newT, newV, priority, add, negated);
 		} else {
@@ -149,7 +149,7 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new TemplateCondition(labelTemplate, valueTemplate, r);
+		return new BasicCondition(labelTemplate.getRawString(), valueTemplate.getRawString(), r);
 	}
 
 	/**
