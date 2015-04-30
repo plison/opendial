@@ -551,7 +551,7 @@ public class BNetwork {
 		}
 
 		// sanity check
-		for (Set<String> cluster1 : cliques) {
+		/** for (Set<String> cluster1 : cliques) {
 			for (Set<String> cluster2 : cliques) {
 				if (!cluster1.equals(cluster2)) {
 					for (String elInCluster1 : cluster1) {
@@ -565,7 +565,7 @@ public class BNetwork {
 					}
 				}
 			}
-		}
+		} */
 		Collections.sort(cliques, (s1, s2) -> s1.hashCode() - s2.hashCode());
 
 		return cliques;

@@ -48,13 +48,15 @@ public class StringUtils {
 	final static Pattern mathExpression = Pattern
 			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
-	// regular expression with * characters
-	final static Pattern simpleRegex = Pattern.compile("\\*");
-
 	// regular expression with alternative or optional elements
-	final static Pattern complexRegex = Pattern
-			.compile("\\\\\\((.+?)\\\\\\)(\\\\\\?)?");
-
+		final static Pattern slotRegex = Pattern
+				.compile("\\{(.+?)\\}");
+		
+	// regular expressions with alternative or optional elements
+	final static Pattern altRegex = Pattern
+			.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
+					+ "|(\\\\\\(((\\(\\?)|[^\\(])+?\\|((\\(\\?)"
+					+ "|[^\\(])+?\\\\\\)(\\\\\\?)?)");
 
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
@@ -122,23 +124,35 @@ public class StringUtils {
 	 * Checks the form of the string to ensure that all parentheses, braces and
 	 * brackets are balanced. Logs warning messages if problems are detected.
 	 * 
+	 * @param showMessage whether to show an error message or not
 	 * @param str the string
+	 * @return true if the form is correct, false otherwise
 	 */
-	public static void checkForm(String str) {
+	public static boolean checkForm(String str, boolean showMessage) {
 
 		if (countNbOccurrences(str, '(') != countNbOccurrences(str, ')')) {
+			if (showMessage) {
 			log.warning("Unequal number of parenthesis in string: " + str
 					+ ", Problems ahead!");
+			}
+			return false;
 		}
 		if (countNbOccurrences(str, '{') != countNbOccurrences(str, '}')) {
+			if (showMessage) {
 			log.warning("Unequal number of braces in string: " + str
 					+ ", Problems ahead!");
+			}
+			return false;
 		}
 		if (countNbOccurrences(str, '[') != countNbOccurrences(str, ']')) {
-			log.warning("Unequal number of brackets in string: " + str
+			if (showMessage) {
+				log.warning("Unequal number of brackets in string: " + str
 					+ ", Problems ahead!");
 		}
+			return false;
 
+		}
+		return true;
 	}
 
 	/**
@@ -270,8 +284,8 @@ public class StringUtils {
 				builder.append("\\^");
 			}
 			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
-				builder.append("\\{\\}");
 				i++;
+				continue;
 			} else {
 				builder.append(charArr[i]);
 			}
@@ -288,12 +302,22 @@ public class StringUtils {
 	 */
 	public static String constructRegex(String init) {
 
-		boolean hasStars = init.chars().anyMatch(c -> c=='*');
-		boolean hasAlternatives = init.chars().anyMatch(c -> c=='|'|c=='?');
+		boolean hasStars = false;
+		boolean hasSlots = false;
+		boolean hasAlternatives = false;
+		for (int i = 0 ; i < init.length() ; i++) {
+			switch (init.charAt(i)) {
+			case '*': hasStars = true; break;
+			case '{': hasSlots = true; break;
+			case '|': hasAlternatives = true; break;
+			case '?': hasAlternatives = true; break;
+			default: break;
+			}
+		}
 		
 		init = (hasStars)? replaceStars(init) : init;
+		init = (hasSlots)? slotRegex.matcher(init).replaceAll("(.+)") : init;
 		init = (hasAlternatives)? replaceComplex(init) : init;
-		
 		return init;		
 	}
 
@@ -338,13 +362,12 @@ public class StringUtils {
 	 * @return the formatted expression
 	 */
 	private static String replaceComplex(String init) {
-
+	
 		StringBuilder builder = new StringBuilder(init);
-		Matcher m = complexRegex.matcher(builder.toString());
+		Matcher m = altRegex.matcher(builder.toString());
 		while (m.find()) {
-			String core = m.group(1);
-			if (m.group(0).endsWith("?")) {
-				// need to remove whitespaces at specific positions
+			if (m.group().endsWith("?") && StringUtils.checkForm(m.group(), false)) {
+				String core = m.group().substring(2, m.group().length()-4);
 				if (m.end() < builder.length()
 						&& builder.charAt(m.end()) == ' ') {
 					String replace = "(?:" + core.replaceAll("\\|", " \\|")
@@ -361,11 +384,13 @@ public class StringUtils {
 					builder = builder.replace(m.start(), m.end(), "(?:"
 							+ core + ")?");
 				}
-			} else {
+				m = altRegex.matcher(builder.toString());
+			} else if (StringUtils.checkForm(m.group(), false)) {
+				String core = m.group().substring(2, m.group(0).length()-2);
 				builder = builder.replace(m.start(), m.end(), "(?:" + core
 						+ ")");
+				m = altRegex.matcher(builder.toString());
 			}
-			m = complexRegex.matcher(builder.toString());
 		}
 		return builder.toString();
 	}

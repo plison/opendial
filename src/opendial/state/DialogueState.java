@@ -43,7 +43,6 @@ import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
@@ -468,12 +467,6 @@ public class DialogueState extends BNetwork {
 	public List<ChanceNode> getMatchingNodes(Collection<Template> templates) {
 		List<ChanceNode> inputVars = new ArrayList<ChanceNode>();
 		for (Template t : templates) {
-			for (String slot : t.getSlots()) {
-				if (hasChanceNode(slot)) {
-					Value bestValue = queryProb(slot).getBest();
-					t = t.fillSlots(new Assignment(slot, bestValue));
-				}
-			}
 			for (String currentVar : getChanceNodeIds()) {
 				if (!currentVar.endsWith("'")
 						&& t.match(currentVar).isMatching()) {

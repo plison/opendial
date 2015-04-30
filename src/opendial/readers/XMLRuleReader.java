@@ -38,13 +38,12 @@ import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleCase;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.NegatedCondition;
-import opendial.domains.rules.conditions.TemplateCondition;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
@@ -234,21 +233,14 @@ public class XMLRuleReader {
 				String valueStr = node.getAttributes().getNamedItem("value")
 						.getNodeValue();
 				Relation relation = getRelation(node);
-				Template tval = new Template(valueStr);
-				if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-					condition = new TemplateCondition(tvar, tval, relation);
-				} else {
-					condition = new BasicCondition(variable,
-							ValueFactory.create(valueStr), relation);
-				}
+				condition = new BasicCondition(variable, valueStr, relation);
 			}
 
 			else if (node.getAttributes().getNamedItem("var2") != null) {
 				String variable2 = node.getAttributes().getNamedItem("var2")
 						.getNodeValue();
 				Relation relation = getRelation(node);
-				condition = new TemplateCondition(tvar, new Template("{"
-						+ variable2 + "}"), relation);
+				condition = new BasicCondition(variable, "{"+ variable2 + "}", relation);
 			} else {
 				throw new DialException("unrecognized format for condition ");
 			}

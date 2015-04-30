@@ -174,7 +174,7 @@ public class DistributionsTest {
 		assertEquals(estimated.getMean()[0],
 				distrib.getFunction().getMean()[0], 0.05);
 		assertEquals(estimated.getVariance()[0], distrib.getFunction()
-				.getVariance()[0], 0.08);
+				.getVariance()[0], 0.1);
 	}
 
 	@Test
@@ -476,7 +476,7 @@ public class DistributionsTest {
 		for (int i = 0; i < 10000; i++) {
 			sum += ((DoubleVal) continuous2.sample()).getDouble();
 		}
-		assertEquals(sum / 10000.0, 0.424, 0.1);
+		assertEquals(sum / 10000.0, 0.424, 0.15);
 
 		assertEquals(continuous2.toDiscrete().getProb(-1.5), 0.2, 0.1);
 
