@@ -140,9 +140,8 @@ public class BNetwork {
 	 * 
 	 * @param network the network to include
 	 * 
-	 * @throws DialException if the inclusion fails
 	 */
-	public void addNetwork(BNetwork network) throws DialException {
+	public void addNetwork(BNetwork network) {
 		for (BNode node : new ArrayList<BNode>(network.getNodes())) {
 			if (hasNode(node.getId())) {
 				removeNode(node.getId());
@@ -593,9 +592,8 @@ public class BNetwork {
 	 * Creates subnetworks corresponding to the cliques of the network
 	 * 
 	 * @return the subnetworks corresponding to the cliques.
-	 * @throws DialException if the cliques could not be created
 	 */
-	public List<BNetwork> createCliques() throws DialException {
+	public List<BNetwork> createCliques() {
 
 		List<BNetwork> result = new ArrayList<BNetwork>();
 
@@ -642,7 +640,7 @@ public class BNetwork {
 	 * @return the copy
 	 * @throws DialException if the copy operation failed
 	 */
-	public BNetwork copy() throws DialException {
+	public BNetwork copy() {
 		BNetwork copyNetwork = new BNetwork();
 		List<BNode> sortedNodes = getSortedNodes();
 		Collections.reverse(sortedNodes);

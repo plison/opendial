@@ -169,19 +169,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 		return this;
 	}
 
-	/**
-	 * Returns the set of possible values for the distribution. If the
-	 * distribution is continuous, the method returns a discretised set. The
-	 * value range is ignored.
-	 * 
-	 * @param range ignored
-	 * @return a set of possible values for the variable
-	 * @throws DialException if the possible values could not be extracted.
-	 */
-	@Override
-	public default Set<Value> getValues(ValueRange range) throws DialException {
-		return getValues();
-	}
 
 	/**
 	 * Returns the probability for the head assignment, if the value can be

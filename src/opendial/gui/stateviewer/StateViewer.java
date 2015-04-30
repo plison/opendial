@@ -37,6 +37,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -169,18 +170,21 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 					}
 				}
 			}
-		} catch (ConcurrentModificationException e) {
+
+			CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
+			StaticLayout<String, Integer> layout = new StaticLayout<String, Integer>(
+					f, transformer);
+
+			layout.setSize(new Dimension(600, 600));
+
+			return layout;
+		}		
+		catch (ConcurrentModificationException|NullPointerException e) {
+			try {Thread.sleep(50);} catch (InterruptedException e1) {}
 			return getGraphLayout(ds, showParameters);
 		}
-
-		CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
-		StaticLayout<String, Integer> layout = new StaticLayout<String, Integer>(
-				f, transformer);
-
-		layout.setSize(new Dimension(600, 600));
-
-		return layout;
 	}
+
 
 	/**
 	 * Returns the graph identifier associated with the node
@@ -206,13 +210,24 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * @return the node in the Bayesian Network, if any
 	 */
 	protected BNode getBNode(String verticeID) {
-		String nodeId = verticeID.replace("util---", "").replace("action---",
-				"");
+		String nodeId = getBNodeId(verticeID);
 		if (currentState != null && currentState.hasNode(nodeId)) {
 			return currentState.getNode(nodeId);
 		}
 		// log.warning("node corresponding to " + verticeID + " not found");
 		return null;
+	}
+	
+	
+	/**
+	 * Returns the node associated with the graph identifier (inverse operation
+	 * of getGraphId)
+	 * 
+	 * @param verticeID the vertice identifier
+	 * @return the node in the Bayesian Network, if any
+	 */
+	protected String getBNodeId(String verticeID) {
+		return verticeID.replace("util---", "").replace("action---", "");
 	}
 
 	/**
@@ -227,10 +242,9 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				isUpdating = true;
 				if (tab.getMainFrame().getSystem().isPaused()) {
 					update();
-				} else {
-					synchronized (currentState) {
-						update();
-					}
+				}
+				else {	
+				synchronized (currentState) { update(); }
 				}
 				isUpdating = false;
 			}).start();
@@ -255,7 +269,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		try {
 			super.paintComponent(g);
 		} catch (NullPointerException e) {
-			log.debug("cannot repaint state viewer, waiting for next update");
+			log.debug("cannot repaint state viewer, waiting for next update: ");
+			e.printStackTrace();
 			isUpdating = false;
 			// tab.trigger(currentState, currentState.getChanceNodeIds());
 		}
@@ -368,11 +383,11 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 						.replace("if", "<b>if</b>")
 						.replace("then",
 								"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-						.replace("else",
-								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-						.replace(
-								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
-								"<b>else if</b>");
+								.replace("else",
+										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+										.replace(
+												"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
+												"<b>else if</b>");
 				return StringUtils.getHtmlRendering(htmlDistrib);
 			} else {
 				return "";
@@ -411,7 +426,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * Renderer for the vertice colour
 	 */
 	final class CustomVertexColourRenderer implements
-			Transformer<String, Paint> {
+	Transformer<String, Paint> {
 
 		@Override
 		public Paint transform(String arg0) {
@@ -470,43 +485,39 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 */
 	final class CustomLayoutTransformer implements Transformer<String, Point2D> {
 
-		Map<BNode, Point2D> positions;
+		Map<String, Point2D> positions;
 
 		public CustomLayoutTransformer(DialogueState network) {
-			positions = new HashMap<BNode, Point2D>();
+			positions = new HashMap<String, Point2D>();
 			Point current = new Point(0, 0);
 
 			// trying to avoid nasty concurrent modifications
-			List<BNode> nodes = new ArrayList<BNode>();
+			List<String> allNodes = new ArrayList<String>();
+			List<String> ruleNodes = new ArrayList<String>();
 			for (int i = 0; i < 3; i++) {
 				try {
-					nodes.addAll(network.getNodes());
+					allNodes.addAll(network.getNodeIds());
+					ruleNodes.addAll(network.getRuleNodeIds());
 					break;
-				} catch (ConcurrentModificationException e) {
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
+				} catch (ConcurrentModificationException|NullPointerException e) {
+					try {Thread.sleep(50);} catch (InterruptedException e1) {}
 				}
 			}
-			Collection<String> ruleNodes = network.getRuleNodes();
-			for (BNode node : nodes) {
-				if (!node.getId().contains("'") && !node.getId().contains("=")
-						&& (node instanceof ChanceNode)
-						&& !ruleNodes.contains(node.getId())) {
+			for (String node : allNodes) {
+				if (!node.contains("'") && !node.contains("=")
+						&& !ruleNodes.contains(node)) {
 					positions.put(node, current);
 					current = incrementPoint(current);
 				}
 			}
 			current = new Point(current.x + 200, 0);
-			for (BNode node : network.getNodes(ruleNodes)) {
+			for (String node : ruleNodes) {
 				positions.put(node, current);
 				current = incrementPoint(current);
 			}
 
 			current = new Point(current.x + 200, 0);
-			for (BNode node : nodes) {
+			for (String node : allNodes) {
 				if (!positions.containsKey(node)) {
 					positions.put(node, current);
 					current = incrementPoint(current);
@@ -524,7 +535,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 
 		@Override
 		public Point2D transform(String id) {
-			return positions.get(getBNode(id));
+			String id2= getBNodeId(id);
+			return positions.get(id2);
 		}
 
 	}

@@ -169,18 +169,13 @@ public class MarginalDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Returns the possible values for X given the range of possible conditional
-	 * values for Y1,...Yn.
+	 * Returns the possible values for X.
 	 * 
-	 * @param range the range of possible values for Y1,...Yn
 	 * @return the set of possible values
 	 */
 	@Override
-	public Set<Value> getValues(ValueRange range) throws DialException {
-		for (String var : uncondDistrib.getVariables()) {
-			range.addValues(var, uncondDistrib.getMarginal(var).getValues());
-		}
-		return condDistrib.getValues(range);
+	public Set<Value> getValues() throws DialException {
+		return condDistrib.getValues();
 	}
 
 	/**

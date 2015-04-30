@@ -572,7 +572,12 @@ public class StateViewerTab extends JComponent {
 		@Override
 		public String getElementAt(int index) {
 			if (index < super.size()) {
+				try {
 				return super.getElementAt(index);
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
+					return "";
+				}
 			} else {
 				return "";
 			}

@@ -92,26 +92,23 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Adds a new relation from the node given as argument to the current node.
 	 * 
 	 * @param inputNode the node to add
-	 * @throws DialException if the network becomes corrupted
 	 */
-	public void addInputNode(BNode inputNode) throws DialException {
+	public void addInputNode(BNode inputNode) {
 
 		if (inputNode == this) {
-			throw new DialException("cannot add itself: " + nodeId);
+			log.warning("cannot add itself: " + nodeId);
 		}
 		if (containsCycles(inputNode)) {
-			throw new DialException("there is a cycle between "
+			log.warning("there is a cycle between "
 					+ inputNode.getId() + " and " + nodeId);
 		}
 
 		if (this instanceof ActionNode) {
-			throw new DialException(
-					"an action node cannot be dependent on any other node");
+			log.warning("an action node cannot be dependent on any other node");
 		}
 
 		if (inputNode instanceof UtilityNode) {
-			throw new DialException(
-					"an utility node cannot be the input of any other node ("
+			log.warning("an utility node cannot be the input of any other node ("
 							+ inputNode.getId() + " -> " + nodeId + ")");
 		}
 
@@ -123,10 +120,8 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Adds new relations from the nodes given as arguments to the current node
 	 * 
 	 * @param inputNodes the nodes to add
-	 * @throws DialException if the network becomes corrupted
 	 */
-	public void addInputNodes(Collection<? extends BNode> inputNodes)
-			throws DialException {
+	public void addInputNodes(Collection<? extends BNode> inputNodes) {
 		for (BNode node : inputNodes) {
 			addInputNode(node);
 		}
@@ -329,21 +324,6 @@ public abstract class BNode implements Comparable<BNode> {
 		return result;
 	}
 
-	/**
-	 * Returns the set of output nodes of a certain class
-	 * 
-	 * @param cls the class
-	 * @return the input node identifiers
-	 */
-	public <T extends BNode> Set<String> getOutputNodesIds(Class<T> cls) {
-		Set<String> result = new HashSet<String>();
-		for (BNode outputNode : outputNodes.values()) {
-			if (cls.isInstance(outputNode)) {
-				result.add(outputNode.getId());
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * Returns the identifiers for the set of output nodes
@@ -354,21 +334,7 @@ public abstract class BNode implements Comparable<BNode> {
 		return new HashSet<String>(outputNodes.keySet());
 	}
 
-	/**
-	 * Returns the identifiers for the set of output nodes that are chance nodes
-	 * 
-	 * @return the ids for the input nodes
-	 */
-	public Set<String> getChanceOutputNodesIds() {
-		Set<String> chanceOutputNodes = new HashSet<String>();
-		for (BNode node : outputNodes.values()) {
-			if (node instanceof ChanceNode) {
-				chanceOutputNodes.add(node.getId());
-			}
-		}
-		return chanceOutputNodes;
-	}
-
+	
 	/**
 	 * Returns an ordered list of nodes which are the ancestors (via the
 	 * relations) of the current node. The ordering puts the closest ancestors

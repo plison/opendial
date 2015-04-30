@@ -23,6 +23,7 @@
 
 package opendial.bn.distribs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -92,17 +93,15 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 */
 	@Override
 	public void modifyVariableId(String oldVarId, String newVarId) {
-		// log.debug("changing var id from " + oldVarId + " --> " + newVarId);
-		HashMap<Assignment, T> newTable = new HashMap<Assignment, T>();
 
-		for (Assignment condition : table.keySet()) {
-			Assignment newCondition = condition.copy();
-			if (condition.containsVar(oldVarId)) {
-				Value condVal = newCondition.removePair(oldVarId);
-				newCondition.addPair(newVarId, condVal);
-			}
+		for (Assignment condition : new ArrayList<Assignment>(table.keySet())) {
 			table.get(condition).modifyVariableId(oldVarId, newVarId);
-			newTable.put(newCondition, table.get(condition));
+			if (condition.containsVar(oldVarId)) {
+				T distrib = table.remove(condition);
+				Value v = condition.removePair(oldVarId);
+				condition.addPair(newVarId, v);
+				table.put(condition, distrib);
+			}
 		}
 
 		if (conditionalVars.contains(oldVarId)) {
@@ -113,7 +112,6 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		if (this.headVar.equals(oldVarId)) {
 			this.headVar = newVarId;
 		}
-		table = newTable;
 	}
 
 	/**
@@ -269,11 +267,10 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * here ignored (for efficiency reasons), so the method simply extracts all
 	 * possible head rows in the table.
 	 * 
-	 * @param range the input values (is ignored)
 	 * @return the possible values for the head variables.
 	 */
 	@Override
-	public Set<Value> getValues(ValueRange range) {
+	public Set<Value> getValues() {
 		Set<Value> headRows = new HashSet<Value>();
 		for (Assignment condition : table.keySet()) {
 			headRows.addAll(table.get(condition).getValues());

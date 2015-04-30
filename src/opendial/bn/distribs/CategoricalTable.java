@@ -72,7 +72,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	Intervals<Value> intervals;
 
 	// sampler
-	Random sampler;
+	static Random sampler = new Random();
 
 	// whether to automatically add a default value to fill the remaining
 	// probability mass
@@ -91,7 +91,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		table = new HashMap<Value, Double>(5);
 		table = Collections.synchronizedMap(table);
 		this.variable = variable;
-		sampler = new Random();
 	}
 
 	/**
@@ -601,6 +600,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 		for (Value head : table.keySet()) {
 			tableCopy.addRow(head.copy(), table.get(head));
 		}
+		tableCopy.intervals = intervals;
+		tableCopy.addDefaultValue = addDefaultValue;
 		return tableCopy;
 	}
 

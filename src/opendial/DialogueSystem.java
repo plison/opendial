@@ -93,6 +93,9 @@ public class DialogueSystem {
 	// whether the system is paused or active
 	protected boolean paused = true;
 
+	// whether the system is currently updating its state
+	protected volatile boolean updating = false;
+
 	// ===================================
 	// SYSTEM INITIALISATION
 	// ===================================
@@ -307,7 +310,6 @@ public class DialogueSystem {
 	 * @throws DialException if the state could not be updated
 	 */
 	public Set<String> addUserInput(Map<String, Double> userInput) {
-		curState.setAsCommitted(settings.userInput);
 		String var = (!settings.invertedRole) ? settings.userInput
 				: settings.systemOutput;
 		CategoricalTable table = new CategoricalTable(var);
@@ -327,19 +329,10 @@ public class DialogueSystem {
 	 */
 	public Set<String> addContent(IndependentProbDistribution distrib) {
 		if (!paused) {
-			synchronized (curState) {
-				try {
-					curState.addToState(distrib);
-					return update();
-				} catch (DialException e) {
-					log.warning("cannot update state with " + distrib + ": "
-							+ e);
-					return new HashSet<String>();
-				}
-			}
+			curState.addToState(distrib);
+			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
-					+ distrib);
+			log.info("system is currently paused -- ignoring content " + distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -360,19 +353,10 @@ public class DialogueSystem {
 	public Set<String> addIncrementalContent(CategoricalTable content,
 			boolean followPrevious) {
 		if (!paused) {
-			synchronized (curState) {
-				try {
-					curState.addToState_incremental(content, followPrevious);
-					return update();
-				} catch (DialException e) {
-					log.warning("cannot update state with " + content + ": "
-							+ e);
-					return new HashSet<String>();
-				}
-			}
+			curState.addToState_incremental(content, followPrevious);
+			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
-					+ content);
+			log.info("system is currently paused -- ignoring content " + content);
 			return new HashSet<String>();
 		}
 	}
@@ -411,15 +395,8 @@ public class DialogueSystem {
 	 */
 	public Set<String> addContent(Assignment assign) {
 		if (!paused) {
-			synchronized (curState) {
-				try {
-					curState.addToState(assign);
-					return update();
-				} catch (DialException e) {
-					log.warning("cannot update state with " + assign + ": " + e);
-					return new HashSet<String>();
-				}
-			}
+			curState.addToState(assign);
+			return update();
 		} else {
 			log.info("system is currently paused -- ignoring content " + assign);
 			return new HashSet<String>();
@@ -437,19 +414,10 @@ public class DialogueSystem {
 	 */
 	public Set<String> addContent(MultivariateDistribution distrib) {
 		if (!paused) {
-			synchronized (curState) {
-				try {
-					curState.addToState(distrib);
-					return update();
-				} catch (DialException e) {
-					log.warning("cannot update state with " + distrib + ": "
-							+ e);
-					return new HashSet<String>();
-				}
-			}
+			curState.addToState(distrib);
+			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
-					+ distrib);
+			log.info("system is currently paused -- ignoring content " + distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -464,13 +432,10 @@ public class DialogueSystem {
 	 */
 	public Set<String> addContent(BNetwork network) throws DialException {
 		if (!paused) {
-			synchronized (curState) {
-				curState.addToState(network);
-				return update();
-			}
+			curState.addToState(network);
+			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
-					+ network);
+			log.info("system is currently paused -- ignoring content " + network);
 			return new HashSet<String>();
 		}
 	}
@@ -485,13 +450,10 @@ public class DialogueSystem {
 	 */
 	public Set<String> addContent(DialogueState newState) throws DialException {
 		if (!paused) {
-			synchronized (curState) {
-				curState.addToState(newState);
-				return update();
-			}
+			curState.addToState(newState);
+			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
-					+ newState);
+			log.info("system is currently paused -- ignoring content " + newState);
 			return new HashSet<String>();
 		}
 	}
@@ -513,45 +475,43 @@ public class DialogueSystem {
 		// set of variables that have been updated
 		Set<String> updatedVars = new HashSet<String>();
 
-		// skip new update if the current thread is already processing an update
-		// loop
-		if (Stream
-				.of(Thread.currentThread().getStackTrace())
-				.skip(2)
-				.limit(20)
-				.anyMatch(
-						t -> t.getClassName().equals(
-								getClass().getCanonicalName())
-								&& t.getMethodName().equals("update"))) {
+		// if the system is already being updated, stop
+		if (updating) {
 			return updatedVars;
 		}
 
-		while (!curState.getNewVariables().isEmpty()) {
+		updating = true;
+		Set<String> toProcess = curState.getNewVariables();
+		while (!toProcess.isEmpty()) {
 
-			// finding the new variables that must be processed
-			Set<String> toProcess = curState.getNewVariables();
-			// reducing the dialogue state to its relevant nodes
-			curState.reduce();
+			synchronized (curState) {
+				// finding the new variables that must be processed
+				
+				// reducing the dialogue state to its relevant nodes
+				curState.reduce();
 
-			// applying the domain models
-			for (Model model : domain.getModels()) {
-				if (model.isTriggered(curState, toProcess)) {
-					model.trigger(curState);
-					if (model.isBlocking()
-							&& !curState.getNewVariables().isEmpty()) {
-						break;
+				// applying the domain models
+				for (Model model : domain.getModels()) {
+					if (model.isTriggered(curState, toProcess)) {
+						model.trigger(curState);
+						if (model.isBlocking()
+								&& !curState.getNewVariables().isEmpty()) {
+							break;
+						}
 					}
 				}
-			}
 
-			// applying the external modules
-			for (Module module : modules) {
-				module.trigger(curState, toProcess);
-			}
+				// applying the external modules
+				for (Module module : modules) {
+					module.trigger(curState, toProcess);
+				}
 
-			updatedVars.addAll(toProcess);
+				updatedVars.addAll(toProcess);
+				toProcess = curState.getNewVariables();
+			}		
 		}
 
+		updating = false;
 		return updatedVars;
 	}
 
