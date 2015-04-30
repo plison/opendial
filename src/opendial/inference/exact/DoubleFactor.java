@@ -171,8 +171,13 @@ public class DoubleFactor {
 		Map<Assignment, Double> probMatrix = InferenceUtils.normalise(
 				getProbMatrix(), condVars);
 
-		matrix = probMatrix.keySet().stream()
-				.collect(Collectors.toMap(a -> a,a -> new double[] { probMatrix.get(a),
+		matrix = probMatrix
+				.keySet()
+				.stream()
+				.collect(
+						Collectors.toMap(
+								a -> a,
+								a -> new double[] { probMatrix.get(a),
 										matrix.get(a)[1] }));
 	}
 
@@ -182,8 +187,11 @@ public class DoubleFactor {
 	 * @param headVars the variables to retain.
 	 */
 	public void trim(Collection<String> headVars) {
-		matrix = matrix.keySet().stream()
-				.collect(Collectors.toMap(a -> a.getTrimmed(headVars),
+		matrix = matrix
+				.keySet()
+				.stream()
+				.collect(
+						Collectors.toMap(a -> a.getTrimmed(headVars),
 								a -> matrix.get(a)));
 	}
 
@@ -210,11 +218,10 @@ public class DoubleFactor {
 		return true;
 	}
 
-	
 	public double[] getEntry(Assignment a) {
 		return matrix.get(a);
 	}
-	
+
 	/**
 	 * Returns the probability for the assignment, if it is encoded in the
 	 * matrix. Else, returns null

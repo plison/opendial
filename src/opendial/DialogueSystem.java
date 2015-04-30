@@ -330,7 +330,8 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + distrib);
+			log.info("system is currently paused -- ignoring content "
+					+ distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -354,7 +355,8 @@ public class DialogueSystem {
 			curState.addToState_incremental(content, followPrevious);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + content);
+			log.info("system is currently paused -- ignoring content "
+					+ content);
 			return new HashSet<String>();
 		}
 	}
@@ -415,7 +417,8 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + distrib);
+			log.info("system is currently paused -- ignoring content "
+					+ distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -433,7 +436,8 @@ public class DialogueSystem {
 			curState.addToState(network);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + network);
+			log.info("system is currently paused -- ignoring content "
+					+ network);
 			return new HashSet<String>();
 		}
 	}
@@ -451,7 +455,8 @@ public class DialogueSystem {
 			curState.addToState(newState);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + newState);
+			log.info("system is currently paused -- ignoring content "
+					+ newState);
 			return new HashSet<String>();
 		}
 	}
@@ -484,7 +489,7 @@ public class DialogueSystem {
 
 			synchronized (curState) {
 				// finding the new variables that must be processed
-				
+
 				// reducing the dialogue state to its relevant nodes
 				curState.reduce();
 
@@ -506,7 +511,7 @@ public class DialogueSystem {
 
 				updatedVars.addAll(toProcess);
 				toProcess = curState.getNewVariables();
-			}		
+			}
 		}
 
 		updating = false;

@@ -62,7 +62,7 @@ public class OutputDistribution implements ProbDistribution {
 
 	// primes attached to the variable label
 	String primes;
-	
+
 	// possible effects from incoming rule nodes
 	List<Set<Effect>> inputEffects;
 
@@ -76,11 +76,10 @@ public class OutputDistribution implements ProbDistribution {
 		this.primes = var.replace(baseVar, "");
 		inputEffects = new ArrayList<Set<Effect>>();
 	}
-	
-	
+
 	/**
-	 * Adds a collection of possible effects (from incoming rule nodes)
-	 * to the output node
+	 * Adds a collection of possible effects (from incoming rule nodes) to the
+	 * output node
 	 * 
 	 * @param effects the possible effects to add
 	 */
@@ -259,18 +258,20 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Calculates the possible values for the output distribution via linearisation 
-	 * (more costly operation, but necessary in case of add effects).
+	 * Calculates the possible values for the output distribution via
+	 * linearisation (more costly operation, but necessary in case of add
+	 * effects).
 	 * 
 	 * @return the set of possible output values
 	 */
 	private Set<Value> getValues_linearise() {
 
-		Map<String,Set<Value>> range = new HashMap<String,Set<Value>>();
-		for (int i = 0 ; i < inputEffects.size() ; i++) {
-			range.put(""+i, new HashSet<Value>(inputEffects.get(i)));
+		Map<String, Set<Value>> range = new HashMap<String, Set<Value>>();
+		for (int i = 0; i < inputEffects.size(); i++) {
+			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
 		}
-		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(range);
+		Set<Assignment> combinations = CombinatoricsUtils
+				.getAllCombinations(range);
 		Set<Value> values = combinations.stream()
 				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
 				.collect(Collectors.toSet());

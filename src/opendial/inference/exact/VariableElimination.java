@@ -187,7 +187,7 @@ public class VariableElimination implements InferenceAlgorithm {
 			double[] entry = factor.getEntry(a);
 			double prob = entry[0];
 			double util = entry[1];
-			sumFactor.incrementEntry(reducedA, prob, prob*util);
+			sumFactor.incrementEntry(reducedA, prob, prob * util);
 		}
 
 		sumFactor.normaliseUtil();
@@ -229,7 +229,7 @@ public class VariableElimination implements InferenceAlgorithm {
 						double product = prob * prob2;
 						double sum = util + util2;
 
-						tempFactor.addEntry(new Assignment(a, b), product,sum);
+						tempFactor.addEntry(new Assignment(a, b), product, sum);
 					}
 				}
 			}

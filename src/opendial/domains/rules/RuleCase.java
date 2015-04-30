@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.arch.Logger;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
@@ -200,10 +201,28 @@ public class RuleCase {
 	 * assignment.
 	 * 
 	 * @param input the input assignment
+	 * @param withEffects whether to take the effects into account when
+	 *            extracting the groundings
 	 * @return the set of possible groundings
 	 */
-	public RuleGrounding getGroundings(Assignment input) {
-		return condition.getGroundings(input);
+	public RuleGrounding getGroundings(Assignment input, boolean withEffects) {
+		RuleGrounding grounding = condition.getGroundings(input);
+		if (withEffects) {
+			Assignment input2 = input.removePrimes();
+			for (Effect e : effects.keySet()) {
+				if (input2.containsVars(e.getOutputVariables())) {
+					Condition co = e.convertToCondition();
+					RuleGrounding effectGrounding = co.getGroundings(input2);
+					grounding.add(effectGrounding);
+				} else {
+					Set<String> slots = e.getAdditionalInputVariables();
+					slots.removeAll(input2.getVariables());
+					grounding.add(Assignment.createOneValue(slots,
+							ValueFactory.create("")));
+				}
+			}
+		}
+		return grounding;
 	}
 
 	/**

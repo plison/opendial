@@ -226,7 +226,8 @@ public class ChanceNode extends BNode {
 			return ((IndependentProbDistribution) distrib).getProb(nodeValue);
 		}
 
-	//	log.debug("Must marginalise to compute P(" + nodeId + "="+ nodeValue + ")");
+		// log.debug("Must marginalise to compute P(" + nodeId + "="+ nodeValue
+		// + ")");
 		Set<Assignment> combinations = getPossibleConditions();
 		double totalProb = 0.0;
 		for (Assignment combi : combinations) {

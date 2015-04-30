@@ -168,7 +168,6 @@ public interface IndependentProbDistribution extends ProbDistribution {
 		return this;
 	}
 
-
 	/**
 	 * Returns the probability for the head assignment, if the value can be
 	 * found in the distribution. Else, returns 0.0. The conditional assignment

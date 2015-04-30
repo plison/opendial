@@ -43,15 +43,16 @@ public class StringUtils {
 	// logger
 	public static Logger log = new Logger("StringUtils", Logger.Level.DEBUG);
 
-
+	final static Pattern nbestRegex = Pattern
+			.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
+	
 	// regular expression to detect algebraic expressions
 	final static Pattern mathExpression = Pattern
 			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
 	// regular expression with alternative or optional elements
-		final static Pattern slotRegex = Pattern
-				.compile("\\{(.+?)\\}");
-		
+	final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
+
 	// regular expressions with alternative or optional elements
 	final static Pattern altRegex = Pattern
 			.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
@@ -132,23 +133,23 @@ public class StringUtils {
 
 		if (countNbOccurrences(str, '(') != countNbOccurrences(str, ')')) {
 			if (showMessage) {
-			log.warning("Unequal number of parenthesis in string: " + str
-					+ ", Problems ahead!");
+				log.warning("Unequal number of parenthesis in string: " + str
+						+ ", Problems ahead!");
 			}
 			return false;
 		}
 		if (countNbOccurrences(str, '{') != countNbOccurrences(str, '}')) {
 			if (showMessage) {
-			log.warning("Unequal number of braces in string: " + str
-					+ ", Problems ahead!");
+				log.warning("Unequal number of braces in string: " + str
+						+ ", Problems ahead!");
 			}
 			return false;
 		}
 		if (countNbOccurrences(str, '[') != countNbOccurrences(str, ']')) {
 			if (showMessage) {
 				log.warning("Unequal number of brackets in string: " + str
-					+ ", Problems ahead!");
-		}
+						+ ", Problems ahead!");
+			}
 			return false;
 
 		}
@@ -200,11 +201,8 @@ public class StringUtils {
 
 		Map<String, Double> table = new HashMap<String, Double>();
 
-		Pattern p = Pattern
-				.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
-
 		for (String split : rawText.split(";")) {
-			Matcher m = p.matcher(split);
+			Matcher m = nbestRegex.matcher(split);
 			if (m.find()) {
 				String probValueStr = m.group(1);
 				double probValue = Double.parseDouble(probValueStr);
@@ -241,10 +239,9 @@ public class StringUtils {
 		return count;
 	}
 
-
 	/**
-	 * Returns true if the string corresponds to an arithmetic expression, and false
-	 * otherwise
+	 * Returns true if the string corresponds to an arithmetic expression, and
+	 * false otherwise
 	 * 
 	 * @param exp the string to check
 	 * @return true if the string is an arithmetic expression, false otherwise
@@ -252,8 +249,6 @@ public class StringUtils {
 	public static boolean isArithmeticExpression(String exp) {
 		return !exp.contains("{") && mathExpression.matcher(exp).matches();
 	}
-
-
 
 	public static String escape(String init) {
 		StringBuilder builder = new StringBuilder();
@@ -273,8 +268,11 @@ public class StringUtils {
 			} else if (charArr[i] == ' ') {
 				builder.append(" ");
 				for (int j = i + 1; j < charArr.length; j++) {
-					if (charArr[j] == ' ') { i++; } 
-					else { break; }
+					if (charArr[j] == ' ') {
+						i++;
+					} else {
+						break;
+					}
 				}
 			} else if (charArr[i] == '.') {
 				builder.append("\\.");
@@ -282,8 +280,7 @@ public class StringUtils {
 				builder.append("\\!");
 			} else if (charArr[i] == '^') {
 				builder.append("\\^");
-			}
-			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
+			} else if (charArr[i] == '{' && charArr[i + 1] == '}') {
 				i++;
 				continue;
 			} else {
@@ -292,7 +289,6 @@ public class StringUtils {
 		}
 		return builder.toString();
 	}
-
 
 	/**
 	 * Formats the regular expression corresponding to the provided string
@@ -305,22 +301,30 @@ public class StringUtils {
 		boolean hasStars = false;
 		boolean hasSlots = false;
 		boolean hasAlternatives = false;
-		for (int i = 0 ; i < init.length() ; i++) {
+		for (int i = 0; i < init.length(); i++) {
 			switch (init.charAt(i)) {
-			case '*': hasStars = true; break;
-			case '{': hasSlots = true; break;
-			case '|': hasAlternatives = true; break;
-			case '?': hasAlternatives = true; break;
-			default: break;
+			case '*':
+				hasStars = true;
+				break;
+			case '{':
+				hasSlots = true;
+				break;
+			case '|':
+				hasAlternatives = true;
+				break;
+			case '?':
+				hasAlternatives = true;
+				break;
+			default:
+				break;
 			}
 		}
-		
-		init = (hasStars)? replaceStars(init) : init;
-		init = (hasSlots)? slotRegex.matcher(init).replaceAll("(.+)") : init;
-		init = (hasAlternatives)? replaceComplex(init) : init;
-		return init;		
-	}
 
+		init = (hasStars) ? replaceStars(init) : init;
+		init = (hasSlots) ? slotRegex.matcher(init).replaceAll("(.+)") : init;
+		init = (hasAlternatives) ? replaceComplex(init) : init;
+		return init;
+	}
 
 	/**
 	 * Replaces the * characters in the string by a proper regular expression
@@ -346,47 +350,45 @@ public class StringUtils {
 				builder.append("(?: .+|)");
 			} else if (chars[i] == '*') {
 				builder.append("(?:.*)");
-			}
-			else {
+			} else {
 				builder.append(chars[i]);
 			}
 		}
 		return builder.toString();
 	}
 
-
 	/**
-	 * Replace the alternative or optional elements by a proper regular expression
+	 * Replace the alternative or optional elements by a proper regular
+	 * expression
 	 * 
 	 * @param init the initial string
 	 * @return the formatted expression
 	 */
 	private static String replaceComplex(String init) {
-	
+
 		StringBuilder builder = new StringBuilder(init);
 		Matcher m = altRegex.matcher(builder.toString());
 		while (m.find()) {
-			if (m.group().endsWith("?") && StringUtils.checkForm(m.group(), false)) {
-				String core = m.group().substring(2, m.group().length()-4);
+			if (m.group().endsWith("?")
+					&& StringUtils.checkForm(m.group(), false)) {
+				String core = m.group().substring(2, m.group().length() - 4);
 				if (m.end() < builder.length()
 						&& builder.charAt(m.end()) == ' ') {
 					String replace = "(?:" + core.replaceAll("\\|", " \\|")
 							+ " )?";
-					builder = builder.replace(m.start(), m.end() + 1,
-							replace);
+					builder = builder.replace(m.start(), m.end() + 1, replace);
 				} else if (m.end() >= builder.length() && m.start() > 0
 						&& builder.charAt(m.start() - 1) == ' ') {
-					String replace = "(?: "
-							+ core.replaceAll("\\|", "\\| ") + ")?";
-					builder = builder.replace(m.start() - 1, m.end(),
-							replace);
+					String replace = "(?: " + core.replaceAll("\\|", "\\| ")
+							+ ")?";
+					builder = builder.replace(m.start() - 1, m.end(), replace);
 				} else {
-					builder = builder.replace(m.start(), m.end(), "(?:"
-							+ core + ")?");
+					builder = builder.replace(m.start(), m.end(), "(?:" + core
+							+ ")?");
 				}
 				m = altRegex.matcher(builder.toString());
 			} else if (StringUtils.checkForm(m.group(), false)) {
-				String core = m.group().substring(2, m.group(0).length()-2);
+				String core = m.group().substring(2, m.group(0).length() - 2);
 				builder = builder.replace(m.start(), m.end(), "(?:" + core
 						+ ")");
 				m = altRegex.matcher(builder.toString());
@@ -394,6 +396,5 @@ public class StringUtils {
 		}
 		return builder.toString();
 	}
-
 
 }
