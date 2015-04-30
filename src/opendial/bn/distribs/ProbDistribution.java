@@ -28,7 +28,6 @@ import java.util.Set;
 import opendial.arch.DialException;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 
 /**
  * Representation of a conditional probability distribution P(X | Y1,...Ym),

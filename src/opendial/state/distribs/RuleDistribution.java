@@ -33,7 +33,6 @@ import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.effects.Effect;

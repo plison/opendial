@@ -270,6 +270,7 @@ public class SpeechInput extends InputStream implements Value {
 	/**
 	 * Returns a string representation of the speech input
 	 */
+	@Override
 	public String toString() {
 		return "SpeechInput (current size: " + data.length + " bytes))";
 	}

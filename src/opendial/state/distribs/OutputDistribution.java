@@ -24,16 +24,12 @@
 package opendial.state.distribs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
@@ -43,7 +39,6 @@ import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.utils.CombinatoricsUtils;
