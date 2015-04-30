@@ -211,7 +211,7 @@ public class LikelihoodWeighting {
 
 		String id = n.getId();
 		if (!evidence.containsVar(id) && n.getInputNodeIds().isEmpty()) {
-			Value newVal = n.sample(sample);
+			Value newVal = n.sample();
 			sample.addPair(id, newVal);
 		} else {
 			Value evidenceValue = evidence.getValue(id);

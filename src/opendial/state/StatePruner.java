@@ -212,7 +212,7 @@ public class StatePruner {
 			return fullState;
 		}
 
-		else if (!Collections.disjoint(nodesToKeep, state.getRuleNodes())) {
+		else if (!Collections.disjoint(nodesToKeep, state.getRuleNodeIds())) {
 			return reduce_light(state, nodesToKeep);
 		}
 

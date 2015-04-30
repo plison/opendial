@@ -24,10 +24,15 @@
 package opendial.state.distribs;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -41,6 +46,7 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
+import opendial.utils.CombinatoricsUtils;
 
 /**
  * Representation of an output distribution (see Pierre Lison's PhD thesis, page
@@ -61,6 +67,9 @@ public class OutputDistribution implements ProbDistribution {
 
 	// primes attached to the variable label
 	String primes;
+	
+	// possible effects from incoming rule nodes
+	List<Set<Effect>> inputEffects;
 
 	/**
 	 * Creates the output distribution for the output variable label
@@ -70,6 +79,18 @@ public class OutputDistribution implements ProbDistribution {
 	public OutputDistribution(String var) {
 		this.baseVar = var.replace("'", "");
 		this.primes = var.replace(baseVar, "");
+		inputEffects = new ArrayList<Set<Effect>>();
+	}
+	
+	
+	/**
+	 * Adds a collection of possible effects (from incoming rule nodes)
+	 * to the output node
+	 * 
+	 * @param effects the possible effects to add
+	 */
+	public void addEffects(Set<Effect> effects) {
+		inputEffects.add(effects);
 	}
 
 	/**
@@ -177,30 +198,23 @@ public class OutputDistribution implements ProbDistribution {
 
 	/**
 	 * Returns the possible outputs values given the input range in the parent
-	 * nodes (probability rule nodes and previous version of the variable)
+	 * nodes (probability rule nodes)
 	 * 
-	 * @param range the range of values for the parents
 	 * @return the possible values for the output
 	 */
 	@Override
-	public Set<Value> getValues(ValueRange range) {
-
+	public Set<Value> getValues() {
 		Set<Value> values = new HashSet<Value>();
 
-		for (String var : range.getVariables()) {
-			for (Value val : range.getValues(var)) {
-
-				if (val instanceof Effect) {
-
-					if (((Effect) val).isAdd(baseVar)) {
-						return getValues_linearise(range);
-					}
-
-					Set<Value> setValues = ((Effect) val).getValues(baseVar);
-					values.addAll(setValues);
-					if (setValues.isEmpty()) {
-						values.add(ValueFactory.none());
-					}
+		for (Set<Effect> set : inputEffects) {
+			for (Effect e : set) {
+				if (e.isAdd(baseVar)) {
+					return getValues_linearise();
+				}
+				Set<Value> setValues = e.getValues(baseVar);
+				values.addAll(setValues);
+				if (setValues.isEmpty()) {
+					values.add(ValueFactory.none());
 				}
 			}
 		}
@@ -234,7 +248,11 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public OutputDistribution copy() {
-		return new OutputDistribution(baseVar + primes);
+		OutputDistribution copy = new OutputDistribution(baseVar + primes);
+		for (Set<Effect> input : inputEffects) {
+			copy.addEffects(input);
+		}
+		return copy;
 	}
 
 	/**
@@ -246,16 +264,19 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Calculates the possible values for the output distribution via
-	 * linearisation (more costly operation, but necessary in case of add
-	 * effects).
+	 * Calculates the possible values for the output distribution via linearisation 
+	 * (more costly operation, but necessary in case of add effects).
 	 * 
-	 * @param range the value range to linearise
 	 * @return the set of possible output values
 	 */
-	private Set<Value> getValues_linearise(ValueRange range) {
+	private Set<Value> getValues_linearise() {
 
-		Set<Value> values = range.linearise().stream()
+		Map<String,Set<Value>> range = new HashMap<String,Set<Value>>();
+		for (int i = 0 ; i < inputEffects.size() ; i++) {
+			range.put(""+i, new HashSet<Value>(inputEffects.get(i)));
+		}
+		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(range);
+		Set<Value> values = combinations.stream()
 				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
 				.collect(Collectors.toSet());
 		if (values.isEmpty()) {

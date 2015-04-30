@@ -227,12 +227,9 @@ public class ChanceNode extends BNode {
 			return ((IndependentProbDistribution) distrib).getProb(nodeValue);
 		}
 
+	//	log.debug("Must marginalise to compute P(" + nodeId + "="+ nodeValue + ")");
 		Set<Assignment> combinations = getPossibleConditions();
 		double totalProb = 0.0;
-		if (combinations.size() > 1) {
-			log.debug("marginalisation necessary to compute P(" + nodeId + "="
-					+ nodeValue + ")");
-		}
 		for (Assignment combi : combinations) {
 			double prob = 1.0;
 			for (BNode inputNode : inputNodes.values()) {
@@ -319,19 +316,9 @@ public class ChanceNode extends BNode {
 	@Override
 	public Set<Value> getValues() {
 		if (cachedValues == null) {
-			ValueRange inputValues = new ValueRange();
-			for (BNode inputNode : inputNodes.values()) {
-				inputValues.addValues(inputNode.getId(), inputNode.getValues());
-			}
-			try {
-				cachedValues = new HashSet<Value>(
-						distrib.getValues(inputValues));
-			} catch (DialException e) {
-				log.warning("Could not extract values for " + nodeId);
-				cachedValues = new HashSet<Value>();
-			}
+			cachedValues = distrib.getValues();
 		}
-		return new HashSet<Value>(cachedValues);
+		return cachedValues;
 	}
 
 	/**

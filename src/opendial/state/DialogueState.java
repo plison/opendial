@@ -38,6 +38,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -185,7 +186,7 @@ public class DialogueState extends BNetwork {
 	 * @param assign the value assignment to add
 	 * @throws DialException if the content could not be added.
 	 */
-	public void addToState(Assignment assign) throws DialException {
+	public synchronized void addToState(Assignment assign) throws DialException {
 		for (String var : assign.getVariables()) {
 			addToState(new CategoricalTable(var, assign.getValue(var)));
 		}
@@ -199,7 +200,7 @@ public class DialogueState extends BNetwork {
 	 * @param distrib the multivariate distribution to add
 	 * @throws DialException if the content could not be added.
 	 */
-	public void addToState(MultivariateDistribution distrib)
+	public synchronized void addToState(MultivariateDistribution distrib)
 			throws DialException {
 		for (String var : distrib.getVariables()) {
 			addToState(distrib.getMarginal(var));
@@ -219,7 +220,7 @@ public class DialogueState extends BNetwork {
 	 * @param distrib a distribution over values for particular state variables
 	 * @throws DialException if the content could not be added.
 	 */
-	public void addToState(IndependentProbDistribution distrib)
+	public synchronized void addToState(IndependentProbDistribution distrib)
 			throws DialException {
 
 		String variable = distrib.getVariable() + "'";
@@ -234,7 +235,6 @@ public class DialogueState extends BNetwork {
 
 		addNode(newNode);
 		connectToPredictions(newNode);
-
 		incrementalVars.remove(variable);
 	}
 
@@ -249,7 +249,7 @@ public class DialogueState extends BNetwork {
 	 *            new utterance)
 	 * @throws DialException if the incremental operation could not be performed
 	 */
-	public void addToState_incremental(CategoricalTable distrib,
+	public synchronized void addToState_incremental(CategoricalTable distrib,
 			boolean followPrevious) throws DialException {
 
 		String var = distrib.getVariable();
@@ -270,7 +270,7 @@ public class DialogueState extends BNetwork {
 	 * @param newState the state to merge into the current state
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
-	public void addToState(DialogueState newState) throws DialException {
+	public synchronized void addToState(DialogueState newState) throws DialException {
 		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
@@ -281,7 +281,7 @@ public class DialogueState extends BNetwork {
 	 * @param newState the state to merge into the current state
 	 * @throws DialException if the new dialogue state could not be merged
 	 */
-	public void addToState(BNetwork newState) throws DialException {
+	public synchronized void addToState(BNetwork newState) throws DialException {
 		for (ChanceNode cn : new ArrayList<ChanceNode>(
 				newState.getChanceNodes())) {
 			cn.setId(cn.getId() + "'");
@@ -530,7 +530,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @return the set of identifiers for the rule nodes
 	 */
-	public Set<String> getRuleNodes() {
+	public Set<String> getRuleNodeIds() {
 		return getNodeIds().stream().filter(i -> isRuleNode(i))
 				.collect(Collectors.toSet());
 	}
@@ -665,24 +665,26 @@ public class DialogueState extends BNetwork {
 		// looping on each output variable
 		for (String updatedVar : arule.getOutputs()) {
 
+			ChanceNode outputNode;
+			OutputDistribution outputDistrib;
+	
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
-				ChanceNode outputNode = new ChanceNode(updatedVar,
-						new OutputDistribution(updatedVar));
+				outputDistrib = new OutputDistribution(updatedVar);
+				outputNode = new ChanceNode(updatedVar, outputDistrib);
 				addNode(outputNode);
 
 				// connecting to prior predictions
 				connectToPredictions(outputNode);
-
-				// adding dependency edge
-				outputNode.addInputNode(ruleNode);
-
 			}
-
 			// else, simply add an additional edge
-			else if (!getNode(updatedVar).hasInputNode(ruleNode.getId())) {
-				getNode(updatedVar).addInputNode(ruleNode);
+			else  {
+				outputNode = getChanceNode(updatedVar);
+				outputDistrib = (OutputDistribution) outputNode.getDistrib();
 			}
+			outputNode.addInputNode(ruleNode);
+			outputDistrib.addEffects(arule.getEffects());
+			
 		}
 	}
 

@@ -134,10 +134,9 @@ public class RuleDistribution implements ProbDistribution {
 	/**
 	 * Returns the possible values for the rule.
 	 * 
-	 * @param range the range of input values (is ignored).
 	 */
 	@Override
-	public Set<Value> getValues(ValueRange range) throws DialException {
+	public Set<Value> getValues() throws DialException {
 		return new HashSet<Value>(arule.getEffects());
 	}
 

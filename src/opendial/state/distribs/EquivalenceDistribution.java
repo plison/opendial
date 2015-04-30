@@ -198,11 +198,10 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Returns a set of two assignments: one with the value true, and one with
 	 * the value false.
 	 * 
-	 * @param range the set of possible input values (is ignored)
 	 * @return the set with the two possible assignments
 	 */
 	@Override
-	public Set<Value> getValues(ValueRange range) {
+	public Set<Value> getValues() {
 		Set<Value> vals = new HashSet<Value>();
 		vals.add(ValueFactory.create(true));
 		vals.add(ValueFactory.create(false));
@@ -218,22 +217,36 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 */
 	private double getProb(Assignment condition) throws DialException {
 
-		Value[] coupledValues = getCoupledValues(condition);
-
-		if (coupledValues[0].equals(ValueFactory.none())
-				|| coupledValues[1].equals(ValueFactory.none())) {
+		Value predicted = null;
+		Value actual = null;
+		for (String inputVar : condition.getVariables()) {
+			if (inputVar.equals(baseVar + "^p")) {
+				predicted = condition.getValue(inputVar);
+			} else if (inputVar.equals(baseVar + "'")) {
+				actual = condition.getValue(inputVar);
+			} else if (inputVar.equals(baseVar)) {
+				actual = condition.getValue(inputVar);
+			}
+		}
+		if (predicted == null || actual == null) {
+			throw new DialException("equivalence distribution with variable "
+					+ baseVar + " cannot handle condition " + condition);
+		}
+		
+		if (predicted.equals(ValueFactory.none())
+				|| actual.equals(ValueFactory.none())) {
 			return NONE_PROB;
-		} else if (coupledValues[0].equals(coupledValues[1])) {
+		} else if (predicted.equals(actual)) {
 			return 1.0;
-		} else if (coupledValues[0] instanceof StringVal
-				&& coupledValues[1] instanceof StringVal) {
-			String str1 = ((StringVal) coupledValues[0]).getString();
-			String str2 = ((StringVal) coupledValues[1]).getString();
+		} else if (predicted instanceof StringVal
+				&& actual instanceof StringVal) {
+			String str1 = ((StringVal) predicted).getString();
+			String str2 = ((StringVal) actual).getString();
 			return (Template.match(str1, str2)) ? 1.0 : 0.0;
-		} else if (coupledValues[0] instanceof SetVal
-				&& coupledValues[1] instanceof SetVal) {
-			Set<Value> vals0 = ((SetVal) coupledValues[0]).getSet();
-			Set<Value> vals1 = ((SetVal) coupledValues[1]).getSet();
+		} else if (predicted instanceof SetVal
+				&& actual instanceof SetVal) {
+			Set<Value> vals0 = ((SetVal) predicted).getSet();
+			Set<Value> vals1 = ((SetVal) actual).getSet();
 			if (vals0.isEmpty()) {
 				return (vals1.isEmpty()) ? 1.0 : 0.0;
 			}
@@ -254,25 +267,6 @@ public class EquivalenceDistribution implements ProbDistribution {
 		return true;
 	}
 
-	private Value[] getCoupledValues(Assignment initialInput)
-			throws DialException {
 
-		Value[] coupledValues = new Value[2];
-		for (String inputVar : initialInput.getVariables()) {
-			if (inputVar.equals(baseVar + "^p")) {
-				coupledValues[0] = initialInput.getValue(inputVar);
-			} else if (inputVar.equals(baseVar + "'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);
-			} else if (inputVar.equals(baseVar)
-					&& !inputVar.contains(baseVar + "'")) {
-				coupledValues[1] = initialInput.getValue(inputVar);
-			}
-		}
-		if (coupledValues[0] == null || coupledValues[1] == null) {
-			throw new DialException("equivalence distribution with variable "
-					+ baseVar + " cannot handle condition " + initialInput);
-		}
-		return coupledValues;
-	}
 
 }
