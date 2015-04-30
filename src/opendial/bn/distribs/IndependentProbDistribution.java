@@ -30,8 +30,6 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -115,6 +113,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @return the possible values for the distribution
 	 */
+	@Override
 	public abstract Set<Value> getValues();
 
 	/**

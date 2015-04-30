@@ -36,7 +36,6 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 import opendial.utils.CombinatoricsUtils;
 
 /**

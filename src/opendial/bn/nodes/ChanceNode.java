@@ -37,7 +37,6 @@ import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 
 /**
  * Representation of a chance node (sometimes also called belief node), which is

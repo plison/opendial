@@ -38,7 +38,6 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
-import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
