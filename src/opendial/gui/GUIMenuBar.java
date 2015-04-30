@@ -79,7 +79,7 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class GUIMenuBar extends JMenuBar {
 
-	public static final String OPENDIAL_DOC = "https://code.google.com/p/opendial/wiki/OpenDialUserManual?tm=6";
+	public static final String OPENDIAL_DOC = "http://www.opendial-toolkit.net/user-manual";
 
 	// logger
 	public static Logger log = new Logger("ToolkitMenu", Logger.Level.DEBUG);
