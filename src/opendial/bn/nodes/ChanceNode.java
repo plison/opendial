@@ -303,7 +303,7 @@ public class ChanceNode extends BNode {
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution) distrib).sample();
 		}
-		return distrib.sample(condition.getTrimmed(inputNodes.keySet()));
+		return distrib.sample(condition);
 	}
 
 	/**

@@ -92,8 +92,8 @@ public final class ComplexCondition implements Condition {
 	 * @return the set of input variables
 	 */
 	@Override
-	public Set<Template> getInputVariables() {
-		Set<Template> variables = new HashSet<Template>();
+	public Collection<Template> getInputVariables() {
+		List<Template> variables = new ArrayList<Template>();
 		for (Condition cond : subconditions) {
 			variables.addAll(cond.getInputVariables());
 		}

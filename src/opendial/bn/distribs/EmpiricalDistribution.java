@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
@@ -307,21 +305,14 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 */
 	protected CategoricalTable createUnivariateTable(String headVar) {
 
-		Map<Value, Integer> counts = new HashMap<Value, Integer>();
+		Map<Value, Double> probs = new HashMap<Value, Double>();
 
+		double incr = 1.0/samples.size();
 		for (Assignment sample : samples) {
 			Value val = sample.getValue(headVar);
-			if (counts.containsKey(val)) {
-				counts.put(val, counts.get(val) + 1);
-			} else {
-				counts.put(val, 1);
-			}
+			probs.put(val, probs.getOrDefault(val, 0.0) + incr);
 		}
 
-		Map<Value, Double> probs = new HashMap<Value, Double>();
-		for (Value value : counts.keySet()) {
-			probs.put(value, 1.0 * counts.get(value) / samples.size());
-		}
 		CategoricalTable table = new CategoricalTable(headVar, probs);
 
 		if (!table.isWellFormed()) {
@@ -339,21 +330,14 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	protected MultivariateTable createMultivariateTable(
 			Collection<String> headVars) {
 
-		Map<Assignment, Integer> counts = new HashMap<Assignment, Integer>();
+		Map<Assignment, Double> probs = new HashMap<Assignment, Double>();
 
+		double incr = 1.0/samples.size();
 		for (Assignment sample : samples) {
 			Assignment trimmed = sample.getTrimmed(headVars);
-			if (counts.containsKey(trimmed)) {
-				counts.put(trimmed, counts.get(trimmed) + 1);
-			} else {
-				counts.put(trimmed, 1);
-			}
+			probs.put(trimmed, probs.getOrDefault(trimmed, 0.0) + incr);
 		}
 
-		Map<Assignment, Double> probs = new HashMap<Assignment, Double>();
-		for (Assignment value : counts.keySet()) {
-			probs.put(value, 1.0 * counts.get(value) / samples.size());
-		}
 		MultivariateTable table = new MultivariateTable(probs);
 
 		if (!table.isWellFormed()) {
@@ -371,18 +355,16 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	protected ContinuousDistribution createContinuousDistribution(
 			String variable) {
 
-		List<double[]> values = samples
-				.stream()
-				.map(a -> a.getValue(variable))
-				.filter(v -> (v instanceof ArrayVal)
-						|| (v instanceof DoubleVal)).map(v -> {
-					if (v instanceof ArrayVal) {
-						return ((ArrayVal) v).getArray();
-					} else {
-						return new double[] { ((DoubleVal) v).getDouble() };
-					}
-				}).collect(Collectors.toList());
-
+		List<double[]> values = new ArrayList<double[]>();
+		for (Assignment a : samples) {
+			Value v = a.getValue(variable);
+			if (v instanceof ArrayVal) {
+				values.add(((ArrayVal)v).getArray());
+			}
+			else if (v instanceof DoubleVal) {
+				values.add(new double[] { ((DoubleVal)v).getDouble()});
+			}
+		}
 		return new ContinuousDistribution(variable, new KernelDensityFunction(
 				values));
 	}
@@ -399,7 +381,6 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			Collection<String> condVars) {
 
 		Map<Assignment, Map<Value, Integer>> temp = new HashMap<Assignment, Map<Value, Integer>>();
-
 		for (Assignment sample : samples) {
 			Assignment condition = sample.getTrimmed(condVars);
 			Value val = sample.getValue(headVar);
@@ -409,11 +390,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 				temp.put(condition, counts);
 			} else {
 				Map<Value, Integer> counts = temp.get(condition);
-				if (!counts.containsKey(val)) {
-					counts.put(val, 1);
-				} else {
-					counts.put(val, counts.get(val) + 1);
-				}
+				counts.put(val, counts.getOrDefault(val,0) + 1);
 			}
 		}
 
@@ -422,11 +399,10 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			Map<Value, Integer> counts = temp.get(condition);
 			double totalCounts = counts.values().stream().mapToInt(i -> i)
 					.sum();
-			counts.keySet()
-					.stream()
-					.forEach(
-							v -> table.addRow(condition, v, counts.get(v)
-									/ totalCounts));
+			Map<Value,Double> probs = new HashMap<Value,Double>();
+			counts.keySet().stream().forEach(k -> probs.put(k,counts.get(k)/totalCounts));
+			CategoricalTable catTable = new CategoricalTable(headVar, probs);
+			table.addRows(condition,catTable);
 		}
 		table.fillConditionalHoles();
 		return table;

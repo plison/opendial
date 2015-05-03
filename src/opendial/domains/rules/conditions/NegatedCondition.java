@@ -23,6 +23,7 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Collection;
 import java.util.Set;
 
 import opendial.arch.Logger;
@@ -69,7 +70,7 @@ public final class NegatedCondition implements Condition {
 	 * @return the input variables
 	 */
 	@Override
-	public Set<Template> getInputVariables() {
+	public Collection<Template> getInputVariables() {
 		return initCondition.getInputVariables();
 	}
 

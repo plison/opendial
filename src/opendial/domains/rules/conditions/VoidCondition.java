@@ -23,6 +23,8 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,8 +52,8 @@ public final class VoidCondition implements Condition {
 	 * @return an empty set
 	 */
 	@Override
-	public Set<Template> getInputVariables() {
-		return new HashSet<Template>();
+	public Collection<Template> getInputVariables() {
+		return Arrays.asList();
 	}
 
 	/**
