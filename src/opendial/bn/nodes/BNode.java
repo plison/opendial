@@ -293,7 +293,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the ids for the input nodes
 	 */
 	public Set<String> getInputNodeIds() {
-		return new HashSet<String>(inputNodes.keySet());
+		return inputNodes.keySet();
 	}
 
 	/**
@@ -330,7 +330,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * @return the ids for the input nodes
 	 */
 	public Set<String> getOutputNodesIds() {
-		return new HashSet<String>(outputNodes.keySet());
+		return outputNodes.keySet();
 	}
 
 	/**

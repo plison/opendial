@@ -24,7 +24,6 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,9 +67,6 @@ public class Rule {
 	// cache with the outputs for a given assignment
 	Map<Assignment, RuleOutput> cache;
 
-	// input variables for the rule
-	Set<Template> inputVars;
-
 	// ===================================
 	// RULE CONSTRUCTION
 	// ===================================
@@ -86,9 +82,7 @@ public class Rule {
 		this.id = id;
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();
-		cache = new HashMap<Assignment, RuleOutput>(100);
-		cache = Collections.synchronizedMap(cache);
-		inputVars = new HashSet<Template>();
+		cache = new HashMap<Assignment, RuleOutput>(10);
 	}
 
 	/**
@@ -103,7 +97,6 @@ public class Rule {
 					+ " is unreachable (previous case is trivially true)");
 		}
 		cases.add(newCase);
-		inputVars.addAll(newCase.getInputVariables());
 	}
 
 	/**
@@ -148,6 +141,10 @@ public class Rule {
 	 * @return the set of labels for the input variables
 	 */
 	public Set<Template> getInputVariables() {
+		Set<Template> inputVars = new HashSet<Template>();
+		for (RuleCase c : cases) {
+			inputVars.addAll(c.getInputVariables());
+		}
 		return inputVars;
 	}
 

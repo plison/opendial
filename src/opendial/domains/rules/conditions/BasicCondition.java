@@ -23,6 +23,8 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -127,10 +129,8 @@ public final class BasicCondition implements Condition {
 	 * @return the input variables
 	 */
 	@Override
-	public Set<Template> getInputVariables() {
-		Set<Template> inputVariables = new HashSet<Template>();
-		inputVariables.add(variable);
-		return inputVariables;
+	public Collection<Template> getInputVariables() {
+		return Arrays.asList(variable);
 	}
 
 	/**

@@ -157,9 +157,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @param heads the simple table with (head assignment, probability value)
 	 */
 	public void addRows(Assignment condition, CategoricalTable heads) {
-		for (Value head : heads.getValues()) {
-			addRow(condition, head, heads.getProb(head));
-		}
+		conditionalVars.addAll(condition.getVariables());
+		table.put(condition, heads);
 	}
 
 	/**
@@ -170,9 +169,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 */
 	public void addRows(Map<Assignment, Map<Value, Double>> fullTable) {
 		for (Assignment cond : fullTable.keySet()) {
-			for (Value head : fullTable.get(cond).keySet()) {
-				addRow(cond, head, fullTable.get(cond).get(head));
-			}
+			addRows(cond, new CategoricalTable(headVar,fullTable.get(cond)));
 		}
 	}
 
@@ -386,7 +383,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	public ConditionalTable copy() {
 		ConditionalTable newC = new ConditionalTable(headVar);
 		for (Assignment cond : table.keySet()) {
-			newC.addRows(cond, table.get(cond));
+			newC.addRows(cond, table.get(cond).copy());
 		}
 		return newC;
 	}

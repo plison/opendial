@@ -87,7 +87,7 @@ public class LikelihoodWeighting {
 				.parallel() // parallelise
 				.map(p -> p.sample()) // generate a sample
 				.limit(nbSamples) // stop when nbSamples are collected
-				.filter(s -> !s.isEmpty()) // discard empty samples
+				.filter(s -> s.getWeight() > WEIGHT_THRESHOLD) // discard empty samples
 				.collect(Collectors.toList()); // makes a list of samples
 	}
 
@@ -148,11 +148,6 @@ public class LikelihoodWeighting {
 				}
 			}
 
-			// we only add the sample if the weight is larger than a given
-			// threshold
-			if (sample.getWeight() < WEIGHT_THRESHOLD) {
-				sample.clear();
-			}
 			sample.trim(queryVars);
 		} catch (DialException e) {
 			log.info("exception caught: " + e);
@@ -170,7 +165,6 @@ public class LikelihoodWeighting {
 	 * is part of the evidence, updates the weight.
 	 * 
 	 * @param n the chance node to sample
-	 * @param sample to weighted sample to extend
 	 * @throws DialException if the sampling operation failed
 	 */
 	private void sampleChanceNode(ChanceNode n, Sample sample)
@@ -214,8 +208,6 @@ public class LikelihoodWeighting {
 			sample.addPair(id, newVal);
 		} else {
 			Value evidenceValue = evidence.getValue(id);
-			double evidenceProb = n.getProb(evidenceValue);
-			sample.addLogWeight(Math.log(evidenceProb));
 			sample.addPair(id, evidenceValue);
 		}
 	}

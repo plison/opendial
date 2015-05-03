@@ -222,6 +222,7 @@ public class DialogueState extends BNetwork {
 			throws DialException {
 
 		String variable = distrib.getVariable() + "'";
+		setAsCommitted(variable);
 		distrib.modifyVariableId(distrib.getVariable(), variable);
 		ChanceNode newNode = new ChanceNode(variable, distrib);
 
@@ -559,9 +560,8 @@ public class DialogueState extends BNetwork {
 	// ===================================
 
 	public void setAsCommitted(String var) {
-		String baseVar = var.replace("'", "");
-		if (incrementalVars.contains(baseVar)) {
-			incrementalVars.remove(baseVar);
+		if (incrementalVars.contains(var)) {
+			incrementalVars.remove(var);
 			StatePruner.prune(this);
 		}
 	}

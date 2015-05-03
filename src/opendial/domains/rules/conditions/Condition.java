@@ -23,6 +23,7 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.Collection;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
@@ -48,7 +49,7 @@ public interface Condition {
 	 * 
 	 * @return the input variable templates
 	 */
-	public Set<Template> getInputVariables();
+	public Collection<Template> getInputVariables();
 
 	/**
 	 * Returns true if the condition is satisfied for the given assignment, and
