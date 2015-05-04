@@ -32,7 +32,7 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.utils.CombinatoricsUtils;
+import opendial.datastructs.ValueRange;
 import opendial.utils.StringUtils;
 
 /**
@@ -200,11 +200,9 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		if (conditionalVars.size() <= 1) {
 			return;
 		}
-		Map<String, Set<Value>> possibleCondPairs = CombinatoricsUtils
-				.extractPossiblePairs(table.keySet());
-		if (CombinatoricsUtils.getNbCombinations(possibleCondPairs) < 500) {
-			Set<Assignment> possibleCondAssignments = CombinatoricsUtils
-					.getAllCombinations(possibleCondPairs);
+		ValueRange possibleCondPairs = new ValueRange(table.keySet());
+		if (possibleCondPairs.getNbCombinations() < 500) {
+			Set<Assignment> possibleCondAssignments = possibleCondPairs.linearise();
 			possibleCondAssignments.remove(new Assignment());
 
 			for (Assignment possibleCond : possibleCondAssignments) {

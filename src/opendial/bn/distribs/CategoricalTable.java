@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -70,9 +69,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 
 	// probability intervals (used for binary search in sampling)
 	Intervals<Value> intervals;
-
-	// sampler
-	static Random sampler = new Random();
 
 	// whether to automatically add a default value to fill the remaining
 	// probability mass
@@ -318,15 +314,23 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public boolean pruneValues(double threshold) {
 		Map<Value, Double> newTable = new HashMap<Value, Double>();
 		boolean changed = false;
+		double totalProb = 0.0;
 		for (Value row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
+				totalProb += prob;
 			} else {
 				changed = true;
 			}
 		}
-		table = InferenceUtils.normalise(newTable);
+		if (addDefaultValue && totalProb < 0.99999) {
+			newTable.put(ValueFactory.none(), 1.0 - totalProb);
+			table = newTable;
+		}
+		else {
+			table = InferenceUtils.normalise(newTable);
+		}
 		intervals = null;
 		return changed;
 	}
@@ -469,9 +473,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.isEmpty()) {
 			return true;
 		} else
-			return (table.size() == 1 && table.keySet().stream()
-					.anyMatch(v -> v.equals(ValueFactory.none())));
-	}
+			return (table.size() == 1 && table.keySet().iterator().next().equals(ValueFactory.none()));
+		}
 
 	/**
 	 * Returns a subset of the N values in the table with the highest

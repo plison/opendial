@@ -51,13 +51,13 @@ public class Intervals<T> {
 	public static Logger log = new Logger("Intervals", Logger.Level.DEBUG);
 
 	// the intervals
-	Interval<T>[] intervals;
+	final Interval<T>[] intervals;
 
 	// sampler for the interval collection
-	Random sampler;
+	final static Random sampler = new Random();
 
 	// total probability for the table
-	double totalProb;
+	final double totalProb;
 
 	/**
 	 * Creates a new interval collection with a set of (content,probability)
@@ -71,21 +71,21 @@ public class Intervals<T> {
 
 		intervals = new Interval[table.size()];
 		int i = 0;
-		totalProb = 0.0f;
+		double total = 0.0f;
 
 		for (T a : new ArrayList<T>(table.keySet())) {
 			double prob = table.get(a);
 			if (prob == Double.NaN) {
 				throw new DialException("probability is NaN: " + table);
 			}
-			intervals[i++] = new Interval<T>(a, totalProb, totalProb + prob);
-			totalProb += prob;
+			intervals[i++] = new Interval<T>(a, total, total + prob);
+			total += prob;
 		}
 
-		if (totalProb < 0.0001) {
+		if (total < 0.0001) {
 			throw new DialException("total prob is null: " + table);
 		}
-		sampler = new Random();
+		totalProb = total;
 	}
 
 	/**
@@ -102,21 +102,21 @@ public class Intervals<T> {
 
 		intervals = new Interval[content.size()];
 		int i = 0;
-		totalProb = 0.0f;
+		double total = 0.0f;
 
 		for (T a : content) {
 			double prob = probs.apply(a);
 			if (prob == Double.NaN) {
 				throw new DialException("probability is NaN: " + a);
 			}
-			intervals[i++] = new Interval<T>(a, totalProb, totalProb + prob);
-			totalProb += prob;
+			intervals[i++] = new Interval<T>(a, total, total + prob);
+			total += prob;
 		}
 
-		if (totalProb < 0.0001) {
+		if (total < 0.0001) {
 			throw new DialException("total prob is null: " + content);
 		}
-		sampler = new Random();
+		totalProb = total;
 	}
 
 	/**
@@ -130,11 +130,6 @@ public class Intervals<T> {
 
 		if (intervals.length == 0) {
 			throw new DialException("could not sample: empty interval");
-		}
-
-		if (sampler == null) {
-			log.debug("sampler is null");
-			sampler = new Random();
 		}
 
 		double rand = sampler.nextDouble() * totalProb;

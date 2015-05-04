@@ -24,11 +24,9 @@
 package opendial.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,39 +85,7 @@ public class CombinatoricsUtils {
 		}
 	}
 
-	/**
-	 * Returns the estimated number (higher bound) of combinations for the set
-	 * of variables and associated values given as argument.
-	 * 
-	 * @param valuesMatrix the set of values to combine
-	 * @return the higher bound on the number of possible combinations
-	 */
-	public static int getNbCombinations(Map<String, Set<Value>> valuesMatrix) {
-		OptionalInt estimation = valuesMatrix.values().stream()
-				.mapToInt(set -> set.size()).reduce((a, b) -> a * b);
-		return (estimation.isPresent()) ? estimation.getAsInt() : 1;
-	}
 
-	/**
-	 * Returns the set of possible (variable,value) pairs used in the the set of
-	 * assignments given as arguments.
-	 * 
-	 * @param assignments the assignments from which to extract the pairs
-	 * @return the extracted pairs
-	 */
-	public static Map<String, Set<Value>> extractPossiblePairs(
-			Set<Assignment> assignments) {
-		Map<String, Set<Value>> possiblePairs = new HashMap<String, Set<Value>>();
-		for (Assignment condition : assignments) {
-			for (String variable : condition.getVariables()) {
-				if (!possiblePairs.containsKey(variable)) {
-					possiblePairs.put(variable, new HashSet<Value>());
-				}
-				possiblePairs.get(variable).add(condition.getValue(variable));
-			}
-		}
-		return possiblePairs;
-	}
 
 	/**
 	 * Get the power set of the given set

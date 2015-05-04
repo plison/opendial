@@ -37,7 +37,7 @@ public class LikelihoodWeighting {
 	// actual number of samples for the algorithm
 	int nbSamples;
 
-	public static double WEIGHT_THRESHOLD = 0.00001f;
+	public static double WEIGHT_THRESHOLD = 0.0001f;
 
 	// the stack of weighted samples which have been collected so far
 	List<Sample> samples;

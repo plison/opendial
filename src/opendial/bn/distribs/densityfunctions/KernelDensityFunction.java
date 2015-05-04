@@ -23,10 +23,9 @@
 
 package opendial.bn.distribs.densityfunctions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -57,22 +56,39 @@ public class KernelDensityFunction implements DensityFunction {
 			Logger.Level.DEBUG);
 
 	// bandwidth for the kernel
-	double[] bandwidths;
+	final double[] bandwidths;
 	// shorter bandwidth (for multivariate sampling)
-	double[] shortbandwidths;
+	final double[] samplingDeviation;
 
 	// the kernel function
-	GaussianDensityFunction kernel = new GaussianDensityFunction(0.0, 1.0);
+	static final GaussianDensityFunction kernel = new GaussianDensityFunction(0.0, 1.0);
 
 	// the points
-	List<double[]> points;
+	final double[][] points;
 
 	// the sampler
-	Random sampler;
+	static final Random sampler = new Random(Calendar.getInstance().getTimeInMillis()
+			+ Thread.currentThread().getId());
 
 	// whether the data points are bounded (if the sum of their values over the
 	// dimensions must amount o 1.0).
-	boolean isBounded = false;
+	final boolean isBounded;
+
+	/**
+	 * Creates a new kernel density function with the given points
+	 * 
+	 * @param points the points
+	 */
+	public KernelDensityFunction(double[][] points) {
+		this.points = points;
+		if (points.length == 0) {
+			throw new DialException("KDE must contain at least one point");
+		}
+		isBounded = shouldBeBounded();
+		bandwidths = estimateBandwidths();
+		samplingDeviation = Arrays.stream(bandwidths)
+				.map(b -> b / Math.pow(bandwidths.length, 2)).toArray();
+		}
 
 	/**
 	 * Creates a new kernel density function with the given points
@@ -80,13 +96,10 @@ public class KernelDensityFunction implements DensityFunction {
 	 * @param points the points
 	 */
 	public KernelDensityFunction(Collection<double[]> points) {
-		this.points = new ArrayList<double[]>(points);
-		isBounded = shouldBeBounded();
-
-		sampler = new Random();
-		estimateBandwidths();
+		this(points.toArray(new double[points.size()][]));
 	}
 
+	
 	/**
 	 * Returns the bandwidth defined for the KDE
 	 * 
@@ -114,9 +127,9 @@ public class KernelDensityFunction implements DensityFunction {
 								/ bandwidths[d])
 								/ bandwidths[d])).sum();
 
-		double density = points.stream()
+		double density = Arrays.stream(points)
 				.mapToDouble(p -> Math.exp(pointDensity.apply(p))).sum()
-				/ points.size();
+				/ points.length;
 
 		// bounded support (cf. Jones 1993)
 		if (isBounded) {
@@ -141,20 +154,27 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] sample() {
+		
+		// step 1 : selecting one point from the available points
+		double[] centre = points[sampler.nextInt(points.length)];
 
-		double[] centre = points.get(sampler.nextInt(points.size()));
+		// step 2: sampling a point in its vicinity (following a Gaussian)
+		double[] newPoint = new double[bandwidths.length];
+		double total = 0.0;
+		double shift = 0.0;
+		for (int i = 0; i < centre.length; i++) {
+			newPoint[i] = (sampler.nextGaussian() * samplingDeviation[i]) + centre[i];					
+			total += newPoint[i];
+			if (newPoint[i]<shift) {
+				shift = newPoint[i];
+			}
+		}
 
-		GaussianDensityFunction fun = new GaussianDensityFunction(centre,
-				shortbandwidths);
-		double[] newPoint = fun.sample();
-
+		// step 3: if the density must be bounded, ensure the sum is = 1
 		if (isBounded) {
-			double total = Arrays.stream(newPoint).sum();
-			double shift = Math.min(0, Arrays.stream(newPoint).min()
-					.getAsDouble());
-			newPoint = Arrays.stream(newPoint)
-					.map(v -> (v - shift) / (total - shift * centre.length))
-					.toArray();
+			for (int i = 0; i < centre.length; i++) {
+				newPoint[i] = (newPoint[i] - shift) / (total - shift*centre.length);
+			}
 		}
 		return newPoint;
 	}
@@ -167,9 +187,8 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public Map<double[], Double> discretise(int nbBuckets) {
-		Collections.shuffle(points);
-		int nbToPick = Math.min(nbBuckets, points.size());
-		Map<double[], Double> vals = points.stream().distinct().limit(nbToPick)
+		int nbToPick = Math.min(nbBuckets, points.length);
+		Map<double[], Double> vals = Arrays.stream(points).distinct().limit(nbToPick)
 				.collect(Collectors.toMap(p -> p, p -> 1.0 / nbToPick));
 		return vals;
 	}
@@ -203,7 +222,7 @@ public class KernelDensityFunction implements DensityFunction {
 			avgstd += std;
 		}
 		s += StringUtils.getShortForm((avgstd / means.length));
-		s += ") with " + points.size() + " kernels ";
+		s += ") with " + points.length + " kernels ";
 		return s;
 	}
 
@@ -214,7 +233,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public int hashCode() {
-		return points.hashCode();
+		return Arrays.asList(points).hashCode();
 	}
 
 	/**
@@ -223,7 +242,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * @return the dimensionality
 	 */
 	@Override
-	public int getDimensionality() {
+	public int getDimensions() {
 		return bandwidths.length;
 	}
 
@@ -234,7 +253,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] getMean() {
-		double[] mean = new double[points.get(0).length];
+		double[] mean = new double[points[0].length];
 		for (int i = 0; i < mean.length; i++) {
 			mean[i] = 0.0;
 		}
@@ -244,7 +263,7 @@ public class KernelDensityFunction implements DensityFunction {
 			}
 		}
 		for (int i = 0; i < mean.length; i++) {
-			mean[i] = mean[i] / points.size();
+			mean[i] = mean[i] / points.length;
 		}
 		return mean;
 	}
@@ -255,7 +274,7 @@ public class KernelDensityFunction implements DensityFunction {
 	@Override
 	public double[] getVariance() {
 		double[] mean = getMean();
-		double[] variance = new double[points.get(0).length];
+		double[] variance = new double[points[0].length];
 		for (int i = 0; i < variance.length; i++) {
 			variance[i] = 0.0;
 		}
@@ -265,7 +284,7 @@ public class KernelDensityFunction implements DensityFunction {
 			}
 		}
 		for (int i = 0; i < variance.length; i++) {
-			variance[i] = variance[i] / points.size();
+			variance[i] = variance[i] / points.length;
 		}
 		return variance;
 	}
@@ -277,13 +296,13 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
-		if (x.length != getDimensionality()) {
+		if (x.length != getDimensions()) {
 			throw new DialException("Illegal dimensionality: " + x.length
-					+ "!=" + getDimensionality());
+					+ "!=" + getDimensions());
 		}
-		double nbOfLowerPoints = points.stream()
+		double nbOfLowerPoints = Arrays.stream(points)
 				.filter(v -> MathUtils.isLower(v, x)).count();
-		return nbOfLowerPoints / points.size();
+		return nbOfLowerPoints / points.length;
 	}
 
 	/**
@@ -293,7 +312,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	private double[] getStandardDeviations() {
 		double[] variance = getVariance();
-		double[] std = new double[points.get(0).length];
+		double[] std = new double[points[0].length];
 		for (int i = 0; i < variance.length; i++) {
 			std[i] = Math.sqrt(variance[i]);
 		}
@@ -308,10 +327,10 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	private boolean shouldBeBounded() {
 		double total = 0;
-		for (int j = 0; j < this.points.get(0).length; j++) {
-			total += this.points.get(0)[j];
+		for (int j = 0; j < points[0].length; j++) {
+			total +=  points[0][j];
 		}
-		if (total > 0.99 && total < 1.01 && this.points.get(0).length > 1) {
+		if (total > 0.99 && total < 1.01 && points[0].length > 1) {
 			return true;
 		}
 		return false;
@@ -320,18 +339,17 @@ public class KernelDensityFunction implements DensityFunction {
 	/**
 	 * Estimate the bandwidths according to Silverman's rule of thumb.
 	 */
-	private void estimateBandwidths() {
+	private double[] estimateBandwidths() {
 		double[] stds = getStandardDeviations();
-		bandwidths = new double[stds.length];
-		for (int i = 0; i < bandwidths.length; i++) {
-			bandwidths[i] = 1.06 * stds[i]
-					* Math.pow(points.size(), -1 / (4.0 + getDimensionality()));
-			if (bandwidths[i] == 0.0) {
-				bandwidths[i] = 0.05;
+		double[] silverman = new double[stds.length];
+		for (int i = 0; i < silverman.length; i++) {
+			silverman[i] = 1.06 * stds[i]
+					* Math.pow(points.length, -1 / (4.0 + silverman.length));
+			if (silverman[i] == 0.0) {
+				silverman[i] = 0.05;
 			}
 		}
-		shortbandwidths = Arrays.stream(bandwidths)
-				.map(b -> b / Math.pow(bandwidths.length, 3)).toArray();
+		return silverman;
 	}
 
 	/**
@@ -348,15 +366,5 @@ public class KernelDensityFunction implements DensityFunction {
 		return gaussian.generateXML(doc);
 	}
 
-	/**
-	 * Multiplies the bandwidth of the KDE by a specific factor
-	 * 
-	 * @param factor the factor
-	 */
-	public void multiplyBandwidth(double factor) {
-		for (int i = 0; i < bandwidths.length; i++) {
-			bandwidths[i] = bandwidths[i] * factor;
-		}
-	}
 
 }

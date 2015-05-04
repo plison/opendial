@@ -44,7 +44,7 @@ public class ValueFactory {
 	public static Logger log = new Logger("ValueFactory", Logger.Level.DEBUG);
 
 	// none value (no need to recreate one everytime)
-	static NoneVal noneValue = new NoneVal();
+	static final NoneVal noneValue = new NoneVal();
 
 	// pattern to find a double value
 	public static Pattern doublePattern = Pattern

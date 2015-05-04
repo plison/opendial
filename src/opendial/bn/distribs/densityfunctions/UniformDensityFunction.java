@@ -50,13 +50,13 @@ public class UniformDensityFunction implements DensityFunction {
 			Logger.Level.NORMAL);
 
 	// minimum threshold
-	double minimum;
+	final double minimum;
 
 	// maximum threshold
-	double maximum;
+	final double maximum;
 
 	// sampler
-	Random sampler;
+	static final Random sampler = new Random();
 
 	/**
 	 * Creates a new uniform density function with the given minimum and maximum
@@ -68,7 +68,6 @@ public class UniformDensityFunction implements DensityFunction {
 	public UniformDensityFunction(double minimum, double maximum) {
 		this.minimum = minimum;
 		this.maximum = maximum;
-		sampler = new Random();
 	}
 
 	/**
@@ -195,7 +194,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 * @return 1.
 	 */
 	@Override
-	public int getDimensionality() {
+	public int getDimensions() {
 		return 1;
 	}
 

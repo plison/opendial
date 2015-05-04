@@ -52,20 +52,18 @@ public class GaussianDensityFunction implements DensityFunction {
 			Logger.Level.DEBUG);
 
 	// the mean of the Gaussian
-	double[] mean;
+	final double[] mean;
 
 	// the variance of the Gaussian
 	// NB: we assume a diagonal covariance
-	double[] variance;
+	final double[] variance;
 
 	// the standard deviation of the Gaussian
-	double[] stdDev;
+	final double[] stdDev;
 
 	// sampler object
-	Random sampler;
+	static final Random sampler = new Random();
 
-	// internal objects for sampling the Gaussian
-	private double[] spare;
 
 	/**
 	 * Creates a new density function with the given mean and variance vector.
@@ -88,7 +86,6 @@ public class GaussianDensityFunction implements DensityFunction {
 			stdDev[i] = Math.sqrt(variance[i]);
 		}
 		this.variance = variance;
-		sampler = new Random();
 	}
 
 	/**
@@ -104,37 +101,35 @@ public class GaussianDensityFunction implements DensityFunction {
 		if (variance < 0) {
 			log.warning("variance should not be negative, but is : " + variance);
 		}
-		sampler = new Random();
 	}
 
-	public GaussianDensityFunction(List<double[]> samples) {
-		if (samples.isEmpty()) {
+	public GaussianDensityFunction(double[][] samples) {
+		if (samples.length == 0) {
 			log.warning("no samples were provided for the Gaussian");
-			samples = Arrays.asList(new double[] { 0.0 });
+			samples = new double[][] { {0.0} };
 		}
 
-		this.mean = new double[samples.get(0).length];
-		this.variance = new double[samples.get(0).length];
+		this.mean = new double[samples[0].length];
+		this.variance = new double[samples[0].length];
 		for (int i = 0; i < mean.length; i++) {
 			mean[i] = 0.0;
 			variance[i] = 0.0;
 		}
 		for (double[] sample : samples) {
 			for (int i = 0; i < sample.length; i++) {
-				mean[i] += sample[i] / samples.size();
+				mean[i] += sample[i] / samples.length;
 			}
 		}
 		for (double[] sample : samples) {
 			for (int i = 0; i < sample.length; i++) {
 				variance[i] += Math.pow(sample[i] - mean[i], 2)
-						/ samples.size();
+						/ samples.length;
 			}
 		}
 		stdDev = new double[variance.length];
 		for (int i = 0; i < variance.length; i++) {
 			stdDev[i] = Math.sqrt(variance[i]);
 		}
-		sampler = new Random();
 	}
 
 	/**
@@ -161,28 +156,12 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] sample() {
-		if (spare != null) {
-			double[] result = new double[spare.length];
-			for (int i = 0; i < spare.length; i++) {
-				result[i] = spare[i] * stdDev[i] + mean[i];
-			}
-			return result;
-		} else {
-			double[] result = new double[mean.length];
-			double[] spare = new double[mean.length];
-			for (int i = 0; i < mean.length; i++) {
-				double u, v, s;
-				do {
-					u = sampler.nextFloat() * 2 - 1;
-					v = sampler.nextFloat() * 2 - 1;
-					s = u * u + v * v;
-				} while (s >= 1 || s == 0);
-				spare[i] = v * Math.sqrt(-2.0 * Math.log(s) / s);
-				result[i] = mean[i] + stdDev[i] * u
-						* Math.sqrt(-2.0 * Math.log(s) / s);
-			}
-			return result;
+		
+		double[] result = new double[mean.length];
+		for (int i = 0 ; i < mean.length ;i++) {
+			result[i] = (sampler.nextGaussian() * stdDev[i]) + mean[i];
 		}
+		return result;
 	}
 
 	/**
@@ -300,7 +279,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public int getDimensionality() {
+	public int getDimensions() {
 		return mean.length;
 	}
 

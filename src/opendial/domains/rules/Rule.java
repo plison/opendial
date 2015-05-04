@@ -24,6 +24,7 @@
 package opendial.domains.rules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +66,7 @@ public class Rule {
 	RuleType ruleType;
 
 	// cache with the outputs for a given assignment
+	public static final int MAX_CACHE_SIZE = 500;
 	Map<Assignment, RuleOutput> cache;
 
 	// ===================================
@@ -83,6 +85,7 @@ public class Rule {
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();
 		cache = new HashMap<Assignment, RuleOutput>(10);
+		cache = Collections.synchronizedMap(cache);
 	}
 
 	/**
@@ -182,7 +185,7 @@ public class Rule {
 
 		if (cache != null) {
 			cache.put(input, output);
-			if (cache != null && cache.size() > 100) {
+			if (cache != null && cache.size() > MAX_CACHE_SIZE) {
 				cache = null;
 			}
 		}

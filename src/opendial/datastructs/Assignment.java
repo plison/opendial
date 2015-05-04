@@ -747,15 +747,13 @@ public class Assignment {
 	 */
 	public boolean consistentWith(Assignment a) {
 		for (String evidenceVar : a.getVariables()) {
-			if (map.containsKey(evidenceVar)) {
-				if (map.get(evidenceVar) == null) {
-					if (a.getValue(evidenceVar) != null) {
-						return false;
-					}
-				} else if (!map.get(evidenceVar)
-						.equals(a.getValue(evidenceVar))) {
-					return false;
-				}
+			Value v2 = map.get(evidenceVar);
+			if (v2 == null) {
+				continue;
+			}
+			Value v1 = a.getValue(evidenceVar);
+			if (!v1.equals(v2)) {
+				return false;
 			}
 		}
 		return true;

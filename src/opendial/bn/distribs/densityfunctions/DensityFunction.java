@@ -79,7 +79,7 @@ public interface DensityFunction {
 	 * 
 	 * @return the dimensionality.
 	 */
-	public int getDimensionality();
+	public int getDimensions();
 
 	/**
 	 * Returns a discretised version of the density function. The granularity of
