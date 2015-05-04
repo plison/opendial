@@ -31,9 +31,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import opendial.arch.Logger;
-import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.utils.CombinatoricsUtils;
+import opendial.datastructs.ValueRange;
 import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 
@@ -206,10 +205,8 @@ public class UtilityTable implements UtilityFunction {
 	 */
 	@Override
 	public boolean isWellFormed() {
-		Map<String, Set<Value>> possiblePairs = CombinatoricsUtils
-				.extractPossiblePairs(table.keySet());
-		Set<Assignment> possibleAssignments = CombinatoricsUtils
-				.getAllCombinations(possiblePairs);
+		ValueRange possiblePairs = new ValueRange(table.keySet());
+		Set<Assignment> possibleAssignments = possiblePairs.linearise();
 
 		for (Assignment assignment : possibleAssignments) {
 			if (!table.containsKey(assignment)) {

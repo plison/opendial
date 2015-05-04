@@ -213,7 +213,7 @@ public class DistributionViewer extends JDialog {
 					"Density", // range axis label
 					new XYSeriesCollection(serie), // data
 					PlotOrientation.VERTICAL, // orientation
-					(distrib.getFunction().getDimensionality() > 1), // include
+					(distrib.getFunction().getDimensions() > 1), // include
 																		// legend
 					true, // tooltips?
 					false); // URLs?
@@ -234,7 +234,7 @@ public class DistributionViewer extends JDialog {
 
 		List<XYSeries> series = new ArrayList<XYSeries>();
 
-		for (int i = 0; i < function.getDimensionality(); i++) {
+		for (int i = 0; i < function.getDimensions(); i++) {
 			series.add(new XYSeries("dimension " + i));
 		}
 

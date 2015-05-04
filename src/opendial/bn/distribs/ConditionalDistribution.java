@@ -26,7 +26,6 @@ package opendial.bn.distribs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +35,7 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.utils.CombinatoricsUtils;
+import opendial.datastructs.ValueRange;
 
 /**
  * Conditional probability distribution represented as a probability table. The
@@ -174,9 +173,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	@Override
 	public Value sample(Assignment condition) throws DialException {
 
-		Assignment trimmed = (conditionalVars.containsAll(condition
-				.getVariables())) ? condition : condition
-				.getTrimmed(conditionalVars);
+		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).sample();
@@ -205,7 +202,16 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
-		} else {
+		} 
+		else if (condition.isDefault()) {
+			log.warning("void condition cannot be found in " + toString());
+			double total = 0.0;
+			for (Assignment c : table.keySet()) {
+				total += table.get(c).getProb(head);
+			}
+			return total;
+		}
+		else {
 			log.warning("could not find the corresponding condition for "
 					+ condition + ")");
 			return 0.0;
@@ -342,19 +348,11 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	@Override
 	public boolean isWellFormed() {
 
-		// checks that all possible conditional assignments are covered in the
-		// table
-		Map<String, Set<Value>> possibleCondPairs = CombinatoricsUtils
-				.extractPossiblePairs(table.keySet());
+		// checks that all possible assignments are covered in the table
+		ValueRange possibleCondPairs = new ValueRange(table.keySet());
 
-		if (CombinatoricsUtils.getNbCombinations(possibleCondPairs) < 100) {
-			// Note that here, we only check on the possible assignments in the
-			// distribution itself
-			// but a better way to do it would be to have it on the actual
-			// values given by the input nodes
-			// but would require the distribution to have some access to it.
-			Set<Assignment> possibleCondAssignments = CombinatoricsUtils
-					.getAllCombinations(possibleCondPairs);
+		if (possibleCondPairs.getNbCombinations() < 100) {
+			Set<Assignment> possibleCondAssignments = possibleCondPairs.linearise();
 			possibleCondAssignments.remove(new Assignment());
 			if (possibleCondAssignments.size() != table.keySet().size()
 					&& possibleCondAssignments.size() > 1) {

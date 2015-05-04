@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,20 @@ public class ValueRange {
 	public ValueRange() {
 		range = new HashMap<String, Set<Value>>();
 	}
+	
+	/**
+	 * Creates a value range out of a set of value assignments
+	 * 
+	 * @param assigns the assignments specifying the possible <variable,value> pairs
+	 */
+	public ValueRange(Set<Assignment> assigns) {
+		this();
+		for (Assignment a : assigns) {
+			addAssign(a);
+		}
+	}
+	
+
 
 	/**
 	 * Constructs a new range that is the union of two existing ranges
@@ -136,6 +151,20 @@ public class ValueRange {
 		}
 		return CombinatoricsUtils.getAllCombinations(range);
 	}
+	
+	
+	/**
+	 * Returns the estimated number (higher bound) of combinations for the value
+	 * range.
+	 * 
+	 * @return the higher bound on the number of possible combinations
+	 */
+	public int getNbCombinations() {
+		OptionalInt estimation = range.values().stream()
+				.mapToInt(set -> set.size()).reduce((a, b) -> a * b);
+		return (estimation.isPresent()) ? estimation.getAsInt() : 1;
+	}
+
 
 	/**
 	 * Returns the set of variables with a non-empty range of values

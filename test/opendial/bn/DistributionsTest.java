@@ -26,10 +26,7 @@ package opendial.bn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Logger.Level;
@@ -164,11 +161,11 @@ public class DistributionsTest {
 		assertEquals(distrib.getFunction().getMean()[0], 1.0, 0.01);
 		assertEquals(distrib.getFunction().getVariance()[0], 3.0, 0.01);
 
-		List<double[]> samples = new ArrayList<double[]>();
+		double[][] samples = new double[20000][];
 		for (int i = 0; i < 20000; i++) {
 			double[] val = new double[] { ((DoubleVal) distrib.sample())
 					.getDouble() };
-			samples.add(val);
+			samples[i] = val;
 		}
 		GaussianDensityFunction estimated = new GaussianDensityFunction(samples);
 		assertEquals(estimated.getMean()[0],

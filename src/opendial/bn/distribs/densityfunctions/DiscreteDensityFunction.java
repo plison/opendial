@@ -79,7 +79,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 		this.minDistance = MathUtils.getMinEuclidianDistance(points.keySet());
 
 		// and define the volume with a radius that is half this distance
-		this.volume = MathUtils.getVolume(minDistance / 2, getDimensionality());
+		this.volume = MathUtils.getVolume(minDistance / 2, getDimensions());
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 		}
 		if (closestDist < minDistance / 2) {
 			return points.get(closest)
-					/ MathUtils.getVolume(minDistance / 2, getDimensionality());
+					/ MathUtils.getVolume(minDistance / 2, getDimensions());
 		} else {
 			return 0;
 		}
@@ -188,7 +188,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * Returns the dimensionality of the distribution.
 	 */
 	@Override
-	public int getDimensionality() {
+	public int getDimensions() {
 		return points.keySet().iterator().next().length;
 	}
 
@@ -198,8 +198,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] getMean() {
-		double[] mean = new double[getDimensionality()];
-		for (int i = 0; i < getDimensionality(); i++) {
+		double[] mean = new double[getDimensions()];
+		for (int i = 0; i < getDimensions(); i++) {
 			mean[i] = 0.0;
 			for (double[] point : points.keySet()) {
 				mean[i] += (point[i] * points.get(point));
@@ -215,9 +215,9 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] getVariance() {
-		double[] variance = new double[getDimensionality()];
+		double[] variance = new double[getDimensions()];
 		double[] mean = getMean();
-		for (int i = 0; i < getDimensionality(); i++) {
+		for (int i = 0; i < getDimensions(); i++) {
 			variance[i] = 0.0;
 			for (double[] point : points.keySet()) {
 				variance[i] += Math.pow(point[i] - mean[i], 2)
@@ -233,9 +233,9 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
-		if (x.length != getDimensionality()) {
+		if (x.length != getDimensions()) {
 			throw new DialException("Illegal dimensionality: " + x.length
-					+ "!=" + getDimensionality());
+					+ "!=" + getDimensions());
 		}
 
 		double cdf = points.keySet().stream()

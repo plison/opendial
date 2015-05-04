@@ -29,10 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.bn.values.ArrayVal;
 import opendial.utils.MathUtils;
 
 import org.w3c.dom.Attr;
@@ -52,13 +50,13 @@ public class DirichletDensityFunction implements DensityFunction {
 			Logger.Level.DEBUG);
 
 	// hyper-parameters
-	double[] alphas;
+	final double[] alphas;
 
 	// normalisation factor
-	double C;
+	final double C;
 
 	// random number generator
-	Random rng = new Random(Calendar.getInstance().getTimeInMillis()
+	static final Random rng = new Random(Calendar.getInstance().getTimeInMillis()
 			+ Thread.currentThread().getId());
 
 	/**
@@ -91,18 +89,6 @@ public class DirichletDensityFunction implements DensityFunction {
 	public double getDensity(double... x) {
 		if (x.length == alphas.length) {
 
-			double sum = 0;
-			for (int i = 0; i < x.length; i++) {
-				if (x[i] < 0 || x[i] > 1) {
-					log.warning(new ArrayVal(x)
-							+ " does not satisfy the constraints >= 0 and <= 1");
-				}
-				sum += x[i];
-			}
-			if (sum < 0.98 || sum > 1.02) {
-				log.warning(new ArrayVal(x) + " does not sum to 1.0");
-			}
-
 			double result = C;
 			for (int i = 0; i < x.length; i++) {
 				result *= Math.pow(x[i], alphas[i] - 1);
@@ -119,7 +105,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * @return the dimensionality
 	 */
 	@Override
-	public int getDimensionality() {
+	public int getDimensions() {
 		return alphas.length;
 	}
 
@@ -131,8 +117,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	@Override
 	public double[] sample() {
 
-		double sum = 0;
 		double[] sample = new double[alphas.length];
+		double sum = 0;
 		for (int i = 0; i < alphas.length; i++) {
 			sample[i] = sampleFromGamma(alphas[i], 1);
 			sum += sample[i];
@@ -296,7 +282,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public int hashCode() {
-		return -32 + alphas.hashCode();
+		return -32 + Arrays.asList(alphas).hashCode();
 	}
 
 	private double getAlphaSum() {
