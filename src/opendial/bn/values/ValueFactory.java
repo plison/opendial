@@ -56,7 +56,7 @@ public class ValueFactory {
 					+ "([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
 	static Pattern setPattern = Pattern.compile("[\\w\\-_\\.\\^\\=\\s]*"
-			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s]+[\\]\\)])?",
+			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s\\(]+\\)*[\\]\\)])?",
 			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
 
 	/**

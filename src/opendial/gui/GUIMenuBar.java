@@ -58,6 +58,7 @@ import opendial.arch.Settings;
 import opendial.arch.Settings.Recording;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
+import opendial.modules.core.AudioModule;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
@@ -212,7 +213,12 @@ public class GUIMenuBar extends JMenuBar {
 			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(
 					mixer.getName());
 			mixerButton
-					.addActionListener(e -> frame.getSystem().getSettings().inputMixer = mixer);
+					.addActionListener(e -> { 
+						frame.getSystem().getSettings().inputMixer = mixer;
+						if (frame.getSystem().getModule(AudioModule.class) != null) {
+							frame.getSystem().getModule(AudioModule.class).start();
+						}
+					});
 			inputGroup.add(mixerButton);
 			inputMenu.add(mixerButton);
 			if (mixer.equals(frame.getSystem().getSettings().inputMixer)) {

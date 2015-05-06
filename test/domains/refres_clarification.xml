@@ -42,6 +42,14 @@
 				<set var="a_m" value="AskConfirm({X})" />
 			</effect>
 		</case>
+		<case>
+			<condition>
+				<if var="matches(ref_main)" relation="contains" value="{X}" />
+			</condition>
+			<effect util="0.5">
+				<set var="a_m" value="AskConfirm({X})" />
+			</effect>
+		</case>
 	</rule>
 
 

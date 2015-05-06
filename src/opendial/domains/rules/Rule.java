@@ -172,7 +172,6 @@ public class Rule {
 
 		for (Assignment g : groundings.getAlternatives()) {
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
-
 			RuleCase match = cases.stream()
 					.filter(c -> c.getCondition().isSatisfiedBy(full))
 					.map(c -> c.ground(full)).findFirst()

@@ -37,8 +37,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.SpeechInput;
-import opendial.datastructs.SpeechOutput;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
@@ -124,9 +124,7 @@ public class ATTSpeech implements Module {
 			log.info("AT&T Speech API will be used without grammar");
 		}
 
-		if (system.getModule(GUIFrame.class) != null) {
-			system.getModule(GUIFrame.class).enableSpeech(true);
-		}
+		system.enableSpeech(true);
 	}
 
 	/**
@@ -139,16 +137,6 @@ public class ATTSpeech implements Module {
 		if (gui == null) {
 			throw new DialException(
 					"AT&T connection requires access to the GUI");
-		}
-
-		// quick hack to ensure that the audio capture works
-		try {
-			SpeechInput firstStream = new SpeechInput(
-					system.getSettings().inputMixer);
-			Thread.sleep(100);
-			firstStream.close();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -180,14 +168,9 @@ public class ATTSpeech implements Module {
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar)
 				&& !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
-			if (speechVal instanceof SpeechInput) {
+			if (speechVal instanceof SpeechData) {
 				new Thread(
-						() -> {
-							Map<String, Double> table = recognise((SpeechInput) speechVal);
-							if (!table.isEmpty()) {
-								system.addUserInput(table);
-							}
-						}).start();
+						() -> recognise((SpeechData) speechVal)).start();
 			}
 		} else if (updatedVars.contains(outputVar)
 				&& state.hasChanceNode(outputVar) && !paused) {
@@ -207,9 +190,8 @@ public class ATTSpeech implements Module {
 	 * @param grammar the recognition grammar, which can be null
 	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String, Double> recognise(SpeechInput stream) {
+	private void recognise(SpeechData stream) {
 
-		Map<String, Double> table = new HashMap<String, Double>();
 		log.info("calling AT&T server for recognition...\t");
 		try {
 
@@ -220,6 +202,7 @@ public class ATTSpeech implements Module {
 			JSONObject recognition = object.getJSONObject("Recognition");
 			final String jStatus = recognition.getString("Status");
 
+			Map<String, Double> table = new HashMap<String, Double>();
 			if (jStatus.equals("OK")) {
 				JSONArray nBest = recognition.getJSONArray("NBest");
 				for (int i = 0; i < nBest.length(); ++i) {
@@ -233,10 +216,14 @@ public class ATTSpeech implements Module {
 				}
 			}
 
+			if (!table.isEmpty()) {
+				system.addUserInput(table);
+			}
+			
 		} catch (Exception re) {
 			re.printStackTrace();
 		}
-		return table;
+		
 	}
 
 	/**
@@ -251,9 +238,8 @@ public class ATTSpeech implements Module {
 			APIResponse apiResponse = ttsClient.httpPost(utterance);
 			int statusCode = apiResponse.getStatusCode();
 			if (statusCode == 200 || statusCode == 201) {
-				SpeechOutput output = new SpeechOutput(
-						apiResponse.getResponseBody());
-				output.play(system.getSettings().outputMixer);
+				SpeechData output = new SpeechData(apiResponse.getResponseBody());
+				system.addContent(new Assignment(system.getSettings().systemSpeech, output));
 
 			} else if (statusCode == 401) {
 				throw new IOException("Unauthorized request.");

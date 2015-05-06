@@ -600,6 +600,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public CategoricalTable copy() {
 		CategoricalTable tableCopy = new CategoricalTable(variable);
+		
 		for (Value head : table.keySet()) {
 			tableCopy.addRow(head.copy(), table.get(head));
 		}

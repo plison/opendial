@@ -177,7 +177,7 @@ public class RuleCase {
 		Set<Template> inputVariables = new HashSet<Template>();
 		inputVariables.addAll(condition.getInputVariables());
 		for (Effect effect : effects.keySet()) {
-			for (String inputVariable : effect.getAdditionalInputVariables()) {
+			for (String inputVariable : effect.getValueSlots()) {
 				inputVariables.add(new Template(inputVariable));
 			}
 		}
@@ -215,7 +215,7 @@ public class RuleCase {
 					RuleGrounding effectGrounding = co.getGroundings(input2);
 					grounding.add(effectGrounding);
 				} else {
-					Set<String> slots = e.getAdditionalInputVariables();
+					Set<String> slots = e.getValueSlots();
 					slots.removeAll(input2.getVariables());
 					grounding.add(Assignment.createOneValue(slots,
 							ValueFactory.create("")));

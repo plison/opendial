@@ -72,6 +72,9 @@ public class Settings {
 	/** Variable label for the user speech signal */
 	public String userSpeech;
 
+	/** Variable label for the system speech signal */
+	public String systemSpeech;
+	
 	/** Variable label for the user input */
 	public String userInput;
 
@@ -115,6 +118,7 @@ public class Settings {
 
 	/** whether the role of user and system are inverted */
 	public boolean invertedRole = false;
+
 
 	/**
 	 * Creates new settings with the default values
@@ -168,9 +172,13 @@ public class Settings {
 				showGUI = Boolean.parseBoolean(mapping.getProperty(key));
 			} else if (key.equalsIgnoreCase("user")) {
 				userInput = mapping.getProperty(key);
-			} else if (key.equalsIgnoreCase("speech")) {
+			} else if (key.equalsIgnoreCase("speech_user")) {
 				userSpeech = mapping.getProperty(key);
-			} else if (key.equalsIgnoreCase("system")) {
+			}
+			else if (key.equalsIgnoreCase("speech_system")) {
+				systemSpeech = mapping.getProperty(key);
+			}
+			else if (key.equalsIgnoreCase("system")) {
 				systemOutput = mapping.getProperty(key);
 			} else if (key.equalsIgnoreCase("monitor")) {
 				String[] split = mapping.getProperty(key).split(",");
@@ -252,7 +260,8 @@ public class Settings {
 		mapping.setProperty("horizon", "" + horizon);
 		mapping.setProperty("discount", "" + discountFactor);
 		mapping.setProperty("gui", "" + showGUI);
-		mapping.setProperty("speech", "" + userSpeech);
+		mapping.setProperty("speech_user", "" + userSpeech);
+		mapping.setProperty("speech_system", "" + systemSpeech);
 		mapping.setProperty("user", "" + userInput);
 		mapping.setProperty("system", "" + systemOutput);
 		mapping.setProperty("inputmixer", "" + inputMixer);

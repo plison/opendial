@@ -194,11 +194,12 @@ public class XMLRuleReader {
 				} else if (operatorStr.toLowerCase().trim().equals("or")) {
 					return new ComplexCondition(subconditions,
 							BinaryOperator.OR);
-				} else if (operatorStr.toLowerCase().trim().equals("neg")) {
+				} else if (operatorStr.toLowerCase().trim().equals("neg") 
+						|| operatorStr.toLowerCase().trim().equals("not")) {
 					Condition negated = (subconditions.size() == 1) ? subconditions
 							.get(0) : new ComplexCondition(subconditions,
-							BinaryOperator.AND);
-					return new NegatedCondition(negated);
+									BinaryOperator.AND);
+							return new NegatedCondition(negated);
 				}
 			}
 			return (subconditions.size() == 1) ? subconditions.get(0)
@@ -259,7 +260,7 @@ public class XMLRuleReader {
 			return condition;
 		}
 
-		// extracting a conjunction, disjunction, or negated conjunction
+		// extracting a conjunction or disjunction
 		else if (node.getNodeName().equals("or")
 				|| node.getNodeName().equals("and")) {
 
@@ -275,6 +276,25 @@ public class XMLRuleReader {
 				}
 			}
 			return new ComplexCondition(conditions, operator);
+		}
+		// extracting a negated conjunction
+		else if (node.getNodeName().equals("neg")
+				|| node.getNodeName().equals("not")) {
+
+			List<Condition> conditions = new ArrayList<Condition>();
+			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+				Node subNode = node.getChildNodes().item(i);
+				if (!subNode.getNodeName().equals("#text")
+						&& !subNode.getNodeName().equals("#comment")) {
+					conditions.add(getSubcondition(subNode));
+				}
+			}
+			if (conditions.size() == 1) {
+				return new NegatedCondition(conditions.get(0));
+			}
+			else if (conditions.size() > 1) {
+				return new NegatedCondition(new ComplexCondition(conditions, BinaryOperator.AND));
+			}
 		}
 		return new VoidCondition();
 	}
@@ -303,7 +323,6 @@ public class XMLRuleReader {
 			} else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
 			}
-
 			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.IN;
 			} else if (relationStr.toLowerCase().trim().equals("length")) {
@@ -379,8 +398,8 @@ public class XMLRuleReader {
 
 		boolean add = node.getNodeName().equalsIgnoreCase("add")
 				|| (node.getAttributes().getNamedItem("add") != null && Boolean
-						.parseBoolean(node.getAttributes().getNamedItem("add")
-								.getNodeValue()));
+				.parseBoolean(node.getAttributes().getNamedItem("add")
+						.getNodeValue()));
 
 		boolean negated = node.getAttributes().getNamedItem("relation") != null
 				&& getRelation(node) == Relation.UNEQUAL;
