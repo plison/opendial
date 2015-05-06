@@ -71,7 +71,8 @@ public class Template {
 	final Map<String, Integer> slots;
 
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
-
+	final static Pattern trailPattern = Pattern.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
+	
 	// ===================================
 	// TEMPLATE CONSTRUCTION
 	// ===================================
@@ -160,7 +161,8 @@ public class Template {
 
 			Assignment filledSlots = new Assignment();
 			for (String slot : slots.keySet()) {
-				String filledValue = matcher.group(slots.get(slot) + 1).trim();
+				String filledValue = matcher.group(slots.get(slot) + 1);
+				filledValue = trailPattern.matcher(filledValue).replaceAll("");
 				filledSlots.addPair(slot, filledValue);
 			}
 
@@ -218,6 +220,7 @@ public class Template {
 				if (filledValue.indexOf(')') < filledValue.indexOf('(')) {
 					continue;
 				}
+				filledValue = trailPattern.matcher(filledValue).replaceAll("");
 				filledSlots.addPair(slot, filledValue);
 			}
 			MatchResult result = new MatchResult(start, end, filledSlots);

@@ -230,7 +230,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
-		} else {
+		} 
+		else {
 			throw new DialException("could not find the corresponding "
 					+ "condition for " + condition + " in " + toString());
 		}

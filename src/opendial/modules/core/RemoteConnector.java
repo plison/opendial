@@ -23,6 +23,7 @@
 
 package opendial.modules.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,8 +40,8 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
-import opendial.datastructs.SpeechInput;
-import opendial.datastructs.SpeechOutput;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.readers.XMLStateReader;
@@ -182,8 +183,9 @@ public class RemoteConnector implements Module {
 			if (updatedVars.contains(speechVar)
 					&& system.getState().hasChanceNode(speechVar)) {
 				Value val = system.getContent(speechVar).getBest();
-				if (val instanceof SpeechInput) {
-					forwardContent(MessageType.STREAM, (SpeechInput) val);
+				if (val instanceof SpeechData) {
+					forwardContent(MessageType.STREAM, 
+							new ByteArrayInputStream(((SpeechData)val).toByteArray()));
 				}
 			}
 		} catch (DialException e) {
@@ -311,8 +313,8 @@ public class RemoteConnector implements Module {
 					String content = new String(message);
 					log.info("received message: " + content);
 				} else if (type == MessageType.STREAM) {
-					SpeechOutput output = new SpeechOutput(message);
-					output.play(system.getSettings().outputMixer);
+					SpeechData output = new SpeechData(message);
+					system.addContent(new Assignment(system.getSettings().systemSpeech, output));
 				} else if (type == MessageType.CLOSE) {
 					String content = new String(message);
 					log.info("Disconnecting from " + content);

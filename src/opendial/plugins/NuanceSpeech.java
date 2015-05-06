@@ -24,27 +24,27 @@
 package opendial.plugins;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-
+import javax.sound.sampled.AudioFormat;
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.SpeechInput;
-import opendial.datastructs.SpeechOutput;
+import opendial.datastructs.Assignment;
+import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
+import opendial.utils.AudioUtils;
 import opendial.utils.InferenceUtils;
 
 import org.apache.http.HttpEntity;
@@ -87,15 +87,6 @@ public class NuanceSpeech implements Module {
 	/** whether the system is paused or active */
 	boolean paused = true;
 
-	/** file used to save the speech input (leave empty to avoid recording) */
-	public static String SAVE_SPEECH = "";
-
-	/** stack of utterances to synthesise */
-	Stack<String> synthesisQueue;
-
-	/** speech output currently playing */
-	SpeechOutput currentOutput;
-
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
@@ -113,10 +104,7 @@ public class NuanceSpeech implements Module {
 
 		buildClients();
 
-		if (system.getModule(GUIFrame.class) != null) {
-			system.getModule(GUIFrame.class).enableSpeech(true);
-		}
-		synthesisQueue = new Stack<String>();
+		system.enableSpeech(true);
 	}
 
 	/**
@@ -129,16 +117,6 @@ public class NuanceSpeech implements Module {
 		if (gui == null) {
 			throw new DialException(
 					"Nuance connection requires access to the GUI");
-		}
-
-		// quick hack to ensure that the audio capture works
-		try {
-			SpeechInput firstStream = new SpeechInput(
-					system.getSettings().inputMixer);
-			Thread.sleep(100);
-			firstStream.close();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -170,14 +148,8 @@ public class NuanceSpeech implements Module {
 		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar)
 				&& !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
-			if (speechVal instanceof SpeechInput) {
-				Thread t = new Thread(
-						() -> {
-							Map<String, Double> table = recognise((SpeechInput) speechVal);
-							if (!table.isEmpty()) {
-								system.addUserInput(table);
-							}
-						});
+			if (speechVal instanceof SpeechData) {
+				Thread t = new Thread(() -> recognise((SpeechData) speechVal));
 				t.start();
 
 			}
@@ -185,42 +157,27 @@ public class NuanceSpeech implements Module {
 				&& state.hasChanceNode(outputVar) && !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
-				Thread t = new Thread(() -> {
-					synthesise(utteranceVal.toString());
-				});
-				t.start();
+				SpeechData output = new SpeechData(new AudioFormat(16000,16,1,true,false));			
+				system.addContent(new Assignment(system.getSettings().systemSpeech, output));
+				synthesise(utteranceVal.toString(), output);
 			}
 		}
 	}
 
 	/**
 	 * Processes the audio data contained in tempFile (based on the recognition
-	 * grammar whenever provided) and returns the corresponding N-Best list of
-	 * results.
+	 * grammar whenever provided) and updates the dialogue state with the
+	 * new user inputs.
 	 * 
 	 * @param stream the speech stream containing the audio data
-	 * @return the corresponding N-Best list of recognition hypotheses
 	 */
-	private Map<String, Double> recognise(SpeechInput stream) {
-
-		Map<String, Double> table = new HashMap<String, Double>();
-		if (currentOutput != null) {
-			currentOutput.stop();
-		}
-		synthesisQueue.clear();
+	private void recognise(SpeechData stream) {
+		
 		int sampleRate = (int) stream.getFormat().getSampleRate();
 		log.info("calling Nuance server for recognition... " + "(sample rate: "
 				+ sampleRate + " Hz.)");
-		stream.setSilence(50);
 		try {
-			// stream.setSilence(200);
-			// wait until the stream is closed to save the audio data
-			if (SAVE_SPEECH != null && SAVE_SPEECH.length() > 0) {
-				while (!stream.isClosed()) {
-					Thread.sleep(50);
-				}
-				stream.generateFile(new File(SAVE_SPEECH));
-			}
+				
 			HttpPost httppost = new HttpPost(asrURI);
 			String format = "audio/x-wav;codec=pcm;bit="
 					+ stream.getFormat().getFrameSize() * 8 + ";rate="
@@ -242,35 +199,41 @@ public class NuanceSpeech implements Module {
 			} else {
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(resEntity.getContent()));
+				
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
 				while ((sentence = reader.readLine()) != null) {
 					lines.put(sentence, 1.0 / (lines.size() + 1));
 				}
-				table.putAll(InferenceUtils.normalise(lines));
-				log.debug("recognition results: " + table);
+				lines = InferenceUtils.normalise(lines);
+				for (String s : new ArrayList<String>(lines.keySet())) {
+					lines.put(s, ((int)(lines.get(s)*100))/100.0);
+				}
+				
+				log.debug("recognition results: " + lines);
 				reader.close();
+				if (!lines.isEmpty()) {
+					system.addUserInput(lines);
+				}
 			}
 			httppost.releaseConnection();
 		} catch (Exception e) {
 			log.warning("could not extract ASR results: " + e);
-		}
-		return table;
+		}	
 	}
 
+	
 	/**
-	 * Performs remote speech synthesis with the given utterance, and plays it
-	 * on the standard audio output.
+	 * Synthesises the provided utterance and adds the resulting stream of
+	 * audio data to the SpeechData object.
 	 * 
-	 * @param utterance the utterance to synthesis
+	 * @param utterance the utterance to synthesise
+	 * @param output the speech data in which to write the generated audio
 	 */
-	public void synthesise(String utterance) {
+	private void synthesise(String utterance, SpeechData output) {
 
 		try {
-			log.info("calling Nuance server for synthesis...\t");
-			String stampedUtterance = utterance + "-"
-					+ System.currentTimeMillis();
-			synthesisQueue.add(stampedUtterance);
+			log.info("calling Nuance server for synthesis of " + utterance);
 
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type", "text/plain");
@@ -289,19 +252,11 @@ public class NuanceSpeech implements Module {
 				return;
 			}
 
-			SpeechOutput output = new SpeechOutput(resEntity.getContent());
+			output.write(AudioUtils.readStream(resEntity.getContent()));
 			httppost.releaseConnection();
-
-			while (synthesisQueue.indexOf(stampedUtterance) > 0) {
-				Thread.sleep(50);
-			}
-			if (synthesisQueue.isEmpty()) {
-				return;
-			}
-			currentOutput = output;
-			output.play(system.getSettings().outputMixer);
-			output.waitUntilPlayed();
-			synthesisQueue.remove(stampedUtterance);
+			output.setAsFinal();
+			log.info("... Speech synthesis completed");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -24,7 +24,11 @@
 package opendial.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -63,6 +68,7 @@ public class AudioUtils {
 
 	/** Audio format for the speech synthesis */
 	static AudioFormat OUT = new AudioFormat(16000.0F, 16, 1, true, false);
+
 
 	/**
 	 * Selects an target data line for a particular audio mixer.
@@ -120,9 +126,9 @@ public class AudioUtils {
 			for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 				if (!mixers.contains(mixerInfos[i])
 						&& AudioSystem.getMixer(mixerInfos[i])
-								.isLineSupported(
-										new DataLine.Info(TargetDataLine.class,
-												format))) {
+						.isLineSupported(
+								new DataLine.Info(TargetDataLine.class,
+										format))) {
 					mixers.add(mixerInfos[i]);
 				}
 			}
@@ -194,6 +200,57 @@ public class AudioUtils {
 					+ e);
 		}
 	}
+	
+
+	/**
+	 * Reads the input stream and returns the corresponding array of bytes
+	 * 
+	 * @param stream the initial stream
+	 * @return the array of bytes from the stream
+	 */
+	public static byte[] readStream(InputStream stream) {
+		ByteArrayOutputStream rawBuffer = new ByteArrayOutputStream();
+		try {
+			int nRead;
+			byte[] data = new byte[1024 * 16];
+			while ((nRead = stream.read(data, 0, data.length)) != -1) {
+				rawBuffer.write(data, 0, nRead);
+			}
+			rawBuffer.flush();
+			rawBuffer.close();
+		} catch (IOException e) {
+			log.warning("Error reading audio stream: " + e);
+		}
+		return rawBuffer.toByteArray();
+	}
+	
+	/**
+	 * Generates an audio file from the stream. The file must be a WAV file.
+	 * 
+	 * @param outputFile the file in which to write the audio data
+	 * @throws DialException if the audio could not be written onto the file
+	 */
+	public static void generateFile(byte[] data, File outputFile) throws DialException {
+		try {
+			AudioInputStream audioStream = getAudioStream(data);
+			if (outputFile.getName().endsWith("wav")) {
+				int nb = AudioSystem.write(audioStream,
+						AudioFileFormat.Type.WAVE, new FileOutputStream(
+								outputFile));
+				log.debug("WAV file written to "
+						+ outputFile.getCanonicalPath() + " (" + (nb / 1000)
+						+ " kB)");
+			} else {
+				throw new DialException("Unsupported encoding " + outputFile);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DialException("could not generate file: " + e);
+		}
+	}
+	
+
+
 
 	/**
 	 * Adds a WAV header to the byte array
@@ -222,5 +279,48 @@ public class AudioUtils {
 		bufferWithHeader.put(bytes);
 		return bufferWithHeader.array();
 	}
+
+
+	/**
+	 * Calculate the RMS of the audio data
+	 * 
+	 * @param audioData the audio data
+	 * @return the corresponding RMS value
+	 */
+	public static double getRMS(byte[] audioData, AudioFormat format) {
+		int[] samples = convertAudio(audioData,format);
+		long sumOfSquares = Arrays.stream(samples).mapToLong(i -> i*i).sum();
+		double rootMeanSquare = Math.sqrt(sumOfSquares / samples.length);
+		return rootMeanSquare;
+	}
+
+
+	private static int[] convertAudio(byte[] audioData, AudioFormat format) {
+
+		if (format.getFrameSize() == 2) {
+			int[] samples = new int[audioData.length / 2];
+			for (int i = 0 ; i < samples.length ; i++) {
+				if (format.isBigEndian()) {
+					samples[i] =((audioData[i*2 + 0] << 8) | (audioData[i*2 + 1] & 0xFF) );
+				}
+				else {
+				samples[i] = (  (audioData[i*2 + 0] & 0xFF) | (audioData[i*2 + 1] << 8) );
+				}
+			}
+			return samples;
+		}
+		else if (format.getFrameSize() == 1) {
+			int[] samples = new int[audioData.length];
+			for (int i = 0 ; i < samples.length ; i++) {
+				samples[i] =  (audioData[i] << 8);
+			}
+			return samples;
+		}
+		else {
+			throw new DialException("unsupported frame size: " + format.getFrameSize());
+		}
+
+	}
+
 
 }

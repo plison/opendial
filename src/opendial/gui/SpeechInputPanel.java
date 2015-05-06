@@ -21,25 +21,26 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.gui.audio;
+package opendial.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
-import opendial.datastructs.Assignment;
-import opendial.datastructs.SpeechInput;
+import opendial.modules.core.AudioModule;
 
 /**
  * Panel employed to capture audio input through a press and hold button,
@@ -54,11 +55,11 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	// logger
 	public static Logger log = new Logger("AudioPanel", Logger.Level.DEBUG);
 
-	// speech recogniser
-	DialogueSystem system;
+	// the audio recorder
+	AudioModule recorder;
 
-	// current speech recording
-	SpeechInput currentRecording;
+	// the current volume
+	int volume = 0;
 
 	// sound level meter
 	SoundLevelMeter slm;
@@ -70,8 +71,8 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	 * @param system the dialogue system (to which the stream is being
 	 *            forwarded)
 	 */
-	public SpeechInputPanel(DialogueSystem system) {
-		this.system = system;
+	public SpeechInputPanel(AudioModule recorder) {
+		this.recorder = recorder;
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		JButton button = new JButton(
@@ -91,7 +92,23 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		slm.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		volumeCont.add(slm, BorderLayout.EAST);
 		container.add(volumeCont, BorderLayout.EAST);
+		final JCheckBox checkbox = new JCheckBox("Voice Activity Detection");
+		checkbox.addActionListener(a -> {
+			recorder.activateVAD(checkbox.isSelected());
+			button.setEnabled(!checkbox.isSelected()); 
+		});
+		container.add(checkbox, BorderLayout.SOUTH);
 		add(container);
+		
+		Thread t = new Thread(() -> {
+			while (true) {			
+				slm.updateVolume(recorder.getVolume());
+				try {Thread.sleep(100);	} 
+				catch (InterruptedException e) {
+				}
+			}
+		});
+		t.start();
 	}
 
 	/**
@@ -102,10 +119,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		try {
-			currentRecording = new SpeechInput(system.getSettings().inputMixer);
-			slm.monitorVolume(currentRecording);
-			system.addContent(new Assignment(system.getSettings().userSpeech,
-					currentRecording));
+			recorder.startRecording();
 		} catch (DialException ex) {
 			log.warning(ex.toString());
 		}
@@ -120,8 +134,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		try {
-			currentRecording.close();
-			system.getState().removeNode(system.getSettings().userSpeech);
+			recorder.stopRecording();
 		} catch (Exception f) {
 			f.printStackTrace();
 		}
@@ -138,4 +151,35 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
+	
+	
+	class SoundLevelMeter extends JPanel {
+		
+		/**
+		 * Updates the volume on the meter
+		 * 
+		 * @param vol the new volume
+		 */
+		private void updateVolume(double vol) {
+			if (volume != vol) {
+			volume = (int) vol;
+			repaint();
+			}
+		}
+
+		/**
+		 * Repaint
+		 *
+		 * @param gg the graphics
+		 */
+		@Override
+		public void paintComponent(Graphics gg) {
+			gg.setColor(Color.GREEN);
+			gg.clearRect(0, 0, 150, 20);
+			gg.fillRect(0, 0, volume/20, 20);
+		}
+
+
+	}
+
 }

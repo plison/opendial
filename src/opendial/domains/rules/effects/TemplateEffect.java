@@ -23,9 +23,6 @@
 
 package opendial.domains.rules.effects;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -86,7 +83,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	public TemplateEffect(Template variable, Template value, int priority,
 			boolean add, boolean negated) {
-		super(variable.toString(), (value.getSlots().isEmpty()) ? ValueFactory
+		super(variable.toString(), (value.isUnderspecified())? ValueFactory
 				.none() : ValueFactory.create(value.getRawString()), priority,
 				add, negated);
 		this.labelTemplate = variable;
@@ -104,7 +101,7 @@ public final class TemplateEffect extends BasicEffect {
 	public BasicEffect ground(Assignment grounding) {
 		Template newT = new Template(labelTemplate.fillSlots(grounding));
 		Template newV = new Template(valueTemplate.fillSlots(grounding));
-		if (newT.isUnderspecified() || (!newV.getSlots().isEmpty())) {
+		if (newT.isUnderspecified() || (newV.isUnderspecified())) {
 			return new TemplateEffect(newT, newV, priority, add, negated);
 		} else {
 			return new BasicEffect(newT.getRawString(),
@@ -117,20 +114,6 @@ public final class TemplateEffect extends BasicEffect {
 	// ===================================
 	// GETTERS
 	// ===================================
-
-	/**
-	 * Returns the set of additional input variables for the effect (from slots
-	 * in the variable label and value).
-	 *
-	 * @return sets of input variables
-	 */
-	@Override
-	public Set<String> getSlots() {
-		Set<String> additionalInputVariables = new HashSet<String>();
-		additionalInputVariables.addAll(this.labelTemplate.getSlots());
-		additionalInputVariables.addAll(this.valueTemplate.getSlots());
-		return additionalInputVariables;
-	}
 
 	/**
 	 * Returns true if the effect contains slots to fill, and false otherwise

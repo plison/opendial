@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.arch.Settings;
@@ -44,6 +45,7 @@ import opendial.domains.Model;
 import opendial.gui.GUIFrame;
 import opendial.gui.TextOnlyInterface;
 import opendial.modules.Module;
+import opendial.modules.core.AudioModule;
 import opendial.modules.core.DialogueImporter;
 import opendial.modules.core.DialogueRecorder;
 import opendial.modules.core.ForwardPlanner;
@@ -280,6 +282,27 @@ public class DialogueSystem {
 			}
 		}
 	}
+	
+	
+	/**
+	 * Enables or disables speech input for the system.
+	 * 
+	 * @param toEnable whether to enable or disable speech input
+	 */
+	public void enableSpeech(boolean toEnable) {
+		if (toEnable) {
+		attachModule(AudioModule.class);
+		if (getModule(GUIFrame.class) != null) {
+			getModule(GUIFrame.class).enableSpeech(true);
+		}
+		}
+		else {
+			detachModule(AudioModule.class);
+			if (getModule(GUIFrame.class) != null) {
+				getModule(GUIFrame.class).enableSpeech(false);
+			}
+		}
+	}
 
 	// ===================================
 	// STATE UPDATE
@@ -330,7 +353,7 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
+			log.info("system is paused -- ignoring content "
 					+ distrib);
 			return new HashSet<String>();
 		}
@@ -355,7 +378,7 @@ public class DialogueSystem {
 			curState.addToState_incremental(content, followPrevious);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
+			log.info("system is paused -- ignoring content "
 					+ content);
 			return new HashSet<String>();
 		}
@@ -398,7 +421,7 @@ public class DialogueSystem {
 			curState.addToState(assign);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content " + assign);
+			log.info("system is paused -- ignoring content " + assign);
 			return new HashSet<String>();
 		}
 	}
@@ -417,7 +440,7 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
+			log.info("system is paused -- ignoring content "
 					+ distrib);
 			return new HashSet<String>();
 		}
@@ -436,7 +459,7 @@ public class DialogueSystem {
 			curState.addToState(network);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
+			log.info("system is paused -- ignoring content "
 					+ network);
 			return new HashSet<String>();
 		}
@@ -455,12 +478,27 @@ public class DialogueSystem {
 			curState.addToState(newState);
 			return update();
 		} else {
-			log.info("system is currently paused -- ignoring content "
+			log.info("system is paused -- ignoring content "
 					+ newState);
 			return new HashSet<String>();
 		}
 	}
 
+	/**
+	 * Removes the variable from the dialogue state
+	 * 
+	 * @param variableId the variable identifier
+	 */
+	public void removeContent(String variableId) {
+		if (!paused) {
+			curState.removeFromState(variableId);
+			update();
+		} else {
+			log.info("system is paused -- ignoring removal of " + variableId);
+		}
+	}
+
+	
 	/**
 	 * Performs an update loop on the current dialogue state, by triggering all
 	 * the models and modules attached to the system until all possible updates
@@ -488,9 +526,7 @@ public class DialogueSystem {
 		// finding the new variables that must be processed
 		Set<String> toProcess = curState.getNewVariables();
 		while (!toProcess.isEmpty()) {
-
 			synchronized (curState) {
-
 				// reducing the dialogue state to its relevant nodes
 				curState.reduce();
 
@@ -587,7 +623,7 @@ public class DialogueSystem {
 	}
 
 	/**
-	 * Returns true is the system is currently paused, and false otherwise
+	 * Returns true is the system is paused, and false otherwise
 	 * 
 	 * @return true if paused, false otherwise.
 	 */
@@ -701,5 +737,6 @@ public class DialogueSystem {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
+
 
 }

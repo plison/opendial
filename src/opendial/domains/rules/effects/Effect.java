@@ -150,9 +150,10 @@ public final class Effect implements Value {
 	 * 
 	 * @return the set of labels for the additional input variables
 	 */
-	public Set<String> getAdditionalInputVariables() {
-		return subeffects.stream().filter(e -> e.containsSlots())
-				.flatMap(e -> e.getSlots().stream())
+	public Set<String> getValueSlots() {
+		return subeffects.stream().filter(e -> e instanceof TemplateEffect)
+				.map(e -> ((TemplateEffect)e).getValueTemplate())
+				.flatMap(t -> t.getSlots().stream())
 				.collect(Collectors.toSet());
 	}
 
@@ -167,20 +168,6 @@ public final class Effect implements Value {
 				.collect(Collectors.toSet());
 	}
 
-	/**
-	 * Returns the underspecified slots in the effect
-	 * 
-	 * @return the labels for the underspecified slots
-	 */
-	public Set<String> getSlots() {
-		Set<String> slots = new HashSet<String>();
-		for (BasicEffect e : subeffects) {
-			if (e instanceof TemplateEffect) {
-				slots.addAll(((TemplateEffect) e).getSlots());
-			}
-		}
-		return slots;
-	}
 
 	/**
 	 * Returns the set of values specified in the effect for the given variable

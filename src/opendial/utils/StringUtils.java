@@ -309,10 +309,7 @@ public class StringUtils {
 			case '{':
 				hasSlots = true;
 				break;
-			case '|':
-				hasAlternatives = true;
-				break;
-			case '?':
+			case '|': case '?':
 				hasAlternatives = true;
 				break;
 			default:

@@ -51,7 +51,7 @@ import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.gui.audio.SpeechInputPanel;
+import opendial.modules.core.AudioModule;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
@@ -169,8 +169,9 @@ public class ChatWindowTab extends JComponent {
 	 * @param toEnable true if the speech panel should be enabled, else false
 	 */
 	public void enableSpeech(boolean toEnable) {
-		if (inputContainer.getComponentCount() == 3 && toEnable) {
-			SpeechInputPanel panel = new SpeechInputPanel(system);
+		if (inputContainer.getComponentCount() == 3 && toEnable 
+				&& system.getModule(AudioModule.class)!= null) {
+			SpeechInputPanel panel = new SpeechInputPanel(system.getModule(AudioModule.class));
 			inputContainer.add(panel, BorderLayout.SOUTH);
 			repaint();
 		} else if (inputContainer.getComponentCount() == 4 && !toEnable) {

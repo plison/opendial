@@ -43,6 +43,7 @@ import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
@@ -220,7 +221,7 @@ public class DialogueState extends BNetwork {
 	 */
 	public synchronized void addToState(IndependentProbDistribution distrib)
 			throws DialException {
-
+		
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
 		distrib.modifyVariableId(distrib.getVariable(), variable);
@@ -292,6 +293,15 @@ public class DialogueState extends BNetwork {
 			addNode(cn);
 			connectToPredictions(cn);
 		}
+	}
+	
+	/**
+	 * Removes the variable from the dialogue state
+	 * 
+	 * @param variableId the node to remove
+	 */
+	public synchronized void removeFromState(String variableId) {
+		addToState(new Assignment(variableId, ValueFactory.none()));
 	}
 
 	/**
@@ -753,5 +763,7 @@ public class DialogueState extends BNetwork {
 		}
 		
 	}
+
+	
 
 }
