@@ -298,7 +298,7 @@ public class AudioModule implements Module {
 				audioLine.start();
 				audioLine.flush();
 				AudioFormat format = audioLine.getFormat();
-				byte[] buffer = new byte[audioLine.getBufferSize() / 5];
+				byte[] buffer = new byte[audioLine.getBufferSize() / 20];
 				while (audioLine.isOpen()) {
 					boolean systemTurnBeforeRead = outputSpeech != null;
 
