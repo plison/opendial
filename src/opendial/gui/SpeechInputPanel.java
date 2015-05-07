@@ -57,13 +57,13 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 
 	// the audio recorder
 	AudioModule recorder;
-
+	
 	// the current volume
-	int volume = 0;
+	int volume;
 
-	// sound level meter
+	// the sound level meter;
 	SoundLevelMeter slm;
-
+	
 	/**
 	 * Creates the speech input panel, composed of a press and hold button and a
 	 * sound level meter.
@@ -72,6 +72,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	 */
 	public SpeechInputPanel(AudioModule recorder) {
 		this.recorder = recorder;
+		recorder.attachPanel(this);
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		JButton button = new JButton(
@@ -99,16 +100,6 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		container.add(checkbox, BorderLayout.SOUTH);
 		add(container);
 
-		Thread t = new Thread(() -> {
-			while (true) {
-				slm.updateVolume(recorder.getVolume());
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
-			}
-		});
-		t.start();
 	}
 
 	/**
@@ -152,32 +143,30 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 	}
 
-	class SoundLevelMeter extends JPanel {
-
-		/**
-		 * Updates the volume on the meter
-		 * 
-		 * @param vol the new volume
-		 */
-		private void updateVolume(double vol) {
-			if (volume != vol) {
-				volume = (int) vol;
-				repaint();
-			}
+	public void updateVolume(int currentVolume) {
+		if (currentVolume != volume) {
+			volume = currentVolume;
+			slm.repaint();
 		}
-
-		/**
-		 * Repaint
-		 *
-		 * @param gg the graphics
-		 */
-		@Override
-		public void paintComponent(Graphics gg) {
-			gg.setColor(Color.GREEN);
-			gg.clearRect(0, 0, 220, 25);
-			gg.fillRect(0, 0, volume / 20, 25);
-		}
-
 	}
+
+
+	
+final class SoundLevelMeter extends JPanel {
+
+	/**
+	 * Repaint
+	 *
+	 * @param gg the graphics
+	 */
+	@Override
+	public void paintComponent(Graphics gg) {
+		gg.setColor(Color.GREEN);
+		gg.clearRect(0, 0, 220, 25);
+		gg.fillRect(0, 0, volume / 20, 25);
+	}
+
+}
+
 
 }
