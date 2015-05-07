@@ -25,8 +25,6 @@ package opendial.modules.core;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -45,35 +43,41 @@ import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 
 /**
- * Module used to take care of all audio processing functionalities in OpenDial. The module
- * is employed both to record audio data from the microphone and to play audio data on the 
- * system speakers.
+ * Module used to take care of all audio processing functionalities in OpenDial.
+ * The module is employed both to record audio data from the microphone and to
+ * play audio data on the system speakers.
  * 
- * <p>Two modes are available to record audio data: <ol>
- * <li> a manual mode when the user explicitly click on the "Press and hold to record speech"
- * to indicate the start and end points of speech data.
- * <li> an automatic mode relying on (energy-based) Voice Activity Recognition to determine
- * when speech is present in the audio stream.
+ * <p>
+ * Two modes are available to record audio data:
+ * <ol>
+ * <li>a manual mode when the user explicitly click on the
+ * "Press and hold to record speech" to indicate the start and end points of
+ * speech data.
+ * <li>an automatic mode relying on (energy-based) Voice Activity Recognition to
+ * determine when speech is present in the audio stream.
  * </ol>.
  * 
- * <p>When speech is detected using one of the two above methods, the module creates a 
- * SpeechData object containing the captured audio stream and updates the dialogue state 
- * with a new value for the variable denoting the user speech (by default s_u). This data 
- * is then presumably picked up by a speech recogniser for further processing.
+ * <p>
+ * When speech is detected using one of the two above methods, the module
+ * creates a SpeechData object containing the captured audio stream and updates
+ * the dialogue state with a new value for the variable denoting the user speech
+ * (by default s_u). This data is then presumably picked up by a speech
+ * recogniser for further processing.
  * 
- * <p>The module is also used for the reverse operation, namely playing audio data (generated
- * via e.g. speech synthesis) on the target audio line. When the module detects a new
- * value for the variable denoting the system speech (by default s_m), it plays the corresponding
- * audio on the target line. 
+ * <p>
+ * The module is also used for the reverse operation, namely playing audio data
+ * (generated via e.g. speech synthesis) on the target audio line. When the
+ * module detects a new value for the variable denoting the system speech (by
+ * default s_m), it plays the corresponding audio on the target line.
  * 
- * <p>The module can gracefully handle user interruptions (when the user starts speaking when
- * the system is still talking). 
+ * <p>
+ * The module can gracefully handle user interruptions (when the user starts
+ * speaking when the system is still talking).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 public class AudioModule implements Module {
-
 
 	// logger
 	public static Logger log = new Logger("AudioModule", Logger.Level.DEBUG);
@@ -87,8 +91,8 @@ public class AudioModule implements Module {
 	/** The recorded speech (null if the input audio is not currently speech) */
 	SpeechData inputSpeech;
 
-	/** The queue of output speech to play */
-	Queue<SpeechData> outputSpeeches;
+	/** The  output speech currently playing */
+	SpeechData outputSpeech;
 
 	/** whether the module is paused or not */
 	boolean isPaused = true;
@@ -96,22 +100,26 @@ public class AudioModule implements Module {
 	/** whether the speech is to be automatically detected or not */
 	boolean voiceActivityDetection = false;
 
-	/** current audio level */ 
+	/** current audio level */
 	double currentVolume = 0.0;
 
 	/** background audio level */
 	double backgroundVolume = 0.0;
 
-	/** Threshold for the difference between the current and background audio
-	 * volume level above which the audio is considered as speech */
+	/**
+	 * Threshold for the difference between the current and background audio
+	 * volume level above which the audio is considered as speech
+	 */
 	public static final double VOLUME_THRESHOLD = 250;
 
-	/** Minimum duration for a sound to be considered as possible speech (in milliseconds) */
+	/**
+	 * Minimum duration for a sound to be considered as possible speech (in
+	 * milliseconds)
+	 */
 	public static final int MIN_DURATION = 300;
 
 	/** file used to save the speech input (leave empty to avoid recording) */
 	public static String SAVE_SPEECH = "";
-
 
 	/**
 	 * Creates a new audio recorder connected to the dialogue system.
@@ -121,9 +129,7 @@ public class AudioModule implements Module {
 	public AudioModule(DialogueSystem system) {
 		this.system = system;
 		audioLine = AudioUtils.selectAudioLine(system.getSettings().inputMixer);
-		outputSpeeches = new LinkedList<SpeechData>();
 	}
-
 
 	/**
 	 * Starts the audio recording
@@ -134,15 +140,14 @@ public class AudioModule implements Module {
 		if (audioLine != null) {
 			audioLine.close();
 		}
-		audioLine = AudioUtils.selectAudioLine(system.getSettings().inputMixer);	
+		audioLine = AudioUtils.selectAudioLine(system.getSettings().inputMixer);
 		(new Thread(new SpeechRecorder())).start();
 	}
 
-
 	/**
-	 * Activates or deactivates voice activity detection (VAD).  If VAD is
-	 * deactivated, the GUI button "press and hold to record speech" is used
-	 * to mark the start and end points of speech data.
+	 * Activates or deactivates voice activity detection (VAD). If VAD is
+	 * deactivated, the GUI button "press and hold to record speech" is used to
+	 * mark the start and end points of speech data.
 	 * 
 	 * @param activateVAD true if VAD should be activated, false otherwise
 	 */
@@ -150,24 +155,26 @@ public class AudioModule implements Module {
 		this.voiceActivityDetection = activateVAD;
 	}
 
-
 	/**
-	 * Starts the recording of a new speech segment, and adds its content
-	 * to the dialogue state. The new speech segment is only inserted after
-	 * waiting a duration of MIN_DURATION, in order to avoid inserting many
-	 * spurious short noises into the dialogue state.
+	 * Starts the recording of a new speech segment, and adds its content to the
+	 * dialogue state. The new speech segment is only inserted after waiting a
+	 * duration of MIN_DURATION, in order to avoid inserting many spurious short
+	 * noises into the dialogue state.
 	 */
 	public void startRecording() {
 		if (!isPaused) {
 			inputSpeech = new SpeechData(audioLine.getFormat());
 			new Thread(() -> {
-				try {Thread.sleep(MIN_DURATION);} catch (Exception e) {} 
+				try {
+					Thread.sleep(MIN_DURATION);
+				} catch (Exception e) {
+				}
 				if (inputSpeech != null && !inputSpeech.isFinal()) {
-					system.addContent(new Assignment(system.getSettings().userSpeech, inputSpeech));					
+					system.addContent(new Assignment(
+							system.getSettings().userSpeech, inputSpeech));
 				}
 			}).start();
-		}
-		else {
+		} else {
 			log.info("Audio recorder is currently paused");
 		}
 	}
@@ -178,33 +185,44 @@ public class AudioModule implements Module {
 	public void stopRecording() {
 		if (inputSpeech != null) {
 			inputSpeech.setAsFinal();
-			if (SAVE_SPEECH.length() > 0 && inputSpeech.duration() > MIN_DURATION) {
-				AudioUtils.generateFile(inputSpeech.toByteArray(), new File(SAVE_SPEECH));			
+
+			if (SAVE_SPEECH.length() > 0
+					&& inputSpeech.length() > MIN_DURATION) {
+				AudioUtils.generateFile(inputSpeech.toByteArray(), new File(
+						SAVE_SPEECH));
 			}
 			inputSpeech = null;
 			system.removeContent(system.getSettings().userSpeech);
 		}
 	}
 
-
 	/**
-	 * Checks whether the dialogue state contains a updated value for the system speech
-	 * (by default denoted as s_m). If yes, plays the audio on the target line.
+	 * Checks whether the dialogue state contains a updated value for the system
+	 * speech (by default denoted as s_m). If yes, plays the audio on the target
+	 * line.
 	 */
 	@Override
-	public synchronized void trigger(DialogueState state, Collection<String> updatedVars) {
+	public synchronized void trigger(DialogueState state,
+			Collection<String> updatedVars) {
 		String systemSpeech = system.getSettings().systemSpeech;
-		if (updatedVars.contains(systemSpeech) && state.hasChanceNode(systemSpeech)) {
+		if (updatedVars.contains(systemSpeech)
+				&& state.hasChanceNode(systemSpeech)) {
 			Value v = state.queryProb(systemSpeech).getBest();
 			if (v instanceof SpeechData) {
-				outputSpeeches.add((SpeechData)v);
-				if (outputSpeeches.size() == 1) {
+
+				// normal case: no previous speech is playing
+				if (outputSpeech == null) {
+					outputSpeech = (SpeechData)v;
 					(new Thread(new SpeechPlayer())).start();
+				}
+
+				// if the system is already playing a sound, concatenate to the existing one
+				else {
+					outputSpeech = outputSpeech.concatenate((SpeechData)v);
 				}
 			}
 		}
 	}
-
 
 	/**
 	 * Pauses the recorder
@@ -222,8 +240,6 @@ public class AudioModule implements Module {
 		return !isPaused;
 	}
 
-
-
 	/**
 	 * Returns the current volume for the recording.
 	 * 
@@ -233,20 +249,20 @@ public class AudioModule implements Module {
 		return currentVolume;
 	}
 
-
 	/**
 	 * Recorder for the stream, based on the captured audio data.
 	 */
 	final class SpeechRecorder implements Runnable {
 
 		public SpeechRecorder() {
-			Runtime.getRuntime().addShutdownHook(
-					new Thread(() -> { audioLine.stop(); audioLine.close(); }));
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				audioLine.stop();
+				audioLine.close();
+			}));
 		}
 
 		/**
-		 * Captures the audio data in the audio line and updates the
-		 * data array.
+		 * Captures the audio data in the audio line and updates the data array.
 		 */
 		@Override
 		public void run() {
@@ -255,35 +271,37 @@ public class AudioModule implements Module {
 				audioLine.open();
 				audioLine.start();
 				audioLine.flush();
-				byte[] buffer = new byte[audioLine.getBufferSize()/20];
+				byte[] buffer = new byte[audioLine.getBufferSize() / 20];
 				while (audioLine.isOpen()) {
-					boolean systemTurnBeforeRead = !outputSpeeches.isEmpty();
+					boolean systemTurnBeforeRead = outputSpeech != null;
 
 					int numBytesRead = audioLine.read(buffer, 0, buffer.length);
 
-					// in case the user has interrupted the system, drain the line
-					if (systemTurnBeforeRead && outputSpeeches.isEmpty()) {
+					// in case the user has interrupted the system, drain the
+					// line
+					if (systemTurnBeforeRead && outputSpeech == null) {
 						audioLine.drain();
-						continue;					
-					}	
-					
-					// if any of these apply, we do not need to process the buffer
-					else if (!outputSpeeches.isEmpty()|| numBytesRead==0 || 
-							(!voiceActivityDetection && inputSpeech==null)) {
 						continue;
 					}
-					
+
+					// if any of these apply, we do not need to process the
+					// buffer
+					else if (outputSpeech != null || numBytesRead == 0
+							|| (!voiceActivityDetection && inputSpeech == null)) {
+						continue;
+					}
+
 					// update the volume estimates
-					double rms = AudioUtils.getRMS(buffer, audioLine.getFormat());
-					currentVolume = (currentVolume*2 + rms) /3;	
+					double rms = AudioUtils.getRMS(buffer,
+							audioLine.getFormat());
+					currentVolume = (currentVolume * 2 + rms) / 3;
 					if (rms < backgroundVolume) {
 						backgroundVolume = rms;
-					}
-					else {
+					} else {
 						backgroundVolume += (rms - backgroundVolume) * 0.003;
 					}
 					double difference = currentVolume - backgroundVolume;
-			
+
 					// try to detect voice (if VAD is activated)
 					if (voiceActivityDetection && inputSpeech == null
 							&& difference > VOLUME_THRESHOLD) {
@@ -293,7 +311,8 @@ public class AudioModule implements Module {
 					// write to the current speech data if the audio is speech
 					if (inputSpeech != null && !inputSpeech.isFinal()) {
 						inputSpeech.write(buffer);
-						if (voiceActivityDetection && difference < VOLUME_THRESHOLD / 10) {
+						if (voiceActivityDetection
+								&& difference < VOLUME_THRESHOLD / 10) {
 							stopRecording();
 						}
 					}
@@ -305,11 +324,10 @@ public class AudioModule implements Module {
 
 	}
 
-
 	/**
-	 * Audio player. The player takes a queue of SpeechData objects to play
-	 * (in sequential order) and plays it on the line corresponding to the
-	 * selected output mixer.
+	 * Audio player. The player takes a queue of SpeechData objects to play (in
+	 * sequential order) and plays it on the line corresponding to the selected
+	 * output mixer.
 	 *
 	 */
 	final class SpeechPlayer implements Runnable {
@@ -320,46 +338,39 @@ public class AudioModule implements Module {
 		@Override
 		public void run() {
 			try {
-				if (outputSpeeches.isEmpty()) {
+				if (outputSpeech == null) {
 					return;
 				}
 				Mixer.Info outputMixer = system.getSettings().outputMixer;
-				AudioFormat format = outputSpeeches.peek().getFormat();
-				SourceDataLine line = AudioSystem.getSourceDataLine(format, outputMixer);
+				AudioFormat format = outputSpeech.getFormat();
+				SourceDataLine line = AudioSystem.getSourceDataLine(format,
+						outputMixer);
 				line.open(format);
 				line.start();
 
-				out: while (!outputSpeeches.isEmpty()) {
-					SpeechData curSpeech = outputSpeeches.peek();
-					int nBytesRead = 0;
-					byte[] abData = new byte[256 * 16];
-					while (nBytesRead != -1) {
-						nBytesRead = curSpeech.read(abData, 0, abData.length);
-						if (inputSpeech != null) {
-							break out;
-						}
-						if (nBytesRead >= 0) {
-							line.write(abData, 0, nBytesRead);
-						}
+				int nBytesRead = 0;
+				byte[] abData = new byte[256 * 16];
+				while (nBytesRead != -1) {
+					nBytesRead = outputSpeech.read(abData, 0, abData.length);
+					if (inputSpeech != null) {
+						break;
 					}
-					outputSpeeches.poll();
+					if (nBytesRead >= 0) {
+						line.write(abData, 0, nBytesRead);
+					}
 				}
-				outputSpeeches.clear();
+
+				outputSpeech = null;
 				line.drain();
 				if (line.isOpen()) {
 					line.close();
 				}
-			}
-			catch (LineUnavailableException e) {
+			} catch (LineUnavailableException e) {
 				log.warning("Audio line is unavailable: " + e);
 			}
 			system.removeContent(system.getSettings().systemSpeech);
 		}
 
-
 	}
-
-
-
 
 }

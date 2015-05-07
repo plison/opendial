@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;

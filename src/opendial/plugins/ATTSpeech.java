@@ -169,8 +169,7 @@ public class ATTSpeech implements Module {
 				&& !paused) {
 			Value speechVal = system.getContent(speechVar).getBest();
 			if (speechVal instanceof SpeechData) {
-				new Thread(
-						() -> recognise((SpeechData) speechVal)).start();
+				new Thread(() -> recognise((SpeechData) speechVal)).start();
 			}
 		} else if (updatedVars.contains(outputVar)
 				&& state.hasChanceNode(outputVar) && !paused) {
@@ -219,11 +218,11 @@ public class ATTSpeech implements Module {
 			if (!table.isEmpty()) {
 				system.addUserInput(table);
 			}
-			
+
 		} catch (Exception re) {
 			re.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -238,8 +237,10 @@ public class ATTSpeech implements Module {
 			APIResponse apiResponse = ttsClient.httpPost(utterance);
 			int statusCode = apiResponse.getStatusCode();
 			if (statusCode == 200 || statusCode == 201) {
-				SpeechData output = new SpeechData(apiResponse.getResponseBody());
-				system.addContent(new Assignment(system.getSettings().systemSpeech, output));
+				SpeechData output = new SpeechData(
+						apiResponse.getResponseBody());
+				system.addContent(new Assignment(
+						system.getSettings().systemSpeech, output));
 
 			} else if (statusCode == 401) {
 				throw new IOException("Unauthorized request.");

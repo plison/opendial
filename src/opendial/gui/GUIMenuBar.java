@@ -212,13 +212,12 @@ public class GUIMenuBar extends JMenuBar {
 		for (final Mixer.Info mixer : mixers) {
 			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(
 					mixer.getName());
-			mixerButton
-					.addActionListener(e -> { 
-						frame.getSystem().getSettings().inputMixer = mixer;
-						if (frame.getSystem().getModule(AudioModule.class) != null) {
-							frame.getSystem().getModule(AudioModule.class).start();
-						}
-					});
+			mixerButton.addActionListener(e -> {
+				frame.getSystem().getSettings().inputMixer = mixer;
+				if (frame.getSystem().getModule(AudioModule.class) != null) {
+					frame.getSystem().getModule(AudioModule.class).start();
+				}
+			});
 			inputGroup.add(mixerButton);
 			inputMenu.add(mixerButton);
 			if (mixer.equals(frame.getSystem().getSettings().inputMixer)) {

@@ -96,9 +96,8 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	 */
 	@Override
 	public Value sample() {
-		Value v = (function.getDimensions() > 1) ? ValueFactory
-				.create(function.sample()) : ValueFactory.create(function
-				.sample()[0]);
+		Value v = (function.getDimensions() > 1) ? ValueFactory.create(function
+				.sample()) : ValueFactory.create(function.sample()[0]);
 		return v;
 	}
 

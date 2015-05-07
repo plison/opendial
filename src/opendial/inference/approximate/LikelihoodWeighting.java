@@ -87,7 +87,8 @@ public class LikelihoodWeighting {
 				.parallel() // parallelise
 				.map(p -> p.sample()) // generate a sample
 				.limit(nbSamples) // stop when nbSamples are collected
-				.filter(s -> s.getWeight() > WEIGHT_THRESHOLD) // discard empty samples
+				.filter(s -> s.getWeight() > WEIGHT_THRESHOLD) // discard empty
+																// samples
 				.collect(Collectors.toList()); // makes a list of samples
 	}
 

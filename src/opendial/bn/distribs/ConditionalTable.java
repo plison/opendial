@@ -169,7 +169,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 */
 	public void addRows(Map<Assignment, Map<Value, Double>> fullTable) {
 		for (Assignment cond : fullTable.keySet()) {
-			addRows(cond, new CategoricalTable(headVar,fullTable.get(cond)));
+			addRows(cond, new CategoricalTable(headVar, fullTable.get(cond)));
 		}
 	}
 
@@ -202,7 +202,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		}
 		ValueRange possibleCondPairs = new ValueRange(table.keySet());
 		if (possibleCondPairs.getNbCombinations() < 500) {
-			Set<Assignment> possibleCondAssignments = possibleCondPairs.linearise();
+			Set<Assignment> possibleCondAssignments = possibleCondPairs
+					.linearise();
 			possibleCondAssignments.remove(new Assignment());
 
 			for (Assignment possibleCond : possibleCondAssignments) {

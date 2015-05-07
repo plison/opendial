@@ -282,8 +282,7 @@ public class DialogueSystem {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Enables or disables speech input for the system.
 	 * 
@@ -291,15 +290,13 @@ public class DialogueSystem {
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
-		attachModule(AudioModule.class);
-		if (settings.showGUI) {
-			getModule(GUIFrame.class).enableSpeech(true);
-		}
-		else {
-			getModule(AudioModule.class).activateVAD(true);
-		}
-		}
-		else {
+			attachModule(AudioModule.class);
+			if (settings.showGUI) {
+				getModule(GUIFrame.class).enableSpeech(true);
+			} else {
+				getModule(AudioModule.class).activateVAD(true);
+			}
+		} else {
 			detachModule(AudioModule.class);
 			if (getModule(GUIFrame.class) != null) {
 				getModule(GUIFrame.class).enableSpeech(false);
@@ -356,8 +353,7 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is paused -- ignoring content "
-					+ distrib);
+			log.info("system is paused -- ignoring content " + distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -381,8 +377,7 @@ public class DialogueSystem {
 			curState.addToState_incremental(content, followPrevious);
 			return update();
 		} else {
-			log.info("system is paused -- ignoring content "
-					+ content);
+			log.info("system is paused -- ignoring content " + content);
 			return new HashSet<String>();
 		}
 	}
@@ -443,8 +438,7 @@ public class DialogueSystem {
 			curState.addToState(distrib);
 			return update();
 		} else {
-			log.info("system is paused -- ignoring content "
-					+ distrib);
+			log.info("system is paused -- ignoring content " + distrib);
 			return new HashSet<String>();
 		}
 	}
@@ -462,8 +456,7 @@ public class DialogueSystem {
 			curState.addToState(network);
 			return update();
 		} else {
-			log.info("system is paused -- ignoring content "
-					+ network);
+			log.info("system is paused -- ignoring content " + network);
 			return new HashSet<String>();
 		}
 	}
@@ -481,8 +474,7 @@ public class DialogueSystem {
 			curState.addToState(newState);
 			return update();
 		} else {
-			log.info("system is paused -- ignoring content "
-					+ newState);
+			log.info("system is paused -- ignoring content " + newState);
 			return new HashSet<String>();
 		}
 	}
@@ -501,7 +493,6 @@ public class DialogueSystem {
 		}
 	}
 
-	
 	/**
 	 * Performs an update loop on the current dialogue state, by triggering all
 	 * the models and modules attached to the system until all possible updates
@@ -525,7 +516,7 @@ public class DialogueSystem {
 		}
 
 		updating = true;
-		
+
 		// finding the new variables that must be processed
 		Set<String> toProcess = curState.getNewVariables();
 		while (!toProcess.isEmpty()) {
@@ -736,6 +727,5 @@ public class DialogueSystem {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}
-
 
 }

@@ -221,7 +221,7 @@ public class DialogueState extends BNetwork {
 	 */
 	public synchronized void addToState(IndependentProbDistribution distrib)
 			throws DialException {
-		
+
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
 		distrib.modifyVariableId(distrib.getVariable(), variable);
@@ -294,7 +294,7 @@ public class DialogueState extends BNetwork {
 			connectToPredictions(cn);
 		}
 	}
-	
+
 	/**
 	 * Removes the variable from the dialogue state
 	 * 
@@ -522,7 +522,7 @@ public class DialogueState extends BNetwork {
 		Set<String> newVars = new HashSet<String>();
 		for (String var : getChanceNodeIds()) {
 			if (var.endsWith("'")) {
-				newVars.add(var.substring(0,var.length()-1));
+				newVars.add(var.substring(0, var.length() - 1));
 			}
 		}
 		return newVars;
@@ -750,7 +750,7 @@ public class DialogueState extends BNetwork {
 		String outputVar = outputNode.getId();
 
 		// adding the connection between the predicted and observed values
-		String baseVar = outputVar.substring(0, outputVar.length()-1);
+		String baseVar = outputVar.substring(0, outputVar.length() - 1);
 		String predictEquiv = baseVar + "^p";
 		if (hasChanceNode(predictEquiv) && !outputVar.equals(predictEquiv)
 				&& !outputVar.contains("^p")) {
@@ -761,9 +761,7 @@ public class DialogueState extends BNetwork {
 			addEvidence(new Assignment(equalityNode.getId(), true));
 			addNode(equalityNode);
 		}
-		
-	}
 
-	
+	}
 
 }

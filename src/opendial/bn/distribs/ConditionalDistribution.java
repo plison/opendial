@@ -202,16 +202,14 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
-		} 
-		else if (condition.isDefault()) {
+		} else if (condition.isDefault()) {
 			log.warning("void condition cannot be found in " + toString());
 			double total = 0.0;
 			for (Assignment c : table.keySet()) {
 				total += table.get(c).getProb(head);
 			}
 			return total;
-		}
-		else {
+		} else {
 			log.warning("could not find the corresponding condition for "
 					+ condition + ")");
 			return 0.0;
@@ -230,8 +228,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
-		} 
-		else {
+		} else {
 			throw new DialException("could not find the corresponding "
 					+ "condition for " + condition + " in " + toString());
 		}
@@ -353,7 +350,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		ValueRange possibleCondPairs = new ValueRange(table.keySet());
 
 		if (possibleCondPairs.getNbCombinations() < 100) {
-			Set<Assignment> possibleCondAssignments = possibleCondPairs.linearise();
+			Set<Assignment> possibleCondAssignments = possibleCondPairs
+					.linearise();
 			possibleCondAssignments.remove(new Assignment());
 			if (possibleCondAssignments.size() != table.keySet().size()
 					&& possibleCondAssignments.size() > 1) {
