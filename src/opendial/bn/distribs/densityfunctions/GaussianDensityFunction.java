@@ -64,7 +64,6 @@ public class GaussianDensityFunction implements DensityFunction {
 	// sampler object
 	static final Random sampler = new Random();
 
-
 	/**
 	 * Creates a new density function with the given mean and variance vector.
 	 * Only diagonal coveriance are currently supported
@@ -106,7 +105,7 @@ public class GaussianDensityFunction implements DensityFunction {
 	public GaussianDensityFunction(double[][] samples) {
 		if (samples.length == 0) {
 			log.warning("no samples were provided for the Gaussian");
-			samples = new double[][] { {0.0} };
+			samples = new double[][] { { 0.0 } };
 		}
 
 		this.mean = new double[samples[0].length];
@@ -156,9 +155,9 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] sample() {
-		
+
 		double[] result = new double[mean.length];
-		for (int i = 0 ; i < mean.length ;i++) {
+		for (int i = 0; i < mean.length; i++) {
 			result[i] = (sampler.nextGaussian() * stdDev[i]) + mean[i];
 		}
 		return result;

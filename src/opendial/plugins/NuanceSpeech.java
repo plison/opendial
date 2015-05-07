@@ -33,7 +33,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.sound.sampled.AudioFormat;
+
 import opendial.DialogueSystem;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
@@ -156,8 +158,10 @@ public class NuanceSpeech implements Module {
 				&& state.hasChanceNode(outputVar) && !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
-				SpeechData output = new SpeechData(new AudioFormat(16000,16,1,true,false));			
-				system.addContent(new Assignment(system.getSettings().systemSpeech, output));
+				SpeechData output = new SpeechData(new AudioFormat(16000, 16,
+						1, true, false));
+				system.addContent(new Assignment(
+						system.getSettings().systemSpeech, output));
 				synthesise(utteranceVal.toString(), output);
 			}
 		}
@@ -165,18 +169,18 @@ public class NuanceSpeech implements Module {
 
 	/**
 	 * Processes the audio data contained in tempFile (based on the recognition
-	 * grammar whenever provided) and updates the dialogue state with the
-	 * new user inputs.
+	 * grammar whenever provided) and updates the dialogue state with the new
+	 * user inputs.
 	 * 
 	 * @param stream the speech stream containing the audio data
 	 */
 	private void recognise(SpeechData stream) {
-		
+
 		int sampleRate = (int) stream.getFormat().getSampleRate();
-		log.debug("calling Nuance server for recognition... " + "(sample rate: "
-				+ sampleRate + " Hz.)");
+		log.debug("calling Nuance server for recognition... "
+				+ "(sample rate: " + sampleRate + " Hz.)");
 		try {
-				
+
 			HttpPost httppost = new HttpPost(asrURI);
 			String format = "audio/x-wav;codec=pcm;bit="
 					+ stream.getFormat().getFrameSize() * 8 + ";rate="
@@ -198,7 +202,7 @@ public class NuanceSpeech implements Module {
 			} else {
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(resEntity.getContent()));
-				
+
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
 				while ((sentence = reader.readLine()) != null) {
@@ -206,9 +210,9 @@ public class NuanceSpeech implements Module {
 				}
 				lines = InferenceUtils.normalise(lines);
 				for (String s : new ArrayList<String>(lines.keySet())) {
-					lines.put(s, ((int)(lines.get(s)*100))/100.0);
+					lines.put(s, ((int) (lines.get(s) * 100)) / 100.0);
 				}
-				
+
 				log.debug("recognition results: " + lines);
 				reader.close();
 				if (!lines.isEmpty()) {
@@ -218,13 +222,12 @@ public class NuanceSpeech implements Module {
 			httppost.releaseConnection();
 		} catch (Exception e) {
 			log.warning("could not extract ASR results: " + e);
-		}	
+		}
 	}
 
-	
 	/**
-	 * Synthesises the provided utterance and adds the resulting stream of
-	 * audio data to the SpeechData object.
+	 * Synthesises the provided utterance and adds the resulting stream of audio
+	 * data to the SpeechData object.
 	 * 
 	 * @param utterance the utterance to synthesise
 	 * @param output the speech data in which to write the generated audio
@@ -232,7 +235,8 @@ public class NuanceSpeech implements Module {
 	private void synthesise(String utterance, SpeechData output) {
 
 		try {
-			log.debug("calling Nuance server to synthesise utterance \"" + utterance + "\"");
+			log.debug("calling Nuance server to synthesise utterance \""
+					+ utterance + "\"");
 
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type", "text/plain");
@@ -251,12 +255,11 @@ public class NuanceSpeech implements Module {
 				return;
 			}
 
-			
 			output.write(resEntity.getContent());
 			httppost.releaseConnection();
 			output.setAsFinal();
 			log.debug("... Speech synthesis completed");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -184,8 +184,10 @@ public class RemoteConnector implements Module {
 					&& system.getState().hasChanceNode(speechVar)) {
 				Value val = system.getContent(speechVar).getBest();
 				if (val instanceof SpeechData) {
-					forwardContent(MessageType.STREAM, 
-							new ByteArrayInputStream(((SpeechData)val).toByteArray()));
+					forwardContent(
+							MessageType.STREAM,
+							new ByteArrayInputStream(((SpeechData) val)
+									.toByteArray()));
 				}
 			}
 		} catch (DialException e) {
@@ -314,7 +316,8 @@ public class RemoteConnector implements Module {
 					log.info("received message: " + content);
 				} else if (type == MessageType.STREAM) {
 					SpeechData output = new SpeechData(message);
-					system.addContent(new Assignment(system.getSettings().systemSpeech, output));
+					system.addContent(new Assignment(
+							system.getSettings().systemSpeech, output));
 				} else if (type == MessageType.CLOSE) {
 					String content = new String(message);
 					log.info("Disconnecting from " + content);

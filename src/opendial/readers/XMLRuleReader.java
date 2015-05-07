@@ -38,12 +38,12 @@ import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.conditions.BasicCondition;
+import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
 import opendial.domains.rules.conditions.ComplexCondition.BinaryOperator;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.NegatedCondition;
-import opendial.domains.rules.conditions.BasicCondition;
-import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
@@ -194,12 +194,12 @@ public class XMLRuleReader {
 				} else if (operatorStr.toLowerCase().trim().equals("or")) {
 					return new ComplexCondition(subconditions,
 							BinaryOperator.OR);
-				} else if (operatorStr.toLowerCase().trim().equals("neg") 
+				} else if (operatorStr.toLowerCase().trim().equals("neg")
 						|| operatorStr.toLowerCase().trim().equals("not")) {
 					Condition negated = (subconditions.size() == 1) ? subconditions
 							.get(0) : new ComplexCondition(subconditions,
-									BinaryOperator.AND);
-							return new NegatedCondition(negated);
+							BinaryOperator.AND);
+					return new NegatedCondition(negated);
 				}
 			}
 			return (subconditions.size() == 1) ? subconditions.get(0)
@@ -291,9 +291,9 @@ public class XMLRuleReader {
 			}
 			if (conditions.size() == 1) {
 				return new NegatedCondition(conditions.get(0));
-			}
-			else if (conditions.size() > 1) {
-				return new NegatedCondition(new ComplexCondition(conditions, BinaryOperator.AND));
+			} else if (conditions.size() > 1) {
+				return new NegatedCondition(new ComplexCondition(conditions,
+						BinaryOperator.AND));
 			}
 		}
 		return new VoidCondition();
@@ -322,8 +322,7 @@ public class XMLRuleReader {
 				relation = Relation.UNEQUAL;
 			} else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
-			}
-			else if (relationStr.toLowerCase().trim().equals("in")) {
+			} else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.IN;
 			} else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
@@ -398,8 +397,8 @@ public class XMLRuleReader {
 
 		boolean add = node.getNodeName().equalsIgnoreCase("add")
 				|| (node.getAttributes().getNamedItem("add") != null && Boolean
-				.parseBoolean(node.getAttributes().getNamedItem("add")
-						.getNodeValue()));
+						.parseBoolean(node.getAttributes().getNamedItem("add")
+								.getNodeValue()));
 
 		boolean negated = node.getAttributes().getNamedItem("relation") != null
 				&& getRelation(node) == Relation.UNEQUAL;

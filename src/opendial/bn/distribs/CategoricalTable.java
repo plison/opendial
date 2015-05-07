@@ -327,8 +327,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (addDefaultValue && totalProb < 0.99999) {
 			newTable.put(ValueFactory.none(), 1.0 - totalProb);
 			table = newTable;
-		}
-		else {
+		} else {
 			table = InferenceUtils.normalise(newTable);
 		}
 		intervals = null;
@@ -473,8 +472,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (table.isEmpty()) {
 			return true;
 		} else
-			return (table.size() == 1 && table.keySet().iterator().next().equals(ValueFactory.none()));
-		}
+			return (table.size() == 1 && table.keySet().iterator().next()
+					.equals(ValueFactory.none()));
+	}
 
 	/**
 	 * Returns a subset of the N values in the table with the highest
@@ -600,7 +600,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public CategoricalTable copy() {
 		CategoricalTable tableCopy = new CategoricalTable(variable);
-		
+
 		for (Value head : table.keySet()) {
 			tableCopy.addRow(head.copy(), table.get(head));
 		}

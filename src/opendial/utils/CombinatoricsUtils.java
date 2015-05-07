@@ -85,8 +85,6 @@ public class CombinatoricsUtils {
 		}
 	}
 
-
-
 	/**
 	 * Get the power set of the given set
 	 * 

@@ -61,14 +61,15 @@ public class KernelDensityFunction implements DensityFunction {
 	final double[] samplingDeviation;
 
 	// the kernel function
-	static final GaussianDensityFunction kernel = new GaussianDensityFunction(0.0, 1.0);
+	static final GaussianDensityFunction kernel = new GaussianDensityFunction(
+			0.0, 1.0);
 
 	// the points
 	final double[][] points;
 
 	// the sampler
-	static final Random sampler = new Random(Calendar.getInstance().getTimeInMillis()
-			+ Thread.currentThread().getId());
+	static final Random sampler = new Random(Calendar.getInstance()
+			.getTimeInMillis() + Thread.currentThread().getId());
 
 	// whether the data points are bounded (if the sum of their values over the
 	// dimensions must amount o 1.0).
@@ -88,7 +89,7 @@ public class KernelDensityFunction implements DensityFunction {
 		bandwidths = estimateBandwidths();
 		samplingDeviation = Arrays.stream(bandwidths)
 				.map(b -> b / Math.pow(bandwidths.length, 2)).toArray();
-		}
+	}
 
 	/**
 	 * Creates a new kernel density function with the given points
@@ -99,7 +100,6 @@ public class KernelDensityFunction implements DensityFunction {
 		this(points.toArray(new double[points.size()][]));
 	}
 
-	
 	/**
 	 * Returns the bandwidth defined for the KDE
 	 * 
@@ -154,7 +154,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public double[] sample() {
-		
+
 		// step 1 : selecting one point from the available points
 		double[] centre = points[sampler.nextInt(points.length)];
 
@@ -163,9 +163,10 @@ public class KernelDensityFunction implements DensityFunction {
 		double total = 0.0;
 		double shift = 0.0;
 		for (int i = 0; i < centre.length; i++) {
-			newPoint[i] = (sampler.nextGaussian() * samplingDeviation[i]) + centre[i];					
+			newPoint[i] = (sampler.nextGaussian() * samplingDeviation[i])
+					+ centre[i];
 			total += newPoint[i];
-			if (newPoint[i]<shift) {
+			if (newPoint[i] < shift) {
 				shift = newPoint[i];
 			}
 		}
@@ -173,7 +174,8 @@ public class KernelDensityFunction implements DensityFunction {
 		// step 3: if the density must be bounded, ensure the sum is = 1
 		if (isBounded) {
 			for (int i = 0; i < centre.length; i++) {
-				newPoint[i] = (newPoint[i] - shift) / (total - shift*centre.length);
+				newPoint[i] = (newPoint[i] - shift)
+						/ (total - shift * centre.length);
 			}
 		}
 		return newPoint;
@@ -188,7 +190,8 @@ public class KernelDensityFunction implements DensityFunction {
 	@Override
 	public Map<double[], Double> discretise(int nbBuckets) {
 		int nbToPick = Math.min(nbBuckets, points.length);
-		Map<double[], Double> vals = Arrays.stream(points).distinct().limit(nbToPick)
+		Map<double[], Double> vals = Arrays.stream(points).distinct()
+				.limit(nbToPick)
 				.collect(Collectors.toMap(p -> p, p -> 1.0 / nbToPick));
 		return vals;
 	}
@@ -328,7 +331,7 @@ public class KernelDensityFunction implements DensityFunction {
 	private boolean shouldBeBounded() {
 		double total = 0;
 		for (int j = 0; j < points[0].length; j++) {
-			total +=  points[0][j];
+			total += points[0][j];
 		}
 		if (total > 0.99 && total < 1.01 && points[0].length > 1) {
 			return true;
@@ -365,6 +368,5 @@ public class KernelDensityFunction implements DensityFunction {
 		GaussianDensityFunction gaussian = new GaussianDensityFunction(points);
 		return gaussian.generateXML(doc);
 	}
-
 
 }

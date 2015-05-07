@@ -214,7 +214,7 @@ public class DistributionViewer extends JDialog {
 					new XYSeriesCollection(serie), // data
 					PlotOrientation.VERTICAL, // orientation
 					(distrib.getFunction().getDimensions() > 1), // include
-																		// legend
+																	// legend
 					true, // tooltips?
 					false); // URLs?
 

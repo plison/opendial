@@ -45,7 +45,7 @@ public class StringUtils {
 
 	final static Pattern nbestRegex = Pattern
 			.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
-	
+
 	// regular expression to detect algebraic expressions
 	final static Pattern mathExpression = Pattern
 			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
@@ -309,7 +309,8 @@ public class StringUtils {
 			case '{':
 				hasSlots = true;
 				break;
-			case '|': case '?':
+			case '|':
+			case '?':
 				hasAlternatives = true;
 				break;
 			default:

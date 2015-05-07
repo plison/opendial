@@ -74,7 +74,7 @@ public class Settings {
 
 	/** Variable label for the system speech signal */
 	public String systemSpeech;
-	
+
 	/** Variable label for the user input */
 	public String userInput;
 
@@ -118,7 +118,6 @@ public class Settings {
 
 	/** whether the role of user and system are inverted */
 	public boolean invertedRole = false;
-
 
 	/**
 	 * Creates new settings with the default values
@@ -174,11 +173,9 @@ public class Settings {
 				userInput = mapping.getProperty(key);
 			} else if (key.equalsIgnoreCase("speech_user")) {
 				userSpeech = mapping.getProperty(key);
-			}
-			else if (key.equalsIgnoreCase("speech_system")) {
+			} else if (key.equalsIgnoreCase("speech_system")) {
 				systemSpeech = mapping.getProperty(key);
-			}
-			else if (key.equalsIgnoreCase("system")) {
+			} else if (key.equalsIgnoreCase("system")) {
 				systemOutput = mapping.getProperty(key);
 			} else if (key.equalsIgnoreCase("monitor")) {
 				String[] split = mapping.getProperty(key).split(",");

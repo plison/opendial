@@ -27,9 +27,9 @@ import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
-import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
+import opendial.domains.rules.conditions.Condition;
 
 /**
  * Representation of a basic effect of a rule. A basic effect is formally
@@ -83,7 +83,7 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	public TemplateEffect(Template variable, Template value, int priority,
 			boolean add, boolean negated) {
-		super(variable.toString(), (value.isUnderspecified())? ValueFactory
+		super(variable.toString(), (value.isUnderspecified()) ? ValueFactory
 				.none() : ValueFactory.create(value.getRawString()), priority,
 				add, negated);
 		this.labelTemplate = variable;

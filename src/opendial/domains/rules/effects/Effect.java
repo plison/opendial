@@ -152,7 +152,7 @@ public final class Effect implements Value {
 	 */
 	public Set<String> getValueSlots() {
 		return subeffects.stream().filter(e -> e instanceof TemplateEffect)
-				.map(e -> ((TemplateEffect)e).getValueTemplate())
+				.map(e -> ((TemplateEffect) e).getValueTemplate())
 				.flatMap(t -> t.getSlots().stream())
 				.collect(Collectors.toSet());
 	}
@@ -167,7 +167,6 @@ public final class Effect implements Value {
 		return subeffects.stream().map(e -> e.getVariable())
 				.collect(Collectors.toSet());
 	}
-
 
 	/**
 	 * Returns the set of values specified in the effect for the given variable

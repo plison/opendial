@@ -68,8 +68,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	 * Creates the speech input panel, composed of a press and hold button and a
 	 * sound level meter.
 	 * 
-	 * @param system the dialogue system (to which the stream is being
-	 *            forwarded)
+	 * @param recorder the audiomodule the audiomodule associated with the panel
 	 */
 	public SpeechInputPanel(AudioModule recorder) {
 		this.recorder = recorder;
@@ -95,16 +94,17 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		final JCheckBox checkbox = new JCheckBox("Voice Activity Detection");
 		checkbox.addActionListener(a -> {
 			recorder.activateVAD(checkbox.isSelected());
-			button.setEnabled(!checkbox.isSelected()); 
+			button.setEnabled(!checkbox.isSelected());
 		});
 		container.add(checkbox, BorderLayout.SOUTH);
 		add(container);
-		
+
 		Thread t = new Thread(() -> {
-			while (true) {			
+			while (true) {
 				slm.updateVolume(recorder.getVolume());
-				try {Thread.sleep(200);	} 
-				catch (InterruptedException e) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
 				}
 			}
 		});
@@ -151,10 +151,9 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
-	
-	
+
 	class SoundLevelMeter extends JPanel {
-		
+
 		/**
 		 * Updates the volume on the meter
 		 * 
@@ -162,8 +161,8 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		 */
 		private void updateVolume(double vol) {
 			if (volume != vol) {
-			volume = (int) vol;
-			repaint();
+				volume = (int) vol;
+				repaint();
 			}
 		}
 
@@ -175,10 +174,9 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		@Override
 		public void paintComponent(Graphics gg) {
 			gg.setColor(Color.GREEN);
-			gg.clearRect(0, 0, 150, 20);
-			gg.fillRect(0, 0, volume/20, 20);
+			gg.clearRect(0, 0, 220, 25);
+			gg.fillRect(0, 0, volume / 20, 25);
 		}
-
 
 	}
 

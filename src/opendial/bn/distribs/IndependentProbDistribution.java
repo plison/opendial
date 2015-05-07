@@ -30,6 +30,7 @@ import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

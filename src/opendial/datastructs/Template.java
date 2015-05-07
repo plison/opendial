@@ -71,8 +71,9 @@ public class Template {
 	final Map<String, Integer> slots;
 
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
-	final static Pattern trailPattern = Pattern.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
-	
+	final static Pattern trailPattern = Pattern
+			.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
+
 	// ===================================
 	// TEMPLATE CONSTRUCTION
 	// ===================================

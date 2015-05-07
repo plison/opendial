@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.utils.MathUtils;
@@ -56,8 +57,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	final double C;
 
 	// random number generator
-	static final Random rng = new Random(Calendar.getInstance().getTimeInMillis()
-			+ Thread.currentThread().getId());
+	static final Random rng = new Random(Calendar.getInstance()
+			.getTimeInMillis() + Thread.currentThread().getId());
 
 	/**
 	 * Create a new Dirichlet density function with the provided alpha

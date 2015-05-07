@@ -29,17 +29,19 @@ import java.io.InputStream;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
+import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.AudioUtils;
 
 /**
- * Representation of a stream of speech data (input or output). The stream
- * can both be read (using the usual methods), but can also be modified
- * by appending new data to the end of the stream. 
+ * Representation of a stream of speech data (input or output). The stream can
+ * both be read (using the usual methods), but can also be modified by appending
+ * new data to the end of the stream.
  * 
- * <p>The stream is allowed to change until it is marked as "final" (i.e. when
- * the audio capture has finished recording). 
+ * <p>
+ * The stream is allowed to change until it is marked as "final" (i.e. when the
+ * audio capture has finished recording).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -50,33 +52,30 @@ public class SpeechData extends InputStream implements Value {
 
 	/** the position in the data stream */
 	int currentPos = 0;
-	
+
 	/** the current array of speech data */
 	byte[] data;
-		
+
 	/** whether the data is final or still expected to change */
 	boolean isFinal = false;
-	
+
 	/** the audio format for the stream */
 	AudioFormat format;
-	
-	
+
 	// ===================================
 	// CONSTRUCTION METHODS
 	// ===================================
-	
-	
+
 	/**
 	 * Creates a new, empty stream of data with a given audio format
 	 * 
 	 * @param format the audio format to employ
 	 */
-	public SpeechData(AudioFormat format)  {
+	public SpeechData(AudioFormat format) {
 		data = new byte[0];
 		this.format = format;
 	}
 
-	
 	/**
 	 * Creates a stream of speech data based on a pre-existing byte array.
 	 * 
@@ -88,10 +87,7 @@ public class SpeechData extends InputStream implements Value {
 		this.data = data;
 		isFinal = true;
 	}
-	
-	
 
-	
 	/**
 	 * Marks the speech data as final (it won't be changed anymore)
 	 * 
@@ -99,17 +95,13 @@ public class SpeechData extends InputStream implements Value {
 	public synchronized void setAsFinal() {
 		isFinal = true;
 	}
-	
-	
 
 	// ===================================
 	// STREAM READING AND WRITING
 	// ===================================
-	
-	
+
 	/**
-	 * Expands the current speech data by appending a new buffer of
-	 * audio data
+	 * Expands the current speech data by appending a new buffer of audio data
 	 * 
 	 * @param buffer the new audio data to insert
 	 */
@@ -123,12 +115,10 @@ public class SpeechData extends InputStream implements Value {
 		System.arraycopy(buffer, 0, newData, data.length, buffer.length);
 		data = newData;
 	}
-	
 
-	
 	/**
-	 * Expands the current speech data by appending the data in the
-	 * input stream.
+	 * Expands the current speech data by appending the data in the input
+	 * stream.
 	 * 
 	 * @param stream the stream to add to the speech data
 	 */
@@ -146,13 +136,11 @@ public class SpeechData extends InputStream implements Value {
 				System.arraycopy(buffer, 0, newData, data.length, nRead);
 				data = newData;
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.warning("Cannot write the stream to the speech data");
-		}		
+		}
 	}
 
-	
 	/**
 	 * Reads one byte of the stream
 	 * 
@@ -162,14 +150,15 @@ public class SpeechData extends InputStream implements Value {
 	public int read() {
 		if (currentPos < data.length) {
 			return data[currentPos++];
-		}
-		else {
+		} else {
 			if (!isFinal) {
-				try {Thread.sleep(100); }
-				catch (InterruptedException e) { }
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				return read();
 			}
-		return -1;
+			return -1;
 		}
 	}
 
@@ -184,45 +173,37 @@ public class SpeechData extends InputStream implements Value {
 	public int read(byte[] buffer, int offset, int length) {
 		if (currentPos >= data.length) {
 			if (!isFinal) {
-				try {Thread.sleep(100); }
-				catch (InterruptedException e) { }
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				return read(buffer, offset, length);
 			}
 			return -1;
 		}
 		int i = 0;
-		for (i = 0 ; i < length & (currentPos+i) < data.length ; i++) {
-			buffer[offset+i] = data[currentPos+i];
+		for (i = 0; i < length & (currentPos + i) < data.length; i++) {
+			buffer[offset + i] = data[currentPos + i];
 		}
 		currentPos += i;
 		return i;
 	}
 
-
 	// ===================================
 	// GETTERS
 	// ===================================
-	
-	
-	/**
-	 * Returns the data length
-	 * 
-	 * @return the length
-	 */
-	@Override
-	public int length() {
-		return data.length;
-	}
-	
+
 	/**
 	 * Returns the duration of the audio data (in milliseconds)
 	 * 
 	 * @return the duration of the audio data
 	 */
-	public int duration() {
-		return data.length / (format.getFrameSize()*8);
+	@Override
+	public int length() {
+		return data.length / (format.getFrameSize() * 8);
 	}
-	
+
+
 	/**
 	 * Returns true if the speech data is final, false otherwise
 	 * 
@@ -232,15 +213,14 @@ public class SpeechData extends InputStream implements Value {
 		return isFinal;
 	}
 
-
 	/**
 	 * Returns the raw array of bytes
+	 * 
 	 * @return
 	 */
 	public byte[] toByteArray() {
 		return data;
 	}
-
 
 	/**
 	 * Returns the format of the speech data
@@ -250,7 +230,6 @@ public class SpeechData extends InputStream implements Value {
 	public AudioFormat getFormat() {
 		return format;
 	}
-	
 
 	// ===================================
 	// UTILITY METHODS
@@ -263,8 +242,7 @@ public class SpeechData extends InputStream implements Value {
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
 	}
-	
-	
+
 	/**
 	 * Returns a fixed number (32).
 	 * 
@@ -274,7 +252,6 @@ public class SpeechData extends InputStream implements Value {
 	public int hashCode() {
 		return 32;
 	}
-	
 
 	/**
 	 * Returns a string representation of the data
@@ -283,9 +260,8 @@ public class SpeechData extends InputStream implements Value {
 	 */
 	@Override
 	public String toString() {
-		return "Speech data (size: " + data.length/1000 + " kb.)";
+		return "Speech data (size: " + data.length / 1000 + " kb.)";
 	}
-
 
 	/**
 	 * Returns itself
@@ -294,8 +270,6 @@ public class SpeechData extends InputStream implements Value {
 	public SpeechData copy() {
 		return this;
 	}
-	
-
 
 	/**
 	 * Returns false
@@ -305,19 +279,24 @@ public class SpeechData extends InputStream implements Value {
 		return false;
 	}
 
-
+	
 	/**
-	 * Returns itself
+	 * Returns the concatenation of the two audio data.
 	 */
 	@Override
-	public Value concatenate(Value value) {
-		return this;
+	public SpeechData concatenate(Value value) {
+		if (value instanceof SpeechData) {
+			SpeechData newData = new SpeechData(format);
+			newData.currentPos = currentPos;
+			newData.write(data);
+			newData.write(((SpeechData)value).data);
+			newData.isFinal = true;
+			return newData;
+		}
+		else {
+			throw new DialException("Cannot concatenate SpeechData and " 
+		+ value.getClass().getCanonicalName());
+		}
 	}
-
-
-
-
-
-
 
 }
