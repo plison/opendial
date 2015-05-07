@@ -189,6 +189,13 @@ public class SpeechData extends InputStream implements Value {
 		return i;
 	}
 
+	/**
+	 * Resets the current position in the stream to 0.
+	 */
+	public void rewind() {
+		currentPos = 0;
+	}
+
 	// ===================================
 	// GETTERS
 	// ===================================
@@ -202,7 +209,6 @@ public class SpeechData extends InputStream implements Value {
 	public int length() {
 		return data.length / (format.getFrameSize() * 8);
 	}
-
 
 	/**
 	 * Returns true if the speech data is final, false otherwise
@@ -279,23 +285,30 @@ public class SpeechData extends InputStream implements Value {
 		return false;
 	}
 
-	
 	/**
-	 * Returns the concatenation of the two audio data.
+	 * Returns the concatenation of the two audio data. If the values are not
+	 * final, waits for them to be final.
 	 */
 	@Override
 	public SpeechData concatenate(Value value) {
+
 		if (value instanceof SpeechData) {
+			while (!isFinal() || !((SpeechData) value).isFinal()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
+			}
+
 			SpeechData newData = new SpeechData(format);
 			newData.currentPos = currentPos;
 			newData.write(data);
-			newData.write(((SpeechData)value).data);
+			newData.write(((SpeechData) value).data);
 			newData.isFinal = true;
 			return newData;
-		}
-		else {
-			throw new DialException("Cannot concatenate SpeechData and " 
-		+ value.getClass().getCanonicalName());
+		} else {
+			throw new DialException("Cannot concatenate SpeechData and "
+					+ value.getClass().getCanonicalName());
 		}
 	}
 

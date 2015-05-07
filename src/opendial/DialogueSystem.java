@@ -40,6 +40,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.SpeechData;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
@@ -338,6 +339,18 @@ public class DialogueSystem {
 			table.addRow(input, userInput.get(input));
 		}
 		return addContent(table);
+	}
+
+	/**
+	 * Adds the user input as a raw speech data to the dialogue state and
+	 * subsequently updates it.
+	 * 
+	 * @param inputSpeech the speech data containing the user utterance
+	 * @return the variables that were updated in the process
+	 * @throws DialException if the state could not be updated
+	 */
+	public Set<String> addUserInput(SpeechData inputSpeech) {
+		return addContent(new Assignment(settings.userSpeech, inputSpeech));
 	}
 
 	/**
