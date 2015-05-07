@@ -37,6 +37,7 @@ import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.datastructs.SpeechData;
+import opendial.gui.SpeechInputPanel;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
@@ -105,12 +106,15 @@ public class AudioModule implements Module {
 	/** background audio level */
 	double backgroundVolume = 0.0;
 
+	/** speech panel (used to e.g. show the current volume) */
+	SpeechInputPanel speechPanel;
+	
 	/**
 	 * Threshold for the difference between the current and background audio
 	 * volume level above which the audio is considered as speech
 	 */
 	public static final double VOLUME_THRESHOLD = 250;
-
+	
 	/**
 	 * Minimum duration for a sound to be considered as possible speech (in
 	 * milliseconds)
@@ -145,6 +149,16 @@ public class AudioModule implements Module {
 			audioLine.stop();
 			audioLine.close();
 		}));
+	}
+	
+
+	/**
+	 * Attaches the speech panel to the module
+	 * 
+	 * @param speechPanel the speech input panel (containing the volume panel)
+	 */
+	public void attachPanel(SpeechInputPanel speechPanel) {
+		this.speechPanel = speechPanel;
 	}
 
 	/**
@@ -284,7 +298,7 @@ public class AudioModule implements Module {
 				audioLine.start();
 				audioLine.flush();
 				AudioFormat format = audioLine.getFormat();
-				byte[] buffer = new byte[audioLine.getBufferSize() / 20];
+				byte[] buffer = new byte[audioLine.getBufferSize() / 5];
 				while (audioLine.isOpen()) {
 					boolean systemTurnBeforeRead = outputSpeech != null;
 
@@ -311,6 +325,9 @@ public class AudioModule implements Module {
 						backgroundVolume = rms;
 					} else {
 						backgroundVolume += (rms - backgroundVolume) * 0.003;
+					}
+					if (speechPanel != null) {
+						speechPanel.updateVolume((int)currentVolume);
 					}
 					double difference = currentVolume - backgroundVolume;
 
@@ -388,5 +405,6 @@ public class AudioModule implements Module {
 		}
 
 	}
+
 
 }
