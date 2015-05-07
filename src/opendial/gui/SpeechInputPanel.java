@@ -103,7 +103,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		Thread t = new Thread(() -> {
 			while (true) {			
 				slm.updateVolume(recorder.getVolume());
-				try {Thread.sleep(100);	} 
+				try {Thread.sleep(200);	} 
 				catch (InterruptedException e) {
 				}
 			}

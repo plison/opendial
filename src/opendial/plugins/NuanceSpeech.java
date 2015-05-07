@@ -174,7 +174,7 @@ public class NuanceSpeech implements Module {
 	private void recognise(SpeechData stream) {
 		
 		int sampleRate = (int) stream.getFormat().getSampleRate();
-		log.info("calling Nuance server for recognition... " + "(sample rate: "
+		log.debug("calling Nuance server for recognition... " + "(sample rate: "
 				+ sampleRate + " Hz.)");
 		try {
 				
@@ -195,7 +195,7 @@ public class NuanceSpeech implements Module {
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity == null
 					|| response.getStatusLine().getStatusCode() != 200) {
-				log.info("Response status: " + response.getStatusLine());
+				log.debug("Response status: " + response.getStatusLine());
 			} else {
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(resEntity.getContent()));
@@ -233,7 +233,7 @@ public class NuanceSpeech implements Module {
 	private void synthesise(String utterance, SpeechData output) {
 
 		try {
-			log.info("calling Nuance server for synthesis of " + utterance);
+			log.debug("calling Nuance server to synthesise utterance \"" + utterance + "\"");
 
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type", "text/plain");
@@ -252,10 +252,11 @@ public class NuanceSpeech implements Module {
 				return;
 			}
 
-			output.write(AudioUtils.readStream(resEntity.getContent()));
+			
+			output.write(resEntity.getContent());
 			httppost.releaseConnection();
 			output.setAsFinal();
-			log.info("... Speech synthesis completed");
+			log.debug("... Speech synthesis completed");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -292,8 +292,11 @@ public class DialogueSystem {
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
 		attachModule(AudioModule.class);
-		if (getModule(GUIFrame.class) != null) {
+		if (settings.showGUI) {
 			getModule(GUIFrame.class).enableSpeech(true);
+		}
+		else {
+			getModule(AudioModule.class).activateVAD(true);
 		}
 		}
 		else {
@@ -565,7 +568,6 @@ public class DialogueSystem {
 		settings.remoteConnections.put(address, port);
 		getModule(RemoteConnector.class).connectTo(address, port);
 		if (settings.showGUI) {
-			getModule(GUIFrame.class).enableSpeech(true);
 			getModule(GUIFrame.class).getMenu().update();
 		}
 	}
@@ -728,9 +730,6 @@ public class DialogueSystem {
 				system.attachModule(new TextOnlyInterface(system));
 			}
 
-			if (!settings.remoteConnections.isEmpty() && settings.showGUI) {
-				system.getModule(GUIFrame.class).enableSpeech(true);
-			}
 			system.startSystem();
 			log.info("Dialogue system started!");
 		} catch (DialException e) {

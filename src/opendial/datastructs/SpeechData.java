@@ -23,9 +23,12 @@
 
 package opendial.datastructs;
 
+import java.io.IOException;
 import java.io.InputStream;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.AudioUtils;
@@ -43,7 +46,7 @@ import opendial.utils.AudioUtils;
 public class SpeechData extends InputStream implements Value {
 
 	// logger
-	public static Logger log = new Logger("SpeechVal", Logger.Level.DEBUG);
+	public static Logger log = new Logger("SpeechData", Logger.Level.DEBUG);
 
 	/** the position in the data stream */
 	int currentPos = 0;
@@ -82,21 +85,10 @@ public class SpeechData extends InputStream implements Value {
 	public SpeechData(byte[] data) {
 		AudioInputStream stream = AudioUtils.getAudioStream(data);
 		format = stream.getFormat();
-		this.data = AudioUtils.readStream(stream);
+		this.data = data;
 		isFinal = true;
 	}
 	
-	
-	/**
-	 * Creates a stream of speech data based on an audio input stream
-	 * 
-	 * @param stream the stream of audio data
-	 */
-	public SpeechData(AudioInputStream stream) {
-		format = stream.getFormat();
-		data = AudioUtils.readStream(stream);
-		isFinal = true;
-	}
 	
 
 	
@@ -130,6 +122,34 @@ public class SpeechData extends InputStream implements Value {
 		System.arraycopy(data, 0, newData, 0, data.length);
 		System.arraycopy(buffer, 0, newData, data.length, buffer.length);
 		data = newData;
+	}
+	
+
+	
+	/**
+	 * Expands the current speech data by appending the data in the
+	 * input stream.
+	 * 
+	 * @param stream the stream to add to the speech data
+	 */
+	public void write(InputStream stream) {
+		if (isFinal) {
+			log.warning("attempting to write to a final SpeechData object");
+			return;
+		}
+		try {
+			int nRead;
+			byte[] buffer = new byte[1024 * 16];
+			while ((nRead = stream.read(buffer, 0, buffer.length)) != -1) {
+				byte[] newData = new byte[data.length + nRead];
+				System.arraycopy(data, 0, newData, 0, data.length);
+				System.arraycopy(buffer, 0, newData, data.length, nRead);
+				data = newData;
+			}
+		}
+		catch (IOException e) {
+			log.warning("Cannot write the stream to the speech data");
+		}		
 	}
 
 	
@@ -293,6 +313,8 @@ public class SpeechData extends InputStream implements Value {
 	public Value concatenate(Value value) {
 		return this;
 	}
+
+
 
 
 

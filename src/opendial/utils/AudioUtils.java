@@ -69,6 +69,8 @@ public class AudioUtils {
 	/** Audio format for the speech synthesis */
 	static AudioFormat OUT = new AudioFormat(16000.0F, 16, 1, true, false);
 
+	/** Maximum number of samples to consider for the calculation of the root mean-square */
+	static int MAX_SIZE_RMS = 100;
 
 	/**
 	 * Selects an target data line for a particular audio mixer.
@@ -224,6 +226,7 @@ public class AudioUtils {
 		return rawBuffer.toByteArray();
 	}
 	
+	
 	/**
 	 * Generates an audio file from the stream. The file must be a WAV file.
 	 * 
@@ -282,37 +285,52 @@ public class AudioUtils {
 
 
 	/**
-	 * Calculate the RMS of the audio data
+	 * Calculate the Root-Mean Square of the audio data
 	 * 
 	 * @param audioData the audio data
+	 * @param format the audio format
 	 * @return the corresponding RMS value
 	 */
 	public static double getRMS(byte[] audioData, AudioFormat format) {
-		int[] samples = convertAudio(audioData,format);
+		
+		// we must first convert the raw array of bytes into integers
+		int[] samples = convertByteArray(audioData,format);
+		
 		long sumOfSquares = Arrays.stream(samples).mapToLong(i -> i*i).sum();
 		double rootMeanSquare = Math.sqrt(sumOfSquares / samples.length);
 		return rootMeanSquare;
 	}
 
-
-	private static int[] convertAudio(byte[] audioData, AudioFormat format) {
+	/**
+	 * Converts the byte array into an array of integers where each integer corresponds
+	 * to an audio sample.
+	 * 
+	 * @param audioData the audio data
+	 * @param format the audio format
+	 * @return the corresponding array of integers
+	 */
+	private static int[] convertByteArray(byte[] audioData, AudioFormat format) {
 
 		if (format.getFrameSize() == 2) {
-			int[] samples = new int[audioData.length / 2];
+			int[] samples = new int[Math.min(audioData.length/2, MAX_SIZE_RMS)];
+			int offset = audioData.length -2*samples.length;
 			for (int i = 0 ; i < samples.length ; i++) {
 				if (format.isBigEndian()) {
-					samples[i] =((audioData[i*2 + 0] << 8) | (audioData[i*2 + 1] & 0xFF) );
+					samples[i] =((audioData[offset + i*2] << 8) 
+							| (audioData[offset + i*2 + 1] & 0xFF) );
 				}
 				else {
-				samples[i] = (  (audioData[i*2 + 0] & 0xFF) | (audioData[i*2 + 1] << 8) );
+				samples[i] = (  (audioData[offset + i*2 + 0] & 0xFF) 
+						| (audioData[offset + i*2 + 1] << 8) );
 				}
 			}
 			return samples;
 		}
 		else if (format.getFrameSize() == 1) {
-			int[] samples = new int[audioData.length];
+			int[] samples = new int[Math.min(audioData.length, MAX_SIZE_RMS)];
+			int offset = audioData.length -samples.length;
 			for (int i = 0 ; i < samples.length ; i++) {
-				samples[i] =  (audioData[i] << 8);
+				samples[i] =  (audioData[offset + i] << 8);
 			}
 			return samples;
 		}
