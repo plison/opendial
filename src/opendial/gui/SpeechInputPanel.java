@@ -119,7 +119,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		try {
-			recorder.startRecording();
+			recorder.startRecording(0);
 		} catch (DialException ex) {
 			log.warning(ex.toString());
 		}

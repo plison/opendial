@@ -47,6 +47,7 @@ import opendial.gui.GUIFrame;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.InferenceUtils;
+import opendial.utils.StringUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -85,6 +86,9 @@ public class NuanceSpeech implements Module {
 	CloseableHttpClient ttsClient;
 	URI ttsURI;
 
+	/** Cache of previously synthesised system utterances */
+	Map<String, SpeechData> ttsCache;
+
 	/** whether the system is paused or active */
 	boolean paused = true;
 
@@ -119,6 +123,7 @@ public class NuanceSpeech implements Module {
 			throw new DialException(
 					"Nuance connection requires access to the GUI");
 		}
+		ttsCache = new HashMap<String, SpeechData>();
 	}
 
 	/**
@@ -143,26 +148,28 @@ public class NuanceSpeech implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
-		String speechVar = system.getSettings().userSpeech;
+		String userSpeechVar = system.getSettings().userSpeech;
 		String outputVar = system.getSettings().systemOutput;
 
-		if (updatedVars.contains(speechVar) && state.hasChanceNode(speechVar)
-				&& !paused) {
-			Value speechVal = system.getContent(speechVar).getBest();
+		// if a new user speech is detected, start the speech recognition
+		if (updatedVars.contains(userSpeechVar)
+				&& state.hasChanceNode(userSpeechVar) && !paused) {
+
+			Value speechVal = system.getContent(userSpeechVar).getBest();
 			if (speechVal instanceof SpeechData) {
 				Thread t = new Thread(() -> recognise((SpeechData) speechVal));
 				t.start();
 
 			}
-		} else if (updatedVars.contains(outputVar)
+		}
+
+		// if a new system speech is detected, start speech synthesis
+		else if (updatedVars.contains(outputVar)
 				&& state.hasChanceNode(outputVar) && !paused) {
+
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
-				SpeechData output = new SpeechData(new AudioFormat(16000, 16,
-						1, true, false));
-				system.addContent(new Assignment(
-						system.getSettings().systemSpeech, output));
-				synthesise(utteranceVal.toString(), output);
+				synthesise(utteranceVal.toString());
 			}
 		}
 	}
@@ -226,6 +233,29 @@ public class NuanceSpeech implements Module {
 	}
 
 	/**
+	 * Synthesises the provided utterance (first looking at the cache of
+	 * existing synthesised speech, and starting the generation if no one is
+	 * already present).
+	 * 
+	 * @param utterance the utterance to synthesise
+	 */
+	private void synthesise(String utterance) {
+
+		String systemSpeechVar = system.getSettings().systemSpeech;
+
+		if (ttsCache.containsKey(utterance)) {
+			SpeechData outputSpeech = ttsCache.get(utterance);
+			outputSpeech.rewind();
+			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
+		} else {
+			AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
+			SpeechData outputSpeech = new SpeechData(format);
+			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
+			new Thread(() -> synthesise(utterance, outputSpeech)).start();
+		}
+	}
+
+	/**
 	 * Synthesises the provided utterance and adds the resulting stream of audio
 	 * data to the SpeechData object.
 	 * 
@@ -258,7 +288,10 @@ public class NuanceSpeech implements Module {
 			output.write(resEntity.getContent());
 			httppost.releaseConnection();
 			output.setAsFinal();
-			log.debug("... Speech synthesis completed");
+			ttsCache.put(utterance, output);
+			log.debug("... Speech synthesis completed (speech duration: "
+					+ StringUtils.getShortForm((double) output.length() / 1000)
+					+ " s.)");
 
 		} catch (Exception e) {
 			e.printStackTrace();

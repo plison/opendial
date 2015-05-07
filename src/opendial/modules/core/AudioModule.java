@@ -36,7 +36,6 @@ import javax.sound.sampled.TargetDataLine;
 import opendial.DialogueSystem;
 import opendial.arch.Logger;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
@@ -91,7 +90,7 @@ public class AudioModule implements Module {
 	/** The recorded speech (null if the input audio is not currently speech) */
 	SpeechData inputSpeech;
 
-	/** The  output speech currently playing */
+	/** The output speech currently playing */
 	SpeechData outputSpeech;
 
 	/** whether the module is paused or not */
@@ -128,7 +127,6 @@ public class AudioModule implements Module {
 	 */
 	public AudioModule(DialogueSystem system) {
 		this.system = system;
-		audioLine = AudioUtils.selectAudioLine(system.getSettings().inputMixer);
 	}
 
 	/**
@@ -142,6 +140,11 @@ public class AudioModule implements Module {
 		}
 		audioLine = AudioUtils.selectAudioLine(system.getSettings().inputMixer);
 		(new Thread(new SpeechRecorder())).start();
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			audioLine.stop();
+			audioLine.close();
+		}));
 	}
 
 	/**
@@ -158,22 +161,38 @@ public class AudioModule implements Module {
 	/**
 	 * Starts the recording of a new speech segment, and adds its content to the
 	 * dialogue state. The new speech segment is only inserted after waiting a
-	 * duration of MIN_DURATION, in order to avoid inserting many spurious short
-	 * noises into the dialogue state.
+	 * minimum duration, in order to avoid inserting many spurious short noises
+	 * into the dialogue state.
+	 * 
+	 * @param minDuration the duration to wait before actually inserting the
+	 *            speech data object to the dialogue state
 	 */
-	public void startRecording() {
+	public void startRecording(int minDuration) {
 		if (!isPaused) {
+
+			// creates a new SpeechData object
 			inputSpeech = new SpeechData(audioLine.getFormat());
-			new Thread(() -> {
-				try {
-					Thread.sleep(MIN_DURATION);
-				} catch (Exception e) {
-				}
+
+			// state update procedure
+			Runnable stateUpdate = () -> {
 				if (inputSpeech != null && !inputSpeech.isFinal()) {
-					system.addContent(new Assignment(
-							system.getSettings().userSpeech, inputSpeech));
+					system.addUserInput(inputSpeech);
 				}
-			}).start();
+			};
+
+			// performs the update
+			if (minDuration > 0) {
+				new Thread(() -> {
+					try {
+						Thread.sleep(minDuration);
+					} catch (Exception e) {
+					}
+					stateUpdate.run();
+				}).start();
+			} else {
+				stateUpdate.run();
+			}
+
 		} else {
 			log.info("Audio recorder is currently paused");
 		}
@@ -186,8 +205,7 @@ public class AudioModule implements Module {
 		if (inputSpeech != null) {
 			inputSpeech.setAsFinal();
 
-			if (SAVE_SPEECH.length() > 0
-					&& inputSpeech.length() > MIN_DURATION) {
+			if (SAVE_SPEECH.length() > 0 && inputSpeech.length() > MIN_DURATION) {
 				AudioUtils.generateFile(inputSpeech.toByteArray(), new File(
 						SAVE_SPEECH));
 			}
@@ -212,13 +230,14 @@ public class AudioModule implements Module {
 
 				// normal case: no previous speech is playing
 				if (outputSpeech == null) {
-					outputSpeech = (SpeechData)v;
+					outputSpeech = (SpeechData) v;
 					(new Thread(new SpeechPlayer())).start();
 				}
 
-				// if the system is already playing a sound, concatenate to the existing one
+				// if the system is already playing a sound, concatenate to the
+				// existing one
 				else {
-					outputSpeech = outputSpeech.concatenate((SpeechData)v);
+					outputSpeech = outputSpeech.concatenate(v);
 				}
 			}
 		}
@@ -254,13 +273,6 @@ public class AudioModule implements Module {
 	 */
 	final class SpeechRecorder implements Runnable {
 
-		public SpeechRecorder() {
-			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				audioLine.stop();
-				audioLine.close();
-			}));
-		}
-
 		/**
 		 * Captures the audio data in the audio line and updates the data array.
 		 */
@@ -271,6 +283,7 @@ public class AudioModule implements Module {
 				audioLine.open();
 				audioLine.start();
 				audioLine.flush();
+				AudioFormat format = audioLine.getFormat();
 				byte[] buffer = new byte[audioLine.getBufferSize() / 20];
 				while (audioLine.isOpen()) {
 					boolean systemTurnBeforeRead = outputSpeech != null;
@@ -292,8 +305,7 @@ public class AudioModule implements Module {
 					}
 
 					// update the volume estimates
-					double rms = AudioUtils.getRMS(buffer,
-							audioLine.getFormat());
+					double rms = AudioUtils.getRMS(buffer, format);
 					currentVolume = (currentVolume * 2 + rms) / 3;
 					if (rms < backgroundVolume) {
 						backgroundVolume = rms;
@@ -305,12 +317,14 @@ public class AudioModule implements Module {
 					// try to detect voice (if VAD is activated)
 					if (voiceActivityDetection && inputSpeech == null
 							&& difference > VOLUME_THRESHOLD) {
-						startRecording();
+						startRecording(MIN_DURATION);
 					}
 
 					// write to the current speech data if the audio is speech
 					if (inputSpeech != null && !inputSpeech.isFinal()) {
 						inputSpeech.write(buffer);
+
+						// stop the recording if the volume is back to normal
 						if (voiceActivityDetection
 								&& difference < VOLUME_THRESHOLD / 10) {
 							stopRecording();
@@ -352,6 +366,8 @@ public class AudioModule implements Module {
 				byte[] abData = new byte[256 * 16];
 				while (nBytesRead != -1) {
 					nBytesRead = outputSpeech.read(abData, 0, abData.length);
+
+					// stop playing if the user starts talking
 					if (inputSpeech != null) {
 						break;
 					}
