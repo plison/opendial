@@ -275,7 +275,7 @@ public class AudioModule implements Module {
 					
 					// update the volume estimates
 					double rms = AudioUtils.getRMS(buffer, audioLine.getFormat());
-					currentVolume = (currentVolume + rms) /2;	
+					currentVolume = (currentVolume*2 + rms) /3;	
 					if (rms < backgroundVolume) {
 						backgroundVolume = rms;
 					}
@@ -292,11 +292,9 @@ public class AudioModule implements Module {
 
 					// write to the current speech data if the audio is speech
 					if (inputSpeech != null && !inputSpeech.isFinal()) {
+						inputSpeech.write(buffer);
 						if (voiceActivityDetection && difference < VOLUME_THRESHOLD / 10) {
 							stopRecording();
-						}
-						else {
-							inputSpeech.write(buffer);
 						}
 					}
 				}

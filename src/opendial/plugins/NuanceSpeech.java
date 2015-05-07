@@ -174,8 +174,8 @@ public class NuanceSpeech implements Module {
 	private void recognise(SpeechData stream) {
 		
 		int sampleRate = (int) stream.getFormat().getSampleRate();
-		log.debug("calling Nuance server for recognition... " + "(sample rate: "
-				+ sampleRate + " Hz.)");
+	//	log.debug("calling Nuance server for recognition... " + "(sample rate: "
+	//			+ sampleRate + " Hz.)");
 		try {
 				
 			HttpPost httppost = new HttpPost(asrURI);
@@ -195,7 +195,7 @@ public class NuanceSpeech implements Module {
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity == null
 					|| response.getStatusLine().getStatusCode() != 200) {
-				log.debug("Response status: " + response.getStatusLine());
+				log.debug("(speech could not be recognised)");
 			} else {
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(resEntity.getContent()));
@@ -210,7 +210,7 @@ public class NuanceSpeech implements Module {
 					lines.put(s, ((int)(lines.get(s)*100))/100.0);
 				}
 				
-				log.debug("recognition results: " + lines);
+		//		log.debug("recognition results: " + lines);
 				reader.close();
 				if (!lines.isEmpty()) {
 					system.addUserInput(lines);
