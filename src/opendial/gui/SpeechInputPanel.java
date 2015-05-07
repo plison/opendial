@@ -144,7 +144,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	}
 
 	public void updateVolume(int currentVolume) {
-		if (currentVolume != volume) {
+		if (Math.abs(currentVolume - volume) > 20) {
 			volume = currentVolume;
 			slm.repaint();
 		}
