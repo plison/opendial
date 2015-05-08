@@ -36,15 +36,15 @@ import opendial.datastructs.ValueRange;
 import opendial.utils.StringUtils;
 
 /**
- * Traditional probability distribution represented as a discrete probability
- * table. The table expresses a generic distribution of type P(X | Y1, ..., Yn),
- * where X is called the "head" random variable, and Y1, ..., Yn the conditional
- * random variables.
+ * Traditional probability distribution represented as a discrete probability table.
+ * The table expresses a generic distribution of type P(X | Y1, ..., Yn), where X is
+ * called the "head" random variable, and Y1, ..., Yn the conditional random
+ * variables.
  * 
  * <p>
- * Technically, the table is expressed as a double mapping, where each
- * assignment for Y1, ..., Yn is mapped to a categorical table where the
- * assignments for X are associated with a given probability value.
+ * Technically, the table is expressed as a double mapping, where each assignment for
+ * Y1, ..., Yn is mapped to a categorical table where the assignments for X are
+ * associated with a given probability value.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -52,16 +52,14 @@ import opendial.utils.StringUtils;
 public class ConditionalTable extends ConditionalDistribution<CategoricalTable> {
 
 	// logger
-	public static Logger log = new Logger("ConditionalTable",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("ConditionalTable", Logger.Level.DEBUG);
 
 	// ===================================
 	// TABLE CONSTRUCTION
 	// ===================================
 
 	/**
-	 * Constructs a new conditional categorical table with the given variable
-	 * name.
+	 * Constructs a new conditional categorical table with the given variable name.
 	 * 
 	 * @param headVar the variable name
 	 */
@@ -70,9 +68,9 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Adds a new row to the probability table, given the conditional
-	 * assignment, the head assignment and the probability value. If the table
-	 * already contains a probability, it is erased.
+	 * Adds a new row to the probability table, given the conditional assignment, the
+	 * head assignment and the probability value. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param condition the conditional assignment for Y1...Yn
 	 * @param head the value for the head variable
@@ -95,9 +93,9 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Adds a new row to the probability table, given the conditional
-	 * assignment, the head assignment and the probability value. If the table
-	 * already contains a probability, it is erased.
+	 * Adds a new row to the probability table, given the conditional assignment, the
+	 * head assignment and the probability value. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param condition the conditional assignment for Y1...Yn
 	 * @param head the value for the head variable (as a string)
@@ -108,9 +106,9 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Adds a new row to the probability table, given the conditional
-	 * assignment, the head assignment and the probability value. If the table
-	 * already contains a probability, it is erased.
+	 * Adds a new row to the probability table, given the conditional assignment, the
+	 * head assignment and the probability value. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param condition the conditional assignment for Y1...Yn
 	 * @param head the value for the head variable (as a double)
@@ -121,9 +119,9 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Adds a new row to the probability table, given the conditional
-	 * assignment, the head assignment and the probability value. If the table
-	 * already contains a probability, it is erased.
+	 * Adds a new row to the probability table, given the conditional assignment, the
+	 * head assignment and the probability value. If the table already contains a
+	 * probability, it is erased.
 	 * 
 	 * @param condition the conditional assignment for Y1...Yn
 	 * @param head the value for the head variable (as a boolean)
@@ -134,8 +132,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Increments the probability specified in the table for the given condition
-	 * and head assignments. If none exists, simply assign the probability.
+	 * Increments the probability specified in the table for the given condition and
+	 * head assignments. If none exists, simply assign the probability.
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
@@ -144,7 +142,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	public void incrementRow(Assignment condition, Value head, double prob) {
 		if (table.containsKey(condition) && table.get(condition).hasProb(head)) {
 			addRow(condition, head, table.get(condition).getProb(head) + prob);
-		} else {
+		}
+		else {
 			addRow(condition, head, prob);
 		}
 	}
@@ -174,8 +173,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Removes a row from the table, given the condition and the head
-	 * assignments.
+	 * Removes a row from the table, given the condition and the head assignments.
 	 * 
 	 * @param condition conditional assignment
 	 * @param head head assignment
@@ -183,7 +181,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	public void removeRow(Assignment condition, Value head) {
 		if (table.containsKey(condition)) {
 			table.get(condition).removeRow(head);
-		} else {
+		}
+		else {
 			log.debug("cannot remove row: condition " + condition
 					+ " is not present");
 		}
@@ -193,8 +192,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * Fill the "conditional holes" of the distribution -- that is, the possible
 	 * conditional assignments Y1,..., Yn that are not associated with any
 	 * distribution P(X1,...,Xn | Y1,...,Yn) in the table. The method create a
-	 * default assignment X1=None,... Xn=None with probability 1.0 for these
-	 * cases.
+	 * default assignment X1=None,... Xn=None with probability 1.0 for these cases.
 	 */
 	public void fillConditionalHoles() {
 		if (conditionalVars.size() <= 1) {
@@ -202,8 +200,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		}
 		ValueRange possibleCondPairs = new ValueRange(table.keySet());
 		if (possibleCondPairs.getNbCombinations() < 500) {
-			Set<Assignment> possibleCondAssignments = possibleCondPairs
-					.linearise();
+			Set<Assignment> possibleCondAssignments = possibleCondPairs.linearise();
 			possibleCondAssignments.remove(new Assignment());
 
 			for (Assignment possibleCond : possibleCondAssignments) {
@@ -219,8 +216,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	// ===================================
 
 	/**
-	 * Returns the probability P(head|condition), if any is specified. Else,
-	 * returns 0.0f.
+	 * Returns the probability P(head|condition), if any is specified. Else, returns
+	 * 0.0f.
 	 *
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
@@ -233,7 +230,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
-		} else {
+		}
+		else {
 			for (String condVar : conditionalVars) {
 				if (!trimmed.containsVar(condVar)) {
 					trimmed.addPair(condVar, ValueFactory.none());
@@ -262,8 +260,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	}
 
 	/**
-	 * Returns whether the distribution has a well-defined probability for the
-	 * given conditional and head assignments
+	 * Returns whether the distribution has a well-defined probability for the given
+	 * conditional and head assignments
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
@@ -272,14 +270,14 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 */
 	public boolean hasProb(Assignment condition, Value head) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		boolean result = (table.containsKey(trimmed) && table.get(trimmed)
-				.hasProb(head));
+		boolean result = (table.containsKey(trimmed) && table.get(trimmed).hasProb(
+				head));
 		return result;
 	}
 
 	/**
-	 * Returns true if the table contains a distribution for the given
-	 * assignment of conditional variables, and false otherwise
+	 * Returns true if the table contains a distribution for the given assignment of
+	 * conditional variables, and false otherwise
 	 * 
 	 * @param condition the conditional assignment
 	 * @return true if the table contains a distribution, false otherwise
@@ -317,8 +315,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @return the resulting probability distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws DialException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
@@ -327,11 +324,11 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		ConditionalTable newDistrib = new ConditionalTable(headVar);
 		for (Assignment a : table.keySet()) {
 			if (a.consistentWith(condition)) {
-				Assignment remaining = a.getTrimmedInverse(condition
-						.getVariables());
+				Assignment remaining = a.getTrimmedInverse(condition.getVariables());
 				if (!newDistrib.table.containsKey(remaining)) {
 					newDistrib.addDistrib(remaining, table.get(a));
-				} else {
+				}
+				else {
 					log.warning("inconsistent results for partial posterior");
 				}
 			}
@@ -351,12 +348,13 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		String str = "";
 		for (Assignment cond : table.keySet()) {
 			for (Value head : table.get(cond).getValues()) {
-				String prob = StringUtils.getShortForm(table.get(cond).getProb(
-						head));
+				String prob = StringUtils
+						.getShortForm(table.get(cond).getProb(head));
 				if (cond.size() > 0) {
-					str += "P(" + headVar + "=" + head + " | " + cond + "):="
-							+ prob + "\n";
-				} else {
+					str += "P(" + headVar + "=" + head + " | " + cond + "):=" + prob
+							+ "\n";
+				}
+				else {
 					str += "P(" + headVar + "=" + head + "):=" + prob + "\n";
 				}
 			}

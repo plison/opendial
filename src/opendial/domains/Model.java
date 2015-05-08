@@ -120,8 +120,8 @@ public class Model {
 	}
 
 	/**
-	 * Sets the model as "blocking" (forbids other models to be triggered in
-	 * parallel when this model is triggered). Default is false.
+	 * Sets the model as "blocking" (forbids other models to be triggered in parallel
+	 * when this model is triggered). Default is false.
 	 * 
 	 * @param blocking whether to set the model in blocking mode or not
 	 */
@@ -161,7 +161,8 @@ public class Model {
 		for (Rule r : rules) {
 			try {
 				state.applyRule(r);
-			} catch (DialException e) {
+			}
+			catch (DialException e) {
 				log.warning("rule " + r.getRuleId() + " could not be applied: "
 						+ e.toString());
 			}
@@ -175,8 +176,7 @@ public class Model {
 	 * @param updatedVars the updated variables
 	 * @return true if triggered, false otherwise
 	 */
-	public boolean isTriggered(DialogueState state,
-			Collection<String> updatedVars) {
+	public boolean isTriggered(DialogueState state, Collection<String> updatedVars) {
 
 		if (rules.isEmpty()) {
 			return false;

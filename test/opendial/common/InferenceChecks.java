@@ -95,7 +95,8 @@ public class InferenceChecks {
 
 		try {
 			compareDistributions(distrib1, distrib2, 0.1);
-		} catch (AssertionError e) {
+		}
+		catch (AssertionError e) {
 			distrib2 = computeProb(query, is2);
 			log.debug("resampling for query "
 					+ new Query.ProbQuery(network, queryVars, evidence));
@@ -109,14 +110,14 @@ public class InferenceChecks {
 
 	public void checkProb(BNetwork network, String queryVar, String a,
 			double expected) throws DialException {
-		checkProb(network, Arrays.asList(queryVar),
-				new Assignment(queryVar, a), expected);
+		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
+				expected);
 	}
 
-	public void checkProb(BNetwork network, String queryVar, Value a,
-			double expected) throws DialException {
-		checkProb(network, Arrays.asList(queryVar),
-				new Assignment(queryVar, a), expected);
+	public void checkProb(BNetwork network, String queryVar, Value a, double expected)
+			throws DialException {
+		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
+				expected);
 	}
 
 	public void checkProb(BNetwork network, Collection<String> queryVars,
@@ -132,7 +133,8 @@ public class InferenceChecks {
 
 		try {
 			assertEquals(expected, distrib2.getProb(a), SAMPLING_THRESHOLD);
-		} catch (AssertionError e) {
+		}
+		catch (AssertionError e) {
 			distrib2 = computeProb(query, is2);
 			assertEquals(expected, distrib2.getProb(a), SAMPLING_THRESHOLD);
 		}
@@ -153,22 +155,21 @@ public class InferenceChecks {
 		ContinuousDistribution distrib2 = computeProb(query, is).getMarginal(
 				variable).toContinuous();
 
-		assertEquals(expected, distrib1.getCumulativeProb(value),
-				EXACT_THRESHOLD);
+		assertEquals(expected, distrib1.getCumulativeProb(value), EXACT_THRESHOLD);
 
 		try {
 			assertEquals(expected, distrib2.getCumulativeProb(value),
 					SAMPLING_THRESHOLD);
-		} catch (AssertionError e) {
-			distrib2 = computeProb(query, is2).getMarginal(variable)
-					.toContinuous();
+		}
+		catch (AssertionError e) {
+			distrib2 = computeProb(query, is2).getMarginal(variable).toContinuous();
 			assertEquals(expected, distrib2.getCumulativeProb(value),
 					SAMPLING_THRESHOLD);
 		}
 
 		if (includeNaive) {
-			ContinuousDistribution distrib3 = computeProb(query, naive)
-					.getMarginal(variable).toContinuous();
+			ContinuousDistribution distrib3 = computeProb(query, naive).getMarginal(
+					variable).toContinuous();
 			assertEquals(expected, distrib3.toDiscrete().getProb(value),
 					EXACT_THRESHOLD);
 		}
@@ -176,8 +177,8 @@ public class InferenceChecks {
 
 	public void checkUtil(BNetwork network, String queryVar, String a,
 			double expected) throws DialException {
-		checkUtil(network, Arrays.asList(queryVar),
-				new Assignment(queryVar, a), expected);
+		checkUtil(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
+				expected);
 
 	}
 
@@ -192,7 +193,8 @@ public class InferenceChecks {
 		assertEquals(expected, distrib1.getUtil(a), EXACT_THRESHOLD);
 		try {
 			assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);
-		} catch (AssertionError e) {
+		}
+		catch (AssertionError e) {
 			distrib2 = computeUtil(query, is2);
 			assertEquals(expected, distrib2.getUtil(a), SAMPLING_THRESHOLD * 5);
 		}
@@ -228,13 +230,11 @@ public class InferenceChecks {
 	}
 
 	private void compareDistributions(MultivariateDistribution distrib1,
-			MultivariateDistribution distrib2, double margin)
-			throws DialException {
+			MultivariateDistribution distrib2, double margin) throws DialException {
 
 		Collection<Assignment> rows = distrib1.getValues();
 		for (Assignment value : rows) {
-			assertEquals(distrib1.getProb(value), distrib2.getProb(value),
-					margin);
+			assertEquals(distrib1.getProb(value), distrib2.getProb(value), margin);
 		}
 	}
 

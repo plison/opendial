@@ -64,8 +64,7 @@ import org.junit.Test;
 public class DistributionsTest {
 
 	// logger
-	public static Logger log = new Logger("DistributionsTest",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("DistributionsTest", Logger.Level.DEBUG);
 
 	@Test
 	public void testSimpleDistrib() {
@@ -78,14 +77,14 @@ public class DistributionsTest {
 		assertEquals(table.getProb("val1"), 0.7, 0.001);
 		assertEquals(table.getProb("val1"), 0.7, 0.001);
 		MultivariateTable table2 = new MultivariateTable();
-		table2.addRow(new Assignment(new Assignment("var2", "val3"), "var1",
-				"val2"), 0.9);
+		table2.addRow(
+				new Assignment(new Assignment("var2", "val3"), "var1", "val2"), 0.9);
 		// assertFalse(table2.isWellFormed());
-		table2.addRow(new Assignment(new Assignment("var2", "val3"), "var1",
-				"val1"), 0.1);
+		table2.addRow(
+				new Assignment(new Assignment("var2", "val3"), "var1", "val1"), 0.1);
 		assertTrue(table2.isWellFormed());
-		assertEquals(table2.getProb(new Assignment(new Assignment("var1",
-				"val1"), new Assignment("var2", "val3"))), 0.1, 0.001);
+		assertEquals(table2.getProb(new Assignment(new Assignment("var1", "val1"),
+				new Assignment("var2", "val3"))), 0.1, 0.001);
 	}
 
 	@Test
@@ -93,8 +92,7 @@ public class DistributionsTest {
 		assertEquals(4.0, MathUtils.getVolume(2, 1), 0.001);
 		assertEquals(Math.PI * 4, MathUtils.getVolume(2, 2), 0.001);
 		assertEquals(4.0 / 3.0 * Math.PI * 8, MathUtils.getVolume(2, 3), 0.001);
-		assertEquals(Math.pow(Math.PI, 2) / 2 * 81, MathUtils.getVolume(3, 4),
-				0.001);
+		assertEquals(Math.pow(Math.PI, 2) / 2 * 81, MathUtils.getVolume(3, 4), 0.001);
 	}
 
 	@Test
@@ -164,15 +162,14 @@ public class DistributionsTest {
 
 		double[][] samples = new double[20000][];
 		for (int i = 0; i < 20000; i++) {
-			double[] val = new double[] { ((DoubleVal) distrib.sample())
-					.getDouble() };
+			double[] val = new double[] { ((DoubleVal) distrib.sample()).getDouble() };
 			samples[i] = val;
 		}
 		GaussianDensityFunction estimated = new GaussianDensityFunction(samples);
-		assertEquals(estimated.getMean()[0],
-				distrib.getFunction().getMean()[0], 0.05);
-		assertEquals(estimated.getVariance()[0], distrib.getFunction()
-				.getVariance()[0], 0.1);
+		assertEquals(estimated.getMean()[0], distrib.getFunction().getMean()[0],
+				0.05);
+		assertEquals(estimated.getVariance()[0],
+				distrib.getFunction().getVariance()[0], 0.1);
 	}
 
 	@Test
@@ -246,26 +243,24 @@ public class DistributionsTest {
 	@Test
 	public void testKernelDistrib() throws InterruptedException, DialException {
 		KernelDensityFunction kds = new KernelDensityFunction(Arrays.asList(
-				new double[] { 0.1 }, new double[] { -1.5 },
-				new double[] { 0.6 }, new double[] { 1.3 },
-				new double[] { 1.3 }));
+				new double[] { 0.1 }, new double[] { -1.5 }, new double[] { 0.6 },
+				new double[] { 1.3 }, new double[] { 1.3 }));
 
-		ContinuousDistribution continuous2 = new ContinuousDistribution("var2",
-				kds);
+		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", kds);
 
 		assertEquals(continuous2.getProbDensity(-2.0), 0.086, 0.001);
 		assertEquals(continuous2.getProbDensity(0.6), 0.32, 0.01);
 		assertEquals(continuous2.getProbDensity(1.3), 0.30, 0.01);
-		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(-1.6)),
-				0.0, 0.001);
-		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(-1.4)),
-				0.2, 0.001);
-		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.29)),
-				0.6, 0.001);
-		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.3)),
-				1.0, 0.001);
-		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.31)),
-				1.0, 0.001);
+		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(-1.6)), 0.0,
+				0.001);
+		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(-1.4)), 0.2,
+				0.001);
+		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.29)), 0.6,
+				0.001);
+		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.3)), 1.0,
+				0.001);
+		assertEquals(continuous2.getCumulativeProb(ValueFactory.create(1.31)), 1.0,
+				0.001);
 		double sum = 0;
 		for (int i = 0; i < 20000; i++) {
 			sum += ((DoubleVal) continuous2.sample()).getDouble();
@@ -331,8 +326,7 @@ public class DistributionsTest {
 		SamplingAlgorithm sampling = new SamplingAlgorithm(2000, 200);
 
 		IndependentProbDistribution distrib2 = sampling.queryProb(bn, "var1");
-		assertEquals(
-				distrib2.getPosterior(new Assignment()).getValues().size(),
+		assertEquals(distrib2.getPosterior(new Assignment()).getValues().size(),
 				Settings.discretisationBuckets, 2);
 		assertEquals(0, distrib2.toContinuous().getCumulativeProb(-1.1), 0.001);
 		assertEquals(0.5, distrib2.toContinuous().getCumulativeProb(1), 0.05);
@@ -377,8 +371,7 @@ public class DistributionsTest {
 		inference.checkCDF(bn, "var2", 8, 0.98);
 
 		/**
-		 * ProbDistribution distrib = (new
-		 * ImportanceSampling()).queryProb(query);
+		 * ProbDistribution distrib = (new ImportanceSampling()).queryProb(query);
 		 * DistributionViewer.showDistributionViewer(distrib);
 		 * Thread.sleep(300000000);
 		 */
@@ -393,25 +386,23 @@ public class DistributionsTest {
 		double[] alphas = new double[2];
 		alphas[0] = 40.0;
 		alphas[1] = 80.0;
-		DirichletDensityFunction dirichlet = new DirichletDensityFunction(
-				alphas);
-		ContinuousDistribution distrib = new ContinuousDistribution("x",
-				dirichlet);
+		DirichletDensityFunction dirichlet = new DirichletDensityFunction(alphas);
+		ContinuousDistribution distrib = new ContinuousDistribution("x", dirichlet);
 		assertTrue(distrib.sample() instanceof ArrayVal);
 		assertEquals(2, ((ArrayVal) distrib.sample()).getVector().size());
-		assertEquals(0.33, ((ArrayVal) distrib.sample()).getVector().get(0),
-				0.15);
+		assertEquals(0.33, ((ArrayVal) distrib.sample()).getVector().get(0), 0.15);
 
-		assertEquals(8.0, distrib.getProbDensity(new ArrayVal(Arrays.asList(
-				0.333, 0.666))), 0.5);
+		assertEquals(8.0,
+				distrib.getProbDensity(new ArrayVal(Arrays.asList(0.333, 0.666))),
+				0.5);
 
 		ChanceNode n = new ChanceNode("x");
 		n.setDistrib(distrib);
 		BNetwork network = new BNetwork();
 		network.addNode(n);
 
-		IndependentProbDistribution table = (new VariableElimination())
-				.queryProb(network, "x");
+		IndependentProbDistribution table = (new VariableElimination()).queryProb(
+				network, "x");
 		double sum = 0;
 		for (Value a : table.getValues()) {
 			if (((ArrayVal) a).getVector().get(0) < 0.33333) {
@@ -423,16 +414,16 @@ public class DistributionsTest {
 		IndependentProbDistribution conversion1 = (new VariableElimination())
 				.queryProb(network, "x");
 
-		assertTrue(Math.abs(conversion1.getPosterior(new Assignment())
-				.getValues().size()
+		assertTrue(Math.abs(conversion1.getPosterior(new Assignment()).getValues()
+				.size()
 				- Settings.discretisationBuckets) < 10);
 		assertEquals(
 				0.02,
 				conversion1.getPosterior(new Assignment()).getProb(
 						ValueFactory.create("[0.3333,0.6666]")), 0.05);
 
-		IndependentProbDistribution conversion3 = (new SamplingAlgorithm(4000,
-				1000)).queryProb(network, "x");
+		IndependentProbDistribution conversion3 = (new SamplingAlgorithm(4000, 1000))
+				.queryProb(network, "x");
 
 		// new DistributionViewer(conversion3);
 		// Thread.sleep(3000000);
@@ -457,19 +448,14 @@ public class DistributionsTest {
 	public void testKernelDistrib2() throws InterruptedException {
 
 		KernelDensityFunction mkds = new KernelDensityFunction(Arrays.asList(
-				new double[] { 0.1 }, new double[] { -1.5 },
-				new double[] { 0.6 }, new double[] { 1.3 },
-				new double[] { 1.3 }));
+				new double[] { 0.1 }, new double[] { -1.5 }, new double[] { 0.6 },
+				new double[] { 1.3 }, new double[] { 1.3 }));
 
-		ContinuousDistribution continuous2 = new ContinuousDistribution("var2",
-				mkds);
+		ContinuousDistribution continuous2 = new ContinuousDistribution("var2", mkds);
 
-		assertEquals(continuous2.getProbDensity(new double[] { -2.0 }), 0.086,
-				0.001);
-		assertEquals(continuous2.getProbDensity(new double[] { 0.6 }), 0.32,
-				0.01);
-		assertEquals(continuous2.getProbDensity(new double[] { 1.3 }), 0.30,
-				0.01);
+		assertEquals(continuous2.getProbDensity(new double[] { -2.0 }), 0.086, 0.001);
+		assertEquals(continuous2.getProbDensity(new double[] { 0.6 }), 0.32, 0.01);
+		assertEquals(continuous2.getProbDensity(new double[] { 1.3 }), 0.30, 0.01);
 		double sum = 0;
 		for (int i = 0; i < 10000; i++) {
 			sum += ((DoubleVal) continuous2.sample()).getDouble();

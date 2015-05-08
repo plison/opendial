@@ -75,8 +75,8 @@ public class UtilityNode extends BNode {
 	}
 
 	/**
-	 * Adds a new utility to the node, valid for the given assignment on the
-	 * input nodes
+	 * Adds a new utility to the node, valid for the given assignment on the input
+	 * nodes
 	 * 
 	 * @param input a value assignment on the input nodes
 	 * @param value the assigned utility
@@ -84,7 +84,8 @@ public class UtilityNode extends BNode {
 	public void addUtility(Assignment input, double value) {
 		if (distrib instanceof UtilityTable) {
 			((UtilityTable) distrib).setUtil(input, value);
-		} else {
+		}
+		else {
 			log.warning("utility distribution is not a table, cannot add value");
 		}
 	}
@@ -97,7 +98,8 @@ public class UtilityNode extends BNode {
 	public void removeUtility(Assignment input) {
 		if (distrib instanceof UtilityTable) {
 			((UtilityTable) distrib).removeUtil(input);
-		} else {
+		}
+		else {
 			log.warning("utility distribution is not a table, cannot remove value");
 		}
 	}
@@ -142,7 +144,7 @@ public class UtilityNode extends BNode {
 	 * 
 	 * @return the utility distribution
 	 */
-	public UtilityFunction getDistrib() {
+	public UtilityFunction getFunction() {
 		return distrib;
 	}
 
@@ -169,8 +171,8 @@ public class UtilityNode extends BNode {
 	// ===================================
 
 	/**
-	 * Returns a copy of the utility node. Note that only the node content is
-	 * copied, not its connection with other nodes.
+	 * Returns a copy of the utility node. Note that only the node content is copied,
+	 * not its connection with other nodes.
 	 * 
 	 * @return the copy
 	 * @throws DialException if the node could not be copied
@@ -182,8 +184,8 @@ public class UtilityNode extends BNode {
 	}
 
 	/**
-	 * Returns a string representation of the node, consisting of the node
-	 * utility distribution
+	 * Returns a string representation of the node, consisting of the node utility
+	 * distribution
 	 */
 	@Override
 	public String toString() {
@@ -191,8 +193,8 @@ public class UtilityNode extends BNode {
 	}
 
 	/**
-	 * Returns the hashcode for the value, computed from the node identifier and
-	 * the distribution
+	 * Returns the hashcode for the value, computed from the node identifier and the
+	 * distribution
 	 *
 	 * @return the hashcode
 	 */

@@ -80,7 +80,8 @@ public class UniformDensityFunction implements DensityFunction {
 	public double getDensity(double... x) {
 		if (x[0] >= minimum && x[0] <= maximum) {
 			return 1.0f / (maximum - minimum);
-		} else {
+		}
+		else {
 			return 0.0f;
 		}
 	}
@@ -118,8 +119,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative probability
-	 * @throws DialException if the dimensionality of the point is greater than
-	 *             1
+	 * @throws DialException if the dimensionality of the point is greater than 1
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
@@ -130,9 +130,11 @@ public class UniformDensityFunction implements DensityFunction {
 
 		if (x[0] < minimum) {
 			return 0.0;
-		} else if (x[0] > maximum) {
+		}
+		else if (x[0] > maximum) {
 			return 1.0;
-		} else {
+		}
+		else {
 			return (x[0] - minimum) / (maximum - minimum);
 		}
 	}
@@ -164,8 +166,7 @@ public class UniformDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public int hashCode() {
-		return (new Double(maximum)).hashCode()
-				- (new Double(minimum)).hashCode();
+		return (new Double(maximum)).hashCode() - (new Double(minimum)).hashCode();
 	}
 
 	/**

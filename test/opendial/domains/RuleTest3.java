@@ -123,11 +123,10 @@ public class RuleTest3 {
 
 		effects.add(new BasicEffect("v2", ValueFactory.create("val2"), 1, true,
 				false));
-		assertEquals(new Effect(effects),
-				Effect.parseEffect("v1:=val1 ^ v2+=val2"));
+		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 
-		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1,
-				false, true));
+		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1, false,
+				true));
 		assertEquals(new Effect(effects),
 				Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 	}
@@ -140,14 +139,13 @@ public class RuleTest3 {
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
-		assertEquals(
-				0.35,
+		assertEquals(0.35,
 				system.getContent("out").getProb("val1 is in [val1, val2]")
-						+ system.getContent("out").getProb(
-								"val1 is in [val2, val1]"), 0.01);
+						+ system.getContent("out")
+								.getProb("val1 is in [val2, val1]"), 0.01);
 		assertEquals(0.5,
-				system.getContent("out2")
-						.getProb("this is a string is matched"), 0.01);
+				system.getContent("out2").getProb("this is a string is matched"),
+				0.01);
 	}
 
 }

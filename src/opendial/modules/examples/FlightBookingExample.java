@@ -33,8 +33,8 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Example of simple external module used for the flight-booking dialogue
- * domain. The module monitors for two particular values for the system action:
+ * Example of simple external module used for the flight-booking dialogue domain. The
+ * module monitors for two particular values for the system action:
  * <ol>
  * <li>"FindOffer" checks the (faked) price of the user order and returns
  * MakeOffer(price)
@@ -46,8 +46,7 @@ import opendial.state.DialogueState;
 public class FlightBookingExample implements Module {
 
 	// logger
-	public static Logger log = new Logger("FlightBookingExample",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("FlightBookingExample", Logger.Level.DEBUG);
 
 	// the dialogue system
 	DialogueSystem system;
@@ -73,12 +72,11 @@ public class FlightBookingExample implements Module {
 	}
 
 	/**
-	 * Checks whether the updated variables contains the system action and (if
-	 * yes) whether the system action value is "FindOffer" or "Book". If the
-	 * value is "FindOffer", checks the price of the order (faked here to 179 or
-	 * 299 EUR) and adds the new action "MakeOffer(price)" to the dialogue
-	 * state. If the value is "Book", simply write down the order on the system
-	 * output.
+	 * Checks whether the updated variables contains the system action and (if yes)
+	 * whether the system action value is "FindOffer" or "Book". If the value is
+	 * "FindOffer", checks the price of the order (faked here to 179 or 299 EUR) and
+	 * adds the new action "MakeOffer(price)" to the dialogue state. If the value is
+	 * "Book", simply write down the order on the system output.
 	 * 
 	 * @param state the current dialogue state
 	 * @param updatedVars the updated variables in the state
@@ -99,17 +97,16 @@ public class FlightBookingExample implements Module {
 				int price = (returndate.equals("NoReturn")) ? 179 : 299;
 				String newAction = "MakeOffer(" + price + ")";
 				system.addContent(new Assignment("a_m", newAction));
-			} else if (action.equals("Book")) {
+			}
+			else if (action.equals("Book")) {
 
-				String departure = state.queryProb("Departure").getBest()
-						.toString();
+				String departure = state.queryProb("Departure").getBest().toString();
 				String destination = state.queryProb("Destination").getBest()
 						.toString();
 				String date = state.queryProb("Date").getBest().toString();
 				String returndate = state.queryProb("ReturnDate").getBest()
 						.toString();
-				String nbtickets = state.queryProb("NbTickets").getBest()
-						.toString();
+				String nbtickets = state.queryProb("NbTickets").getBest().toString();
 
 				// In a real system, the system database should be modified here
 				// to

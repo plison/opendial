@@ -38,8 +38,7 @@ import org.junit.Test;
 public class DialogueStateTest {
 
 	// logger
-	public static Logger log = new Logger("DialogueStateTest",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueStateTest", Logger.Level.DEBUG);
 
 	public static final String domainFile = "test//domains//domain1.xml";
 
@@ -50,7 +49,8 @@ public class DialogueStateTest {
 		try {
 			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			e.printStackTrace();
 		}
 	}
@@ -76,8 +76,7 @@ public class DialogueStateTest {
 
 		inference.checkProb(initialState, ruleId,
 				Effect.parseEffect("a_u2+=HowAreYou"), 0.9);
-		inference.checkProb(initialState, ruleId, Effect.parseEffect("Void"),
-				0.1);
+		inference.checkProb(initialState, ruleId, Effect.parseEffect("Void"), 0.1);
 
 		inference.checkProb(initialState, "a_u2", "[HowAreYou]", 0.2);
 		inference.checkProb(initialState, "a_u2", "[Greet, HowAreYou]", 0.7);

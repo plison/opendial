@@ -153,13 +153,12 @@ public class SettingsPanel extends JDialog {
 		okButton.addActionListener(e -> {
 			try {
 				Settings.nbSamples = Integer.parseInt(sampleNumber.getText());
-				Settings.maxSamplingTime = Integer.parseInt(sampleTime
-						.getText());
-				Settings.discretisationBuckets = Integer.parseInt(discrete
-						.getText());
+				Settings.maxSamplingTime = Integer.parseInt(sampleTime.getText());
+				Settings.discretisationBuckets = Integer.parseInt(discrete.getText());
 				settings.horizon = Integer.parseInt(horizon.getText());
 				settings.discountFactor = Double.parseDouble(discount.getText());
-			} catch (Exception f) {
+			}
+			catch (Exception f) {
 				log.warning("invalid number format in settings");
 			}
 			settings.userInput = userVar.getText();

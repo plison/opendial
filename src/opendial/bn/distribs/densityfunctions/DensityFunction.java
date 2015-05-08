@@ -32,8 +32,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Density function for a continuous probability distribution. The density
- * function can be either univariate or multivariate.
+ * Density function for a continuous probability distribution. The density function
+ * can be either univariate or multivariate.
  * 
  *
  * @author Pierre Lison (plison@ifi.uio.no)
@@ -59,8 +59,8 @@ public interface DensityFunction {
 	public double[] getMean();
 
 	/**
-	 * Returns the variance of the density function. The size of the double
-	 * array corresponds to the dimensionality of the function.
+	 * Returns the variance of the density function. The size of the double array
+	 * corresponds to the dimensionality of the function.
 	 * 
 	 * @return the density variance
 	 */
@@ -82,12 +82,12 @@ public interface DensityFunction {
 	public int getDimensions();
 
 	/**
-	 * Returns a discretised version of the density function. The granularity of
-	 * the discretisation is defined by the number of discretisation buckets.
+	 * Returns a discretised version of the density function. The granularity of the
+	 * discretisation is defined by the number of discretisation buckets.
 	 * 
 	 * @param nbBuckets the number of discretisation buckets
-	 * @return a discretised probability distribution, mapping a collection of
-	 *         points to a probability value
+	 * @return a discretised probability distribution, mapping a collection of points
+	 *         to a probability value
 	 */
 	public Map<double[], Double> discretise(int nbBuckets);
 

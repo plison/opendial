@@ -41,9 +41,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Representation of a continuous probability distribution, defined by an
- * arbitrary density function over a single (univariate or multivariate)
- * variable. The distribution does not take any conditional assignment.
+ * Representation of a continuous probability distribution, defined by an arbitrary
+ * density function over a single (univariate or multivariate) variable. The
+ * distribution does not take any conditional assignment.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -135,8 +135,8 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 					.discretise(Settings.discretisationBuckets);
 			discreteCache = new CategoricalTable(variable);
 			for (double[] value : discretisation.keySet()) {
-				Value val = (value.length > 1) ? new ArrayVal(value)
-						: ValueFactory.create(value[0]);
+				Value val = (value.length > 1) ? new ArrayVal(value) : ValueFactory
+						.create(value[0]);
 				discreteCache.addRow(val, discretisation.get(value));
 			}
 		}
@@ -207,56 +207,59 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	}
 
 	/**
-	 * Returns the cumulative probability from 0 up to a given point provided in
-	 * the argument.
+	 * Returns the cumulative probability from 0 up to a given point provided in the
+	 * argument.
 	 * 
-	 * @param val the value up to which the cumulative probability must be
-	 *            estimated.
+	 * @param val the value up to which the cumulative probability must be estimated.
 	 * @return the cumulative probability
 	 */
 	public double getCumulativeProb(Value val) {
 		try {
 			if (val instanceof ArrayVal) {
 				return function.getCDF(((ArrayVal) val).getArray());
-			} else if (val instanceof DoubleVal) {
-				return function.getCDF(new double[] { ((DoubleVal) val)
-						.getDouble() });
 			}
-		} catch (DialException e) {
+			else if (val instanceof DoubleVal) {
+				return function
+						.getCDF(new double[] { ((DoubleVal) val).getDouble() });
+			}
+		}
+		catch (DialException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
 	}
 
 	/**
-	 * Returns the cumulative probability from 0 up to a given point provided in
-	 * the argument.
+	 * Returns the cumulative probability from 0 up to a given point provided in the
+	 * argument.
 	 * 
-	 * @param val value up to which the cumulative probability must be estimated
-	 *            (as a double)
+	 * @param val value up to which the cumulative probability must be estimated (as
+	 *            a double)
 	 * @return the cumulative probability
 	 */
 	public double getCumulativeProb(double val) {
 		try {
 			return function.getCDF(val);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
 	}
 
 	/**
-	 * Returns the cumulative probability from 0 up to a given point provided in
-	 * the argument.
+	 * Returns the cumulative probability from 0 up to a given point provided in the
+	 * argument.
 	 * 
-	 * @param val value up to which the cumulative probability must be estimated
-	 *            (as an array of Doubles)
+	 * @param val value up to which the cumulative probability must be estimated (as
+	 *            an array of Doubles)
 	 * @return the cumulative probability
 	 */
 	public double getCumulativeProb(double[] val) {
 		try {
 			return function.getCDF(val);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
@@ -277,8 +280,8 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	// ===================================
 
 	/**
-	 * Returns true if the distribution is well-formed -- more specifically, if
-	 * the cumulative density function sums up to 1.0 as it should.
+	 * Returns true if the distribution is well-formed -- more specifically, if the
+	 * cumulative density function sums up to 1.0 as it should.
 	 * 
 	 * @return true if well-formed, false otherwise.
 	 */

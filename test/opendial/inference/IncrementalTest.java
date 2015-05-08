@@ -52,8 +52,7 @@ public class IncrementalTest {
 		system.getSettings().showGUI = false;
 		system.getSettings().recording = Settings.Recording.ALL;
 		system.startSystem();
-		system.addContent(new Assignment(system.getSettings().userSpeech,
-				"busy"));
+		system.addContent(new Assignment(system.getSettings().userSpeech, "busy"));
 		system.addIncrementalContent(new CategoricalTable("u_u", "go"), false);
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
@@ -65,13 +64,10 @@ public class IncrementalTest {
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("go forward")));
-		assertEquals(system.getContent("u_u").getProb("go backward"), 0.2,
-				0.001);
+		assertEquals(system.getContent("u_u").getProb("go backward"), 0.2, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
-		system.addContent(new Assignment(system.getSettings().userSpeech,
-				"None"));
-		system.addIncrementalContent(new CategoricalTable("u_u", "please"),
-				true);
+		system.addContent(new Assignment(system.getSettings().userSpeech, "None"));
+		system.addIncrementalContent(new CategoricalTable("u_u", "please"), true);
 		assertEquals(system.getContent("u_u").getProb("go please"), 0.1, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
@@ -79,15 +75,15 @@ public class IncrementalTest {
 		CategoricalTable t2 = new CategoricalTable("u_u");
 		t2.addRow("I said go backward", 0.3);
 		system.addIncrementalContent(t2, true);
-		assertEquals(system.getContent("a_u").getProb("Request(Backward)"),
-				0.82, 0.05);
+		assertEquals(system.getContent("a_u").getProb("Request(Backward)"), 0.82,
+				0.05);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("I said go backward")));
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
 		assertFalse(system.getState().hasChanceNode("nlu"));
-		system.addIncrementalContent(new CategoricalTable("u_u",
-				"yes that is right"), false);
+		system.addIncrementalContent(
+				new CategoricalTable("u_u", "yes that is right"), false);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("yes that is right")));
 	}

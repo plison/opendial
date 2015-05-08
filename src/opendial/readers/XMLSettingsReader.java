@@ -41,8 +41,7 @@ import org.w3c.dom.NodeList;
  */
 public class XMLSettingsReader {
 
-	public static Logger log = new Logger("XMLSettingsReader",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("XMLSettingsReader", Logger.Level.DEBUG);
 
 	// ===================================
 	// TOP DOMAIN
@@ -59,7 +58,8 @@ public class XMLSettingsReader {
 			Document doc = XMLUtils.getXMLDocument(settingsFile);
 			Properties mapping = extractMapping(XMLUtils.getMainNode(doc));
 			return mapping;
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("error extracting the settings: " + e);
 			return new Properties();
 		}

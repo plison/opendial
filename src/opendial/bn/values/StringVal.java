@@ -127,7 +127,8 @@ public final class StringVal implements Value {
 	public int compareTo(Value o) {
 		if (o instanceof StringVal) {
 			return str.compareTo(((StringVal) o).str);
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -139,19 +140,22 @@ public final class StringVal implements Value {
 	public Value concatenate(Value v) {
 		if (v instanceof StringVal) {
 			return ValueFactory.create(str + " " + v.toString());
-		} else if (v instanceof DoubleVal) {
+		}
+		else if (v instanceof DoubleVal) {
 			return ValueFactory.create(str + " " + v.toString());
-		} else if (v instanceof NoneVal) {
+		}
+		else if (v instanceof NoneVal) {
 			return this;
-		} else {
+		}
+		else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
 	}
 
 	/**
-	 * Returns true if subvalue is a substring of the current StringVal, and
-	 * false otherwise
+	 * Returns true if subvalue is a substring of the current StringVal, and false
+	 * otherwise
 	 * 
 	 * @return true is subvalue is a substring of the object, false otherwise
 	 */
@@ -163,7 +167,8 @@ public final class StringVal implements Value {
 				stringval.template = new Template(stringval.str);
 			}
 			return stringval.template.partialmatch(str).isMatching();
-		} else {
+		}
+		else {
 			return subvalue.toString().contains(str);
 		}
 	}

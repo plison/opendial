@@ -54,7 +54,8 @@ public class RuleTest1 {
 		try {
 			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -115,12 +116,11 @@ public class RuleTest1 {
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		inference.checkProb(system.getState(), "o", "and we have var1=value2",
-				0.3);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value3", 0.28);
+		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
+				0.2);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
+				0.28);
 
 		StatePruner.ENABLE_PRUNING = true;
 	}
@@ -135,8 +135,8 @@ public class RuleTest1 {
 		system.startSystem();
 
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
-		inference.checkProb(system.getState(), "o2",
-				"and value2 is over there", 0.07);
+		inference.checkProb(system.getState(), "o2", "and value2 is over there",
+				0.07);
 		inference.checkProb(system.getState(), "o2", "value3, finally", 0.28);
 
 		StatePruner.ENABLE_PRUNING = true;
@@ -156,12 +156,11 @@ public class RuleTest1 {
 		table.addRow("value2", 0.9);
 		system.addContent(table);
 
-		inference.checkProb(system.getState(), "o", "and we have var1=value2",
-				0.9);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value1", 0.05);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value3", 0.04);
+		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.9);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
+				0.05);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
+				0.04);
 
 		StatePruner.ENABLE_PRUNING = true;
 	}
@@ -174,8 +173,7 @@ public class RuleTest1 {
 		StatePruner.ENABLE_PRUNING = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
-		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]",
-				0.7);
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 

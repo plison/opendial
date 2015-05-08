@@ -175,7 +175,8 @@ public class ChatWindowTab extends JComponent {
 					system.getModule(AudioModule.class));
 			inputContainer.add(panel, BorderLayout.SOUTH);
 			repaint();
-		} else if (inputContainer.getComponentCount() == 4 && !toEnable) {
+		}
+		else if (inputContainer.getComponentCount() == 4 && !toEnable) {
 			inputContainer.remove(3);
 			repaint();
 		}
@@ -206,9 +207,9 @@ public class ChatWindowTab extends JComponent {
 	 */
 	public void addComment(String comment) {
 		try {
-			kit.insertHTML(doc, doc.getLength(), "[" + comment + "]\n", 0, 0,
-					null);
-		} catch (Exception e) {
+			kit.insertHTML(doc, doc.getLength(), "[" + comment + "]\n", 0, 0, null);
+		}
+		catch (Exception e) {
 			log.warning("text area exception: " + e);
 		}
 	}
@@ -227,9 +228,11 @@ public class ChatWindowTab extends JComponent {
 
 		if (baseVar.equals(system.getSettings().userInput)) {
 			htmlTable += "<b>[user]</b>";
-		} else if (baseVar.equals(system.getSettings().systemOutput)) {
+		}
+		else if (baseVar.equals(system.getSettings().systemOutput)) {
 			htmlTable += "<b>[system]</b>";
-		} else {
+		}
+		else {
 			htmlTable += "[" + baseVar + "]";
 		}
 		htmlTable += "</font></td>";
@@ -243,8 +246,7 @@ public class ChatWindowTab extends JComponent {
 				htmlTable += "<td><font size=4>";
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content += " ("
-							+ StringUtils.getShortForm(table.getProb(value))
+					content += " (" + StringUtils.getShortForm(table.getProb(value))
 							+ ")";
 				}
 				if (system.getSettings().varsToMonitor.contains(baseVar)) {
@@ -267,11 +269,11 @@ public class ChatWindowTab extends JComponent {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
 			if (lines.getText().length() <= 100
-					&& !lines.getText()
-							.contains("No domain currently selected")) {
+					&& !lines.getText().contains("No domain currently selected")) {
 				addComment("No domain currently selected");
 			}
-		} else {
+		}
+		else {
 			if (inputField.isEnabled() == system.isPaused()) {
 				inputField.setEnabled(!system.isPaused());
 				lines.setEnabled(!system.isPaused());
@@ -280,9 +282,9 @@ public class ChatWindowTab extends JComponent {
 	}
 
 	/**
-	 * Triggers the update of the chat window. The window is updated whenever
-	 * the updated variables contains the user input, system output, or other
-	 * variables to monitor.
+	 * Triggers the update of the chat window. The window is updated whenever the
+	 * updated variables contains the user input, system output, or other variables
+	 * to monitor.
 	 * 
 	 * @param state the dialogue state
 	 * @param updatedVars the list of recently updated variables
@@ -316,7 +318,8 @@ public class ChatWindowTab extends JComponent {
 
 		if (distrib.getBest() == ValueFactory.none()) {
 			distrib = distrib.getNBest(nBestView + 1);
-		} else {
+		}
+		else {
 			distrib = distrib.getNBest(nBestView);
 		}
 		String text = getHtmlRendering(distrib);
@@ -331,7 +334,8 @@ public class ChatWindowTab extends JComponent {
 			lastUpdatedVariable = variable;
 			lastUpdate = System.currentTimeMillis();
 			negativeOffset = doc.getLength() - initLength;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.warning("text area exception: " + e);
 		}
 	}
@@ -349,8 +353,8 @@ public class ChatWindowTab extends JComponent {
 	 * Adds the utterance entered in the text field to the dialogue state
 	 * 
 	 * NB: if the text is starting or ending with '/', assume it represents
-	 * incremental inputs (where an '/' at the end represents an unfinished
-	 * input, and '/' at the beginning a follow-up to a previous unit).
+	 * incremental inputs (where an '/' at the end represents an unfinished input,
+	 * and '/' at the beginning a follow-up to a previous unit).
 	 */
 	private void addUtteranceToState() {
 		String rawText = inputField.getText().trim();
@@ -393,8 +397,7 @@ public class ChatWindowTab extends JComponent {
 					(incomplete) ? "busy" : "None"));
 			system.addIncrementalUserInput(table, followPrevious);
 			if (!incomplete) {
-				system.getState()
-						.setAsCommitted(system.getSettings().userInput);
+				system.getState().setAsCommitted(system.getSettings().userInput);
 			}
 		}).start();
 

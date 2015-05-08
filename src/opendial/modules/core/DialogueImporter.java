@@ -31,25 +31,24 @@ import opendial.arch.Logger;
 import opendial.state.DialogueState;
 
 /**
- * Functionality to import a previously recorded dialogue in the dialogue
- * system. The import essentially "replays" the previous interaction, including
- * all state update operations.
+ * Functionality to import a previously recorded dialogue in the dialogue system. The
+ * import essentially "replays" the previous interaction, including all state update
+ * operations.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class DialogueImporter extends Thread {
 
 	// logger
-	public static Logger log = new Logger("DialogueImporter",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueImporter", Logger.Level.DEBUG);
 
 	DialogueSystem system;
 	List<DialogueState> turns;
 	boolean wizardOfOzMode = false;
 
 	/**
-	 * Creates a new dialogue importer attached to a particular dialogue system,
-	 * and with an ordered list of turns (encoded by their dialogue state).
+	 * Creates a new dialogue importer attached to a particular dialogue system, and
+	 * with an ordered list of turns (encoded by their dialogue state).
 	 * 
 	 * @param system the dialogue system
 	 * @param turns the sequence of turns
@@ -80,14 +79,13 @@ public class DialogueImporter extends Thread {
 			for (final DialogueState turn : turns) {
 				addTurn(turn);
 			}
-		} else {
+		}
+		else {
 			system.detachModule(ForwardPlanner.class);
 			for (final DialogueState turn : turns) {
 				addTurn(turn);
-				system.getState().removeNodes(
-						system.getState().getActionNodeIds());
-				system.getState().removeNodes(
-						system.getState().getUtilityNodeIds());
+				system.getState().removeNodes(system.getState().getActionNodeIds());
+				system.getState().removeNodes(system.getState().getUtilityNodeIds());
 			}
 			system.attachModule(ForwardPlanner.class);
 		}
@@ -99,11 +97,13 @@ public class DialogueImporter extends Thread {
 					|| !system.getModule(DialogueRecorder.class).isRunning()) {
 				try {
 					Thread.sleep(100);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 				}
 			}
 			system.addContent(turn.copy());
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not add content: " + e);
 		}
 	}

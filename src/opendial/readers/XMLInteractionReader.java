@@ -73,15 +73,17 @@ public class XMLInteractionReader {
 				sample.add(state);
 				if (node.getNodeName().equals("systemTurn")
 						&& state.hasChanceNode("a_m")) {
-					Assignment assign = new Assignment("a_m", state.queryProb(
-							"a_m").getBest());
+					Assignment assign = new Assignment("a_m", state.queryProb("a_m")
+							.getBest());
 					state.addEvidence(assign);
 				}
-			} else if (node.getNodeName().equals("wizard")) {
-				Assignment assign = Assignment.createFromString(node
-						.getFirstChild().getNodeValue().trim());
+			}
+			else if (node.getNodeName().equals("wizard")) {
+				Assignment assign = Assignment.createFromString(node.getFirstChild()
+						.getNodeValue().trim());
 				sample.get(sample.size() - 1).addEvidence(assign);
-			} else if (node.getNodeName().equals("import")) {
+			}
+			else if (node.getNodeName().equals("import")) {
 				String fileName = mainNode.getAttributes().getNamedItem("href")
 						.getNodeValue();
 				List<DialogueState> points = extractInteraction(rootpath + "/"

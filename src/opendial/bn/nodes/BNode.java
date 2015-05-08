@@ -46,11 +46,11 @@ import opendial.utils.StringUtils;
 
 /**
  * Basic representation of a node integrated in a Bayesian Network. The node is
- * defined via a unique identifier and a set of incoming and outgoing relations
- * with other nodes.
+ * defined via a unique identifier and a set of incoming and outgoing relations with
+ * other nodes.
  * 
- * The class is abstract -- each node needs to be instantiated in a concrete
- * subclass such as ChanceNode, ActionNode or UtilityNode.
+ * The class is abstract -- each node needs to be instantiated in a concrete subclass
+ * such as ChanceNode, ActionNode or UtilityNode.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -77,8 +77,7 @@ public abstract class BNode implements Comparable<BNode> {
 	// ===================================
 
 	/**
-	 * Creates a node with a unique identifier, and a empty set of incoming
-	 * nodes
+	 * Creates a node with a unique identifier, and a empty set of incoming nodes
 	 * 
 	 * @param nodeId the identifier for the node
 	 */
@@ -99,8 +98,8 @@ public abstract class BNode implements Comparable<BNode> {
 			log.warning("cannot add itself: " + nodeId);
 		}
 		if (containsCycles(inputNode)) {
-			log.warning("there is a cycle between " + inputNode.getId()
-					+ " and " + nodeId);
+			log.warning("there is a cycle between " + inputNode.getId() + " and "
+					+ nodeId);
 		}
 
 		if (this instanceof ActionNode) {
@@ -139,8 +138,7 @@ public abstract class BNode implements Comparable<BNode> {
 					+ nodeId);
 		}
 		boolean removal1 = inputNodes.containsKey(inputNodeId)
-				&& inputNodes.get(inputNodeId)
-						.removeOutputNode_internal(nodeId);
+				&& inputNodes.get(inputNodeId).removeOutputNode_internal(nodeId);
 		boolean removal2 = removeInputNode_internal(inputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -171,8 +169,7 @@ public abstract class BNode implements Comparable<BNode> {
 					+ nodeId);
 		}
 		boolean removal1 = outputNodes.containsKey(outputNodeId)
-				&& outputNodes.get(outputNodeId).removeInputNode_internal(
-						nodeId);
+				&& outputNodes.get(outputNodeId).removeInputNode_internal(nodeId);
 		boolean removal2 = removeOutputNode_internal(outputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -240,8 +237,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns true if the node contains an input node identified by the given
-	 * id, and false otherwise.
+	 * Returns true if the node contains an input node identified by the given id,
+	 * and false otherwise.
 	 * 
 	 * @param nodeId the identifier for the node
 	 * @return true if there is such input node, false otherwise
@@ -251,8 +248,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns true if the node contains an output node identified by the given
-	 * id, and false otherwise.
+	 * Returns true if the node contains an output node identified by the given id,
+	 * and false otherwise.
 	 * 
 	 * @param nodeId the identifier for the node
 	 * @return true if there is such output node, false otherwise
@@ -334,9 +331,9 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns an ordered list of nodes which are the ancestors (via the
-	 * relations) of the current node. The ordering puts the closest ancestors
-	 * at the beginning of the list, and the most remote ancestors at the end.
+	 * Returns an ordered list of nodes which are the ancestors (via the relations)
+	 * of the current node. The ordering puts the closest ancestors at the beginning
+	 * of the list, and the most remote ancestors at the end.
 	 * 
 	 * @return an ordered list of ancestors for the node
 	 */
@@ -363,8 +360,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns an order list of node identifiers which are the ancestors (via
-	 * the relations) of the current node.
+	 * Returns an order list of node identifiers which are the ancestors (via the
+	 * relations) of the current node.
 	 * 
 	 * @return the ordered list of ancestor identifiers
 	 */
@@ -378,11 +375,11 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns the list of closest ancestors for the node among a set of
-	 * possible variables. The variables not mentioned are ignored.
+	 * Returns the list of closest ancestors for the node among a set of possible
+	 * variables. The variables not mentioned are ignored.
 	 * 
-	 * @param variablesToRetain the set of all variables from which to seek
-	 *            possible ancestors
+	 * @param variablesToRetain the set of all variables from which to seek possible
+	 *            ancestors
 	 * @return the set of dependencies for the given variable
 	 */
 	public Set<String> getAncestorsIds(Collection<String> variablesToRetain) {
@@ -394,7 +391,8 @@ public abstract class BNode implements Comparable<BNode> {
 			BNode inputNode = nodesToProcess.pop();
 			if (variablesToRetain.contains(inputNode.getId())) {
 				ancestors.add(inputNode.getId());
-			} else {
+			}
+			else {
 				nodesToProcess.addAll(inputNode.getInputNodes());
 			}
 		}
@@ -402,11 +400,11 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns the list of closest descendants for the node among a set of
-	 * possible variables. The variables not mentioned are ignored.
+	 * Returns the list of closest descendants for the node among a set of possible
+	 * variables. The variables not mentioned are ignored.
 	 * 
-	 * @param variablesToRetain the set of all variables from which to seek
-	 *            possible descendants
+	 * @param variablesToRetain the set of all variables from which to seek possible
+	 *            descendants
 	 * @return the set of relevant descendatns for the given variable
 	 */
 	public Set<String> getDescendantsIds(Collection<String> variablesToRetain) {
@@ -418,7 +416,8 @@ public abstract class BNode implements Comparable<BNode> {
 			BNode outputNode = nodesToProcess.pop();
 			if (variablesToRetain.contains(outputNode.getId())) {
 				descendants.add(outputNode.getId());
-			} else {
+			}
+			else {
 				nodesToProcess.addAll(outputNode.getOutputNodes());
 			}
 		}
@@ -426,9 +425,9 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns an ordered list of nodes which are the descendants (via the
-	 * relations) of the current node. The ordering puts the closest descendants
-	 * at the beginning of the list, and the most remote descendants at the end.
+	 * Returns an ordered list of nodes which are the descendants (via the relations)
+	 * of the current node. The ordering puts the closest descendants at the
+	 * beginning of the list, and the most remote descendants at the end.
 	 * 
 	 * @return an ordered list of descendants for the node
 	 */
@@ -455,8 +454,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns an order list of node identifiers which are the descendants (via
-	 * the relations) of the current node.
+	 * Returns an order list of node identifiers which are the descendants (via the
+	 * relations) of the current node.
 	 * 
 	 * @return the ordered list of descendant identifiers
 	 */
@@ -499,8 +498,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns true if at least one of the variables given as argument is an
-	 * ancestor of this node, and false otherwise
+	 * Returns true if at least one of the variables given as argument is an ancestor
+	 * of this node, and false otherwise
 	 * 
 	 * @param variables the node identifiers of potential descendants
 	 * @return true if a descendant is found, false otherwise
@@ -574,8 +573,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns the set of distinct values that the node can take. The nature of
-	 * those values depends on the node type.
+	 * Returns the set of distinct values that the node can take. The nature of those
+	 * values depends on the node type.
 	 * 
 	 * @return the set of distinct values
 	 */
@@ -619,8 +618,8 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Returns the list of possible assignment of input values for the node. If
-	 * the node has no input, returns a list with a single, empty assignment.
+	 * Returns the list of possible assignment of input values for the node. If the
+	 * node has no input, returns a list with a single, empty assignment.
 	 * 
 	 * <p>
 	 * NB: this is a combinatorially expensive operation, use with caution.
@@ -630,12 +629,12 @@ public abstract class BNode implements Comparable<BNode> {
 	public Set<Assignment> getPossibleConditions() {
 		ValueRange possibleInputValues = new ValueRange();
 		for (BNode inputNode : inputNodes.values()) {
-			possibleInputValues.addValues(inputNode.getId(),
-					inputNode.getValues());
+			possibleInputValues.addValues(inputNode.getId(), inputNode.getValues());
 		}
 		try {
 			return possibleInputValues.linearise();
-		} catch (OutOfMemoryError e) {
+		}
+		catch (OutOfMemoryError e) {
 			log.debug("input node is: " + nodeId + " and possibleInputValues: "
 					+ possibleInputValues);
 			throw e;
@@ -647,8 +646,8 @@ public abstract class BNode implements Comparable<BNode> {
 	// ===================================
 
 	/**
-	 * Creates a copy of the current node. Needs to be instantiated by the
-	 * concrete subclasses.
+	 * Creates a copy of the current node. Needs to be instantiated by the concrete
+	 * subclasses.
 	 * 
 	 * @return the copy of the node
 	 * @throws DialException if the copy operation failed
@@ -656,17 +655,16 @@ public abstract class BNode implements Comparable<BNode> {
 	public abstract BNode copy() throws DialException;
 
 	/**
-	 * Compares the node to other nodes, in order to derive the topological
-	 * order of the network. If the node given as argument is one ancestor of
-	 * this node, return -100. If the opposite is true, returns +100. Else,
-	 * returns the difference between the size of the respective ancestors
-	 * lists. Finally, if both lists are empty, returns +1 or -1 depending on
-	 * the lexicographic order of the node identifiers.
+	 * Compares the node to other nodes, in order to derive the topological order of
+	 * the network. If the node given as argument is one ancestor of this node,
+	 * return -100. If the opposite is true, returns +100. Else, returns the
+	 * difference between the size of the respective ancestors lists. Finally, if
+	 * both lists are empty, returns +1 or -1 depending on the lexicographic order of
+	 * the node identifiers.
 	 * 
 	 * <p>
 	 * This ordering is used for various inference algorithms (e.g. variable
-	 * elimination) relying on a topological ordering of the nodes in the
-	 * network.
+	 * elimination) relying on a topological ordering of the nodes in the network.
 	 *
 	 * @param otherNode the node to compare
 	 * @return the comparison result
@@ -676,10 +674,10 @@ public abstract class BNode implements Comparable<BNode> {
 	public int compareTo(BNode otherNode) {
 
 		// if one node has no incoming nodes, the answer is straightforward
-		if (!otherNode.getInputNodeIds().isEmpty()
-				&& getInputNodeIds().isEmpty()) {
+		if (!otherNode.getInputNodeIds().isEmpty() && getInputNodeIds().isEmpty()) {
 			return +100;
-		} else if (otherNode.getInputNodeIds().isEmpty()
+		}
+		else if (otherNode.getInputNodeIds().isEmpty()
 				&& !getInputNodeIds().isEmpty()) {
 			return -100;
 		}
@@ -688,13 +686,14 @@ public abstract class BNode implements Comparable<BNode> {
 		// (and put action nodes first)
 		else if (otherNode.getInputNodeIds().isEmpty()
 				&& getInputNodeIds().isEmpty()) {
-			if (this instanceof ActionNode
-					&& !(otherNode instanceof ActionNode)) {
+			if (this instanceof ActionNode && !(otherNode instanceof ActionNode)) {
 				return +10;
-			} else if (otherNode instanceof ActionNode
+			}
+			else if (otherNode instanceof ActionNode
 					&& !(this instanceof ActionNode)) {
 				return -10;
-			} else {
+			}
+			else {
 				return StringUtils.compare(nodeId, otherNode.getId());
 			}
 		}
@@ -763,8 +762,7 @@ public abstract class BNode implements Comparable<BNode> {
 	// ===================================
 
 	/**
-	 * Replaces the identifier for the input and output nodes with the new
-	 * identifier
+	 * Replaces the identifier for the input and output nodes with the new identifier
 	 * 
 	 * @param oldNodeId the old label for the node
 	 * @param newNodeId the new label for the node
@@ -774,7 +772,8 @@ public abstract class BNode implements Comparable<BNode> {
 			BNode inputNode = inputNodes.get(oldNodeId);
 			removeInputNode_internal(oldNodeId);
 			addInputNode_internal(inputNode);
-		} else if (outputNodes.containsKey(oldNodeId)) {
+		}
+		else if (outputNodes.containsKey(oldNodeId)) {
 			BNode outputNode = outputNodes.get(oldNodeId);
 			removeOutputNode_internal(oldNodeId);
 			addOutputNode_internal(outputNode);
@@ -782,9 +781,9 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Adds a new incoming relation to the node. This method should never be
-	 * called outside the addRelation method, to ensure consistency between the
-	 * input and output links.
+	 * Adds a new incoming relation to the node. This method should never be called
+	 * outside the addRelation method, to ensure consistency between the input and
+	 * output links.
 	 * 
 	 * @param node the input node to add
 	 */
@@ -797,9 +796,9 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Adds a new outgoing relation to the node. This method should never be
-	 * called outside the addRelation method, to ensure consistency between the
-	 * input and output links.
+	 * Adds a new outgoing relation to the node. This method should never be called
+	 * outside the addRelation method, to ensure consistency between the input and
+	 * output links.
 	 * 
 	 * @param outputNode the output node to add
 	 */
@@ -807,7 +806,8 @@ public abstract class BNode implements Comparable<BNode> {
 		if (outputNodes.containsKey(outputNode.getId())) {
 			log.debug("node " + outputNode.getId()
 					+ " already included in the output nodes of " + nodeId);
-		} else {
+		}
+		else {
 			outputNodes.put(outputNode.getId(), outputNode);
 		}
 	}
@@ -818,9 +818,9 @@ public abstract class BNode implements Comparable<BNode> {
 	}
 
 	/**
-	 * Removes an outgoing relation to the node. This method should never be
-	 * called outside the removeRelation method, to ensure consistency between
-	 * the input and output links.
+	 * Removes an outgoing relation to the node. This method should never be called
+	 * outside the removeRelation method, to ensure consistency between the input and
+	 * output links.
 	 * 
 	 * @param node the output node to remove
 	 * @return true if a relation between the nodes existed, false otherwise

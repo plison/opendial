@@ -76,15 +76,14 @@ public class InferenceUtils {
 	}
 
 	/**
-	 * Normalises the given distribution, assuming a set of conditional
-	 * variables.
+	 * Normalises the given distribution, assuming a set of conditional variables.
 	 * 
 	 * @param distrib the distribution to normalise
 	 * @param condVars the conditional variables
 	 * @return the normalised distribution
 	 */
-	public static Map<Assignment, Double> normalise(
-			Map<Assignment, Double> distrib, Collection<String> condVars) {
+	public static Map<Assignment, Double> normalise(Map<Assignment, Double> distrib,
+			Collection<String> condVars) {
 
 		Map<Assignment, Double> totals = new HashMap<Assignment, Double>();
 		for (Assignment a : distrib.keySet()) {
@@ -110,8 +109,8 @@ public class InferenceUtils {
 	}
 
 	/**
-	 * Flattens a probability table, i.e. converts a double mapping into a
-	 * single one, by creating every possible combination of assignments.
+	 * Flattens a probability table, i.e. converts a double mapping into a single
+	 * one, by creating every possible combination of assignments.
 	 * 
 	 * @param table the table to flatten
 	 * @return the flattened table
@@ -121,8 +120,8 @@ public class InferenceUtils {
 		Map<Assignment, Double> flatTable = new HashMap<Assignment, Double>();
 		for (Assignment condition : table.keySet()) {
 			for (Assignment head : table.get(condition).keySet()) {
-				flatTable.put(new Assignment(condition, head),
-						table.get(condition).get(head));
+				flatTable.put(new Assignment(condition, head), table.get(condition)
+						.get(head));
 			}
 		}
 		return flatTable;
@@ -151,7 +150,8 @@ public class InferenceUtils {
 			for (int i = 0; i < initProbs.length; i++) {
 				result[i] = initProbs[i] / sum;
 			}
-		} else {
+		}
+		else {
 			for (int i = 0; i < initProbs.length; i++) {
 				result[i] = 1.0 / initProbs.length;
 			}
@@ -169,8 +169,8 @@ public class InferenceUtils {
 	 * @param <T> the type of the elements in the table
 	 * @return the resulting subset of the table
 	 */
-	public static <T> LinkedHashMap<T, Double> getNBest(
-			Map<T, Double> initTable, int nbest) {
+	public static <T> LinkedHashMap<T, Double> getNBest(Map<T, Double> initTable,
+			int nbest) {
 		if (nbest < 1) {
 			log.warning("nbest should be >= 1, but is " + nbest);
 			nbest = 1;
@@ -192,8 +192,7 @@ public class InferenceUtils {
 		}
 		for (T key : new ArrayList<T>(newTable.keySet())) {
 			if (key instanceof Assignment && ((Assignment) key).isDefault()
-					|| key instanceof Value
-					&& ((Value) key) == ValueFactory.none()) {
+					|| key instanceof Value && ((Value) key) == ValueFactory.none()) {
 				double val = newTable.remove(key);
 				newTable.put(key, val);
 			}
@@ -202,15 +201,15 @@ public class InferenceUtils {
 	}
 
 	/**
-	 * Returns the ranking of the given assignment in the table, assuming an
-	 * ordering of the table in descending order.
+	 * Returns the ranking of the given assignment in the table, assuming an ordering
+	 * of the table in descending order.
 	 * 
 	 * @param initTable the table
 	 * @param assign the assignment to find
 	 * @param <T> the type of the elements in the table
 	 * @param minDifference the minimum difference between values
-	 * @return the index in the ordered table, or -1 if the element is not in
-	 *         the table
+	 * @return the index in the ordered table, or -1 if the element is not in the
+	 *         table
 	 */
 	public static <T> int getRanking(Map<T, Double> initTable, T assign,
 			double minDifference) {
@@ -225,7 +224,8 @@ public class InferenceUtils {
 			Map.Entry<T, Double> entry = entries.get(i);
 			if (entry.getKey().equals(assign)) {
 				return entries.indexOf(entry);
-			} else if (i < entries.size() - 1) {
+			}
+			else if (i < entries.size() - 1) {
 				Map.Entry<T, Double> nextEntry = entries.get(i + 1);
 				if (nextEntry.getKey().equals(assign)
 						&& comp.compare(entry, nextEntry) == 0) {
@@ -256,7 +256,8 @@ public class InferenceUtils {
 			double result = arg0.getValue() - arg1.getValue();
 			if (Math.abs(result) < minDifference) {
 				return 0;
-			} else {
+			}
+			else {
 				return (int) (result * 10000000);
 			}
 		}

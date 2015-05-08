@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import opendial.arch.DialException;
@@ -45,9 +46,9 @@ import opendial.state.distribs.EquivalenceDistribution;
 import opendial.state.distribs.RuleDistribution;
 
 /**
- * Prunes the dialogue state by removing all intermediary nodes (that is, rule
- * nodes, utility and action nodes, equivalence nodes, and outdated versions of
- * updated variables).
+ * Prunes the dialogue state by removing all intermediary nodes (that is, rule nodes,
+ * utility and action nodes, equivalence nodes, and outdated versions of updated
+ * variables).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -90,11 +91,13 @@ public class StatePruner {
 
 				// step 6: and final reset the state to the reduced form
 				state.reset(reduced);
-			} else {
+			}
+			else {
 				state.reset(new BNetwork());
 			}
 
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("cannot prune state: " + e);
 		}
 
@@ -115,15 +118,17 @@ public class StatePruner {
 			if (node.getId().startsWith("=_") || node.getId().endsWith("^t")
 					|| node.getId().endsWith("^o")) {
 				continue;
-			} else if (ENABLE_PRUNING
-					& node.getDistrib() instanceof RuleDistribution) {
+			}
+			else if (ENABLE_PRUNING & node.getDistrib() instanceof RuleDistribution) {
 				continue;
-			} else if (node.getInputNodeIds().size() < 3
+			}
+			else if (node.getInputNodeIds().size() < 3
 					&& node.getNbValues() == 1
 					&& node.getValues().iterator().next()
 							.equals(ValueFactory.none())) {
 				continue;
-			} else if (node.getId().endsWith("^p")
+			}
+			else if (node.getId().endsWith("^p")
 					&& node.getOutputNodesIds().stream()
 							.anyMatch(i -> i.startsWith("=_"))) {
 				continue;
@@ -134,16 +139,14 @@ public class StatePruner {
 			}
 
 			if (state.isIncremental(node.getId())) {
-				node.getDescendantIds().stream()
-						.filter(i -> state.hasChanceNode(i))
+				node.getDescendantIds().stream().filter(i -> state.hasChanceNode(i))
 						.filter(i -> !state.hasChanceNode(i + "'"))
 						.forEach(i -> nodesToKeep.add(i));
 			}
 
 			if (state.getParameterIds().contains(node.getId())
 					&& !node.hasDescendant(state.getEvidence().getVariables())) {
-				node.getOutputNodes(ChanceNode.class)
-						.stream()
+				node.getOutputNodes(ChanceNode.class).stream()
 						.filter(n -> n.getDistrib() instanceof RuleDistribution)
 						.forEach(n -> nodesToKeep.add(n.getId()));
 			}
@@ -152,15 +155,15 @@ public class StatePruner {
 	}
 
 	/**
-	 * Reduces a Bayesian network to a subset of variables. The method is
-	 * divided in three steps:
+	 * Reduces a Bayesian network to a subset of variables. The method is divided in
+	 * three steps:
 	 * <ul>
-	 * <li>The method first checks whether inference is necessary at all or
-	 * whether the current network can be returned as it is.
-	 * <li>If inference is necessary, the algorithm divides the network into
-	 * cliques and performs inference on each clique separately.
-	 * <li>Finally, if only one clique is present, the reduction selects the
-	 * best algorithm and return the result of the reduction process.
+	 * <li>The method first checks whether inference is necessary at all or whether
+	 * the current network can be returned as it is.
+	 * <li>If inference is necessary, the algorithm divides the network into cliques
+	 * and performs inference on each clique separately.
+	 * <li>Finally, if only one clique is present, the reduction selects the best
+	 * algorithm and return the result of the reduction process.
 	 * </ul>
 	 * 
 	 * @param state the dialogue state to reduce
@@ -169,51 +172,54 @@ public class StatePruner {
 	 * @return the reduced dialogue state
 	 * @throws DialException
 	 */
-	private static DialogueState reduce(DialogueState state,
-			Set<String> nodesToKeep) throws DialException {
+	private static DialogueState reduce(DialogueState state, Set<String> nodesToKeep)
+			throws DialException {
 
 		Assignment evidence = state.getEvidence();
-		// if the current network can be returned as such, do it
-		if (nodesToKeep.containsAll(state.getNodeIds())) {
-			return state;
-		}
-
 		// if all nodes to keep are included in the evidence, no inference is
 		// needed
-		else if (evidence.containsVars(nodesToKeep)) {
+		if (evidence.containsVars(nodesToKeep)) {
 			DialogueState newState = new DialogueState();
-			newState.incrementalVars = state.incrementalVars;
 			for (String toKeep : nodesToKeep) {
-				ChanceNode newNode = new ChanceNode(toKeep,
-						new CategoricalTable(toKeep, evidence.getValue(toKeep)));
+				ChanceNode newNode = new ChanceNode(toKeep, new CategoricalTable(
+						toKeep, evidence.getValue(toKeep)));
 				newState.addNode(newNode);
 			}
 			return newState;
 		}
 
-		// if the network can be divided into cliques, extract the cliques
-		// and do a separate reduction for each
-		else if (state.getCliques().size() > 1) {
-			DialogueState fullState = new DialogueState();
-			fullState.incrementalVars = state.incrementalVars;
-			for (BNetwork clique : state.createCliques()) {
-				Set<String> subNodesToKeep = new HashSet<String>(nodesToKeep);
-				subNodesToKeep.retainAll(clique.getNodeIds());
-				if (!subNodesToKeep.isEmpty()) {
-					Assignment subEvidence = evidence.getTrimmed(clique
-							.getNodeIds());
-					DialogueState substate = new DialogueState(clique,
-							subEvidence);
-					substate = reduce(substate, subNodesToKeep);
-					fullState.addNetwork(substate);
-					fullState.addEvidence(substate.evidence);
-				}
-			}
-			return fullState;
+		// if the current network can be returned as such, do it
+		else if (nodesToKeep.containsAll(state.getNodeIds())) {
+			return state;
 		}
 
+		// if all nodes belong to a single clique and the evidence does not
+		// pertain to
+		// them, return the subset of nodes
+		else if (state.isClique(nodesToKeep)
+				&& !evidence.containsOneVar(nodesToKeep)) {
+			DialogueState newState = new DialogueState(state.getNodes(nodesToKeep),
+					evidence);
+			return newState;
+
+		}
+		// if some rule nodes are included
 		else if (!Collections.disjoint(nodesToKeep, state.getRuleNodeIds())) {
 			return reduce_light(state, nodesToKeep);
+		}
+
+		// if the network can be divided into cliques, extract the cliques
+		// and do a separate reduction for each
+		List<Set<String>> cliques = state.getCliques(nodesToKeep);
+		if (cliques.size() > 1) {
+			DialogueState fullState = new DialogueState();
+			for (Set<String> clique : cliques) {
+				clique.retainAll(nodesToKeep);
+				DialogueState cliqueState = reduce(state, clique);
+				fullState.addNetwork(cliqueState);
+				fullState.addEvidence(cliqueState.evidence);
+			}
+			return fullState;
 		}
 
 		// else, select the best reduction algorithm and performs the reduction
@@ -233,37 +239,34 @@ public class StatePruner {
 	private static DialogueState reduce_light(DialogueState state,
 			Collection<String> nodesToKeep) throws DialException {
 
-		for (ChanceNode node : new ArrayList<ChanceNode>(state.getChanceNodes())) {
+		DialogueState newState = new DialogueState(state, state.evidence);
+		for (ChanceNode node : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 
 			if (!nodesToKeep.contains(node.getId())) {
-				CategoricalTable initDistrib = state.queryProb(node.getId(),
-						false).toDiscrete();
-				for (ChanceNode outputNode : node
-						.getOutputNodes(ChanceNode.class)) {
+				CategoricalTable initDistrib = state.queryProb(node.getId(), false)
+						.toDiscrete();
+				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
 					MarginalDistribution newDistrib = new MarginalDistribution(
 							outputNode.getDistrib(), initDistrib);
 					outputNode.setDistrib(newDistrib);
 				}
-				state.removeNode(node.getId());
+				newState.removeNode(node.getId());
 			}
 		}
-		return state;
+		return newState;
 	}
 
 	/**
-	 * Removes the prime characters from the variable labels in the dialogue
-	 * state.
+	 * Removes the prime characters from the variable labels in the dialogue state.
 	 * 
 	 * @param reduced the reduced state
 	 * @throws DialException
 	 */
-	private static void removePrimes(DialogueState reduced)
-			throws DialException {
+	private static void removePrimes(DialogueState reduced) throws DialException {
 
 		for (ChanceNode cn : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 			if (reduced.hasChanceNode(cn.getId() + "'")) {
-				log.warning("Reduction problem: two variables for "
-						+ cn.getId());
+				log.warning("Reduction problem: two variables for " + cn.getId());
 				reduced.removeNode(cn.getId());
 			}
 		}
@@ -273,7 +276,8 @@ public class StatePruner {
 				String newId = nodeId.replace("'", "");
 				if (!reduced.hasChanceNode(newId)) {
 					reduced.getChanceNode(nodeId).setId(newId);
-				} else {
+				}
+				else {
 					log.warning("reduced state still contains duplicates: "
 							+ reduced.getNodeIds());
 				}
@@ -294,13 +298,13 @@ public class StatePruner {
 		for (ChanceNode node : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 
 			// if the node only contain a None value, prunes it
-			if (node.getInputNodes().isEmpty()
-					&& node.getOutputNodes().isEmpty()
+			if (node.getInputNodes().isEmpty() && node.getOutputNodes().isEmpty()
 					&& node.getDistrib() instanceof CategoricalTable
 					&& node.getProb(ValueFactory.none()) > 0.99) {
 				reduced.removeNode(node.getId());
 				continue;
-			} else if (node.getDistrib() instanceof EquivalenceDistribution
+			}
+			else if (node.getDistrib() instanceof EquivalenceDistribution
 					&& node.getInputNodeIds().isEmpty()) {
 				reduced.removeNode(node.getId());
 			}
@@ -314,18 +318,15 @@ public class StatePruner {
 					&& !node.getOutputNodes().isEmpty()
 					&& reduced.getUtilityNodeIds().isEmpty()
 					&& reduced.incrementalVars.isEmpty()) {
-				Assignment onlyAssign = new Assignment(node.getId(),
-						node.sample());
-				for (ChanceNode outputNode : node
-						.getOutputNodes(ChanceNode.class)) {
+				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
+				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
 					ProbDistribution curDistrib = outputNode.getDistrib();
 					outputNode.removeInputNode(node.getId());
 					if (outputNode.getInputNodeIds().isEmpty()) {
-						outputNode.setDistrib(curDistrib
-								.getProbDistrib(onlyAssign));
-					} else {
-						outputNode.setDistrib(curDistrib
-								.getPosterior(onlyAssign));
+						outputNode.setDistrib(curDistrib.getProbDistrib(onlyAssign));
+					}
+					else {
+						outputNode.setDistrib(curDistrib.getPosterior(onlyAssign));
 					}
 				}
 			}

@@ -39,8 +39,8 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of a chance node (sometimes also called belief node), which is
- * a random variable associated with a specific probability distribution.
+ * Representation of a chance node (sometimes also called belief node), which is a
+ * random variable associated with a specific probability distribution.
  * 
  *
  * @author Pierre Lison (plison@ifi.uio.no)
@@ -64,8 +64,8 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 	/**
-	 * Creates a new chance node defined by the identifier. The default
-	 * probability distribution is then a probability table.
+	 * Creates a new chance node defined by the identifier. The default probability
+	 * distribution is then a probability table.
 	 * 
 	 * @param nodeId the node identifier
 	 */
@@ -89,8 +89,7 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Sets the probability distribution of the node, and erases the existing
-	 * one.
+	 * Sets the probability distribution of the node, and erases the existing one.
 	 * 
 	 * @param distrib the distribution for the node
 	 * @throws DialException if the distribution is not well-formed
@@ -101,9 +100,8 @@ public class ChanceNode extends BNode {
 			log.warning(nodeId + "  != " + distrib.getVariable());
 		}
 		if (!distrib.isWellFormed()) {
-			throw new DialException("Distribution for node " + nodeId
-					+ " (type " + distrib.getClass().getSimpleName()
-					+ ") is not well-formed");
+			throw new DialException("Distribution for node " + nodeId + " (type "
+					+ distrib.getClass().getSimpleName() + ") is not well-formed");
 		}
 		cachedValues = null;
 	}
@@ -120,9 +118,9 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Adds a new value with associated probability to the node. The probability
-	 * must be independent of other nodes, and the distribution must be a
-	 * probability table.
+	 * Adds a new value with associated probability to the node. The probability must
+	 * be independent of other nodes, and the distribution must be a probability
+	 * table.
 	 * 
 	 * @param nodeValue the node value
 	 * @param prob the associated probability
@@ -133,8 +131,8 @@ public class ChanceNode extends BNode {
 
 	/**
 	 * Adds a new value with associated probability, given a specific value
-	 * assignment for the conditional nodes. The distribution must be a
-	 * probability table.
+	 * assignment for the conditional nodes. The distribution must be a probability
+	 * table.
 	 * 
 	 * @param condition the condition for which the probability is value
 	 * @param nodeValue the new value
@@ -143,7 +141,8 @@ public class ChanceNode extends BNode {
 	public void addProb(Assignment condition, Value nodeValue, double prob) {
 		if (distrib instanceof ConditionalTable) {
 			((ConditionalTable) distrib).addRow(condition, nodeValue, prob);
-		} else {
+		}
+		else {
 			log.warning("distribution is not defined as a dependent table table, "
 					+ "impossible to add probability");
 		}
@@ -168,7 +167,8 @@ public class ChanceNode extends BNode {
 	public void removeProb(Assignment condition, Value nodeValue) {
 		if (distrib instanceof ConditionalTable) {
 			((ConditionalTable) distrib).removeRow(condition, nodeValue);
-		} else {
+		}
+		else {
 			log.warning("distribution is not defined as a table, impossible "
 					+ "to remove probability");
 		}
@@ -204,18 +204,18 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 	/**
-	 * Returns the probability associated with a specific value, according to
-	 * the current distribution.
+	 * Returns the probability associated with a specific value, according to the
+	 * current distribution.
 	 * 
 	 * <p>
-	 * The method assumes that the node is conditionally independent of every
-	 * other node. If it isn't, one should use the getProb(condition, nodeValue)
-	 * method instead.
+	 * The method assumes that the node is conditionally independent of every other
+	 * node. If it isn't, one should use the getProb(condition, nodeValue) method
+	 * instead.
 	 * 
 	 * <p>
-	 * NB: the method should *not* be used to perform sophisticated inference,
-	 * as it is not optimised and might lead to distorted results for very
-	 * dependent networks
+	 * NB: the method should *not* be used to perform sophisticated inference, as it
+	 * is not optimised and might lead to distorted results for very dependent
+	 * networks
 	 * 
 	 * @param nodeValue the value for the node
 	 * @return its probability
@@ -244,8 +244,8 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Returns the probability associated with the conditional assignment and
-	 * the node value, if one is defined.
+	 * Returns the probability associated with the conditional assignment and the
+	 * node value, if one is defined.
 	 * 
 	 * 
 	 * @param condition the condition
@@ -255,20 +255,20 @@ public class ChanceNode extends BNode {
 	public double getProb(Assignment condition, Value nodeValue) {
 		try {
 			return distrib.getProb(condition, nodeValue);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("exception: " + e);
 			return 0.0;
 		}
 	}
 
 	/**
-	 * Returns a sample value for the node, according to the probability
-	 * distribution currently defined.
+	 * Returns a sample value for the node, according to the probability distribution
+	 * currently defined.
 	 * 
 	 * <p>
-	 * The method assumes that the node is conditionally independent of every
-	 * other node. If it isn't, one should use the sample(condition) method
-	 * instead.
+	 * The method assumes that the node is conditionally independent of every other
+	 * node. If it isn't, one should use the sample(condition) method instead.
 	 * 
 	 * @return the sample value
 	 * @throws DialException if no sample can be selected
@@ -283,7 +283,8 @@ public class ChanceNode extends BNode {
 			if (inputNode instanceof ChanceNode) {
 				inputSample.addPair(inputNode.getId(),
 						((ChanceNode) inputNode).sample());
-			} else if (inputNode instanceof ActionNode) {
+			}
+			else if (inputNode instanceof ActionNode) {
 				inputSample.addPair(inputNode.getId(),
 						((ActionNode) inputNode).sample());
 			}
@@ -292,8 +293,8 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Returns a sample value for the node, given a condition. The sample is
-	 * selected according to the probability distribution for the node.
+	 * Returns a sample value for the node, given a condition. The sample is selected
+	 * according to the probability distribution for the node.
 	 * 
 	 * @param condition the value assignment on conditional nodes
 	 * @return the sample value
@@ -307,9 +308,9 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Returns a discrete set of values for the node. If the variable for the
-	 * node has a continuous range, this set if based on a discretisation
-	 * procedure defined by the distribution.
+	 * Returns a discrete set of values for the node. If the variable for the node
+	 * has a continuous range, this set if based on a discretisation procedure
+	 * defined by the distribution.
 	 *
 	 * @return the discrete set of values
 	 */
@@ -329,7 +330,8 @@ public class ChanceNode extends BNode {
 	public int getNbValues() {
 		if (distrib instanceof ContinuousDistribution) {
 			return Settings.discretisationBuckets;
-		} else {
+		}
+		else {
 			return getValues().size();
 		}
 	}
@@ -344,8 +346,8 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Returns the "factor matrix" mapping assignments of conditional variables
-	 * + the node variable to a probability value.
+	 * Returns the "factor matrix" mapping assignments of conditional variables + the
+	 * node variable to a probability value.
 	 *
 	 * @return the factor matrix.
 	 */
@@ -372,8 +374,8 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 	/**
-	 * Returns a copy of the node. Note that only the node content is copied,
-	 * not its connection with other nodes.
+	 * Returns a copy of the node. Note that only the node content is copied, not its
+	 * connection with other nodes.
 	 *
 	 * @return the copy
 	 * @throws DialException if the node could not be copied.
@@ -388,8 +390,8 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
-	 * Returns the hashcode for the node (based on the hashcode of the
-	 * identifier and the distribution).
+	 * Returns the hashcode for the node (based on the hashcode of the identifier and
+	 * the distribution).
 	 */
 	@Override
 	public int hashCode() {

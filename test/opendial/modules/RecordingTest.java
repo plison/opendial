@@ -81,39 +81,26 @@ public class RecordingTest {
 		table.addRow("move a bit to the left", 0.65);
 		system.addContent(table);
 
-		assertTrue(system
-				.getModule(GUIFrame.class)
-				.getChatTab()
-				.getChat()
-				.contains(
-						"<font size=\"4\">move a bit to the left (0.05)</font>"));
-		assertTrue(system
-				.getModule(GUIFrame.class)
-				.getChatTab()
-				.getChat()
-				.contains(
-						"<font size=\"4\">OK, moving Left a little bit</font>"));
+		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat()
+				.contains("<font size=\"4\">move a bit to the left (0.05)</font>"));
+		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat()
+				.contains("<font size=\"4\">OK, moving Left a little bit</font>"));
 		assertEquals(6, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(),
-				"userTurn"));
-		if (StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(),
-				"systemTurn") != 4) {
+				system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
+		if (StringUtils.countOccurrences(system.getModule(DialogueRecorder.class)
+				.getRecord(), "systemTurn") != 4) {
 			Thread.sleep(250);
 		}
 		assertEquals(4, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(),
-				"systemTurn"));
+				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(14, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(),
-				"variable"));
+				system.getModule(DialogueRecorder.class).getRecord(), "variable"));
 
 		system.getModule(GUIFrame.class).getFrame().dispose();
 	}
 
 	@Test
-	public void testXML() throws DialException, InterruptedException,
-			IOException {
+	public void testXML() throws DialException, InterruptedException, IOException {
 
 		DialogueSystem system = new DialogueSystem(
 				XMLDomainReader.extractDomain(domainFile2));

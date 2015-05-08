@@ -290,6 +290,7 @@
 				</condition>
 				<effect prob="1">
 					<set var="ReturnDate" value="NoReturn" />
+					<set var="a_m-prev" value="{a_m}" />
 					<set var="a_m" value="FindOffer" />
 				</effect>
 			</case>
@@ -298,6 +299,7 @@
 					<if var="a_m" value="Ground(ReturnDate,*)" />
 				</condition>
 				<effect prob="1">
+					<set var="a_m-prev" value="{a_m}" />
 					<set var="a_m" value="FindOffer" />
 				</effect>
 			</case>
@@ -330,6 +332,7 @@
 					<if var="a_m" value="Ground(Booking)" />
 				</condition>
 				<effect prob="1">
+					<set var="a_m-prev" value="{a_m}" />
 					<set var="a_m" value="Book"/>
 					<set var="current_step" value="Final" />
 				</effect>

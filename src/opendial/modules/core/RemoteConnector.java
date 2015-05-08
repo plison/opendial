@@ -54,8 +54,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * Module used to connect OpenDial to other remote clients (for instance, in
- * order to conduct Wizard-of-Oz experiments).
+ * Module used to connect OpenDial to other remote clients (for instance, in order to
+ * conduct Wizard-of-Oz experiments).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -86,8 +86,8 @@ public class RemoteConnector implements Module {
 	// ===================================
 
 	/**
-	 * A server socket is created, using an arbitrary open port (NB: the port
-	 * can be read in the "About" page in the GUI).
+	 * A server socket is created, using an arbitrary open port (NB: the port can be
+	 * read in the "About" page in the GUI).
 	 * 
 	 * @param system the local dialogue system
 	 * @throws DialException if the server socket could not be opened
@@ -97,7 +97,8 @@ public class RemoteConnector implements Module {
 		try {
 			local = new ServerSocket(0);
 			new Thread(() -> readContent()).start();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new DialException("cannot initialise remote connector: " + e);
 		}
 	}
@@ -124,7 +125,8 @@ public class RemoteConnector implements Module {
 				forwardContent(MessageType.CLOSE, content);
 				try {
 					Thread.sleep(100);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -133,8 +135,8 @@ public class RemoteConnector implements Module {
 	}
 
 	/**
-	 * Connects to a new IP address and port (after startup). Note that the
-	 * remote connection must also be present in the system settings.
+	 * Connects to a new IP address and port (after startup). Note that the remote
+	 * connection must also be present in the system settings.
 	 * 
 	 * @param address the IP address.
 	 * @param port the port to employ
@@ -156,7 +158,8 @@ public class RemoteConnector implements Module {
 		if (skipNextTrigger) {
 			skipNextTrigger = false;
 			return;
-		} else if (paused || system.getSettings().remoteConnections.isEmpty()) {
+		}
+		else if (paused || system.getSettings().remoteConnections.isEmpty()) {
 			return;
 		}
 		try {
@@ -184,13 +187,12 @@ public class RemoteConnector implements Module {
 					&& system.getState().hasChanceNode(speechVar)) {
 				Value val = system.getContent(speechVar).getBest();
 				if (val instanceof SpeechData) {
-					forwardContent(
-							MessageType.STREAM,
-							new ByteArrayInputStream(((SpeechData) val)
-									.toByteArray()));
+					forwardContent(MessageType.STREAM, new ByteArrayInputStream(
+							((SpeechData) val).toByteArray()));
 				}
 			}
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("cannot update remote connector: " + e);
 		}
 	}
@@ -216,7 +218,8 @@ public class RemoteConnector implements Module {
 		try {
 			String localIp = InetAddress.getLocalHost().getHostAddress();
 			return localIp + ":" + local.getLocalPort();
-		} catch (UnknownHostException e) {
+		}
+		catch (UnknownHostException e) {
 			log.warning("cannot extract local address");
 			return "";
 		}
@@ -265,7 +268,8 @@ public class RemoteConnector implements Module {
 				out.write(messageType.ordinal());
 				IOUtils.copy(IOUtils.toBufferedInputStream(content), out);
 				socket.close();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.warning("cannot forward content: " + e);
 			}
 		};
@@ -278,10 +282,10 @@ public class RemoteConnector implements Module {
 	/**
 	 * Infinite loop that reads content from the server socket
 	 * <ul>
-	 * <li>If the message type is INIT, adds the connection to the list of
-	 * remote connections
-	 * <li>If the message type is XML, adds the new distributions to the
-	 * dialogue state
+	 * <li>If the message type is INIT, adds the connection to the list of remote
+	 * connections
+	 * <li>If the message type is XML, adds the new distributions to the dialogue
+	 * state
 	 * <li>If the message type is STREAM, play the stream on the output mixer
 	 * <li>If the message type is CLOSE, removes the connections from the list
 	 * </ul>
@@ -304,21 +308,25 @@ public class RemoteConnector implements Module {
 						system.getModule(GUIFrame.class).enableSpeech(true);
 						system.getModule(GUIFrame.class).getMenu().update();
 					}
-				} else if (type == MessageType.XML) {
+				}
+				else if (type == MessageType.XML) {
 					String content = new String(message);
 					Document doc = XMLUtils.loadXMLFromString(content);
 					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils
 							.getMainNode(doc));
 					skipNextTrigger = true;
 					system.addContent(nodes);
-				} else if (type == MessageType.MISC) {
+				}
+				else if (type == MessageType.MISC) {
 					String content = new String(message);
 					log.info("received message: " + content);
-				} else if (type == MessageType.STREAM) {
+				}
+				else if (type == MessageType.STREAM) {
 					SpeechData output = new SpeechData(message);
 					system.addContent(new Assignment(
 							system.getSettings().systemSpeech, output));
-				} else if (type == MessageType.CLOSE) {
+				}
+				else if (type == MessageType.CLOSE) {
 					String content = new String(message);
 					log.info("Disconnecting from " + content);
 					system.displayComment("Disconnecting from " + content);
@@ -326,9 +334,9 @@ public class RemoteConnector implements Module {
 					system.getSettings().remoteConnections.remove(ip);
 				}
 				Thread.sleep(100);
-			} catch (IOException | InterruptedException
-					| ParserConfigurationException | SAXException
-					| DialException e) {
+			}
+			catch (IOException | InterruptedException | ParserConfigurationException
+					| SAXException | DialException e) {
 				e.printStackTrace();
 			}
 		}

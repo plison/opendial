@@ -62,8 +62,7 @@ public class XMLDomainReader {
 	 * @return the extracted dialogue domain
 	 * @throws DialException if a format error occurs
 	 */
-	public static Domain extractDomain(String topDomainFile)
-			throws DialException {
+	public static Domain extractDomain(String topDomainFile) throws DialException {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
@@ -81,7 +80,8 @@ public class XMLDomainReader {
 				&& mainNode.getAttributes().getNamedItem("name") != null) {
 			domain.setName(mainNode.getAttributes().getNamedItem("name")
 					.getNodeValue());
-		} else {
+		}
+		else {
 			domain.setName(topDomainFile.replace("//", "/"));
 		}
 
@@ -95,8 +95,8 @@ public class XMLDomainReader {
 	}
 
 	/**
-	 * Extracts a partially specified domain from the XML node and add its
-	 * content to the dialogue domain.
+	 * Extracts a partially specified domain from the XML node and add its content to
+	 * the dialogue domain.
 	 * 
 	 * @param mainNode main XML node
 	 * @param domain dialogue domain
@@ -144,8 +144,7 @@ public class XMLDomainReader {
 		}
 
 		// extracting imported references
-		else if (mainNode.getNodeName().equals("import")
-				&& mainNode.hasAttributes()
+		else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes()
 				&& mainNode.getAttributes().getNamedItem("href") != null) {
 
 			String fileName = mainNode.getAttributes().getNamedItem("href")
@@ -181,15 +180,15 @@ public class XMLDomainReader {
 			Pattern p = Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
 					+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
 					+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
-			Matcher m = p.matcher(topNode.getAttributes()
-					.getNamedItem("trigger").getNodeValue());
+			Matcher m = p.matcher(topNode.getAttributes().getNamedItem("trigger")
+					.getNodeValue());
 			while (m.find()) {
 				model.addTrigger(m.group());
 			}
-		} else {
-			throw new DialException(
-					"each model must specify a variable trigger:"
-							+ XMLUtils.serialise(topNode));
+		}
+		else {
+			throw new DialException("each model must specify a variable trigger:"
+					+ XMLUtils.serialise(topNode));
 		}
 
 		if (topNode.getAttributes().getNamedItem("blocking") != null) {
@@ -199,8 +198,7 @@ public class XMLDomainReader {
 		}
 
 		if (topNode.getAttributes().getNamedItem("id") != null) {
-			String id = topNode.getAttributes().getNamedItem("id")
-					.getNodeValue();
+			String id = topNode.getAttributes().getNamedItem("id").getNodeValue();
 			model.setId(id);
 		}
 

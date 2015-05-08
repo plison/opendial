@@ -24,10 +24,9 @@
 package opendial.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -36,16 +35,15 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-
+import javax.swing.JProgressBar;
 import opendial.arch.DialException;
 import opendial.arch.Logger;
 import opendial.modules.core.AudioModule;
 
 /**
- * Panel employed to capture audio input through a press and hold button,
- * accompanied by a sound level meter. The captured sound is then sent to the
- * dialogue system for further processing by the speech recognition engine.
+ * Panel employed to capture audio input through a press and hold button, accompanied
+ * by a sound level meter. The captured sound is then sent to the dialogue system for
+ * further processing by the speech recognition engine.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -57,13 +55,13 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 
 	// the audio recorder
 	AudioModule recorder;
-	
+
 	// the current volume
 	int volume;
 
 	// the sound level meter;
-	SoundLevelMeter slm;
-	
+	JProgressBar slm;
+
 	/**
 	 * Creates the speech input panel, composed of a press and hold button and a
 	 * sound level meter.
@@ -73,32 +71,29 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	public SpeechInputPanel(AudioModule recorder) {
 		this.recorder = recorder;
 		recorder.attachPanel(this);
-		Container container = new Container();
-		container.setLayout(new BorderLayout());
-		JButton button = new JButton(
-				"<html>Press & hold to record speech</html>");
-		button.addMouseListener(this);
-		container.add(new JLabel("<html><b>Audio capture</b>:&nbsp;"),
-				BorderLayout.WEST);
-		container.add(button, BorderLayout.CENTER);
-		Container volumeCont = new Container();
-		volumeCont.setLayout(new BorderLayout());
-		volumeCont
-				.add(new JLabel(
-						"<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Volume:&nbsp;</html>"),
-						BorderLayout.CENTER);
-		slm = new SoundLevelMeter();
-		slm.setPreferredSize(new Dimension(200, 20));
-		slm.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		volumeCont.add(slm, BorderLayout.EAST);
-		container.add(volumeCont, BorderLayout.EAST);
+		setLayout(new BorderLayout());
+
 		final JCheckBox checkbox = new JCheckBox("Voice Activity Detection");
+		add(checkbox, BorderLayout.LINE_START);
+		Container container = new Container();
+		container.setLayout(new FlowLayout());
+		container.add(new JLabel(""));
+		JButton button = new JButton("<html>Press & hold to record speech</html>");
+		button.addMouseListener(this);
+		container.add(button);
+		container.add(new JLabel(""));
+		add(container);
+		slm = new JProgressBar();
+		slm.setMaximum(2000);
+		slm.setBorderPainted(true);
+		slm.setString("System is talking...");
+		slm.setPreferredSize(new Dimension(200, 25));
+		add(slm, BorderLayout.LINE_END);
+		this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 		checkbox.addActionListener(a -> {
 			recorder.activateVAD(checkbox.isSelected());
 			button.setEnabled(!checkbox.isSelected());
 		});
-		container.add(checkbox, BorderLayout.SOUTH);
-		add(container);
 
 	}
 
@@ -110,8 +105,9 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		try {
-			recorder.startRecording(0);
-		} catch (DialException ex) {
+			recorder.startRecording();
+		}
+		catch (DialException ex) {
 			log.warning(ex.toString());
 		}
 	}
@@ -126,7 +122,8 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		try {
 			recorder.stopRecording();
-		} catch (Exception f) {
+		}
+		catch (Exception f) {
 			f.printStackTrace();
 		}
 	}
@@ -143,30 +140,36 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 	}
 
+	/**
+	 * Updates the volume value in the meter.
+	 * 
+	 * @param currentVolume the new volume
+	 */
 	public void updateVolume(int currentVolume) {
 		if (Math.abs(currentVolume - volume) > 20) {
 			volume = currentVolume;
-			slm.repaint();
+			slm.setValue(volume);
 		}
 	}
 
-
-	
-final class SoundLevelMeter extends JPanel {
-
 	/**
-	 * Repaint
-	 *
-	 * @param gg the graphics
+	 * Clears the volume in the meter
 	 */
-	@Override
-	public void paintComponent(Graphics gg) {
-		gg.setColor(Color.GREEN);
-		gg.clearRect(0, 0, 220, 25);
-		gg.fillRect(0, 0, volume / 20, 25);
+	public void clearVolume() {
+		if (volume != 0) {
+			volume = 0;
+			slm.setValue(0);
+		}
 	}
 
-}
-
+	/**
+	 * Sets a string in the volume meter indicating that the system is currently
+	 * talking.
+	 * 
+	 * @param systemTalks whether the system currently talks or not
+	 */
+	public void setSystemTalking(boolean systemTalks) {
+		slm.setStringPainted(systemTalks);
+	}
 
 }

@@ -26,8 +26,8 @@ package opendial.bn.distribs;
 import opendial.datastructs.Assignment;
 
 /**
- * Generic interface for a utility function (also called value function),
- * mapping every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).
+ * Generic interface for a utility function (also called value function), mapping
+ * every assignment X1, ..., Xn to a scalar utility U(X1, ...., Xn).
  * 
  * <p>
  * Typically, at least one of these X1, ..., Xn variables consist of a decision
@@ -39,8 +39,8 @@ import opendial.datastructs.Assignment;
 public interface UtilityFunction {
 
 	/**
-	 * Returns the utility associated with the specific assignment of values for
-	 * the input nodes. If none exists, returns 0.0f.
+	 * Returns the utility associated with the specific assignment of values for the
+	 * input nodes. If none exists, returns 0.0f.
 	 * 
 	 * @param input the value assignment for the input chance nodes
 	 * @return the associated utility
@@ -48,8 +48,7 @@ public interface UtilityFunction {
 	public double getUtil(Assignment input);
 
 	/**
-	 * Checks that the utility function is well-formed (all assignments are
-	 * covered)
+	 * Checks that the utility function is well-formed (all assignments are covered)
 	 * 
 	 * @return true is the distribution is well-formed, false otherwise
 	 */

@@ -42,10 +42,10 @@ import opendial.domains.rules.parameters.SingleParameter;
 
 /**
  * Representation of a particular output derived from the application of a
- * probabilistic rule. The output essentially contains a (parametrised)
- * distribution over possible effects. If the rule contains multiple groundings,
- * the output is a merge (joint probability distribution for a probability rule,
- * add table for a utility rule) of the rule case for every possible groundings.
+ * probabilistic rule. The output essentially contains a (parametrised) distribution
+ * over possible effects. If the rule contains multiple groundings, the output is a
+ * merge (joint probability distribution for a probability rule, add table for a
+ * utility rule) of the rule case for every possible groundings.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -65,9 +65,9 @@ public class RuleOutput extends RuleCase {
 	}
 
 	/**
-	 * Adds a rule case to the output. The result is a joint probability
-	 * distribution in the case of a probability rule, and an add table in the
-	 * case of a utility rule.
+	 * Adds a rule case to the output. The result is a joint probability distribution
+	 * in the case of a probability rule, and an add table in the case of a utility
+	 * rule.
 	 * 
 	 * @param newCase the new rule case to add
 	 */
@@ -107,22 +107,25 @@ public class RuleOutput extends RuleCase {
 					Parameter mergeParam = multiplyParameter(param, newParam);
 					if (!newOutput.containsKey(newEffect)) {
 						newOutput.put(newEffect, mergeParam);
-					} else {
-						Parameter addParam = sumParameter(
-								newOutput.get(newEffect), mergeParam);
+					}
+					else {
+						Parameter addParam = sumParameter(newOutput.get(newEffect),
+								mergeParam);
 						newOutput.put(newEffect, addParam);
 					}
 				}
 			}
 			effects = newOutput;
 			newCase.pruneEffects();
-		} else if (type == RuleType.UTIL) {
+		}
+		else if (type == RuleType.UTIL) {
 			for (Effect o2 : newCase.getEffects()) {
 				if (effects.containsKey(o2)) {
 					Parameter mergeParam = sumParameter(effects.get(o2),
 							newCase.getParameter(o2));
 					effects.put(o2, mergeParam);
-				} else {
+				}
+				else {
 					effects.put(o2, newCase.getParameter(o2));
 				}
 			}
@@ -130,8 +133,8 @@ public class RuleOutput extends RuleCase {
 	}
 
 	/**
-	 * Returns the total probability mass specified by the output (possibly
-	 * given an assignment of parameter values).
+	 * Returns the total probability mass specified by the output (possibly given an
+	 * assignment of parameter values).
 	 * 
 	 * @param input input assignment (with parameters values)
 	 * @return the corresponding mass
@@ -154,11 +157,12 @@ public class RuleOutput extends RuleCase {
 			double sum = ((FixedParameter) p1).getParameterValue()
 					+ ((FixedParameter) p2).getParameterValue();
 			return new FixedParameter(sum);
-		} else {
-			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}"
-					: p1.toString();
-			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}"
-					: p2.toString();
+		}
+		else {
+			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1
+					.toString();
+			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2
+					.toString();
 			Set<String> unknowns = new HashSet<String>();
 			unknowns.addAll(p1.getVariables());
 			unknowns.addAll(p2.getVariables());
@@ -178,11 +182,12 @@ public class RuleOutput extends RuleCase {
 			double sum = ((FixedParameter) p1).getParameterValue()
 					* ((FixedParameter) p2).getParameterValue();
 			return new FixedParameter(sum);
-		} else {
-			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}"
-					: p1.toString();
-			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}"
-					: p2.toString();
+		}
+		else {
+			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1
+					.toString();
+			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2
+					.toString();
 			Set<String> unknowns = new HashSet<String>();
 			unknowns.addAll(p1.getVariables());
 			unknowns.addAll(p2.getVariables());

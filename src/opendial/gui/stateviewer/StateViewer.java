@@ -75,8 +75,8 @@ import edu.uci.ics.jung.visualization.renderers.VertexLabelRenderer;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
 /**
- * Graph rendering component for the Bayesian Network. The component is based on
- * the JUNG library for easy layout of the graphs.
+ * Graph rendering component for the Bayesian Network. The component is based on the
+ * JUNG library for easy layout of the graphs.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -101,8 +101,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	Map<String, DistributionViewer> shownDistribs;
 
 	/**
-	 * Creates a new graph viewer, connected to the component given as argument.
-	 * The viewer initially displays an empty graph.
+	 * Creates a new graph viewer, connected to the component given as argument. The
+	 * viewer initially displays an empty graph.
 	 * 
 	 * @param tab the state viewer component
 	 */
@@ -117,14 +117,12 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 
 		// setting various renderers and element transformers
 		setBackground(Color.white);
-		getRenderContext().setVertexLabelTransformer(
-				new ToStringLabeller<String>());
-		getRenderContext().setVertexShapeTransformer(
-				new CustomVertexShapeRenderer());
+		getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
+		getRenderContext()
+				.setVertexShapeTransformer(new CustomVertexShapeRenderer());
 		getRenderContext().setVertexFillPaintTransformer(
 				new CustomVertexColourRenderer());
-		getRenderContext().setVertexLabelRenderer(
-				new CustomVertexLabelRenderer());
+		getRenderContext().setVertexLabelRenderer(new CustomVertexLabelRenderer());
 		getRenderer().getVertexLabelRenderer().setPosition(Position.S);
 		setVertexToolTipTransformer(new CustomToolTipTransformer());
 		ToolTipManager.sharedInstance().setDismissDelay(1000000000);
@@ -139,8 +137,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	}
 
 	/**
-	 * Creates a new DAG-based graph layout for the given Bayesian Network. The
-	 * nodes are identified by a string label, and the edges by a number.
+	 * Creates a new DAG-based graph layout for the given Bayesian Network. The nodes
+	 * are identified by a string label, and the edges by a number.
 	 * 
 	 * @param bn the Bayesian network
 	 * @return the generated layout
@@ -153,13 +151,11 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		int counter = 0;
 		try {
 			for (BNode node : new ArrayList<BNode>(ds.getNodes())) {
-				if (showParameters
-						|| !ds.getParameterIds().contains(node.getId())) {
+				if (showParameters || !ds.getParameterIds().contains(node.getId())) {
 					String nodeName = getVerticeId(node);
 
 					f.addVertex(nodeName);
-					for (BNode inputNode : new ArrayList<BNode>(
-							node.getInputNodes())) {
+					for (BNode inputNode : new ArrayList<BNode>(node.getInputNodes())) {
 						if (ds.getNode(inputNode.getId()) != null) {
 							String inputNodeName = getVerticeId(inputNode);
 							f.addEdge(counter, inputNodeName, nodeName);
@@ -169,18 +165,19 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				}
 			}
 
-			CustomLayoutTransformer transformer = new CustomLayoutTransformer(
-					ds);
+			CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
 			StaticLayout<String, Integer> layout = new StaticLayout<String, Integer>(
 					f, transformer);
 
 			layout.setSize(new Dimension(600, 600));
 
 			return layout;
-		} catch (ConcurrentModificationException | NullPointerException e) {
+		}
+		catch (ConcurrentModificationException | NullPointerException e) {
 			try {
 				Thread.sleep(50);
-			} catch (InterruptedException e1) {
+			}
+			catch (InterruptedException e1) {
 			}
 			return getGraphLayout(ds, showParameters);
 		}
@@ -196,15 +193,16 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		String nodeName = node.getId();
 		if (node instanceof UtilityNode) {
 			nodeName = "util---" + node.getId();
-		} else if (node instanceof ActionNode) {
+		}
+		else if (node instanceof ActionNode) {
 			nodeName = "action---" + node.getId();
 		}
 		return nodeName;
 	}
 
 	/**
-	 * Returns the node associated with the graph identifier (inverse operation
-	 * of getGraphId)
+	 * Returns the node associated with the graph identifier (inverse operation of
+	 * getGraphId)
 	 * 
 	 * @param verticeID the vertice identifier
 	 * @return the node in the Bayesian Network, if any
@@ -219,8 +217,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	}
 
 	/**
-	 * Returns the node associated with the graph identifier (inverse operation
-	 * of getGraphId)
+	 * Returns the node associated with the graph identifier (inverse operation of
+	 * getGraphId)
 	 * 
 	 * @param verticeID the vertice identifier
 	 * @return the node in the Bayesian Network, if any
@@ -241,7 +239,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				isUpdating = true;
 				if (tab.getMainFrame().getSystem().isPaused()) {
 					update();
-				} else {
+				}
+				else {
 					synchronized (currentState) {
 						update();
 					}
@@ -268,7 +267,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	public void paintComponent(Graphics g) {
 		try {
 			super.paintComponent(g);
-		} catch (NullPointerException e) {
+		}
+		catch (NullPointerException e) {
 			log.debug("cannot repaint state viewer, waiting for next update: ");
 			e.printStackTrace();
 			isUpdating = false;
@@ -307,7 +307,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			int dx = -vertical;
 			int dy = horizontal;
 			modelTransformer.translate(dy, dx);
-		} catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			throw ex;
 		}
 	}
@@ -346,8 +347,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 */
 	public void displayDistrib(String queryVar) {
 		if (!shownDistribs.containsKey(queryVar)) {
-			IndependentProbDistribution distrib = currentState
-					.queryProb(queryVar);
+			IndependentProbDistribution distrib = currentState.queryProb(queryVar);
 			DistributionViewer viewer = new DistributionViewer(currentState,
 					queryVar, this);
 			shownDistribs.put(distrib.getVariable(), viewer);
@@ -365,8 +365,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 
 	/**
 	 * Tooltip transformer showing the pretty print information available in the
-	 * original Bayesian node. The information is shown when the mouse cursor
-	 * hovers over the node.
+	 * original Bayesian node. The information is shown when the mouse cursor hovers
+	 * over the node.
 	 *
 	 */
 	final class CustomToolTipTransformer implements Transformer<String, String> {
@@ -389,7 +389,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
 								"<b>else if</b>");
 				return StringUtils.getHtmlRendering(htmlDistrib);
-			} else {
+			}
+			else {
 				return "";
 			}
 		}
@@ -410,8 +411,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				if (node != null) {
 					String str = StringUtils.getHtmlRendering(node.getId());
 					if (currentState.isRuleNode(node.getId())) {
-						str = "<font size=\"6\" color=\"gray\">" + str
-								+ "</font>";
+						str = "<font size=\"6\" color=\"gray\">" + str + "</font>";
 					}
 					JLabel jlabel = new JLabel("<html>" + str + "</html>");
 					jlabel.setFont(new Font("Arial bold", Font.PLAIN, 24));
@@ -425,24 +425,26 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	/**
 	 * Renderer for the vertice colour
 	 */
-	final class CustomVertexColourRenderer implements
-			Transformer<String, Paint> {
+	final class CustomVertexColourRenderer implements Transformer<String, Paint> {
 
 		@Override
 		public Paint transform(String arg0) {
 			BNode node = getBNode(arg0);
-			boolean isPicked = getPickedVertexState().getPicked()
-					.contains(arg0);
+			boolean isPicked = getPickedVertexState().getPicked().contains(arg0);
 			if (isPicked) {
 				return new Color(255, 204, 0);
-			} else if (node instanceof UtilityNode) {
+			}
+			else if (node instanceof UtilityNode) {
 				return new Color(0, 128, 108);
-			} else if (node instanceof ActionNode) {
+			}
+			else if (node instanceof ActionNode) {
 				return new Color(0, 100, 155);
-			} else if (node != null
+			}
+			else if (node != null
 					&& getState().getEvidence().containsVar(node.getId())) {
 				return Color.darkGray;
-			} else {
+			}
+			else {
 				return new Color(179, 0, 45);
 			}
 		}
@@ -461,10 +463,12 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			if (node instanceof ChanceNode) {
 				if (((ChanceNode) node).getDistrib() instanceof RuleDistribution) {
 					return new Ellipse2D.Double(-5.0, -5.0, 20.0, 20.0);
-				} else {
+				}
+				else {
 					return new Ellipse2D.Double(-15.0, -15.0, 30.0, 30.0);
 				}
-			} else if (node instanceof UtilityNode) {
+			}
+			else if (node instanceof UtilityNode) {
 				GeneralPath p0 = new GeneralPath();
 				p0.moveTo(0.0f, -15);
 				p0.lineTo(15, 0.0f);
@@ -472,9 +476,11 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				p0.lineTo(-15, 0.0f);
 				p0.closePath();
 				return p0;
-			} else if (node instanceof ActionNode) {
+			}
+			else if (node instanceof ActionNode) {
 				return new Rectangle2D.Double(-15.0, -15.0, 30.0, 30.0);
-			} else {
+			}
+			else {
 				return new Ellipse2D.Double(-15.0, -15.0, 30.0, 30.0);
 			}
 		}
@@ -499,10 +505,12 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 					allNodes.addAll(network.getNodeIds());
 					ruleNodes.addAll(network.getRuleNodeIds());
 					break;
-				} catch (ConcurrentModificationException | NullPointerException e) {
+				}
+				catch (ConcurrentModificationException | NullPointerException e) {
 					try {
 						Thread.sleep(50);
-					} catch (InterruptedException e1) {
+					}
+					catch (InterruptedException e1) {
 					}
 				}
 			}
@@ -531,7 +539,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		private Point incrementPoint(Point curPoint) {
 			if (curPoint.y < 500) {
 				return new Point(curPoint.x, curPoint.y + 150);
-			} else {
+			}
+			else {
 				return new Point(curPoint.x + 150, 0);
 			}
 		}

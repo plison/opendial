@@ -31,8 +31,7 @@ import opendial.inference.Query;
 public class LikelihoodWeighting {
 
 	// logger
-	public static Logger log = new Logger("LikelihoodWeighting",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
 
 	// actual number of samples for the algorithm
 	int nbSamples;
@@ -55,8 +54,7 @@ public class LikelihoodWeighting {
 
 	// scheduled thread pool to terminate sampling once the time limit is
 	// reached
-	static ScheduledExecutorService service = Executors
-			.newScheduledThreadPool(3);
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
 
 	// ===================================
 	// PUBLIC METHODS
@@ -93,8 +91,7 @@ public class LikelihoodWeighting {
 	}
 
 	/**
-	 * Returns a string representation of the query and number of collected
-	 * samples
+	 * Returns a string representation of the query and number of collected samples
 	 */
 	@Override
 	public String toString() {
@@ -114,9 +111,8 @@ public class LikelihoodWeighting {
 
 	/**
 	 * Runs the sample collection procedure until termination (either due to a
-	 * time-out or the collection of a number of samples = nbSamples). The
-	 * method loops until terminate() is called, or enough samples have been
-	 * collected.
+	 * time-out or the collection of a number of samples = nbSamples). The method
+	 * loops until terminate() is called, or enough samples have been collected.
 	 * 
 	 */
 	protected Sample sample() {
@@ -133,7 +129,8 @@ public class LikelihoodWeighting {
 				if (n.getInputNodeIds().isEmpty() && evidence.containsVar(id)) {
 					sample.addPair(id, evidence.getValue(id));
 
-				} else if (n instanceof ChanceNode) {
+				}
+				else if (n instanceof ChanceNode) {
 					sampleChanceNode((ChanceNode) n, sample);
 				}
 
@@ -150,7 +147,8 @@ public class LikelihoodWeighting {
 			}
 
 			sample.trim(queryVars);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.info("exception caught: " + e);
 			e.printStackTrace();
 		}
@@ -162,14 +160,13 @@ public class LikelihoodWeighting {
 	// ===================================
 
 	/**
-	 * Samples the given chance node and add it to the sample. If the variable
-	 * is part of the evidence, updates the weight.
+	 * Samples the given chance node and add it to the sample. If the variable is
+	 * part of the evidence, updates the weight.
 	 * 
 	 * @param n the chance node to sample
 	 * @throws DialException if the sampling operation failed
 	 */
-	private void sampleChanceNode(ChanceNode n, Sample sample)
-			throws DialException {
+	private void sampleChanceNode(ChanceNode n, Sample sample) throws DialException {
 
 		String id = n.getId();
 		// if the node is chance node and not evidence, sample from the values
@@ -186,7 +183,8 @@ public class LikelihoodWeighting {
 			if (distrib instanceof ContinuousDistribution) {
 				evidenceProb = ((ContinuousDistribution) distrib)
 						.getProbDensity(evidenceValue);
-			} else {
+			}
+			else {
 				evidenceProb = n.getProb(sample, evidenceValue);
 			}
 			sample.addLogWeight(Math.log(evidenceProb));
@@ -195,8 +193,8 @@ public class LikelihoodWeighting {
 	}
 
 	/**
-	 * Samples the action node. If the node is part of the evidence, simply add
-	 * it to the sample. Else, samples an action at random.
+	 * Samples the action node. If the node is part of the evidence, simply add it to
+	 * the sample. Else, samples an action at random.
 	 * 
 	 * @param n the action node
 	 * @param sample the weighted sample to extend
@@ -207,15 +205,16 @@ public class LikelihoodWeighting {
 		if (!evidence.containsVar(id) && n.getInputNodeIds().isEmpty()) {
 			Value newVal = n.sample();
 			sample.addPair(id, newVal);
-		} else {
+		}
+		else {
 			Value evidenceValue = evidence.getValue(id);
 			sample.addPair(id, evidenceValue);
 		}
 	}
 
 	/**
-	 * Redraw the samples according to their weight. The number of redrawn
-	 * samples is the same as the one given as argument.
+	 * Redraw the samples according to their weight. The number of redrawn samples is
+	 * the same as the one given as argument.
 	 * 
 	 * @param samples the initial samples (with their weight)
 	 * @return the redrawn samples given their weight
@@ -233,7 +232,8 @@ public class LikelihoodWeighting {
 				newSamples.add(intervals.sample());
 			}
 			samples = newSamples;
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not redraw samples: " + e);
 		}
 	}

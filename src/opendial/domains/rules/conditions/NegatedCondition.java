@@ -40,8 +40,7 @@ import opendial.domains.rules.RuleGrounding;
 public final class NegatedCondition implements Condition {
 
 	// logger
-	public static Logger log = new Logger("NegatedCondition",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("NegatedCondition", Logger.Level.NORMAL);
 
 	// condition to negate
 	final Condition initCondition;
@@ -64,8 +63,8 @@ public final class NegatedCondition implements Condition {
 	// ===================================
 
 	/**
-	 * Returns the input variables for the condition (which are the same as the
-	 * ones for the condition to negate)
+	 * Returns the input variables for the condition (which are the same as the ones
+	 * for the condition to negate)
 	 * 
 	 * @return the input variables
 	 */
@@ -82,8 +81,8 @@ public final class NegatedCondition implements Condition {
 	}
 
 	/**
-	 * Returns true if the condition to negate is *not* satisfied, and false if
-	 * it is satisfied
+	 * Returns true if the condition to negate is *not* satisfied, and false if it is
+	 * satisfied
 	 * 
 	 * @param input the input assignment to verify
 	 * @return true if the included condition is false, and vice versa
@@ -135,8 +134,8 @@ public final class NegatedCondition implements Condition {
 	}
 
 	/**
-	 * Returns true if the current instance and the object are identical, and
-	 * false otherwise
+	 * Returns true if the current instance and the object are identical, and false
+	 * otherwise
 	 *
 	 * @param o the object to compare
 	 * @return true if equal, false otherwise
@@ -144,8 +143,7 @@ public final class NegatedCondition implements Condition {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof NegatedCondition) {
-			return ((NegatedCondition) o).getInitCondition().equals(
-					initCondition);
+			return ((NegatedCondition) o).getInitCondition().equals(initCondition);
 		}
 		return false;
 	}

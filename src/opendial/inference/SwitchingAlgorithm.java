@@ -36,8 +36,8 @@ import opendial.inference.exact.VariableElimination;
 
 /**
  * Switching algorithms that alternative between an exact algorithm (variable
- * elimination) and an approximate algorithm (likelihood weighting) depending on
- * the query.
+ * elimination) and an approximate algorithm (likelihood weighting) depending on the
+ * query.
  * 
  * <p>
  * The switching mechanism is defined via three thresholds:
@@ -48,17 +48,15 @@ import opendial.inference.exact.VariableElimination;
  * </ul>
  * 
  * <p>
- * If at least one of these thresholds is exceeded, the selected algorithm will
- * be likelihood weighting. Variable elimination is selected in the remaining
- * cases.
+ * If at least one of these thresholds is exceeded, the selected algorithm will be
+ * likelihood weighting. Variable elimination is selected in the remaining cases.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("SwitchingAlgorithm",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
 
 	// maximum branching factor (in-degree) for VE
 	public static int MAX_BRANCHING_FACTOR = 10;
@@ -102,15 +100,15 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Reduces a Bayesian network to a subset of variables. The method is
-	 * divided in three steps:
+	 * Reduces a Bayesian network to a subset of variables. The method is divided in
+	 * three steps:
 	 * <ul>
-	 * <li>The method first checks whether inference is necessary at all or
-	 * whether the current network can be returned as it is.
-	 * <li>If inference is necessary, the algorithm divides the network into
-	 * cliques and performs inference on each clique separately.
-	 * <li>Finally, if only one clique is present, the reduction selects the
-	 * best algorithm and return the result of the reduction process.
+	 * <li>The method first checks whether inference is necessary at all or whether
+	 * the current network can be returned as it is.
+	 * <li>If inference is necessary, the algorithm divides the network into cliques
+	 * and performs inference on each clique separately.
+	 * <li>Finally, if only one clique is present, the reduction selects the best
+	 * algorithm and return the result of the reduction process.
 	 * </ul>
 	 * 
 	 * @param query the reduction query

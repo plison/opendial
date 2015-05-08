@@ -33,9 +33,9 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
 /**
- * Parameter represented by a single distribution over a continuous variable. If
- * the variable is multivariate, the parameter represents a specific dimension
- * of the multivariate distribution.
+ * Parameter represented by a single distribution over a continuous variable. If the
+ * variable is multivariate, the parameter represents a specific dimension of the
+ * multivariate distribution.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -43,8 +43,7 @@ import opendial.datastructs.Assignment;
 public class SingleParameter implements Parameter {
 
 	// logger
-	public static Logger log = new Logger("StochasticParameter",
-			Logger.Level.NORMAL);
+	public static Logger log = new Logger("StochasticParameter", Logger.Level.NORMAL);
 
 	// the parameter identifier
 	String paramId;
@@ -85,9 +84,8 @@ public class SingleParameter implements Parameter {
 	}
 
 	/**
-	 * Returns the actual value for the parameter, as given in the input
-	 * assignment (as a DoubleVal or ArrayVal). If the value is not given,
-	 * throws an exception.
+	 * Returns the actual value for the parameter, as given in the input assignment
+	 * (as a DoubleVal or ArrayVal). If the value is not given, throws an exception.
 	 *
 	 * @param input the input assignment
 	 * @return the actual value for the parameter
@@ -97,7 +95,8 @@ public class SingleParameter implements Parameter {
 		Value value = input.getValue(paramId);
 		if (input.containsVar(paramId) && value instanceof DoubleVal) {
 			return ((DoubleVal) input.getValue(paramId)).getDouble();
-		} else if (input.containsVar(paramId) && value instanceof ArrayVal
+		}
+		else if (input.containsVar(paramId) && value instanceof ArrayVal
 				&& ((ArrayVal) value).getArray().length > dimension) {
 			return ((ArrayVal) value).getArray()[dimension];
 		}
@@ -115,7 +114,8 @@ public class SingleParameter implements Parameter {
 	public String toString() {
 		if (dimension != -1) {
 			return paramId.toString() + "[" + dimension + "]";
-		} else {
+		}
+		else {
 			return paramId.toString();
 		}
 	}

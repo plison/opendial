@@ -86,8 +86,8 @@ public final class VoidCondition implements Condition {
 	}
 
 	/**
-	 * Returns the string "true" indicating that the condition is always
-	 * trivially true
+	 * Returns the string "true" indicating that the condition is always trivially
+	 * true
 	 *
 	 * @return true
 	 */

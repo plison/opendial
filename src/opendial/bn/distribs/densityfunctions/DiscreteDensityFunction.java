@@ -83,16 +83,15 @@ public class DiscreteDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Returns the density for a given point. The density is derived in two
-	 * steps:<br>
+	 * Returns the density for a given point. The density is derived in two steps:<br>
 	 * <ol>
 	 * 
-	 * <li>locating the point in the distribution that is closest to x
-	 * (according to Euclidian distance)
+	 * <li>locating the point in the distribution that is closest to x (according to
+	 * Euclidian distance)
 	 * 
-	 * <li>dividing the probability mass for the point by the n-dimensional
-	 * volume around this point. The radius of the ball is the half of the
-	 * minimum distance between the points of the distribution.
+	 * <li>dividing the probability mass for the point by the n-dimensional volume
+	 * around this point. The radius of the ball is the half of the minimum distance
+	 * between the points of the distribution.
 	 * </ol>
 	 *
 	 * @param x the point
@@ -112,7 +111,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 		if (closestDist < minDistance / 2) {
 			return points.get(closest)
 					/ MathUtils.getVolume(minDistance / 2, getDimensions());
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}
@@ -209,8 +209,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Returns the variance of the distribution (calculated like for a
-	 * categorical distribution)
+	 * Returns the variance of the distribution (calculated like for a categorical
+	 * distribution)
 	 * 
 	 */
 	@Override
@@ -220,26 +220,24 @@ public class DiscreteDensityFunction implements DensityFunction {
 		for (int i = 0; i < getDimensions(); i++) {
 			variance[i] = 0.0;
 			for (double[] point : points.keySet()) {
-				variance[i] += Math.pow(point[i] - mean[i], 2)
-						* points.get(point);
+				variance[i] += Math.pow(point[i] - mean[i], 2) * points.get(point);
 			}
 		}
 		return variance;
 	}
 
 	/**
-	 * Returns the cumulative distribution for the distribution (by counting all
-	 * the points with a value that is lower than x).
+	 * Returns the cumulative distribution for the distribution (by counting all the
+	 * points with a value that is lower than x).
 	 */
 	@Override
 	public double getCDF(double... x) throws DialException {
 		if (x.length != getDimensions()) {
-			throw new DialException("Illegal dimensionality: " + x.length
-					+ "!=" + getDimensions());
+			throw new DialException("Illegal dimensionality: " + x.length + "!="
+					+ getDimensions());
 		}
 
-		double cdf = points.keySet().stream()
-				.filter(v -> MathUtils.isLower(v, x))
+		double cdf = points.keySet().stream().filter(v -> MathUtils.isLower(v, x))
 				.mapToDouble(v -> points.get(v)).sum();
 
 		return cdf;

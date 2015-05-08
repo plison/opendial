@@ -38,16 +38,15 @@ import opendial.datastructs.Assignment;
  * <li>a distribution P(Z1,...Zm)
  * </ul>
  * 
- * The probability P(X|Y1,...Yn) can be straightforwardly calculated by
- * marginalising out the variables Z1,...Zm.
+ * The probability P(X|Y1,...Yn) can be straightforwardly calculated by marginalising
+ * out the variables Z1,...Zm.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
 public class MarginalDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("MarginalDistribution",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("MarginalDistribution", Logger.Level.DEBUG);
 
 	// the conditional distribution P(X|Y1,...Yn, Z1,...Zm)
 	ProbDistribution condDistrib;
@@ -56,8 +55,7 @@ public class MarginalDistribution implements ProbDistribution {
 	MultivariateDistribution uncondDistrib;
 
 	/**
-	 * Creates a new marginal distribution given the two component
-	 * distributions.
+	 * Creates a new marginal distribution given the two component distributions.
 	 * 
 	 * @param condDistrib the distribution P(X|Y1,...Yn, Z1,...Zm)
 	 * @param uncondDistrib the distributionP(Z1,...Zm)
@@ -119,8 +117,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting probability
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head)
-			throws DialException {
+	public double getProb(Assignment condition, Value head) throws DialException {
 		double totalProb = 0.0;
 		for (Assignment assign : uncondDistrib.getValues()) {
 			Assignment augmentedCond = new Assignment(condition, assign);
@@ -130,22 +127,20 @@ public class MarginalDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Returns a sample value for the variable X given the conditional
-	 * assignment
+	 * Returns a sample value for the variable X given the conditional assignment
 	 * 
 	 * @param condition the conditional assignment for Y1,...Yn
 	 * @return the sampled value for X
 	 */
 	@Override
 	public Value sample(Assignment condition) throws DialException {
-		Assignment augmentedCond = new Assignment(condition,
-				uncondDistrib.sample());
+		Assignment augmentedCond = new Assignment(condition, uncondDistrib.sample());
 		return condDistrib.sample(augmentedCond);
 	}
 
 	/**
-	 * Returns the categorical table P(X) given the conditional assignment for
-	 * the variables Y1,...Yn.
+	 * Returns the categorical table P(X) given the conditional assignment for the
+	 * variables Y1,...Yn.
 	 * 
 	 * @param condition the conditional assignment for Y1,...Yn
 	 * @return the categorical table for the random variable X
@@ -153,13 +148,12 @@ public class MarginalDistribution implements ProbDistribution {
 	@Override
 	public CategoricalTable getProbDistrib(Assignment condition)
 			throws DialException {
-		CategoricalTable result = new CategoricalTable(
-				condDistrib.getVariable());
+		CategoricalTable result = new CategoricalTable(condDistrib.getVariable());
 		for (Assignment assign : uncondDistrib.getValues()) {
 			double assignProb = uncondDistrib.getProb(assign);
 			Assignment augmentedCond = new Assignment(condition, assign);
-			CategoricalTable subtable = condDistrib.getProbDistrib(
-					augmentedCond).toDiscrete();
+			CategoricalTable subtable = condDistrib.getProbDistrib(augmentedCond)
+					.toDiscrete();
 			for (Value value : subtable.getValues()) {
 				result.incrementRow(value, assignProb * subtable.getProb(value));
 			}
@@ -185,8 +179,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws DialException {
 		MultivariateTable extended = uncondDistrib.toDiscrete();
 		extended.extendRows(condition);
 		return new MarginalDistribution(condDistrib, extended);
@@ -217,8 +210,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 */
 	@Override
 	public MarginalDistribution copy() {
-		return new MarginalDistribution(condDistrib.copy(),
-				uncondDistrib.copy());
+		return new MarginalDistribution(condDistrib.copy(), uncondDistrib.copy());
 	}
 
 	/**

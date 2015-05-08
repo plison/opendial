@@ -196,8 +196,9 @@
 		<!-- Once the information is grounded, we assume the value won't change-->
 		<rule>
 			<case>
-				<condition>
+				<condition operator="or">
 					<if var="a_m" value="Ground({Slot},{Value})" />
+					<if var="a_m-prev" value="Ground({Slot},{Value})" />
 				</condition>
 				<effect>
 					<set var="{Slot}" value="{Value}" />

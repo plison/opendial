@@ -76,7 +76,8 @@ public final class ArrayVal implements Value {
 			double[] otherVector = ((ArrayVal) arg0).getArray();
 			if (array.length != otherVector.length) {
 				return array.length - otherVector.length;
-			} else {
+			}
+			else {
 				for (int i = 0; i < array.length; i++) {
 					double val1 = array[i];
 					double val2 = otherVector[i];
@@ -144,8 +145,7 @@ public final class ArrayVal implements Value {
 	}
 
 	/**
-	 * If v is an ArrayVal, returns the combined array value. Else, returns
-	 * none.
+	 * If v is an ArrayVal, returns the combined array value. Else, returns none.
 	 * 
 	 * @param v the value to concatenate
 	 * @return the concatenated result
@@ -162,9 +162,11 @@ public final class ArrayVal implements Value {
 				newvals[array.length + i] = ((ArrayVal) v).getArray()[i];
 			}
 			return new ArrayVal(newvals);
-		} else if (v instanceof NoneVal) {
+		}
+		else if (v instanceof NoneVal) {
 			return this;
-		} else {
+		}
+		else {
 			log.warning("cannot concatenate " + this + " with " + v);
 			return ValueFactory.noneValue;
 		}

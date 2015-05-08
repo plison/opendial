@@ -35,8 +35,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * Representation of an unconditional probability distribution P(X), where X is
- * a random variable.
+ * Representation of an unconditional probability distribution P(X), where X is a
+ * random variable.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -47,8 +47,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 			Logger.Level.DEBUG);
 
 	/**
-	 * Returns the probability P(value), if any is specified. Else, returns
-	 * 0.0f.
+	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
 	 * 
 	 * @param value the value for the random variable
 	 * @return the associated probability, if one exists.
@@ -56,8 +55,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	public double getProb(Value value);
 
 	/**
-	 * Returns the probability P(value), if any is specified. Else, returns
-	 * 0.0f.
+	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
 	 * 
 	 * @param value the value for the random variable (as a string)
 	 * @return the associated probability, if one exists.
@@ -67,8 +65,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	}
 
 	/**
-	 * Returns the probability P(value), if any is specified. Else, returns
-	 * 0.0f.
+	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
 	 * 
 	 * @param value the value for the random variable (as a boolean)
 	 * @return the associated probability, if one exists.
@@ -78,8 +75,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	}
 
 	/**
-	 * Returns the probability P(value), if any is specified. Else, returns
-	 * 0.0f.
+	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
 	 * 
 	 * @param value the value for the random variable (as a double)
 	 * @return the associated probability, if one exists.
@@ -89,8 +85,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	}
 
 	/**
-	 * Returns the probability P(value), if any is specified. Else, returns
-	 * 0.0f.
+	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
 	 * 
 	 * @param value the value for the random variable (as a double array)
 	 * @return the associated probability, if one exists.
@@ -108,9 +103,8 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	public Value sample() throws DialException;
 
 	/**
-	 * Returns a set of possible values for the distribution. If the
-	 * distribution is continuous, assumes a discretised representation of the
-	 * distribution.
+	 * Returns a set of possible values for the distribution. If the distribution is
+	 * continuous, assumes a discretised representation of the distribution.
 	 * 
 	 * @return the possible values for the distribution
 	 */
@@ -134,8 +128,8 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	public CategoricalTable toDiscrete();
 
 	/**
-	 * Returns the value with maximum probability (discrete case) or the mean
-	 * value of the distribution (continuous case)
+	 * Returns the value with maximum probability (discrete case) or the mean value
+	 * of the distribution (continuous case)
 	 * 
 	 * @return the maximum-probability value (discrete) or the mean value
 	 *         (continuous)
@@ -170,9 +164,8 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	}
 
 	/**
-	 * Returns the probability for the head assignment, if the value can be
-	 * found in the distribution. Else, returns 0.0. The conditional assignment
-	 * is ignored.
+	 * Returns the probability for the head assignment, if the value can be found in
+	 * the distribution. Else, returns 0.0. The conditional assignment is ignored.
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the value for the head variable
@@ -197,8 +190,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns itself.
 	 */
 	@Override
-	public default IndependentProbDistribution getProbDistrib(
-			Assignment condition) {
+	public default IndependentProbDistribution getProbDistrib(Assignment condition) {
 		return this;
 	}
 

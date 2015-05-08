@@ -46,8 +46,8 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Module employed during simulated dialogues to automatically estimate a
- * utility model from rewards produced by the simulator.
+ * Module employed during simulated dialogues to automatically estimate a utility
+ * model from rewards produced by the simulator.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -99,11 +99,11 @@ public class RewardLearner implements Module {
 	}
 
 	/**
-	 * Triggers the reward learner. The module is only triggered whenever a
-	 * variable of the form R(assignment of action values) is included in the
-	 * dialogue state by the simulator. In such case, the module checks whether
-	 * a past dialogue state contains a decision for these action variables, and
-	 * if yes, update their parameters to reflect the actual received reward.
+	 * Triggers the reward learner. The module is only triggered whenever a variable
+	 * of the form R(assignment of action values) is included in the dialogue state
+	 * by the simulator. In such case, the module checks whether a past dialogue
+	 * state contains a decision for these action variables, and if yes, update their
+	 * parameters to reflect the actual received reward.
 	 * 
 	 * @param state the dialogue state
 	 * @param updatedVars the list of recently updated variables.
@@ -114,17 +114,15 @@ public class RewardLearner implements Module {
 
 		for (String evidenceVar : state.getEvidence().getVariables()) {
 			if (evidenceVar.startsWith("R(") && evidenceVar.endsWith(")")) {
-				Assignment actualAction = Assignment
-						.createFromString(evidenceVar.substring(2,
-								evidenceVar.length() - 1));
-				double actualUtility = ((DoubleVal) state.getEvidence()
-						.getValue(evidenceVar)).getDouble();
+				Assignment actualAction = Assignment.createFromString(evidenceVar
+						.substring(2, evidenceVar.length() - 1));
+				double actualUtility = ((DoubleVal) state.getEvidence().getValue(
+						evidenceVar)).getDouble();
 
 				if (previousStates.containsKey(actualAction.getVariables())) {
-					DialogueState previousState = previousStates
-							.get(actualAction.getVariables());
-					learnFromFeedback(previousState, actualAction,
-							actualUtility);
+					DialogueState previousState = previousStates.get(actualAction
+							.getVariables());
+					learnFromFeedback(previousState, actualAction, actualUtility);
 				}
 				state.clearEvidence(Arrays.asList(evidenceVar));
 			}
@@ -132,10 +130,10 @@ public class RewardLearner implements Module {
 
 		if (!state.getActionNodeIds().isEmpty()) {
 			try {
-				previousStates.put(
-						new HashSet<String>(state.getActionNodeIds()),
+				previousStates.put(new HashSet<String>(state.getActionNodeIds()),
 						state.copy());
-			} catch (DialException e) {
+			}
+			catch (DialException e) {
 				log.warning("cannot copy state: " + e);
 			}
 		}
@@ -150,35 +148,32 @@ public class RewardLearner implements Module {
 	 * @param actualAction the action that was selected
 	 * @param actualUtility the resulting utility for the action.
 	 */
-	private void learnFromFeedback(DialogueState state,
-			Assignment actualAction, double actualUtility) {
+	private void learnFromFeedback(DialogueState state, Assignment actualAction,
+			double actualUtility) {
 
 		try {
 
 			// determine the relevant parameters (discard the isolated ones)
-			Set<String> relevantParams = state
-					.getParameterIds()
-					.stream()
-					.filter(p -> !state.getChanceNode(p).getOutputNodes()
-							.isEmpty()).collect(Collectors.toSet());
+			Set<String> relevantParams = state.getParameterIds().stream()
+					.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
+					.collect(Collectors.toSet());
 
 			if (!relevantParams.isEmpty()) {
 
 				Query query = new Query.UtilQuery(state, relevantParams,
 						actualAction);
-				EmpiricalDistribution empiricalDistrib = sampler
-						.getWeightedSamples(query,
-								cs -> reweightSamples(cs, actualUtility));
+				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
+						query, cs -> reweightSamples(cs, actualUtility));
 
 				for (String param : relevantParams) {
-					ChanceNode paramNode = system.getState().getChanceNode(
-							param);
+					ChanceNode paramNode = system.getState().getChanceNode(param);
 					ProbDistribution newDistrib = empiricalDistrib.getMarginal(
 							param, paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not learn from action feedback: " + e);
 		}
 
@@ -186,12 +181,10 @@ public class RewardLearner implements Module {
 
 	private static void reweightSamples(Collection<Sample> samples,
 			double actualUtility) {
-		samples.stream().forEach(
-				s -> {
-					double weight = 1.0 / (Math.abs(s.getUtility()
-							- actualUtility) + 1);
-					s.addLogWeight(Math.log(weight));
-				});
+		samples.stream().forEach(s -> {
+			double weight = 1.0 / (Math.abs(s.getUtility() - actualUtility) + 1);
+			s.addLogWeight(Math.log(weight));
+		});
 	}
 
 }

@@ -116,18 +116,20 @@ public final class DoubleVal implements Value {
 
 	/**
 	 * If v is a DoubleVal, returns the addition of the two values. If v is a
-	 * StringVal, returns the string concatenation of the two. Else, returns
-	 * none.
+	 * StringVal, returns the string concatenation of the two. Else, returns none.
 	 */
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof DoubleVal) {
 			return new DoubleVal(d + ((DoubleVal) v).getDouble());
-		} else if (v instanceof StringVal) {
+		}
+		else if (v instanceof StringVal) {
 			return ValueFactory.create(toString() + " " + v.toString());
-		} else if (v instanceof NoneVal) {
+		}
+		else if (v instanceof NoneVal) {
 			return this;
-		} else {
+		}
+		else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
@@ -136,14 +138,14 @@ public final class DoubleVal implements Value {
 	/**
 	 * Compares the double value to another value
 	 * 
-	 * @return usual ordering, or hashcode difference if the value is not a
-	 *         double
+	 * @return usual ordering, or hashcode difference if the value is not a double
 	 */
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof DoubleVal) {
 			return Double.compare(d, ((DoubleVal) o).getDouble());
-		} else {
+		}
+		else {
 			return 0;
 		}
 	}

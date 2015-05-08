@@ -87,12 +87,13 @@ public class AudioUtils {
 
 		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 			try {
-				DataLine.Info lineInfo = new DataLine.Info(
-						TargetDataLine.class, format);
+				DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class,
+						format);
 				if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
 					return AudioSystem.getTargetDataLine(format, mixer);
 				}
-			} catch (LineUnavailableException e) {
+			}
+			catch (LineUnavailableException e) {
 				log.warning(" line for mixer " + mixer + " is not available");
 				log.info("Available audio mixers: " + getMixers());
 			}
@@ -117,8 +118,8 @@ public class AudioUtils {
 	}
 
 	/**
-	 * Returns a list with all audio mixers whose input are compatible with the
-	 * two audio format IN_HIGH or IN_LOW.
+	 * Returns a list with all audio mixers whose input are compatible with the two
+	 * audio format IN_HIGH or IN_LOW.
 	 * 
 	 * @return the list of all input mixers
 	 */
@@ -130,10 +131,8 @@ public class AudioUtils {
 		for (int i = 0; i < mixerInfos.length; i++) {
 			for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 				if (!mixers.contains(mixerInfos[i])
-						&& AudioSystem.getMixer(mixerInfos[i])
-								.isLineSupported(
-										new DataLine.Info(TargetDataLine.class,
-												format))) {
+						&& AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
+								new DataLine.Info(TargetDataLine.class, format))) {
 					mixers.add(mixerInfos[i]);
 				}
 			}
@@ -143,8 +142,8 @@ public class AudioUtils {
 	}
 
 	/**
-	 * Returns the list of all audio mixers whose output is compatible with the
-	 * audio format OUT.
+	 * Returns the list of all audio mixers whose output is compatible with the audio
+	 * format OUT.
 	 * 
 	 * @return the list of all compatible output mixers
 	 */
@@ -164,11 +163,13 @@ public class AudioUtils {
 							.getSourceDataLine(OUT)
 							.getLineInfo()
 							.matches(
-									AudioSystem.getSourceDataLine(OUT,
-											mixerInfos[i]).getLineInfo())) {
+									AudioSystem
+											.getSourceDataLine(OUT, mixerInfos[i])
+											.getLineInfo())) {
 						defaultMixer = mixerInfos[i];
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -191,18 +192,17 @@ public class AudioUtils {
 			throws DialException {
 		try {
 			try {
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(
-						byteArray);
-				return AudioSystem.getAudioInputStream(byteStream);
-			} catch (UnsupportedAudioFileException e) {
-				byteArray = addWavHeader(byteArray);
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(
-						byteArray);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
-		} catch (IOException | UnsupportedAudioFileException e) {
-			throw new DialException("cannot convert bytes to audio stream: "
-					+ e);
+			catch (UnsupportedAudioFileException e) {
+				byteArray = addWavHeader(byteArray);
+				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+				return AudioSystem.getAudioInputStream(byteStream);
+			}
+		}
+		catch (IOException | UnsupportedAudioFileException e) {
+			throw new DialException("cannot convert bytes to audio stream: " + e);
 		}
 	}
 
@@ -222,7 +222,8 @@ public class AudioUtils {
 			}
 			rawBuffer.flush();
 			rawBuffer.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.warning("Error reading audio stream: " + e);
 		}
 		return rawBuffer.toByteArray();
@@ -239,16 +240,16 @@ public class AudioUtils {
 		try {
 			AudioInputStream audioStream = getAudioStream(data);
 			if (outputFile.getName().endsWith("wav")) {
-				int nb = AudioSystem.write(audioStream,
-						AudioFileFormat.Type.WAVE, new FileOutputStream(
-								outputFile));
-				log.debug("WAV file written to "
-						+ outputFile.getCanonicalPath() + " (" + (nb / 1000)
-						+ " kB)");
-			} else {
+				int nb = AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE,
+						new FileOutputStream(outputFile));
+				log.debug("WAV file written to " + outputFile.getCanonicalPath()
+						+ " (" + (nb / 1000) + " kB)");
+			}
+			else {
 				throw new DialException("Unsupported encoding " + outputFile);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			throw new DialException("could not generate file: " + e);
 		}
@@ -310,27 +311,29 @@ public class AudioUtils {
 	private static int[] convertByteArray(byte[] audioData, AudioFormat format) {
 
 		if (format.getFrameSize() == 2) {
-			int[] samples = new int[Math
-					.min(audioData.length / 2, MAX_SIZE_RMS)];
+			int[] samples = new int[Math.min(audioData.length / 2, MAX_SIZE_RMS)];
 			int offset = audioData.length - 2 * samples.length;
 			for (int i = 0; i < samples.length; i++) {
 				if (format.isBigEndian()) {
 					samples[i] = ((audioData[offset + i * 2] << 8) | (audioData[offset
 							+ i * 2 + 1] & 0xFF));
-				} else {
+				}
+				else {
 					samples[i] = ((audioData[offset + i * 2 + 0] & 0xFF) | (audioData[offset
 							+ i * 2 + 1] << 8));
 				}
 			}
 			return samples;
-		} else if (format.getFrameSize() == 1) {
+		}
+		else if (format.getFrameSize() == 1) {
 			int[] samples = new int[Math.min(audioData.length, MAX_SIZE_RMS)];
 			int offset = audioData.length - samples.length;
 			for (int i = 0; i < samples.length; i++) {
 				samples[i] = (audioData[offset + i] << 8);
 			}
 			return samples;
-		} else {
+		}
+		else {
 			throw new DialException("unsupported frame size: "
 					+ format.getFrameSize());
 		}

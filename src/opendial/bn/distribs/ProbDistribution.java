@@ -30,9 +30,9 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of a conditional probability distribution P(X | Y1,...Ym),
- * where X is the "head" random variable for the distribution, and Y1,...Ym are
- * the conditional variables
+ * Representation of a conditional probability distribution P(X | Y1,...Ym), where X
+ * is the "head" random variable for the distribution, and Y1,...Ym are the
+ * conditional variables
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -47,16 +47,15 @@ public interface ProbDistribution {
 	public String getVariable();
 
 	/**
-	 * Returns the probability P(head|condition), if any is specified. Else,
-	 * returns 0.0f.
+	 * Returns the probability P(head|condition), if any is specified. Else, returns
+	 * 0.0f.
 	 * 
 	 * @param condition the conditional assignment for Y1,..., Ym
 	 * @param head the value for the random variable
 	 * @return the associated probability, if one exists.
 	 * @throws DialException if the probability could not be extracted
 	 */
-	public double getProb(Assignment condition, Value head)
-			throws DialException;
+	public double getProb(Assignment condition, Value head) throws DialException;
 
 	/**
 	 * Returns the (unconditional) probability distribution associated with the
@@ -64,15 +63,14 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
 	 * @return the independent probability distribution on X.
-	 * @throws DialException if the unconditional distribution could not be
-	 *             extracted
+	 * @throws DialException if the unconditional distribution could not be extracted
 	 */
 	public IndependentProbDistribution getProbDistrib(Assignment condition)
 			throws DialException;
 
 	/**
-	 * Returns a sample value for the distribution given a particular
-	 * conditional assignment.
+	 * Returns a sample value for the distribution given a particular conditional
+	 * assignment.
 	 * 
 	 * @param condition the conditional assignment for Y1,...,Ym
 	 * @return the sampled values for the random variable
@@ -81,16 +79,16 @@ public interface ProbDistribution {
 	public Value sample(Assignment condition) throws DialException;
 
 	/**
-	 * Returns the set of possible values for the distribution. If the
-	 * distribution is continuous, the method returns a discretised set.
+	 * Returns the set of possible values for the distribution. If the distribution
+	 * is continuous, the method returns a discretised set.
 	 * 
 	 * @throws DialException if the values could not be extracted
 	 */
 	public Set<Value> getValues() throws DialException;
 
 	/**
-	 * Returns a new probability distribution that is the posterior of the
-	 * current distribution, given the conditional assignment as argument.
+	 * Returns a new probability distribution that is the posterior of the current
+	 * distribution, given the conditional assignment as argument.
 	 * 
 	 * @param condition an assignment of values to (a subset of) the conditional
 	 *            variables
@@ -110,8 +108,8 @@ public interface ProbDistribution {
 	public boolean pruneValues(double threshold);
 
 	/**
-	 * Checks that the probability distribution is well-formed (all assignments
-	 * are covered, and the probabilities add up to 1.0f)
+	 * Checks that the probability distribution is well-formed (all assignments are
+	 * covered, and the probabilities add up to 1.0f)
 	 * 
 	 * @return true is the distribution is well-formed, false otherwise
 	 */

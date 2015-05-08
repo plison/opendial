@@ -45,8 +45,7 @@ import org.junit.Test;
 public class TemplateStringTest {
 
 	// logger
-	public static Logger log = new Logger("TemplateStringTest",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("TemplateStringTest", Logger.Level.DEBUG);
 
 	@Test
 	public void testTemplate1() {
@@ -69,8 +68,7 @@ public class TemplateStringTest {
 
 	@Test
 	public void testTemplate3() {
-		Template template = new Template(
-				"hi my name is {name} and I need coffee");
+		Template template = new Template("hi my name is {name} and I need coffee");
 		String utterance1 = " hi my name is Pierre and i need coffee ";
 		String utterance2 = "hi my name is Pierre and I need coffee right now";
 		assertTrue(template.partialmatch(utterance1).isMatching());
@@ -85,16 +83,14 @@ public class TemplateStringTest {
 	@Test
 	public void testTemplate4() {
 		Template template1 = new Template("hi my name is {name}");
-		assertEquals("Pierre Lison",
-				template1.match("hi my name is Pierre Lison ").getFilledSlots()
-						.getValue("name").toString());
+		assertEquals("Pierre Lison", template1.match("hi my name is Pierre Lison ")
+				.getFilledSlots().getValue("name").toString());
 
 		Template template2 = new Template("{name} is my name");
 		assertEquals("Pierre Lison", template2.match("Pierre Lison is my name")
 				.getFilledSlots().getValue("name").toString());
 
-		Template template3 = new Template(
-				"hi my name is {name} and I need coffee");
+		Template template3 = new Template("hi my name is {name} and I need coffee");
 		assertEquals("Pierre",
 				template3.match("hi my name is Pierre and I need coffee ")
 						.getFilledSlots().getValue("name").toString());
@@ -114,8 +110,8 @@ public class TemplateStringTest {
 	@Test
 	public void testTemplate6() {
 		Template template1 = new Template("{anything}");
-		assertEquals("bla bla bla", template1.match("bla bla bla")
-				.getFilledSlots().getValue("anything").toString());
+		assertEquals("bla bla bla", template1.match("bla bla bla").getFilledSlots()
+				.getValue("anything").toString());
 
 		Template template2 = new Template("{anything} is good");
 		assertEquals("bla bla bla", template2.match("bla bla bla is good")
@@ -183,8 +179,7 @@ public class TemplateStringTest {
 						"and this could be pretty much anything, right")
 						.getBoundaries()[1], 0.0);
 		assertEquals(-1,
-				template2
-						.partialmatch("and this could be pretty much anything")
+				template2.partialmatch("and this could be pretty much anything")
 						.getBoundaries()[1], 0.0);
 
 		Template template3 = new Template("{}");
@@ -208,8 +203,7 @@ public class TemplateStringTest {
 
 	@Test
 	public void testTemplateQuick() throws DialException {
-		Domain domain = XMLDomainReader
-				.extractDomain("test/domains/quicktest.xml");
+		Domain domain = XMLDomainReader.extractDomain("test/domains/quicktest.xml");
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 
@@ -238,8 +232,7 @@ public class TemplateStringTest {
 		assertTrue(t2.match("a bottle of wine").isMatching());
 		assertFalse(t2.match("a bottle of").isMatching());
 		assertFalse(t2.match("a coke").isMatching());
-		assertTrue(t2.partialmatch("I would like a bottle of beer")
-				.isMatching());
+		assertTrue(t2.partialmatch("I would like a bottle of beer").isMatching());
 		Template t3 = new Template("move (a (little)? bit)? (to the)? left");
 		assertTrue(t3.match("move a little bit to the left").isMatching());
 		assertTrue(t3.match("move a bit to the left").isMatching());
@@ -258,8 +251,8 @@ public class TemplateStringTest {
 		assertFalse(t5.match("beer wine").isMatching());
 		assertTrue(new Template("* (to the|at the)? left of").match(
 				"window to the left of").isMatching());
-		assertTrue(new Template("* (to the|at the)? left of").match(
-				"window left of").isMatching());
+		assertTrue(new Template("* (to the|at the)? left of")
+				.match("window left of").isMatching());
 		assertTrue(new Template("* (to the|at the)? left of").match("left of")
 				.isMatching());
 	}
@@ -300,18 +293,19 @@ public class TemplateStringTest {
 		assertTrue(t1.match("this is a ball").isMatching());
 		assertTrue(t1.match("this is a really great ball").isMatching());
 		assertFalse(t1.match("this is huge").isMatching());
-		assertEquals("ball", t1.match("this is a ball").getFilledSlots()
+		assertEquals("ball",
+				t1.match("this is a ball").getFilledSlots().getValue("test")
+						.toString());
+		assertEquals("ball", t1.match("this is a great blue ball").getFilledSlots()
 				.getValue("test").toString());
-		assertEquals("ball", t1.match("this is a great blue ball")
-				.getFilledSlots().getValue("test").toString());
 		t1 = new Template("* {test}");
 		assertEquals("ball", t1.match("this is a great ball").getFilledSlots()
 				.getValue("test").toString());
 		assertEquals("ball", t1.match("ball").getFilledSlots().getValue("test")
 				.toString());
 		t1 = new Template("{test} *");
-		assertEquals("great ball", t1.match("great ball").getFilledSlots()
-				.getValue("test").toString());
+		assertEquals("great ball",
+				t1.match("great ball").getFilledSlots().getValue("test").toString());
 		assertEquals("ball", t1.match("ball").getFilledSlots().getValue("test")
 				.toString());
 	}

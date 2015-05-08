@@ -37,8 +37,8 @@ import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 
 /**
- * Utility table that is empirically constructed from a set of samples. The
- * table is defined via a mapping from assignment to utility estimates.
+ * Utility table that is empirically constructed from a set of samples. The table is
+ * defined via a mapping from assignment to utility estimates.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -67,8 +67,7 @@ public class UtilityTable implements UtilityFunction {
 	}
 
 	/**
-	 * Constructs a new utility distribution, given the values provided as
-	 * argument
+	 * Constructs a new utility distribution, given the values provided as argument
 	 * 
 	 * @param values the values
 	 */
@@ -88,7 +87,8 @@ public class UtilityTable implements UtilityFunction {
 	public void incrementUtil(Assignment sample, double utility) {
 		if (!table.containsKey(sample)) {
 			table.put(new Assignment(sample), new UtilityEstimate(utility));
-		} else {
+		}
+		else {
 			table.get(new Assignment(sample)).update(utility);
 		}
 		variables.addAll(sample.getVariables());
@@ -134,8 +134,7 @@ public class UtilityTable implements UtilityFunction {
 	}
 
 	/**
-	 * Returns the table reflecting the estimated utility values for each
-	 * assignment
+	 * Returns the table reflecting the estimated utility values for each assignment
 	 * 
 	 * @return the (assignment,utility) table
 	 */
@@ -148,15 +147,15 @@ public class UtilityTable implements UtilityFunction {
 	}
 
 	/**
-	 * Creates a table with a subset of the utility values, namely the N-best
-	 * highest ones.
+	 * Creates a table with a subset of the utility values, namely the N-best highest
+	 * ones.
 	 * 
 	 * @param nbest the number of values to keep in the filtered table
 	 * @return the table of values, of size nbest
 	 */
 	public UtilityTable getNBest(int nbest) {
-		Map<Assignment, Double> filteredTable = InferenceUtils.getNBest(
-				getTable(), nbest);
+		Map<Assignment, Double> filteredTable = InferenceUtils.getNBest(getTable(),
+				nbest);
 		return new UtilityTable(filteredTable);
 	}
 
@@ -246,8 +245,8 @@ public class UtilityTable implements UtilityFunction {
 	@Override
 	public String toString() {
 
-		Map<Assignment, Double> sortedTable = InferenceUtils.getNBest(
-				getTable(), table.size());
+		Map<Assignment, Double> sortedTable = InferenceUtils.getNBest(getTable(),
+				table.size());
 
 		String str = "";
 		for (Entry<Assignment, Double> entry : sortedTable.entrySet()) {
@@ -278,9 +277,9 @@ public class UtilityTable implements UtilityFunction {
 	}
 
 	/**
-	 * Estimate of a utility value, defined by the averaged estimate itself and
-	 * the number of values that have contributed to it (in order to correctly
-	 * compute the average)
+	 * Estimate of a utility value, defined by the averaged estimate itself and the
+	 * number of values that have contributed to it (in order to correctly compute
+	 * the average)
 	 */
 	private class UtilityEstimate {
 
@@ -318,7 +317,8 @@ public class UtilityTable implements UtilityFunction {
 		public double getValue() {
 			if (nbValues > 0) {
 				return average;
-			} else {
+			}
+			else {
 				return 0.0;
 			}
 		}

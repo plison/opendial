@@ -42,9 +42,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Density function represented as a Gaussian kernel of data points. The
- * distribution is more exactly a Product KDE (a multivariate extension of
- * classical KDE).
+ * Density function represented as a Gaussian kernel of data points. The distribution
+ * is more exactly a Product KDE (a multivariate extension of classical KDE).
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -61,8 +60,8 @@ public class KernelDensityFunction implements DensityFunction {
 	final double[] samplingDeviation;
 
 	// the kernel function
-	static final GaussianDensityFunction kernel = new GaussianDensityFunction(
-			0.0, 1.0);
+	static final GaussianDensityFunction kernel = new GaussianDensityFunction(0.0,
+			1.0);
 
 	// the points
 	final double[][] points;
@@ -147,8 +146,8 @@ public class KernelDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Samples from the kernel density function, first picking one of the point,
-	 * and then deviating from it according to a Gaussian centered around it
+	 * Samples from the kernel density function, first picking one of the point, and
+	 * then deviating from it according to a Gaussian centered around it
 	 * 
 	 * @return the sampled point
 	 */
@@ -300,8 +299,8 @@ public class KernelDensityFunction implements DensityFunction {
 	@Override
 	public double getCDF(double... x) throws DialException {
 		if (x.length != getDimensions()) {
-			throw new DialException("Illegal dimensionality: " + x.length
-					+ "!=" + getDimensions());
+			throw new DialException("Illegal dimensionality: " + x.length + "!="
+					+ getDimensions());
 		}
 		double nbOfLowerPoints = Arrays.stream(points)
 				.filter(v -> MathUtils.isLower(v, x)).count();

@@ -42,8 +42,8 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 
 /**
- * Representation of a Bayesian Network augmented with value and action nodes.
- * The network is simply defined as a set of nodes connected with each other.
+ * Representation of a Bayesian Network augmented with value and action nodes. The
+ * network is simply defined as a set of nodes connected with each other.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -100,8 +100,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Adds a new node to the network. Note: if the node already exists, it is
-	 * better to use the "replaceNode" method, to avoid warning messages.
+	 * Adds a new node to the network. Note: if the node already exists, it is better
+	 * to use the "replaceNode" method, to avoid warning messages.
 	 * 
 	 * @param node the node to add
 	 */
@@ -116,9 +116,11 @@ public class BNetwork {
 		// adding the node in the type-specific collections
 		if (node instanceof ChanceNode) {
 			chanceNodes.put(node.getId(), (ChanceNode) node);
-		} else if (node instanceof UtilityNode) {
+		}
+		else if (node instanceof UtilityNode) {
 			utilityNodes.put(node.getId(), (UtilityNode) node);
-		} else if (node instanceof ActionNode) {
+		}
+		else if (node instanceof ActionNode) {
 			actionNodes.put(node.getId(), (ActionNode) node);
 		}
 	}
@@ -135,8 +137,7 @@ public class BNetwork {
 	}
 
 	/**
-	 * Adds all the nodes in the network provided as argument to the current
-	 * network
+	 * Adds all the nodes in the network provided as argument to the current network
 	 * 
 	 * @param network the network to include
 	 * 
@@ -168,7 +169,8 @@ public class BNetwork {
 		if (!nodes.containsKey(node.getId())) {
 			log.debug("network does not contain a node with identifier "
 					+ node.getId());
-		} else {
+		}
+		else {
 			removeNode(node.getId());
 		}
 		addNode(node);
@@ -184,7 +186,8 @@ public class BNetwork {
 		if (!nodes.containsKey(nodeId)) {
 			// log.warning("network does not contain a node with identifier " +
 			// nodeId);
-		} else {
+		}
+		else {
 			BNode node = nodes.get(nodeId);
 
 			for (BNode inputNode : node.getInputNodes()) {
@@ -197,9 +200,11 @@ public class BNetwork {
 			// remove the node from the type-specific collections
 			if (node instanceof ChanceNode) {
 				chanceNodes.remove(nodeId);
-			} else if (node instanceof UtilityNode) {
+			}
+			else if (node instanceof UtilityNode) {
 				utilityNodes.remove(nodeId);
-			} else if (node instanceof ActionNode) {
+			}
+			else if (node instanceof ActionNode) {
 				actionNodes.remove(nodeId);
 			}
 		}
@@ -235,7 +240,8 @@ public class BNetwork {
 		actionNodes.remove(oldNodeId);
 		if (node != null) {
 			addNode(node);
-		} else {
+		}
+		else {
 			log.warning("node " + oldNodeId
 					+ " did not exist, cannot change its identifier");
 		}
@@ -245,8 +251,7 @@ public class BNetwork {
 	 * Resets the Bayesian network to only contain the nodes contained in the
 	 * argument. Everything else is erased.
 	 * 
-	 * @param network the network that contains the nodes to include after the
-	 *            reset.
+	 * @param network the network that contains the nodes to include after the reset.
 	 */
 	public void reset(BNetwork network) {
 		if (System.identityHashCode(this) != System.identityHashCode(network)) {
@@ -276,16 +281,15 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the node associated with the given identifier in the network. If
-	 * no such node is present, returns null.
+	 * Returns the node associated with the given identifier in the network. If no
+	 * such node is present, returns null.
 	 * 
 	 * @param nodeId the node identifier
 	 * @return the node, if it exists, or null otherwise.
 	 */
 	public BNode getNode(String nodeId) {
 		if (!nodes.containsKey(nodeId)) {
-			log.severe("network does not contain a node with identifier "
-					+ nodeId);
+			log.severe("network does not contain a node with identifier " + nodeId);
 		}
 		return nodes.get(nodeId);
 	}
@@ -338,8 +342,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns true if the network contains a chance node with the given
-	 * identifier, and false otherwise
+	 * Returns true if the network contains a chance node with the given identifier,
+	 * and false otherwise
 	 * 
 	 * @param nodeId the node identifier to check
 	 * @return true if a chance node is found, false otherwise
@@ -366,8 +370,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the chance node associated with the identifier, if one exists.
-	 * Else, returns null
+	 * Returns the chance node associated with the identifier, if one exists. Else,
+	 * returns null
 	 * 
 	 * @param nodeId the node identifier
 	 * @return the chance node
@@ -390,8 +394,7 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the collection of chance node identifiers currently in the
-	 * network
+	 * Returns the collection of chance node identifiers currently in the network
 	 * 
 	 * @return the collection of identifiers of chance nodes
 	 */
@@ -400,8 +403,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns true if the network contains an action node with the given
-	 * identifier, and false otherwise
+	 * Returns true if the network contains an action node with the given identifier,
+	 * and false otherwise
 	 * 
 	 * @param nodeId the node identifier to check
 	 * @return true if a action node is found, false otherwise
@@ -411,8 +414,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the action node associated with the identifier, if one exists.
-	 * Else, returns null
+	 * Returns the action node associated with the identifier, if one exists. Else,
+	 * returns null
 	 * 
 	 * @param nodeId the node identifier
 	 * @return the action node
@@ -435,8 +438,7 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the collection of action node identifiers currently in the
-	 * network
+	 * Returns the collection of action node identifiers currently in the network
 	 * 
 	 * @return the collection of identifiers of action nodes
 	 */
@@ -445,8 +447,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns true if the network contains a utility node with the given
-	 * identifier, and false otherwise
+	 * Returns true if the network contains a utility node with the given identifier,
+	 * and false otherwise
 	 * 
 	 * @param nodeId the node identifier to check
 	 * @return true if a utility node is found, false otherwise
@@ -456,8 +458,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the utility node associated with the identifier, if one exists.
-	 * Else, returns null
+	 * Returns the utility node associated with the identifier, if one exists. Else,
+	 * returns null
 	 * 
 	 * @param nodeId the node identifier
 	 * @return the utility node
@@ -480,8 +482,7 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the collection of utility node identifiers currently in the
-	 * network
+	 * Returns the collection of utility node identifiers currently in the network
 	 * 
 	 * @return the collection of identifiers of utility nodes
 	 */
@@ -500,14 +501,13 @@ public class BNetwork {
 
 	/**
 	 * Returns an ordered list of nodes, where the ordering is defined in the
-	 * compareTo method implemented in BNode. The ordering will place end nodes
-	 * (i.e. nodes with no outward edges) at the beginning of the list, and
-	 * start nodes (nodes with no inward edges) at the end of the list.
+	 * compareTo method implemented in BNode. The ordering will place end nodes (i.e.
+	 * nodes with no outward edges) at the beginning of the list, and start nodes
+	 * (nodes with no inward edges) at the end of the list.
 	 * 
 	 * <p>
-	 * This ordering is used in particular for various inference algorithms
-	 * relying on a topological ordering of the nodes (e.g. variable
-	 * elimination).
+	 * This ordering is used in particular for various inference algorithms relying
+	 * on a topological ordering of the nodes (e.g. variable elimination).
 	 * 
 	 * @return the ordered list of nodes
 	 */
@@ -531,9 +531,25 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns the set of maximal cliques that compose this network. The cliques
-	 * are collections of nodes such that each node in the clique is connect to
-	 * all the other nodes in the clique but to no nodes outside the clique.
+	 * Returns the subset of nodes that are referred to by the list of identifiers
+	 * 
+	 * @param ids the list of identifiers
+	 * @return the corresponding nodes
+	 */
+	protected List<BNode> getNodes(Set<String> ids) {
+		List<BNode> subset = new ArrayList<BNode>();
+		for (String id : ids) {
+			if (nodes.containsKey(id)) {
+				subset.add(nodes.get(id));
+			}
+		}
+		return subset;
+	}
+
+	/**
+	 * Returns the set of maximal cliques that compose this network. The cliques are
+	 * collections of nodes such that each node in the clique is connect to all the
+	 * other nodes in the clique but to no nodes outside the clique.
 	 * 
 	 * @return the collection of cliques for the network.
 	 */
@@ -550,66 +566,51 @@ public class BNetwork {
 			nodesToProcess.removeAll(newClique);
 		}
 
-		// sanity check
-		/**
-		 * for (Set<String> cluster1 : cliques) { for (Set<String> cluster2 :
-		 * cliques) { if (!cluster1.equals(cluster2)) { for (String elInCluster1
-		 * : cluster1) { if (cluster2.contains(elInCluster1)) {
-		 * log.warning("cluster 1:" + cluster1 + ", cluster 2:" + cluster2);
-		 * log.warning("network to cluster: " + getNodeIds());
-		 * log.warning("network to cluster2: " + nodes.keySet()); } } } } }
-		 */
 		Collections.sort(cliques, (s1, s2) -> s1.hashCode() - s2.hashCode());
 
 		return cliques;
 	}
 
 	/**
-	 * Returns the subset of nodes that are referred to by the list of
-	 * identifiers
+	 * Returns the set of maximal cliques that compose this network, if one only
+	 * looks at the clique containing the given subset of node identifiers. The
+	 * cliques are collections of nodes such that each node in the clique is connect
+	 * to all the other nodes in the clique but to no nodes outside the clique.
 	 * 
-	 * @param ids the list of identifiers
-	 * @return the corresponding nodes
+	 * @param subsetIds the subset of node identifiers to use
+	 * @return the collection of cliques for the network.
 	 */
-	protected List<BNode> getNodes(Set<String> ids) {
-		List<BNode> subset = new ArrayList<BNode>();
-		for (String id : ids) {
-			if (nodes.containsKey(id)) {
-				subset.add(nodes.get(id));
-			}
+	public List<Set<String>> getCliques(Set<String> subsetIds) {
+
+		List<Set<String>> cliques = new ArrayList<Set<String>>();
+
+		Stack<String> nodesToProcess = new Stack<String>();
+		nodesToProcess.addAll(nodes.keySet());
+		nodesToProcess.retainAll(subsetIds);
+		while (!nodesToProcess.isEmpty()) {
+			String node = nodesToProcess.pop();
+			Set<String> newClique = nodes.get(node).getClique();
+			cliques.add(newClique);
+			nodesToProcess.removeAll(newClique);
 		}
-		return subset;
+
+		return cliques;
 	}
 
 	/**
-	 * Creates subnetworks corresponding to the cliques of the network
+	 * Returns true if the subset of node identifiers correspond to a maximal clique
+	 * in the network, and false otherwise
 	 * 
-	 * @return the subnetworks corresponding to the cliques.
+	 * @param subsetIds the subset of node identifiers
+	 * @return true if subsetIds corresponds to a maximal clique, false otherwise
 	 */
-	public List<BNetwork> createCliques() {
+	public boolean isClique(Set<String> subsetIds) {
 
-		List<BNetwork> result = new ArrayList<BNetwork>();
-
-		for (Set<String> clique : getCliques()) {
-			BNetwork subnetwork = new BNetwork();
-			List<BNode> sorted = getSortedNodes();
-			Collections.reverse(sorted);
-			for (BNode n : sorted) {
-				if (clique.contains(n.getId())) {
-					BNode copy = n.copy();
-
-					for (String input : n.getInputNodeIds()) {
-						if (!subnetwork.hasNode(input)) {
-							log.warning("problem in the topological ordering of the nodes");
-						}
-						copy.addInputNode(subnetwork.getNode(input));
-					}
-					subnetwork.addNode(copy);
-				}
-			}
-			result.add(subnetwork);
+		if (!subsetIds.isEmpty()) {
+			String first = subsetIds.iterator().next();
+			return hasNode(first) && getNode(first).getClique().equals(subsetIds);
 		}
-		return result;
+		return false;
 	}
 
 	// ===================================
@@ -617,8 +618,8 @@ public class BNetwork {
 	// ===================================
 
 	/**
-	 * Returns the hashcode for the network, defined as the hashcode for the
-	 * node identifiers in the network.
+	 * Returns the hashcode for the network, defined as the hashcode for the node
+	 * identifiers in the network.
 	 * 
 	 * @return the hashcode for the network
 	 */
@@ -642,12 +643,10 @@ public class BNetwork {
 			BNode nodeCopy = node.copy();
 			for (BNode inputNode : node.getInputNodes()) {
 				if (!copyNetwork.hasNode(inputNode.getId())) {
-					throw new DialException(
-							"cannot copy the network: structure "
-									+ "is corrupt (" + inputNode.getId()
-									+ " is not present, but "
-									+ "should be input node to " + node.getId()
-									+ ")");
+					throw new DialException("cannot copy the network: structure "
+							+ "is corrupt (" + inputNode.getId()
+							+ " is not present, but " + "should be input node to "
+							+ node.getId() + ")");
 				}
 				nodeCopy.addInputNode(copyNetwork.getNode(inputNode.getId()));
 			}
@@ -657,8 +656,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns a basic string representation for the network, defined as the set
-	 * of node identifiers in the network.
+	 * Returns a basic string representation for the network, defined as the set of
+	 * node identifiers in the network.
 	 */
 	@Override
 	public String toString() {
@@ -666,8 +665,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns true if the object is also a Bayesian network with exactly the
-	 * same node identifiers.
+	 * Returns true if the object is also a Bayesian network with exactly the same
+	 * node identifiers.
 	 *
 	 * @param o the object to compare
 	 * @return true if o is network with identical identifiers, false otherwise
@@ -681,8 +680,8 @@ public class BNetwork {
 	}
 
 	/**
-	 * Returns a pretty print representation of the network, comprising both the
-	 * node identifiers and the graph structure.
+	 * Returns a pretty print representation of the network, comprising both the node
+	 * identifiers and the graph structure.
 	 * 
 	 * @return the pretty print representation
 	 */

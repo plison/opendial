@@ -55,7 +55,8 @@ public class PlanningTest {
 			domain2 = XMLDomainReader.extractDomain(domainFile2);
 			domain3 = XMLDomainReader.extractDomain(domainFile3);
 			inference = new InferenceChecks();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

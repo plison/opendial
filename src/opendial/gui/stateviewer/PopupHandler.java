@@ -49,8 +49,7 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 		MouseListener {
 
 	// logger
-	public static Logger log = new Logger("GraphViewerPopupMenu",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("GraphViewerPopupMenu", Logger.Level.DEBUG);
 
 	private StateViewer viewer;
 
@@ -78,20 +77,17 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 
 		JPopupMenu popup = new JPopupMenu();
 		if (!pickedVertices.isEmpty() && state.hasChanceNodes(pickedVertices)) {
-			JMenuItem marginalItem = new JMenuItem(
-					"Calculate marginal distribution");
+			JMenuItem marginalItem = new JMenuItem("Calculate marginal distribution");
 
 			marginalItem.addActionListener(ev -> {
-				MultivariateDistribution distrib = state
-						.queryProb(pickedVertices);
+				MultivariateDistribution distrib = state.queryProb(pickedVertices);
 				viewer.getStateMonitorTab().writeToLogArea(distrib);
 				resetPickedVertices();
 			});
 
 			popup.add(marginalItem);
 		}
-		if (pickedVertices.size() == 1
-				&& state.hasChanceNode(pickedVertices.get(0))) {
+		if (pickedVertices.size() == 1 && state.hasChanceNode(pickedVertices.get(0))) {
 			JMenuItem distribItem = new JMenuItem("Show distribution chart");
 
 			distribItem.addActionListener(ev -> {
@@ -104,13 +100,14 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 		if (!pickedVertices.isEmpty() && !state.getUtilityNodeIds().isEmpty()) {
 			JMenuItem utilityItem = new JMenuItem("Calculate utility");
 
-			utilityItem.addActionListener(ev -> {
+			utilityItem
+					.addActionListener(ev -> {
 
-				UtilityFunction result = viewer.getState().queryUtil(
-						pickedVertices);
-				viewer.getStateMonitorTab().writeToLogArea(result);
-				resetPickedVertices();
-			});
+						UtilityFunction result = viewer.getState().queryUtil(
+								pickedVertices);
+						viewer.getStateMonitorTab().writeToLogArea(result);
+						resetPickedVertices();
+					});
 
 			popup.add(utilityItem);
 
@@ -119,8 +116,7 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 		// other action: draw outgoing dependency
 
 		if (popup.getComponentCount() == 0 && !pickedVertices.isEmpty()) {
-			popup.add(new JLabel(
-					"  No action available for the selected node(s)  "));
+			popup.add(new JLabel("  No action available for the selected node(s)  "));
 		}
 		if (popup.getComponentCount() > 0) {
 			popup.show(viewer, e.getX(), e.getY());

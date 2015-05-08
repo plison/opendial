@@ -71,7 +71,8 @@ public class SimulatorTest {
 			try {
 				checkCondition(str);
 				system.pause(true);
-			} catch (AssertionError e) {
+			}
+			catch (AssertionError e) {
 			}
 		}
 
@@ -85,8 +86,7 @@ public class SimulatorTest {
 	public void testRewardLearner() throws DialException, InterruptedException {
 		DialogueSystem system = null;
 		outloop: for (int k = 0; k < 2; k++) {
-			system = new DialogueSystem(
-					XMLDomainReader.extractDomain(mainDomain2));
+			system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain2));
 
 			Domain simDomain3 = XMLDomainReader.extractDomain(simDomain2);
 			Simulator sim = new Simulator(system, simDomain3);
@@ -101,7 +101,8 @@ public class SimulatorTest {
 					checkCondition2(system);
 					system.pause(true);
 					break outloop;
-				} catch (AssertionError e) {
+				}
+				catch (AssertionError e) {
 				}
 			}
 
@@ -129,8 +130,7 @@ public class SimulatorTest {
 		assertTrue(str.contains("Do(Pick"));
 	}
 
-	private static void checkCondition2(DialogueSystem system)
-			throws DialException {
+	private static void checkCondition2(DialogueSystem system) throws DialException {
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct = system.getContent("theta_correct").toContinuous()
 				.getFunction();

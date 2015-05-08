@@ -82,11 +82,13 @@ public class XMLUtils {
 		if (new File(filename).exists()) {
 			try {
 				is = new FileInputStream(filename);
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				log.warning(e.getMessage());
 				throw new DialException(e.getMessage());
 			}
-		} else {
+		}
+		else {
 			is = XMLUtils.class.getResourceAsStream("/"
 					+ filename.replace("//", "/"));
 			if (is == null) {
@@ -115,13 +117,16 @@ public class XMLUtils {
 			Document doc = builder.parse(is);
 			// log.info("XML parsing of file: " + filename + " successful!");
 			return doc;
-		} catch (SAXException e) {
+		}
+		catch (SAXException e) {
 			log.warning("Reading aborted: \n" + e.getMessage());
 			throw new DialException(e.getMessage());
-		} catch (ParserConfigurationException e) {
+		}
+		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			throw new DialException(e.getMessage());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.warning(e.getMessage());
 			throw new DialException(e.getMessage());
 		}
@@ -141,7 +146,8 @@ public class XMLUtils {
 					.getDOMImplementation("LS");
 			LSSerializer serializer = lsImpl.createLSSerializer();
 			return serializer.writeToString(node);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.debug("could not serialise XML node: " + e);
 			return "";
 		}
@@ -180,8 +186,7 @@ public class XMLUtils {
 	public static void writeXMLDocument(Document doc, String filename)
 			throws DialException {
 		try {
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer;
 			transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -189,9 +194,11 @@ public class XMLUtils {
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 			log.info("writing operation to " + filename + " successful!");
-		} catch (TransformerConfigurationException e) {
+		}
+		catch (TransformerConfigurationException e) {
 			log.warning(e.getMessage());
-		} catch (TransformerException e) {
+		}
+		catch (TransformerException e) {
 			log.warning(e.getMessage());
 		}
 	}
@@ -255,28 +262,30 @@ public class XMLUtils {
 						dialSpecs.lastIndexOf("//") + 1);
 				Vector<String> includedFiles = extractIncludedFiles(doc);
 				for (String file : includedFiles) {
-					boolean validation = validateXML(rootpath + file,
-							schemaFile);
+					boolean validation = validateXML(rootpath + file, schemaFile);
 					if (!validation) {
 						return false;
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new DialException(e.getMessage());
 			}
 			return true;
-		} catch (SAXException e) {
+		}
+		catch (SAXException e) {
 			log.warning("Validation aborted: \n" + e.getMessage());
 			return false;
-		} catch (ParserConfigurationException e) {
+		}
+		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
 			return false;
 		}
 	}
 
 	/**
-	 * Extract included filenames in the XML document, assuming that filenames
-	 * are provided with the attribute "href".
+	 * Extract included filenames in the XML document, assuming that filenames are
+	 * provided with the attribute "href".
 	 * 
 	 * @param xmlDocument the XML document
 	 * @return the filenames to include
@@ -295,8 +304,8 @@ public class XMLUtils {
 					Node node = midNode.getChildNodes().item(k);
 					if (node.hasAttributes()
 							&& node.getAttributes().getNamedItem("href") != null) {
-						String fileName = node.getAttributes()
-								.getNamedItem("href").getNodeValue();
+						String fileName = node.getAttributes().getNamedItem("href")
+								.getNodeValue();
 						includedFiles.add(fileName);
 					}
 				}

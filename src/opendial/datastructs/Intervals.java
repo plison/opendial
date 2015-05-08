@@ -33,10 +33,9 @@ import opendial.arch.DialException;
 import opendial.arch.Logger;
 
 /**
- * Representation of a collection of intervals, each of which is associated with
- * a content object, and start and end values. The difference between the start
- * and end values of an interval can for instance represent the object
- * probability.
+ * Representation of a collection of intervals, each of which is associated with a
+ * content object, and start and end values. The difference between the start and end
+ * values of an interval can for instance represent the object probability.
  * 
  * <p>
  * The intervals can then be used for sampling a content object according to the
@@ -60,8 +59,7 @@ public class Intervals<T> {
 	final double totalProb;
 
 	/**
-	 * Creates a new interval collection with a set of (content,probability)
-	 * pairs
+	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
 	 * @param table the tables from which to create the intervals
 	 * @throws DialException if the intervals could not be created
@@ -89,8 +87,8 @@ public class Intervals<T> {
 	}
 
 	/**
-	 * Creates a new interval collection with a collection of values and a
-	 * function specifying the probability of each value
+	 * Creates a new interval collection with a collection of values and a function
+	 * specifying the probability of each value
 	 * 
 	 * @param content the collection of content objects
 	 * @param probs the function associating a weight to each object
@@ -120,8 +118,8 @@ public class Intervals<T> {
 	}
 
 	/**
-	 * Samples an object from the interval collection, using a simple binary
-	 * search procedure.
+	 * Samples an object from the interval collection, using a simple binary search
+	 * procedure.
 	 * 
 	 * @return the sampled object
 	 * @throws DialException if the sampling could not be performed
@@ -179,8 +177,8 @@ public class Intervals<T> {
 }
 
 /**
- * Representation of a single interval, made of an object, a start value, and an
- * end value
+ * Representation of a single interval, made of an object, a start value, and an end
+ * value
  * 
  *
  * @author Pierre Lison (plison@ifi.uio.no)
@@ -221,21 +219,22 @@ final class Interval<T> {
 	}
 
 	/**
-	 * Returns the position of the double value in comparison with the start and
-	 * end values of the interval
+	 * Returns the position of the double value in comparison with the start and end
+	 * values of the interval
 	 * 
 	 * @param value the value to compare
-	 * @return +1 if value < start, 0 if start <= value <= end, -1 if value >
-	 *         end
+	 * @return +1 if value < start, 0 if start <= value <= end, -1 if value > end
 	 */
 	public int compareTo(double value) {
 		if (value >= start) {
 			if (value < end) {
 				return 0;
-			} else {
+			}
+			else {
 				return -1;
 			}
-		} else {
+		}
+		else {
 			return +1;
 		}
 

@@ -27,9 +27,8 @@ import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of a (possibly weighted) sample, which consists of an
- * assignment of values together with a weight (here in logarithmic form) and
- * utility.
+ * Representation of a (possibly weighted) sample, which consists of an assignment of
+ * values together with a weight (here in logarithmic form) and utility.
  * 
  *
  * @author Pierre Lison (plison@ifi.uio.no)
@@ -125,8 +124,7 @@ public class Sample extends Assignment implements Comparable<Sample> {
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + " (w=" + getWeight() + ", util=" + utility
-				+ ")";
+		return super.toString() + " (w=" + getWeight() + ", util=" + utility + ")";
 	}
 
 	@Override

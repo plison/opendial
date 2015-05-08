@@ -43,36 +43,36 @@ import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 
 /**
- * Module used to take care of all audio processing functionalities in OpenDial.
- * The module is employed both to record audio data from the microphone and to
- * play audio data on the system speakers.
+ * Module used to take care of all audio processing functionalities in OpenDial. The
+ * module is employed both to record audio data from the microphone and to play audio
+ * data on the system speakers.
  * 
  * <p>
  * Two modes are available to record audio data:
  * <ol>
  * <li>a manual mode when the user explicitly click on the
- * "Press and hold to record speech" to indicate the start and end points of
- * speech data.
+ * "Press and hold to record speech" to indicate the start and end points of speech
+ * data.
  * <li>an automatic mode relying on (energy-based) Voice Activity Recognition to
  * determine when speech is present in the audio stream.
  * </ol>.
  * 
  * <p>
- * When speech is detected using one of the two above methods, the module
- * creates a SpeechData object containing the captured audio stream and updates
- * the dialogue state with a new value for the variable denoting the user speech
- * (by default s_u). This data is then presumably picked up by a speech
- * recogniser for further processing.
+ * When speech is detected using one of the two above methods, the module creates a
+ * SpeechData object containing the captured audio stream and updates the dialogue
+ * state with a new value for the variable denoting the user speech (by default s_u).
+ * This data is then presumably picked up by a speech recogniser for further
+ * processing.
  * 
  * <p>
  * The module is also used for the reverse operation, namely playing audio data
- * (generated via e.g. speech synthesis) on the target audio line. When the
- * module detects a new value for the variable denoting the system speech (by
- * default s_m), it plays the corresponding audio on the target line.
+ * (generated via e.g. speech synthesis) on the target audio line. When the module
+ * detects a new value for the variable denoting the system speech (by default s_m),
+ * it plays the corresponding audio on the target line.
  * 
  * <p>
- * The module can gracefully handle user interruptions (when the user starts
- * speaking when the system is still talking).
+ * The module can gracefully handle user interruptions (when the user starts speaking
+ * when the system is still talking).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -108,13 +108,13 @@ public class AudioModule implements Module {
 
 	/** speech panel (used to e.g. show the current volume) */
 	SpeechInputPanel speechPanel;
-	
+
 	/**
-	 * Threshold for the difference between the current and background audio
-	 * volume level above which the audio is considered as speech
+	 * Threshold for the difference between the current and background audio volume
+	 * level above which the audio is considered as speech
 	 */
 	public static final double VOLUME_THRESHOLD = 250;
-	
+
 	/**
 	 * Minimum duration for a sound to be considered as possible speech (in
 	 * milliseconds)
@@ -150,7 +150,6 @@ public class AudioModule implements Module {
 			audioLine.close();
 		}));
 	}
-	
 
 	/**
 	 * Attaches the speech panel to the module
@@ -163,8 +162,8 @@ public class AudioModule implements Module {
 
 	/**
 	 * Activates or deactivates voice activity detection (VAD). If VAD is
-	 * deactivated, the GUI button "press and hold to record speech" is used to
-	 * mark the start and end points of speech data.
+	 * deactivated, the GUI button "press and hold to record speech" is used to mark
+	 * the start and end points of speech data.
 	 * 
 	 * @param activateVAD true if VAD should be activated, false otherwise
 	 */
@@ -174,14 +173,13 @@ public class AudioModule implements Module {
 
 	/**
 	 * Starts the recording of a new speech segment, and adds its content to the
-	 * dialogue state. The new speech segment is only inserted after waiting a
-	 * minimum duration, in order to avoid inserting many spurious short noises
-	 * into the dialogue state.
+	 * dialogue state. If voice activity recognition is used, the new speech segment
+	 * is only inserted after waiting a minimum duration, in order to avoid inserting
+	 * many spurious short noises into the dialogue state. Otherwise, the speech is
+	 * inserted immediately.
 	 * 
-	 * @param minDuration the duration to wait before actually inserting the
-	 *            speech data object to the dialogue state
 	 */
-	public void startRecording(int minDuration) {
+	public void startRecording() {
 		if (!isPaused) {
 
 			// creates a new SpeechData object
@@ -195,19 +193,22 @@ public class AudioModule implements Module {
 			};
 
 			// performs the update
-			if (minDuration > 0) {
+			if (voiceActivityDetection) {
 				new Thread(() -> {
 					try {
-						Thread.sleep(minDuration);
-					} catch (Exception e) {
+						Thread.sleep(MIN_DURATION);
+					}
+					catch (Exception e) {
 					}
 					stateUpdate.run();
 				}).start();
-			} else {
+			}
+			else {
 				stateUpdate.run();
 			}
 
-		} else {
+		}
+		else {
 			log.info("Audio recorder is currently paused");
 		}
 	}
@@ -237,8 +238,7 @@ public class AudioModule implements Module {
 	public synchronized void trigger(DialogueState state,
 			Collection<String> updatedVars) {
 		String systemSpeech = system.getSettings().systemSpeech;
-		if (updatedVars.contains(systemSpeech)
-				&& state.hasChanceNode(systemSpeech)) {
+		if (updatedVars.contains(systemSpeech) && state.hasChanceNode(systemSpeech)) {
 			Value v = state.queryProb(systemSpeech).getBest();
 			if (v instanceof SpeechData) {
 
@@ -315,6 +315,9 @@ public class AudioModule implements Module {
 					// buffer
 					else if (outputSpeech != null || numBytesRead == 0
 							|| (!voiceActivityDetection && inputSpeech == null)) {
+						if (speechPanel != null) {
+							speechPanel.clearVolume();
+						}
 						continue;
 					}
 
@@ -323,18 +326,19 @@ public class AudioModule implements Module {
 					currentVolume = (currentVolume * 2 + rms) / 3;
 					if (rms < backgroundVolume) {
 						backgroundVolume = rms;
-					} else {
+					}
+					else {
 						backgroundVolume += (rms - backgroundVolume) * 0.003;
 					}
 					if (speechPanel != null) {
-						speechPanel.updateVolume((int)currentVolume);
+						speechPanel.updateVolume((int) currentVolume);
 					}
 					double difference = currentVolume - backgroundVolume;
 
 					// try to detect voice (if VAD is activated)
 					if (voiceActivityDetection && inputSpeech == null
 							&& difference > VOLUME_THRESHOLD) {
-						startRecording(MIN_DURATION);
+						startRecording();
 					}
 
 					// write to the current speech data if the audio is speech
@@ -348,7 +352,8 @@ public class AudioModule implements Module {
 						}
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -372,6 +377,9 @@ public class AudioModule implements Module {
 				if (outputSpeech == null) {
 					return;
 				}
+				if (speechPanel != null) {
+					speechPanel.setSystemTalking(true);
+				}
 				Mixer.Info outputMixer = system.getSettings().outputMixer;
 				AudioFormat format = outputSpeech.getFormat();
 				SourceDataLine line = AudioSystem.getSourceDataLine(format,
@@ -392,19 +400,21 @@ public class AudioModule implements Module {
 						line.write(abData, 0, nBytesRead);
 					}
 				}
-
+				if (speechPanel != null) {
+					speechPanel.setSystemTalking(false);
+				}
 				outputSpeech = null;
 				line.drain();
 				if (line.isOpen()) {
 					line.close();
 				}
-			} catch (LineUnavailableException e) {
+			}
+			catch (LineUnavailableException e) {
 				log.warning("Audio line is unavailable: " + e);
 			}
 			system.removeContent(system.getSettings().systemSpeech);
 		}
 
 	}
-
 
 }

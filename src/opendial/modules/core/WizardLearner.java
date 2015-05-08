@@ -44,8 +44,8 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Module employed to update parameters when provided with gold-standard actions
- * from Wizard-of-Oz data.
+ * Module employed to update parameters when provided with gold-standard actions from
+ * Wizard-of-Oz data.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -89,10 +89,12 @@ public class WizardLearner implements Module {
 					state.clearEvidence(wizardAction.getVariables());
 					learnFromWizardAction(wizardAction);
 					state.addToState(wizardAction.removePrimes());
-				} catch (DialException e) {
+				}
+				catch (DialException e) {
 					log.warning("could not learn from wizard actions: " + e);
 				}
-			} else {
+			}
+			else {
 				state.removeNodes(state.getActionNodeIds());
 				state.removeNodes(state.getUtilityNodeIds());
 			}
@@ -101,8 +103,8 @@ public class WizardLearner implements Module {
 	}
 
 	/**
-	 * Updates the domain parameters given the wizard action selected at the
-	 * provided dialogue state, and returns the list of updated parameters.
+	 * Updates the domain parameters given the wizard action selected at the provided
+	 * dialogue state, and returns the list of updated parameters.
 	 * 
 	 * @param state the dialogue state to update
 	 * @param wizardAction the wizard action
@@ -113,9 +115,7 @@ public class WizardLearner implements Module {
 
 		DialogueState state = system.getState();
 		// determine the relevant parameters (discard the isolated ones)
-		Set<String> relevantParams = state
-				.getParameterIds()
-				.stream()
+		Set<String> relevantParams = state.getParameterIds().stream()
 				.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
 				.collect(Collectors.toSet());
 
@@ -124,11 +124,9 @@ public class WizardLearner implements Module {
 				List<String> queryVars = new ArrayList<String>(relevantParams);
 				queryVars.addAll(wizardAction.getVariables());
 
-				Query query = new Query.UtilQuery(state, queryVars,
-						new Assignment());
-				EmpiricalDistribution empiricalDistrib = sampler
-						.getWeightedSamples(query,
-								cs -> reweightSamples(cs, wizardAction));
+				Query query = new Query.UtilQuery(state, queryVars, new Assignment());
+				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
+						query, cs -> reweightSamples(cs, wizardAction));
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = state.getChanceNode(param);
@@ -137,9 +135,9 @@ public class WizardLearner implements Module {
 							param, paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
-			} catch (DialException e) {
-				log.warning("cannot update parameters based on wizard action: "
-						+ e);
+			}
+			catch (DialException e) {
+				log.warning("cannot update parameters based on wizard action: " + e);
 			}
 		}
 

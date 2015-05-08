@@ -35,8 +35,8 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
 
 /**
- * Representation of a basic effect of a rule. A basic effect is formally
- * defined as a triple with:
+ * Representation of a basic effect of a rule. A basic effect is formally defined as
+ * a triple with:
  * <ol>
  * <li>a variable label;
  * <li>one of four basic operations on the variable SET, DISCARD, ADD;
@@ -61,9 +61,8 @@ public class BasicEffect {
 	final Value variableValue;
 
 	/**
-	 * Whether the value is mutually exclusive with other values for the
-	 * variable (default case) or not. If not, distinct values are added
-	 * together in a list.
+	 * Whether the value is mutually exclusive with other values for the variable
+	 * (default case) or not. If not, distinct values are added together in a list.
 	 */
 	final boolean add;
 
@@ -90,15 +89,14 @@ public class BasicEffect {
 	/**
 	 * Constructs a new basic effect, with a variable label, value and other
 	 * arguments. The argument "add" specifies whether the effect is mutually
-	 * exclusive with other effects. The argument "negated" specifies whether
-	 * the effect includes a negation.
+	 * exclusive with other effects. The argument "negated" specifies whether the
+	 * effect includes a negation.
 	 * 
 	 * 
 	 * @param variable variable label (raw string)
 	 * @param value variable value
 	 * @param priority the priority level (default is 1)
-	 * @param add true if distinct values are to be added together, false
-	 *            otherwise
+	 * @param add true if distinct values are to be added together, false otherwise
 	 * @param negated whether to negate the effect or not.
 	 */
 	public BasicEffect(String variable, Value value, int priority, boolean add,
@@ -182,8 +180,8 @@ public class BasicEffect {
 	}
 
 	/**
-	 * Returns true if the effect allows multiple distinct values for the
-	 * variable and false otherwise (default case).
+	 * Returns true if the effect allows multiple distinct values for the variable
+	 * and false otherwise (default case).
 	 * 
 	 * @return true if the effect allows values to be added together, false
 	 *         otherwise.
@@ -213,9 +211,11 @@ public class BasicEffect {
 		String str = variableLabel;
 		if (negated) {
 			str += "!=";
-		} else if (add) {
+		}
+		else if (add) {
 			str += "+=";
-		} else {
+		}
+		else {
 			str += ":=";
 		}
 		str += variableValue;
@@ -247,13 +247,17 @@ public class BasicEffect {
 		if (o instanceof BasicEffect) {
 			if (!((BasicEffect) o).getVariable().equals(variableLabel)) {
 				return false;
-			} else if (!((BasicEffect) o).getValue().equals(getValue())) {
+			}
+			else if (!((BasicEffect) o).getValue().equals(getValue())) {
 				return false;
-			} else if (((BasicEffect) o).isAdd() != add) {
+			}
+			else if (((BasicEffect) o).isAdd() != add) {
 				return false;
-			} else if (((BasicEffect) o).isNegated() != negated) {
+			}
+			else if (((BasicEffect) o).isNegated() != negated) {
 				return false;
-			} else if (((BasicEffect) o).priority != priority) {
+			}
+			else if (((BasicEffect) o).priority != priority) {
 				return false;
 			}
 			return true;
@@ -267,8 +271,8 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue,
-				priority, add, negated);
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority,
+				add, negated);
 		return copy;
 	}
 
@@ -279,8 +283,7 @@ public class BasicEffect {
 	 * @return a new basic effect with the changed priority
 	 */
 	public BasicEffect changePriority(int priority) {
-		return new BasicEffect(variableLabel, variableValue, priority, add,
-				negated);
+		return new BasicEffect(variableLabel, variableValue, priority, add, negated);
 	}
 
 }

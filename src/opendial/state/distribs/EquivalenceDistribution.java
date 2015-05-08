@@ -41,13 +41,13 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 
 /**
- * Representation of an equivalence distribution (see dissertation p. 78 for
- * details) with two possible values: true or false. The distribution is
- * essentially defined as:
+ * Representation of an equivalence distribution (see dissertation p. 78 for details)
+ * with two possible values: true or false. The distribution is essentially defined
+ * as:
  * 
  * <p>
- * P(eq=true | X, X^p) = 1 when X = X^p and != None = NONE_PROB when X = None or
- * X^p = None = 0 otherwise.
+ * P(eq=true | X, X^p) = 1 when X = X^p and != None = NONE_PROB when X = None or X^p
+ * = None = 0 otherwise.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -113,8 +113,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Generates a sample from the distribution given the conditional
-	 * assignment.
+	 * Generates a sample from the distribution given the conditional assignment.
 	 */
 	@Override
 	public Value sample(Assignment condition) throws DialException {
@@ -122,7 +121,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 
 		if (sampler.nextDouble() < prob) {
 			return ValueFactory.create(true);
-		} else {
+		}
+		else {
 			return ValueFactory.create(false);
 		}
 	}
@@ -153,13 +153,14 @@ public class EquivalenceDistribution implements ProbDistribution {
 				boolean val = ((BooleanVal) head).getBoolean();
 				if (val) {
 					return prob;
-				} else {
+				}
+				else {
 					return 1 - prob;
 				}
 			}
-			log.warning("cannot extract prob for P(" + head + "|" + condition
-					+ ")");
-		} catch (DialException e) {
+			log.warning("cannot extract prob for P(" + head + "|" + condition + ")");
+		}
+		catch (DialException e) {
 			log.warning(e.toString());
 		}
 		return 0.0;
@@ -170,8 +171,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * fixed input.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws DialException {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -180,8 +180,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the corresponding categorical table on the true and false values
-	 * @throws DialException if the table could not be extracted for the
-	 *             condition
+	 * @throws DialException if the table could not be extracted for the condition
 	 */
 	@Override
 	public CategoricalTable getProbDistrib(Assignment condition)
@@ -194,8 +193,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Returns a set of two assignments: one with the value true, and one with
-	 * the value false.
+	 * Returns a set of two assignments: one with the value true, and one with the
+	 * value false.
 	 * 
 	 * @return the set with the two possible assignments
 	 */
@@ -221,9 +220,11 @@ public class EquivalenceDistribution implements ProbDistribution {
 		for (String inputVar : condition.getVariables()) {
 			if (inputVar.equals(baseVar + "^p")) {
 				predicted = condition.getValue(inputVar);
-			} else if (inputVar.equals(baseVar + "'")) {
+			}
+			else if (inputVar.equals(baseVar + "'")) {
 				actual = condition.getValue(inputVar);
-			} else if (inputVar.equals(baseVar)) {
+			}
+			else if (inputVar.equals(baseVar)) {
 				actual = condition.getValue(inputVar);
 			}
 		}
@@ -235,14 +236,16 @@ public class EquivalenceDistribution implements ProbDistribution {
 		if (predicted.equals(ValueFactory.none())
 				|| actual.equals(ValueFactory.none())) {
 			return NONE_PROB;
-		} else if (predicted.equals(actual)) {
+		}
+		else if (predicted.equals(actual)) {
 			return 1.0;
-		} else if (predicted instanceof StringVal
-				&& actual instanceof StringVal) {
+		}
+		else if (predicted instanceof StringVal && actual instanceof StringVal) {
 			String str1 = ((StringVal) predicted).getString();
 			String str2 = ((StringVal) actual).getString();
 			return (Template.match(str1, str2)) ? 1.0 : 0.0;
-		} else if (predicted instanceof SetVal && actual instanceof SetVal) {
+		}
+		else if (predicted instanceof SetVal && actual instanceof SetVal) {
 			Set<Value> vals0 = ((SetVal) predicted).getSet();
 			Set<Value> vals1 = ((SetVal) actual).getSet();
 			if (vals0.isEmpty()) {
@@ -251,7 +254,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 			Set<Value> intersect = new HashSet<Value>(vals0);
 			intersect.retainAll(vals1);
 			return ((double) intersect.size()) / vals0.size();
-		} else {
+		}
+		else {
 			return 0.0;
 		}
 

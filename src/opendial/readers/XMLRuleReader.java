@@ -88,7 +88,8 @@ public class XMLRuleReader {
 		if (topNode.hasAttributes()
 				&& topNode.getAttributes().getNamedItem("id") != null) {
 			ruleId = topNode.getAttributes().getNamedItem("id").getNodeValue();
-		} else {
+		}
+		else {
 			ruleId = "rule" + idCounter;
 			idCounter++;
 		}
@@ -104,10 +105,11 @@ public class XMLRuleReader {
 				RuleCase newCase = getCase(node, type);
 				rule.addCase(newCase);
 
-			} else if (!node.getNodeName().equals("#text")
+			}
+			else if (!node.getNodeName().equals("#text")
 					&& !node.getNodeName().equals("#comment")) {
-				throw new DialException("Ill-formed rule: "
-						+ node.getNodeName() + " not accepted");
+				throw new DialException("Ill-formed rule: " + node.getNodeName()
+						+ " not accepted");
 			}
 		}
 
@@ -149,10 +151,11 @@ public class XMLRuleReader {
 							.getSlots(), type);
 					newCase.addEffect(effect, prob);
 				}
-			} else if (!node.getNodeName().equals("#text")
+			}
+			else if (!node.getNodeName().equals("#text")
 					&& !node.getNodeName().equals("#comment")) {
-				throw new DialException("Ill-formed rule: "
-						+ node.getNodeName() + " not accepted");
+				throw new DialException("Ill-formed rule: " + node.getNodeName()
+						+ " not accepted");
 			}
 		}
 
@@ -183,18 +186,19 @@ public class XMLRuleReader {
 
 		if (subconditions.isEmpty()) {
 			return new VoidCondition();
-		} else {
+		}
+		else {
 			if (conditionNode.hasAttributes()
 					&& conditionNode.getAttributes().getNamedItem("operator") != null) {
 				String operatorStr = conditionNode.getAttributes()
 						.getNamedItem("operator").getNodeValue();
 				if (operatorStr.toLowerCase().trim().equals("and")) {
-					return new ComplexCondition(subconditions,
-							BinaryOperator.AND);
-				} else if (operatorStr.toLowerCase().trim().equals("or")) {
-					return new ComplexCondition(subconditions,
-							BinaryOperator.OR);
-				} else if (operatorStr.toLowerCase().trim().equals("neg")
+					return new ComplexCondition(subconditions, BinaryOperator.AND);
+				}
+				else if (operatorStr.toLowerCase().trim().equals("or")) {
+					return new ComplexCondition(subconditions, BinaryOperator.OR);
+				}
+				else if (operatorStr.toLowerCase().trim().equals("neg")
 						|| operatorStr.toLowerCase().trim().equals("not")) {
 					Condition negated = (subconditions.size() == 1) ? subconditions
 							.get(0) : new ComplexCondition(subconditions,
@@ -243,7 +247,8 @@ public class XMLRuleReader {
 				Relation relation = getRelation(node);
 				condition = new BasicCondition(variable, "{" + variable2 + "}",
 						relation);
-			} else {
+			}
+			else {
 				throw new DialException("unrecognized format for condition ");
 			}
 
@@ -261,8 +266,7 @@ public class XMLRuleReader {
 		}
 
 		// extracting a conjunction or disjunction
-		else if (node.getNodeName().equals("or")
-				|| node.getNodeName().equals("and")) {
+		else if (node.getNodeName().equals("or") || node.getNodeName().equals("and")) {
 
 			BinaryOperator operator = (node.getNodeName().equals("or")) ? BinaryOperator.OR
 					: BinaryOperator.AND;
@@ -291,7 +295,8 @@ public class XMLRuleReader {
 			}
 			if (conditions.size() == 1) {
 				return new NegatedCondition(conditions.get(0));
-			} else if (conditions.size() > 1) {
+			}
+			else if (conditions.size() > 1) {
 				return new NegatedCondition(new ComplexCondition(conditions,
 						BinaryOperator.AND));
 			}
@@ -314,27 +319,38 @@ public class XMLRuleReader {
 					.getNodeValue();
 			if (relationStr.toLowerCase().trim().equals("=")) {
 				relation = Relation.EQUAL;
-			} else if (relationStr.toLowerCase().trim().equals("!=")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("!=")) {
 				relation = Relation.UNEQUAL;
-			} else if (relationStr.toLowerCase().trim().equals("equal")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("equal")) {
 				relation = Relation.EQUAL;
-			} else if (relationStr.toLowerCase().trim().equals("unequal")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("unequal")) {
 				relation = Relation.UNEQUAL;
-			} else if (relationStr.toLowerCase().trim().equals("contains")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("contains")) {
 				relation = Relation.CONTAINS;
-			} else if (relationStr.toLowerCase().trim().equals("in")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("in")) {
 				relation = Relation.IN;
-			} else if (relationStr.toLowerCase().trim().equals("length")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("length")) {
 				relation = Relation.LENGTH;
-			} else if (relationStr.toLowerCase().trim().equals("!contains")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("!contains")) {
 				relation = Relation.NOT_CONTAINS;
-			} else if (relationStr.toLowerCase().trim().equals("!in")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("!in")) {
 				relation = Relation.NOT_IN;
-			} else if (relationStr.toLowerCase().trim().equals(">")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals(">")) {
 				relation = Relation.GREATER_THAN;
-			} else if (relationStr.toLowerCase().trim().equals("<")) {
+			}
+			else if (relationStr.toLowerCase().trim().equals("<")) {
 				relation = Relation.LOWER_THAN;
-			} else {
+			}
+			else {
 				throw new DialException("unrecognized relation: " + relationStr);
 			}
 
@@ -386,11 +402,12 @@ public class XMLRuleReader {
 		String value = null;
 		if (node.getAttributes().getNamedItem("value") != null) {
 			value = node.getAttributes().getNamedItem("value").getNodeValue();
-		} else if (node.getAttributes().getNamedItem("var2") != null) {
-			value = "{"
-					+ node.getAttributes().getNamedItem("var2").getNodeValue()
+		}
+		else if (node.getAttributes().getNamedItem("var2") != null) {
+			value = "{" + node.getAttributes().getNamedItem("var2").getNodeValue()
 					+ "}";
-		} else {
+		}
+		else {
 			value = "None";
 		}
 		value = value.replaceAll("\\s+", " ");
@@ -425,9 +442,10 @@ public class XMLRuleReader {
 		Template tval = new Template(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
 			return new TemplateEffect(tvar, tval, 1, add, negated);
-		} else {
-			return new BasicEffect(var, ValueFactory.create(tval.toString()),
-					1, add, negated);
+		}
+		else {
+			return new BasicEffect(var, ValueFactory.create(tval.toString()), 1,
+					add, negated);
 		}
 
 	}
@@ -448,10 +466,12 @@ public class XMLRuleReader {
 				String prob = node.getAttributes().getNamedItem("prob")
 						.getNodeValue();
 				return getInnerParameter(prob, caseSlots);
-			} else {
+			}
+			else {
 				return new FixedParameter(1.0);
 			}
-		} else if (type == RuleType.UTIL) {
+		}
+		else if (type == RuleType.UTIL) {
 			if (node.getAttributes().getNamedItem("util") != null) {
 				String util = node.getAttributes().getNamedItem("util")
 						.getNodeValue();
@@ -469,8 +489,8 @@ public class XMLRuleReader {
 	 * @return the parameter representation
 	 * @throws DialException
 	 */
-	private static Parameter getInnerParameter(String paramStr,
-			Set<String> caseSlots) throws DialException {
+	private static Parameter getInnerParameter(String paramStr, Set<String> caseSlots)
+			throws DialException {
 
 		// we first try to extract a fixed value
 		try {
@@ -497,7 +517,8 @@ public class XMLRuleReader {
 							.replace("]", ""));
 					String paramId = paramStr.replace(m.group(1), "").trim();
 					return new SingleParameter(paramId, index);
-				} else {
+				}
+				else {
 					return new SingleParameter(paramStr);
 				}
 			}

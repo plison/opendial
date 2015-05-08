@@ -42,9 +42,8 @@ import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
 /**
- * Generic representation of a probabilistic rule, with an identifier and an
- * ordered list of cases. The rule can be either a probability or a utility
- * rule.
+ * Generic representation of a probabilistic rule, with an identifier and an ordered
+ * list of cases. The rule can be either a probability or a utility rule.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -74,8 +73,8 @@ public class Rule {
 	// ===================================
 
 	/**
-	 * Creates a new rule, with the given identifier and type, and an empty list
-	 * of cases
+	 * Creates a new rule, with the given identifier and type, and an empty list of
+	 * cases
 	 * 
 	 * @param id the identifier
 	 * @param ruleType the rule type
@@ -138,8 +137,8 @@ public class Rule {
 	}
 
 	/**
-	 * Returns the input variables (possibly underspecified, with slots to fill)
-	 * for the rule
+	 * Returns the input variables (possibly underspecified, with slots to fill) for
+	 * the rule
 	 * 
 	 * @return the set of labels for the input variables
 	 */
@@ -152,9 +151,9 @@ public class Rule {
 	}
 
 	/**
-	 * Returns the first case whose condition matches the input assignment
-	 * provided as argument. The case contains the grounded list of effects
-	 * associated with the satisfied condition.
+	 * Returns the first case whose condition matches the input assignment provided
+	 * as argument. The case contains the grounded list of effects associated with
+	 * the satisfied condition.
 	 * 
 	 * @param input the input assignment
 	 * @return the matched rule case.
@@ -174,8 +173,7 @@ public class Rule {
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
 			RuleCase match = cases.stream()
 					.filter(c -> c.getCondition().isSatisfiedBy(full))
-					.map(c -> c.ground(full)).findFirst()
-					.orElse(new RuleCase());
+					.map(c -> c.ground(full)).findFirst().orElse(new RuleCase());
 
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
@@ -218,8 +216,7 @@ public class Rule {
 	}
 
 	/**
-	 * Returns the set of all (templated) output variables defined inside the
-	 * rule
+	 * Returns the set of all (templated) output variables defined inside the rule
 	 * 
 	 * @return the set of all possible output variables
 	 */
@@ -299,8 +296,8 @@ public class Rule {
 	}
 
 	/**
-	 * Returns true if o is a rule that has the same identifier, rule type and
-	 * list of cases than the current rule.
+	 * Returns true if o is a rule that has the same identifier, rule type and list
+	 * of cases than the current rule.
 	 * 
 	 * @param o the object to compare
 	 * @return true if the object is an identical rule, false otherwise.

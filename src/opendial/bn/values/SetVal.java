@@ -47,8 +47,7 @@ public final class SetVal implements Value {
 	final int hashcode;
 
 	/**
-	 * Creates the list of values (protected, should be created via
-	 * ValueFactory)
+	 * Creates the list of values (protected, should be created via ValueFactory)
 	 * 
 	 * @param values the values
 	 */
@@ -57,7 +56,8 @@ public final class SetVal implements Value {
 		for (Value v : values) {
 			if (v instanceof SetVal) {
 				this.set.addAll(((SetVal) v).getSet());
-			} else {
+			}
+			else {
 				this.set.add(v);
 			}
 		}
@@ -143,9 +143,11 @@ public final class SetVal implements Value {
 			Set<Value> newSet = new HashSet<Value>(set);
 			newSet.addAll(((SetVal) v).getSet());
 			return new SetVal(newSet);
-		} else if (v instanceof NoneVal) {
+		}
+		else if (v instanceof NoneVal) {
 			return this;
-		} else {
+		}
+		else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
