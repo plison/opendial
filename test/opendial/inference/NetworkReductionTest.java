@@ -23,14 +23,14 @@
 
 package opendial.inference;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.common.NetworkExamples;
 import opendial.datastructs.Assignment;
@@ -49,7 +49,7 @@ import org.junit.Test;
 public class NetworkReductionTest {
 
 	// logger
-	public static Logger log = new Logger("PruningTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	BNetwork network;
 
@@ -58,7 +58,7 @@ public class NetworkReductionTest {
 	NaiveInference naive;
 	SwitchingAlgorithm sw;
 
-	public NetworkReductionTest() throws DialException {
+	public NetworkReductionTest() throws RuntimeException {
 		network = NetworkExamples.constructBasicNetwork2();
 
 		ve = new VariableElimination();
@@ -68,16 +68,20 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test1() throws DialException, InterruptedException {
+	public void test1() throws RuntimeException, InterruptedException {
 
-		BNetwork reducedNet = ve.reduce(network,
-				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet2 = naive.reduce(network,
-				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet3 = is.reduce(network,
-				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
-		BNetwork reducedNet4 = sw.reduce(network,
-				Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet =
+				ve.reduce(network,
+						Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet2 =
+				naive.reduce(network,
+						Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet3 =
+				is.reduce(network,
+						Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
+		BNetwork reducedNet4 =
+				sw.reduce(network,
+						Arrays.asList("Burglary", "Earthquake", "MaryCalls"));
 
 		assertEquals(3, reducedNet.getNodes().size());
 		assertEquals(3, reducedNet2.getNodes().size());
@@ -149,20 +153,20 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test2() throws DialException, InterruptedException {
+	public void test2() throws RuntimeException, InterruptedException {
 
-		BNetwork reducedNet = ve.reduce(network,
-				Arrays.asList("Burglary", "MaryCalls"),
-				new Assignment("!Earthquake"));
-		BNetwork reducedNet2 = naive.reduce(network,
-				Arrays.asList("Burglary", "MaryCalls"),
-				new Assignment("!Earthquake"));
-		BNetwork reducedNet3 = is.reduce(network,
-				Arrays.asList("Burglary", "MaryCalls"),
-				new Assignment("!Earthquake"));
-		BNetwork reducedNet4 = sw.reduce(network,
-				Arrays.asList("Burglary", "MaryCalls"),
-				new Assignment("!Earthquake"));
+		BNetwork reducedNet =
+				ve.reduce(network, Arrays.asList("Burglary", "MaryCalls"),
+						new Assignment("!Earthquake"));
+		BNetwork reducedNet2 =
+				naive.reduce(network, Arrays.asList("Burglary", "MaryCalls"),
+						new Assignment("!Earthquake"));
+		BNetwork reducedNet3 =
+				is.reduce(network, Arrays.asList("Burglary", "MaryCalls"),
+						new Assignment("!Earthquake"));
+		BNetwork reducedNet4 =
+				sw.reduce(network, Arrays.asList("Burglary", "MaryCalls"),
+						new Assignment("!Earthquake"));
 
 		assertEquals(2, reducedNet.getNodes().size());
 		assertEquals(2, reducedNet2.getNodes().size());
@@ -224,19 +228,19 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test3() throws DialException, InterruptedException {
+	public void test3() throws RuntimeException, InterruptedException {
 
-		BNetwork reducedNet = ve
-				.reduce(network, Arrays.asList("Burglary", "Earthquake"),
+		BNetwork reducedNet =
+				ve.reduce(network, Arrays.asList("Burglary", "Earthquake"),
 						new Assignment("JohnCalls"));
-		BNetwork reducedNet2 = naive
-				.reduce(network, Arrays.asList("Burglary", "Earthquake"),
+		BNetwork reducedNet2 =
+				naive.reduce(network, Arrays.asList("Burglary", "Earthquake"),
 						new Assignment("JohnCalls"));
-		BNetwork reducedNet3 = is
-				.reduce(network, Arrays.asList("Burglary", "Earthquake"),
+		BNetwork reducedNet3 =
+				is.reduce(network, Arrays.asList("Burglary", "Earthquake"),
 						new Assignment("JohnCalls"));
-		BNetwork reducedNet4 = sw
-				.reduce(network, Arrays.asList("Burglary", "Earthquake"),
+		BNetwork reducedNet4 =
+				sw.reduce(network, Arrays.asList("Burglary", "Earthquake"),
 						new Assignment("JohnCalls"));
 
 		assertEquals(2, reducedNet.getNodes().size());
@@ -293,11 +297,13 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test5() throws DialException {
-		BNetwork reducedNet = ve.reduce(network, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
-		BNetwork reducedNet2 = is.reduce(network, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+	public void test5() throws RuntimeException {
+		BNetwork reducedNet =
+				ve.reduce(network, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		BNetwork reducedNet2 =
+				is.reduce(network, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		reducedNet.addNode(network.getNode("Action").copy());
 		reducedNet.addNode(network.getNode("Util1").copy());
@@ -308,8 +314,9 @@ public class NetworkReductionTest {
 		reducedNet.getNode("Util2").addInputNode(reducedNet.getNode("Action"));
 
 		UtilityTable table1 = ve.queryUtil(reducedNet, "Action");
-		UtilityTable table2 = ve.queryUtil(network, Arrays.asList("Action"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		UtilityTable table2 =
+				ve.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		for (Assignment a : table1.getTable().keySet()) {
 			assertEquals(table1.getUtil(a), table2.getUtil(a), 0.01);
@@ -331,13 +338,13 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test6() throws DialException, InterruptedException {
+	public void test6() throws RuntimeException, InterruptedException {
 		BNetwork old = network.copy();
 
 		network.getNode("Alarm").removeInputNode("Earthquake");
 		network.getNode("Alarm").removeInputNode("Burglary");
 		network.getChanceNode("Alarm").setDistrib(
-				new CategoricalTable("Alarm", "False"));
+				new SingleValueDistribution("Alarm", "False"));
 
 		test1();
 		test2();

@@ -23,11 +23,11 @@
 
 package opendial.state.distribs;
 
+import java.util.logging.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -48,7 +48,7 @@ import opendial.state.AnchoredRule;
 public class RuleDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleDistribution", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	String id;
 
@@ -62,14 +62,14 @@ public class RuleDistribution implements ProbDistribution {
 	 * Creates a new rule-base distribution, based on an anchored rule
 	 * 
 	 * @param rule the anchored rule
-	 * @throws DialException if the rule is not an update or a prediction rule
+	 * @throws RuntimeException if the rule is not an update or a prediction rule
 	 */
-	public RuleDistribution(AnchoredRule rule) throws DialException {
+	public RuleDistribution(AnchoredRule rule) throws RuntimeException {
 		if (rule.getRule().getRuleType() == RuleType.PROB) {
 			this.arule = rule;
 		}
 		else {
-			throw new DialException("only probabilistic rules can define a "
+			throw new RuntimeException("only probabilistic rules can define a "
 					+ "rule-based probability distribution");
 		}
 		id = rule.getRule().getRuleId();
@@ -105,10 +105,10 @@ public class RuleDistribution implements ProbDistribution {
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
 	 * @return the probability
-	 * @throws DialException if the probability could not be calculated.
+	 * @throws RuntimeException if the probability could not be calculated.
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws DialException {
+	public double getProb(Assignment condition, Value head) throws RuntimeException {
 
 		CategoricalTable outputTable = getProbDistrib(condition);
 		double prob = outputTable.getProb(head);
@@ -121,10 +121,11 @@ public class RuleDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the associated probability table (as a CategoricalTable)
-	 * @throws DialException if the distribution could not be calculated.
+	 * @throws RuntimeException if the distribution could not be calculated.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -133,7 +134,7 @@ public class RuleDistribution implements ProbDistribution {
 	 * 
 	 */
 	@Override
-	public Set<Value> getValues() throws DialException {
+	public Set<Value> getValues() throws RuntimeException {
 		return new HashSet<Value>(arule.getEffects());
 	}
 
@@ -142,10 +143,10 @@ public class RuleDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the input assignment
 	 * @return the sampled value
-	 * @throws DialException if sampling returned an error
+	 * @throws RuntimeException if sampling returned an error
 	 */
 	@Override
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 
 		CategoricalTable outputTable = getProbDistrib(condition);
 		return outputTable.sample();
@@ -162,7 +163,7 @@ public class RuleDistribution implements ProbDistribution {
 	}
 
 	@Override
-	public CategoricalTable getProbDistrib(Assignment input) throws DialException {
+	public CategoricalTable getProbDistrib(Assignment input) throws RuntimeException {
 
 		// search for the matching case
 
@@ -178,8 +179,8 @@ public class RuleDistribution implements ProbDistribution {
 		}
 
 		for (Effect e : output.getEffects()) {
-			double param = output.getParameter(e).getParameterValue(input)
-					/ totalMass;
+			double param =
+					output.getParameter(e).getParameterValue(input) / totalMass;
 			if (param > 0) {
 				probTable.addRow(e, param);
 			}
@@ -188,7 +189,7 @@ public class RuleDistribution implements ProbDistribution {
 		if (probTable.isEmpty()) {
 			log.warning("probability table is empty (no effects) for " + "input "
 					+ input + " and rule " + arule.toString());
-			log.debug("output was " + output + " and effect " + output.getEffects());
+			log.fine("output was " + output + " and effect " + output.getEffects());
 		}
 		return probTable;
 	}
@@ -196,16 +197,6 @@ public class RuleDistribution implements ProbDistribution {
 	// ===================================
 	// UTILITY METHODS
 	// ===================================
-
-	/**
-	 * Returns true
-	 * 
-	 * @return true
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return true;
-	}
 
 	/**
 	 * Returns a copy of the distribution
@@ -218,7 +209,7 @@ public class RuleDistribution implements ProbDistribution {
 			RuleDistribution distrib = new RuleDistribution(arule);
 			return distrib;
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			e.printStackTrace();
 			return null;
 		}

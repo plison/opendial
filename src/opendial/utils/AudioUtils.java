@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -48,9 +49,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-
 /**
  * Utility methods for processing audio data.
  * 
@@ -58,7 +56,7 @@ import opendial.arch.Logger;
  */
 public class AudioUtils {
 
-	public static Logger log = new Logger("AudioUtils", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Audio format for higher-quality speech recognition (frame rate: 16 kHz) */
 	static AudioFormat IN_HIGH = new AudioFormat(16000.0F, 16, 1, true, false);
@@ -80,15 +78,15 @@ public class AudioUtils {
 	 * 
 	 * @param mixer the name of the audio mixer
 	 * @return the selected line
-	 * @throws DialException if no line could be selected
+	 * @throws RuntimeException if no line could be selected
 	 */
 	public static TargetDataLine selectAudioLine(Mixer.Info mixer)
-			throws DialException {
+			throws RuntimeException {
 
 		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 			try {
-				DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class,
-						format);
+				DataLine.Info lineInfo =
+						new DataLine.Info(TargetDataLine.class, format);
 				if (AudioSystem.getMixer(mixer).isLineSupported(lineInfo)) {
 					return AudioSystem.getTargetDataLine(format, mixer);
 				}
@@ -98,7 +96,7 @@ public class AudioUtils {
 				log.info("Available audio mixers: " + getMixers());
 			}
 		}
-		throw new DialException("Cannot obtain audio line for mixer " + mixer);
+		throw new RuntimeException("Cannot obtain audio line for mixer " + mixer);
 	}
 
 	/**
@@ -189,20 +187,22 @@ public class AudioUtils {
 	 * @return the converted audio stream
 	 */
 	public static AudioInputStream getAudioStream(byte[] byteArray)
-			throws DialException {
+			throws RuntimeException {
 		try {
 			try {
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+				ByteArrayInputStream byteStream =
+						new ByteArrayInputStream(byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
 			catch (UnsupportedAudioFileException e) {
 				byteArray = addWavHeader(byteArray);
-				ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
+				ByteArrayInputStream byteStream =
+						new ByteArrayInputStream(byteArray);
 				return AudioSystem.getAudioInputStream(byteStream);
 			}
 		}
 		catch (IOException | UnsupportedAudioFileException e) {
-			throw new DialException("cannot convert bytes to audio stream: " + e);
+			throw new RuntimeException("cannot convert bytes to audio stream: " + e);
 		}
 	}
 
@@ -233,25 +233,26 @@ public class AudioUtils {
 	 * Generates an audio file from the stream. The file must be a WAV file.
 	 * 
 	 * @param outputFile the file in which to write the audio data
-	 * @throws DialException if the audio could not be written onto the file
+	 * @throws RuntimeException if the audio could not be written onto the file
 	 */
 	public static void generateFile(byte[] data, File outputFile)
-			throws DialException {
+			throws RuntimeException {
 		try {
 			AudioInputStream audioStream = getAudioStream(data);
 			if (outputFile.getName().endsWith("wav")) {
-				int nb = AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE,
-						new FileOutputStream(outputFile));
-				log.debug("WAV file written to " + outputFile.getCanonicalPath()
+				int nb =
+						AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE,
+								new FileOutputStream(outputFile));
+				log.fine("WAV file written to " + outputFile.getCanonicalPath()
 						+ " (" + (nb / 1000) + " kB)");
 			}
 			else {
-				throw new DialException("Unsupported encoding " + outputFile);
+				throw new RuntimeException("Unsupported encoding " + outputFile);
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			throw new DialException("could not generate file: " + e);
+			throw new RuntimeException("could not generate file: " + e);
 		}
 	}
 
@@ -315,12 +316,14 @@ public class AudioUtils {
 			int offset = audioData.length - 2 * samples.length;
 			for (int i = 0; i < samples.length; i++) {
 				if (format.isBigEndian()) {
-					samples[i] = ((audioData[offset + i * 2] << 8) | (audioData[offset
-							+ i * 2 + 1] & 0xFF));
+					samples[i] =
+							((audioData[offset + i * 2] << 8) | (audioData[offset
+									+ i * 2 + 1] & 0xFF));
 				}
 				else {
-					samples[i] = ((audioData[offset + i * 2 + 0] & 0xFF) | (audioData[offset
-							+ i * 2 + 1] << 8));
+					samples[i] =
+							((audioData[offset + i * 2 + 0] & 0xFF) | (audioData[offset
+									+ i * 2 + 1] << 8));
 				}
 			}
 			return samples;
@@ -334,7 +337,7 @@ public class AudioUtils {
 			return samples;
 		}
 		else {
-			throw new DialException("unsupported frame size: "
+			throw new RuntimeException("unsupported frame size: "
 					+ format.getFrameSize());
 		}
 

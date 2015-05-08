@@ -1,5 +1,7 @@
 package opendial.inference.approximate;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ActionNode;
@@ -31,7 +31,7 @@ import opendial.inference.Query;
 public class LikelihoodWeighting {
 
 	// logger
-	public static Logger log = new Logger("LikelihoodWeighting", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// actual number of samples for the algorithm
 	int nbSamples;
@@ -148,8 +148,8 @@ public class LikelihoodWeighting {
 
 			sample.trim(queryVars);
 		}
-		catch (DialException e) {
-			log.info("exception caught: " + e);
+		catch (RuntimeException e) {
+			log.warning("exception caught: " + e);
 			e.printStackTrace();
 		}
 		return sample;
@@ -164,9 +164,10 @@ public class LikelihoodWeighting {
 	 * part of the evidence, updates the weight.
 	 * 
 	 * @param n the chance node to sample
-	 * @throws DialException if the sampling operation failed
+	 * @throws RuntimeException if the sampling operation failed
 	 */
-	private void sampleChanceNode(ChanceNode n, Sample sample) throws DialException {
+	private void sampleChanceNode(ChanceNode n, Sample sample)
+			throws RuntimeException {
 
 		String id = n.getId();
 		// if the node is chance node and not evidence, sample from the values
@@ -181,8 +182,9 @@ public class LikelihoodWeighting {
 			ProbDistribution distrib = n.getDistrib();
 			double evidenceProb = 1.0;
 			if (distrib instanceof ContinuousDistribution) {
-				evidenceProb = ((ContinuousDistribution) distrib)
-						.getProbDensity(evidenceValue);
+				evidenceProb =
+						((ContinuousDistribution) distrib)
+								.getProbDensity(evidenceValue);
 			}
 			else {
 				evidenceProb = n.getProb(sample, evidenceValue);
@@ -218,13 +220,13 @@ public class LikelihoodWeighting {
 	 * 
 	 * @param samples the initial samples (with their weight)
 	 * @return the redrawn samples given their weight
-	 * @throws DialException if the samples could not be redrawn.
+	 * @throws RuntimeException if the samples could not be redrawn.
 	 */
 	private void redrawSamples() {
 
 		try {
-			Intervals<Sample> intervals = new Intervals<Sample>(samples,
-					s -> s.getWeight());
+			Intervals<Sample> intervals =
+					new Intervals<Sample>(samples, s -> s.getWeight());
 
 			Stack<Sample> newSamples = new Stack<Sample>();
 			int sampleSize = samples.size();
@@ -233,7 +235,7 @@ public class LikelihoodWeighting {
 			}
 			samples = newSamples;
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not redraw samples: " + e);
 		}
 	}

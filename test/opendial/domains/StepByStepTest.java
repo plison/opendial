@@ -22,16 +22,16 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.datastructs.Assignment;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 
 import org.junit.Test;
@@ -39,13 +39,14 @@ import org.junit.Test;
 public class StepByStepTest {
 
 	// logger
-	public static Logger log = new Logger("StepByStepTest", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void domain() throws DialException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader
-						.extractDomain("domains/examples/example-step-by-step_params.xml"));
+	public void domain() throws RuntimeException {
+		DialogueSystem system =
+				new DialogueSystem(
+						XMLDomainReader
+								.extractDomain("domains/examples/example-step-by-step_params.xml"));
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		// Settings.nbSamples = Settings.nbSamples / 2;

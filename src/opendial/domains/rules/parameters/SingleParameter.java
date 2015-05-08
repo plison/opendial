@@ -23,10 +23,11 @@
 
 package opendial.domains.rules.parameters;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
@@ -43,7 +44,7 @@ import opendial.datastructs.Assignment;
 public class SingleParameter implements Parameter {
 
 	// logger
-	public static Logger log = new Logger("StochasticParameter", Logger.Level.NORMAL);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the parameter identifier
 	String paramId;

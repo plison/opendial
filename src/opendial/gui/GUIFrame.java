@@ -23,6 +23,8 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
@@ -36,7 +38,6 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import opendial.DialogueSystem;
-import opendial.arch.Logger;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -50,7 +51,7 @@ import opendial.state.DialogueState;
 public class GUIFrame implements Module {
 
 	// logger
-	public static Logger log = new Logger("GUIFrame", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String ICON_PATH = "resources/opendial-icon.png";
 
@@ -96,7 +97,7 @@ public class GUIFrame implements Module {
 				}
 			}
 			catch (Exception e) {
-				log.debug("could not employ icon: " + e);
+				log.fine("could not employ icon: " + e);
 			}
 			JTabbedPane tabbedPane = new JTabbedPane();
 			frame.getContentPane().add(tabbedPane);

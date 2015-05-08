@@ -22,14 +22,14 @@
 
 package opendial.modules.simulation;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -50,7 +50,7 @@ import opendial.utils.StringUtils;
 public class Simulator implements Module {
 
 	// logger
-	public static Logger log = new Logger("Simulator", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueState simulatorState;
 
@@ -64,10 +64,10 @@ public class Simulator implements Module {
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
 	 * @param simulatorDomain the dialogue domain for the simulator
-	 * @throws DialException if the simulator could not be created
+	 * @throws RuntimeException if the simulator could not be created
 	 */
 	public Simulator(DialogueSystem system, String simulatorDomain)
-			throws DialException {
+			throws RuntimeException {
 		this(system, extractDomain(simulatorDomain));
 	}
 
@@ -76,9 +76,9 @@ public class Simulator implements Module {
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
 	 * @param domain the dialogue domain for the simulator
-	 * @throws DialException if the simulator could not be created
+	 * @throws RuntimeException if the simulator could not be created
 	 */
-	public Simulator(DialogueSystem system, Domain domain) throws DialException {
+	public Simulator(DialogueSystem system, Domain domain) throws RuntimeException {
 		this.system = system;
 		this.domain = domain;
 		simulatorState = domain.getInitialState().copy();
@@ -90,9 +90,10 @@ public class Simulator implements Module {
 	 * Adds an empty action to the dialogue system to start the interaction.
 	 */
 	@Override
-	public void start() throws DialException {
-		Assignment emptyAction = new Assignment(system.getSettings().systemOutput,
-				ValueFactory.none());
+	public void start() throws RuntimeException {
+		Assignment emptyAction =
+				new Assignment(system.getSettings().systemOutput,
+						ValueFactory.none());
 		if (system.isPaused()) {
 			system.getState().addToState(emptyAction);
 		}
@@ -129,9 +130,10 @@ public class Simulator implements Module {
 		}
 	}
 
-	private static Domain extractDomain(String simulatorDomain) throws DialException {
+	private static Domain extractDomain(String simulatorDomain)
+			throws RuntimeException {
 		if (simulatorDomain == null) {
-			throw new DialException("Required parameter: simulatorDomain");
+			throw new RuntimeException("Required parameter: simulatorDomain");
 		}
 		return XMLDomainReader.extractDomain(simulatorDomain);
 	}
@@ -147,7 +149,7 @@ public class Simulator implements Module {
 					systemAction = systemState.queryProb(outputVar).getBest();
 				}
 
-				log.debug("Simulator input: " + systemAction);
+				log.fine("Simulator input: " + systemAction);
 				boolean turnPerformed = performTurn(systemAction);
 				int repeat = 0;
 				while (!turnPerformed && repeat < 5
@@ -157,8 +159,8 @@ public class Simulator implements Module {
 				}
 			}
 		}
-		catch (DialException e) {
-			log.debug("cannot update simulator: " + e);
+		catch (RuntimeException e) {
+			log.fine("cannot update simulator: " + e);
 		}
 	}
 
@@ -166,15 +168,15 @@ public class Simulator implements Module {
 	 * Performs the dialogue turn in the simulator.
 	 * 
 	 * @param systemAction the last system action.
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
 	private synchronized boolean performTurn(Value systemAction)
-			throws DialException {
+			throws RuntimeException {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
-		Assignment systemAssign = new Assignment(system.getSettings().systemOutput,
-				systemAction);
+		Assignment systemAssign =
+				new Assignment(system.getSettings().systemOutput, systemAction);
 		simulatorState.addToState(systemAssign);
 
 		while (!simulatorState.getNewVariables().isEmpty()) {
@@ -195,7 +197,7 @@ public class Simulator implements Module {
 				double reward = simulatorState.queryUtil();
 				String comment = "Reward: " + StringUtils.getShortForm(reward);
 				system.displayComment(comment);
-				log.debug(comment);
+				log.fine(comment);
 				system.getState()
 						.addEvidence(
 								new Assignment(
@@ -219,9 +221,9 @@ public class Simulator implements Module {
 	 * otherwise.
 	 * 
 	 * @return whether a user input has been generated
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
-	private boolean addNewObservations() throws DialException {
+	private boolean addNewObservations() throws RuntimeException {
 		List<String> newObsVars = new ArrayList<String>();
 		for (String var : simulatorState.getChanceNodeIds()) {
 			if (var.contains("^o'")) {
@@ -242,12 +244,12 @@ public class Simulator implements Module {
 			}
 			if (!newObs.getValues().isEmpty()) {
 				if (newObs.getVariables().contains(system.getSettings().userInput)) {
-					log.debug("Simulator output: " + newObs + "\n --------------");
+					log.fine("Simulator output: " + newObs + "\n --------------");
 					system.addContent(newObs);
 					return true;
 				}
 				else {
-					log.debug("Contextual variables: " + newObs);
+					log.fine("Contextual variables: " + newObs);
 					system.addContent(newObs);
 				}
 			}

@@ -23,14 +23,14 @@
 
 package opendial.bn.distribs.densityfunctions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 
 import org.w3c.dom.Attr;
@@ -46,8 +46,7 @@ import org.w3c.dom.Element;
 public class UniformDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("UniformDensityFunction",
-			Logger.Level.NORMAL);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// minimum threshold
 	final double minimum;
@@ -119,12 +118,12 @@ public class UniformDensityFunction implements DensityFunction {
 	 *
 	 * @param x the point
 	 * @return the cumulative probability
-	 * @throws DialException if the dimensionality of the point is greater than 1
+	 * @throws RuntimeException if the dimensionality of the point is greater than 1
 	 */
 	@Override
-	public double getCDF(double... x) throws DialException {
+	public double getCDF(double... x) throws RuntimeException {
 		if (x.length != 1) {
-			throw new DialException(
+			throw new RuntimeException(
 					"Uniform distribution currently only accepts a dimensionality == 1");
 		}
 

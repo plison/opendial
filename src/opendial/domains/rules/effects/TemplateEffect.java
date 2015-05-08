@@ -23,7 +23,8 @@
 
 package opendial.domains.rules.effects;
 
-import opendial.arch.Logger;
+import java.util.logging.*;
+
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -45,7 +46,7 @@ import opendial.domains.rules.conditions.Condition;
  */
 public final class TemplateEffect extends BasicEffect {
 
-	static Logger log = new Logger("TemplateEffect", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// variable label for the basic effect (as a template)
 	final Template labelTemplate;
@@ -182,9 +183,10 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		int hashcode = ((negated) ? -2 : 1) * labelTemplate.hashCode()
-				^ (new Boolean(add)).hashCode() ^ priority
-				^ valueTemplate.hashCode();
+		int hashcode =
+				((negated) ? -2 : 1) * labelTemplate.hashCode()
+						^ (new Boolean(add)).hashCode() ^ priority
+						^ valueTemplate.hashCode();
 		return hashcode;
 	}
 

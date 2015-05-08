@@ -28,11 +28,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.ConditionalTable;
-import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -52,10 +50,10 @@ import org.junit.Test;
  */
 public class BNetworkStructureTest {
 
-	public static Logger log = new Logger("BNetworkTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void testBuildBasicNetwork() throws DialException {
+	public void testBuildBasicNetwork() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 
@@ -86,7 +84,8 @@ public class BNetworkStructureTest {
 				bn.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
 						ValueFactory.create(true)), 0.0001f);
 
-		assertTrue(bn.getChanceNode("MaryCalls").getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) bn.getChanceNode("MaryCalls").getDistrib())
+				.isWellFormed());
 
 		assertEquals(3, bn.getActionNode("Action").getValues().size());
 		assertEquals(
@@ -97,7 +96,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testCopy() throws DialException {
+	public void testCopy() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = bn.copy();
 
@@ -139,7 +138,8 @@ public class BNetworkStructureTest {
 				bn2.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
 						ValueFactory.create(true)), 0.0001f);
 
-		assertTrue(bn2.getChanceNode("MaryCalls").getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) bn2.getChanceNode("MaryCalls").getDistrib())
+				.isWellFormed());
 
 		assertEquals(3, bn2.getActionNode("Action").getValues().size());
 		assertEquals(
@@ -150,7 +150,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testStructure() throws DialException {
+	public void testStructure() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(5, bn.getNode("Burglary").getDescendantIds().size());
@@ -172,13 +172,12 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testDistribution() throws DialException {
+	public void testDistribution() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode e = bn.getChanceNode("Earthquake");
-		assertTrue(e.getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) e.getDistrib()).isWellFormed());
 		e.removeProb(ValueFactory.create(false));
-		ConditionalTable.log.setLevel(Logger.Level.NONE);
 		// assertFalse(e.getDistribution().isWellFormed());
 		e.addProb(ValueFactory.create(false), 0.1f);
 		// assertFalse(e.getDistribution().isWellFormed());
@@ -186,10 +185,10 @@ public class BNetworkStructureTest {
 		// assertFalse(e.getDistribution().isWellFormed());
 		e.addProb(ValueFactory.create(true), 0.2f);
 		e.addProb(ValueFactory.create(false), 0.8f);
-		assertTrue(e.getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) e.getDistrib()).isWellFormed());
 
 		ChanceNode a = bn.getChanceNode("Alarm");
-		assertTrue(a.getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) a.getDistrib()).isWellFormed());
 		a.removeProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
 				ValueFactory.create(true));
 		// assertFalse(a.getDistribution().isWellFormed());
@@ -198,11 +197,8 @@ public class BNetworkStructureTest {
 		// assertFalse(a.getDistribution().isWellFormed());
 		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
 				ValueFactory.create(true), 0.29f);
-		assertTrue(a.getDistrib().isWellFormed());
+		assertTrue(((ConditionalTable) a.getDistrib()).isWellFormed());
 
-		ConditionalTable.log.setLevel(Logger.Level.NORMAL);
-
-		UtilityTable.log.setLevel(Logger.Level.NONE);
 		UtilityNode v = bn.getUtilityNode("Util1");
 		assertTrue(v.getFunction().isWellFormed());
 		v.removeUtility(new Assignment(new Assignment("Burglary", false), "Action",
@@ -211,11 +207,10 @@ public class BNetworkStructureTest {
 		v.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
 				ValueFactory.create("CallPolice")), 100f);
 		assertTrue(v.getFunction().isWellFormed());
-		UtilityTable.log.setLevel(Logger.Level.NORMAL);
 	}
 
 	@Test
-	public void testRemoval() throws DialException {
+	public void testRemoval() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		bn.removeNode("Earthquake");
@@ -233,7 +228,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testIdChance() throws DialException {
+	public void testIdChance() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNode node = bn.getNode("Alarm");
 		node.setId("Alarm2");
@@ -248,7 +243,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testCopyIdChange() throws DialException {
+	public void testCopyIdChange() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = bn.copy();
 		BNode node = bn.getNode("Earthquake");
@@ -264,7 +259,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void tableExpansion() throws DialException {
+	public void tableExpansion() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode node = new ChanceNode("HouseSize");
 		node.addProb(ValueFactory.create("Small"), 0.7f);
@@ -298,7 +293,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testDefaultValue() throws DialException {
+	public void testDefaultValue() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode node = bn.getChanceNode("Burglary");
 		node.addProb(ValueFactory.create(false), 0.8);
@@ -312,7 +307,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testSortedNodes() throws DialException {
+	public void testSortedNodes() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals("Action", bn.getSortedNodes().get(7).getId());
 		assertEquals("Burglary", bn.getSortedNodes().get(6).getId());
@@ -335,9 +330,9 @@ public class BNetworkStructureTest {
 	}
 
 	/**
-	 * @throws DialException
-	 * @Test public void derivedActionNodes () throws DialException { BNetwork bn =
-	 *       NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
+	 * @throws RuntimeException
+	 * @Test public void derivedActionNodes () throws RuntimeException { BNetwork bn
+	 *       = NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
 	 *       NetworkExamples.constructBasicNetwork3();
 	 *       assertTrue(bn2.getActionNode("Action") instanceof ActionNode);
 	 *       assertEquals(2,
@@ -349,7 +344,7 @@ public class BNetworkStructureTest {
 	 */
 
 	@Test
-	public void testCliques() throws DialException {
+	public void testCliques() throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(1, bn.getCliques().size());
 		assertEquals(8, bn.getCliques().get(0).size());

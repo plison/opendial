@@ -23,10 +23,10 @@
 
 package opendial.common;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
@@ -45,9 +45,9 @@ import opendial.datastructs.Assignment;
 public class NetworkExamples {
 
 	// logger
-	public static Logger log = new Logger("CommonTestUtils", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
-	public static BNetwork constructBasicNetwork() throws DialException {
+	public static BNetwork constructBasicNetwork() throws RuntimeException {
 		BNetwork bn = new BNetwork();
 
 		ChanceNode b = new ChanceNode("Burglary");
@@ -131,7 +131,7 @@ public class NetworkExamples {
 		return bn;
 	}
 
-	public static BNetwork constructBasicNetwork2() throws DialException {
+	public static BNetwork constructBasicNetwork2() throws RuntimeException {
 		BNetwork network = constructBasicNetwork();
 		network.getChanceNode("Burglary").addProb(ValueFactory.create(true), 0.1f);
 		network.getChanceNode("Burglary").addProb(ValueFactory.create(false), 0.9f);
@@ -141,7 +141,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructBasicNetwork3() throws DialException {
+	public static BNetwork constructBasicNetwork3() throws RuntimeException {
 		BNetwork network = constructBasicNetwork();
 		network.removeNode("Action");
 		ActionNode ddn = new ActionNode("Action");
@@ -154,7 +154,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructBasicNetwork4() throws DialException {
+	public static BNetwork constructBasicNetwork4() throws RuntimeException {
 		BNetwork network = constructBasicNetwork();
 		ChanceNode node = new ChanceNode("gaussian");
 		node.setDistrib(new ContinuousDistribution("gaussian",
@@ -163,7 +163,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructIWSDSNetwork() throws DialException {
+	public static BNetwork constructIWSDSNetwork() throws RuntimeException {
 
 		BNetwork net = new BNetwork();
 

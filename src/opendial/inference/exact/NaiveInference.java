@@ -23,6 +23,8 @@
 
 package opendial.inference.exact;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,8 +34,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ConditionalTable;
@@ -59,17 +59,18 @@ import opendial.utils.InferenceUtils;
  */
 public class NaiveInference implements InferenceAlgorithm {
 
-	public static Logger log = new Logger("NaiveInference", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Queries the probability distribution encoded in the Bayesian Network, given a
 	 * set of query variables, and some evidence.
 	 * 
 	 * @param query the full query
-	 * @throws DialException if the inference process failed to deliver a result
+	 * @throws RuntimeException if the inference process failed to deliver a result
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query) throws DialException {
+	public MultivariateTable queryProb(Query.ProbQuery query)
+			throws RuntimeException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -79,14 +80,15 @@ public class NaiveInference implements InferenceAlgorithm {
 		Map<Assignment, Double> fullJoint = getFullJoint(network, false);
 
 		// generates all possible value assignments for the query variables
-		SortedMap<String, Set<Value>> queryValues = new TreeMap<String, Set<Value>>();
+		SortedMap<String, Set<Value>> queryValues =
+				new TreeMap<String, Set<Value>>();
 		for (ChanceNode n : network.getChanceNodes()) {
 			if (queryVars.contains(n.getId())) {
 				queryValues.put(n.getId(), n.getValues());
 			}
 		}
-		Set<Assignment> queryAssigns = CombinatoricsUtils
-				.getAllCombinations(queryValues);
+		Set<Assignment> queryAssigns =
+				CombinatoricsUtils.getAllCombinations(queryValues);
 
 		Map<Assignment, Double> queryResult = new HashMap<Assignment, Double>();
 
@@ -132,20 +134,21 @@ public class NaiveInference implements InferenceAlgorithm {
 			}
 		}
 
-		Set<Assignment> fullAssigns = CombinatoricsUtils
-				.getAllCombinations(allValues);
+		Set<Assignment> fullAssigns =
+				CombinatoricsUtils.getAllCombinations(allValues);
 		Map<Assignment, Double> result = new HashMap<Assignment, Double>();
 		for (Assignment singleAssign : fullAssigns) {
 			double jointLogProb = 0.0f;
 			for (ChanceNode n : bn.getChanceNodes()) {
 				Assignment trimmedCon = singleAssign.getTrimmed(n.getInputNodeIds());
-				jointLogProb += Math.log10(n.getProb(trimmedCon,
-						singleAssign.getValue(n.getId())));
+				jointLogProb +=
+						Math.log10(n.getProb(trimmedCon,
+								singleAssign.getValue(n.getId())));
 			}
 			if (includeActions) {
 				for (ActionNode n : bn.getActionNodes()) {
-					jointLogProb += Math.log10(n.getProb(singleAssign.getValue(n
-							.getId())));
+					jointLogProb +=
+							Math.log10(n.getProb(singleAssign.getValue(n.getId())));
 				}
 			}
 			result.put(singleAssign, Math.pow(10, jointLogProb));
@@ -171,14 +174,15 @@ public class NaiveInference implements InferenceAlgorithm {
 		Map<Assignment, Double> fullJoint = getFullJoint(network, true);
 
 		// generates all possible value assignments for the query variables
-		SortedMap<String, Set<Value>> actionValues = new TreeMap<String, Set<Value>>();
+		SortedMap<String, Set<Value>> actionValues =
+				new TreeMap<String, Set<Value>>();
 		for (BNode n : network.getNodes()) {
 			if (queryVars.contains(n.getId())) {
 				actionValues.put(n.getId(), n.getValues());
 			}
 		}
-		Set<Assignment> actionAssigns = CombinatoricsUtils
-				.getAllCombinations(actionValues);
+		Set<Assignment> actionAssigns =
+				CombinatoricsUtils.getAllCombinations(actionValues);
 		UtilityTable table = new UtilityTable();
 		for (Assignment actionAssign : actionAssigns) {
 
@@ -188,16 +192,16 @@ public class NaiveInference implements InferenceAlgorithm {
 
 				if (jointAssign.contains(evidence)) {
 					double totalUtilityForAssign = 0.0f;
-					Assignment stateAndActionAssign = new Assignment(jointAssign,
-							actionAssign);
+					Assignment stateAndActionAssign =
+							new Assignment(jointAssign, actionAssign);
 
 					for (UtilityNode valueNode : network.getUtilityNodes()) {
-						double singleUtility = valueNode
-								.getUtility(stateAndActionAssign);
+						double singleUtility =
+								valueNode.getUtility(stateAndActionAssign);
 						totalUtilityForAssign += singleUtility;
 					}
-					totalUtility += (totalUtilityForAssign * fullJoint
-							.get(jointAssign));
+					totalUtility +=
+							(totalUtilityForAssign * fullJoint.get(jointAssign));
 					totalProb += fullJoint.get(jointAssign);
 				}
 			}
@@ -216,7 +220,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
+	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -228,23 +232,23 @@ public class NaiveInference implements InferenceAlgorithm {
 
 		BNetwork reduced = new BNetwork();
 		for (String var : sortedNodesIds) {
-			Set<String> directAncestors = network.getNode(var).getAncestorsIds(
-					queryVars);
+			Set<String> directAncestors =
+					network.getNode(var).getAncestorsIds(queryVars);
 
 			// generating the conditional assignments for var
 			Map<String, Set<Value>> inputValues = new HashMap<String, Set<Value>>();
 			for (String input : directAncestors) {
 				inputValues.put(input, network.getNode(var).getValues());
 			}
-			Set<Assignment> inputs = CombinatoricsUtils
-					.getAllCombinations(inputValues);
+			Set<Assignment> inputs =
+					CombinatoricsUtils.getAllCombinations(inputValues);
 
 			// creating a conditional probability table for the variable
 			ConditionalTable table = new ConditionalTable(var);
 			for (Assignment a : inputs) {
 				Assignment evidence2 = new Assignment(evidence, a);
-				CategoricalTable result = (CategoricalTable) queryProb(network, var,
-						evidence2);
+				CategoricalTable result =
+						(CategoricalTable) queryProb(network, var, evidence2);
 				table.addDistrib(a, result);
 			}
 

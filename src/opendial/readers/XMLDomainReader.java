@@ -23,13 +23,13 @@
 
 package opendial.readers;
 
+import java.util.logging.*;
+
 import java.io.File;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
  */
 public class XMLDomainReader {
 
-	public static Logger log = new Logger("XMLDomainReader", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// ===================================
 	// TOP DOMAIN
@@ -60,9 +60,9 @@ public class XMLDomainReader {
 	 * 
 	 * @param topDomainFile the filename of the top XML file
 	 * @return the extracted dialogue domain
-	 * @throws DialException if a format error occurs
+	 * @throws RuntimeException if a format error occurs
 	 */
-	public static Domain extractDomain(String topDomainFile) throws DialException {
+	public static Domain extractDomain(String topDomainFile) throws RuntimeException {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
@@ -102,10 +102,10 @@ public class XMLDomainReader {
 	 * @param domain dialogue domain
 	 * @param rootpath rooth path (necessary to handle references)
 	 * @return the augmented dialogue domain
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
 	private static Domain extractPartialDomain(Node mainNode, Domain domain,
-			String rootpath) throws DialException {
+			String rootpath) throws RuntimeException {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("domain")) {
@@ -127,13 +127,13 @@ public class XMLDomainReader {
 		else if (mainNode.getNodeName().equals("initialstate")) {
 			BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
 			domain.setInitialState(new DialogueState(state));
-			// log.debug(state);
+			// log.fine(state);
 		}
 
 		// extracting rule-based probabilistic model
 		else if (mainNode.getNodeName().equals("model")) {
 			Model model = createModel(mainNode);
-			// log.debug(model);
+			// log.fine(model);
 			domain.addModel(model);
 		}
 
@@ -147,12 +147,13 @@ public class XMLDomainReader {
 		else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes()
 				&& mainNode.getAttributes().getNamedItem("href") != null) {
 
-			String fileName = mainNode.getAttributes().getNamedItem("href")
-					.getNodeValue();
-			Document subdoc = XMLUtils.getXMLDocument(rootpath + File.separator
-					+ fileName);
-			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
-					rootpath);
+			String fileName =
+					mainNode.getAttributes().getNamedItem("href").getNodeValue();
+			Document subdoc =
+					XMLUtils.getXMLDocument(rootpath + File.separator + fileName);
+			domain =
+					extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
+							rootpath);
 		}
 
 		return domain;
@@ -163,9 +164,9 @@ public class XMLDomainReader {
 	 * 
 	 * @param topNode the XML node
 	 * @return the corresponding model
-	 * @throws DialException if the specification is ill-defined
+	 * @throws RuntimeException if the specification is ill-defined
 	 */
-	private static Model createModel(Node topNode) throws DialException {
+	private static Model createModel(Node topNode) throws RuntimeException {
 		Model model = new Model();
 		for (int i = 0; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
@@ -177,23 +178,26 @@ public class XMLDomainReader {
 
 		if (topNode.hasAttributes()
 				&& topNode.getAttributes().getNamedItem("trigger") != null) {
-			Pattern p = Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
-					+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
-					+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
-			Matcher m = p.matcher(topNode.getAttributes().getNamedItem("trigger")
-					.getNodeValue());
+			Pattern p =
+					Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
+							+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
+							+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
+			Matcher m =
+					p.matcher(topNode.getAttributes().getNamedItem("trigger")
+							.getNodeValue());
 			while (m.find()) {
 				model.addTrigger(m.group());
 			}
 		}
 		else {
-			throw new DialException("each model must specify a variable trigger:"
+			throw new RuntimeException("each model must specify a variable trigger:"
 					+ XMLUtils.serialise(topNode));
 		}
 
 		if (topNode.getAttributes().getNamedItem("blocking") != null) {
-			boolean blocking = Boolean.parseBoolean(topNode.getAttributes()
-					.getNamedItem("blocking").getNodeValue());
+			boolean blocking =
+					Boolean.parseBoolean(topNode.getAttributes()
+							.getNamedItem("blocking").getNodeValue());
 			model.setBlocking(blocking);
 		}
 

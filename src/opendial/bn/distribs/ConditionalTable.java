@@ -26,14 +26,12 @@ package opendial.bn.distribs;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
-import opendial.utils.StringUtils;
 
 /**
  * Traditional probability distribution represented as a discrete probability table.
@@ -52,7 +50,7 @@ import opendial.utils.StringUtils;
 public class ConditionalTable extends ConditionalDistribution<CategoricalTable> {
 
 	// logger
-	public static Logger log = new Logger("ConditionalTable", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// ===================================
 	// TABLE CONSTRUCTION
@@ -183,8 +181,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 			table.get(condition).removeRow(head);
 		}
 		else {
-			log.debug("cannot remove row: condition " + condition
-					+ " is not present");
+			log.fine("cannot remove row: condition " + condition + " is not present");
 		}
 	}
 
@@ -270,8 +267,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 */
 	public boolean hasProb(Assignment condition, Value head) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		boolean result = (table.containsKey(trimmed) && table.get(trimmed).hasProb(
-				head));
+		boolean result =
+				(table.containsKey(trimmed) && table.get(trimmed).hasProb(head));
 		return result;
 	}
 
@@ -315,7 +312,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @return the resulting probability distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
@@ -336,32 +334,40 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		return newDistrib;
 	}
 
+	/**
+	 * Returns true if the conditional distribution is deterministic, i.e. each
+	 * condition is associated with a distribution with a single possible value (with
+	 * probability 1.0).
+	 * 
+	 * @return true if the distribution is deterministic, false otherwise
+	 */
+	public boolean isDeterministic() {
+		for (Assignment cond : table.keySet()) {
+			if (!table.get(cond).isDeterministic()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a deterministic distribution where each "head" distribution is reduced
+	 * to a distribution with a single possible value (with probability 1.0).
+	 * 
+	 * @return the deterministic equivalent of the distribution
+	 */
+	public ConditionalDistribution<SingleValueDistribution> getDeterministic() {
+		ConditionalDistribution<SingleValueDistribution> cd =
+				new ConditionalDistribution<SingleValueDistribution>(headVar);
+		for (Assignment cond : table.keySet()) {
+			cd.addDistrib(cond, table.get(cond).getDeterministic());
+		}
+		return cd;
+	}
+
 	// ===================================
 	// UTILITIES
 	// ===================================
-
-	/**
-	 * Returns a string representation of the probability table
-	 */
-	@Override
-	public String toString() {
-		String str = "";
-		for (Assignment cond : table.keySet()) {
-			for (Value head : table.get(cond).getValues()) {
-				String prob = StringUtils
-						.getShortForm(table.get(cond).getProb(head));
-				if (cond.size() > 0) {
-					str += "P(" + headVar + "=" + head + " | " + cond + "):=" + prob
-							+ "\n";
-				}
-				else {
-					str += "P(" + headVar + "=" + head + "):=" + prob + "\n";
-				}
-			}
-		}
-
-		return str;
-	}
 
 	/**
 	 * Returns the hashcode for the distribution

@@ -22,6 +22,8 @@
 
 package opendial.modules.examples;
 
+import java.util.logging.*;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,9 +36,6 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.datastructs.Assignment;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -53,7 +52,7 @@ import opendial.state.DialogueState;
 public class ModuleExample2 implements Module {
 
 	// logger
-	public static Logger log = new Logger("ModuleExample2", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueSystem system;
 	JFrame frame;
@@ -75,7 +74,7 @@ public class ModuleExample2 implements Module {
 	 * and add it to the dialogue state.
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		frame = new JFrame();
 		ActionListener listener = new CustomActionListener();
 		frame.setLayout(new BorderLayout());
@@ -139,16 +138,16 @@ public class ModuleExample2 implements Module {
 			}
 			switch (((BasicArrowButton) arg0.getSource()).getDirection()) {
 			case SwingConstants.NORTH:
-				system.addContent(new Assignment("a_u", "Request(Forward)"));
+				system.addContent("a_u", "Request(Forward)");
 				break;
 			case SwingConstants.SOUTH:
-				system.addContent(new Assignment("a_u", "Request(Backward)"));
+				system.addContent("a_u", "Request(Backward)");
 				break;
 			case SwingConstants.WEST:
-				system.addContent(new Assignment("a_u", "Request(Left)"));
+				system.addContent("a_u", "Request(Left)");
 				break;
 			case SwingConstants.EAST:
-				system.addContent(new Assignment("a_u", "Request(Right)"));
+				system.addContent("a_u", "Request(Right)");
 				break;
 			}
 		}

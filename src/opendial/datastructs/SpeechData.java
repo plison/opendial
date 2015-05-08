@@ -23,14 +23,14 @@
 
 package opendial.datastructs;
 
+import java.util.logging.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.AudioUtils;
 
@@ -48,7 +48,7 @@ import opendial.utils.AudioUtils;
 public class SpeechData extends InputStream implements Value {
 
 	// logger
-	public static Logger log = new Logger("SpeechData", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** the position in the data stream */
 	int currentPos = 0;
@@ -312,7 +312,7 @@ public class SpeechData extends InputStream implements Value {
 			return newData;
 		}
 		else {
-			throw new DialException("Cannot concatenate SpeechData and "
+			throw new RuntimeException("Cannot concatenate SpeechData and "
 					+ value.getClass().getCanonicalName());
 		}
 	}

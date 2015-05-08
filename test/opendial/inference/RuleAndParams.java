@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
 import opendial.state.distribs.RuleDistribution;
@@ -18,7 +16,7 @@ public class RuleAndParams {
 	public static final String domainFile = "test//domains//rulesandparams.xml";
 
 	@Test
-	public void RuleAndParamsTest() throws DialException, InterruptedException {
+	public void RuleAndParamsTest() throws RuntimeException, InterruptedException {
 
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);
@@ -40,7 +38,7 @@ public class RuleAndParams {
 		assertFalse(system.getState().hasChanceNode("movements"));
 		assertEquals(system.getContent("theta_moves").toContinuous().getFunction()
 				.getMean()[0], 2.0 / 6, 0.07);
-		system.addContent(new Assignment("a_m", "turning left"));
+		system.addContent("a_m", "turning left");
 		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.23, 0.04);
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 1);

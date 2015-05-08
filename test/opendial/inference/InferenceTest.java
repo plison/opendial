@@ -23,14 +23,14 @@
 
 package opendial.inference;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.EmpiricalDistribution;
@@ -57,17 +57,18 @@ import org.junit.Test;
 public class InferenceTest {
 
 	// logger
-	public static Logger log = new Logger("InferenceTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
-	public static void main(String[] args) throws DialException {
+	public static void main(String[] args) throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		log.info((new VariableElimination()).queryProb(bn,
-				Arrays.asList("Burglary"), new Assignment(new Assignment(
+		log.info(""
+				+ (new VariableElimination()).queryProb(bn, Arrays
+						.asList("Burglary"), new Assignment(new Assignment(
 						"JohnCalls", true), new Assignment("MaryCalls", false))));
 	}
 
 	@Test
-	public void testNetwork1() throws DialException {
+	public void testNetwork1() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -82,18 +83,18 @@ public class InferenceTest {
 
 		NaiveInference naive = new NaiveInference();
 
-		MultivariateDistribution query = naive.queryProb(bn,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query =
+				naive.queryProb(bn, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.71367f, query.getProb(new Assignment("Burglary", false)),
 				0.0001f);
 		assertEquals(0.286323, query.getProb(new Assignment("Burglary", true)),
 				0.0001f);
 
-		MultivariateDistribution query2 = naive.queryProb(bn,
-				Arrays.asList("Alarm", "Burglary"),
-				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
+		MultivariateDistribution query2 =
+				naive.queryProb(bn, Arrays.asList("Alarm", "Burglary"),
+						new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.623974,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -102,7 +103,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork1bis() throws DialException {
+	public void testNetwork1bis() throws RuntimeException {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -117,18 +118,18 @@ public class InferenceTest {
 
 		NaiveInference naive = new NaiveInference();
 
-		MultivariateDistribution query = naive.queryProb(bn,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query =
+				naive.queryProb(bn, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.360657, query.getProb(new Assignment("Burglary", false)),
 				0.0001f);
 		assertEquals(0.639343, query.getProb(new Assignment("Burglary", true)),
 				0.0001f);
 
-		MultivariateDistribution query2 = naive.queryProb(bn,
-				Arrays.asList("Alarm", "Burglary"),
-				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
+		MultivariateDistribution query2 =
+				naive.queryProb(bn, Arrays.asList("Alarm", "Burglary"),
+						new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.3577609,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -137,23 +138,23 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork2() throws DialException {
+	public void testNetwork2() throws RuntimeException {
 
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 
-		MultivariateDistribution distrib = ve.queryProb(bn,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution distrib =
+				ve.queryProb(bn, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.713676, distrib.getProb(new Assignment("Burglary", false)),
 				0.0001f);
 		assertEquals(0.286323, distrib.getProb(new Assignment("Burglary", true)),
 				0.0001f);
 
-		MultivariateDistribution query2 = ve.queryProb(bn,
-				Arrays.asList("Alarm", "Burglary"),
-				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
+		MultivariateDistribution query2 =
+				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
+						Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.623974,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -161,22 +162,23 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork2bis() throws DialException {
+	public void testNetwork2bis() throws RuntimeException {
 
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution query = ve.queryProb(bn, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query =
+				ve.queryProb(bn, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.360657, query.getProb(new Assignment("Burglary", false)),
 				0.0001f);
 		assertEquals(0.63934, query.getProb(new Assignment("Burglary", true)),
 				0.0001f);
 
-		MultivariateDistribution query2 = ve.queryProb(bn,
-				Arrays.asList("Alarm", "Burglary"),
-				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
+		MultivariateDistribution query2 =
+				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
+						Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.3577609,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -184,22 +186,23 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork3bis() throws DialException {
+	public void testNetwork3bis() throws RuntimeException {
 
 		SamplingAlgorithm is = new SamplingAlgorithm(5000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution query = is.queryProb(bn, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query =
+				is.queryProb(bn, Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.362607f, query.getProb(new Assignment("Burglary", false)),
 				0.06f);
 		assertEquals(0.637392, query.getProb(new Assignment("Burglary", true)),
 				0.06f);
 
-		MultivariateDistribution query2 = is.queryProb(bn,
-				Arrays.asList("Alarm", "Burglary"),
-				new Assignment(Arrays.asList("Alarm", "MaryCalls")));
+		MultivariateDistribution query2 =
+				is.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
+						Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.35970f,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -207,7 +210,7 @@ public class InferenceTest {
 	}
 
 	/**
-	 * @Test public void conditionalProbsTest() throws DialException {
+	 * @Test public void conditionalProbsTest() throws RuntimeException {
 	 * 
 	 *       BNetwork bn2 = NetworkExamples.constructBasicNetwork2(); NaiveInference
 	 *       naive = new NaiveInference(); ProbQuery query = new ProbQuery(bn2,
@@ -234,7 +237,7 @@ public class InferenceTest {
 	 */
 
 	@Test
-	public void testNetworkUtil() throws DialException {
+	public void testNetworkUtil() throws RuntimeException {
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 
 		VariableElimination ve = new VariableElimination();
@@ -288,7 +291,7 @@ public class InferenceTest {
 						Arrays.asList("Action"),
 						new Assignment(new Assignment("JohnCalls"), new Assignment(
 								"MaryCalls"))).getUtil(
-						new Assignment("Action", "DoNothing")), 1.0);
+						new Assignment("Action", "DoNothing")), 1.2);
 
 		assertEquals(
 				-0.1667,
@@ -342,14 +345,15 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testSwitching() throws DialException {
+	public void testSwitching() throws RuntimeException {
 		int oldFactor = SwitchingAlgorithm.MAX_BRANCHING_FACTOR;
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = 4;
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution distrib = (new SwitchingAlgorithm()).queryProb(
-				network, Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution distrib =
+				(new SwitchingAlgorithm()).queryProb(network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
 		ChanceNode n1 = new ChanceNode("n1");
@@ -365,17 +369,19 @@ public class InferenceTest {
 		network.getNode("Alarm").addInputNode(n2);
 		network.getNode("Alarm").addInputNode(n3);
 
-		distrib = (new SwitchingAlgorithm()).queryProb(network,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		distrib =
+				(new SwitchingAlgorithm()).queryProb(network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertEquals(EmpiricalDistribution.class, distrib.getClass());
 
 		network.removeNode(n1.getId());
 		network.removeNode(n2.getId());
 
-		distrib = (new SwitchingAlgorithm()).queryProb(network,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		distrib =
+				(new SwitchingAlgorithm()).queryProb(network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
 		n1 = new ChanceNode("n1");
@@ -389,16 +395,17 @@ public class InferenceTest {
 		network.getNode("Earthquake").addInputNode(n1);
 		network.getNode("Earthquake").addInputNode(n2);
 
-		distrib = (new SwitchingAlgorithm().queryProb(network,
-				Arrays.asList("Burglary"),
-				new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
+		distrib =
+				(new SwitchingAlgorithm().queryProb(network,
+						Arrays.asList("Burglary"),
+						new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
 		assertTrue(distrib instanceof EmpiricalDistribution);
 
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = oldFactor;
 	}
 
 	/**
-	 * @Test public void specialUtilQueryTest() throws DialException {
+	 * @Test public void specialUtilQueryTest() throws RuntimeException {
 	 * 
 	 *       BNetwork network = new BNetwork(); ChanceNode n = new ChanceNode("s");
 	 *       n.addProb(ValueFactory.create("val1"), 0.3);

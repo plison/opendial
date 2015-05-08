@@ -23,10 +23,10 @@
 
 package opendial.domains.rules.parameters;
 
+import java.util.Collections;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.logging.Logger;
 
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 
 /**
@@ -38,7 +38,7 @@ import opendial.datastructs.Assignment;
 public class FixedParameter implements Parameter {
 
 	// logger
-	public static Logger log = new Logger("FixedParameter", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the parameter value
 	double param;
@@ -78,7 +78,7 @@ public class FixedParameter implements Parameter {
 	 */
 	@Override
 	public Collection<String> getVariables() {
-		return new LinkedList<String>();
+		return Collections.emptySet();
 	}
 
 	/**

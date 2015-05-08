@@ -31,6 +31,7 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -45,13 +46,12 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import net.java.balloontip.BalloonTip;
 import opendial.DialogueSystem;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
-import opendial.modules.core.AudioModule;
+import opendial.modules.AudioModule;
 import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
@@ -65,27 +65,29 @@ import opendial.utils.StringUtils;
 public class ChatWindowTab extends JComponent {
 
 	public static final String TAB_TITLE = " Chat Window ";
-	public static final String TAB_TIP = "Chat window listing the user and system utterances";
-	public static final String TIP_TEXT = "<html><br>- To directly enter a user utterance, simply type it in the text field "
-			+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
-			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move to the left</i><br><br>"
-			+ "- To associate the utterance a recognition probability, simply enter the<br>"
-			+ "&nbsp;&nbsp;&nbsp;probability value in parenthesis after the utterance:<br>"
-			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55)</i><br><br>"
-			+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
-			+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
-			+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
-			+ "- To enter an N-best list of user utterances, separate each<br>"
-			+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
-			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
-			+ "do not move left (0.15)</i><br><br>"
-			+ "- Finally, to insert content other than user inputs into the dialogue state (for <br>"
-			+ "&nbsp;&nbsp;&nbsp;instance, contextual variables), you can simply type into the text field:"
-			+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<i>var_name = the_content_to_add</i><br><br>"
-			+ "&nbsp;&nbsp;&nbsp;where <i>var_name</i> is the variable label, and <i>the_content_to_add</i> its value(s),<br>"
-			+ "&nbsp;&nbsp;&nbsp;using the same format as the one described above for user inputs.<br><br></html>";
+	public static final String TAB_TIP =
+			"Chat window listing the user and system utterances";
+	public static final String TIP_TEXT =
+			"<html><br>- To directly enter a user utterance, simply type it in the text field "
+					+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
+					+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move to the left</i><br><br>"
+					+ "- To associate the utterance a recognition probability, simply enter the<br>"
+					+ "&nbsp;&nbsp;&nbsp;probability value in parenthesis after the utterance:<br>"
+					+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55)</i><br><br>"
+					+ "&nbsp;&nbsp;&nbsp;Probability values must be comprised between 0 and 1. When the total<br>"
+					+ "&nbsp;&nbsp;&nbsp;probability is lower than 1, the remaining probability mass is assigned <br>"
+					+ "&nbsp;&nbsp;&nbsp;to a default \"none\" value (i.e. no recognition).<br><br>"
+					+ "- To enter an N-best list of user utterances, separate each<br>"
+					+ "&nbsp;&nbsp;&nbsp;alternative recognition hypothesis with a semicolon, as in:<br>"
+					+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<b>User input: </b><i>now move left (0.55) ; "
+					+ "do not move left (0.15)</i><br><br>"
+					+ "- Finally, to insert content other than user inputs into the dialogue state (for <br>"
+					+ "&nbsp;&nbsp;&nbsp;instance, contextual variables), you can simply type into the text field:"
+					+ "<p style=\"font-size: 2px\">&nbsp;</p>&nbsp;&nbsp;&nbsp;<i>var_name = the_content_to_add</i><br><br>"
+					+ "&nbsp;&nbsp;&nbsp;where <i>var_name</i> is the variable label, and <i>the_content_to_add</i> its value(s),<br>"
+					+ "&nbsp;&nbsp;&nbsp;using the same format as the one described above for user inputs.<br><br></html>";
 
-	public static Logger log = new Logger("ChatWindowTab", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// main chat window
 	HTMLEditorKit kit;
@@ -171,8 +173,8 @@ public class ChatWindowTab extends JComponent {
 	public void enableSpeech(boolean toEnable) {
 		if (inputContainer.getComponentCount() == 3 && toEnable
 				&& system.getModule(AudioModule.class) != null) {
-			SpeechInputPanel panel = new SpeechInputPanel(
-					system.getModule(AudioModule.class));
+			SpeechInputPanel panel =
+					new SpeechInputPanel(system.getModule(AudioModule.class));
 			inputContainer.add(panel, BorderLayout.SOUTH);
 			repaint();
 		}
@@ -224,7 +226,8 @@ public class ChatWindowTab extends JComponent {
 
 		String htmlTable = "";
 		String baseVar = table.getVariable().replace("'", "");
-		htmlTable += "<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
+		htmlTable +=
+				"<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
 
 		if (baseVar.equals(system.getSettings().userInput)) {
 			htmlTable += "<b>[user]</b>";
@@ -236,18 +239,19 @@ public class ChatWindowTab extends JComponent {
 			htmlTable += "[" + baseVar + "]";
 		}
 		htmlTable += "</font></td>";
-		List<Value> rankedValues = table
-				.getValues()
-				.stream()
-				.sorted((v1, v2) -> Double.compare(table.getProb(v2),
-						table.getProb(v1))).collect(Collectors.toList());
+		List<Value> rankedValues =
+				table.getValues()
+						.stream()
+						.sorted((v1, v2) -> Double.compare(table.getProb(v2),
+								table.getProb(v1))).collect(Collectors.toList());
 		for (Value value : rankedValues) {
 			if (!(value instanceof NoneVal)) {
 				htmlTable += "<td><font size=4>";
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content += " (" + StringUtils.getShortForm(table.getProb(value))
-							+ ")";
+					content +=
+							" (" + StringUtils.getShortForm(table.getProb(value))
+									+ ")";
 				}
 				if (system.getSettings().varsToMonitor.contains(baseVar)) {
 					content = "<i>" + content + "</i>";
@@ -255,8 +259,8 @@ public class ChatWindowTab extends JComponent {
 				htmlTable += content + "</font></td></tr><tr><td></td>";
 			}
 		}
-		htmlTable = htmlTable.substring(0, htmlTable.length() - 13)
-				+ "</table></p>\n";
+		htmlTable =
+				htmlTable.substring(0, htmlTable.length() - 13) + "</table></p>\n";
 
 		return htmlTable;
 	}
@@ -293,8 +297,9 @@ public class ChatWindowTab extends JComponent {
 		updateActivation();
 		if (updatedVars.contains(system.getSettings().userInput)
 				&& state.hasChanceNode(system.getSettings().userInput)) {
-			CategoricalTable distrib = state.queryProb(
-					system.getSettings().userInput, false).toDiscrete();
+			CategoricalTable distrib =
+					state.queryProb(system.getSettings().userInput, false)
+							.toDiscrete();
 			showVariable(distrib);
 		}
 		if (updatedVars.contains(system.getSettings().systemOutput)

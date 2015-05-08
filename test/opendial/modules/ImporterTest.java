@@ -22,15 +22,13 @@
 
 package opendial.modules;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.modules.core.DialogueImporter;
-import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;
@@ -40,7 +38,7 @@ import org.junit.Test;
 public class ImporterTest {
 
 	// logger
-	public static Logger log = new Logger("ImporterTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static String domainFile = "test/domains/domain-woz.xml";
 	public static String dialogueFile = "test/domains/woz-dialogue.xml";
@@ -48,13 +46,14 @@ public class ImporterTest {
 	public static String dialogueFile2 = "test/domains/dialogue.xml";
 
 	@Test
-	public void testImporter() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+	public void testImporter() throws RuntimeException, InterruptedException {
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 		Settings.nbSamples = Settings.nbSamples / 10;
-		DialogueImporter importer = new DialogueImporter(system,
-				XMLInteractionReader.extractInteraction(dialogueFile));
+		DialogueImporter importer =
+				new DialogueImporter(system,
+						XMLInteractionReader.extractInteraction(dialogueFile));
 		system.startSystem();
 		importer.start();
 		while (importer.isAlive()) {
@@ -69,13 +68,14 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter2() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+	public void testImporter2() throws RuntimeException, InterruptedException {
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 		Settings.nbSamples = Settings.nbSamples / 10;
-		DialogueImporter importer = new DialogueImporter(system,
-				XMLInteractionReader.extractInteraction(dialogueFile));
+		DialogueImporter importer =
+				new DialogueImporter(system,
+						XMLInteractionReader.extractInteraction(dialogueFile));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();
@@ -92,12 +92,13 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter3() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile2));
+	public void testImporter3() throws RuntimeException, InterruptedException {
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		system.getSettings().showGUI = false;
-		DialogueImporter importer = new DialogueImporter(system,
-				XMLInteractionReader.extractInteraction(dialogueFile2));
+		DialogueImporter importer =
+				new DialogueImporter(system,
+						XMLInteractionReader.extractInteraction(dialogueFile2));
 		system.startSystem();
 		importer.start();
 		while (importer.isAlive()) {
@@ -114,14 +115,15 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter4() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile2));
+	public void testImporter4() throws RuntimeException, InterruptedException {
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		Settings.nbSamples = Settings.nbSamples * 3;
 		Settings.maxSamplingTime = Settings.maxSamplingTime * 3;
 		system.getSettings().showGUI = false;
-		DialogueImporter importer = new DialogueImporter(system,
-				XMLInteractionReader.extractInteraction(dialogueFile2));
+		DialogueImporter importer =
+				new DialogueImporter(system,
+						XMLInteractionReader.extractInteraction(dialogueFile2));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();

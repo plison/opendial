@@ -33,11 +33,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
@@ -58,7 +57,7 @@ import opendial.utils.StringUtils;
 public abstract class BNode implements Comparable<BNode> {
 
 	// logger
-	public static Logger log = new Logger("BNode", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// unique identifier for the node
 	protected String nodeId;
@@ -137,8 +136,10 @@ public abstract class BNode implements Comparable<BNode> {
 			log.warning("node " + inputNodeId + " is not an input node for "
 					+ nodeId);
 		}
-		boolean removal1 = inputNodes.containsKey(inputNodeId)
-				&& inputNodes.get(inputNodeId).removeOutputNode_internal(nodeId);
+		boolean removal1 =
+				inputNodes.containsKey(inputNodeId)
+						&& inputNodes.get(inputNodeId).removeOutputNode_internal(
+								nodeId);
 		boolean removal2 = removeInputNode_internal(inputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -168,8 +169,10 @@ public abstract class BNode implements Comparable<BNode> {
 			log.warning("node " + outputNodeId + " is not an input node for "
 					+ nodeId);
 		}
-		boolean removal1 = outputNodes.containsKey(outputNodeId)
-				&& outputNodes.get(outputNodeId).removeInputNode_internal(nodeId);
+		boolean removal1 =
+				outputNodes.containsKey(outputNodeId)
+						&& outputNodes.get(outputNodeId).removeInputNode_internal(
+								nodeId);
 		boolean removal2 = removeOutputNode_internal(outputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -635,7 +638,7 @@ public abstract class BNode implements Comparable<BNode> {
 			return possibleInputValues.linearise();
 		}
 		catch (OutOfMemoryError e) {
-			log.debug("input node is: " + nodeId + " and possibleInputValues: "
+			log.fine("input node is: " + nodeId + " and possibleInputValues: "
 					+ possibleInputValues);
 			throw e;
 		}
@@ -650,9 +653,9 @@ public abstract class BNode implements Comparable<BNode> {
 	 * subclasses.
 	 * 
 	 * @return the copy of the node
-	 * @throws DialException if the copy operation failed
+	 * @throws RuntimeException if the copy operation failed
 	 */
-	public abstract BNode copy() throws DialException;
+	public abstract BNode copy() throws RuntimeException;
 
 	/**
 	 * Compares the node to other nodes, in order to derive the topological order of
@@ -804,7 +807,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	protected void addOutputNode_internal(BNode outputNode) {
 		if (outputNodes.containsKey(outputNode.getId())) {
-			log.debug("node " + outputNode.getId()
+			log.fine("node " + outputNode.getId()
 					+ " already included in the output nodes of " + nodeId);
 		}
 		else {

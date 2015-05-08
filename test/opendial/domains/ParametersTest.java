@@ -23,6 +23,8 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -30,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.UtilityTable;
@@ -45,7 +45,7 @@ import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.SingleParameter;
 import opendial.inference.approximate.SamplingAlgorithm;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLStateReader;
 
@@ -54,7 +54,7 @@ import org.junit.Test;
 public class ParametersTest {
 
 	// logger
-	public static Logger log = new Logger("ParametersTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//testwithparams.xml";
 	public static final String domainFile2 = "test//domains//testwithparams2.xml";
@@ -83,7 +83,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam1() throws DialException, InterruptedException {
+	public void testParam1() throws RuntimeException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 
@@ -100,9 +100,9 @@ public class ParametersTest {
 		inference.checkCDF(system.getState(), "theta_2", 2, 0.5);
 
 		system.startSystem();
-		system.addContent(new Assignment("u_u", "hello there"));
-		UtilityTable utils = ((new SamplingAlgorithm()).queryUtil(system.getState(),
-				"u_m'"));
+		system.addContent("u_u", "hello there");
+		UtilityTable utils =
+				((new SamplingAlgorithm()).queryUtil(system.getState(), "u_m'"));
 		assertTrue(utils
 				.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) > 0);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
@@ -115,7 +115,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam2() throws DialException, InterruptedException {
+	public void testParam2() throws RuntimeException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 
@@ -129,7 +129,7 @@ public class ParametersTest {
 		inference.checkCDF(system.getState(), "theta_3", 0.95, 1.0);
 
 		system.startSystem();
-		system.addContent(new Assignment("u_u", "brilliant"));
+		system.addContent("u_u", "brilliant");
 		IndependentProbDistribution distrib = system.getContent("a_u");
 
 		assertEquals(0.8, distrib.getProb("Approval"), 0.05);
@@ -137,24 +137,25 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam3() throws DialException, InterruptedException {
+	public void testParam3() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0).getRules());
+		List<Rule> rules =
+				new ArrayList<Rule>(domain1.getModels().get(0).getRules());
 		RuleOutput outputs = rules.get(1).getOutput(new Assignment("u_u", "no no"));
 		Effect o = new Effect(new BasicEffect("a_u", "Disapproval"));
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
-		Assignment input = new Assignment("theta_4",
-				ValueFactory.create("[0.36, 0.64]"));
+		Assignment input =
+				new Assignment("theta_4", ValueFactory.create("[0.36, 0.64]"));
 		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "no no"));
+		system.addContent("u_u", "no no");
 		assertEquals(0.36, system.getState().queryProb("theta_4").toContinuous()
 				.getFunction().getMean()[0], 0.1);
 
@@ -163,62 +164,65 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void paramTest4() throws DialException, InterruptedException {
+	public void paramTest4() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1).getRules());
-		RuleOutput outputs = rules.get(0).getOutput(
-				new Assignment("u_u", "my name is"));
+		List<Rule> rules =
+				new ArrayList<Rule>(domain1.getModels().get(1).getRules());
+		RuleOutput outputs =
+				rules.get(0).getOutput(new Assignment("u_u", "my name is"));
 		Effect o = new Effect(new BasicEffect("u_u^p", "Pierre"));
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
-		Assignment input = new Assignment("theta_5",
-				ValueFactory.create("[0.36, 0.24, 0.40]"));
+		Assignment input =
+				new Assignment("theta_5", ValueFactory.create("[0.36, 0.24, 0.40]"));
 		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "my name is"));
+		system.addContent("u_u", "my name is");
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "Pierre"));
+		system.addContent("u_u", "Pierre");
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "my name is"));
+		system.addContent("u_u", "my name is");
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "Pierre"));
+		system.addContent("u_u", "Pierre");
 
 		assertEquals(0.3, system.getState().queryProb("theta_5").toContinuous()
 				.getFunction().getMean()[0], 0.12);
 	}
 
 	@Test
-	public void testParam5() throws DialException, InterruptedException {
+	public void testParam5() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0).getRules());
-		RuleOutput outputs = rules.get(0).getOutput(
-				new Assignment("u_u", "brilliant"));
+		List<Rule> rules =
+				new ArrayList<Rule>(domain2.getModels().get(0).getRules());
+		RuleOutput outputs =
+				rules.get(0).getOutput(new Assignment("u_u", "brilliant"));
 		Effect o = new Effect(new BasicEffect("a_u", "Approval"));
 		assertTrue(outputs.getParameter(o) instanceof ComplexParameter);
-		Assignment input = new Assignment(new Assignment("theta_6", 2.1),
-				new Assignment("theta_7", 1.3));
+		Assignment input =
+				new Assignment(new Assignment("theta_6", 2.1), new Assignment(
+						"theta_7", 1.3));
 		assertEquals(3.4, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(new Assignment("u_u", "brilliant"));
+		system.addContent("u_u", "brilliant");
 
 		assertEquals(1.0, system.getState().queryProb("theta_6").toContinuous()
 				.getFunction().getMean()[0], 0.08);

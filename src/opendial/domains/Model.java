@@ -23,13 +23,13 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
 import opendial.state.DialogueState;
@@ -44,7 +44,7 @@ import opendial.state.DialogueState;
  */
 public class Model {
 
-	static Logger log = new Logger("Model", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// identifier for the model
 	String id;
@@ -162,7 +162,7 @@ public class Model {
 			try {
 				state.applyRule(r);
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("rule " + r.getRuleId() + " could not be applied: "
 						+ e.toString());
 			}
@@ -244,8 +244,9 @@ public class Model {
 		for (Template trigger : triggers) {
 			str += "(" + trigger + ")" + " v ";
 		}
-		str = str.substring(0, str.length() - 3) + "] with " + rules.size()
-				+ " rules: ";
+		str =
+				str.substring(0, str.length() - 3) + "] with " + rules.size()
+						+ " rules: ";
 
 		for (Rule rule : rules) {
 			str += rule.getRuleId() + ",";

@@ -26,8 +26,6 @@ package opendial.bn.distribs.densityfunctions;
 import java.util.List;
 import java.util.Map;
 
-import opendial.arch.DialException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -46,7 +44,7 @@ public interface DensityFunction {
 	 * 
 	 * @param x the (possibly multivariate) point
 	 * @return the density value for the point
-	 * @throws DialException if the density of x could not be calculated.
+	 * @throws RuntimeException if the density of x could not be calculated.
 	 */
 	public double getDensity(double... x);
 
@@ -103,9 +101,9 @@ public interface DensityFunction {
 	 * 
 	 * @param x the (possibly multivariate) point x
 	 * @return the cumulative probability from 0 to x
-	 * @throws DialException if the CDF could not be extracted
+	 * @throws RuntimeException if the CDF could not be extracted
 	 */
-	public double getCDF(double... x) throws DialException;
+	public double getCDF(double... x) throws RuntimeException;
 
 	/**
 	 * Returns the XML representation (as a list of XML elements) of the density

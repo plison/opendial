@@ -27,11 +27,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
-import opendial.arch.Logger;
 import opendial.bn.values.DoubleVal;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -46,7 +46,7 @@ import opendial.datastructs.Template;
 public class ComplexParameter implements Parameter {
 
 	// logger
-	public static Logger log = new Logger("TemplateParameter", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// template expression for the parameter
 	Template template;
@@ -66,8 +66,9 @@ public class ComplexParameter implements Parameter {
 	 */
 	public ComplexParameter(String expression, Collection<String> unknowns) {
 		template = new Template(expression);
-		this.expression = new ExpressionBuilder(template.getStringWithoutBraces())
-				.variables(template.getSlots()).build();
+		this.expression =
+				new ExpressionBuilder(template.getStringWithoutBraces()).variables(
+						template.getSlots()).build();
 		this.unknowns = new HashSet<String>(unknowns);
 	}
 
@@ -78,13 +79,14 @@ public class ComplexParameter implements Parameter {
 	@Override
 	public double getParameterValue(Assignment input) {
 		if (template.isFilledBy(input)) {
-			Map<String, Double> valueMap = input
-					.getEntrySet()
-					.stream()
-					.filter(e -> e.getValue() instanceof DoubleVal)
-					.collect(
-							Collectors.toMap(e -> e.getKey(),
-									e -> ((DoubleVal) e.getValue()).getDouble()));
+			Map<String, Double> valueMap =
+					input.getEntrySet()
+							.stream()
+							.filter(e -> e.getValue() instanceof DoubleVal)
+							.collect(
+									Collectors.toMap(e -> e.getKey(),
+											e -> ((DoubleVal) e.getValue())
+													.getDouble()));
 			return expression.setVariables(valueMap).evaluate();
 		}
 		else {

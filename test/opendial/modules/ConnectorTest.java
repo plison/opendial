@@ -28,21 +28,19 @@ import static org.junit.Assert.assertEquals;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.modules.core.DialogueRecorder;
 
 import org.junit.Test;
 
 public class ConnectorTest {
 
 	// logger
-	public static Logger log = new Logger("ConnectorTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void remoteConnection() throws DialException, UnknownHostException,
+	public void remoteConnection() throws RuntimeException, UnknownHostException,
 			InterruptedException {
 		DialogueSystem system1 = new DialogueSystem();
 		system1.getSettings().showGUI = false;

@@ -31,10 +31,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
@@ -66,7 +65,7 @@ import com.att.api.rest.RESTException;
 public class ATTSpeech implements Module {
 
 	// logger
-	public static Logger log = new Logger("ATTSpeech", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Root of the URL for the API */
 	public static final String FQDN = "https://api.att.com";
@@ -90,15 +89,15 @@ public class ATTSpeech implements Module {
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
 	 * @param system the dialogue system to attach
-	 * @throws DialException if the module could not be established
+	 * @throws RuntimeException if the module could not be established
 	 */
-	public ATTSpeech(DialogueSystem system) throws DialException {
+	public ATTSpeech(DialogueSystem system) throws RuntimeException {
 		this.system = system;
-		List<String> missingParams = new LinkedList<String>(Arrays.asList("key",
-				"secret"));
+		List<String> missingParams =
+				new LinkedList<String>(Arrays.asList("key", "secret"));
 		missingParams.removeAll(system.getSettings().params.keySet());
 		if (!missingParams.isEmpty()) {
-			throw new DialException("Missing parameters: " + missingParams);
+			throw new RuntimeException("Missing parameters: " + missingParams);
 		}
 
 		buildClients();
@@ -106,8 +105,11 @@ public class ATTSpeech implements Module {
 		if (system.getSettings().params.containsKey("grammar")) {
 			File f = new File(system.getSettings().params.getProperty("grammar"));
 			if (!f.exists()) {
-				f = new File((new File(system.getDomain().getName()).getParent()
-						+ "/" + system.getSettings().params.getProperty("grammar")));
+				f =
+						new File(
+								(new File(system.getDomain().getName()).getParent()
+										+ "/" + system.getSettings().params
+										.getProperty("grammar")));
 			}
 			if (f.exists()) {
 				grammarFile = f;
@@ -130,11 +132,11 @@ public class ATTSpeech implements Module {
 	 * Starts the AT&amp;T speech plugin.
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException("AT&T connection requires access to the GUI");
+			throw new RuntimeException("AT&T connection requires access to the GUI");
 		}
 	}
 
@@ -193,8 +195,8 @@ public class ATTSpeech implements Module {
 		log.info("calling AT&T server for recognition...\t");
 		try {
 
-			APIResponse apiResponse = asrClient.httpPost(grammarFile, stream,
-					stream.getFormat());
+			APIResponse apiResponse =
+					asrClient.httpPost(grammarFile, stream, stream.getFormat());
 
 			JSONObject object = new JSONObject(apiResponse.getResponseBodyStr());
 			JSONObject recognition = object.getJSONObject("Recognition");
@@ -258,29 +260,31 @@ public class ATTSpeech implements Module {
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
 	 * 
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
-	private void buildClients() throws DialException {
+	private void buildClients() throws RuntimeException {
 
 		String key = system.getSettings().params.getProperty("key");
 		String secret = system.getSettings().params.getProperty("secret");
 		try {
 			// Create service for interacting with the Speech api
 			OAuthService osrvc = new OAuthService(FQDN, key, secret);
-			asrClient = new RESTClient(FQDN + "/speech/v3/speechToTextCustom")
-					.addAuthorizationHeader(osrvc.getToken("STTC"))
-					.addHeader("Accept", "application/json")
-					.addHeader("X-Arg", "HasMultipleNBest=true");
+			asrClient =
+					new RESTClient(FQDN + "/speech/v3/speechToTextCustom")
+							.addAuthorizationHeader(osrvc.getToken("STTC"))
+							.addHeader("Accept", "application/json")
+							.addHeader("X-Arg", "HasMultipleNBest=true");
 
-			ttsClient = new RESTClient(FQDN + "/speech/v3/textToSpeech")
-					.addAuthorizationHeader(osrvc.getToken("TTS"))
-					.addHeader("Content-Type", "text/plain")
-					.addHeader("Accept", "audio/x-wav");
+			ttsClient =
+					new RESTClient(FQDN + "/speech/v3/textToSpeech")
+							.addAuthorizationHeader(osrvc.getToken("TTS"))
+							.addHeader("Content-Type", "text/plain")
+							.addHeader("Accept", "audio/x-wav");
 
 		}
 		catch (RESTException e) {
 			log.warning("Thrown exception: " + e);
-			throw new DialException(
+			throw new RuntimeException(
 					"Cannot access AT&T API with the following credentials: " + key
 							+ " --> " + secret);
 		}

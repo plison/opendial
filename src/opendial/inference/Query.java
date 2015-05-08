@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.UtilityNode;
@@ -44,7 +44,7 @@ import opendial.datastructs.Assignment;
  */
 public abstract class Query {
 
-	public static Logger log = new Logger("Query", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Representation of a probability query P(queryVars | evidence) on a specific

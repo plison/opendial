@@ -23,6 +23,8 @@
 
 package opendial.domains.rules.effects;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,8 +34,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -54,7 +54,7 @@ import opendial.domains.rules.conditions.VoidCondition;
 public final class Effect implements Value {
 
 	// logger
-	static Logger log = new Logger("Effect", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the sub-effects included in the effect
 	final Set<BasicEffect> subeffects;
@@ -126,21 +126,22 @@ public final class Effect implements Value {
 		if (isFullyGrounded()) {
 			return this;
 		}
-		List<BasicEffect> grounded = subeffects.stream()
-				.map(e -> e.ground(grounding)).filter(e -> !e.containsSlots())
-				.collect(Collectors.toList());
+		List<BasicEffect> grounded =
+				subeffects.stream().map(e -> e.ground(grounding))
+						.filter(e -> !e.containsSlots())
+						.collect(Collectors.toList());
 		return new Effect(grounded);
 	}
 
 	@Override
-	public Value concatenate(Value v) throws DialException {
+	public Value concatenate(Value v) throws RuntimeException {
 		if (v instanceof Effect) {
 			Collection<BasicEffect> effects = new ArrayList<BasicEffect>(subeffects);
 			effects.addAll(((Effect) v).getSubEffects());
 			return new Effect(effects);
 		}
 		else {
-			throw new DialException("cannot concatenate " + this + " and " + v);
+			throw new RuntimeException("cannot concatenate " + this + " and " + v);
 		}
 	}
 
@@ -250,9 +251,10 @@ public final class Effect implements Value {
 				equivalentCondition = conditions.get(0);
 			}
 			else {
-				equivalentCondition = new ComplexCondition(conditions, (this
-						.getOutputVariables().size() == 1) ? BinaryOperator.OR
-						: BinaryOperator.AND);
+				equivalentCondition =
+						new ComplexCondition(conditions, (this.getOutputVariables()
+								.size() == 1) ? BinaryOperator.OR
+								: BinaryOperator.AND);
 			}
 		}
 		return equivalentCondition;

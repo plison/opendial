@@ -23,6 +23,8 @@
 
 package opendial.utils;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
@@ -43,7 +44,7 @@ import opendial.datastructs.Assignment;
 public class CombinatoricsUtils {
 
 	// logger
-	public static Logger log = new Logger("CombinatoricsUtils", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Generates all possible assignment combinations from the set of values provided
@@ -68,17 +69,20 @@ public class CombinatoricsUtils {
 			// combination
 			for (String label : valuesMatrix.keySet()) {
 				Set<Value> values = valuesMatrix.get(label);
-				assignments = assignments
-						.stream()
-						.flatMap(
-								a -> values.stream()
-										.map(v -> new Assignment(a, label, v))
-										.sequential()).collect(Collectors.toSet());
+				assignments =
+						assignments
+								.stream()
+								.flatMap(
+										a -> values
+												.stream()
+												.map(v -> new Assignment(a, label, v))
+												.sequential())
+								.collect(Collectors.toSet());
 			}
 			return assignments;
 		}
 		catch (OutOfMemoryError e) {
-			log.debug("out of memory error, initial matrix: " + valuesMatrix);
+			log.fine("out of memory error, initial matrix: " + valuesMatrix);
 			e.printStackTrace();
 			return new HashSet<Assignment>();
 		}
@@ -94,7 +98,7 @@ public class CombinatoricsUtils {
 	public static <T> Set<Set<T>> getPowerset(Set<T> originalSet) {
 		Set<Set<T>> sets = new HashSet<Set<T>>();
 		if (originalSet.size() >= 8) {
-			log.debug("original set is too big, not returning any result");
+			log.fine("original set is too big, not returning any result");
 			return sets;
 		}
 		if (originalSet.isEmpty()) {

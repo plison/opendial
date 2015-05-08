@@ -23,6 +23,8 @@
 
 package opendial.bn.distribs.densityfunctions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,8 +35,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
@@ -51,8 +51,7 @@ import org.w3c.dom.Element;
 public class KernelDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("KernelDensityFunction",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// bandwidth for the kernel
 	final double[] bandwidths;
@@ -82,12 +81,13 @@ public class KernelDensityFunction implements DensityFunction {
 	public KernelDensityFunction(double[][] points) {
 		this.points = points;
 		if (points.length == 0) {
-			throw new DialException("KDE must contain at least one point");
+			throw new RuntimeException("KDE must contain at least one point");
 		}
 		isBounded = shouldBeBounded();
 		bandwidths = estimateBandwidths();
-		samplingDeviation = Arrays.stream(bandwidths)
-				.map(b -> b / Math.pow(bandwidths.length, 2)).toArray();
+		samplingDeviation =
+				Arrays.stream(bandwidths)
+						.map(b -> b / Math.pow(bandwidths.length, 2)).toArray();
 	}
 
 	/**
@@ -119,16 +119,18 @@ public class KernelDensityFunction implements DensityFunction {
 		int dim = (isBounded) ? bandwidths.length - 1 : bandwidths.length;
 
 		// Density of x for a single point in the KDE
-		Function<double[], Double> pointDensity = p -> IntStream
-				.range(0, dim)
-				.mapToDouble(
-						d -> Math.log(kernel.getDensity((x[d] - p[d])
-								/ bandwidths[d])
-								/ bandwidths[d])).sum();
+		Function<double[], Double> pointDensity =
+				p -> IntStream
+						.range(0, dim)
+						.mapToDouble(
+								d -> Math.log(kernel.getDensity((x[d] - p[d])
+										/ bandwidths[d])
+										/ bandwidths[d])).sum();
 
-		double density = Arrays.stream(points)
-				.mapToDouble(p -> Math.exp(pointDensity.apply(p))).sum()
-				/ points.length;
+		double density =
+				Arrays.stream(points)
+						.mapToDouble(p -> Math.exp(pointDensity.apply(p))).sum()
+						/ points.length;
 
 		// bounded support (cf. Jones 1993)
 		if (isBounded) {
@@ -162,8 +164,8 @@ public class KernelDensityFunction implements DensityFunction {
 		double total = 0.0;
 		double shift = 0.0;
 		for (int i = 0; i < centre.length; i++) {
-			newPoint[i] = (sampler.nextGaussian() * samplingDeviation[i])
-					+ centre[i];
+			newPoint[i] =
+					(sampler.nextGaussian() * samplingDeviation[i]) + centre[i];
 			total += newPoint[i];
 			if (newPoint[i] < shift) {
 				shift = newPoint[i];
@@ -173,8 +175,8 @@ public class KernelDensityFunction implements DensityFunction {
 		// step 3: if the density must be bounded, ensure the sum is = 1
 		if (isBounded) {
 			for (int i = 0; i < centre.length; i++) {
-				newPoint[i] = (newPoint[i] - shift)
-						/ (total - shift * centre.length);
+				newPoint[i] =
+						(newPoint[i] - shift) / (total - shift * centre.length);
 			}
 		}
 		return newPoint;
@@ -189,9 +191,9 @@ public class KernelDensityFunction implements DensityFunction {
 	@Override
 	public Map<double[], Double> discretise(int nbBuckets) {
 		int nbToPick = Math.min(nbBuckets, points.length);
-		Map<double[], Double> vals = Arrays.stream(points).distinct()
-				.limit(nbToPick)
-				.collect(Collectors.toMap(p -> p, p -> 1.0 / nbToPick));
+		Map<double[], Double> vals =
+				Arrays.stream(points).distinct().limit(nbToPick)
+						.collect(Collectors.toMap(p -> p, p -> 1.0 / nbToPick));
 		return vals;
 	}
 
@@ -297,13 +299,13 @@ public class KernelDensityFunction implements DensityFunction {
 	 * @return the cumulative probability from 0 to x.
 	 */
 	@Override
-	public double getCDF(double... x) throws DialException {
+	public double getCDF(double... x) throws RuntimeException {
 		if (x.length != getDimensions()) {
-			throw new DialException("Illegal dimensionality: " + x.length + "!="
+			throw new RuntimeException("Illegal dimensionality: " + x.length + "!="
 					+ getDimensions());
 		}
-		double nbOfLowerPoints = Arrays.stream(points)
-				.filter(v -> MathUtils.isLower(v, x)).count();
+		double nbOfLowerPoints =
+				Arrays.stream(points).filter(v -> MathUtils.isLower(v, x)).count();
 		return nbOfLowerPoints / points.length;
 	}
 
@@ -345,8 +347,9 @@ public class KernelDensityFunction implements DensityFunction {
 		double[] stds = getStandardDeviations();
 		double[] silverman = new double[stds.length];
 		for (int i = 0; i < silverman.length; i++) {
-			silverman[i] = 1.06 * stds[i]
-					* Math.pow(points.length, -1 / (4.0 + silverman.length));
+			silverman[i] =
+					1.06 * stds[i]
+							* Math.pow(points.length, -1 / (4.0 + silverman.length));
 			if (silverman[i] == 0.0) {
 				silverman[i] = 0.05;
 			}
@@ -359,7 +362,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * representation.
 	 * 
 	 * @param doc the XML document
-	 * @throws DialException if the XML representation could not be generated
+	 * @throws RuntimeException if the XML representation could not be generated
 	 * 
 	 */
 	@Override

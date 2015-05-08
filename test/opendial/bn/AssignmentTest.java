@@ -24,7 +24,9 @@
 package opendial.bn;
 
 import static org.junit.Assert.assertFalse;
-import opendial.arch.Logger;
+
+import java.util.logging.Logger;
+
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 
@@ -39,18 +41,22 @@ import org.junit.Test;
 public class AssignmentTest {
 
 	// logger
-	public static Logger log = new Logger("AssignmentTest", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
 	public void testAssignInterchance() {
-		Assignment a1 = new Assignment(new Assignment("Burglary", true),
-				"Earthquake", ValueFactory.create(false));
-		Assignment a1bis = new Assignment(new Assignment("Earthquake", false),
-				"Burglary", ValueFactory.create(true));
-		Assignment a2 = new Assignment(new Assignment("Burglary", false),
-				"Earthquake", ValueFactory.create(true));
-		Assignment a2bis = new Assignment(new Assignment("Earthquake", true),
-				"Burglary", ValueFactory.create(false));
+		Assignment a1 =
+				new Assignment(new Assignment("Burglary", true), "Earthquake",
+						ValueFactory.create(false));
+		Assignment a1bis =
+				new Assignment(new Assignment("Earthquake", false), "Burglary",
+						ValueFactory.create(true));
+		Assignment a2 =
+				new Assignment(new Assignment("Burglary", false), "Earthquake",
+						ValueFactory.create(true));
+		Assignment a2bis =
+				new Assignment(new Assignment("Earthquake", true), "Burglary",
+						ValueFactory.create(false));
 		assertFalse(a1.equals(a2));
 		assertFalse(a1.hashCode() == a2.hashCode());
 		assertFalse(a1bis.equals(a2bis));

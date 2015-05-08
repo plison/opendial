@@ -25,9 +25,10 @@ package opendial.modules;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.util.logging.Logger;
+
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.common.InferenceChecks;
 import opendial.domains.Domain;
@@ -38,7 +39,7 @@ import org.junit.Test;
 public class PlanningTest {
 
 	// logger
-	public static Logger log = new Logger("PlanningTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//domain3.xml";
 	public static final String domainFile2 = "test//domains//basicplanning.xml";
@@ -62,7 +63,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning() throws DialException, InterruptedException {
+	public void testPlanning() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -76,7 +77,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning2() throws DialException, InterruptedException {
+	public void testPlanning2() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -88,7 +89,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning3() throws DialException, InterruptedException {
+	public void testPlanning3() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -99,7 +100,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning4() throws DialException, InterruptedException {
+	public void testPlanning4() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain3);
 		system.getSettings().showGUI = false;
@@ -116,7 +117,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning5() throws DialException, InterruptedException {
+	public void testPlanning5() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain3);
 		system.getSettings().showGUI = false;

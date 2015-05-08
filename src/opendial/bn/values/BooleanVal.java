@@ -23,7 +23,7 @@
 
 package opendial.bn.values;
 
-import opendial.arch.Logger;
+import java.util.logging.Logger;
 
 /**
  * Representation of a boolean value.
@@ -35,7 +35,7 @@ import opendial.arch.Logger;
 public final class BooleanVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("BooleanVal", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the boolean
 	final boolean b;

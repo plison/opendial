@@ -23,10 +23,10 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
+
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
@@ -46,7 +46,7 @@ import opendial.datastructs.Assignment;
 public class MarginalDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("MarginalDistribution", Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the conditional distribution P(X|Y1,...Yn, Z1,...Zm)
 	ProbDistribution condDistrib;
@@ -117,7 +117,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting probability
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws DialException {
+	public double getProb(Assignment condition, Value head) throws RuntimeException {
 		double totalProb = 0.0;
 		for (Assignment assign : uncondDistrib.getValues()) {
 			Assignment augmentedCond = new Assignment(condition, assign);
@@ -133,7 +133,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the sampled value for X
 	 */
 	@Override
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 		Assignment augmentedCond = new Assignment(condition, uncondDistrib.sample());
 		return condDistrib.sample(augmentedCond);
 	}
@@ -147,13 +147,13 @@ public class MarginalDistribution implements ProbDistribution {
 	 */
 	@Override
 	public CategoricalTable getProbDistrib(Assignment condition)
-			throws DialException {
+			throws RuntimeException {
 		CategoricalTable result = new CategoricalTable(condDistrib.getVariable());
 		for (Assignment assign : uncondDistrib.getValues()) {
 			double assignProb = uncondDistrib.getProb(assign);
 			Assignment augmentedCond = new Assignment(condition, assign);
-			CategoricalTable subtable = condDistrib.getProbDistrib(augmentedCond)
-					.toDiscrete();
+			CategoricalTable subtable =
+					condDistrib.getProbDistrib(augmentedCond).toDiscrete();
 			for (Value value : subtable.getValues()) {
 				result.incrementRow(value, assignProb * subtable.getProb(value));
 			}
@@ -167,7 +167,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the set of possible values
 	 */
 	@Override
-	public Set<Value> getValues() throws DialException {
+	public Set<Value> getValues() throws RuntimeException {
 		return condDistrib.getValues();
 	}
 
@@ -179,7 +179,8 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		MultivariateTable extended = uncondDistrib.toDiscrete();
 		extended.extendRows(condition);
 		return new MarginalDistribution(condDistrib, extended);
@@ -195,14 +196,6 @@ public class MarginalDistribution implements ProbDistribution {
 		boolean changed = condDistrib.pruneValues(threshold);
 		boolean changed2 = uncondDistrib.pruneValues(threshold);
 		return changed || changed2;
-	}
-
-	/**
-	 * Returns true if the two component distributions are well-formed.
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return (condDistrib.isWellFormed() && uncondDistrib.isWellFormed());
 	}
 
 	/**

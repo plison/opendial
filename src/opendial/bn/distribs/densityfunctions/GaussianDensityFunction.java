@@ -23,13 +23,14 @@
 
 package opendial.bn.distribs.densityfunctions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
 
@@ -48,8 +49,7 @@ import org.w3c.dom.Element;
 public class GaussianDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("GaussianDensityFunction",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the mean of the Gaussian
 	final double[] mean;

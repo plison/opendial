@@ -23,6 +23,8 @@
 
 package opendial.bn.distribs.densityfunctions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.utils.MathUtils;
 
 import org.w3c.dom.Attr;
@@ -47,8 +47,7 @@ import org.w3c.dom.Element;
 public class DirichletDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("DirichletDensityFunction",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// hyper-parameters
 	final double[] alphas;
@@ -272,8 +271,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public double getCDF(double... x) throws DialException {
-		throw new DialException(
+	public double getCDF(double... x) throws RuntimeException {
+		throw new RuntimeException(
 				"currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
 	}
 

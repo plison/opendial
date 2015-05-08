@@ -25,7 +25,6 @@ package opendial.modules;
 
 import java.util.Collection;
 
-import opendial.arch.DialException;
 import opendial.state.DialogueState;
 
 /**
@@ -60,9 +59,9 @@ public interface Module {
 	/**
 	 * Starts the module.
 	 * 
-	 * @throws DialException if the initialisation fails
+	 * @throws RuntimeException if the initialisation fails
 	 */
-	public void start() throws DialException;
+	public void start() throws RuntimeException;
 
 	/**
 	 * Triggers the module after a state update

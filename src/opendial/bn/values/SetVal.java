@@ -23,12 +23,12 @@
 
 package opendial.bn.values;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import opendial.arch.Logger;
 
 /**
  * Value that is defined as a set of values.
@@ -40,7 +40,7 @@ import opendial.arch.Logger;
 public final class SetVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("SetVal", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the set of values
 	final Set<Value> set;

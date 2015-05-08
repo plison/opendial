@@ -23,6 +23,8 @@
 
 package opendial.bn;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.BooleanVal;
@@ -46,7 +47,7 @@ import org.junit.Test;
 public class ValueTest {
 
 	// logger
-	public static Logger log = new Logger("ValueTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * @Test public void mapTest() { String stringVersion =
@@ -59,8 +60,9 @@ public class ValueTest {
 
 	@Test
 	public void testAssign() {
-		Assignment a = Assignment
-				.createFromString("blabla=3 ^ !bloblo^TTT=32.4 ^v=[0.4,0.6] ^ final");
+		Assignment a =
+				Assignment
+						.createFromString("blabla=3 ^ !bloblo^TTT=32.4 ^v=[0.4,0.6] ^ final");
 		assertEquals(5, a.getVariables().size());
 		assertEquals(
 				new HashSet<String>(Arrays.asList("blabla", "bloblo", "TTT", "v",

@@ -23,6 +23,8 @@
 
 package opendial.gui.stateviewer;
 
+import java.util.logging.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -45,7 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.ToolTipManager;
 
-import opendial.arch.Logger;
+import opendial.DialogueSystem;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -85,7 +87,7 @@ import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 public class StateViewer extends VisualizationViewer<String, Integer> {
 
 	// logger
-	public static Logger log = new Logger("StateViewer", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// connection to the top tab including the graph viewer
 	// (necessary to write information to the logging area)
@@ -128,8 +130,10 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		ToolTipManager.sharedInstance().setDismissDelay(1000000000);
 
 		// connects the graph to a custom mouse listener (for selecting nodes)
-		DefaultModalGraphMouse<String, Integer> graphMouse = new DefaultModalGraphMouse<String, Integer>();
+		DefaultModalGraphMouse<String, Integer> graphMouse =
+				new DefaultModalGraphMouse<String, Integer>();
 		graphMouse.setMode(Mode.PICKING);
+
 		graphMouse.add(new PopupHandler(this));
 		setGraphMouse(graphMouse);
 
@@ -166,8 +170,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			}
 
 			CustomLayoutTransformer transformer = new CustomLayoutTransformer(ds);
-			StaticLayout<String, Integer> layout = new StaticLayout<String, Integer>(
-					f, transformer);
+			StaticLayout<String, Integer> layout =
+					new StaticLayout<String, Integer>(f, transformer);
 
 			layout.setSize(new Dimension(600, 600));
 
@@ -254,8 +258,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * Updates the viewer with the current state.
 	 */
 	private void update() {
-		Layout<String, Integer> layout = getGraphLayout(currentState,
-				tab.showParameters());
+		Layout<String, Integer> layout =
+				getGraphLayout(currentState, tab.showParameters());
 		setGraphLayout(layout);
 		updateDistribs();
 	}
@@ -269,7 +273,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			super.paintComponent(g);
 		}
 		catch (NullPointerException e) {
-			log.debug("cannot repaint state viewer, waiting for next update: ");
+			log.fine("cannot repaint state viewer, waiting for next update: ");
 			e.printStackTrace();
 			isUpdating = false;
 			// tab.trigger(currentState, currentState.getChanceNodeIds());
@@ -301,8 +305,9 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * @param vertical vertical offset
 	 */
 	public void translate(int horizontal, int vertical) {
-		MutableTransformer modelTransformer = getRenderContext()
-				.getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
+		MutableTransformer modelTransformer =
+				getRenderContext().getMultiLayerTransformer().getTransformer(
+						Layer.LAYOUT);
 		try {
 			int dx = -vertical;
 			int dy = horizontal;
@@ -348,8 +353,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	public void displayDistrib(String queryVar) {
 		if (!shownDistribs.containsKey(queryVar)) {
 			IndependentProbDistribution distrib = currentState.queryProb(queryVar);
-			DistributionViewer viewer = new DistributionViewer(currentState,
-					queryVar, this);
+			DistributionViewer viewer =
+					new DistributionViewer(currentState, queryVar, this);
 			shownDistribs.put(distrib.getVariable(), viewer);
 		}
 	}
@@ -361,6 +366,15 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		for (String queryVar : shownDistribs.keySet()) {
 			shownDistribs.get(queryVar).update(currentState);
 		}
+	}
+
+	/**
+	 * Returns a pointer to the dialogue system.
+	 * 
+	 * @return the dialogue system
+	 */
+	public DialogueSystem getSystem() {
+		return getStateMonitorTab().getMainFrame().getSystem();
 	}
 
 	/**
@@ -376,18 +390,20 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			BNode node = getBNode(nodeGraphId);
 			if (node != null) {
 				String prettyPrintNode = node.toString();
-				String htmlDistrib = "<html>&nbsp;&nbsp;"
-						+ prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
-								+ "<br>&nbsp;&nbsp;") + "<br></html>";
-				htmlDistrib = htmlDistrib
-						.replace("if", "<b>if</b>")
-						.replace("then",
-								"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-						.replace("else",
-								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-						.replace(
-								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
-								"<b>else if</b>");
+				String htmlDistrib =
+						"<html>&nbsp;&nbsp;"
+								+ prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
+										+ "<br>&nbsp;&nbsp;") + "<br></html>";
+				htmlDistrib =
+						htmlDistrib
+								.replace("if", "<b>if</b>")
+								.replace("then",
+										"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+								.replace("else",
+										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+								.replace(
+										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
+										"<b>else if</b>");
 				return StringUtils.getHtmlRendering(htmlDistrib);
 			}
 			else {

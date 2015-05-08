@@ -23,6 +23,8 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Intervals;
@@ -48,7 +48,7 @@ import opendial.utils.StringUtils;
 public class MultivariateTable implements MultivariateDistribution {
 
 	// logger
-	public static Logger log = new Logger("MultivariateTable", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the head variables
 	Set<String> headVars;
@@ -276,10 +276,10 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * (due to e.g. an ill-formed distribution), returns an empty assignment.
 	 * 
 	 * @return the sampled assignment
-	 * @throws DialException if no assignment could be sampled
+	 * @throws RuntimeException if no assignment could be sampled
 	 */
 	@Override
-	public Assignment sample() throws DialException {
+	public Assignment sample() throws RuntimeException {
 
 		if (intervals == null) {
 			intervals = new Intervals<Assignment>(table);
@@ -325,8 +325,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	 */
 	public MultivariateTable getNBest(int nbest) {
 
-		Map<Assignment, Double> filteredTable = InferenceUtils
-				.getNBest(table, nbest);
+		Map<Assignment, Double> filteredTable =
+				InferenceUtils.getNBest(table, nbest);
 		return new MultivariateTable(filteredTable);
 	}
 
@@ -398,14 +398,13 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
-	@Override
 	public boolean isWellFormed() {
 
 		// checks that the total probability is roughly equal to 1.0f
-		double totalProb = countTotalProb()
-				+ getProb(Assignment.createDefault(headVars));
+		double totalProb =
+				countTotalProb() + getProb(Assignment.createDefault(headVars));
 		if (totalProb < 0.9f || totalProb > 1.1f) {
-			log.debug("total probability is " + totalProb);
+			log.fine("total probability is " + totalProb);
 			return false;
 		}
 
@@ -420,8 +419,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	@Override
 	public String toString() {
 
-		Map<Assignment, Double> sortedTable = InferenceUtils.getNBest(table,
-				Math.max(table.size(), 1));
+		Map<Assignment, Double> sortedTable =
+				InferenceUtils.getNBest(table, Math.max(table.size(), 1));
 
 		String str = "";
 		for (Entry<Assignment, Double> entry : sortedTable.entrySet()) {

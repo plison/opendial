@@ -23,7 +23,8 @@
 
 package opendial.inference.approximate;
 
-import opendial.arch.Logger;
+import java.util.logging.*;
+
 import opendial.datastructs.Assignment;
 
 /**
@@ -37,7 +38,7 @@ import opendial.datastructs.Assignment;
 public class Sample extends Assignment implements Comparable<Sample> {
 
 	// logger
-	public static Logger log = new Logger("WeightedSample", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// logarithmic weight (+- equiv. of probability)
 	double logWeight = 0.0f;

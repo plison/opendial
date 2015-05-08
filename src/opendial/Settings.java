@@ -21,8 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.arch;
+package opendial;
 
+import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,22 +53,25 @@ import org.w3c.dom.Element;
 public class Settings {
 
 	// logger
-	public static Logger log = new Logger("Settings", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Default settings */
 	public static final String SETTINGS_FILE = "resources//settings.xml";
 
 	/** maximum number of samples to use for likelihood weighting */
-	public static int nbSamples = 3000;
+	public static int nbSamples;
 
 	/** maximum sampling time (in milliseconds) */
-	public static long maxSamplingTime = 250;
+	public static long maxSamplingTime;
 
 	/** Number of discretisation buckets to convert continuous distributions */
 	public static int discretisationBuckets = 50;
 
 	/** Whether to show the GUI */
 	public boolean showGUI;
+
+	/** Variable label for the conversational floor */
+	public String floor;
 
 	/** Variable label for the user speech signal */
 	public String userSpeech;
@@ -127,6 +131,10 @@ public class Settings {
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
 		explicitSettings.clear();
 		selectAudioMixers();
+
+		System.getProperties().setProperty(
+				"java.util.logging.SimpleFormatter.format", "[%3$s] %4$s: %5$s %n");
+
 	}
 
 	private void selectAudioMixers() {
@@ -178,6 +186,9 @@ public class Settings {
 			}
 			else if (key.equalsIgnoreCase("speech_system")) {
 				systemSpeech = mapping.getProperty(key);
+			}
+			else if (key.equalsIgnoreCase("floor")) {
+				floor = mapping.getProperty(key);
 			}
 			else if (key.equalsIgnoreCase("system")) {
 				systemOutput = mapping.getProperty(key);
@@ -241,7 +252,7 @@ public class Settings {
 							if (!modules.contains(clazz)) {
 								log.warning("class " + split[i].trim()
 										+ " is not a module");
-								log.debug("interfaces "
+								log.fine("interfaces "
 										+ Arrays.asList(clazz.getInterfaces()));
 							}
 						}
@@ -272,6 +283,7 @@ public class Settings {
 		mapping.setProperty("gui", "" + showGUI);
 		mapping.setProperty("speech_user", "" + userSpeech);
 		mapping.setProperty("speech_system", "" + systemSpeech);
+		mapping.setProperty("floor", "" + floor);
 		mapping.setProperty("user", "" + userInput);
 		mapping.setProperty("system", "" + systemOutput);
 		mapping.setProperty("inputmixer", "" + inputMixer);
@@ -309,9 +321,9 @@ public class Settings {
 	 * 
 	 * @param doc the document to which the element must comply
 	 * @return the resulting XML element
-	 * @throws DialException if the XML generation failed
+	 * @throws RuntimeException if the XML generation failed
 	 */
-	public Element generateXML(Document doc) throws DialException {
+	public Element generateXML(Document doc) throws RuntimeException {
 
 		Element root = doc.createElement("settings");
 

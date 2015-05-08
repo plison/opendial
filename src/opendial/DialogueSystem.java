@@ -27,30 +27,30 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
 import opendial.gui.TextOnlyInterface;
+import opendial.modules.AudioModule;
+import opendial.modules.DialogueImporter;
+import opendial.modules.DialogueRecorder;
+import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
-import opendial.modules.core.AudioModule;
-import opendial.modules.core.DialogueImporter;
-import opendial.modules.core.DialogueRecorder;
-import opendial.modules.core.ForwardPlanner;
-import opendial.modules.core.RemoteConnector;
+import opendial.modules.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
@@ -77,7 +77,7 @@ import opendial.state.DialogueState;
 public class DialogueSystem {
 
 	// logger
-	public static Logger log = new Logger("DialogueSystem", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the dialogue state
 	protected DialogueState curState;
@@ -104,9 +104,10 @@ public class DialogueSystem {
 	/**
 	 * Creates a new dialogue system with an empty dialogue system
 	 * 
-	 * @throws DialException if the system could not be created
+	 * @throws RuntimeException if the system could not be created
 	 */
-	public DialogueSystem() throws DialException {
+	public DialogueSystem() throws RuntimeException {
+
 		settings = new Settings();
 		curState = new DialogueState();
 
@@ -117,15 +118,16 @@ public class DialogueSystem {
 		modules.add(new RemoteConnector(this));
 		modules.add(new ForwardPlanner(this));
 		domain = new Domain();
+
 	}
 
 	/**
 	 * Creates a new dialogue system with the provided dialogue domain
 	 * 
 	 * @param domain the dialogue domain to employ
-	 * @throws DialException if the system could not be created
+	 * @throws RuntimeException if the system could not be created
 	 */
-	public DialogueSystem(Domain domain) throws DialException {
+	public DialogueSystem(Domain domain) throws RuntimeException {
 		this();
 		changeDomain(domain);
 	}
@@ -144,7 +146,7 @@ public class DialogueSystem {
 					module.pause(false);
 				}
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("could not start module "
 						+ module.getClass().getCanonicalName() + ": " + e);
 				modules.remove(module);
@@ -160,9 +162,9 @@ public class DialogueSystem {
 	 * Changes the dialogue domain for the dialogue domain
 	 * 
 	 * @param domain the dialogue domain to employ
-	 * @throws DialException if the system could not be created
+	 * @throws RuntimeException if the system could not be created
 	 */
-	public void changeDomain(Domain domain) throws DialException {
+	public void changeDomain(Domain domain) throws RuntimeException {
 		this.domain = domain;
 		changeSettings(domain.getSettings());
 		curState = domain.getInitialState().copy();
@@ -188,7 +190,7 @@ public class DialogueSystem {
 			try {
 				module.start();
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("could not start module "
 						+ module.getClass().getCanonicalName());
 				modules.remove(module);
@@ -281,7 +283,7 @@ public class DialogueSystem {
 
 		for (Class<Module> toAttach : settings.modules) {
 			if (getModule(toAttach) == null) {
-				log.info("Attaching module: " + toAttach.getCanonicalName());
+				log.fine("Attaching module: " + toAttach.getSimpleName());
 				attachModule(toAttach);
 			}
 		}
@@ -320,9 +322,9 @@ public class DialogueSystem {
 	 * 
 	 * @param userInput the user input as a string
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated
+	 * @throws RuntimeException if the state could not be updated
 	 */
-	public Set<String> addUserInput(String userInput) throws DialException {
+	public Set<String> addUserInput(String userInput) throws RuntimeException {
 		Assignment a = new Assignment(settings.userInput, userInput);
 		return addContent(a);
 	}
@@ -333,11 +335,12 @@ public class DialogueSystem {
 	 * 
 	 * @param userInput the user input as an N-best list
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated
+	 * @throws RuntimeException if the state could not be updated
 	 */
 	public Set<String> addUserInput(Map<String, Double> userInput) {
-		String var = (!settings.invertedRole) ? settings.userInput
-				: settings.systemOutput;
+		String var =
+				(!settings.invertedRole) ? settings.userInput
+						: settings.systemOutput;
 		CategoricalTable table = new CategoricalTable(var);
 		for (String input : userInput.keySet()) {
 			table.addRow(input, userInput.get(input));
@@ -351,10 +354,96 @@ public class DialogueSystem {
 	 * 
 	 * @param inputSpeech the speech data containing the user utterance
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated
+	 * @throws RuntimeException if the state could not be updated
 	 */
 	public Set<String> addUserInput(SpeechData inputSpeech) {
-		return addContent(new Assignment(settings.userSpeech, inputSpeech));
+		Assignment a = new Assignment(settings.userSpeech, inputSpeech);
+		a.addPair(settings.floor, "user");
+		return addContent(a);
+	}
+
+	/**
+	 * Adds the content (expressed as a pair of variable=value) to the current
+	 * dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param variable the variable label
+	 * @param value the variable value
+	 * @return the variables that were updated in the process
+	 * @throws RuntimeException if the state could not be updated.
+	 */
+	public Set<String> addContent(String variable, String value) {
+		if (!paused) {
+			curState.addToState(new Assignment(variable, value));
+			return update();
+		}
+		else {
+			log.info("system is paused -- ignoring content " + variable + "="
+					+ value);
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Adds the content (expressed as a pair of variable=value) to the current
+	 * dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param variable the variable label
+	 * @param value the variable value
+	 * @return the variables that were updated in the process
+	 * @throws RuntimeException if the state could not be updated.
+	 */
+	public Set<String> addContent(String variable, boolean value) {
+		if (!paused) {
+			curState.addToState(new Assignment(variable, value));
+			return update();
+		}
+		else {
+			log.info("system is paused -- ignoring content " + variable + "="
+					+ value);
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Adds the content (expressed as a pair of variable=value) to the current
+	 * dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param variable the variable label
+	 * @param value the variable value
+	 * @return the variables that were updated in the process
+	 * @throws RuntimeException if the state could not be updated.
+	 */
+	public Set<String> addContent(String variable, Value value) {
+		if (!paused) {
+			curState.addToState(new Assignment(variable, value));
+			return update();
+		}
+		else {
+			log.info("system is paused -- ignoring content " + variable + "="
+					+ value);
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Adds the content (expressed as a pair of variable=value) to the current
+	 * dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param variable the variable label
+	 * @param value the variable value
+	 * @return the variables that were updated in the process
+	 * @throws RuntimeException if the state could not be updated.
+	 */
+	public Set<String> addContent(String variable, double value) {
+		if (!paused) {
+			curState.addToState(new Assignment(variable, value));
+			return update();
+		}
+		else {
+			log.info("system is paused -- ignoring content " + variable + "="
+					+ value);
+			return Collections.emptySet();
+		}
 	}
 
 	/**
@@ -363,7 +452,7 @@ public class DialogueSystem {
 	 * 
 	 * @param distrib the (independent) probability distribution to add
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated.
+	 * @throws RuntimeException if the state could not be updated.
 	 */
 	public Set<String> addContent(IndependentProbDistribution distrib) {
 		if (!paused) {
@@ -372,7 +461,7 @@ public class DialogueSystem {
 		}
 		else {
 			log.info("system is paused -- ignoring content " + distrib);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -387,17 +476,17 @@ public class DialogueSystem {
 	 *            previous values, or reset the content (e.g. when starting a new
 	 *            utterance)
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the incremental update failed
+	 * @throws RuntimeException if the incremental update failed
 	 */
-	public Set<String> addIncrementalContent(CategoricalTable content,
+	public Set<String> addIncrementalContent(IndependentProbDistribution content,
 			boolean followPrevious) {
 		if (!paused) {
-			curState.addToState_incremental(content, followPrevious);
+			curState.addToState_incremental(content.toDiscrete(), followPrevious);
 			return update();
 		}
 		else {
 			log.info("system is paused -- ignoring content " + content);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -413,7 +502,7 @@ public class DialogueSystem {
 	 *            previous values, or reset the content (e.g. when starting a new
 	 *            utterance)
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the incremental update failed
+	 * @throws RuntimeException if the incremental update failed
 	 */
 	public Set<String> addIncrementalUserInput(Map<String, Double> userInput,
 			boolean followPrevious) {
@@ -430,7 +519,7 @@ public class DialogueSystem {
 	 * 
 	 * @param assign the value assignment to add
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated.
+	 * @throws RuntimeException if the state could not be updated.
 	 */
 	public Set<String> addContent(Assignment assign) {
 		if (!paused) {
@@ -439,7 +528,7 @@ public class DialogueSystem {
 		}
 		else {
 			log.info("system is paused -- ignoring content " + assign);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -449,7 +538,7 @@ public class DialogueSystem {
 	 * 
 	 * @param distrib the multivariate distribution to add
 	 * @return the variables that were updated in the process
-	 * @throws DialException if the state could not be updated.
+	 * @throws RuntimeException if the state could not be updated.
 	 */
 	public Set<String> addContent(MultivariateDistribution distrib) {
 		if (!paused) {
@@ -458,7 +547,7 @@ public class DialogueSystem {
 		}
 		else {
 			log.info("system is paused -- ignoring content " + distrib);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -468,16 +557,16 @@ public class DialogueSystem {
 	 * 
 	 * @param network the Bayesian network to merge into the current state
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the update failed
+	 * @throws RuntimeException if the update failed
 	 */
-	public Set<String> addContent(BNetwork network) throws DialException {
+	public Set<String> addContent(BNetwork network) throws RuntimeException {
 		if (!paused) {
 			curState.addToState(network);
 			return update();
 		}
 		else {
 			log.info("system is paused -- ignoring content " + network);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -487,16 +576,16 @@ public class DialogueSystem {
 	 * 
 	 * @param newState the state to merge into the current state
 	 * @return the set of variables that have been updated
-	 * @throws DialException if the update failed
+	 * @throws RuntimeException if the update failed
 	 */
-	public Set<String> addContent(DialogueState newState) throws DialException {
+	public Set<String> addContent(DialogueState newState) throws RuntimeException {
 		if (!paused) {
 			curState.addToState(newState);
 			return update();
 		}
 		else {
 			log.info("system is paused -- ignoring content " + newState);
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -595,6 +684,19 @@ public class DialogueSystem {
 	 */
 	public DialogueState getState() {
 		return curState;
+	}
+
+	/**
+	 * Returns who holds the current conversational floor (user, system, or free)
+	 * 
+	 * @return a string stating who currently owns the floor
+	 */
+	public String getFloor() {
+		if (curState.hasChanceNode(settings.floor)) {
+			return getContent(settings.floor).getBest().toString();
+		}
+		else
+			return "free";
 	}
 
 	/**
@@ -721,15 +823,16 @@ public class DialogueSystem {
 				log.info("Settings from " + settingsFile + " successfully extracted");
 			}
 			if (dialogueFile != null) {
-				List<DialogueState> dialogue = XMLInteractionReader
-						.extractInteraction(dialogueFile);
+				List<DialogueState> dialogue =
+						XMLInteractionReader.extractInteraction(dialogueFile);
 				log.info("Interaction from " + dialogueFile
 						+ " successfully extracted");
 				(new DialogueImporter(system, dialogue)).start();
 			}
 			if (simulatorFile != null) {
-				Simulator simulator = new Simulator(system,
-						XMLDomainReader.extractDomain(simulatorFile));
+				Simulator simulator =
+						new Simulator(system,
+								XMLDomainReader.extractDomain(simulatorFile));
 				log.info("Simulator with domain " + simulatorFile
 						+ " successfully extracted");
 				system.attachModule(simulator);
@@ -743,7 +846,7 @@ public class DialogueSystem {
 			system.startSystem();
 			log.info("Dialogue system started!");
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.severe("could not start system, aborting: " + e);
 		}
 	}

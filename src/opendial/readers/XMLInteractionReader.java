@@ -23,12 +23,12 @@
 
 package opendial.readers;
 
+import java.util.logging.*;
+
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
@@ -44,7 +44,7 @@ import org.w3c.dom.Node;
  */
 public class XMLInteractionReader {
 
-	static Logger log = new Logger("XMLInteractionReader", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Extracts the dialogue specified in the data file. The result is a list of
@@ -52,10 +52,10 @@ public class XMLInteractionReader {
 	 * 
 	 * @param dataFile the XML file containing the turns
 	 * @return the list of dialogue states
-	 * @throws DialException if the XML file is corrupted.
+	 * @throws RuntimeException if the XML file is corrupted.
 	 */
 	public static List<DialogueState> extractInteraction(String dataFile)
-			throws DialException {
+			throws RuntimeException {
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(dataFile);
 		Node mainNode = XMLUtils.getMainNode(doc);
@@ -68,26 +68,27 @@ public class XMLInteractionReader {
 
 			Node node = mainNode.getChildNodes().item(j);
 			if (node.getNodeName().contains("Turn")) {
-				DialogueState state = new DialogueState(
-						XMLStateReader.getBayesianNetwork(node));
+				DialogueState state =
+						new DialogueState(XMLStateReader.getBayesianNetwork(node));
 				sample.add(state);
 				if (node.getNodeName().equals("systemTurn")
 						&& state.hasChanceNode("a_m")) {
-					Assignment assign = new Assignment("a_m", state.queryProb("a_m")
-							.getBest());
+					Assignment assign =
+							new Assignment("a_m", state.queryProb("a_m").getBest());
 					state.addEvidence(assign);
 				}
 			}
 			else if (node.getNodeName().equals("wizard")) {
-				Assignment assign = Assignment.createFromString(node.getFirstChild()
-						.getNodeValue().trim());
+				Assignment assign =
+						Assignment.createFromString(node.getFirstChild()
+								.getNodeValue().trim());
 				sample.get(sample.size() - 1).addEvidence(assign);
 			}
 			else if (node.getNodeName().equals("import")) {
-				String fileName = mainNode.getAttributes().getNamedItem("href")
-						.getNodeValue();
-				List<DialogueState> points = extractInteraction(rootpath + "/"
-						+ fileName);
+				String fileName =
+						mainNode.getAttributes().getNamedItem("href").getNodeValue();
+				List<DialogueState> points =
+						extractInteraction(rootpath + "/" + fileName);
 				sample.addAll(points);
 			}
 

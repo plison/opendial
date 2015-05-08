@@ -23,6 +23,8 @@
 
 package opendial.state;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,8 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MarginalDistribution;
@@ -55,7 +55,7 @@ import opendial.state.distribs.RuleDistribution;
 public class StatePruner {
 
 	// logger
-	public static Logger log = new Logger("StatePruner", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static double VALUE_PRUNING_THRESHOLD = 0.01;
 
@@ -97,7 +97,7 @@ public class StatePruner {
 			}
 
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("cannot prune state: " + e);
 		}
 
@@ -170,10 +170,10 @@ public class StatePruner {
 	 * @param nodesToKeep the nodes to preserve in the reduction
 	 * 
 	 * @return the reduced dialogue state
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
 	private static DialogueState reduce(DialogueState state, Set<String> nodesToKeep)
-			throws DialException {
+			throws RuntimeException {
 
 		Assignment evidence = state.getEvidence();
 		// if all nodes to keep are included in the evidence, no inference is
@@ -181,8 +181,8 @@ public class StatePruner {
 		if (evidence.containsVars(nodesToKeep)) {
 			DialogueState newState = new DialogueState();
 			for (String toKeep : nodesToKeep) {
-				ChanceNode newNode = new ChanceNode(toKeep, new CategoricalTable(
-						toKeep, evidence.getValue(toKeep)));
+				ChanceNode newNode =
+						new ChanceNode(toKeep, evidence.getValue(toKeep));
 				newState.addNode(newNode);
 			}
 			return newState;
@@ -198,8 +198,8 @@ public class StatePruner {
 		// them, return the subset of nodes
 		else if (state.isClique(nodesToKeep)
 				&& !evidence.containsOneVar(nodesToKeep)) {
-			DialogueState newState = new DialogueState(state.getNodes(nodesToKeep),
-					evidence);
+			DialogueState newState =
+					new DialogueState(state.getNodes(nodesToKeep), evidence);
 			return newState;
 
 		}
@@ -223,8 +223,9 @@ public class StatePruner {
 		}
 
 		// else, select the best reduction algorithm and performs the reduction
-		BNetwork result = new SwitchingAlgorithm().reduce(state, nodesToKeep,
-				state.getEvidence());
+		BNetwork result =
+				new SwitchingAlgorithm().reduce(state, nodesToKeep,
+						state.getEvidence());
 		return new DialogueState(result);
 	}
 
@@ -234,20 +235,21 @@ public class StatePruner {
 	 * @param state the dialogue state
 	 * @param nodesToKeep the nodes to keep
 	 * @return the reduced dialogue state
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
 	private static DialogueState reduce_light(DialogueState state,
-			Collection<String> nodesToKeep) throws DialException {
+			Collection<String> nodesToKeep) throws RuntimeException {
 
 		DialogueState newState = new DialogueState(state, state.evidence);
 		for (ChanceNode node : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 
 			if (!nodesToKeep.contains(node.getId())) {
-				CategoricalTable initDistrib = state.queryProb(node.getId(), false)
-						.toDiscrete();
+				CategoricalTable initDistrib =
+						state.queryProb(node.getId(), false).toDiscrete();
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
-					MarginalDistribution newDistrib = new MarginalDistribution(
-							outputNode.getDistrib(), initDistrib);
+					MarginalDistribution newDistrib =
+							new MarginalDistribution(outputNode.getDistrib(),
+									initDistrib);
 					outputNode.setDistrib(newDistrib);
 				}
 				newState.removeNode(node.getId());
@@ -260,9 +262,9 @@ public class StatePruner {
 	 * Removes the prime characters from the variable labels in the dialogue state.
 	 * 
 	 * @param reduced the reduced state
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
-	private static void removePrimes(DialogueState reduced) throws DialException {
+	private static void removePrimes(DialogueState reduced) throws RuntimeException {
 
 		for (ChanceNode cn : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 			if (reduced.hasChanceNode(cn.getId() + "'")) {
@@ -289,10 +291,10 @@ public class StatePruner {
 	 * Removes all non-necessary nodes from the dialogue state.
 	 * 
 	 * @param reduced the reduced dialogue state
-	 * @throws DialException if the removal fails
+	 * @throws RuntimeException if the removal fails
 	 */
 	private static void removeSpuriousNodes(DialogueState reduced)
-			throws DialException {
+			throws RuntimeException {
 
 		// looping on every chance node
 		for (ChanceNode node : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
@@ -338,10 +340,10 @@ public class StatePruner {
 	 * 
 	 * @param reduced the reduced state
 	 * @param original the original state
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
 	private static void reinsertActionAndUtilityNodes(BNetwork reduced,
-			BNetwork original) throws DialException {
+			BNetwork original) throws RuntimeException {
 
 		// action nodes
 		for (ActionNode n : original.getActionNodes()) {

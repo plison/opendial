@@ -23,12 +23,11 @@
 
 package opendial.modules.examples;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.datastructs.Assignment;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -46,7 +45,7 @@ import opendial.state.DialogueState;
 public class FlightBookingExample implements Module {
 
 	// logger
-	public static Logger log = new Logger("FlightBookingExample", Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the dialogue system
 	DialogueSystem system;
@@ -67,7 +66,7 @@ public class FlightBookingExample implements Module {
 	 * Starts the module.
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		paused = false;
 	}
 
@@ -87,8 +86,8 @@ public class FlightBookingExample implements Module {
 			String action = state.queryProb("a_m").getBest().toString();
 
 			if (action.equals("FindOffer")) {
-				String returndate = state.queryProb("ReturnDate").getBest()
-						.toString();
+				String returndate =
+						state.queryProb("ReturnDate").getBest().toString();
 
 				// here, we fake the price estimation by making up numbers.
 				// Obviously,
@@ -96,33 +95,35 @@ public class FlightBookingExample implements Module {
 				// system.
 				int price = (returndate.equals("NoReturn")) ? 179 : 299;
 				String newAction = "MakeOffer(" + price + ")";
-				system.addContent(new Assignment("a_m", newAction));
+				system.addContent("a_m", newAction);
 			}
 			else if (action.equals("Book")) {
 
 				String departure = state.queryProb("Departure").getBest().toString();
-				String destination = state.queryProb("Destination").getBest()
-						.toString();
+				String destination =
+						state.queryProb("Destination").getBest().toString();
 				String date = state.queryProb("Date").getBest().toString();
-				String returndate = state.queryProb("ReturnDate").getBest()
-						.toString();
+				String returndate =
+						state.queryProb("ReturnDate").getBest().toString();
 				String nbtickets = state.queryProb("NbTickets").getBest().toString();
 
 				// In a real system, the system database should be modified here
 				// to
 				// actually perform the booking. Here, we just print a small
 				// message.
-				String info = "Booked "
-						+ nbtickets
-						+ " tickets from "
-						+ departure
-						+ " to "
-						+ destination
-						+ " on "
-						+ date
-						+ ((returndate.equals("NoReturn")) ? " and return on "
-								+ returndate : "");
-				log.info(info);
+				String info =
+						"Booked "
+								+ nbtickets
+								+ " tickets from "
+								+ departure
+								+ " to "
+								+ destination
+								+ " on "
+								+ date
+								+ ((returndate.equals("NoReturn")) ? " and return on "
+										+ returndate
+										: "");
+				log.fine(info);
 			}
 		}
 

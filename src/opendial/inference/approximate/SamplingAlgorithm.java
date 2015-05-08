@@ -23,15 +23,14 @@
 
 package opendial.inference.approximate;
 
+import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.EmpiricalDistribution;
@@ -54,7 +53,7 @@ import opendial.inference.Query;
 public class SamplingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("SamplingAlgorithm", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public int nbSamples = Settings.nbSamples;
 
@@ -94,15 +93,15 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 * @return the resulting probability distribution
-	 * @throws DialException if the inference operation failed
+	 * @throws RuntimeException if the inference operation failed
 	 */
 	@Override
 	public EmpiricalDistribution queryProb(Query.ProbQuery query)
-			throws DialException {
+			throws RuntimeException {
 
 		// creates a new query thread
-		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
-				maxSamplingTime);
+		LikelihoodWeighting isquery =
+				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 
 		// extract and redraw the samples according to their weight.
 		List<Sample> samples = isquery.getSamples();
@@ -117,19 +116,19 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @param network the network on which to extract the sample
 	 * @param queryVars the variables to extract
 	 * @return the extracted sample
-	 * @throws DialException if no sample could be extracted.
+	 * @throws RuntimeException if no sample could be extracted.
 	 */
 	public static Assignment extractSample(BNetwork network,
-			Collection<String> queryVars) throws DialException {
+			Collection<String> queryVars) throws RuntimeException {
 		// creates a new query thread
 		Query query = new Query.ProbQuery(network, queryVars, new Assignment());
-		LikelihoodWeighting isquery = new LikelihoodWeighting(query, 1,
-				Settings.maxSamplingTime);
+		LikelihoodWeighting isquery =
+				new LikelihoodWeighting(query, 1, Settings.maxSamplingTime);
 
 		// extract and redraw the samples according to their weight.
 		List<Sample> samples = isquery.getSamples();
 		if (samples.isEmpty()) {
-			throw new DialException("could not extract sample");
+			throw new RuntimeException("could not extract sample");
 		}
 		else {
 			return samples.get(0).getTrimmed(query.getQueryVars());
@@ -142,15 +141,15 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * 
 	 * @param query the full query
 	 * @return the utility distribution
-	 * @throws DialException if the inference operation failed
+	 * @throws RuntimeException if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
+	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
 
 		try {
 			// creates a new query thread
-			LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
-					maxSamplingTime);
+			LikelihoodWeighting isquery =
+					new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 
 			// extract and redraw the samples
 			List<Sample> samples = isquery.getSamples();
@@ -173,22 +172,23 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * 
 	 * @param network the graphical model
 	 * @return the utility
-	 * @throws DialException if the inference operation failed
+	 * @throws RuntimeException if the inference operation failed
 	 */
 
-	public double queryUtil(BNetwork network) throws DialException {
+	public double queryUtil(BNetwork network) throws RuntimeException {
 
 		// creates a new query thread
-		Query query = new Query.UtilQuery(network, network.getChanceNodeIds(),
-				new Assignment());
-		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
-				maxSamplingTime);
+		Query query =
+				new Query.UtilQuery(network, network.getChanceNodeIds(),
+						new Assignment());
+		LikelihoodWeighting isquery =
+				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 
 		// extract and redraw the samples
 		List<Sample> samples = isquery.getSamples();
 
-		double total = samples.stream().parallel().mapToDouble(s -> s.getUtility())
-				.sum();
+		double total =
+				samples.stream().parallel().mapToDouble(s -> s.getUtility()).sum();
 		return total / samples.size();
 	}
 
@@ -204,14 +204,14 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @return the reduced Bayesian network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
+	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
 
 		// creates a new query thread
-		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
-				maxSamplingTime);
+		LikelihoodWeighting isquery =
+				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 
 		// extract and redraw the samples
 		List<Sample> samples = isquery.getSamples();
@@ -222,8 +222,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		BNetwork reduced = new BNetwork();
 		for (String var : query.getSortedQueryVars()) {
 
-			Set<String> inputNodesIds = network.getNode(var).getAncestorsIds(
-					queryVars);
+			Set<String> inputNodesIds =
+					network.getNode(var).getAncestorsIds(queryVars);
 			for (String inputNodeId : new ArrayList<String>(inputNodesIds)) {
 
 				// remove the continuous nodes from the inputs (as a conditional
@@ -258,17 +258,17 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @param weightScheme the weighting scheme for the samples
 	 * @return the resulting empirical distribution for the query variables, after
 	 *         reweigthing
-	 * @throws DialException if the reweighting operation failed.
+	 * @throws RuntimeException if the reweighting operation failed.
 	 */
 	public EmpiricalDistribution getWeightedSamples(Query query,
-			Consumer<Collection<Sample>> weightScheme) throws DialException {
+			Consumer<Collection<Sample>> weightScheme) throws RuntimeException {
 
-		LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
-				maxSamplingTime);
+		LikelihoodWeighting isquery =
+				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 		List<Sample> samples = isquery.getSamples();
 		weightScheme.accept(samples);
-		Intervals<Sample> intervals = new Intervals<Sample>(samples,
-				s -> s.getWeight());
+		Intervals<Sample> intervals =
+				new Intervals<Sample>(samples, s -> s.getWeight());
 
 		EmpiricalDistribution distrib = new EmpiricalDistribution();
 

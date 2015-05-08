@@ -23,12 +23,12 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.common.InferenceChecks;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 
@@ -43,7 +43,7 @@ import org.junit.Test;
 public class RuleTest1 {
 
 	// logger
-	public static Logger log = new Logger("RuleTest1", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//domain1.xml";
 
@@ -61,7 +61,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test1() throws DialException, InterruptedException {
+	public void test1() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -76,7 +76,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test2() throws DialException {
+	public void test2() throws RuntimeException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -91,7 +91,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test3() throws DialException, InterruptedException {
+	public void test3() throws RuntimeException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
 
@@ -108,7 +108,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test4() throws DialException {
+	public void test4() throws RuntimeException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -126,7 +126,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test5() throws DialException {
+	public void test5() throws RuntimeException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -144,7 +144,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test6() throws DialException, InterruptedException {
+	public void test6() throws RuntimeException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
 
@@ -166,7 +166,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test7() throws DialException, InterruptedException {
+	public void test7() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);

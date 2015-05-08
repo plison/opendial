@@ -26,8 +26,8 @@ package opendial.state;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.Logger;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
@@ -44,7 +44,7 @@ import opendial.domains.rules.parameters.Parameter;
 public final class AnchoredRule {
 
 	// logger
-	public static Logger log = new Logger("AnchoredRule", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the rule
 	final Rule rule;

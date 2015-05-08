@@ -23,6 +23,8 @@
 
 package opendial.inference;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,8 +34,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
 import opendial.common.InferenceChecks;
@@ -52,13 +52,12 @@ import org.junit.Test;
 public class InferenceLargeScaleTest {
 
 	// logger
-	public static Logger log = new Logger("InferenceLargeScaleTest",
-			Logger.Level.NORMAL);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	public static double PERCENT_COMPARISONS = 0.5;
 
 	@Test
-	public void testNetwork() throws DialException {
+	public void testNetwork() throws RuntimeException {
 
 		InferenceChecks inference = new InferenceChecks();
 		inference.includeNaive(true);
@@ -116,8 +115,8 @@ public class InferenceLargeScaleTest {
 
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 		for (Assignment a : fullJoint.keySet()) {
-			Set<Set<Entry<String, Value>>> partialAssigns = generatePowerset(a
-					.getPairs().entrySet());
+			Set<Set<Entry<String, Value>>> partialAssigns =
+					generatePowerset(a.getPairs().entrySet());
 			for (Set<Entry<String, Value>> partial : partialAssigns) {
 				Assignment p = new Assignment(partial);
 				allAssignments.add(p);

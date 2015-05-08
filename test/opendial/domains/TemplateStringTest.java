@@ -23,12 +23,12 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.readers.XMLDomainReader;
@@ -45,7 +45,7 @@ import org.junit.Test;
 public class TemplateStringTest {
 
 	// logger
-	public static Logger log = new Logger("TemplateStringTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
 	public void testTemplate1() {
@@ -202,7 +202,7 @@ public class TemplateStringTest {
 	 */
 
 	@Test
-	public void testTemplateQuick() throws DialException {
+	public void testTemplateQuick() throws RuntimeException {
 		Domain domain = XMLDomainReader.extractDomain("test/domains/quicktest.xml");
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

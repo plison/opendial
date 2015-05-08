@@ -23,6 +23,7 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -59,10 +60,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.arch.Settings.Recording;
+import opendial.Settings;
+import opendial.Settings.Recording;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.gui.stateviewer.StateViewer;
@@ -91,11 +90,12 @@ import opendial.utils.StringUtils;
 public class StateViewerTab extends JComponent {
 
 	// logger
-	public static Logger log = new Logger("StateViewerTab", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// title, position and tooltip for the tab
 	public static final String TAB_TITLE = " Dialogue State Monitor ";
-	public static final String TAB_TIP = "Visual monitoring as the Bayesian Network defining the dialogue state";
+	public static final String TAB_TIP =
+			"Visual monitoring as the Bayesian Network defining the dialogue state";
 
 	// directions for zooming and translating the graph
 	public static enum ZoomDirection {
@@ -152,11 +152,12 @@ public class StateViewerTab extends JComponent {
 		logScroll.setBorder(BorderFactory.createEmptyBorder());
 
 		// arrange the global layout
-		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
-				visualisation.wrapWithScrollPane());
+		JSplitPane topPanel =
+				new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
+						visualisation.wrapWithScrollPane());
 		topPanel.setDividerLocation(250);
-		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel,
-				logScroll);
+		JSplitPane fullPanel =
+				new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
 		fullPanel.setDividerLocation(600);
 		add(fullPanel);
 
@@ -213,16 +214,16 @@ public class StateViewerTab extends JComponent {
 				}
 			}
 		}
-		List<String> varsInProcessing = state.getNodeIds().stream()
-				.filter(s -> s.contains("'")).map(s -> s.replace("'", ""))
-				.collect(Collectors.toList());
+		List<String> varsInProcessing =
+				state.getNodeIds().stream().filter(s -> s.contains("'"))
+						.map(s -> s.replace("'", "")).collect(Collectors.toList());
 		if (settings.recording != Recording.NONE && !varsInProcessing.isEmpty()) {
 			String title = "Updating " + StringUtils.join(varsInProcessing, ",");
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("cannot copy state : " + e);
 			}
 		}
@@ -242,8 +243,8 @@ public class StateViewerTab extends JComponent {
 	public void recordState(DialogueState state, String name) {
 		states.put(name, state);
 		if (!listModel.contains(name)) {
-			int position = name.contains(CURRENT_NAME) ? 0 : Math.min(2,
-					listModel.size());
+			int position =
+					name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size());
 			listModel.add(position, name);
 		}
 

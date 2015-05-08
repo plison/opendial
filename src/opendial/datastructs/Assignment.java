@@ -23,6 +23,8 @@
 
 package opendial.datastructs;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
@@ -60,7 +61,7 @@ import org.w3c.dom.Element;
 public class Assignment {
 
 	// logger
-	static Logger log = new Logger("Assignment", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the hashmap encoding the assignment
 	final Map<String, Value> map;
@@ -277,8 +278,9 @@ public class Assignment {
 	 * @return the resulting default assignment
 	 */
 	public static Assignment createDefault(Collection<String> variables) {
-		Map<String, Value> noneMap = variables.stream().collect(
-				Collectors.toMap(v -> v, v -> ValueFactory.none()));
+		Map<String, Value> noneMap =
+				variables.stream().collect(
+						Collectors.toMap(v -> v, v -> ValueFactory.none()));
 		return new Assignment(noneMap);
 	}
 
@@ -291,8 +293,9 @@ public class Assignment {
 	 */
 	public static Assignment createOneValue(Collection<String> variables,
 			Value commonValue) {
-		Map<String, Value> oneValMap = variables.stream().collect(
-				Collectors.toMap(v -> v, v -> commonValue));
+		Map<String, Value> oneValMap =
+				variables.stream().collect(
+						Collectors.toMap(v -> v, v -> commonValue));
 		return new Assignment(oneValMap);
 	}
 
@@ -521,8 +524,8 @@ public class Assignment {
 		for (String var : map.keySet()) {
 			if (!map.containsKey(var + "'")) {
 				boolean hasPrime = (var.charAt(var.length() - 1) == '\'');
-				String newVar = (hasPrime) ? var.substring(0, var.length() - 1)
-						: var;
+				String newVar =
+						(hasPrime) ? var.substring(0, var.length() - 1) : var;
 				a.addPair(newVar, map.get(var));
 			}
 		}
@@ -547,8 +550,12 @@ public class Assignment {
 	}
 
 	public Assignment addPrimes() {
-		Map<String, Value> newMap = map.keySet().stream()
-				.collect(Collectors.toMap(var -> var + "'", var -> map.get(var)));
+		Map<String, Value> newMap =
+				map.keySet()
+						.stream()
+						.collect(
+								Collectors.toMap(var -> var + "'",
+										var -> map.get(var)));
 		return new Assignment(newMap);
 	}
 
@@ -623,9 +630,9 @@ public class Assignment {
 		if (variables.containsAll(map.keySet())) {
 			return copy();
 		}
-		Map<String, Value> newMap = variables.stream()
-				.filter(var -> map.containsKey(var))
-				.collect(Collectors.toMap(var -> var, var -> map.get(var)));
+		Map<String, Value> newMap =
+				variables.stream().filter(var -> map.containsKey(var))
+						.collect(Collectors.toMap(var -> var, var -> map.get(var)));
 		return new Assignment(newMap);
 	}
 

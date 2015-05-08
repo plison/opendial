@@ -21,8 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
+import java.util.logging.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,14 +37,11 @@ import java.util.Collection;
 import javax.xml.parsers.ParserConfigurationException;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
-import opendial.modules.Module;
 import opendial.readers.XMLStateReader;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
@@ -62,7 +60,7 @@ import org.xml.sax.SAXException;
 public class RemoteConnector implements Module {
 
 	// logger
-	public static Logger log = new Logger("RemoteConnector", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the local dialogue system
 	DialogueSystem system;
@@ -90,16 +88,16 @@ public class RemoteConnector implements Module {
 	 * read in the "About" page in the GUI).
 	 * 
 	 * @param system the local dialogue system
-	 * @throws DialException if the server socket could not be opened
+	 * @throws RuntimeException if the server socket could not be opened
 	 */
-	public RemoteConnector(DialogueSystem system) throws DialException {
+	public RemoteConnector(DialogueSystem system) throws RuntimeException {
 		this.system = system;
 		try {
 			local = new ServerSocket(0);
 			new Thread(() -> readContent()).start();
 		}
 		catch (IOException e) {
-			throw new DialException("cannot initialise remote connector: " + e);
+			throw new RuntimeException("cannot initialise remote connector: " + e);
 		}
 	}
 
@@ -120,7 +118,7 @@ public class RemoteConnector implements Module {
 		// add a shutdown hook to close the remote connections
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			if (!system.getSettings().remoteConnections.isEmpty()) {
-				log.info("Shutting down remote connection");
+				log.fine("Shutting down remote connection");
 				InputStream content = IOUtils.toInputStream(getLocalAddress());
 				forwardContent(MessageType.CLOSE, content);
 				try {
@@ -175,8 +173,8 @@ public class RemoteConnector implements Module {
 			// if the resulting document is non-empty, forward it through the
 			// socket
 			if (root.hasChildNodes()) {
-				InputStream content = IOUtils.toInputStream(XMLUtils
-						.serialise(xmlDoc));
+				InputStream content =
+						IOUtils.toInputStream(XMLUtils.serialise(xmlDoc));
 				forwardContent(MessageType.XML, content);
 				return;
 			}
@@ -192,7 +190,7 @@ public class RemoteConnector implements Module {
 				}
 			}
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("cannot update remote connector: " + e);
 		}
 	}
@@ -301,7 +299,7 @@ public class RemoteConnector implements Module {
 					String content = new String(message);
 					String ip = content.split(":")[0];
 					int port = Integer.parseInt(content.split(":")[1]);
-					log.info("Connected to " + ip + ":" + port);
+					log.fine("Connected to " + ip + ":" + port);
 					system.displayComment("Connected to " + ip + ":" + port);
 					system.getSettings().remoteConnections.put(ip, port);
 					if (system.getSettings().showGUI) {
@@ -312,14 +310,15 @@ public class RemoteConnector implements Module {
 				else if (type == MessageType.XML) {
 					String content = new String(message);
 					Document doc = XMLUtils.loadXMLFromString(content);
-					BNetwork nodes = XMLStateReader.getBayesianNetwork(XMLUtils
-							.getMainNode(doc));
+					BNetwork nodes =
+							XMLStateReader.getBayesianNetwork(XMLUtils
+									.getMainNode(doc));
 					skipNextTrigger = true;
 					system.addContent(nodes);
 				}
 				else if (type == MessageType.MISC) {
 					String content = new String(message);
-					log.info("received message: " + content);
+					log.fine("received message: " + content);
 				}
 				else if (type == MessageType.STREAM) {
 					SpeechData output = new SpeechData(message);
@@ -328,7 +327,7 @@ public class RemoteConnector implements Module {
 				}
 				else if (type == MessageType.CLOSE) {
 					String content = new String(message);
-					log.info("Disconnecting from " + content);
+					log.fine("Disconnecting from " + content);
 					system.displayComment("Disconnecting from " + content);
 					String ip = content.split(":")[0];
 					system.getSettings().remoteConnections.remove(ip);
@@ -336,7 +335,7 @@ public class RemoteConnector implements Module {
 				Thread.sleep(100);
 			}
 			catch (IOException | InterruptedException | ParserConfigurationException
-					| SAXException | DialException e) {
+					| SAXException | RuntimeException e) {
 				e.printStackTrace();
 			}
 		}

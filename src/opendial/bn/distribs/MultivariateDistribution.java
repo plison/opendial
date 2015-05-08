@@ -25,7 +25,6 @@ package opendial.bn.distribs;
 
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 
 /**
@@ -63,9 +62,9 @@ public interface MultivariateDistribution {
 	 * Returns a sample assignment for X1,...Xn.
 	 * 
 	 * @return the sampled assignment
-	 * @throws DialException if no sample could be extracted
+	 * @throws RuntimeException if no sample could be extracted
 	 */
-	public Assignment sample() throws DialException;
+	public Assignment sample() throws RuntimeException;
 
 	/**
 	 * Returns the marginal probability distribution P(Xi) for a random variable Xi
@@ -90,13 +89,6 @@ public interface MultivariateDistribution {
 	 * @return the multivariate table.
 	 */
 	public MultivariateTable toDiscrete();
-
-	/**
-	 * Returns true if the distribution is well-formed, and false otherwise.
-	 * 
-	 * @return true if well-formed, else false.
-	 */
-	public boolean isWellFormed();
 
 	/**
 	 * Returns a copy of the distribution.
