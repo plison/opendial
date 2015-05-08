@@ -412,7 +412,7 @@ public class Assignment {
 	 * @param pairs the pairs to add
 	 */
 	public void addPairs(Map<String, Value> pairs) {
-		pairs.keySet().stream().forEach(v -> map.put(v, pairs.get(v)));
+		map.putAll(pairs);
 		cachedHash = 0;
 	}
 
@@ -627,13 +627,9 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
-		if (variables.containsAll(map.keySet())) {
-			return copy();
-		}
-		Map<String, Value> newMap =
-				variables.stream().filter(var -> map.containsKey(var))
-						.collect(Collectors.toMap(var -> var, var -> map.get(var)));
-		return new Assignment(newMap);
+		Map<String,Value> submap = new HashMap<String,Value>(map);
+		submap.keySet().retainAll(variables);
+		return new Assignment(submap);
 	}
 
 	/**

@@ -142,7 +142,6 @@ public class Simulator implements Module {
 		DialogueState systemState = system.getState();
 		final String outputVar = system.getSettings().systemOutput;
 		try {
-			synchronized (systemState) {
 
 				Value systemAction = ValueFactory.none();
 				if (systemState.hasChanceNode(outputVar)) {
@@ -157,7 +156,6 @@ public class Simulator implements Module {
 					turnPerformed = performTurn(systemAction);
 					repeat++;
 				}
-			}
 		}
 		catch (RuntimeException e) {
 			log.fine("cannot update simulator: " + e);

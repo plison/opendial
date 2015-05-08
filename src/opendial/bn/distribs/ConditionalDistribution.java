@@ -169,8 +169,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
-		if (table.containsKey(trimmed)) {
-			return table.get(trimmed).sample();
+		T subdistrib = table.get(trimmed);
+		if (subdistrib!= null) {
+			return subdistrib.sample();
 		}
 
 		// log.fine("could not find the distribution for " + condition + " (vars: "
