@@ -74,8 +74,7 @@ public class StringUtils {
 	}
 
 	/**
-	 * Returns a HTML-compatible rendering of the raw string provided as
-	 * argument
+	 * Returns a HTML-compatible rendering of the raw string provided as argument
 	 * 
 	 * @param str the raw string
 	 * @return the formatted string
@@ -87,20 +86,19 @@ public class StringUtils {
 		Matcher matcher = Pattern.compile("_\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher.find()) {
 			String subscript = matcher.group(1);
-			str = str.replace("_{" + subscript + "}", "<sub>" + subscript
-					+ "</sub>");
+			str = str
+					.replace("_{" + subscript + "}", "<sub>" + subscript + "</sub>");
 		}
 		Matcher matcher2 = Pattern.compile("_(\\p{Alnum}*)").matcher(str);
 		while (matcher2.find()) {
 			String subscript = matcher2.group(1);
 			str = str.replace("_" + subscript, "<sub>" + subscript + "</sub>");
 		}
-		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(
-				str);
+		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher3.find()) {
 			String subscript = matcher3.group(1);
-			str = str.replace("^{" + subscript + "}", "<sup>" + subscript
-					+ "</sup>");
+			str = str
+					.replace("^{" + subscript + "}", "<sup>" + subscript + "</sup>");
 		}
 		Matcher matcher4 = Pattern.compile("\\^([\\w\\-\\^]+)").matcher(str);
 		while (matcher4.find()) {
@@ -158,9 +156,8 @@ public class StringUtils {
 
 	/**
 	 * Performs a lexicographic comparison of the two identifiers. If there is a
-	 * difference between the number of primes in the two identifiers, returns
-	 * it. Else, returns +1 if id1.compareTo(id2) is higher than 0, and -1
-	 * otherwise.
+	 * difference between the number of primes in the two identifiers, returns it.
+	 * Else, returns +1 if id1.compareTo(id2) is higher than 0, and -1 otherwise.
 	 * 
 	 * @param id1 the first identifier
 	 * @param id2 the second identifier
@@ -178,15 +175,14 @@ public class StringUtils {
 	}
 
 	/**
-	 * Joins the string elements into a single string where the elements are
-	 * joined by a specific string.
+	 * Joins the string elements into a single string where the elements are joined
+	 * by a specific string.
 	 * 
 	 * @param elements the string elements
 	 * @param jointure the string used to join the elements
 	 * @return the concatenated string.
 	 */
-	public static String join(Collection<? extends Object> elements,
-			String jointure) {
+	public static String join(Collection<? extends Object> elements, String jointure) {
 		return elements.stream().map(o -> o.toString())
 				.collect(Collectors.joining(jointure));
 	}
@@ -206,10 +202,11 @@ public class StringUtils {
 			if (m.find()) {
 				String probValueStr = m.group(1);
 				double probValue = Double.parseDouble(probValueStr);
-				String remainingStr = split.replace("(" + probValueStr + ")",
-						"").trim();
+				String remainingStr = split.replace("(" + probValueStr + ")", "")
+						.trim();
 				table.put(remainingStr, probValue);
-			} else {
+			}
+			else {
 				table.put(split.trim(), 1.0);
 			}
 		}
@@ -240,8 +237,8 @@ public class StringUtils {
 	}
 
 	/**
-	 * Returns true if the string corresponds to an arithmetic expression, and
-	 * false otherwise
+	 * Returns true if the string corresponds to an arithmetic expression, and false
+	 * otherwise
 	 * 
 	 * @param exp the string to check
 	 * @return true if the string is an arithmetic expression, false otherwise
@@ -257,33 +254,44 @@ public class StringUtils {
 		for (int i = 0; i < charArr.length; i++) {
 			if (charArr[i] == '(') {
 				builder.append("\\(");
-			} else if (charArr[i] == ')') {
+			}
+			else if (charArr[i] == ')') {
 				builder.append("\\)");
-			} else if (charArr[i] == '[') {
+			}
+			else if (charArr[i] == '[') {
 				builder.append("\\[");
-			} else if (charArr[i] == ']') {
+			}
+			else if (charArr[i] == ']') {
 				builder.append("\\]");
-			} else if (charArr[i] == '?') {
+			}
+			else if (charArr[i] == '?') {
 				builder.append("\\?");
-			} else if (charArr[i] == ' ') {
+			}
+			else if (charArr[i] == ' ') {
 				builder.append(" ");
 				for (int j = i + 1; j < charArr.length; j++) {
 					if (charArr[j] == ' ') {
 						i++;
-					} else {
+					}
+					else {
 						break;
 					}
 				}
-			} else if (charArr[i] == '.') {
+			}
+			else if (charArr[i] == '.') {
 				builder.append("\\.");
-			} else if (charArr[i] == '!') {
+			}
+			else if (charArr[i] == '!') {
 				builder.append("\\!");
-			} else if (charArr[i] == '^') {
+			}
+			else if (charArr[i] == '^') {
 				builder.append("\\^");
-			} else if (charArr[i] == '{' && charArr[i + 1] == '}') {
+			}
+			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
 				i++;
 				continue;
-			} else {
+			}
+			else {
 				builder.append(charArr[i]);
 			}
 		}
@@ -334,21 +342,24 @@ public class StringUtils {
 		StringBuilder builder = new StringBuilder();
 		char[] chars = init.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
-			if (chars[i] == '*' && i == 0 && chars.length > 1
-					&& chars[i + 1] == ' ') {
+			if (chars[i] == '*' && i == 0 && chars.length > 1 && chars[i + 1] == ' ') {
 				builder.append("(?:.+ |)");
 				i++;
-			} else if (chars[i] == '*' && i < (chars.length - 1) && i > 0
+			}
+			else if (chars[i] == '*' && i < (chars.length - 1) && i > 0
 					&& chars[i + 1] == ' ' && chars[i - 1] == ' ') {
 				builder.deleteCharAt(builder.length() - 1);
 				builder.append("(?:.+|)");
-			} else if (chars[i] == '*' && i == (chars.length - 1) && i > 0
+			}
+			else if (chars[i] == '*' && i == (chars.length - 1) && i > 0
 					&& chars[i - 1] == ' ') {
 				builder.deleteCharAt(builder.length() - 1);
 				builder.append("(?: .+|)");
-			} else if (chars[i] == '*') {
+			}
+			else if (chars[i] == '*') {
 				builder.append("(?:.*)");
-			} else {
+			}
+			else {
 				builder.append(chars[i]);
 			}
 		}
@@ -356,8 +367,7 @@ public class StringUtils {
 	}
 
 	/**
-	 * Replace the alternative or optional elements by a proper regular
-	 * expression
+	 * Replace the alternative or optional elements by a proper regular expression
 	 * 
 	 * @param init the initial string
 	 * @return the formatted expression
@@ -367,28 +377,26 @@ public class StringUtils {
 		StringBuilder builder = new StringBuilder(init);
 		Matcher m = altRegex.matcher(builder.toString());
 		while (m.find()) {
-			if (m.group().endsWith("?")
-					&& StringUtils.checkForm(m.group(), false)) {
+			if (m.group().endsWith("?") && StringUtils.checkForm(m.group(), false)) {
 				String core = m.group().substring(2, m.group().length() - 4);
-				if (m.end() < builder.length()
-						&& builder.charAt(m.end()) == ' ') {
-					String replace = "(?:" + core.replaceAll("\\|", " \\|")
-							+ " )?";
+				if (m.end() < builder.length() && builder.charAt(m.end()) == ' ') {
+					String replace = "(?:" + core.replaceAll("\\|", " \\|") + " )?";
 					builder = builder.replace(m.start(), m.end() + 1, replace);
-				} else if (m.end() >= builder.length() && m.start() > 0
+				}
+				else if (m.end() >= builder.length() && m.start() > 0
 						&& builder.charAt(m.start() - 1) == ' ') {
-					String replace = "(?: " + core.replaceAll("\\|", "\\| ")
-							+ ")?";
+					String replace = "(?: " + core.replaceAll("\\|", "\\| ") + ")?";
 					builder = builder.replace(m.start() - 1, m.end(), replace);
-				} else {
+				}
+				else {
 					builder = builder.replace(m.start(), m.end(), "(?:" + core
 							+ ")?");
 				}
 				m = altRegex.matcher(builder.toString());
-			} else if (StringUtils.checkForm(m.group(), false)) {
+			}
+			else if (StringUtils.checkForm(m.group(), false)) {
 				String core = m.group().substring(2, m.group(0).length() - 2);
-				builder = builder.replace(m.start(), m.end(), "(?:" + core
-						+ ")");
+				builder = builder.replace(m.start(), m.end(), "(?:" + core + ")");
 				m = altRegex.matcher(builder.toString());
 			}
 		}

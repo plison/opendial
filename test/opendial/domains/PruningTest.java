@@ -65,7 +65,8 @@ public class PruningTest {
 			system.getSettings().showGUI = false;
 
 			system.startSystem();
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			e.printStackTrace();
 		}
 	}
@@ -103,20 +104,19 @@ public class PruningTest {
 	@Test
 	public void testPruning4() throws DialException {
 
-		inference.checkProb(system.getState(), "o", "and we have var1=value2",
-				0.3);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value3", 0.31);
+		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
+				0.2);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
+				0.31);
 	}
 
 	@Test
 	public void testPruning5() throws DialException {
 
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
-		inference.checkProb(system.getState(), "o2",
-				"and value2 is over there", 0.07);
+		inference.checkProb(system.getState(), "o2", "and value2 is over there",
+				0.07);
 		inference.checkProb(system.getState(), "o2", "value3, finally", 0.28);
 
 	}
@@ -130,12 +130,11 @@ public class PruningTest {
 		table.addRow("value2", 0.9);
 		system.getState().addToState(table);
 
-		inference.checkProb(system.getState(), "o", "and we have var1=value2",
-				0.3);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value1", 0.2);
-		inference.checkProb(system.getState(), "o",
-				"and we have localvar=value3", 0.31);
+		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
+				0.2);
+		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
+				0.31);
 
 		system.getState().reset(initialState);
 
@@ -144,8 +143,7 @@ public class PruningTest {
 	@Test
 	public void testPruning7() throws DialException, InterruptedException {
 
-		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]",
-				0.7);
+		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 
@@ -167,24 +165,24 @@ public class PruningTest {
 
 		String greetNode = "";
 		String howareyouNode = "";
-		Set<Value> values = system.getState()
-				.getNode(createdNodes.first() + "").getValues();
+		Set<Value> values = system.getState().getNode(createdNodes.first() + "")
+				.getValues();
 		if (values.contains(ValueFactory.create("Greet"))) {
 			greetNode = createdNodes.first();
 			howareyouNode = createdNodes.last();
-		} else {
+		}
+		else {
 			greetNode = createdNodes.last();
 			howareyouNode = createdNodes.first();
 		}
 
-		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode
-				+ "," + greetNode + "]", 0.7);
+		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode + ","
+				+ greetNode + "]", 0.7);
 		inference.checkProb(system.getState(), "a_u3", "none", 0.1);
-		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode
-				+ "]", 0.2);
+		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode + "]",
+				0.2);
 		inference.checkProb(system.getState(), greetNode + "", "Greet", 0.7);
-		inference.checkProb(system.getState(), howareyouNode + "", "HowAreYou",
-				0.9);
+		inference.checkProb(system.getState(), howareyouNode + "", "HowAreYou", 0.9);
 
 		system.getState().reset(initialState);
 

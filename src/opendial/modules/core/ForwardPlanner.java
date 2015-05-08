@@ -44,20 +44,19 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Online forward planner for OpenDial. The planner constructs a lookahead tree
- * (with a depth corresponding to the planning horizon) that explores possible
- * actions and their expected consequences on the future dialogue state. The
- * final utility values for each action is then estimated, and the action with
- * highest utility is selected.
+ * Online forward planner for OpenDial. The planner constructs a lookahead tree (with
+ * a depth corresponding to the planning horizon) that explores possible actions and
+ * their expected consequences on the future dialogue state. The final utility values
+ * for each action is then estimated, and the action with highest utility is
+ * selected.
  * 
  * <p>
- * The planner is an anytime process. It can be interrupted at any time and
- * yield a result. The quality of the utility estimates is of course improving
- * over time.
+ * The planner is an anytime process. It can be interrupted at any time and yield a
+ * result. The quality of the utility estimates is of course improving over time.
  * 
  * <p>
- * The planning algorithm is described in pages 121-123 of Pierre Lison's PhD
- * thesis [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
+ * The planning algorithm is described in pages 121-123 of Pierre Lison's PhD thesis
+ * [http://folk.uio.no/plison/pdfs/thesis/thesis-plison2013.pdf]
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -70,8 +69,7 @@ public class ForwardPlanner implements Module {
 	public static int NB_BEST_ACTIONS = 100;
 
 	/**
-	 * Maximum number of alternative observations to consider at each planning
-	 * step
+	 * Maximum number of alternative observations to consider at each planning step
 	 */
 	public static int NB_BEST_OBSERVATIONS = 3;
 
@@ -87,8 +85,7 @@ public class ForwardPlanner implements Module {
 
 	// scheduled thread pool to terminate planning once the time limit is
 	// reached
-	static ScheduledExecutorService service = Executors
-			.newScheduledThreadPool(2);
+	static ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
 
 	/**
 	 * Constructs a forward planner for the dialogue system.
@@ -135,8 +132,7 @@ public class ForwardPlanner implements Module {
 		Settings settings = system.getSettings();
 		if (state.hasChanceNode(settings.userSpeech)
 				&& state.hasActionNode(settings.systemOutput + "'")) {
-			ActionNode sysOutNode = state.getActionNode(settings.systemOutput
-					+ "'");
+			ActionNode sysOutNode = state.getActionNode(settings.systemOutput + "'");
 			state.removeNodes(sysOutNode.getOutputNodesIds());
 			state.removeNode(sysOutNode.getId());
 		}
@@ -158,10 +154,9 @@ public class ForwardPlanner implements Module {
 		boolean isTerminated = false;
 
 		/**
-		 * Creates the planning process. Timeout is set to twice the maximum
-		 * sampling time. Then, runs the planner until the horizon has been
-		 * reached, or the planner has run out of time. Adds the best action to
-		 * the dialogue state.
+		 * Creates the planning process. Timeout is set to twice the maximum sampling
+		 * time. Then, runs the planner until the horizon has been reached, or the
+		 * planner has run out of time. Adds the best action to the dialogue state.
 		 * 
 		 * @param initState initial dialogue state.
 		 */
@@ -180,14 +175,12 @@ public class ForwardPlanner implements Module {
 
 			try {
 				// step 1: extract the Q-values
-				UtilityTable evalActions = getQValues(initState,
-						settings.horizon);
+				UtilityTable evalActions = getQValues(initState, settings.horizon);
 
 				// step 2: find the action with highest utility
 				Assignment bestAction = evalActions.getBest().getKey();
 				if (evalActions.getUtil(bestAction) < 0.001) {
-					bestAction = Assignment.createDefault(bestAction
-							.getVariables());
+					bestAction = Assignment.createDefault(bestAction.getVariables());
 				}
 
 				// step 3: remove the action and utility nodes
@@ -200,7 +193,8 @@ public class ForwardPlanner implements Module {
 				initState.addToState(bestAction.removePrimes());
 				// log.debug("BEST ACTION: " + bestAction);
 				isTerminated = true;
-			} catch (DialException e) {
+			}
+			catch (DialException e) {
 				log.warning("could not perform planning, aborting action selection: "
 						+ e);
 				e.printStackTrace();
@@ -235,8 +229,7 @@ public class ForwardPlanner implements Module {
 				double reward = rewards.getUtil(action);
 				qValues.setUtil(action, reward);
 
-				if (horizon > 1 && !isTerminated && !paused
-						&& hasTransition(action)) {
+				if (horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
 
 					DialogueState copy = state.copy();
 					copy.addToState(action.removePrimes());
@@ -245,8 +238,7 @@ public class ForwardPlanner implements Module {
 					if (!action.isDefault()) {
 						double expected = discount
 								* getExpectedValue(copy, horizon - 1);
-						qValues.setUtil(action, qValues.getUtil(action)
-								+ expected);
+						qValues.setUtil(action, qValues.getUtil(action) + expected);
 					}
 				}
 			}
@@ -268,8 +260,7 @@ public class ForwardPlanner implements Module {
 				for (Model model : system.getDomain().getModels()) {
 					if (model.isTriggered(state, toProcess)) {
 						model.trigger(state);
-						if (model.isBlocking()
-								&& !state.getNewVariables().isEmpty()) {
+						if (model.isBlocking() && !state.getNewVariables().isEmpty()) {
 							break;
 						}
 					}
@@ -278,8 +269,8 @@ public class ForwardPlanner implements Module {
 		}
 
 		/**
-		 * Returns true if the dialogue domain specifies a transition model for
-		 * the particular action assignment.
+		 * Returns true if the dialogue domain specifies a transition model for the
+		 * particular action assignment.
 		 * 
 		 * @param action the assignment of action values
 		 * @return true if a transition is defined, false otherwise.
@@ -306,8 +297,7 @@ public class ForwardPlanner implements Module {
 				throws DialException {
 
 			MultivariateTable observations = getObservations(state);
-			MultivariateTable nbestObs = observations
-					.getNBest(NB_BEST_OBSERVATIONS);
+			MultivariateTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
 			double expectedValue = 0.0;
 			for (Assignment obs : nbestObs.getValues()) {
 				double obsProb = nbestObs.getProb(obs);
@@ -329,8 +319,8 @@ public class ForwardPlanner implements Module {
 		}
 
 		/**
-		 * Returns the possible observations that are expected to be perceived
-		 * from the dialogue state
+		 * Returns the possible observations that are expected to be perceived from
+		 * the dialogue state
 		 * 
 		 * @param state the dialogue state from which to extract observations
 		 * @return the inferred observations

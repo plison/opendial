@@ -76,8 +76,8 @@ public class MathUtils {
 	}
 
 	/**
-	 * Returns the minimal Euclidian distance between any two pairs of points in
-	 * the collection of points provided as argument.
+	 * Returns the minimal Euclidian distance between any two pairs of points in the
+	 * collection of points provided as argument.
 	 * 
 	 * @param points the collection of points
 	 * @return the minimum distance between all possible pairs of points
@@ -128,8 +128,8 @@ public class MathUtils {
 	}
 
 	/**
-	 * Returns the value of the gamma function: Gamma(x) = integral( t^(x-1)
-	 * e^(-t), t = 0 .. infinity)
+	 * Returns the value of the gamma function: Gamma(x) = integral( t^(x-1) e^(-t),
+	 * t = 0 .. infinity)
 	 * 
 	 * @param x the point
 	 * @return the gamma value fo the point

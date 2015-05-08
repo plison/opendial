@@ -37,8 +37,8 @@ import opendial.bn.nodes.UtilityNode;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of an inference query, which can be either a probability
- * query, a utility query, or a reduction query.
+ * Representation of an inference query, which can be either a probability query, a
+ * utility query, or a reduction query.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -47,8 +47,8 @@ public abstract class Query {
 	public static Logger log = new Logger("Query", Logger.Level.DEBUG);
 
 	/**
-	 * Representation of a probability query P(queryVars | evidence) on a
-	 * specific Bayesian network.
+	 * Representation of a probability query P(queryVars | evidence) on a specific
+	 * Bayesian network.
 	 */
 	public static final class ProbQuery extends Query {
 
@@ -71,9 +71,9 @@ public abstract class Query {
 	}
 
 	/**
-	 * Representation of a reduction Query where the Bayesian network is reduced
-	 * to a new network containing only the variables queryVars, and integrating
-	 * the evidence.
+	 * Representation of a reduction Query where the Bayesian network is reduced to a
+	 * new network containing only the variables queryVars, and integrating the
+	 * evidence.
 	 */
 	public static final class ReduceQuery extends Query {
 
@@ -87,8 +87,7 @@ public abstract class Query {
 	Collection<String> queryVars;
 	Assignment evidence;
 
-	public Query(BNetwork network, Collection<String> queryVars,
-			Assignment evidence) {
+	public Query(BNetwork network, Collection<String> queryVars, Assignment evidence) {
 
 		this.network = network;
 		this.queryVars = queryVars;
@@ -96,7 +95,8 @@ public abstract class Query {
 
 		if (queryVars.isEmpty()) {
 			log.warning("empty set of query variables: " + toString());
-		} else if (!network.getNodeIds().containsAll(queryVars)) {
+		}
+		else if (!network.getNodeIds().containsAll(queryVars)) {
 			log.warning("mismatch between query variables and network nodes: "
 					+ queryVars + " not included in " + network.getNodeIds());
 		}
@@ -147,10 +147,9 @@ public abstract class Query {
 	}
 
 	/**
-	 * Assuming a particular query P(queryVars|evidence) or
-	 * U(queryVars|evidence) on the provided Bayesian network, determines which
-	 * nodes is relevant for the inference and which one can be discarded
-	 * without affecting the final result.
+	 * Assuming a particular query P(queryVars|evidence) or U(queryVars|evidence) on
+	 * the provided Bayesian network, determines which nodes is relevant for the
+	 * inference and which one can be discarded without affecting the final result.
 	 * 
 	 */
 	private Set<String> getIrrelevantNodes() {
@@ -161,14 +160,14 @@ public abstract class Query {
 			for (String nodeId : new ArrayList<String>(network.getNodeIds())) {
 				BNode node = network.getNode(nodeId);
 				if (!irrelevantNodesIds.contains(nodeId)
-						&& irrelevantNodesIds.containsAll(node
-								.getOutputNodesIds())
+						&& irrelevantNodesIds.containsAll(node.getOutputNodesIds())
 						&& !queryVars.contains(nodeId)
 						&& !evidence.containsVar(nodeId)
 						&& !(node instanceof UtilityNode)) {
 					irrelevantNodesIds.add(nodeId);
 					continue whileLoop;
-				} else if (!(this instanceof UtilQuery)
+				}
+				else if (!(this instanceof UtilQuery)
 						&& !irrelevantNodesIds.contains(nodeId)
 						&& node instanceof UtilityNode) {
 					irrelevantNodesIds.add(nodeId);
@@ -203,9 +202,11 @@ public abstract class Query {
 
 		if (this instanceof ProbQuery) {
 			return "P(" + str + ")";
-		} else if (this instanceof UtilQuery) {
+		}
+		else if (this instanceof UtilQuery) {
 			return "U(" + str + ")";
-		} else {
+		}
+		else {
 			return "Reduce(" + str + ")";
 		}
 	}

@@ -59,14 +59,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
- * Plugin to access the Nuance Speech API for both speech recognition and
- * synthesis. The plugin necessitates the specification of an application ID and
- * key [see the README file for the plugin for details]. The API offers a
- * cloud-based access to the Nuance Mobile developer platform.
+ * Plugin to access the Nuance Speech API for both speech recognition and synthesis.
+ * The plugin necessitates the specification of an application ID and key [see the
+ * README file for the plugin for details]. The API offers a cloud-based access to
+ * the Nuance Mobile developer platform.
  * 
  * <p>
- * To enhance the recognition accuracy, it is recommended to provide the system
- * with custom vocabularies (see the documentation on the Nuance website).
+ * To enhance the recognition accuracy, it is recommended to provide the system with
+ * custom vocabularies (see the documentation on the Nuance website).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -120,8 +120,7 @@ public class NuanceSpeech implements Module {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException(
-					"Nuance connection requires access to the GUI");
+			throw new DialException("Nuance connection requires access to the GUI");
 		}
 		ttsCache = new HashMap<String, SpeechData>();
 	}
@@ -164,8 +163,8 @@ public class NuanceSpeech implements Module {
 		}
 
 		// if a new system speech is detected, start speech synthesis
-		else if (updatedVars.contains(outputVar)
-				&& state.hasChanceNode(outputVar) && !paused) {
+		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar)
+				&& !paused) {
 
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
@@ -176,22 +175,21 @@ public class NuanceSpeech implements Module {
 
 	/**
 	 * Processes the audio data contained in tempFile (based on the recognition
-	 * grammar whenever provided) and updates the dialogue state with the new
-	 * user inputs.
+	 * grammar whenever provided) and updates the dialogue state with the new user
+	 * inputs.
 	 * 
 	 * @param stream the speech stream containing the audio data
 	 */
 	private void recognise(SpeechData stream) {
 
 		int sampleRate = (int) stream.getFormat().getSampleRate();
-		log.debug("calling Nuance server for recognition... "
-				+ "(sample rate: " + sampleRate + " Hz.)");
+		log.debug("calling Nuance server for recognition... " + "(sample rate: "
+				+ sampleRate + " Hz.)");
 		try {
 
 			HttpPost httppost = new HttpPost(asrURI);
 			String format = "audio/x-wav;codec=pcm;bit="
-					+ stream.getFormat().getFrameSize() * 8 + ";rate="
-					+ sampleRate;
+					+ stream.getFormat().getFrameSize() * 8 + ";rate=" + sampleRate;
 			String lang = system.getSettings().params.getProperty("lang");
 			httppost.addHeader("Content-Type", format);
 			httppost.addHeader("Accept", "application/xml");
@@ -203,12 +201,12 @@ public class NuanceSpeech implements Module {
 			HttpResponse response = asrClient.execute(httppost);
 
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity == null
-					|| response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
 				log.info("(speech could not be recognised)");
-			} else {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(resEntity.getContent()));
+			}
+			else {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+						resEntity.getContent()));
 
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
@@ -227,15 +225,15 @@ public class NuanceSpeech implements Module {
 				}
 			}
 			httppost.releaseConnection();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.warning("could not extract ASR results: " + e);
 		}
 	}
 
 	/**
-	 * Synthesises the provided utterance (first looking at the cache of
-	 * existing synthesised speech, and starting the generation if no one is
-	 * already present).
+	 * Synthesises the provided utterance (first looking at the cache of existing
+	 * synthesised speech, and starting the generation if no one is already present).
 	 * 
 	 * @param utterance the utterance to synthesise
 	 */
@@ -247,7 +245,8 @@ public class NuanceSpeech implements Module {
 			SpeechData outputSpeech = ttsCache.get(utterance);
 			outputSpeech.rewind();
 			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
-		} else {
+		}
+		else {
 			AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
 			SpeechData outputSpeech = new SpeechData(format);
 			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
@@ -256,8 +255,8 @@ public class NuanceSpeech implements Module {
 	}
 
 	/**
-	 * Synthesises the provided utterance and adds the resulting stream of audio
-	 * data to the SpeechData object.
+	 * Synthesises the provided utterance and adds the resulting stream of audio data
+	 * to the SpeechData object.
 	 * 
 	 * @param utterance the utterance to synthesise
 	 * @param output the speech data in which to write the generated audio
@@ -265,13 +264,12 @@ public class NuanceSpeech implements Module {
 	private void synthesise(String utterance, SpeechData output) {
 
 		try {
-			log.debug("calling Nuance server to synthesise utterance \""
-					+ utterance + "\"");
+			log.debug("calling Nuance server to synthesise utterance \"" + utterance
+					+ "\"");
 
 			HttpPost httppost = new HttpPost(ttsURI);
 			httppost.addHeader("Content-Type", "text/plain");
-			httppost.addHeader("Accept",
-					"audio/x-wav;codec=pcm;bit=16;rate=16000");
+			httppost.addHeader("Accept", "audio/x-wav;codec=pcm;bit=16;rate=16000");
 			HttpEntity entity = new StringEntity(utterance, "utf-8");
 			;
 			httppost.setEntity(entity);
@@ -279,8 +277,7 @@ public class NuanceSpeech implements Module {
 			HttpResponse response = ttsClient.execute(httppost);
 
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity == null
-					|| response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());
 				return;
 			}
@@ -293,7 +290,8 @@ public class NuanceSpeech implements Module {
 					+ StringUtils.getShortForm((double) output.length() / 1000)
 					+ " s.)");
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -329,7 +327,8 @@ public class NuanceSpeech implements Module {
 					system.getSettings().params.getProperty("lang"));
 			ttsURI = builder.build();
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new DialException("cannot build client: " + e);
 		}
 	}

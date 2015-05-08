@@ -36,9 +36,9 @@ import opendial.datastructs.Assignment;
 public interface Parameter {
 
 	/**
-	 * Returns the actual parameter value given the inputs provided as
-	 * arguments. If the actual value cannot be retrieved (missing information),
-	 * throws an exception.
+	 * Returns the actual parameter value given the inputs provided as arguments. If
+	 * the actual value cannot be retrieved (missing information), throws an
+	 * exception.
 	 * 
 	 * @param input the input assignment
 	 * @return the actual parameter value

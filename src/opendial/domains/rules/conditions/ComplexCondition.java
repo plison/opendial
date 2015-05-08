@@ -67,8 +67,7 @@ public final class ComplexCondition implements Condition {
 	 * @param subconditions the subconditions
 	 * @param operator the binary operator to employ between the conditions
 	 */
-	public ComplexCondition(List<Condition> subconditions,
-			BinaryOperator operator) {
+	public ComplexCondition(List<Condition> subconditions, BinaryOperator operator) {
 		this.subconditions = subconditions;
 		this.operator = operator;
 	}
@@ -124,12 +123,12 @@ public final class ComplexCondition implements Condition {
 	}
 
 	/**
-	 * Returns true if the complex condition is satisfied by the input
-	 * assignment, and false otherwise.
+	 * Returns true if the complex condition is satisfied by the input assignment,
+	 * and false otherwise.
 	 * 
 	 * <p>
-	 * If the logical operator is AND, all the subconditions must be satisfied.
-	 * If the operator is OR, at least one must be satisfied.
+	 * If the logical operator is AND, all the subconditions must be satisfied. If
+	 * the operator is OR, at least one must be satisfied.
 	 * 
 	 * @param input the input assignment
 	 * @return true if the conditions are satisfied, false otherwise
@@ -139,8 +138,8 @@ public final class ComplexCondition implements Condition {
 		for (Condition cond : subconditions) {
 			if (operator == BinaryOperator.AND && !cond.isSatisfiedBy(input)) {
 				return false;
-			} else if (operator == BinaryOperator.OR
-					&& cond.isSatisfiedBy(input)) {
+			}
+			else if (operator == BinaryOperator.OR && cond.isSatisfiedBy(input)) {
 				return true;
 			}
 		}
@@ -148,8 +147,8 @@ public final class ComplexCondition implements Condition {
 	}
 
 	/**
-	 * Returns the groundings for the complex condition (which is the union of
-	 * the groundings for all basic conditions).
+	 * Returns the groundings for the complex condition (which is the union of the
+	 * groundings for all basic conditions).
 	 * 
 	 * @return the full set of groundings
 	 */
@@ -163,8 +162,8 @@ public final class ComplexCondition implements Condition {
 
 				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 				for (Assignment g : groundings.getAlternatives()) {
-					RuleGrounding newGround = cond
-							.getGroundings(new Assignment(input, g));
+					RuleGrounding newGround = cond.getGroundings(new Assignment(
+							input, g));
 					newGround.extend(g);
 					alternatives.add(newGround);
 				}
@@ -174,7 +173,8 @@ public final class ComplexCondition implements Condition {
 					return groundings;
 				}
 			}
-		} else if (operator == BinaryOperator.OR) {
+		}
+		else if (operator == BinaryOperator.OR) {
 
 			List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 			for (Condition cond : subconditions) {

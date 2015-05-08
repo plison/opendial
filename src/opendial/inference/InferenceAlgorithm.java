@@ -34,19 +34,19 @@ import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 
 /**
- * Generic interface for probabilistic inference algorithms. Three distinct
- * types of queries are possible:
+ * Generic interface for probabilistic inference algorithms. Three distinct types of
+ * queries are possible:
  * <ul>
  * <li>probability queries of the form P(X1,...,Xn)
  * <li>utility queries of the form U(X1,...,Xn)
- * <li>reduction queries where a Bayesian network is reduced to a subset of
- * variables X1,...,Xn
+ * <li>reduction queries where a Bayesian network is reduced to a subset of variables
+ * X1,...,Xn
  * </ul>
  * 
- * The interface contains 3 abstract methods (queryProb, queryUtil and reduce)
- * that must be specified by all implementing classes. In addition, a set of
- * default methods provide alternative ways to call the inference process (e.g.
- * with one or several query variables, with or without evidence, etc.).
+ * The interface contains 3 abstract methods (queryProb, queryUtil and reduce) that
+ * must be specified by all implementing classes. In addition, a set of default
+ * methods provide alternative ways to call the inference process (e.g. with one or
+ * several query variables, with or without evidence, etc.).
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -79,14 +79,13 @@ public interface InferenceAlgorithm {
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	public default MultivariateDistribution queryProb(BNetwork network,
-			Collection<String> queryVars, Assignment evidence)
-			throws DialException {
+			Collection<String> queryVars, Assignment evidence) throws DialException {
 		return queryProb(new Query.ProbQuery(network, queryVars, evidence));
 	}
 
 	/**
-	 * Computes the probability distribution for the query variables, assuming
-	 * no additional evidence.
+	 * Computes the probability distribution for the query variables, assuming no
+	 * additional evidence.
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the collection of query variables
@@ -95,8 +94,7 @@ public interface InferenceAlgorithm {
 	 */
 	public default MultivariateDistribution queryProb(BNetwork network,
 			Collection<String> queryVars) throws DialException {
-		return queryProb(new Query.ProbQuery(network, queryVars,
-				new Assignment()));
+		return queryProb(new Query.ProbQuery(network, queryVars, new Assignment()));
 	}
 
 	/**
@@ -155,8 +153,7 @@ public interface InferenceAlgorithm {
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network,
-			Collection<String> queryVars, Assignment evidence)
-			throws DialException {
+			Collection<String> queryVars, Assignment evidence) throws DialException {
 		return queryUtil(new Query.UtilQuery(network, queryVars, evidence));
 	}
 
@@ -171,8 +168,7 @@ public interface InferenceAlgorithm {
 	 */
 	public default UtilityTable queryUtil(BNetwork network,
 			Collection<String> queryVars) throws DialException {
-		return queryUtil(new Query.UtilQuery(network, queryVars,
-				new Assignment()));
+		return queryUtil(new Query.UtilQuery(network, queryVars, new Assignment()));
 	}
 
 	/**
@@ -211,8 +207,8 @@ public interface InferenceAlgorithm {
 	// ===================================
 
 	/**
-	 * Generates a new Bayesian network that only contains a subset of variables
-	 * in the original network and integrates the provided evidence.
+	 * Generates a new Bayesian network that only contains a subset of variables in
+	 * the original network and integrates the provided evidence.
 	 * 
 	 * @param query the full reduction query
 	 * @return the reduced Bayesian network
@@ -221,8 +217,8 @@ public interface InferenceAlgorithm {
 	public BNetwork reduce(Query.ReduceQuery query) throws DialException;
 
 	/**
-	 * Generates a new Bayesian network that only contains a subset of variables
-	 * in the original network and integrates the provided evidence.
+	 * Generates a new Bayesian network that only contains a subset of variables in
+	 * the original network and integrates the provided evidence.
 	 * 
 	 * @param network the original Bayesian network
 	 * @param queryVars the variables to retain
@@ -230,25 +226,23 @@ public interface InferenceAlgorithm {
 	 * @return the new, reduced Bayesian network
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default BNetwork reduce(BNetwork network,
-			Collection<String> queryVars, Assignment evidence)
-			throws DialException {
+	public default BNetwork reduce(BNetwork network, Collection<String> queryVars,
+			Assignment evidence) throws DialException {
 		return reduce(new Query.ReduceQuery(network, queryVars, evidence));
 	}
 
 	/**
-	 * Generates a new Bayesian network that only contains a subset of variables
-	 * in the original network, assuming no additional evidence.
+	 * Generates a new Bayesian network that only contains a subset of variables in
+	 * the original network, assuming no additional evidence.
 	 * 
 	 * @param network the original Bayesian network
 	 * @param queryVars the variables to retain
 	 * @return the new, reduced Bayesian network
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
-	public default BNetwork reduce(BNetwork network,
-			Collection<String> queryVars) throws DialException {
-		return reduce(new Query.ReduceQuery(network, queryVars,
-				new Assignment()));
+	public default BNetwork reduce(BNetwork network, Collection<String> queryVars)
+			throws DialException {
+		return reduce(new Query.ReduceQuery(network, queryVars, new Assignment()));
 	}
 
 }

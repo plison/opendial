@@ -35,13 +35,13 @@ import opendial.bn.values.Value;
 import opendial.utils.AudioUtils;
 
 /**
- * Representation of a stream of speech data (input or output). The stream can
- * both be read (using the usual methods), but can also be modified by appending
- * new data to the end of the stream.
+ * Representation of a stream of speech data (input or output). The stream can both
+ * be read (using the usual methods), but can also be modified by appending new data
+ * to the end of the stream.
  * 
  * <p>
- * The stream is allowed to change until it is marked as "final" (i.e. when the
- * audio capture has finished recording).
+ * The stream is allowed to change until it is marked as "final" (i.e. when the audio
+ * capture has finished recording).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -117,8 +117,7 @@ public class SpeechData extends InputStream implements Value {
 	}
 
 	/**
-	 * Expands the current speech data by appending the data in the input
-	 * stream.
+	 * Expands the current speech data by appending the data in the input stream.
 	 * 
 	 * @param stream the stream to add to the speech data
 	 */
@@ -136,7 +135,8 @@ public class SpeechData extends InputStream implements Value {
 				System.arraycopy(buffer, 0, newData, data.length, nRead);
 				data = newData;
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.warning("Cannot write the stream to the speech data");
 		}
 	}
@@ -150,11 +150,13 @@ public class SpeechData extends InputStream implements Value {
 	public int read() {
 		if (currentPos < data.length) {
 			return data[currentPos++];
-		} else {
+		}
+		else {
 			if (!isFinal) {
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 				}
 				return read();
 			}
@@ -175,7 +177,8 @@ public class SpeechData extends InputStream implements Value {
 			if (!isFinal) {
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 				}
 				return read(buffer, offset, length);
 			}
@@ -286,8 +289,8 @@ public class SpeechData extends InputStream implements Value {
 	}
 
 	/**
-	 * Returns the concatenation of the two audio data. If the values are not
-	 * final, waits for them to be final.
+	 * Returns the concatenation of the two audio data. If the values are not final,
+	 * waits for them to be final.
 	 */
 	@Override
 	public SpeechData concatenate(Value value) {
@@ -296,7 +299,8 @@ public class SpeechData extends InputStream implements Value {
 			while (!isFinal() || !((SpeechData) value).isFinal()) {
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 				}
 			}
 
@@ -306,7 +310,8 @@ public class SpeechData extends InputStream implements Value {
 			newData.write(((SpeechData) value).data);
 			newData.isFinal = true;
 			return newData;
-		} else {
+		}
+		else {
 			throw new DialException("Cannot concatenate SpeechData and "
 					+ value.getClass().getCanonicalName());
 		}

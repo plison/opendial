@@ -75,8 +75,8 @@ public class DemoTest {
 		t.addRow("a_u", 0.1);
 		system.addContent(t);
 		for (int i = 0; i < 3000; i++) {
-			System.out.println(((ArrayVal) system.getState()
-					.getChanceNode("theta").sample()).getArray()[0]);
+			System.out.println(((ArrayVal) system.getState().getChanceNode("theta")
+					.sample()).getArray()[0]);
 		}
 		// System.out.println("DENSITY: " + new
 		// ArrayVal(((ProductKernelDensityFunction)((MultivariateDistribution)system.getState().
@@ -119,8 +119,8 @@ public class DemoTest {
 		t.addRow("move a bit to the left", 0.22);
 		system.addContent(t);
 
-		assertEquals("Sorry, could you repeat?", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("Sorry, could you repeat?", system.getContent("u_m").getBest()
+				.toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("do that one more time", 0.65);
@@ -136,8 +136,8 @@ public class DemoTest {
 		t.addRow("do you see it", 0.3);
 		log.debug("-------------------");
 		system.addContent(t);
-		assertEquals("I see a blue cylinder", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("I see a blue cylinder", system.getContent("u_m").getBest()
+				.toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("pick up the blue object", 0.75);
@@ -163,23 +163,23 @@ public class DemoTest {
 		t.addRow("move backward", 0.1);
 		system.addContent(t);
 
-		assertEquals("OK, moving Forward a little bit", system
-				.getContent("u_m").getBest().toString());
+		assertEquals("OK, moving Forward a little bit", system.getContent("u_m")
+				.getBest().toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("and now move forward", 0.21);
 		t.addRow("move backward", 0.09);
 		system.addContent(t);
 
-		assertEquals("Should I move forward?", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("Should I move forward?", system.getContent("u_m").getBest()
+				.toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("no", 0.6);
 		system.addContent(t);
 
-		assertEquals("Should I move backward?", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("Should I move backward?", system.getContent("u_m").getBest()
+				.toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("yes", 0.5);
@@ -192,8 +192,8 @@ public class DemoTest {
 		t.addRow("now what can you see now?", 0.7);
 		system.addContent(t);
 
-		assertEquals("I do not see anything", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("I do not see anything", system.getContent("u_m").getBest()
+				.toString());
 
 		t = new CategoricalTable("u_u");
 		t.addRow("please release the object", 0.5);
@@ -212,8 +212,8 @@ public class DemoTest {
 		t.addRow("goodbye", 0.7);
 		system.addContent(t);
 
-		assertEquals("Bye, see you next time", system.getContent("u_m")
-				.getBest().toString());
+		assertEquals("Bye, see you next time", system.getContent("u_m").getBest()
+				.toString());
 
 	}
 

@@ -156,11 +156,11 @@ public class GUIMenuBar extends JMenuBar {
 				String ipaddress = fullAddress.split(":")[0];
 				int port = Integer.parseInt(fullAddress.split(":")[1]);
 				frame.getSystem().connectTo(ipaddress, port);
-			} else if (fullAddress != null) {
-				frame.getSystem()
-						.displayComment(
-								"address of remote client is "
-										+ "not well-formed, must be \"IP_address:port\"");
+			}
+			else if (fullAddress != null) {
+				frame.getSystem().displayComment(
+						"address of remote client is "
+								+ "not well-formed, must be \"IP_address:port\"");
 			}
 		});
 
@@ -181,9 +181,8 @@ public class GUIMenuBar extends JMenuBar {
 		systemRole = new JRadioButtonMenuItem("System");
 		modeGroup.add(systemRole);
 		roleMenu.add(systemRole);
-		systemRole
-				.setEnabled(!frame.getSystem().getSettings().remoteConnections
-						.isEmpty());
+		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections
+				.isEmpty());
 		traceMenu.add(roleMenu);
 		userRole.addItemListener(inversion);
 		systemRole.addItemListener(inversion);
@@ -248,8 +247,7 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenu interactionMenu = new JMenu("View Utterances");
 		ButtonGroup group = new ButtonGroup();
-		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem(
-				"Single-best");
+		JRadioButtonMenuItem singleBest = new JRadioButtonMenuItem("Single-best");
 		singleBest.addActionListener(e -> {
 			frame.getChatTab().setNBest(1);
 			frame.addComment("Number of shown user hypotheses: 1");
@@ -260,8 +258,7 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getChatTab().setNBest(3);
 			frame.addComment("Number of shown user hypotheses: 3");
 		});
-		JRadioButtonMenuItem allBest = new JRadioButtonMenuItem(
-				"Full N-best list");
+		JRadioButtonMenuItem allBest = new JRadioButtonMenuItem("Full N-best list");
 		allBest.addActionListener(e -> {
 			frame.getChatTab().setNBest(20);
 			frame.addComment("Number of shown user hypotheses: 20");
@@ -366,11 +363,12 @@ public class GUIMenuBar extends JMenuBar {
 			try {
 				List<DialogueState> interaction = XMLInteractionReader
 						.extractInteraction(interactionFile);
-				DialogueImporter importer = new DialogueImporter(
-						frame.getSystem(), interaction);
+				DialogueImporter importer = new DialogueImporter(frame.getSystem(),
+						interaction);
 				importer.setWizardOfOzMode(isWizardOfOz);
 				importer.start();
-			} catch (Exception f) {
+			}
+			catch (Exception f) {
 				log.warning("could not extract interaction: " + f);
 				frame.addComment(f.toString());
 			}
@@ -384,7 +382,8 @@ public class GUIMenuBar extends JMenuBar {
 		if (Desktop.isDesktopSupported()) {
 			try {
 				Desktop.getDesktop().browse(new URI(OPENDIAL_DOC));
-			} catch (Exception e1) {
+			}
+			catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -403,10 +402,9 @@ public class GUIMenuBar extends JMenuBar {
 			Font font = label.getFont();
 
 			// create some css from the label's font
-			StringBuffer style = new StringBuffer("font-family:"
-					+ font.getFamily() + ";");
-			style.append("font-weight:" + (font.isBold() ? "bold" : "normal")
+			StringBuffer style = new StringBuffer("font-family:" + font.getFamily()
 					+ ";");
+			style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
 			style.append("font-size:" + font.getSize() + "pt;");
 
 			JEditorPane ep = new JEditorPane(
@@ -431,7 +429,8 @@ public class GUIMenuBar extends JMenuBar {
 						&& Desktop.isDesktopSupported()) {
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (Exception e1) {
+					}
+					catch (Exception e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -439,10 +438,10 @@ public class GUIMenuBar extends JMenuBar {
 			ep.setEditable(false);
 			ep.setBackground(label.getBackground());
 
-			JOptionPane.showMessageDialog(frame.getFrame(), ep,
-					"About OpenDial", JOptionPane.INFORMATION_MESSAGE,
-					new ImageIcon(original));
-		} catch (Exception f) {
+			JOptionPane.showMessageDialog(frame.getFrame(), ep, "About OpenDial",
+					JOptionPane.INFORMATION_MESSAGE, new ImageIcon(original));
+		}
+		catch (Exception f) {
 			log.warning("could not show about box: " + f);
 		}
 	}
@@ -476,7 +475,8 @@ public class GUIMenuBar extends JMenuBar {
 			frame.addComment("Importing " + tag + " from " + stateFile);
 			try {
 				importContent(frame.getSystem(), stateFile, tag);
-			} catch (Exception f) {
+			}
+			catch (Exception f) {
 				log.warning("could not extract interaction: " + f);
 				frame.addComment(f.toString());
 			}
@@ -489,22 +489,20 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file that contains the state or parameter content
 	 * @param tag the expected top XML tag.
-	 * @throws DialException if the content could not be imported into the
-	 *             system
+	 * @throws DialException if the content could not be imported into the system
 	 */
-	public static void importContent(DialogueSystem system, String file,
-			String tag) throws DialException {
+	public static void importContent(DialogueSystem system, String file, String tag)
+			throws DialException {
 		if (tag.equals("parameters")) {
-			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file,
-					tag);
+			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
 				if (!parameters.hasChanceNode(oldParam)) {
-					parameters.addNode(system.getState()
-							.getChanceNode(oldParam));
+					parameters.addNode(system.getState().getChanceNode(oldParam));
 				}
 			}
 			system.getState().setParameters(parameters);
-		} else {
+		}
+		else {
 			BNetwork state = XMLStateReader.extractBayesianNetwork(file, tag);
 			system.addContent(new DialogueState(state));
 		}
@@ -525,7 +523,8 @@ public class GUIMenuBar extends JMenuBar {
 				exportContent(frame.getSystem(), recordFile, tag);
 				frame.addComment(tag.substring(0, 1).toUpperCase()
 						+ tag.substring(1) + " saved to " + recordFile);
-			} catch (DialException j) {
+			}
+			catch (DialException j) {
 				log.warning("could not save parameter distribution: " + j);
 			}
 		}
@@ -537,11 +536,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file in which to write the state or parameter content
 	 * @param tag the expected top XML tag.
-	 * @throws DialException if the content could not be exported from the
-	 *             system
+	 * @throws DialException if the content could not be exported from the system
 	 */
-	public static void exportContent(DialogueSystem system, String file,
-			String tag) throws DialException {
+	public static void exportContent(DialogueSystem system, String file, String tag)
+			throws DialException {
 		Document doc = XMLUtils.newXMLDocument();
 
 		Set<String> parameterIds = new HashSet<String>(system.getState()
@@ -570,7 +568,8 @@ public class GUIMenuBar extends JMenuBar {
 				Domain domain = XMLDomainReader.extractDomain(domainFile);
 				frame.getSystem().changeDomain(domain);
 				frame.addComment("Now using domain: " + domainFile);
-			} catch (DialException j) {
+			}
+			catch (DialException j) {
 				frame.addComment("Cannot use domain: " + j);
 			}
 		}
@@ -580,10 +579,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * Updates the menu bar.
 	 */
 	public void update() {
-		Set<String> parameterIds = new HashSet<String>(frame.getSystem()
-				.getState().getParameterIds());
-		Set<String> otherVarsIds = new HashSet<String>(frame.getSystem()
-				.getState().getChanceNodeIds());
+		Set<String> parameterIds = new HashSet<String>(frame.getSystem().getState()
+				.getParameterIds());
+		Set<String> otherVarsIds = new HashSet<String>(frame.getSystem().getState()
+				.getChanceNodeIds());
 		otherVarsIds.removeAll(parameterIds);
 		exportState.setEnabled(!otherVarsIds.isEmpty());
 		exportParams.setEnabled(!parameterIds.isEmpty());
@@ -593,22 +592,19 @@ public class GUIMenuBar extends JMenuBar {
 		for (Component c : inputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem
 					&& ((JRadioButtonMenuItem) c).getText().startsWith(
-							frame.getSystem().getSettings().inputMixer
-									.getName())) {
+							frame.getSystem().getSettings().inputMixer.getName())) {
 				((JRadioButtonMenuItem) c).setSelected(true);
 			}
 		}
 		for (Component c : outputMenu.getComponents()) {
 			if (c instanceof JRadioButtonMenuItem
 					&& ((JRadioButtonMenuItem) c).getText().startsWith(
-							frame.getSystem().getSettings().outputMixer
-									.getName())) {
+							frame.getSystem().getSettings().outputMixer.getName())) {
 				((JRadioButtonMenuItem) c).setSelected(true);
 			}
 		}
-		systemRole
-				.setEnabled(!frame.getSystem().getSettings().remoteConnections
-						.isEmpty());
+		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections
+				.isEmpty());
 	}
 
 }

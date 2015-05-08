@@ -41,8 +41,8 @@ import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
- * Main GUI frame for the OpenDial toolkit, encompassing various tabs and menus
- * to control the application
+ * Main GUI frame for the OpenDial toolkit, encompassing various tabs and menus to
+ * control the application
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -89,12 +89,13 @@ public class GUIFrame implements Module {
 				File f = new File(ICON_PATH);
 				if (f.exists()) {
 					frame.setIconImage(ImageIO.read(f));
-				} else {
-					frame.setIconImage(ImageIO.read(GUIFrame.class
-							.getResourceAsStream("/"
-									+ ICON_PATH.replace("//", "/"))));
 				}
-			} catch (Exception e) {
+				else {
+					frame.setIconImage(ImageIO.read(GUIFrame.class
+							.getResourceAsStream("/" + ICON_PATH.replace("//", "/"))));
+				}
+			}
+			catch (Exception e) {
 				log.debug("could not employ icon: " + e);
 			}
 			JTabbedPane tabbedPane = new JTabbedPane();
@@ -148,8 +149,8 @@ public class GUIFrame implements Module {
 	}
 
 	/**
-	 * Updates the current dialogue state displayed in the component. The
-	 * current dialogue state is name "current" in the selection list.
+	 * Updates the current dialogue state displayed in the component. The current
+	 * dialogue state is name "current" in the selection list.
 	 * 
 	 */
 	@Override
@@ -160,7 +161,8 @@ public class GUIFrame implements Module {
 			menu.update();
 			if (system.getDomain() == null) {
 				frame.setTitle("OpenDial toolkit");
-			} else if (!frame.getTitle().contains(system.getDomain().getName())) {
+			}
+			else if (!frame.getTitle().contains(system.getDomain().getName())) {
 				frame.setTitle("OpenDial toolkit - domain: "
 						+ system.getDomain().getName());
 			}
@@ -168,10 +170,9 @@ public class GUIFrame implements Module {
 	}
 
 	/**
-	 * Records a dialogue state in the component and makes it available for
-	 * display in the network selection list on the left side. The network is
-	 * associated with a specific name. If the name already exists, the previous
-	 * network is erased.
+	 * Records a dialogue state in the component and makes it available for display
+	 * in the network selection list on the left side. The network is associated with
+	 * a specific name. If the name already exists, the previous network is erased.
 	 * 
 	 * 
 	 * @param state the dialogue state to record

@@ -79,7 +79,8 @@ public class DoubleFactor {
 	public void addProbEntry(Assignment a, double value) {
 		if (matrix.containsKey(a)) {
 			matrix.put(a, new double[] { value, matrix.get(a)[1] });
-		} else {
+		}
+		else {
 			matrix.put(a, new double[] { value, 0.0 });
 		}
 	}
@@ -93,7 +94,8 @@ public class DoubleFactor {
 	public void addUtilityEntry(Assignment a, double value) {
 		if (matrix.containsKey(a)) {
 			matrix.put(a, new double[] { matrix.get(a)[0], value });
-		} else {
+		}
+		else {
 			matrix.put(a, new double[] { 1.0, value });
 		}
 	}
@@ -113,7 +115,8 @@ public class DoubleFactor {
 		if (matrix.containsKey(a)) {
 			matrix.put(a, new double[] { getProbEntry(a) + probIncr,
 					getUtilityEntry(a) + utilIncr });
-		} else {
+		}
+		else {
 			matrix.put(a, new double[] { probIncr, utilIncr });
 		}
 	}
@@ -143,8 +146,7 @@ public class DoubleFactor {
 			log.debug("utility matrix: " + utilityMatrix);
 		}
 		for (Assignment a : probMatrix.keySet()) {
-			matrix.put(a,
-					new double[] { probMatrix.get(a), utilityMatrix.get(a) });
+			matrix.put(a, new double[] { probMatrix.get(a), utilityMatrix.get(a) });
 		}
 	}
 
@@ -156,8 +158,7 @@ public class DoubleFactor {
 		for (Assignment a : new ArrayList<Assignment>(matrix.keySet())) {
 			double[] entries = matrix.get(a);
 			if (entries[0] > 0.0 && entries[1] != 0 && entries[0] != 1) {
-				matrix.put(a, new double[] { entries[0],
-						entries[1] / entries[0] });
+				matrix.put(a, new double[] { entries[0], entries[1] / entries[0] });
 			}
 		}
 	}
@@ -175,8 +176,7 @@ public class DoubleFactor {
 				.keySet()
 				.stream()
 				.collect(
-						Collectors.toMap(
-								a -> a,
+						Collectors.toMap(a -> a,
 								a -> new double[] { probMatrix.get(a),
 										matrix.get(a)[1] }));
 	}
@@ -200,8 +200,8 @@ public class DoubleFactor {
 	// ===================================
 
 	/**
-	 * Returns true if the factor is empty, e.g. either really empty, or
-	 * containing only empty assignments.
+	 * Returns true if the factor is empty, e.g. either really empty, or containing
+	 * only empty assignments.
 	 * 
 	 * @return true if the factor is empty, false otherwise
 	 */
@@ -223,8 +223,8 @@ public class DoubleFactor {
 	}
 
 	/**
-	 * Returns the probability for the assignment, if it is encoded in the
-	 * matrix. Else, returns null
+	 * Returns the probability for the assignment, if it is encoded in the matrix.
+	 * Else, returns null
 	 * 
 	 * @param a the assignment
 	 * @return probability of the assignment
@@ -234,8 +234,8 @@ public class DoubleFactor {
 	}
 
 	/**
-	 * Returns the utility for the assignment, if it is encoded in the matrix.
-	 * Else, returns null
+	 * Returns the utility for the assignment, if it is encoded in the matrix. Else,
+	 * returns null
 	 * 
 	 * @param a the assignment
 	 * @return utility for the assignment
@@ -283,15 +283,16 @@ public class DoubleFactor {
 	}
 
 	/**
-	 * Returns the set of variables used in the assignment. It assumes that at
-	 * least one entry exists in the matrix. Else, returns an empty list
+	 * Returns the set of variables used in the assignment. It assumes that at least
+	 * one entry exists in the matrix. Else, returns an empty list
 	 * 
 	 * @return the set of variables
 	 */
 	public Set<String> getVariables() {
 		if (!matrix.isEmpty()) {
 			return matrix.keySet().iterator().next().getVariables();
-		} else {
+		}
+		else {
 			return new HashSet<String>();
 		}
 	}

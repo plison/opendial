@@ -69,8 +69,8 @@ public final class BasicCondition implements Condition {
 	// ===================================
 
 	/**
-	 * Creates a new basic condition, given a variable label, an expected value,
-	 * and a relation to hold between the variable and its value
+	 * Creates a new basic condition, given a variable label, an expected value, and
+	 * a relation to hold between the variable and its value
 	 * 
 	 * @param variable the variable
 	 * @param value the value
@@ -86,8 +86,8 @@ public final class BasicCondition implements Condition {
 	}
 
 	/**
-	 * Creates a new basic condition, given a variable label, an expected value,
-	 * and a relation to hold between the variable and its value
+	 * Creates a new basic condition, given a variable label, an expected value, and
+	 * a relation to hold between the variable and its value
 	 * 
 	 * @param variable the variable
 	 * @param value the value
@@ -123,8 +123,8 @@ public final class BasicCondition implements Condition {
 	}
 
 	/**
-	 * Returns the input variables for the condition (the main variable itself,
-	 * plus optional slots in the value to fill)
+	 * Returns the input variables for the condition (the main variable itself, plus
+	 * optional slots in the value to fill)
 	 * 
 	 * @return the input variables
 	 */
@@ -145,8 +145,8 @@ public final class BasicCondition implements Condition {
 	}
 
 	/**
-	 * Returns true if the condition is satisfied by the value assignment
-	 * provided as argument, and false otherwise
+	 * Returns true if the condition is satisfied by the value assignment provided as
+	 * argument, and false otherwise
 	 * 
 	 * <p>
 	 * This method uses an external ConditionCheck object to ease the process.
@@ -175,7 +175,8 @@ public final class BasicCondition implements Condition {
 
 		if (expectedValue != null) {
 			return isSatisfiedBy(actualValue, expectedValue);
-		} else {
+		}
+		else {
 			return isSatisfiedBy(actualValue, filledTemplate);
 		}
 	}
@@ -213,8 +214,8 @@ public final class BasicCondition implements Condition {
 	}
 
 	/**
-	 * Returns true if the relation is satisfied between the actual and
-	 * (template) expected values.
+	 * Returns true if the relation is satisfied between the actual and (template)
+	 * expected values.
 	 * 
 	 * @param actualValue the actual value
 	 * @param templateValue the templated expected value
@@ -227,11 +228,9 @@ public final class BasicCondition implements Condition {
 		case UNEQUAL:
 			return !templateValue.match(actualValue.toString()).isMatching();
 		case CONTAINS:
-			return templateValue.partialmatch(actualValue.toString())
-					.isMatching();
+			return templateValue.partialmatch(actualValue.toString()).isMatching();
 		case NOT_CONTAINS:
-			return !templateValue.partialmatch(actualValue.toString())
-					.isMatching();
+			return !templateValue.partialmatch(actualValue.toString()).isMatching();
 		case LENGTH:
 			return templateValue.match("" + actualValue.length()).isMatching();
 		default:
@@ -250,15 +249,13 @@ public final class BasicCondition implements Condition {
 
 		// case 1: the variable label is underspecified
 		if (!variable.getSlots().isEmpty()
-				&& !new Template(variable.fillSlots(input)).getSlots()
-						.isEmpty()) {
+				&& !new Template(variable.fillSlots(input)).getSlots().isEmpty()) {
 
 			RuleGrounding groundings = new RuleGrounding();
 			for (String inputVar : input.getVariables()) {
 				MatchResult m = variable.match(inputVar);
 				if (m.isMatching()) {
-					Assignment newInput = new Assignment(input,
-							m.getFilledSlots());
+					Assignment newInput = new Assignment(input, m.getFilledSlots());
 					RuleGrounding specGrounds = getGroundings(newInput);
 					specGrounds.extend(m.getFilledSlots());
 					groundings.add(specGrounds);
@@ -307,15 +304,14 @@ public final class BasicCondition implements Condition {
 	}
 
 	/**
-	 * Tries to match the template with the actual value, and returns the
-	 * associated groundings
+	 * Tries to match the template with the actual value, and returns the associated
+	 * groundings
 	 * 
 	 * @param actualValue the actual filled value
 	 * @param templateValue the template to match
 	 * @return the resulting groundings
 	 */
-	private RuleGrounding getGroundings(Value actualValue,
-			Template templateValue) {
+	private RuleGrounding getGroundings(Value actualValue, Template templateValue) {
 
 		RuleGrounding grounding = new RuleGrounding();
 		if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
@@ -323,17 +319,17 @@ public final class BasicCondition implements Condition {
 			if (m.isMatching()) {
 				grounding.add(m.getFilledSlots());
 			}
-		} else if (relation == Relation.CONTAINS
-				&& actualValue instanceof SetVal) {
+		}
+		else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
 			for (Value subval : ((SetVal) actualValue).getSet()) {
 				MatchResult m2 = templateValue.match(subval.toString());
 				if (m2.isMatching()) {
 					grounding.add(m2.getFilledSlots());
 				}
 			}
-		} else if (relation == Relation.CONTAINS) {
-			List<MatchResult> m2 = templateValue.find(actualValue.toString(),
-					100);
+		}
+		else if (relation == Relation.CONTAINS) {
+			List<MatchResult> m2 = templateValue.find(actualValue.toString(), 100);
 			for (MatchResult match : m2) {
 				grounding.add(match.getFilledSlots());
 			}

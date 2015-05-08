@@ -57,8 +57,7 @@ public class ValueRange {
 	/**
 	 * Creates a value range out of a set of value assignments
 	 * 
-	 * @param assigns the assignments specifying the possible (variable,value)
-	 *            pairs
+	 * @param assigns the assignments specifying the possible (variable,value) pairs
 	 */
 	public ValueRange(Set<Assignment> assigns) {
 		this();
@@ -80,8 +79,8 @@ public class ValueRange {
 	}
 
 	/**
-	 * Constructs a range of values based on the mapping between variables and
-	 * sets of values
+	 * Constructs a range of values based on the mapping between variables and sets
+	 * of values
 	 * 
 	 * @param range the range (as a map)
 	 */
@@ -137,8 +136,8 @@ public class ValueRange {
 	}
 
 	/**
-	 * Extracts all alternative assignments of values for the variables in the
-	 * range. This operation can be computational expensive, use with caution.
+	 * Extracts all alternative assignments of values for the variables in the range.
+	 * This operation can be computational expensive, use with caution.
 	 * 
 	 * @return the set of alternative assignments
 	 */
@@ -158,8 +157,8 @@ public class ValueRange {
 	 * @return the higher bound on the number of possible combinations
 	 */
 	public int getNbCombinations() {
-		OptionalInt estimation = range.values().stream()
-				.mapToInt(set -> set.size()).reduce((a, b) -> a * b);
+		OptionalInt estimation = range.values().stream().mapToInt(set -> set.size())
+				.reduce((a, b) -> a * b);
 		return (estimation.isPresent()) ? estimation.getAsInt() : 1;
 	}
 
@@ -173,8 +172,8 @@ public class ValueRange {
 	}
 
 	/**
-	 * Returns the set of values for the variable in the range (if defined). If
-	 * the variable is not defined in the range, returns null
+	 * Returns the set of values for the variable in the range (if defined). If the
+	 * variable is not defined in the range, returns null
 	 * 
 	 * @param variable the variable
 	 * @return its set of alternative values
@@ -209,8 +208,8 @@ public class ValueRange {
 	}
 
 	/**
-	 * Intersects the range with the existing one (only retains the values
-	 * defined in both ranges).
+	 * Intersects the range with the existing one (only retains the values defined in
+	 * both ranges).
 	 * 
 	 * @param otherRange the range to intersect with the existing one
 	 */
@@ -218,7 +217,8 @@ public class ValueRange {
 		for (String id : otherRange.getVariables()) {
 			if (range.containsKey(id)) {
 				range.get(id).retainAll(otherRange.getValues(id));
-			} else {
+			}
+			else {
 				addValues(id, otherRange.getValues(id));
 			}
 		}

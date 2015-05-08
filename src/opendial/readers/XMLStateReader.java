@@ -58,8 +58,8 @@ public class XMLStateReader {
 	// ===================================
 
 	/**
-	 * Returns the initial state or parameters from the XML document, for the
-	 * given domain (where the variable types are already declared)
+	 * Returns the initial state or parameters from the XML document, for the given
+	 * domain (where the variable types are already declared)
 	 * 
 	 * @param file the file to process
 	 * @param tag the XML tag to search for
@@ -87,15 +87,14 @@ public class XMLStateReader {
 	}
 
 	/**
-	 * Returns the initial state or parameters from the XML document, for the
-	 * given domain (where the variable types are already declared)
+	 * Returns the initial state or parameters from the XML document, for the given
+	 * domain (where the variable types are already declared)
 	 * 
 	 * @param mainNode the main node for the XML document
 	 * @return the corresponding dialogue state
 	 * @throws DialException if XML document is ill-formatted
 	 */
-	public static BNetwork getBayesianNetwork(Node mainNode)
-			throws DialException {
+	public static BNetwork getBayesianNetwork(Node mainNode) throws DialException {
 
 		BNetwork state = new BNetwork();
 
@@ -119,8 +118,7 @@ public class XMLStateReader {
 	 */
 	public static ChanceNode createChanceNode(Node node) throws DialException {
 
-		if (!node.hasAttributes()
-				|| node.getAttributes().getNamedItem("id") == null) {
+		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id") == null) {
 			throw new DialException("variable id is mandatory");
 		}
 
@@ -160,13 +158,14 @@ public class XMLStateReader {
 					else if (distribType.equalsIgnoreCase("uniform")) {
 						distrib = new ContinuousDistribution(label,
 								getUniform(subnode));
-					} else if (distribType.equalsIgnoreCase("dirichlet")) {
+					}
+					else if (distribType.equalsIgnoreCase("dirichlet")) {
 						distrib = new ContinuousDistribution(label,
 								getDirichlet(subnode));
-					} else {
-						throw new DialException(
-								"distribution is not recognised: "
-										+ distribType);
+					}
+					else {
+						throw new DialException("distribution is not recognised: "
+								+ distribType);
 					}
 
 				}
@@ -176,15 +175,16 @@ public class XMLStateReader {
 		ChanceNode variable = new ChanceNode(label);
 		if (distrib != null) {
 			variable.setDistrib(distrib);
-		} else {
+		}
+		else {
 			variable.setDistrib(table);
 		}
 		return variable;
 	}
 
 	/**
-	 * Returns the probability of the value defined in the XML node (default to
-	 * 1.0f is none is declared)
+	 * Returns the probability of the value defined in the XML node (default to 1.0f
+	 * is none is declared)
 	 * 
 	 * @param node the XML node
 	 * @return the value probability
@@ -201,7 +201,8 @@ public class XMLStateReader {
 
 			try {
 				prob = Float.parseFloat(probStr);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				XMLDomainReader.log.warning("probability " + probStr
 						+ " not valid, assuming 1.0f");
 			}
@@ -226,7 +227,8 @@ public class XMLStateReader {
 				String meanStr = subsubnode.getFirstChild().getNodeValue();
 				if (meanStr.contains("[")) {
 					mean = ((ArrayVal) ValueFactory.create(meanStr)).getArray();
-				} else {
+				}
+				else {
 					mean = new double[] { Double.parseDouble(meanStr) };
 				}
 			}
@@ -235,7 +237,8 @@ public class XMLStateReader {
 				if (varianceStr.contains("[")) {
 					variance = ((ArrayVal) ValueFactory.create(varianceStr))
 							.getArray();
-				} else {
+				}
+				else {
 					variance = new double[] { Double.parseDouble(varianceStr) };
 				}
 			}
@@ -253,19 +256,16 @@ public class XMLStateReader {
 	 * @return the corresponding uniform PDF
 	 * @throws DialException if the density function is not properly encoded
 	 */
-	private static UniformDensityFunction getUniform(Node node)
-			throws DialException {
+	private static UniformDensityFunction getUniform(Node node) throws DialException {
 		double min = Double.MAX_VALUE;
 		double max = Double.MAX_VALUE;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
 			Node subsubnode = node.getChildNodes().item(j);
 			if (subsubnode.getNodeName().equals("min")) {
-				min = Double.parseDouble(subsubnode.getFirstChild()
-						.getNodeValue());
+				min = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
 			}
 			if (subsubnode.getNodeName().equals("max")) {
-				max = Double.parseDouble(subsubnode.getFirstChild()
-						.getNodeValue());
+				max = Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
 			}
 		}
 		if (min != Double.MAX_VALUE && max != Double.MAX_VALUE) {
@@ -275,8 +275,7 @@ public class XMLStateReader {
 	}
 
 	/**
-	 * Extracts the Dirichlet density function described by the XML
-	 * specification
+	 * Extracts the Dirichlet density function described by the XML specification
 	 * 
 	 * @param node the XML node
 	 * @return the corresponding Dirichlet PDF
@@ -294,8 +293,7 @@ public class XMLStateReader {
 			}
 		}
 		if (!alphas.isEmpty()) {
-			return new DirichletDensityFunction(
-					(new ArrayVal(alphas)).getArray());
+			return new DirichletDensityFunction((new ArrayVal(alphas)).getArray());
 		}
 		throw new DialException("Dirichlet must have at least one alpha count");
 	}

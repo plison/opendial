@@ -66,24 +66,23 @@ public class VariableElimination implements InferenceAlgorithm {
 	// ===================================
 
 	/**
-	 * Queries for the probability distribution of the set of random variables
-	 * in the Bayesian network, given the provided evidence
+	 * Queries for the probability distribution of the set of random variables in the
+	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
 	 * @return the corresponding categorical table
 	 * @throws DialException if the inference operation failed
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query)
-			throws DialException {
+	public MultivariateTable queryProb(Query.ProbQuery query) throws DialException {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
 		return new MultivariateTable(queryFactor.getProbMatrix());
 	}
 
 	/**
-	 * Queries for the utility of a particular set of (action) variables, given
-	 * the provided evidence
+	 * Queries for the utility of a particular set of (action) variables, given the
+	 * provided evidence
 	 * 
 	 * @param query the full query
 	 * @return the utility distribution
@@ -101,8 +100,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	// ===================================
 
 	/**
-	 * Generates the full double factor associated with the query variables,
-	 * using the variable-elimination algorithm.
+	 * Generates the full double factor associated with the query variables, using
+	 * the variable-elimination algorithm.
 	 * 
 	 * @param query the query
 	 * @return the full double factor containing all query variables
@@ -133,8 +132,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Sums out the variable from the pointwise product of the factors, and
-	 * returns the result
+	 * Sums out the variable from the pointwise product of the factors, and returns
+	 * the result
 	 * 
 	 * @param nodeId the Bayesian node corresponding to the variable
 	 * @param factors the factors to sum out
@@ -150,7 +149,8 @@ public class VariableElimination implements InferenceAlgorithm {
 		for (DoubleFactor f : factors) {
 			if (!f.getVariables().contains(nodeId)) {
 				remainingFactors.add(f);
-			} else {
+			}
+			else {
 				dependentFactors.add(f);
 			}
 		}
@@ -263,7 +263,8 @@ public class VariableElimination implements InferenceAlgorithm {
 
 				if (node instanceof ChanceNode || node instanceof ActionNode) {
 					factor.addEntry(a2, flatTable.get(a), 0.0f);
-				} else if (node instanceof UtilityNode) {
+				}
+				else if (node instanceof UtilityNode) {
 					factor.addEntry(a2, 1.0f, flatTable.get(a));
 				}
 			}
@@ -273,9 +274,9 @@ public class VariableElimination implements InferenceAlgorithm {
 	}
 
 	/**
-	 * In case of overlap between the query variables and the evidence (this
-	 * happens when a variable specified in the evidence also appears in the
-	 * query), extends the distribution to add the evidence assignment pairs.
+	 * In case of overlap between the query variables and the evidence (this happens
+	 * when a variable specified in the evidence also appears in the query), extends
+	 * the distribution to add the evidence assignment pairs.
 	 * 
 	 * @param query the query
 	 * @param distribution the computed distribution
@@ -283,8 +284,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	private DoubleFactor addEvidencePairs(DoubleFactor factor, Query query) {
 
 		List<String> inter = ListUtils.intersection(
-				new ArrayList<String>(query.getQueryVars()),
-				new ArrayList<String>(query.getEvidence().getVariables()));
+				new ArrayList<String>(query.getQueryVars()), new ArrayList<String>(
+						query.getEvidence().getVariables()));
 
 		if (!inter.isEmpty()) {
 			DoubleFactor newFactor = new DoubleFactor();
@@ -295,7 +296,8 @@ public class VariableElimination implements InferenceAlgorithm {
 						factor.getUtilityEntry(a));
 			}
 			return newFactor;
-		} else {
+		}
+		else {
 			return factor;
 		}
 	}
@@ -350,17 +352,17 @@ public class VariableElimination implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Returns the factor associated with the probability/utility distribution
-	 * for the given node in the Bayesian network. If the factor encode more
-	 * than the needed distribution, the surplus variables are summed out.
+	 * Returns the factor associated with the probability/utility distribution for
+	 * the given node in the Bayesian network. If the factor encode more than the
+	 * needed distribution, the surplus variables are summed out.
 	 * 
 	 * @param factors the collection of factors in which to search
 	 * @param toEstimate the variable to estimate
 	 * @return the relevant factor associated with the node
 	 * @throws DialException if not relevant factor could be found
 	 */
-	private DoubleFactor getRelevantFactor(DoubleFactor fullFactor,
-			String headVar, Set<String> inputVars) throws DialException {
+	private DoubleFactor getRelevantFactor(DoubleFactor fullFactor, String headVar,
+			Set<String> inputVars) throws DialException {
 
 		// summing out unrelated variables
 		DoubleFactor factor = fullFactor.copy();
@@ -378,8 +380,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Creates the probability distribution for the given variable, as described
-	 * by the factor. The distribution is normalised, and encoded as a table.
+	 * Creates the probability distribution for the given variable, as described by
+	 * the factor. The distribution is normalised, and encoded as a table.
 	 * 
 	 * @param factor the factor
 	 * @param variable the variable
@@ -401,14 +403,12 @@ public class VariableElimination implements InferenceAlgorithm {
 		// else, create a full probability table
 		else {
 			ConditionalTable table = new ConditionalTable(variable);
-			Set<String> depVariables = new HashSet<String>(
-					factor.getVariables());
+			Set<String> depVariables = new HashSet<String>(factor.getVariables());
 			depVariables.remove(variable);
 			factor.normalise(depVariables);
 			for (Assignment a : factor.getMatrix().keySet()) {
 				Assignment condition = a.getTrimmed(depVariables);
-				table.addRow(condition, a.getValue(variable),
-						factor.getProbEntry(a));
+				table.addRow(condition, a.getValue(variable), factor.getProbEntry(a));
 			}
 			table.fillConditionalHoles();
 			return table;

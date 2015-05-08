@@ -152,11 +152,11 @@ public class StateViewerTab extends JComponent {
 		logScroll.setBorder(BorderFactory.createEmptyBorder());
 
 		// arrange the global layout
-		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				leftPanel, visualisation.wrapWithScrollPane());
+		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
+				visualisation.wrapWithScrollPane());
 		topPanel.setDividerLocation(250);
-		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topPanel, logScroll);
+		JSplitPane fullPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel,
+				logScroll);
 		fullPanel.setDividerLocation(600);
 		add(fullPanel);
 
@@ -181,8 +181,8 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Returns true if the parameter variables are currently displayed in the
-	 * state viewer. Returns false otherwise.
+	 * Returns true if the parameter variables are currently displayed in the state
+	 * viewer. Returns false otherwise.
 	 * 
 	 * @return true if parameters are shown, false otherwise.
 	 */
@@ -191,8 +191,8 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Updates the current dialogue state displayed in the component. The
-	 * current dialogue state is named "Current state" in the selection list.
+	 * Updates the current dialogue state displayed in the component. The current
+	 * dialogue state is named "Current state" in the selection list.
 	 * 
 	 * @param state the updated Bayesian Network
 	 * @param updatedVars the updated variables
@@ -205,7 +205,8 @@ public class StateViewerTab extends JComponent {
 		if (updatedVars.contains(settings.userInput)) {
 			if (settings.recording == Recording.ALL) {
 				listModel.add(2, "separator-utterances");
-			} else {
+			}
+			else {
 				while (listModel.size() > 2) {
 					String name = listModel.remove(2);
 					states.remove(name);
@@ -216,12 +217,12 @@ public class StateViewerTab extends JComponent {
 				.filter(s -> s.contains("'")).map(s -> s.replace("'", ""))
 				.collect(Collectors.toList());
 		if (settings.recording != Recording.NONE && !varsInProcessing.isEmpty()) {
-			String title = "Updating "
-					+ StringUtils.join(varsInProcessing, ",");
+			String title = "Updating " + StringUtils.join(varsInProcessing, ",");
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
-			} catch (DialException e) {
+			}
+			catch (DialException e) {
 				log.warning("cannot copy state : " + e);
 			}
 		}
@@ -230,10 +231,9 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Records a dialogue state in the component and makes it available for
-	 * display in the network selection list on the left side. The network is
-	 * associated with a specific name. If the name already exists, the previous
-	 * network is erased.
+	 * Records a dialogue state in the component and makes it available for display
+	 * in the network selection list on the left side. The network is associated with
+	 * a specific name. If the name already exists, the previous network is erased.
 	 * 
 	 * 
 	 * @param state the dialogue state to record
@@ -250,8 +250,7 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Writes the given distribution in the logging area at the bottom of the
-	 * window
+	 * Writes the given distribution in the logging area at the bottom of the window
 	 * 
 	 * @param distrib the distribution to write
 	 */
@@ -263,8 +262,7 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Writes the given distribution in the logging area at the bottom of the
-	 * window
+	 * Writes the given distribution in the logging area at the bottom of the window
 	 * 
 	 * @param distrib the distribution to write
 	 */
@@ -304,8 +302,7 @@ public class StateViewerTab extends JComponent {
 		JScrollPane scrollPane = new JScrollPane(listBox);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		leftPanel.add(scrollPane, BorderLayout.CENTER);
-		scrollPane.setBorder(BorderFactory
-				.createTitledBorder("Dialogue states:"));
+		scrollPane.setBorder(BorderFactory.createTitledBorder("Dialogue states:"));
 
 		JPanel controlPanel = createControlPanel();
 		leftPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -360,8 +357,8 @@ public class StateViewerTab extends JComponent {
 
 		controlPanel.add(translationPanel, BorderLayout.EAST);
 		controlPanel.setBorder(new CompoundBorder(BorderFactory
-				.createTitledBorder("Controls"), BorderFactory
-				.createEmptyBorder(5, 5, 10, 20)));
+				.createTitledBorder("Controls"), BorderFactory.createEmptyBorder(5,
+				5, 10, 20)));
 
 		return controlPanel;
 	}
@@ -381,25 +378,20 @@ public class StateViewerTab extends JComponent {
 		// NB: the translation actions are only made available when the graph is
 		// in focus,
 		// to avoid conflicts with the navigation of the selection list
-		visualisation
-				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke(38, 0, false),
 						TranslationDirection.NORTH);
-		visualisation
-				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke(40, 0, false),
 						TranslationDirection.SOUTH);
 		visualisation
 				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(37, 0, false),
-						TranslationDirection.WEST);
+				.put(KeyStroke.getKeyStroke(37, 0, false), TranslationDirection.WEST);
 		visualisation
 				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(39, 0, false),
-						TranslationDirection.EAST);
+				.put(KeyStroke.getKeyStroke(39, 0, false), TranslationDirection.EAST);
 
-		getActionMap()
-				.put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));
+		getActionMap().put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));
 		getActionMap().put(ZoomDirection.IN, new ZoomAction(ZoomDirection.IN));
 		visualisation.getActionMap().put(TranslationDirection.NORTH,
 				new TranslationAction(TranslationDirection.NORTH));
@@ -427,8 +419,8 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * A listener for the list containing the Bayesian Networks. Once a network
-	 * is selected, its graph is automatically displayed in the main window.
+	 * A listener for the list containing the Bayesian Networks. Once a network is
+	 * selected, its graph is automatically displayed in the main window.
 	 *
 	 */
 	final class CustomListSelectionListener implements ListSelectionListener {
@@ -438,8 +430,7 @@ public class StateViewerTab extends JComponent {
 			@SuppressWarnings("unchecked")
 			JList<String> jl = (JList<String>) e.getSource();
 			if (jl.getMinSelectionIndex() >= 0) {
-				String selection = listModel.getElementAt(jl
-						.getMinSelectionIndex());
+				String selection = listModel.getElementAt(jl.getMinSelectionIndex());
 				if (!selection.contains("separator")) {
 					visualisation.showBayesianNetwork(states.get(selection));
 				}
@@ -505,10 +496,10 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Custom mouse listener for the control buttons. The objective of this
-	 * button is to keep pursuing the given action (either zooming or
-	 * translating) until the button is released. This is realised via a thread
-	 * which is interrupted upon the button release.
+	 * Custom mouse listener for the control buttons. The objective of this button is
+	 * to keep pursuing the given action (either zooming or translating) until the
+	 * button is released. This is realised via a thread which is interrupted upon
+	 * the button release.
 	 *
 	 */
 	final class CustomMouseListener implements MouseListener {
@@ -531,7 +522,8 @@ public class StateViewerTab extends JComponent {
 						try {
 							action.actionPerformed(new ActionEvent(this, 0, ""));
 							Thread.sleep(100);
-						} catch (InterruptedException e) {
+						}
+						catch (InterruptedException e) {
 							continueProcess = false;
 						}
 					}
@@ -564,8 +556,8 @@ public class StateViewerTab extends JComponent {
 	}
 
 	/**
-	 * Custom model for the list of dialogue states (employed to avoid null
-	 * pointer exceptions).
+	 * Custom model for the list of dialogue states (employed to avoid null pointer
+	 * exceptions).
 	 */
 	final class CustomListModel extends DefaultListModel<String> {
 
@@ -574,10 +566,12 @@ public class StateViewerTab extends JComponent {
 			if (index < super.size()) {
 				try {
 					return super.getElementAt(index);
-				} catch (ArrayIndexOutOfBoundsException e) {
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
 					return "";
 				}
-			} else {
+			}
+			else {
 				return "";
 			}
 		}
@@ -586,8 +580,7 @@ public class StateViewerTab extends JComponent {
 	/**
 	 * Renderer for the list of dialogue states
 	 */
-	final class JlistRenderer extends JLabel implements
-			ListCellRenderer<String> {
+	final class JlistRenderer extends JLabel implements ListCellRenderer<String> {
 		JSeparator separator;
 
 		public JlistRenderer() {
@@ -597,9 +590,8 @@ public class StateViewerTab extends JComponent {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(
-				JList<? extends String> list, String value, int index,
-				boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList<? extends String> list,
+				String value, int index, boolean isSelected, boolean cellHasFocus) {
 			String str = (value == null) ? "" : value.toString();
 			if (str.contains("separator")) {
 				return separator;
@@ -610,7 +602,8 @@ public class StateViewerTab extends JComponent {
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
 				setForeground(list.getSelectionForeground());
-			} else {
+			}
+			else {
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
 			}

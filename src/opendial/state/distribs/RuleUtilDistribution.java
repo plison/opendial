@@ -44,8 +44,7 @@ import opendial.state.AnchoredRule;
 public class RuleUtilDistribution implements UtilityFunction {
 
 	// logger
-	public static Logger log = new Logger("RuleUtilDistribution",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleUtilDistribution", Logger.Level.DEBUG);
 
 	// A rule
 	AnchoredRule rule;
@@ -64,7 +63,8 @@ public class RuleUtilDistribution implements UtilityFunction {
 
 		if ((rule.getRule().getRuleType() == RuleType.UTIL)) {
 			this.rule = rule;
-		} else {
+		}
+		else {
 			throw new DialException("only utility rules can define a "
 					+ "rule-based utility distribution");
 		}
@@ -84,8 +84,8 @@ public class RuleUtilDistribution implements UtilityFunction {
 	// ===================================
 
 	/**
-	 * Returns the utility for Q(input), where input is the assignment of values
-	 * for both the chance nodes and the action nodes
+	 * Returns the utility for Q(input), where input is the assignment of values for
+	 * both the chance nodes and the action nodes
 	 * 
 	 * @param fullInput the value assignment
 	 * @return the corresponding utility
@@ -133,7 +133,8 @@ public class RuleUtilDistribution implements UtilityFunction {
 		try {
 			RuleUtilDistribution distrib = new RuleUtilDistribution(rule);
 			return distrib;
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -171,8 +172,8 @@ public class RuleUtilDistribution implements UtilityFunction {
 		for (Effect effectOutput : output.getEffects()) {
 			Condition effectCondition = effectOutput.convertToCondition();
 			if (effectCondition.isSatisfiedBy(ruleAction)) {
-				totalUtil += output.getParameter(effectOutput)
-						.getParameterValue(input);
+				totalUtil += output.getParameter(effectOutput).getParameterValue(
+						input);
 			}
 		}
 

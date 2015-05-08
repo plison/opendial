@@ -39,8 +39,8 @@ import opendial.domains.rules.effects.Effect;
 import opendial.state.AnchoredRule;
 
 /**
- * Discrete probability distribution based on a rule specification (which can be
- * for an update rule or a prediction rule).
+ * Discrete probability distribution based on a rule specification (which can be for
+ * an update rule or a prediction rule).
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -48,8 +48,7 @@ import opendial.state.AnchoredRule;
 public class RuleDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("RuleDistribution",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("RuleDistribution", Logger.Level.DEBUG);
 
 	String id;
 
@@ -68,7 +67,8 @@ public class RuleDistribution implements ProbDistribution {
 	public RuleDistribution(AnchoredRule rule) throws DialException {
 		if (rule.getRule().getRuleType() == RuleType.PROB) {
 			this.arule = rule;
-		} else {
+		}
+		else {
 			throw new DialException("only probabilistic rules can define a "
 					+ "rule-based probability distribution");
 		}
@@ -99,8 +99,8 @@ public class RuleDistribution implements ProbDistribution {
 	// ===================================
 
 	/**
-	 * Returns the probability for P(head|condition), where head is an
-	 * assignment of an output value for the rule node.
+	 * Returns the probability for P(head|condition), where head is an assignment of
+	 * an output value for the rule node.
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
@@ -108,8 +108,7 @@ public class RuleDistribution implements ProbDistribution {
 	 * @throws DialException if the probability could not be calculated.
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head)
-			throws DialException {
+	public double getProb(Assignment condition, Value head) throws DialException {
 
 		CategoricalTable outputTable = getProbDistrib(condition);
 		double prob = outputTable.getProb(head);
@@ -125,8 +124,7 @@ public class RuleDistribution implements ProbDistribution {
 	 * @throws DialException if the distribution could not be calculated.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws DialException {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -164,8 +162,7 @@ public class RuleDistribution implements ProbDistribution {
 	}
 
 	@Override
-	public CategoricalTable getProbDistrib(Assignment input)
-			throws DialException {
+	public CategoricalTable getProbDistrib(Assignment input) throws DialException {
 
 		// search for the matching case
 
@@ -189,10 +186,9 @@ public class RuleDistribution implements ProbDistribution {
 		}
 
 		if (probTable.isEmpty()) {
-			log.warning("probability table is empty (no effects) for "
-					+ "input " + input + " and rule " + arule.toString());
-			log.debug("output was " + output + " and effect "
-					+ output.getEffects());
+			log.warning("probability table is empty (no effects) for " + "input "
+					+ input + " and rule " + arule.toString());
+			log.debug("output was " + output + " and effect " + output.getEffects());
 		}
 		return probTable;
 	}
@@ -221,7 +217,8 @@ public class RuleDistribution implements ProbDistribution {
 		try {
 			RuleDistribution distrib = new RuleDistribution(arule);
 			return distrib;
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			e.printStackTrace();
 			return null;
 		}

@@ -26,6 +26,7 @@ package opendial.datastructs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +50,9 @@ import org.w3c.dom.Element;
  * conjunction of (variable,value) pairs.
  * 
  * <p>
- * Technically, the assignment is encoded as a map between the variable
- * identifiers and their associated value. This class offers various methods are
- * provided for creating, comparing and manipulating such assignments.
+ * Technically, the assignment is encoded as a map between the variable identifiers
+ * and their associated value. This class offers various methods are provided for
+ * creating, comparing and manipulating such assignments.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -155,9 +156,9 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment with a single pair, given a boolean assignment such
-	 * as "Variable" or "!Variable". If booleanAssign start with an exclamation
-	 * mark, the value is set to false, else the value is set to true.
+	 * Creates an assignment with a single pair, given a boolean assignment such as
+	 * "Variable" or "!Variable". If booleanAssign start with an exclamation mark,
+	 * the value is set to false, else the value is set to true.
 	 * 
 	 * @param booleanAssign the boolean assignment
 	 */
@@ -167,8 +168,7 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment with a list of boolean assignments (cf. method
-	 * above).
+	 * Creates an assignment with a list of boolean assignments (cf. method above).
 	 * 
 	 * @param booleanAssigns the list of boolean assignments
 	 */
@@ -188,8 +188,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment from an existing one (which is copied), plus a
-	 * single (var,value) pair
+	 * Creates an assignment from an existing one (which is copied), plus a single
+	 * (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -202,8 +202,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment from an existing one (which is copied), plus a
-	 * single (var,value) pair
+	 * Creates an assignment from an existing one (which is copied), plus a single
+	 * (var,value) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -216,8 +216,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment from an existing one (which is copied), plus a
-	 * single (var,val) pair
+	 * Creates an assignment from an existing one (which is copied), plus a single
+	 * (var,val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -230,8 +230,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment from an existing one (which is copied), plus a
-	 * single (var, val) pair
+	 * Creates an assignment from an existing one (which is copied), plus a single
+	 * (var, val) pair
 	 * 
 	 * @param ass the assignment to copy
 	 * @param var the variable label
@@ -270,8 +270,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment with only none values for the variable labels given
-	 * as argument.
+	 * Creates an assignment with only none values for the variable labels given as
+	 * argument.
 	 * 
 	 * @param variables the collection of variable labels
 	 * @return the resulting default assignment
@@ -297,8 +297,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Creates an assignment with only none values for the variable labels given
-	 * as argument.
+	 * Creates an assignment with only none values for the variable labels given as
+	 * argument.
 	 * 
 	 * @param variables the collection of variable labels
 	 * @return the resulting default assignment
@@ -315,10 +315,12 @@ public class Assignment {
 				String var = substr.split("=")[0].trim();
 				String value = substr.split("=")[1].trim();
 				a.addPair(var, ValueFactory.create(value));
-			} else if (substr.contains("!")) {
+			}
+			else if (substr.contains("!")) {
 				String woNeg = substr.replace("!", "").trim();
 				a.addPair(woNeg, ValueFactory.create(false));
-			} else {
+			}
+			else {
 				a.addPair(substr.trim(), ValueFactory.create(true));
 			}
 		}
@@ -385,16 +387,17 @@ public class Assignment {
 	}
 
 	/**
-	 * Adds a new (var,value) pair as determined by the form of the argument. If
-	 * the argument starts with an exclamation mark, the value is set to False,
-	 * else the value is set to True.
+	 * Adds a new (var,value) pair as determined by the form of the argument. If the
+	 * argument starts with an exclamation mark, the value is set to False, else the
+	 * value is set to True.
 	 * 
 	 * @param booleanAssign the pair to add
 	 */
 	public void addPair(String booleanAssign) {
 		if (!booleanAssign.startsWith("!")) {
 			addPair(booleanAssign, ValueFactory.create(true));
-		} else {
+		}
+		else {
 			addPair(booleanAssign.substring(1, booleanAssign.length()),
 					ValueFactory.create(false));
 		}
@@ -411,8 +414,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Add a new set of pairs defined in the assignment given as argument (i.e.
-	 * merge the given assignment into the present one).
+	 * Add a new set of pairs defined in the assignment given as argument (i.e. merge
+	 * the given assignment into the present one).
 	 * 
 	 * @param assignment the assignment to merge
 	 */
@@ -544,11 +547,8 @@ public class Assignment {
 	}
 
 	public Assignment addPrimes() {
-		Map<String, Value> newMap = map
-				.keySet()
-				.stream()
-				.collect(
-						Collectors.toMap(var -> var + "'", var -> map.get(var)));
+		Map<String, Value> newMap = map.keySet().stream()
+				.collect(Collectors.toMap(var -> var + "'", var -> map.get(var)));
 		return new Assignment(newMap);
 	}
 
@@ -591,8 +591,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns true if the assignment contains all of the given variables, and
-	 * false otherwise
+	 * Returns true if the assignment contains all of the given variables, and false
+	 * otherwise
 	 * 
 	 * @param vars the variable labels
 	 * @return true if all variables are included, false otherwise
@@ -602,8 +602,19 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns a trimmed version of the assignment, where only the variables
-	 * given as parameters are considered
+	 * Returns true if the assignment contains at least one of the given variables,
+	 * and false otherwise
+	 * 
+	 * @param vars the variable labels
+	 * @return true if at least one variable are included, false otherwise
+	 */
+	public boolean containsOneVar(Set<String> vars) {
+		return !Collections.disjoint(map.keySet(), vars);
+	}
+
+	/**
+	 * Returns a trimmed version of the assignment, where only the variables given as
+	 * parameters are considered
 	 * 
 	 * @param variables the variables to consider
 	 * @return a new, trimmed assignment
@@ -633,8 +644,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns a trimmed version of the assignment, where only the variables
-	 * given as parameters are considered
+	 * Returns a trimmed version of the assignment, where only the variables given as
+	 * parameters are considered
 	 * 
 	 * @param variables the variables to consider
 	 * @return a new, trimmed assignment
@@ -688,8 +699,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns the value associated with the variable in the assignment, if one
-	 * is specified. Else, returns the none value.
+	 * Returns the value associated with the variable in the assignment, if one is
+	 * specified. Else, returns the none value.
 	 * 
 	 * @param var the variable
 	 * @return the associated value
@@ -697,7 +708,8 @@ public class Assignment {
 	public Value getValue(String var) {
 		if (map.containsKey(var)) {
 			return map.get(var);
-		} else {
+		}
+		else {
 			return ValueFactory.none();
 		}
 	}
@@ -712,9 +724,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns true if the assignment contains all pairs specified in the
-	 * assignment given as parameter (both the label and its value must match
-	 * for all pairs).
+	 * Returns true if the assignment contains all pairs specified in the assignment
+	 * given as parameter (both the label and its value must match for all pairs).
 	 * 
 	 * @param a the assignment
 	 * @return true if a is contained in assignment, false otherwise
@@ -727,10 +738,12 @@ public class Assignment {
 					if (val != null) {
 						return false;
 					}
-				} else if (!map.get(key).equals(val)) {
+				}
+				else if (!map.get(key).equals(val)) {
 					return false;
 				}
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -738,9 +751,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns true if the two assignments are mutually consistent, i.e. if
-	 * there is a label l which appears in both assignment, then their value
-	 * must be equal.
+	 * Returns true if the two assignments are mutually consistent, i.e. if there is
+	 * a label l which appears in both assignment, then their value must be equal.
 	 * 
 	 * @param a the second assignment
 	 * @return true if assignments are consistent, false otherwise
@@ -760,8 +772,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns true if the assignment only contains none values for all
-	 * variables, and false if at least one has a different value.
+	 * Returns true if the assignment only contains none values for all variables,
+	 * and false if at least one has a different value.
 	 * 
 	 * @return true if all variables have none values, false otherwise
 	 */
@@ -803,8 +815,8 @@ public class Assignment {
 	}
 
 	/**
-	 * Returns true if the object given as argument is an assignment identical
-	 * to the present one
+	 * Returns true if the object given as argument is an assignment identical to the
+	 * present one
 	 *
 	 * @param o the object to compare
 	 * @return true if the assignments are equal, false otherwise
@@ -847,11 +859,14 @@ public class Assignment {
 		for (String key : keyList) {
 			if (map.get(key) == null) {
 				str += key + "=null";
-			} else if (map.get(key).equals(Boolean.TRUE)) {
+			}
+			else if (map.get(key).equals(Boolean.TRUE)) {
 				str += key;
-			} else if (map.get(key).equals(Boolean.FALSE)) {
+			}
+			else if (map.get(key).equals(Boolean.FALSE)) {
 				str += "!" + key;
-			} else {
+			}
+			else {
 				str += key + "=" + map.get(key);
 			}
 			if (!key.equals(keyList.get(map.keySet().size() - 1))) {

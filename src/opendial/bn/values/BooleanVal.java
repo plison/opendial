@@ -110,16 +110,18 @@ public final class BooleanVal implements Value {
 	}
 
 	/**
-	 * If v is a BooleanVal, returns the conjunction of the two values. Else,
-	 * returns none.
+	 * If v is a BooleanVal, returns the conjunction of the two values. Else, returns
+	 * none.
 	 */
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof BooleanVal) {
 			return new BooleanVal(b & ((BooleanVal) v).getBoolean());
-		} else if (v instanceof NoneVal) {
+		}
+		else if (v instanceof NoneVal) {
 			return this;
-		} else {
+		}
+		else {
 			log.warning("cannot concatenate " + this + " and " + v);
 			return ValueFactory.noneValue;
 		}
@@ -128,14 +130,14 @@ public final class BooleanVal implements Value {
 	/**
 	 * Compares the boolean to another value
 	 * 
-	 * @return usual ordering, or hashcode difference if the value is not a
-	 *         boolean
+	 * @return usual ordering, or hashcode difference if the value is not a boolean
 	 */
 	@Override
 	public int compareTo(Value o) {
 		if (o instanceof BooleanVal) {
 			return (new Boolean(b)).compareTo(((BooleanVal) o).getBoolean());
-		} else {
+		}
+		else {
 			return hashCode() - o.hashCode();
 		}
 	}

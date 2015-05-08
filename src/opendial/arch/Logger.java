@@ -64,7 +64,8 @@ public class Logger {
 		try {
 			out = new PrintStream(System.out, true, "UTF-8");
 			err = new PrintStream(System.err, true, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 

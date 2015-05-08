@@ -35,8 +35,8 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 
 /**
- * Representation of an action node (sometimes also called decision node). An
- * action node is defined as a set of mutually exclusive action values.
+ * Representation of an action node (sometimes also called decision node). An action
+ * node is defined as a set of mutually exclusive action values.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -125,9 +125,9 @@ public class ActionNode extends BNode {
 	}
 
 	/**
-	 * Returns the factor matrix for the action node. The matrix lists the
-	 * possible actions for the node, along with a uniform probability
-	 * distribution over its values
+	 * Returns the factor matrix for the action node. The matrix lists the possible
+	 * actions for the node, along with a uniform probability distribution over its
+	 * values
 	 *
 	 * @return the factor matrix corresponding to the node
 	 */
@@ -166,16 +166,16 @@ public class ActionNode extends BNode {
 	}
 
 	/**
-	 * Returns a sample point for the action, assuming a uniform distribution
-	 * over the action values
+	 * Returns a sample point for the action, assuming a uniform distribution over
+	 * the action values
 	 * 
 	 * @return the sample value
 	 */
 	public Value sample() {
 		int index = sampler.nextInt(actionValues.size());
 		if (actionValuesAsArray == null) {
-			actionValuesAsArray = actionValues.toArray(new Value[actionValues
-					.size()]);
+			actionValuesAsArray = actionValues
+					.toArray(new Value[actionValues.size()]);
 		}
 		return actionValuesAsArray[index];
 	}
@@ -185,8 +185,8 @@ public class ActionNode extends BNode {
 	// ===================================
 
 	/**
-	 * Copies the action node. Note that only the node content is copied, not
-	 * its connection with other nodes.
+	 * Copies the action node. Note that only the node content is copied, not its
+	 * connection with other nodes.
 	 * 
 	 * @return the copy of the node
 	 */
@@ -196,8 +196,8 @@ public class ActionNode extends BNode {
 	}
 
 	/**
-	 * Returns a string representation of the node, which states the node
-	 * identifier followed by the action values
+	 * Returns a string representation of the node, which states the node identifier
+	 * followed by the action values
 	 */
 	@Override
 	public String toString() {

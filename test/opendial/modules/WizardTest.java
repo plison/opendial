@@ -98,8 +98,7 @@ public class WizardTest {
 		system.addContent(new Assignment("u_u", "hi"));
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
 				.getComponentCount());
-		assertEquals(
-				3,
+		assertEquals(3,
 				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
 						.getModule(GUIFrame.class).getChatTab().getComponent(2))
 						.getComponent(0)).getComponent(0)).getComponent(0))
@@ -108,8 +107,7 @@ public class WizardTest {
 		system.addContent(new Assignment("u_u", "move left"));
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
 				.getComponentCount());
-		assertEquals(
-				4,
+		assertEquals(4,
 				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
 						.getModule(GUIFrame.class).getChatTab().getComponent(2))
 						.getComponent(0)).getComponent(0)).getComponent(0))

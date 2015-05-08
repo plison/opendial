@@ -63,7 +63,8 @@ public class RuleTest2 {
 		try {
 			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -122,10 +123,8 @@ public class RuleTest2 {
 
 		inference.checkProb(system.getState(), "u_u2^p", "Do A", 0.216);
 		inference.checkProb(system.getState(), "u_u2^p", "Please do C", 0.027);
-		inference.checkProb(system.getState(), "u_u2^p", "Could you do B?",
-				0.054);
-		inference.checkProb(system.getState(), "u_u2^p", "Could you do A?",
-				0.162);
+		inference.checkProb(system.getState(), "u_u2^p", "Could you do B?", 0.054);
+		inference.checkProb(system.getState(), "u_u2^p", "Could you do A?", 0.162);
 		inference.checkProb(system.getState(), "u_u2^p", "none", 0.19);
 
 		CategoricalTable table = new CategoricalTable("u_u2");
@@ -183,15 +182,16 @@ public class RuleTest2 {
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem();
 
-		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'",
-				"obj(a_m3)'"), new Assignment(new Assignment("a_m3'", "Do"),
-				new Assignment("obj(a_m3)'", "A")), 0.3);
-		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'",
-				"obj(a_m3)'"), new Assignment(new Assignment("a_m3'", "Do"),
-				new Assignment("obj(a_m3)'", "B")), -1.7);
-		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'",
-				"obj(a_m3)'"), new Assignment(new Assignment("a_m3'", "SayHi"),
-				new Assignment("obj(a_m3)'", "None")), -0.9);
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
+						"a_m3'", "Do"), new Assignment("obj(a_m3)'", "A")), 0.3);
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
+						"a_m3'", "Do"), new Assignment("obj(a_m3)'", "B")), -1.7);
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
+						"a_m3'", "SayHi"), new Assignment("obj(a_m3)'", "None")),
+				-0.9);
 		// assertEquals(5, (new
 		// LikelihoodWeighting()).queryUtil(query).getTable().size());
 		// assertEquals(6, (new
@@ -211,18 +211,17 @@ public class RuleTest2 {
 		// log.debug((new VariableElimination()).queryUtility(query));
 
 		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
-				"a_md'"),
-				new Assignment(new Assignment("a_ml'", "SayYes"),
-						new Assignment("a_mg'", "Nod"), new Assignment("a_md'",
-								"None")), 2.4);
+				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
+				new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "None")),
+				2.4);
 		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
 				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
 				new Assignment("a_mg'", "Nod"), new Assignment("a_md'",
 						"DanceAround")), -0.6);
 		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
 				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
-				new Assignment("a_mg'", "None"),
-				new Assignment("a_md'", "None")), 1.6);
+				new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")),
+				1.6);
 
 	}
 
@@ -234,8 +233,8 @@ public class RuleTest2 {
 		system2.getSettings().showGUI = false;
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem();
-		inference.checkProb(system2.getState(), "A",
-				ValueFactory.create("[a1,a2]"), 1.0);
+		inference.checkProb(system2.getState(), "A", ValueFactory.create("[a1,a2]"),
+				1.0);
 
 		inference.checkProb(system2.getState(), "a_u", "Request(ball)", 0.5);
 	}

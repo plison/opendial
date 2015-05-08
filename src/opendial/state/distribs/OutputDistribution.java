@@ -45,9 +45,9 @@ import opendial.domains.rules.effects.Effect;
 import opendial.utils.CombinatoricsUtils;
 
 /**
- * Representation of an output distribution (see Pierre Lison's PhD thesis, page
- * 70 for details), which is a reflection of the combination of effects
- * specified in the parent rules.
+ * Representation of an output distribution (see Pierre Lison's PhD thesis, page 70
+ * for details), which is a reflection of the combination of effects specified in the
+ * parent rules.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -55,8 +55,7 @@ import opendial.utils.CombinatoricsUtils;
 public class OutputDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("OutputDistribution",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
 
 	// output variables
 	String baseVar;
@@ -79,8 +78,8 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Adds a collection of possible effects (from incoming rule nodes) to the
-	 * output node
+	 * Adds a collection of possible effects (from incoming rule nodes) to the output
+	 * node
 	 * 
 	 * @param effects the possible effects to add
 	 */
@@ -146,8 +145,7 @@ public class OutputDistribution implements ProbDistribution {
 	public CategoricalTable getProbDistrib(Assignment condition) {
 
 		// creating the table
-		CategoricalTable probTable = new CategoricalTable(baseVar + primes,
-				false);
+		CategoricalTable probTable = new CategoricalTable(baseVar + primes, false);
 
 		// combining all effects
 		List<BasicEffect> fullEffects = new ArrayList<BasicEffect>();
@@ -192,8 +190,8 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Returns the possible outputs values given the input range in the parent
-	 * nodes (probability rule nodes)
+	 * Returns the possible outputs values given the input range in the parent nodes
+	 * (probability rule nodes)
 	 * 
 	 * @return the possible values for the output
 	 */
@@ -259,9 +257,8 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Calculates the possible values for the output distribution via
-	 * linearisation (more costly operation, but necessary in case of add
-	 * effects).
+	 * Calculates the possible values for the output distribution via linearisation
+	 * (more costly operation, but necessary in case of add effects).
 	 * 
 	 * @return the set of possible output values
 	 */
@@ -271,8 +268,7 @@ public class OutputDistribution implements ProbDistribution {
 		for (int i = 0; i < inputEffects.size(); i++) {
 			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
 		}
-		Set<Assignment> combinations = CombinatoricsUtils
-				.getAllCombinations(range);
+		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(range);
 		Set<Value> values = combinations.stream()
 				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
 				.collect(Collectors.toSet());

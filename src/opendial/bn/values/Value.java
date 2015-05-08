@@ -36,8 +36,8 @@ import opendial.arch.DialException;
  * .
  * 
  * <p>
- * <b>IMPORTANT</b>: all implementations of Value <i>must</i> implement the
- * three core methods equals(Object o), toString() and hashCode().
+ * <b>IMPORTANT</b>: all implementations of Value <i>must</i> implement the three
+ * core methods equals(Object o), toString() and hashCode().
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *

@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Density function for a Dirichlet distribution. The distribution is defined
- * through an array of alpha hyper-parameters.
+ * Density function for a Dirichlet distribution. The distribution is defined through
+ * an array of alpha hyper-parameters.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -57,12 +57,11 @@ public class DirichletDensityFunction implements DensityFunction {
 	final double C;
 
 	// random number generator
-	static final Random rng = new Random(Calendar.getInstance()
-			.getTimeInMillis() + Thread.currentThread().getId());
+	static final Random rng = new Random(Calendar.getInstance().getTimeInMillis()
+			+ Thread.currentThread().getId());
 
 	/**
-	 * Create a new Dirichlet density function with the provided alpha
-	 * parameters
+	 * Create a new Dirichlet density function with the provided alpha parameters
 	 * 
 	 * @param alphas the hyper-parameters for the density function
 	 */
@@ -165,7 +164,8 @@ public class DirichletDensityFunction implements DensityFunction {
 		double numerator = MathUtils.gamma(alphaSum);
 		if (denominator != 0.0) {
 			return numerator / denominator;
-		} else {
+		}
+		else {
 			return Double.MAX_VALUE;
 		}
 	}
@@ -197,7 +197,8 @@ public class DirichletDensityFunction implements DensityFunction {
 				}
 			} while (!accept);
 			return (x * theta);
-		} else {
+		}
+		else {
 			// Cheng's algorithm
 			double b = (k - Math.log(4));
 			double c = (k + Math.sqrt(2 * k - 1));
@@ -266,8 +267,8 @@ public class DirichletDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Throws an exception (calculating the CDF of a Dirichlet is quite hard and
-	 * not currently implemented).
+	 * Throws an exception (calculating the CDF of a Dirichlet is quite hard and not
+	 * currently implemented).
 	 * 
 	 */
 	@Override

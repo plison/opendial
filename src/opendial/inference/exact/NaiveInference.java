@@ -51,8 +51,8 @@ import opendial.utils.CombinatoricsUtils;
 import opendial.utils.InferenceUtils;
 
 /**
- * Algorithm for naive probabilistic inference, based on computing the full
- * joint distribution, and then summing everything.
+ * Algorithm for naive probabilistic inference, based on computing the full joint
+ * distribution, and then summing everything.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -62,15 +62,14 @@ public class NaiveInference implements InferenceAlgorithm {
 	public static Logger log = new Logger("NaiveInference", Logger.Level.DEBUG);
 
 	/**
-	 * Queries the probability distribution encoded in the Bayesian Network,
-	 * given a set of query variables, and some evidence.
+	 * Queries the probability distribution encoded in the Bayesian Network, given a
+	 * set of query variables, and some evidence.
 	 * 
 	 * @param query the full query
 	 * @throws DialException if the inference process failed to deliver a result
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query)
-			throws DialException {
+	public MultivariateTable queryProb(Query.ProbQuery query) throws DialException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -139,15 +138,14 @@ public class NaiveInference implements InferenceAlgorithm {
 		for (Assignment singleAssign : fullAssigns) {
 			double jointLogProb = 0.0f;
 			for (ChanceNode n : bn.getChanceNodes()) {
-				Assignment trimmedCon = singleAssign.getTrimmed(n
-						.getInputNodeIds());
+				Assignment trimmedCon = singleAssign.getTrimmed(n.getInputNodeIds());
 				jointLogProb += Math.log10(n.getProb(trimmedCon,
 						singleAssign.getValue(n.getId())));
 			}
 			if (includeActions) {
 				for (ActionNode n : bn.getActionNodes()) {
-					jointLogProb += Math.log10(n.getProb(singleAssign
-							.getValue(n.getId())));
+					jointLogProb += Math.log10(n.getProb(singleAssign.getValue(n
+							.getId())));
 				}
 			}
 			result.put(singleAssign, Math.pow(10, jointLogProb));
@@ -156,8 +154,8 @@ public class NaiveInference implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Computes the utility distribution for the Bayesian network, depending on
-	 * the value of the action variables given as parameters.
+	 * Computes the utility distribution for the Bayesian network, depending on the
+	 * value of the action variables given as parameters.
 	 * 
 	 * @param query the full query
 	 * @return the corresponding utility table
@@ -190,8 +188,8 @@ public class NaiveInference implements InferenceAlgorithm {
 
 				if (jointAssign.contains(evidence)) {
 					double totalUtilityForAssign = 0.0f;
-					Assignment stateAndActionAssign = new Assignment(
-							jointAssign, actionAssign);
+					Assignment stateAndActionAssign = new Assignment(jointAssign,
+							actionAssign);
 
 					for (UtilityNode valueNode : network.getUtilityNodes()) {
 						double singleUtility = valueNode
@@ -211,9 +209,8 @@ public class NaiveInference implements InferenceAlgorithm {
 
 	/**
 	 * Reduces the Bayesian network to a subset of its variables. This reduction
-	 * operates here by generating the possible conditional assignments for
-	 * every retained variables, and calculating the distribution for each
-	 * assignment.
+	 * operates here by generating the possible conditional assignments for every
+	 * retained variables, and calculating the distribution for each assignment.
 	 * 
 	 * @param query the reduction query
 	 * @return the reduced network
@@ -246,8 +243,8 @@ public class NaiveInference implements InferenceAlgorithm {
 			ConditionalTable table = new ConditionalTable(var);
 			for (Assignment a : inputs) {
 				Assignment evidence2 = new Assignment(evidence, a);
-				CategoricalTable result = (CategoricalTable) queryProb(network,
-						var, evidence2);
+				CategoricalTable result = (CategoricalTable) queryProb(network, var,
+						evidence2);
 				table.addDistrib(a, result);
 			}
 

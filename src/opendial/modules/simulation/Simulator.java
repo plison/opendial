@@ -62,8 +62,7 @@ public class Simulator implements Module {
 	/**
 	 * Creates a new user/environment simulator.
 	 * 
-	 * @param system the main dialogue system to which the simulator should
-	 *            connect
+	 * @param system the main dialogue system to which the simulator should connect
 	 * @param simulatorDomain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
@@ -75,8 +74,7 @@ public class Simulator implements Module {
 	/**
 	 * Creates a new user/environment simulator.
 	 * 
-	 * @param system the main dialogue system to which the simulator should
-	 *            connect
+	 * @param system the main dialogue system to which the simulator should connect
 	 * @param domain the dialogue domain for the simulator
 	 * @throws DialException if the simulator could not be created
 	 */
@@ -93,11 +91,12 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public void start() throws DialException {
-		Assignment emptyAction = new Assignment(
-				system.getSettings().systemOutput, ValueFactory.none());
+		Assignment emptyAction = new Assignment(system.getSettings().systemOutput,
+				ValueFactory.none());
 		if (system.isPaused()) {
 			system.getState().addToState(emptyAction);
-		} else {
+		}
+		else {
 			system.addContent(emptyAction);
 		}
 		system.attachModule(RewardLearner.class);
@@ -130,8 +129,7 @@ public class Simulator implements Module {
 		}
 	}
 
-	private static Domain extractDomain(String simulatorDomain)
-			throws DialException {
+	private static Domain extractDomain(String simulatorDomain) throws DialException {
 		if (simulatorDomain == null) {
 			throw new DialException("Required parameter: simulatorDomain");
 		}
@@ -158,7 +156,8 @@ public class Simulator implements Module {
 					repeat++;
 				}
 			}
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.debug("cannot update simulator: " + e);
 		}
 	}
@@ -174,8 +173,8 @@ public class Simulator implements Module {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
-		Assignment systemAssign = new Assignment(
-				system.getSettings().systemOutput, systemAction);
+		Assignment systemAssign = new Assignment(system.getSettings().systemOutput,
+				systemAction);
 		simulatorState.addToState(systemAssign);
 
 		while (!simulatorState.getNewVariables().isEmpty()) {
@@ -197,9 +196,11 @@ public class Simulator implements Module {
 				String comment = "Reward: " + StringUtils.getShortForm(reward);
 				system.displayComment(comment);
 				log.debug(comment);
-				system.getState().addEvidence(
-						new Assignment("R(" + systemAssign.addPrimes() + ")",
-								reward));
+				system.getState()
+						.addEvidence(
+								new Assignment(
+										"R(" + systemAssign.addPrimes() + ")",
+										reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 
@@ -213,9 +214,9 @@ public class Simulator implements Module {
 	}
 
 	/**
-	 * Generates new simulated observations and adds them to the dialogue state.
-	 * The method returns true when a new user input has been generated, and
-	 * false otherwise.
+	 * Generates new simulated observations and adds them to the dialogue state. The
+	 * method returns true when a new user input has been generated, and false
+	 * otherwise.
 	 * 
 	 * @return whether a user input has been generated
 	 * @throws DialException
@@ -228,25 +229,24 @@ public class Simulator implements Module {
 			}
 		}
 		if (!newObsVars.isEmpty()) {
-			MultivariateDistribution newObs = simulatorState
-					.queryProb(newObsVars);
+			MultivariateDistribution newObs = simulatorState.queryProb(newObsVars);
 			for (String newObsVar : newObsVars) {
 				newObs.modifyVariableId(newObsVar, newObsVar.replace("^o'", ""));
 			}
 			while (system.isPaused()) {
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 				}
 			}
 			if (!newObs.getValues().isEmpty()) {
-				if (newObs.getVariables().contains(
-						system.getSettings().userInput)) {
-					log.debug("Simulator output: " + newObs
-							+ "\n --------------");
+				if (newObs.getVariables().contains(system.getSettings().userInput)) {
+					log.debug("Simulator output: " + newObs + "\n --------------");
 					system.addContent(newObs);
 					return true;
-				} else {
+				}
+				else {
 					log.debug("Contextual variables: " + newObs);
 					system.addContent(newObs);
 				}

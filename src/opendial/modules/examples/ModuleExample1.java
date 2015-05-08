@@ -41,8 +41,8 @@ import opendial.state.DialogueState;
  * domains/examples/example-step-by-step.xml.
  * 
  * <p>
- * The example creates a visual grid of size GRID_SIZE and updates the position
- * of the agent in accordance with the movements.
+ * The example creates a visual grid of size GRID_SIZE and updates the position of
+ * the agent in accordance with the movements.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -86,17 +86,16 @@ public class ModuleExample1 implements Module {
 	}
 
 	/**
-	 * If the updated variables contain the system action "a_m" and the action
-	 * is a movement, updates the visual grid in accordance with the movement.
+	 * If the updated variables contain the system action "a_m" and the action is a
+	 * movement, updates the visual grid in accordance with the movement.
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m")
-				&& !paused) {
+		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m") && !paused) {
 			String actionValue = state.queryProb("a_m").getBest().toString();
 			if (actionValue.startsWith("Move(")) {
-				String direction = actionValue.substring(5,
-						actionValue.length() - 1);
+				String direction = actionValue
+						.substring(5, actionValue.length() - 1);
 				changePosition(direction);
 			}
 		}
@@ -111,11 +110,14 @@ public class ModuleExample1 implements Module {
 		int newPosition = 0;
 		if (direction.equals("Left")) {
 			newPosition = currentPosition - 1;
-		} else if (direction.equals("Right")) {
+		}
+		else if (direction.equals("Right")) {
 			newPosition = currentPosition + 1;
-		} else if (direction.equals("Forward")) {
+		}
+		else if (direction.equals("Forward")) {
 			newPosition = currentPosition - GRID_SIZE;
-		} else if (direction.equals("Backward")) {
+		}
+		else if (direction.equals("Backward")) {
 			newPosition = currentPosition + GRID_SIZE;
 		}
 		if (newPosition >= 0 && newPosition < GRID_SIZE * GRID_SIZE) {

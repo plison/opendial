@@ -32,9 +32,9 @@ import opendial.bn.BNetwork;
 import opendial.state.DialogueState;
 
 /**
- * Representation of a dialogue domain, composed of (1) an initial dialogue
- * state and (2) a list of probability and utility models employed to update the
- * dialogue state upon relevant changes.
+ * Representation of a dialogue domain, composed of (1) an initial dialogue state and
+ * (2) a list of probability and utility models employed to update the dialogue state
+ * upon relevant changes.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *

@@ -60,10 +60,9 @@ public class ValueFactory {
 			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
 
 	/**
-	 * Creates a new value based on the provided string representation. If the
-	 * string contains a numeric value, "true", "false", "None", or opening and
-	 * closing brackets, convert it to the appropriate values. Else, returns a
-	 * string value.
+	 * Creates a new value based on the provided string representation. If the string
+	 * contains a numeric value, "true", "false", "None", or opening and closing
+	 * brackets, convert it to the appropriate values. Else, returns a string value.
 	 * 
 	 * @param str the string representation for the value
 	 * @return the resulting value
@@ -77,11 +76,14 @@ public class ValueFactory {
 		Matcher m = doublePattern.matcher(str);
 		if (m.matches()) {
 			return new DoubleVal(Double.parseDouble(str));
-		} else if (str.equalsIgnoreCase("true")) {
+		}
+		else if (str.equalsIgnoreCase("true")) {
 			return new BooleanVal(true);
-		} else if (str.equalsIgnoreCase("false")) {
+		}
+		else if (str.equalsIgnoreCase("false")) {
 			return new BooleanVal(false);
-		} else if (str.equalsIgnoreCase("None")) {
+		}
+		else if (str.equalsIgnoreCase("None")) {
 			return none();
 		}
 		// adds the converted value
@@ -94,11 +96,11 @@ public class ValueFactory {
 					subVals.add(Double.parseDouble(subVal));
 				}
 				return new ArrayVal(subVals);
-			} else if (str.startsWith("[") && str.endsWith("]")) {
+			}
+			else if (str.startsWith("[") && str.endsWith("]")) {
 
 				LinkedList<Value> subVals = new LinkedList<Value>();
-				Matcher m3 = setPattern.matcher(str.substring(1,
-						str.length() - 1));
+				Matcher m3 = setPattern.matcher(str.substring(1, str.length() - 1));
 				while (m3.find()) {
 					String subval = m3.group(0).trim();
 					if (subval.length() > 0) {
@@ -169,13 +171,15 @@ public class ValueFactory {
 		if (value instanceof StringVal && value2 instanceof StringVal) {
 			return new StringVal(((StringVal) value).getString() + " "
 					+ ((StringVal) value2).getString());
-		} else if (value instanceof NoneVal) {
+		}
+		else if (value instanceof NoneVal) {
 			return value2;
-		} else if (value2 instanceof NoneVal) {
+		}
+		else if (value2 instanceof NoneVal) {
 			return value;
-		} else {
-			log.warning("concatenation not implemented for " + value + "+"
-					+ value2);
+		}
+		else {
+			log.warning("concatenation not implemented for " + value + "+" + value2);
 			return noneValue;
 		}
 	}

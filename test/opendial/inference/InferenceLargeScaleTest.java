@@ -65,8 +65,7 @@ public class InferenceLargeScaleTest {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 
-		Set<Set<String>> queryVarsPowerset = generatePowerset(bn
-				.getChanceNodeIds());
+		Set<Set<String>> queryVarsPowerset = generatePowerset(bn.getChanceNodeIds());
 		List<Assignment> evidencePowerset = generateEvidencePowerset(bn);
 
 		int nbErrors = 0;
@@ -78,7 +77,8 @@ public class InferenceLargeScaleTest {
 
 						try {
 							inference.checkProb(bn, queryVars, evidence);
-						} catch (AssertionError e) {
+						}
+						catch (AssertionError e) {
 							nbErrors++;
 							if (nbErrors > 2) {
 								throw new AssertionError(
@@ -114,8 +114,7 @@ public class InferenceLargeScaleTest {
 	private List<Assignment> generateEvidencePowerset(BNetwork bn) {
 		List<Assignment> allAssignments = new LinkedList<Assignment>();
 
-		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn,
-				false);
+		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 		for (Assignment a : fullJoint.keySet()) {
 			Set<Set<Entry<String, Value>>> partialAssigns = generatePowerset(a
 					.getPairs().entrySet());

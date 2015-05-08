@@ -32,8 +32,8 @@ import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.Condition;
 
 /**
- * Representation of a basic effect of a rule. A basic effect is formally
- * defined as a triple with:
+ * Representation of a basic effect of a rule. A basic effect is formally defined as
+ * a triple with:
  * <ol>
  * <li>a (possibly underspecified) variable label;
  * <li>one of four basic operations on the variable SET, DISCARD, ADD;
@@ -68,31 +68,29 @@ public final class TemplateEffect extends BasicEffect {
 	}
 
 	/**
-	 * Constructs a new effect, with a variable label, value, and other
-	 * arguments. The argument "add" specifies whether the effect is mutually
-	 * exclusive with other effects. The argument "negated" specifies whether
-	 * the effect includes a negation.
+	 * Constructs a new effect, with a variable label, value, and other arguments.
+	 * The argument "add" specifies whether the effect is mutually exclusive with
+	 * other effects. The argument "negated" specifies whether the effect includes a
+	 * negation.
 	 * 
 	 * 
 	 * @param variable variable label
 	 * @param value variable value
 	 * @param priority the priority level (default is 1)
-	 * @param add true if distinct values are to be added together, false
-	 *            otherwise
+	 * @param add true if distinct values are to be added together, false otherwise
 	 * @param negated whether to negate the effect or not.
 	 */
 	public TemplateEffect(Template variable, Template value, int priority,
 			boolean add, boolean negated) {
-		super(variable.toString(), (value.isUnderspecified()) ? ValueFactory
-				.none() : ValueFactory.create(value.getRawString()), priority,
-				add, negated);
+		super(variable.toString(), (value.isUnderspecified()) ? ValueFactory.none()
+				: ValueFactory.create(value.getRawString()), priority, add, negated);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
 	}
 
 	/**
-	 * Ground the slots in the effect variable and value (given the assignment)
-	 * and returns the resulting effect.
+	 * Ground the slots in the effect variable and value (given the assignment) and
+	 * returns the resulting effect.
 	 * 
 	 * @param grounding the grounding
 	 * @return the grounded effect
@@ -103,10 +101,10 @@ public final class TemplateEffect extends BasicEffect {
 		Template newV = new Template(valueTemplate.fillSlots(grounding));
 		if (newT.isUnderspecified() || (newV.isUnderspecified())) {
 			return new TemplateEffect(newT, newV, priority, add, negated);
-		} else {
-			return new BasicEffect(newT.getRawString(),
-					ValueFactory.create(newV.getRawString()), priority, add,
-					negated);
+		}
+		else {
+			return new BasicEffect(newT.getRawString(), ValueFactory.create(newV
+					.getRawString()), priority, add, negated);
 		}
 
 	}
@@ -166,9 +164,11 @@ public final class TemplateEffect extends BasicEffect {
 		String str = labelTemplate.toString();
 		if (negated) {
 			str += "!=";
-		} else if (add) {
+		}
+		else if (add) {
 			str += "+=";
-		} else {
+		}
+		else {
 			str += ":=";
 		}
 		str += valueTemplate.toString();
@@ -200,14 +200,17 @@ public final class TemplateEffect extends BasicEffect {
 		if (o instanceof TemplateEffect) {
 			if (!((TemplateEffect) o).labelTemplate.equals(labelTemplate)) {
 				return false;
-			} else if (!((TemplateEffect) o).valueTemplate
-					.equals(valueTemplate)) {
+			}
+			else if (!((TemplateEffect) o).valueTemplate.equals(valueTemplate)) {
 				return false;
-			} else if (((TemplateEffect) o).isAdd() != add) {
+			}
+			else if (((TemplateEffect) o).isAdd() != add) {
 				return false;
-			} else if (((TemplateEffect) o).isNegated() != negated) {
+			}
+			else if (((TemplateEffect) o).isNegated() != negated) {
 				return false;
-			} else if (((TemplateEffect) o).priority != priority) {
+			}
+			else if (((TemplateEffect) o).priority != priority) {
 				return false;
 			}
 			return true;

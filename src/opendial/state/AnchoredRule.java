@@ -37,8 +37,7 @@ import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.Parameter;
 
 /**
- * Representation of a probabilistic rule anchored in a particular dialogue
- * state.
+ * Representation of a probabilistic rule anchored in a particular dialogue state.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -66,8 +65,8 @@ public final class AnchoredRule {
 	final Set<Effect> effects;
 
 	/**
-	 * Anchors the rule in the dialogue state. The construction process leads to
-	 * the determination of:
+	 * Anchors the rule in the dialogue state. The construction process leads to the
+	 * determination of:
 	 * <ul>
 	 * <li>the relevance of the rule in the given dialogue state
 	 * <li>the range of possible values for the input nodes
@@ -87,8 +86,7 @@ public final class AnchoredRule {
 
 		// determines the input range
 		inputs = new ValueRange();
-		for (ChanceNode inputNode : state.getMatchingNodes(rule
-				.getInputVariables())) {
+		for (ChanceNode inputNode : state.getMatchingNodes(rule.getInputVariables())) {
 			inputs.addValues(inputNode.getId(), inputNode.getValues());
 		}
 
@@ -102,14 +100,12 @@ public final class AnchoredRule {
 			relevant = relevant || !output.getEffects().isEmpty();
 
 			// looping on all alternative effects in the output
-			for (Map.Entry<Effect, Parameter> o : output.getEffectMap()
-					.entrySet()) {
+			for (Map.Entry<Effect, Parameter> o : output.getEffectMap().entrySet()) {
 				Effect effect = o.getKey();
 				Parameter param = o.getValue();
 				effects.add(effect);
 				outputs.addAssign(effect.getAssignment());
-				param.getVariables().stream()
-						.filter(p -> state.hasChanceNode(p))
+				param.getVariables().stream().filter(p -> state.hasChanceNode(p))
 						.forEach(p -> parameters.add(p));
 			}
 		}

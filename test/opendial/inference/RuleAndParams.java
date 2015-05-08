@@ -24,10 +24,9 @@ public class RuleAndParams {
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.startSystem();
-		assertEquals(system.getContent("theta_moves").toContinuous()
-				.getFunction().getMean()[0], 0.2, 0.02);
-		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.12,
-				0.03);
+		assertEquals(system.getContent("theta_moves").toContinuous().getFunction()
+				.getMean()[0], 0.2, 0.02);
+		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.12, 0.03);
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 1);
 		assertTrue(system.getState().hasChanceNode("movements"));
@@ -39,11 +38,10 @@ public class RuleAndParams {
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 0);
 		assertFalse(system.getState().hasChanceNode("movements"));
-		assertEquals(system.getContent("theta_moves").toContinuous()
-				.getFunction().getMean()[0], 2.0 / 6, 0.07);
+		assertEquals(system.getContent("theta_moves").toContinuous().getFunction()
+				.getMean()[0], 2.0 / 6, 0.07);
 		system.addContent(new Assignment("a_m", "turning left"));
-		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.23,
-				0.04);
+		assertEquals(system.getContent("a_u^p").getProb("I want left"), 0.23, 0.04);
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 1);
 	}

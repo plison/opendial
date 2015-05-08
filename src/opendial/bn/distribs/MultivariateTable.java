@@ -39,8 +39,8 @@ import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 
 /**
- * Representation of a multivariate categorical table P(X1,...Xn), where
- * X1,...Xn are random variables.
+ * Representation of a multivariate categorical table P(X1,...Xn), where X1,...Xn are
+ * random variables.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -48,8 +48,7 @@ import opendial.utils.StringUtils;
 public class MultivariateTable implements MultivariateDistribution {
 
 	// logger
-	public static Logger log = new Logger("MultivariateTable",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("MultivariateTable", Logger.Level.DEBUG);
 
 	// the head variables
 	Set<String> headVars;
@@ -125,8 +124,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Adds a new row to the probability table, assuming no conditional
-	 * assignment. If the table already contains a probability, it is erased.
+	 * Adds a new row to the probability table, assuming no conditional assignment.
+	 * If the table already contains a probability, it is erased.
 	 * 
 	 * @param head the assignment for X1...Xn
 	 * @param prob the associated probability
@@ -144,7 +143,8 @@ public class MultivariateTable implements MultivariateDistribution {
 		double totalProb = countTotalProb();
 		if (totalProb < 0.98) {
 			table.put(Assignment.createDefault(headVars), 1.0 - totalProb);
-		} else {
+		}
+		else {
 			table.remove(Assignment.createDefault(headVars));
 		}
 	}
@@ -162,7 +162,8 @@ public class MultivariateTable implements MultivariateDistribution {
 				return;
 			}
 			addRow(head, table.get(head) + prob);
-		} else {
+		}
+		else {
 			addRow(head, prob);
 		}
 	}
@@ -241,8 +242,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Returns the marginal distribution P(Xi) for a random variable Xi in
-	 * X1,...Xn.
+	 * Returns the marginal distribution P(Xi) for a random variable Xi in X1,...Xn.
 	 * 
 	 * @param variable the variable Xi
 	 * @return the distribution P(Xi).
@@ -264,8 +264,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * returns true if the table contains a probability for the given assignment
 	 * 
 	 * @param head the assignment
-	 * @return true if the table contains a row for the assignment, false
-	 *         otherwise
+	 * @return true if the table contains a row for the assignment, false otherwise
 	 */
 	public boolean hasProb(Assignment head) {
 		Assignment trimmedHead = head.getTrimmed(headVars);
@@ -273,9 +272,8 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Sample an assignment from the distribution. If no assignment can be
-	 * sampled (due to e.g. an ill-formed distribution), returns an empty
-	 * assignment.
+	 * Sample an assignment from the distribution. If no assignment can be sampled
+	 * (due to e.g. an ill-formed distribution), returns an empty assignment.
 	 * 
 	 * @return the sampled assignment
 	 * @throws DialException if no assignment could be sampled
@@ -305,36 +303,36 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Returns true if the table is empty (or contains only a default
-	 * assignment), false otherwise
+	 * Returns true if the table is empty (or contains only a default assignment),
+	 * false otherwise
 	 * 
 	 * @return true if empty, false otherwise
 	 */
 	public boolean isEmpty() {
 		if (table.isEmpty()) {
 			return true;
-		} else
+		}
+		else
 			return (table.size() == 1 && table.keySet().iterator().next()
 					.equals(Assignment.createDefault(headVars)));
 	}
 
 	/**
-	 * Returns a subset of the N values in the table with the highest
-	 * probability.
+	 * Returns a subset of the N values in the table with the highest probability.
 	 * 
 	 * @param nbest the number of values to select
 	 * @return the distribution with the subset of values
 	 */
 	public MultivariateTable getNBest(int nbest) {
 
-		Map<Assignment, Double> filteredTable = InferenceUtils.getNBest(table,
-				nbest);
+		Map<Assignment, Double> filteredTable = InferenceUtils
+				.getNBest(table, nbest);
 		return new MultivariateTable(filteredTable);
 	}
 
 	/**
-	 * Returns the most likely assignment of values in the table. If none could
-	 * be found, returns an empty assignment.
+	 * Returns the most likely assignment of values in the table. If none could be
+	 * found, returns an empty assignment.
 	 * 
 	 * @return the assignment with highest probability
 	 */
@@ -346,7 +344,8 @@ public class MultivariateTable implements MultivariateDistribution {
 				nbest.removeRow(Assignment.createDefault(nbest.getVariables()));
 			}
 			return nbest.getValues().iterator().next();
-		} else {
+		}
+		else {
 			log.warning("table is empty, cannot extract best value");
 			return new Assignment();
 		}
@@ -393,9 +392,9 @@ public class MultivariateTable implements MultivariateDistribution {
 	}
 
 	/**
-	 * Returns true if the probability table is well-formed. The method checks
-	 * that all possible assignments for the condition and head parts are
-	 * covered in the table, and that the probabilities add up to 1.0f.
+	 * Returns true if the probability table is well-formed. The method checks that
+	 * all possible assignments for the condition and head parts are covered in the
+	 * table, and that the probabilities add up to 1.0f.
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
@@ -446,7 +445,8 @@ public class MultivariateTable implements MultivariateDistribution {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
-			} else {
+			}
+			else {
 				changed = true;
 			}
 		}
@@ -481,8 +481,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	// ===================================
 
 	/**
-	 * Returns the total accumulated probability for the distribution
-	 * P(.|condition)
+	 * Returns the total accumulated probability for the distribution P(.|condition)
 	 * 
 	 * @return the total probability
 	 */

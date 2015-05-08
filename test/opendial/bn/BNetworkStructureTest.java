@@ -73,17 +73,14 @@ public class BNetworkStructureTest {
 		assertTrue(bn.getNode("Burglary").getValues()
 				.contains(ValueFactory.create(true)));
 
-		assertEquals(
-				0.001f,
+		assertEquals(0.001f,
 				bn.getChanceNode("Burglary").getProb(ValueFactory.create(true)),
 				0.0001f);
 		assertEquals(
 				0.95f,
-				bn.getChanceNode("Alarm")
-						.getProb(
-								new Assignment(Arrays.asList("Burglary",
-										"Earthquake")),
-								ValueFactory.create(true)), 0.0001f);
+				bn.getChanceNode("Alarm").getProb(
+						new Assignment(Arrays.asList("Burglary", "Earthquake")),
+						ValueFactory.create(true)), 0.0001f);
 		assertEquals(
 				0.9f,
 				bn.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
@@ -108,8 +105,8 @@ public class BNetworkStructureTest {
 		b.addProb(ValueFactory.create(true), 0.2f);
 		b.addProb(ValueFactory.create(false), 0.8f);
 		UtilityNode value = bn.getUtilityNode("Util1");
-		value.addUtility(new Assignment(new Assignment("Burglary", true),
-				"Action", ValueFactory.create("DoNothing")), -20.0f);
+		value.addUtility(new Assignment(new Assignment("Burglary", true), "Action",
+				ValueFactory.create("DoNothing")), -20.0f);
 
 		assertEquals(3, bn.getNode("Burglary").getOutputNodes().size());
 		assertEquals(3, bn2.getNode("Burglary").getOutputNodes().size());
@@ -130,15 +127,13 @@ public class BNetworkStructureTest {
 				.contains(ValueFactory.create(true)));
 
 		assertEquals(0.001f,
-				bn2.getChanceNode("Burglary")
-						.getProb(ValueFactory.create(true)), 0.0001f);
+				bn2.getChanceNode("Burglary").getProb(ValueFactory.create(true)),
+				0.0001f);
 		assertEquals(
 				0.95f,
-				bn2.getChanceNode("Alarm")
-						.getProb(
-								new Assignment(Arrays.asList("Burglary",
-										"Earthquake")),
-								ValueFactory.create(true)), 0.0001f);
+				bn2.getChanceNode("Alarm").getProb(
+						new Assignment(Arrays.asList("Burglary", "Earthquake")),
+						ValueFactory.create(true)), 0.0001f);
 		assertEquals(
 				0.9f,
 				bn2.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
@@ -160,13 +155,11 @@ public class BNetworkStructureTest {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(5, bn.getNode("Burglary").getDescendantIds().size());
 		assertTrue(bn.getNode("Burglary").getDescendantIds().contains("Alarm"));
-		assertTrue(bn.getNode("Burglary").getDescendantIds()
-				.contains("MaryCalls"));
+		assertTrue(bn.getNode("Burglary").getDescendantIds().contains("MaryCalls"));
 
 		assertEquals(3, bn.getNode("MaryCalls").getAncestorIds().size());
 		assertTrue(bn.getNode("MaryCalls").getAncestorIds().contains("Alarm"));
-		assertTrue(bn.getNode("MaryCalls").getAncestorIds()
-				.contains("Earthquake"));
+		assertTrue(bn.getNode("MaryCalls").getAncestorIds().contains("Earthquake"));
 		assertEquals(0, bn.getNode("MaryCalls").getDescendantIds().size());
 
 		assertEquals(2, bn.getNode("Util1").getAncestorIds().size());
@@ -211,13 +204,13 @@ public class BNetworkStructureTest {
 
 		UtilityTable.log.setLevel(Logger.Level.NONE);
 		UtilityNode v = bn.getUtilityNode("Util1");
-		assertTrue(v.getDistrib().isWellFormed());
-		v.removeUtility(new Assignment(new Assignment("Burglary", false),
-				"Action", ValueFactory.create("CallPolice")));
-		assertFalse(v.getDistrib().isWellFormed());
-		v.addUtility(new Assignment(new Assignment("Burglary", false),
-				"Action", ValueFactory.create("CallPolice")), 100f);
-		assertTrue(v.getDistrib().isWellFormed());
+		assertTrue(v.getFunction().isWellFormed());
+		v.removeUtility(new Assignment(new Assignment("Burglary", false), "Action",
+				ValueFactory.create("CallPolice")));
+		assertFalse(v.getFunction().isWellFormed());
+		v.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
+				ValueFactory.create("CallPolice")), 100f);
+		assertTrue(v.getFunction().isWellFormed());
 		UtilityTable.log.setLevel(Logger.Level.NORMAL);
 	}
 
@@ -248,10 +241,8 @@ public class BNetworkStructureTest {
 		assertFalse(bn.hasNode("Alarm"));
 		assertTrue(bn.hasChanceNode("Alarm2"));
 		assertFalse(bn.hasChanceNode("Alarm"));
-		assertTrue(bn.getNode("Burglary").getOutputNodesIds()
-				.contains("Alarm2"));
-		assertFalse(bn.getNode("Burglary").getOutputNodesIds()
-				.contains("Alarm"));
+		assertTrue(bn.getNode("Burglary").getOutputNodesIds().contains("Alarm2"));
+		assertFalse(bn.getNode("Burglary").getOutputNodesIds().contains("Alarm"));
 		assertTrue(bn.getNode("MaryCalls").getInputNodeIds().contains("Alarm2"));
 		assertFalse(bn.getNode("MaryCalls").getInputNodeIds().contains("Alarm"));
 	}
@@ -262,18 +253,13 @@ public class BNetworkStructureTest {
 		BNetwork bn2 = bn.copy();
 		BNode node = bn.getNode("Earthquake");
 		node.setId("Earthquake2");
-		assertFalse(bn2.getNode("Alarm").getInputNodeIds()
-				.contains("Earthquake2"));
-		assertFalse(bn2.getNode("Alarm").getInputNodeIds()
-				.contains("Earthquake2"));
+		assertFalse(bn2.getNode("Alarm").getInputNodeIds().contains("Earthquake2"));
+		assertFalse(bn2.getNode("Alarm").getInputNodeIds().contains("Earthquake2"));
 		BNode node2 = bn.getNode("Alarm");
 		node2.setId("Alarm2");
-		assertFalse(bn2.getNode("MaryCalls").getInputNodeIds()
-				.contains("Alarm2"));
-		assertFalse(bn2.getNode("Burglary").getOutputNodesIds()
-				.contains("Alarm2"));
-		assertTrue(bn2.getNode("Burglary").getOutputNodesIds()
-				.contains("Alarm"));
+		assertFalse(bn2.getNode("MaryCalls").getInputNodeIds().contains("Alarm2"));
+		assertFalse(bn2.getNode("Burglary").getOutputNodesIds().contains("Alarm2"));
+		assertTrue(bn2.getNode("Burglary").getOutputNodesIds().contains("Alarm"));
 		assertTrue(bn2.getNode("MaryCalls").getInputNodeIds().contains("Alarm"));
 	}
 
@@ -299,11 +285,9 @@ public class BNetworkStructureTest {
 		bn.getNode("Alarm").addInputNode(node);
 		assertEquals(
 				0.95f,
-				bn.getChanceNode("Alarm")
-						.getProb(
-								new Assignment(Arrays.asList("Burglary",
-										"Earthquake")),
-								ValueFactory.create(true)), 0.0001f);
+				bn.getChanceNode("Alarm").getProb(
+						new Assignment(Arrays.asList("Burglary", "Earthquake")),
+						ValueFactory.create(true)), 0.0001f);
 		assertEquals(
 				0.95f,
 				bn.getChanceNode("Alarm").getProb(
@@ -352,8 +336,8 @@ public class BNetworkStructureTest {
 
 	/**
 	 * @throws DialException
-	 * @Test public void derivedActionNodes () throws DialException { BNetwork
-	 *       bn = NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
+	 * @Test public void derivedActionNodes () throws DialException { BNetwork bn =
+	 *       NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
 	 *       NetworkExamples.constructBasicNetwork3();
 	 *       assertTrue(bn2.getActionNode("Action") instanceof ActionNode);
 	 *       assertEquals(2,

@@ -42,8 +42,8 @@ import org.w3c.dom.Node;
 
 /**
  * Module used to systematically record all user inputs and outputs during the
- * interaction. The recordings are stored in a XML element which can be written
- * to a file at any time.
+ * interaction. The recordings are stored in a XML element which can be written to a
+ * file at any time.
  * 
  * The module can also be used to record Wizard-of-Oz interactions.
  * 
@@ -52,8 +52,7 @@ import org.w3c.dom.Node;
 public class DialogueRecorder implements Module {
 
 	// logger
-	public static Logger log = new Logger("DialogueRecorder",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("DialogueRecorder", Logger.Level.DEBUG);
 
 	Node rootNode;
 	Document doc;
@@ -77,7 +76,8 @@ public class DialogueRecorder implements Module {
 			doc = XMLUtils.newXMLDocument();
 			doc.appendChild(doc.createElement("interaction"));
 			rootNode = XMLUtils.getMainNode(doc);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not create dialogue recorder");
 		}
 	}
@@ -90,10 +90,9 @@ public class DialogueRecorder implements Module {
 	}
 
 	/**
-	 * Triggers the recorder with a particular dialogue state and a set of
-	 * recently updated variables. If one of the updated variables is the user
-	 * input or system output, the recorder stores a new turn. Else, the module
-	 * does nothing.
+	 * Triggers the recorder with a particular dialogue state and a set of recently
+	 * updated variables. If one of the updated variables is the user input or system
+	 * output, the recorder stores a new turn. Else, the module does nothing.
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
@@ -131,7 +130,8 @@ public class DialogueRecorder implements Module {
 					rootNode.appendChild(el);
 				}
 			}
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("cannot record dialogue turn " + e);
 		}
 	}
@@ -146,10 +146,12 @@ public class DialogueRecorder implements Module {
 			if (rootNode.getNodeName().equals("interaction")) {
 				Comment com = doc.createComment(comment);
 				rootNode.appendChild(com);
-			} else {
+			}
+			else {
 				log.warning("could not add comment");
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			log.warning("could not record preamble or comment: " + e);
 		}
@@ -164,7 +166,8 @@ public class DialogueRecorder implements Module {
 		log.debug("recording interaction in file " + recordFile);
 		try {
 			XMLUtils.writeXMLDocument(doc, recordFile);
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not create file " + recordFile);
 		}
 	}

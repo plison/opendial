@@ -45,8 +45,8 @@ import opendial.state.DialogueState;
  * domains/examples/example-step-by-step.xml.
  * 
  * <p>
- * The example creates a small control window where the user can click to
- * provide directions to the agent.
+ * The example creates a small control window where the user can click to provide
+ * directions to the agent.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -60,8 +60,8 @@ public class ModuleExample2 implements Module {
 	boolean paused = true;
 
 	/**
-	 * Creates the example module. The module must have access to the dialogue
-	 * system since it will periodically write new content to it.
+	 * Creates the example module. The module must have access to the dialogue system
+	 * since it will periodically write new content to it.
 	 * 
 	 * @param system the dialogue system
 	 */
@@ -70,9 +70,9 @@ public class ModuleExample2 implements Module {
 	}
 
 	/**
-	 * Creates a small control window with 4 arrow buttons. When clicked, each
-	 * button will create a new dialogue act corresponding to the instruction to
-	 * perform, and add it to the dialogue state.
+	 * Creates a small control window with 4 arrow buttons. When clicked, each button
+	 * will create a new dialogue act corresponding to the instruction to perform,
+	 * and add it to the dialogue state.
 	 */
 	@Override
 	public void start() throws DialException {

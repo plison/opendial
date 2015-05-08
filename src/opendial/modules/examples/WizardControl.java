@@ -58,10 +58,10 @@ import opendial.state.DialogueState;
 import opendial.state.distribs.RuleUtilDistribution;
 
 /**
- * Module employed in the "Wizard-of-Oz" interaction mode. The module extracts
- * all possible actions available for the current dialogue state and displays
- * this list of actions on the right side of the GUI. The Wizard must then
- * select the action to perform.
+ * Module employed in the "Wizard-of-Oz" interaction mode. The module extracts all
+ * possible actions available for the current dialogue state and displays this list
+ * of actions on the right side of the GUI. The Wizard must then select the action to
+ * perform.
  * 
  * <p>
  * The module only works if the GUI is activated.
@@ -87,7 +87,8 @@ public class WizardControl implements Module {
 
 		if (system.getModule(GUIFrame.class) == null) {
 			throw new DialException("could not create wizard control: no GUI");
-		} else {
+		}
+		else {
 			gui = system.getModule(GUIFrame.class);
 		}
 	}
@@ -115,16 +116,16 @@ public class WizardControl implements Module {
 	}
 
 	/**
-	 * Triggers the wizard control. The wizard control window is displayed
-	 * whenever the dialogue state contains at least one action node.
+	 * Triggers the wizard control. The wizard control window is displayed whenever
+	 * the dialogue state contains at least one action node.
 	 * 
 	 * <p>
-	 * There is an exception: if the action selection is straightforward and
-	 * does not contain any parameters (i.e. there is only one possible action
-	 * and its utility is well-defined), the wizard control directly selects
-	 * this action. This exception is there to allow for the NLG module to
-	 * directly realise the system's communicative intention without the wizard
-	 * intervention, if there is no doubt about how to realise the utterance.
+	 * There is an exception: if the action selection is straightforward and does not
+	 * contain any parameters (i.e. there is only one possible action and its utility
+	 * is well-defined), the wizard control directly selects this action. This
+	 * exception is there to allow for the NLG module to directly realise the
+	 * system's communicative intention without the wizard intervention, if there is
+	 * no doubt about how to realise the utterance.
 	 */
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
@@ -132,11 +133,10 @@ public class WizardControl implements Module {
 		// if the action selection is straightforward and parameter-less,
 		// directly select the action
 		if (state.getUtilityNodes().size() == 1) {
-			UtilityNode urnode = state.getUtilityNodes().stream().findFirst()
-					.get();
-			if (urnode.getDistrib() instanceof RuleUtilDistribution) {
-				AnchoredRule arule = ((RuleUtilDistribution) urnode
-						.getDistrib()).getAnchor();
+			UtilityNode urnode = state.getUtilityNodes().stream().findFirst().get();
+			if (urnode.getFunction() instanceof RuleUtilDistribution) {
+				AnchoredRule arule = ((RuleUtilDistribution) urnode.getFunction())
+						.getAnchor();
 				if (arule.getInputRange().linearise().size() == 1
 						&& arule.getParameters().isEmpty()) {
 					system.getModule(ForwardPlanner.class).trigger(state,
@@ -154,14 +154,15 @@ public class WizardControl implements Module {
 					.removePrimes());
 			state.removeNodes(state.getActionNodeIds());
 			state.removeNodes(state.getUtilityNodeIds());
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not apply wizard control: " + e);
 		}
 	}
 
 	/**
-	 * Displays the Wizard-of-Oz window with the possible action values
-	 * specified in the action node.
+	 * Displays the Wizard-of-Oz window with the possible action values specified in
+	 * the action node.
 	 * 
 	 * @param actionNode the action node
 	 * @throws DialException if the action values could not be extracted
@@ -178,19 +179,17 @@ public class WizardControl implements Module {
 		JScrollPane scrollPane = new JScrollPane(listBox);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.setPreferredSize(new Dimension(200, 600));
-		scrollPane.setBorder(BorderFactory
-				.createTitledBorder("Actions to select:"));
+		scrollPane.setBorder(BorderFactory.createTitledBorder("Actions to select:"));
 
 		Container container = new Container();
 		container.setLayout(new BorderLayout());
 		container.add(scrollPane);
 		final JButton button = new JButton("Select");
 		DialogueState copy = system.getState().copy();
-		button.addActionListener(e -> recordAction(copy, listBox, actionNode
-				.getId().replace("'", "")));
+		button.addActionListener(e -> recordAction(copy, listBox, actionNode.getId()
+				.replace("'", "")));
 
-		InputMap inputMap = button
-				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		inputMap.put(enter, "ENTER");
 		button.getActionMap().put("ENTER", new AbstractAction() {
@@ -208,8 +207,8 @@ public class WizardControl implements Module {
 		gui.getChatTab().repaint();
 	}
 
-	public void recordAction(DialogueState previousState,
-			JList<String> listBox, String actionVar) {
+	public void recordAction(DialogueState previousState, JList<String> listBox,
+			String actionVar) {
 		String actionValue = listBox.getModel()
 				.getElementAt(listBox.getMinSelectionIndex()).toString();
 		Assignment action = new Assignment(actionVar, actionValue);

@@ -58,8 +58,8 @@ import com.att.api.rest.RESTException;
  * cloud-based services for AT&amp;T's WATSON system.
  * 
  * <p>
- * To enhance the recognition accuracy, it is recommended to provide the system
- * with a recognition grammar, which can be specified in the GRXML format.
+ * To enhance the recognition accuracy, it is recommended to provide the system with
+ * a recognition grammar, which can be specified in the GRXML format.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */
@@ -94,8 +94,8 @@ public class ATTSpeech implements Module {
 	 */
 	public ATTSpeech(DialogueSystem system) throws DialException {
 		this.system = system;
-		List<String> missingParams = new LinkedList<String>(Arrays.asList(
-				"key", "secret"));
+		List<String> missingParams = new LinkedList<String>(Arrays.asList("key",
+				"secret"));
 		missingParams.removeAll(system.getSettings().params.keySet());
 		if (!missingParams.isEmpty()) {
 			throw new DialException("Missing parameters: " + missingParams);
@@ -104,23 +104,22 @@ public class ATTSpeech implements Module {
 		buildClients();
 
 		if (system.getSettings().params.containsKey("grammar")) {
-			File f = new File(
-					system.getSettings().params.getProperty("grammar"));
+			File f = new File(system.getSettings().params.getProperty("grammar"));
 			if (!f.exists()) {
-				f = new File(
-						(new File(system.getDomain().getName()).getParent()
-								+ "/" + system.getSettings().params
-								.getProperty("grammar")));
+				f = new File((new File(system.getDomain().getName()).getParent()
+						+ "/" + system.getSettings().params.getProperty("grammar")));
 			}
 			if (f.exists()) {
 				grammarFile = f;
 				log.info("AT&T Speech API will be used with the grammar: "
 						+ grammarFile.getPath());
-			} else {
+			}
+			else {
 				log.warning("Grammar file " + f.getPath() + " cannot be found");
 				log.info("AT&T Speech API will be used without grammar");
 			}
-		} else {
+		}
+		else {
 			log.info("AT&T Speech API will be used without grammar");
 		}
 
@@ -135,8 +134,7 @@ public class ATTSpeech implements Module {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException(
-					"AT&T connection requires access to the GUI");
+			throw new DialException("AT&T connection requires access to the GUI");
 		}
 	}
 
@@ -171,8 +169,9 @@ public class ATTSpeech implements Module {
 			if (speechVal instanceof SpeechData) {
 				new Thread(() -> recognise((SpeechData) speechVal)).start();
 			}
-		} else if (updatedVars.contains(outputVar)
-				&& state.hasChanceNode(outputVar) && !paused) {
+		}
+		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar)
+				&& !paused) {
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
 				synthesise(utteranceVal.toString());
@@ -219,15 +218,16 @@ public class ATTSpeech implements Module {
 				system.addUserInput(table);
 			}
 
-		} catch (Exception re) {
+		}
+		catch (Exception re) {
 			re.printStackTrace();
 		}
 
 	}
 
 	/**
-	 * Performs remote speech synthesis with the given utterance, and plays it
-	 * on the standard audio output.
+	 * Performs remote speech synthesis with the given utterance, and plays it on the
+	 * standard audio output.
 	 * 
 	 * @param utterance the utterance to synthesis
 	 */
@@ -237,18 +237,20 @@ public class ATTSpeech implements Module {
 			APIResponse apiResponse = ttsClient.httpPost(utterance);
 			int statusCode = apiResponse.getStatusCode();
 			if (statusCode == 200 || statusCode == 201) {
-				SpeechData output = new SpeechData(
-						apiResponse.getResponseBody());
-				system.addContent(new Assignment(
-						system.getSettings().systemSpeech, output));
+				SpeechData output = new SpeechData(apiResponse.getResponseBody());
+				system.addContent(new Assignment(system.getSettings().systemSpeech,
+						output));
 
-			} else if (statusCode == 401) {
+			}
+			else if (statusCode == 401) {
 				throw new IOException("Unauthorized request.");
-			} else {
+			}
+			else {
 				log.warning("TTS error: " + apiResponse);
 			}
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -275,11 +277,12 @@ public class ATTSpeech implements Module {
 					.addHeader("Content-Type", "text/plain")
 					.addHeader("Accept", "audio/x-wav");
 
-		} catch (RESTException e) {
+		}
+		catch (RESTException e) {
 			log.warning("Thrown exception: " + e);
 			throw new DialException(
-					"Cannot access AT&T API with the following credentials: "
-							+ key + " --> " + secret);
+					"Cannot access AT&T API with the following credentials: " + key
+							+ " --> " + secret);
 		}
 	}
 

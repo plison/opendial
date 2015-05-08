@@ -68,8 +68,8 @@ public interface MultivariateDistribution {
 	public Assignment sample() throws DialException;
 
 	/**
-	 * Returns the marginal probability distribution P(Xi) for a random variable
-	 * Xi in X1,...Xn.
+	 * Returns the marginal probability distribution P(Xi) for a random variable Xi
+	 * in X1,...Xn.
 	 * 
 	 * @param variable the random variable Xi
 	 * @return the marginal distribution P(Xi)

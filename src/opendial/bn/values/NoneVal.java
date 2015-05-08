@@ -109,8 +109,7 @@ public final class NoneVal implements Value {
 	}
 
 	/**
-	 * True if subvalue is contained in the current instance, and false
-	 * otherwise
+	 * True if subvalue is contained in the current instance, and false otherwise
 	 * 
 	 * @param subvalue the possibly contained value
 	 * @return true if contained, false otherwise

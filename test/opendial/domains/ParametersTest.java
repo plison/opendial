@@ -67,8 +67,7 @@ public class ParametersTest {
 
 	static {
 		try {
-			params = XMLStateReader.extractBayesianNetwork(paramFile,
-					"parameters");
+			params = XMLStateReader.extractBayesianNetwork(paramFile, "parameters");
 
 			domain1 = XMLDomainReader.extractDomain(domainFile);
 			domain1.setParameters(params);
@@ -77,7 +76,8 @@ public class ParametersTest {
 			domain2.setParameters(params);
 
 			inference = new InferenceChecks();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -101,14 +101,14 @@ public class ParametersTest {
 
 		system.startSystem();
 		system.addContent(new Assignment("u_u", "hello there"));
-		UtilityTable utils = ((new SamplingAlgorithm()).queryUtil(
-				system.getState(), "u_m'"));
-		assertTrue(utils.getUtil(new Assignment("u_m'",
-				"yeah yeah talk to my hand")) > 0);
+		UtilityTable utils = ((new SamplingAlgorithm()).queryUtil(system.getState(),
+				"u_m'"));
+		assertTrue(utils
+				.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) > 0);
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
-		assertTrue(utils.getUtil(new Assignment("u_m'",
-				"yeah yeah talk to my hand")) < utils.getUtil(new Assignment(
-				"u_m'", "so interesting!")));
+		assertTrue(utils
+				.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < utils
+				.getUtil(new Assignment("u_m'", "so interesting!")));
 		assertEquals(11, system.getState().getNodeIds().size());
 
 		// Thread.sleep(30000000);
@@ -144,22 +144,19 @@ public class ParametersTest {
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0)
-				.getRules());
-		RuleOutput outputs = rules.get(1).getOutput(
-				new Assignment("u_u", "no no"));
+		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(0).getRules());
+		RuleOutput outputs = rules.get(1).getOutput(new Assignment("u_u", "no no"));
 		Effect o = new Effect(new BasicEffect("a_u", "Disapproval"));
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
 		Assignment input = new Assignment("theta_4",
 				ValueFactory.create("[0.36, 0.64]"));
-		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input),
-				0.01);
+		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		system.addContent(new Assignment("u_u", "no no"));
-		assertEquals(0.36, system.getState().queryProb("theta_4")
-				.toContinuous().getFunction().getMean()[0], 0.1);
+		assertEquals(0.36, system.getState().queryProb("theta_4").toContinuous()
+				.getFunction().getMean()[0], 0.1);
 
 		assertEquals(0.64, system.getContent("a_u").getProb("Disapproval"), 0.1);
 
@@ -173,16 +170,14 @@ public class ParametersTest {
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1)
-				.getRules());
+		List<Rule> rules = new ArrayList<Rule>(domain1.getModels().get(1).getRules());
 		RuleOutput outputs = rules.get(0).getOutput(
 				new Assignment("u_u", "my name is"));
 		Effect o = new Effect(new BasicEffect("u_u^p", "Pierre"));
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
 		Assignment input = new Assignment("theta_5",
 				ValueFactory.create("[0.36, 0.24, 0.40]"));
-		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input),
-				0.01);
+		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
@@ -212,16 +207,14 @@ public class ParametersTest {
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0)
-				.getRules());
+		List<Rule> rules = new ArrayList<Rule>(domain2.getModels().get(0).getRules());
 		RuleOutput outputs = rules.get(0).getOutput(
 				new Assignment("u_u", "brilliant"));
 		Effect o = new Effect(new BasicEffect("a_u", "Approval"));
 		assertTrue(outputs.getParameter(o) instanceof ComplexParameter);
 		Assignment input = new Assignment(new Assignment("theta_6", 2.1),
 				new Assignment("theta_7", 1.3));
-		assertEquals(3.4, outputs.getParameter(o).getParameterValue(input),
-				0.01);
+		assertEquals(3.4, outputs.getParameter(o).getParameterValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());

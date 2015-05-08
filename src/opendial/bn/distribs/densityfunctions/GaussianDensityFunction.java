@@ -39,8 +39,8 @@ import org.w3c.dom.Element;
 
 /**
  * Gaussian density function. In the multivariate case, the density function is
- * currently limited to Gaussian distribution with a diagonal covariance (which
- * are equivalent to the product of univariate distributions).
+ * currently limited to Gaussian distribution with a diagonal covariance (which are
+ * equivalent to the product of univariate distributions).
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -65,8 +65,8 @@ public class GaussianDensityFunction implements DensityFunction {
 	static final Random sampler = new Random();
 
 	/**
-	 * Creates a new density function with the given mean and variance vector.
-	 * Only diagonal coveriance are currently supported
+	 * Creates a new density function with the given mean and variance vector. Only
+	 * diagonal coveriance are currently supported
 	 * 
 	 * @param mean the Gaussian mean vector
 	 * @param variance the variances for each dimension
@@ -79,8 +79,7 @@ public class GaussianDensityFunction implements DensityFunction {
 		stdDev = new double[variance.length];
 		for (int i = 0; i < variance.length; i++) {
 			if (variance[i] < 0) {
-				log.warning("variance should not be negative, but is : "
-						+ variance);
+				log.warning("variance should not be negative, but is : " + variance);
 			}
 			stdDev[i] = Math.sqrt(variance[i]);
 		}
@@ -121,8 +120,7 @@ public class GaussianDensityFunction implements DensityFunction {
 		}
 		for (double[] sample : samples) {
 			for (int i = 0; i < sample.length; i++) {
-				variance[i] += Math.pow(sample[i] - mean[i], 2)
-						/ samples.length;
+				variance[i] += Math.pow(sample[i] - mean[i], 2) / samples.length;
 			}
 		}
 		stdDev = new double[variance.length];
@@ -164,8 +162,8 @@ public class GaussianDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Returns a set of discrete values (of a size of nbBuckets) extracted from
-	 * the Gaussian. The number of values is derived from
+	 * Returns a set of discrete values (of a size of nbBuckets) extracted from the
+	 * Gaussian. The number of values is derived from
 	 * Settings.NB_DISCRETISATION_BUCKETS
 	 *
 	 * @param nbBuckets the number of buckets to employ
@@ -209,17 +207,14 @@ public class GaussianDensityFunction implements DensityFunction {
 		double product = 1;
 		for (int i = 0; i < mean.length; i++) {
 			double z = (x[i] - mean[i]) / stdDev[i];
-			if (z < -8.0)
-				return 0.0;
-			if (z > 8.0)
-				continue;
+			if (z < -8.0) return 0.0;
+			if (z > 8.0) continue;
 			double sum = 0.0, term = z;
 			for (int j = 3; sum + term != sum; j += 2) {
 				sum = sum + term;
 				term = term * z * z / j;
 			}
-			product *= 0.5 + sum * Math.exp(-z * z / 2)
-					/ Math.sqrt(2 * Math.PI);
+			product *= 0.5 + sum * Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
 		}
 		return product;
 	}
@@ -295,8 +290,7 @@ public class GaussianDensityFunction implements DensityFunction {
 		distribElement.appendChild(meanEl);
 		Element varianceEl = doc.createElement("variance");
 		varianceEl.setTextContent((variance.length > 1) ? ValueFactory.create(
-				variance).toString() : ""
-				+ StringUtils.getShortForm(variance[0]));
+				variance).toString() : "" + StringUtils.getShortForm(variance[0]));
 		distribElement.appendChild(varianceEl);
 
 		return Arrays.asList(distribElement);

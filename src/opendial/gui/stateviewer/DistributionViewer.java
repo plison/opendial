@@ -72,15 +72,14 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class DistributionViewer extends JDialog {
 
 	// logger
-	public static Logger log = new Logger("DistributionViewer",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
 
 	String queryVar;
 	IndependentProbDistribution lastDistrib;
 
 	/**
-	 * Constructs a new viewer for the given distribution, connected to the
-	 * state viewer component.
+	 * Constructs a new viewer for the given distribution, connected to the state
+	 * viewer component.
 	 * 
 	 * @param currentState the current dialogue state
 	 * @param queryVar the variable to display
@@ -88,8 +87,7 @@ public class DistributionViewer extends JDialog {
 	 */
 	public DistributionViewer(final DialogueState currentState,
 			final String queryVar, final StateViewer viewer) {
-		super(viewer.tab.getMainFrame().getFrame(),
-				Dialog.ModalityType.MODELESS);
+		super(viewer.tab.getMainFrame().getFrame(), Dialog.ModalityType.MODELESS);
 		setTitle("Distribution Viewer");
 		this.queryVar = queryVar;
 		update(currentState);
@@ -113,7 +111,8 @@ public class DistributionViewer extends JDialog {
 
 		if (!currentState.hasChanceNode(queryVar)) {
 			return;
-		} else if (lastDistrib != null
+		}
+		else if (lastDistrib != null
 				&& this.lastDistrib.equals(currentState.getChanceNode(queryVar)
 						.getDistrib())) {
 			return;
@@ -133,11 +132,13 @@ public class DistributionViewer extends JDialog {
 			if (indepDistrib instanceof ContinuousDistribution) {
 				container.add(generatePanel(indepDistrib.toContinuous()),
 						BorderLayout.CENTER);
-			} else {
+			}
+			else {
 				container.add(generatePanel(indepDistrib.toDiscrete()),
 						BorderLayout.CENTER);
 			}
-		} catch (DialException e) {
+		}
+		catch (DialException e) {
 			log.warning("could not generate distribution viewer: " + e);
 		}
 		setContentPane(container);
@@ -145,7 +146,8 @@ public class DistributionViewer extends JDialog {
 			pack();
 			setLocation(new Random().nextInt(500), (new Random()).nextInt(500));
 			setVisible(true);
-		} else {
+		}
+		else {
 			validate();
 		}
 	}
@@ -164,9 +166,9 @@ public class DistributionViewer extends JDialog {
 		distrib.getValues().stream()
 				.forEach(d -> dataset.addValue(distrib.getProb(d), "", "" + d));
 
-		JFreeChart chart = ChartFactory.createBarChart(
-				"Probability distribution P(" + variableName + ")", // chart
-																	// title
+		JFreeChart chart = ChartFactory.createBarChart("Probability distribution P("
+				+ variableName + ")", // chart
+										// title
 				"Value", // domain axis label
 				"Probability", // range axis label
 				dataset, // data
@@ -178,8 +180,8 @@ public class DistributionViewer extends JDialog {
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		BarRenderer renderer = (BarRenderer) plot.getRenderer();
 		renderer.setToolTipGenerator((d, s, c) -> {
-			return "P(" + variableName + "=" + d.getColumnKeys().get(c)
-					+ ") = " + d.getValue(s, c);
+			return "P(" + variableName + "=" + d.getColumnKeys().get(c) + ") = "
+					+ d.getValue(s, c);
 		});
 
 		renderer.setBarPainter(new StandardBarPainter());
@@ -204,8 +206,8 @@ public class DistributionViewer extends JDialog {
 
 		List<XYSeries> series = extractSeries(distrib.getFunction());
 
-		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(
-				new NumberAxis("Value"));
+		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis(
+				"Value"));
 		for (XYSeries serie : series) {
 
 			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title
@@ -224,9 +226,9 @@ public class DistributionViewer extends JDialog {
 			plot.setRangeGridlinePaint(Color.white);
 		}
 
-		return new ChartPanel(new JFreeChart("Probability distribution P("
-				+ variableName + ")", JFreeChart.DEFAULT_TITLE_FONT, combined,
-				true), false);
+		return new ChartPanel(
+				new JFreeChart("Probability distribution P(" + variableName + ")",
+						JFreeChart.DEFAULT_TITLE_FONT, combined, true), false);
 	}
 
 	private List<XYSeries> extractSeries(DensityFunction function)
@@ -268,8 +270,7 @@ public class DistributionViewer extends JDialog {
 					prevPrevY = prevY;
 					prevY = currentY;
 				}
-				doSmoothing = (nbFluctuations > points.size() / 2) ? true
-						: false;
+				doSmoothing = (nbFluctuations > points.size() / 2) ? true : false;
 			}
 
 		}

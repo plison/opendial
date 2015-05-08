@@ -74,8 +74,7 @@ public class RuleGrounding {
 	}
 
 	/**
-	 * Adds a collection of alternative groundings. At least one must be
-	 * non-failed.
+	 * Adds a collection of alternative groundings. At least one must be non-failed.
 	 * 
 	 * @param alternatives the alternative groundings
 	 */
@@ -93,8 +92,7 @@ public class RuleGrounding {
 	}
 
 	/**
-	 * Constructs a set of groundings with the alternative values for the
-	 * variable
+	 * Constructs a set of groundings with the alternative values for the variable
 	 * 
 	 * @param variable the variable label
 	 * @param vals the alternative values
@@ -236,7 +234,8 @@ public class RuleGrounding {
 	public String toString() {
 		if (!isFailed()) {
 			return groundings.toString();
-		} else {
+		}
+		else {
 			return "failed";
 		}
 	}
@@ -260,13 +259,12 @@ public class RuleGrounding {
 	 */
 	public boolean isEmpty() {
 		return groundings.isEmpty()
-				|| (groundings.size() == 1 && groundings.iterator().next()
-						.isEmpty());
+				|| (groundings.size() == 1 && groundings.iterator().next().isEmpty());
 	}
 
 	/**
-	 * Special type of rule grounding when the grounding has "failed", i.e.
-	 * there is no possible assignment of values for the condition(s).
+	 * Special type of rule grounding when the grounding has "failed", i.e. there is
+	 * no possible assignment of values for the condition(s).
 	 *
 	 */
 	public static final class Failed extends RuleGrounding {

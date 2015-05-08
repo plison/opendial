@@ -38,16 +38,16 @@ import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
 /**
- * Representation of a string object containing a variable number (from 0 to n)
- * of slots to be filled, forming a template.
+ * Representation of a string object containing a variable number (from 0 to n) of
+ * slots to be filled, forming a template.
  * 
  * <p>
  * For instance, the raw string "Take the {BOX} to the {LOCATION}$ contains two
  * slots: a slot labeled BOX and a slot labeled LOCATION.
  * 
  * <p>
- * The class offers several methods for constructing template strings, matching
- * them against strings, and filling their slots with specific values.
+ * The class offers several methods for constructing template strings, matching them
+ * against strings, and filling their slots with specific values.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -79,9 +79,9 @@ public class Template {
 	// ===================================
 
 	/**
-	 * Creates a new template string, based on the raw string provided as
-	 * argument. The raw string must signal its slots by surrounding its slots
-	 * labels with { ... $}.
+	 * Creates a new template string, based on the raw string provided as argument.
+	 * The raw string must signal its slots by surrounding its slots labels with {
+	 * ... $}.
 	 * 
 	 * @param value the string value.
 	 */
@@ -126,8 +126,8 @@ public class Template {
 	}
 
 	/**
-	 * Returns true if the template is an actual template, i.e. can match
-	 * multiple values (due to slots or alternative/optional elements)
+	 * Returns true if the template is an actual template, i.e. can match multiple
+	 * values (due to slots or alternative/optional elements)
 	 * 
 	 * @return true if underspecified, false otherwise
 	 */
@@ -136,10 +136,10 @@ public class Template {
 	}
 
 	/**
-	 * Checks whether the string is matching the template or not. The matching
-	 * result contains a boolean representing the outcome of the process, as
-	 * well (if the match is successful) as the boundaries of the match and the
-	 * extracted slot values.
+	 * Checks whether the string is matching the template or not. The matching result
+	 * contains a boolean representing the outcome of the process, as well (if the
+	 * match is successful) as the boundaries of the match and the extracted slot
+	 * values.
 	 * 
 	 * @param str the string to check
 	 * @return the matching result
@@ -149,7 +149,8 @@ public class Template {
 		if (!underspecified) {
 			if (input.equalsIgnoreCase(rawString)) {
 				return new MatchResult(0, rawString.length(), new Assignment());
-			} else {
+			}
+			else {
 				return new MatchResult();
 			}
 		}
@@ -157,8 +158,7 @@ public class Template {
 		Matcher matcher = pattern.matcher(input);
 		if ((matcher.matches())) {
 			int start = input.indexOf(matcher.group(0));
-			int end = input.indexOf(matcher.group(0))
-					+ matcher.group(0).length();
+			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
 
 			Assignment filledSlots = new Assignment();
 			for (String slot : slots.keySet()) {
@@ -174,9 +174,9 @@ public class Template {
 
 	/**
 	 * Checks whether the template can be found within the string. The matching
-	 * result contains a boolean representing the outcome of the process, as
-	 * well (if the match is successful) as the boundaries of the match and the
-	 * extracted slot values.
+	 * result contains a boolean representing the outcome of the process, as well (if
+	 * the match is successful) as the boundaries of the match and the extracted slot
+	 * values.
 	 * 
 	 * @param str the string to check
 	 * @return the matching result
@@ -185,14 +185,15 @@ public class Template {
 		List<MatchResult> results = find(str, 1);
 		if (results.isEmpty()) {
 			return new MatchResult();
-		} else {
+		}
+		else {
 			return results.get(0);
 		}
 	}
 
 	/**
-	 * Searches for all occurrences of the template in the str. The maximum
-	 * number of occurrences to find is specified in maxResults.
+	 * Searches for all occurrences of the template in the str. The maximum number of
+	 * occurrences to find is specified in maxResults.
 	 * 
 	 * @param str the string to check
 	 * @param maxResults the maximum number of occurrences
@@ -206,11 +207,9 @@ public class Template {
 		while ((matcher.find())) {
 
 			int start = input.indexOf(matcher.group(0));
-			int end = input.indexOf(matcher.group(0))
-					+ matcher.group(0).length();
-			if (((start != 0 && !isWhitespaceOrPunctuation(input
-					.charAt(start - 1))) || (end < input.length() && !isWhitespaceOrPunctuation(input
-					.charAt(end))))
+			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
+			if (((start != 0 && !isWhitespaceOrPunctuation(input.charAt(start - 1))) || (end < input
+					.length() && !isWhitespaceOrPunctuation(input.charAt(end))))
 					&& !rawString.equals(" ")) {
 				continue;
 			}
@@ -245,8 +244,8 @@ public class Template {
 		if (str1.contains("*") || str1.contains(")?") || str1.contains("|")) {
 			Template t1 = new Template(str1);
 			return t1.match(str2).isMatching();
-		} else if (str2.contains("*") || str2.contains(")?")
-				|| str2.contains("|")) {
+		}
+		else if (str2.contains("*") || str2.contains(")?") || str2.contains("|")) {
 			Template t2 = new Template(str2);
 			return t2.match(str1).isMatching();
 		}
@@ -258,8 +257,8 @@ public class Template {
 	// ===================================
 
 	/**
-	 * Returns true if the provided variables cover all of the slots in the
-	 * template. Otherwise, returns false.
+	 * Returns true if the provided variables cover all of the slots in the template.
+	 * Otherwise, returns false.
 	 * 
 	 * @param input the input
 	 * @return true if all slots can be filled, and false otherwise.
@@ -275,14 +274,13 @@ public class Template {
 	}
 
 	/**
-	 * Fills the template with the given content, and returns the filled string.
-	 * The content provided in the form of a slot:filler mapping. For instance,
-	 * given a template: "my name is {name}" and a filler "name:Pierre", the
-	 * method will return "my name is Pierre".
+	 * Fills the template with the given content, and returns the filled string. The
+	 * content provided in the form of a slot:filler mapping. For instance, given a
+	 * template: "my name is {name}" and a filler "name:Pierre", the method will
+	 * return "my name is Pierre".
 	 * 
 	 * <p>
-	 * In addition, the slot {random} is associated with a random integer
-	 * number.
+	 * In addition, the slot {random} is associated with a random integer number.
 	 * 
 	 * @param fillers the content associated with each slot.
 	 * @return the string filled with the given content
@@ -295,8 +293,8 @@ public class Template {
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
 			if (fillers.getValue(slot) != ValueFactory.none()) {
-				filledTemplate = filledTemplate.replace("{" + slot + "}",
-						fillers.getValue(slot).toString());
+				filledTemplate = filledTemplate.replace("{" + slot + "}", fillers
+						.getValue(slot).toString());
 			}
 		}
 
@@ -333,8 +331,8 @@ public class Template {
 	}
 
 	/**
-	 * Returns true if the object o is identical to the current template, and
-	 * false otherwise
+	 * Returns true if the object o is identical to the current template, and false
+	 * otherwise
 	 *
 	 * @param o the object to compare
 	 * @return true if identical, false otherwise
@@ -388,8 +386,7 @@ public class Template {
 
 	public boolean isRawSlot() {
 		return slots.size() == 1
-				&& rawString.equals("{" + slots.keySet().iterator().next()
-						+ "}");
+				&& rawString.equals("{" + slots.keySet().iterator().next() + "}");
 	}
 
 	/**
@@ -420,16 +417,16 @@ public class Template {
 		try {
 			return Pattern.compile(regex, Pattern.CASE_INSENSITIVE
 					| Pattern.UNICODE_CASE);
-		} catch (PatternSyntaxException e) {
-			log.warning("illegal pattern syntax: " + regex + " (from " + str
-					+ ")");
+		}
+		catch (PatternSyntaxException e) {
+			log.warning("illegal pattern syntax: " + regex + " (from " + str + ")");
 			return Pattern.compile("bogus pattern");
 		}
 	}
 
 	/**
-	 * Returns the raw string after removing the braces surrounding
-	 * underspecified variables
+	 * Returns the raw string after removing the braces surrounding underspecified
+	 * variables
 	 * 
 	 * @return the string with the opening and closing braces removed.
 	 */

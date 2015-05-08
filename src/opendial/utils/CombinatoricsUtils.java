@@ -43,13 +43,12 @@ import opendial.datastructs.Assignment;
 public class CombinatoricsUtils {
 
 	// logger
-	public static Logger log = new Logger("CombinatoricsUtils",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("CombinatoricsUtils", Logger.Level.DEBUG);
 
 	/**
-	 * Generates all possible assignment combinations from the set of values
-	 * provided as parameters -- each variable being associated with a set of
-	 * alternative values.
+	 * Generates all possible assignment combinations from the set of values provided
+	 * as parameters -- each variable being associated with a set of alternative
+	 * values.
 	 * 
 	 * <p>
 	 * NB: use with caution, computational complexity is exponential!
@@ -74,11 +73,11 @@ public class CombinatoricsUtils {
 						.flatMap(
 								a -> values.stream()
 										.map(v -> new Assignment(a, label, v))
-										.sequential())
-						.collect(Collectors.toSet());
+										.sequential()).collect(Collectors.toSet());
 			}
 			return assignments;
-		} catch (OutOfMemoryError e) {
+		}
+		catch (OutOfMemoryError e) {
 			log.debug("out of memory error, initial matrix: " + valuesMatrix);
 			e.printStackTrace();
 			return new HashSet<Assignment>();

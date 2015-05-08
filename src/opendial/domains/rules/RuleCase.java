@@ -42,9 +42,9 @@ import opendial.domains.rules.parameters.Parameter;
 import opendial.state.StatePruner;
 
 /**
- * Representation of a rule case, containing a condition and a list of
- * alternative effects if the condition holds. Each alternative effect has a
- * distinct probability or utility parameter.
+ * Representation of a rule case, containing a condition and a list of alternative
+ * effects if the condition holds. Each alternative effect has a distinct probability
+ * or utility parameter.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -148,8 +148,8 @@ public class RuleCase {
 	}
 
 	/**
-	 * Returns the parameter associated with the effect. If the effect is not
-	 * part of the case, returns null.
+	 * Returns the parameter associated with the effect. If the effect is not part of
+	 * the case, returns null.
 	 * 
 	 * @param e the effect
 	 * @return the parameter associated with the effect.
@@ -168,8 +168,8 @@ public class RuleCase {
 	}
 
 	/**
-	 * Returns the input variables for the case, composed of the input variables
-	 * for the condition, plus the additional input variables for the effects.
+	 * Returns the input variables for the case, composed of the input variables for
+	 * the condition, plus the additional input variables for the effects.
 	 * 
 	 * @return the set of input variables for the case
 	 */
@@ -185,8 +185,8 @@ public class RuleCase {
 	}
 
 	/**
-	 * Returns the set of output variables for the case, as defined in the
-	 * effects associated with the case condition.
+	 * Returns the set of output variables for the case, as defined in the effects
+	 * associated with the case condition.
 	 * 
 	 * @return the set of output variables defined in the case's effects
 	 */
@@ -201,8 +201,8 @@ public class RuleCase {
 	 * assignment.
 	 * 
 	 * @param input the input assignment
-	 * @param withEffects whether to take the effects into account when
-	 *            extracting the groundings
+	 * @param withEffects whether to take the effects into account when extracting
+	 *            the groundings
 	 * @return the set of possible groundings
 	 */
 	public RuleGrounding getGroundings(Assignment input, boolean withEffects) {
@@ -214,7 +214,8 @@ public class RuleCase {
 					Condition co = e.convertToCondition();
 					RuleGrounding effectGrounding = co.getGroundings(input2);
 					grounding.add(effectGrounding);
-				} else {
+				}
+				else {
 					Set<String> slots = e.getValueSlots();
 					slots.removeAll(input2.getVariables());
 					grounding.add(Assignment.createOneValue(slots,
@@ -246,7 +247,8 @@ public class RuleCase {
 		String str = "";
 		if (!(condition instanceof VoidCondition)) {
 			str += "if (" + condition.toString() + ") then ";
-		} else {
+		}
+		else {
 			str += " ";
 		}
 		for (Effect e : effects.keySet()) {
@@ -275,9 +277,8 @@ public class RuleCase {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof RuleCase
-				&& condition.equals(((RuleCase) o).condition) && effects
-					.equals(((RuleCase) o).effects));
+		return (o instanceof RuleCase && condition.equals(((RuleCase) o).condition) && effects
+				.equals(((RuleCase) o).effects));
 	}
 
 	// ===================================
@@ -285,8 +286,8 @@ public class RuleCase {
 	// ===================================
 
 	/**
-	 * Prunes all effects whose parameter is lower than the provided threshold.
-	 * This only works for fixed parameters.
+	 * Prunes all effects whose parameter is lower than the provided threshold. This
+	 * only works for fixed parameters.
 	 * 
 	 */
 	protected void pruneEffects() {
@@ -303,11 +304,9 @@ public class RuleCase {
 	 * Adds a void effect if there is a remaining probability mass to allocate
 	 */
 	protected void addVoidEffect() {
-		double fixedMass = effects.keySet().stream()
-				.map(e -> this.getParameter(e))
+		double fixedMass = effects.keySet().stream().map(e -> this.getParameter(e))
 				.filter(e -> e instanceof FixedParameter)
-				.mapToDouble(e -> ((FixedParameter) e).getParameterValue())
-				.sum();
+				.mapToDouble(e -> ((FixedParameter) e).getParameterValue()).sum();
 		if (fixedMass > 0 && fixedMass < 0.99) {
 			addEffect(new Effect(), new FixedParameter(1.0 - fixedMass));
 		}

@@ -44,9 +44,9 @@ import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 
 /**
- * Sampling-based inference algorithm for Bayesian networks. The class provides
- * a set of functionalities for performing inference operations based on a
- * particular sampling algorithm (e.g. likelihood weighting).
+ * Sampling-based inference algorithm for Bayesian networks. The class provides a set
+ * of functionalities for performing inference operations based on a particular
+ * sampling algorithm (e.g. likelihood weighting).
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -54,8 +54,7 @@ import opendial.inference.Query;
 public class SamplingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("SamplingAlgorithm",
-			Logger.Level.DEBUG);
+	public static Logger log = new Logger("SamplingAlgorithm", Logger.Level.DEBUG);
 
 	public int nbSamples = Settings.nbSamples;
 
@@ -90,8 +89,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	// ===================================
 
 	/**
-	 * Queries for the probability distribution of the set of random variables
-	 * in the Bayesian network, given the provided evidence
+	 * Queries for the probability distribution of the set of random variables in the
+	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
 	 * @return the resulting probability distribution
@@ -131,14 +130,15 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		List<Sample> samples = isquery.getSamples();
 		if (samples.isEmpty()) {
 			throw new DialException("could not extract sample");
-		} else {
+		}
+		else {
 			return samples.get(0).getTrimmed(query.getQueryVars());
 		}
 	}
 
 	/**
-	 * Queries for the utility of a particular set of (action) variables, given
-	 * the provided evidence
+	 * Queries for the utility of a particular set of (action) variables, given the
+	 * provided evidence
 	 * 
 	 * @param query the full query
 	 * @return the utility distribution
@@ -149,8 +149,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 
 		try {
 			// creates a new query thread
-			LikelihoodWeighting isquery = new LikelihoodWeighting(query,
-					nbSamples, maxSamplingTime);
+			LikelihoodWeighting isquery = new LikelihoodWeighting(query, nbSamples,
+					maxSamplingTime);
 
 			// extract and redraw the samples
 			List<Sample> samples = isquery.getSamples();
@@ -161,7 +161,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 					s -> utilityTable.incrementUtil(s, s.getUtility()));
 
 			return utilityTable;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			return new UtilityTable();
 		}
@@ -186,8 +187,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 		// extract and redraw the samples
 		List<Sample> samples = isquery.getSamples();
 
-		double total = samples.stream().parallel()
-				.mapToDouble(s -> s.getUtility()).sum();
+		double total = samples.stream().parallel().mapToDouble(s -> s.getUtility())
+				.sum();
 		return total / samples.size();
 	}
 
@@ -196,8 +197,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * result.
 	 * 
 	 * <p>
-	 * NB: the equivalent "reduce" method includes additional speed-up methods
-	 * to simplify the reduction process.
+	 * NB: the equivalent "reduce" method includes additional speed-up methods to
+	 * simplify the reduction process.
 	 * 
 	 * @param query the reduction query
 	 * @return the reduced Bayesian network
@@ -235,8 +236,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 				}
 			}
 
-			ProbDistribution distrib = fullDistrib.getMarginal(var,
-					inputNodesIds);
+			ProbDistribution distrib = fullDistrib.getMarginal(var, inputNodesIds);
 
 			// creating the node
 			ChanceNode node = new ChanceNode(var);
@@ -251,13 +251,13 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	}
 
 	/**
-	 * Returns an empirical distribution for the particular query, after
-	 * reweighting each samples based on the provided weighting scheme.
+	 * Returns an empirical distribution for the particular query, after reweighting
+	 * each samples based on the provided weighting scheme.
 	 * 
 	 * @param query the query
 	 * @param weightScheme the weighting scheme for the samples
-	 * @return the resulting empirical distribution for the query variables,
-	 *         after reweigthing
+	 * @return the resulting empirical distribution for the query variables, after
+	 *         reweigthing
 	 * @throws DialException if the reweighting operation failed.
 	 */
 	public EmpiricalDistribution getWeightedSamples(Query query,
