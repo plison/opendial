@@ -121,7 +121,7 @@ public class GUIFrame implements Module {
 			tabbedPane.addTab(StateViewerTab.TAB_TITLE, null, stateMonitorTab,
 					StateViewerTab.TAB_TIP);
 
-			frame.setPreferredSize(new Dimension(1000, 800));
+			frame.setPreferredSize(new Dimension(900, 800));
 			frame.pack();
 
 			frame.setVisible(true);
