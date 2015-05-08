@@ -411,7 +411,7 @@ public class GUIMenuBar extends JMenuBar {
 					"text/html",
 					"<html><body style=\""
 							+ style
-							+ "\"><b>OpenDial dialogue toolkit, version 1.2</b><br>"
+							+ "\"><b>OpenDial dialogue toolkit, version 1.3</b><br>"
 							+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
 							+ "OpenDial is distributed as free software under<br>"
 							+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
