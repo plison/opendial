@@ -23,7 +23,6 @@
 
 package opendial.bn.values;
 
-import opendial.arch.DialException;
 
 /**
  * Generic class for a variable value. The value can be:
@@ -64,9 +63,9 @@ public interface Value extends Comparable<Value> {
 	 * 
 	 * @param value the value to concatenate with the current one
 	 * @return the concatenated result
-	 * @throws DialException if the values could not be concatenated
+	 * @throws RuntimeException if the values could not be concatenated
 	 */
-	public Value concatenate(Value value) throws DialException;
+	public Value concatenate(Value value) throws RuntimeException;
 
 	/**
 	 * Returns the length of the value

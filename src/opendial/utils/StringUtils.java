@@ -23,6 +23,8 @@
 
 package opendial.utils;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 
 /**
  * Various utilities for manipulating strings
@@ -41,7 +42,7 @@ import opendial.arch.Logger;
 public class StringUtils {
 
 	// logger
-	public static Logger log = new Logger("StringUtils", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	final static Pattern nbestRegex = Pattern
 			.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
@@ -86,8 +87,9 @@ public class StringUtils {
 		Matcher matcher = Pattern.compile("_\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher.find()) {
 			String subscript = matcher.group(1);
-			str = str
-					.replace("_{" + subscript + "}", "<sub>" + subscript + "</sub>");
+			str =
+					str.replace("_{" + subscript + "}", "<sub>" + subscript
+							+ "</sub>");
 		}
 		Matcher matcher2 = Pattern.compile("_(\\p{Alnum}*)").matcher(str);
 		while (matcher2.find()) {
@@ -97,8 +99,9 @@ public class StringUtils {
 		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher3.find()) {
 			String subscript = matcher3.group(1);
-			str = str
-					.replace("^{" + subscript + "}", "<sup>" + subscript + "</sup>");
+			str =
+					str.replace("^{" + subscript + "}", "<sup>" + subscript
+							+ "</sup>");
 		}
 		Matcher matcher4 = Pattern.compile("\\^([\\w\\-\\^]+)").matcher(str);
 		while (matcher4.find()) {
@@ -202,8 +205,8 @@ public class StringUtils {
 			if (m.find()) {
 				String probValueStr = m.group(1);
 				double probValue = Double.parseDouble(probValueStr);
-				String remainingStr = split.replace("(" + probValueStr + ")", "")
-						.trim();
+				String remainingStr =
+						split.replace("(" + probValueStr + ")", "").trim();
 				table.put(remainingStr, probValue);
 			}
 			else {
@@ -389,8 +392,8 @@ public class StringUtils {
 					builder = builder.replace(m.start() - 1, m.end(), replace);
 				}
 				else {
-					builder = builder.replace(m.start(), m.end(), "(?:" + core
-							+ ")?");
+					builder =
+							builder.replace(m.start(), m.end(), "(?:" + core + ")?");
 				}
 				m = altRegex.matcher(builder.toString());
 			}

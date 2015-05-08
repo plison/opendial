@@ -23,11 +23,11 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.BNetwork;
 import opendial.state.DialogueState;
 
@@ -41,7 +41,7 @@ import opendial.state.DialogueState;
  */
 public class Domain {
 
-	static Logger log = new Logger("Domain", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// domain name
 	String domainName = "";

@@ -23,10 +23,10 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
+
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -43,8 +43,7 @@ import org.w3c.dom.Node;
  */
 public interface IndependentProbDistribution extends ProbDistribution {
 
-	public static Logger log = new Logger("IndependentProbDistribution",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.
@@ -98,9 +97,9 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns a sampled value for the distribution.
 	 * 
 	 * @return the sampled value
-	 * @throws DialException if no sample could be extracted.
+	 * @throws RuntimeException if no sample could be extracted.
 	 */
-	public Value sample() throws DialException;
+	public Value sample() throws RuntimeException;
 
 	/**
 	 * Returns a set of possible values for the distribution. If the distribution is
@@ -115,10 +114,10 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns a continuous representation of the distribution.
 	 * 
 	 * @return the distribution in a continuous form
-	 * @throws DialException if the distribution could not be converted to a
+	 * @throws RuntimeException if the distribution could not be converted to a
 	 *             continuous form
 	 */
-	public ContinuousDistribution toContinuous() throws DialException;
+	public ContinuousDistribution toContinuous() throws RuntimeException;
 
 	/**
 	 * Returns a discrete representation of the distribution
@@ -141,7 +140,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param document the XML node to which the node will be attached
 	 * @return the corresponding XML node
-	 * @throws DialException if the XML generation failed.
+	 * @throws RuntimeException if the XML generation failed.
 	 */
 	public Node generateXML(Document document);
 
@@ -170,11 +169,11 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @param condition the conditional assignment
 	 * @param head the value for the head variable
 	 * @return the resulting probability
-	 * @throws DialException if the probability could not be extracted.
+	 * @throws RuntimeException if the probability could not be extracted.
 	 */
 	@Override
 	public default double getProb(Assignment condition, Value head)
-			throws DialException {
+			throws RuntimeException {
 		return getProb(head);
 	}
 
@@ -182,7 +181,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns a sample from the distribution (the condition is ignored).
 	 */
 	@Override
-	public default Value sample(Assignment condition) throws DialException {
+	public default Value sample(Assignment condition) throws RuntimeException {
 		return sample();
 	}
 

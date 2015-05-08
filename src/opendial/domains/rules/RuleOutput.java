@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.BasicEffect;
@@ -100,8 +99,8 @@ public class RuleOutput extends RuleCase {
 				for (Effect o2 : newCase.getEffects()) {
 					Parameter newParam = newCase.getParameter(o2);
 
-					Collection<BasicEffect> effectsList = new ArrayList<BasicEffect>(
-							o.getSubEffects());
+					Collection<BasicEffect> effectsList =
+							new ArrayList<BasicEffect>(o.getSubEffects());
 					effectsList.addAll(o2.getSubEffects());
 					Effect newEffect = new Effect(effectsList);
 					Parameter mergeParam = multiplyParameter(param, newParam);
@@ -109,8 +108,8 @@ public class RuleOutput extends RuleCase {
 						newOutput.put(newEffect, mergeParam);
 					}
 					else {
-						Parameter addParam = sumParameter(newOutput.get(newEffect),
-								mergeParam);
+						Parameter addParam =
+								sumParameter(newOutput.get(newEffect), mergeParam);
 						newOutput.put(newEffect, addParam);
 					}
 				}
@@ -121,8 +120,8 @@ public class RuleOutput extends RuleCase {
 		else if (type == RuleType.UTIL) {
 			for (Effect o2 : newCase.getEffects()) {
 				if (effects.containsKey(o2)) {
-					Parameter mergeParam = sumParameter(effects.get(o2),
-							newCase.getParameter(o2));
+					Parameter mergeParam =
+							sumParameter(effects.get(o2), newCase.getParameter(o2));
 					effects.put(o2, mergeParam);
 				}
 				else {
@@ -138,7 +137,7 @@ public class RuleOutput extends RuleCase {
 	 * 
 	 * @param input input assignment (with parameters values)
 	 * @return the corresponding mass
-	 * @throws DialException if some parameters could not be found.
+	 * @throws RuntimeException if some parameters could not be found.
 	 */
 	public double getTotalMass(Assignment input) {
 		return effects.values().stream()
@@ -154,15 +153,16 @@ public class RuleOutput extends RuleCase {
 	 */
 	private Parameter sumParameter(Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
-			double sum = ((FixedParameter) p1).getParameterValue()
-					+ ((FixedParameter) p2).getParameterValue();
+			double sum =
+					((FixedParameter) p1).getParameterValue()
+							+ ((FixedParameter) p2).getParameterValue();
 			return new FixedParameter(sum);
 		}
 		else {
-			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1
-					.toString();
-			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2
-					.toString();
+			String p1str =
+					(p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1.toString();
+			String p2str =
+					(p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2.toString();
 			Set<String> unknowns = new HashSet<String>();
 			unknowns.addAll(p1.getVariables());
 			unknowns.addAll(p2.getVariables());
@@ -179,15 +179,16 @@ public class RuleOutput extends RuleCase {
 	 */
 	private Parameter multiplyParameter(Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
-			double sum = ((FixedParameter) p1).getParameterValue()
-					* ((FixedParameter) p2).getParameterValue();
+			double sum =
+					((FixedParameter) p1).getParameterValue()
+							* ((FixedParameter) p2).getParameterValue();
 			return new FixedParameter(sum);
 		}
 		else {
-			String p1str = (p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1
-					.toString();
-			String p2str = (p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2
-					.toString();
+			String p1str =
+					(p1 instanceof SingleParameter) ? "{" + p1 + "}" : p1.toString();
+			String p2str =
+					(p2 instanceof SingleParameter) ? "{" + p2 + "}" : p2.toString();
 			Set<String> unknowns = new HashSet<String>();
 			unknowns.addAll(p1.getVariables());
 			unknowns.addAll(p2.getVariables());

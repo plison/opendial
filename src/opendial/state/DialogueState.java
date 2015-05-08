@@ -29,15 +29,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
@@ -75,7 +75,7 @@ import org.w3c.dom.Node;
 public class DialogueState extends BNetwork {
 
 	// logger
-	public static Logger log = new Logger("DialogueState", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// evidence values for state variables
 	Assignment evidence;
@@ -179,9 +179,9 @@ public class DialogueState extends BNetwork {
 	 * Adds a set of parameter variables to the dialogue state.
 	 * 
 	 * @param parameters the parameters
-	 * @throws DialException if the inclusion of parameters failed
+	 * @throws RuntimeException if the inclusion of parameters failed
 	 */
-	public void setParameters(BNetwork parameters) throws DialException {
+	public void setParameters(BNetwork parameters) throws RuntimeException {
 		addNetwork(parameters);
 		this.parameterVars.clear();
 		this.parameterVars.addAll(parameters.getChanceNodeIds());
@@ -197,11 +197,11 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * 
 	 * @param assign the value assignment to add
-	 * @throws DialException if the content could not be added.
+	 * @throws RuntimeException if the content could not be added.
 	 */
-	public synchronized void addToState(Assignment assign) throws DialException {
+	public synchronized void addToState(Assignment assign) throws RuntimeException {
 		for (String var : assign.getVariables()) {
-			addToState(new CategoricalTable(var, assign.getValue(var)));
+			addToState(new SingleValueDistribution(var, assign.getValue(var)));
 		}
 	}
 
@@ -211,10 +211,10 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * 
 	 * @param distrib the multivariate distribution to add
-	 * @throws DialException if the content could not be added.
+	 * @throws RuntimeException if the content could not be added.
 	 */
 	public synchronized void addToState(MultivariateDistribution distrib)
-			throws DialException {
+			throws RuntimeException {
 		for (String var : distrib.getVariables()) {
 			addToState(distrib.getMarginal(var));
 		}
@@ -231,10 +231,10 @@ public class DialogueState extends BNetwork {
 	 * should be used instead.
 	 * 
 	 * @param distrib a distribution over values for particular state variables
-	 * @throws DialException if the content could not be added.
+	 * @throws RuntimeException if the content could not be added.
 	 */
 	public synchronized void addToState(IndependentProbDistribution distrib)
-			throws DialException {
+			throws RuntimeException {
 
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
@@ -261,10 +261,10 @@ public class DialogueState extends BNetwork {
 	 * @param followPrevious whether the results should be concatenated to the
 	 *            previous values, or reset the content (e.g. when starting a new
 	 *            utterance)
-	 * @throws DialException if the incremental operation could not be performed
+	 * @throws RuntimeException if the incremental operation could not be performed
 	 */
 	public synchronized void addToState_incremental(CategoricalTable distrib,
-			boolean followPrevious) throws DialException {
+			boolean followPrevious) throws RuntimeException {
 
 		if (!followPrevious) {
 			setAsCommitted(distrib.getVariable());
@@ -272,8 +272,8 @@ public class DialogueState extends BNetwork {
 
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
-			CategoricalTable newtable = ((CategoricalTable) queryProb(var))
-					.concatenate(distrib);
+			CategoricalTable newtable =
+					((CategoricalTable) queryProb(var)).concatenate(distrib);
 			getChanceNode(var).setDistrib(newtable);
 			getChanceNode(var).setId(var + "'");
 		}
@@ -287,9 +287,9 @@ public class DialogueState extends BNetwork {
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
 	 * @param newState the state to merge into the current state
-	 * @throws DialException if the new dialogue state could not be merged
+	 * @throws RuntimeException if the new dialogue state could not be merged
 	 */
-	public synchronized void addToState(DialogueState newState) throws DialException {
+	public synchronized void addToState(DialogueState newState) throws RuntimeException {
 		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
@@ -298,9 +298,9 @@ public class DialogueState extends BNetwork {
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
 	 * @param newState the state to merge into the current state
-	 * @throws DialException if the new dialogue state could not be merged
+	 * @throws RuntimeException if the new dialogue state could not be merged
 	 */
-	public synchronized void addToState(BNetwork newState) throws DialException {
+	public synchronized void addToState(BNetwork newState) throws RuntimeException {
 		for (ChanceNode cn : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 			cn.setId(cn.getId() + "'");
 			addNode(cn);
@@ -334,9 +334,9 @@ public class DialogueState extends BNetwork {
 	 * Lison's PhD thesis, Section 4.3 for details.
 	 * 
 	 * @param r the rule to apply.
-	 * @throws DialException if the rule could not be applied.
+	 * @throws RuntimeException if the rule could not be applied.
 	 */
-	public void applyRule(Rule r) throws DialException {
+	public void applyRule(Rule r) throws RuntimeException {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
 		if (arule.isRelevant()) {
@@ -409,12 +409,12 @@ public class DialogueState extends BNetwork {
 
 			else {
 				try {
-					Assignment queryEvidence = (includeEvidence) ? evidence
-							: new Assignment();
+					Assignment queryEvidence =
+							(includeEvidence) ? evidence : new Assignment();
 					return new SwitchingAlgorithm().queryProb(this, variable,
 							queryEvidence);
 				}
-				catch (DialException e) {
+				catch (RuntimeException e) {
 					log.warning("Error querying variable " + variable + " : " + e);
 					return new CategoricalTable(variable);
 				}
@@ -517,9 +517,9 @@ public class DialogueState extends BNetwork {
 	 * Returns a sample of all the variables in the dialogue state
 	 * 
 	 * @return a sample assignment
-	 * @throws DialException if no sample could be extracted
+	 * @throws RuntimeException if no sample could be extracted
 	 */
-	public Assignment getSample() throws DialException {
+	public Assignment getSample() throws RuntimeException {
 		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
 	}
 
@@ -603,7 +603,7 @@ public class DialogueState extends BNetwork {
 	 * @return the copy
 	 */
 	@Override
-	public DialogueState copy() throws DialException {
+	public DialogueState copy() throws RuntimeException {
 		DialogueState sn = new DialogueState(super.copy());
 		sn.addEvidence(evidence.copy());
 		sn.parameterVars = new HashSet<String>(parameterVars);
@@ -641,10 +641,10 @@ public class DialogueState extends BNetwork {
 	 * @param doc the document to which the element must comply
 	 * @param varsToRecord the set of variables to record
 	 * @return the resulting XML element
-	 * @throws DialException if the XML generation failed
+	 * @throws RuntimeException if the XML generation failed
 	 */
 	public Element generateXML(Document doc, Collection<String> varsToRecord)
-			throws DialException {
+			throws RuntimeException {
 
 		Element root = doc.createElement("state");
 		for (String nodeId : varsToRecord) {
@@ -665,9 +665,9 @@ public class DialogueState extends BNetwork {
 	 * Adds the probability rule to the dialogue state
 	 * 
 	 * @param arule the anchored rule (must be of type PROB)
-	 * @throws DialException if the creation of new nodes fails
+	 * @throws RuntimeException if the creation of new nodes fails
 	 */
-	private void addProbabilityRule(AnchoredRule arule) throws DialException {
+	private void addProbabilityRule(AnchoredRule arule) throws RuntimeException {
 
 		String ruleId = arule.getRule().getRuleId();
 		if (hasChanceNode(ruleId)) {
@@ -712,9 +712,9 @@ public class DialogueState extends BNetwork {
 	 * Adds the utility rule to the dialogue state.
 	 * 
 	 * @param arule the anchored rule (must be of type UTIL)
-	 * @throws DialException if the creation of new nodes fails
+	 * @throws RuntimeException if the creation of new nodes fails
 	 */
-	private void addUtilityRule(AnchoredRule arule) throws DialException {
+	private void addUtilityRule(AnchoredRule arule) throws RuntimeException {
 
 		String ruleId = arule.getRule().getRuleId();
 
@@ -752,9 +752,9 @@ public class DialogueState extends BNetwork {
 	 * Connects the chance node to its prior predictions (if any).
 	 * 
 	 * @param outputNode the output node to connect
-	 * @throws DialException if the connection fails
+	 * @throws RuntimeException if the connection fails
 	 */
-	private void connectToPredictions(ChanceNode outputNode) throws DialException {
+	private void connectToPredictions(ChanceNode outputNode) throws RuntimeException {
 
 		String outputVar = outputNode.getId();
 

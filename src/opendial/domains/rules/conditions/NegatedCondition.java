@@ -23,10 +23,11 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 import java.util.Set;
 
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
@@ -40,7 +41,7 @@ import opendial.domains.rules.RuleGrounding;
 public final class NegatedCondition implements Condition {
 
 	// logger
-	public static Logger log = new Logger("NegatedCondition", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// condition to negate
 	final Condition initCondition;

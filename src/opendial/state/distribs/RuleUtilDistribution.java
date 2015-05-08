@@ -23,10 +23,10 @@
 
 package opendial.state.distribs;
 
+import java.util.logging.*;
+
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
@@ -44,7 +44,7 @@ import opendial.state.AnchoredRule;
 public class RuleUtilDistribution implements UtilityFunction {
 
 	// logger
-	public static Logger log = new Logger("RuleUtilDistribution", Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// A rule
 	AnchoredRule rule;
@@ -57,15 +57,15 @@ public class RuleUtilDistribution implements UtilityFunction {
 	 * Creates a new rule-based utility distribution, based on an anchored rule
 	 * 
 	 * @param rule the anchored rule
-	 * @throws DialException if the rule is not a decision rule
+	 * @throws RuntimeException if the rule is not a decision rule
 	 */
-	public RuleUtilDistribution(AnchoredRule rule) throws DialException {
+	public RuleUtilDistribution(AnchoredRule rule) throws RuntimeException {
 
 		if ((rule.getRule().getRuleType() == RuleType.UTIL)) {
 			this.rule = rule;
 		}
 		else {
-			throw new DialException("only utility rules can define a "
+			throw new RuntimeException("only utility rules can define a "
 					+ "rule-based utility distribution");
 		}
 
@@ -134,7 +134,7 @@ public class RuleUtilDistribution implements UtilityFunction {
 			RuleUtilDistribution distrib = new RuleUtilDistribution(rule);
 			return distrib;
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -172,8 +172,8 @@ public class RuleUtilDistribution implements UtilityFunction {
 		for (Effect effectOutput : output.getEffects()) {
 			Condition effectCondition = effectOutput.convertToCondition();
 			if (effectCondition.isSatisfiedBy(ruleAction)) {
-				totalUtil += output.getParameter(effectOutput).getParameterValue(
-						input);
+				totalUtil +=
+						output.getParameter(effectOutput).getParameterValue(input);
 			}
 		}
 

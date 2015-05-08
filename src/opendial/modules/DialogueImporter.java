@@ -21,13 +21,12 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.state.DialogueState;
 
 /**
@@ -40,7 +39,7 @@ import opendial.state.DialogueState;
 public class DialogueImporter extends Thread {
 
 	// logger
-	public static Logger log = new Logger("DialogueImporter", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueSystem system;
 	List<DialogueState> turns;
@@ -103,7 +102,7 @@ public class DialogueImporter extends Thread {
 			}
 			system.addContent(turn.copy());
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not add content: " + e);
 		}
 	}

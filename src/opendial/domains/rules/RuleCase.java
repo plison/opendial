@@ -23,13 +23,14 @@
 
 package opendial.domains.rules;
 
+import java.util.logging.*;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
@@ -52,7 +53,7 @@ import opendial.state.StatePruner;
 public class RuleCase {
 
 	// logger
-	static Logger log = new Logger("Case", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the condition for the case
 	final Condition condition;
@@ -304,9 +305,11 @@ public class RuleCase {
 	 * Adds a void effect if there is a remaining probability mass to allocate
 	 */
 	protected void addVoidEffect() {
-		double fixedMass = effects.keySet().stream().map(e -> this.getParameter(e))
-				.filter(e -> e instanceof FixedParameter)
-				.mapToDouble(e -> ((FixedParameter) e).getParameterValue()).sum();
+		double fixedMass =
+				effects.keySet().stream().map(e -> this.getParameter(e))
+						.filter(e -> e instanceof FixedParameter)
+						.mapToDouble(e -> ((FixedParameter) e).getParameterValue())
+						.sum();
 		if (fixedMass > 0 && fixedMass < 0.99) {
 			addEffect(new Effect(), new FixedParameter(1.0 - fixedMass));
 		}

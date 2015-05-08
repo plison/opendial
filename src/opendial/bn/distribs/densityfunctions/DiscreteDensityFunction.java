@@ -23,14 +23,14 @@
 
 package opendial.bn.distribs.densityfunctions;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
@@ -50,8 +50,7 @@ import org.w3c.dom.Element;
 public class DiscreteDensityFunction implements DensityFunction {
 
 	// logger
-	public static Logger log = new Logger("DiscreteDensityFunction",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the set of points for the density function
 	Map<double[], Double> points;
@@ -168,8 +167,9 @@ public class DiscreteDensityFunction implements DensityFunction {
 			for (int i = 0; i < point.length; i++) {
 				s += StringUtils.getShortForm(point[i]) + ",";
 			}
-			s = s.substring(0, s.length() - 1) + "):="
-					+ StringUtils.getShortForm(points.get(point));
+			s =
+					s.substring(0, s.length() - 1) + "):="
+							+ StringUtils.getShortForm(points.get(point));
 		}
 		return s + ")";
 	}
@@ -231,14 +231,15 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * points with a value that is lower than x).
 	 */
 	@Override
-	public double getCDF(double... x) throws DialException {
+	public double getCDF(double... x) throws RuntimeException {
 		if (x.length != getDimensions()) {
-			throw new DialException("Illegal dimensionality: " + x.length + "!="
+			throw new RuntimeException("Illegal dimensionality: " + x.length + "!="
 					+ getDimensions());
 		}
 
-		double cdf = points.keySet().stream().filter(v -> MathUtils.isLower(v, x))
-				.mapToDouble(v -> points.get(v)).sum();
+		double cdf =
+				points.keySet().stream().filter(v -> MathUtils.isLower(v, x))
+						.mapToDouble(v -> points.get(v)).sum();
 
 		return cdf;
 	}

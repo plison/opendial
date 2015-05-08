@@ -23,6 +23,8 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -33,9 +35,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import opendial.DialogueSystem;
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
-import opendial.modules.core.DialogueRecorder;
+import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 
@@ -43,7 +44,7 @@ import org.junit.Test;
 
 public class FlightBookingTest {
 
-	public static Logger log = new Logger("FlightBookingTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	Domain domain = XMLDomainReader
 			.extractDomain("domains/examples/example-flightbooking.xml");
@@ -76,7 +77,7 @@ public class FlightBookingTest {
 		u_u.clear();
 		u_u.put("yes exactly", 0.8);
 		system.addUserInput(u_u);
-		assertEquals(0.98, system.getContent("a_u").getProb("[Confirm]"), 0.01);
+		assertEquals(1.0, system.getContent("a_u").getProb("[Confirm]"), 0.01);
 		assertEquals(1.0, system.getContent("Destination").getProb("Bergen"), 0.01);
 		assertEquals("Ground(Destination,Bergen)", system.getContent("a_m")
 				.toDiscrete().getBest().toString());

@@ -28,17 +28,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.gui.GUIFrame;
 import opendial.gui.GUIMenuBar;
-import opendial.modules.core.DialogueImporter;
-import opendial.modules.core.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.utils.StringUtils;
@@ -49,20 +46,24 @@ public class RecordingTest {
 
 	public static final String domainFile = "test//domains//domain-demo.xml";
 	public static final String domainFile2 = "test//domains//domain-woz.xml";
-	public static final String importState = "test//domains//domain-demo-importstate.xml";
-	public static final String importParams = "test//domains//domain-demo-importparams.xml";
-	public static final String exportState = "test//domains//domain-demo-exportstate.xml";
-	public static final String exportParams = "test//domains//domain-demo-exportparams.xml";
+	public static final String importState =
+			"test//domains//domain-demo-importstate.xml";
+	public static final String importParams =
+			"test//domains//domain-demo-importparams.xml";
+	public static final String exportState =
+			"test//domains//domain-demo-exportstate.xml";
+	public static final String exportParams =
+			"test//domains//domain-demo-exportparams.xml";
 	public static String dialogueFile = "test/domains/woz-dialogue.xml";
 
 	// logger
-	public static Logger log = new Logger("RecordingTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void testRecord() throws DialException, InterruptedException {
+	public void testRecord() throws RuntimeException, InterruptedException {
 
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
 		system.startSystem();
 
@@ -100,10 +101,10 @@ public class RecordingTest {
 	}
 
 	@Test
-	public void testXML() throws DialException, InterruptedException, IOException {
+	public void testXML() throws RuntimeException, InterruptedException, IOException {
 
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile2));
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
@@ -116,8 +117,9 @@ public class RecordingTest {
 		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof UniformDensityFunction);
 
 		Settings.nbSamples = Settings.nbSamples / 100;
-		DialogueImporter importer = new DialogueImporter(system,
-				XMLInteractionReader.extractInteraction(dialogueFile));
+		DialogueImporter importer =
+				new DialogueImporter(system,
+						XMLInteractionReader.extractInteraction(dialogueFile));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();

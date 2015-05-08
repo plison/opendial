@@ -23,6 +23,8 @@
 
 package opendial.datastructs;
 
+import java.util.logging.*;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +33,6 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.utils.CombinatoricsUtils;
 
@@ -43,7 +44,7 @@ import opendial.utils.CombinatoricsUtils;
 public class ValueRange {
 
 	// logger
-	public static Logger log = new Logger("ValueRange", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	Map<String, Set<Value>> range;
 
@@ -157,8 +158,9 @@ public class ValueRange {
 	 * @return the higher bound on the number of possible combinations
 	 */
 	public int getNbCombinations() {
-		OptionalInt estimation = range.values().stream().mapToInt(set -> set.size())
-				.reduce((a, b) -> a * b);
+		OptionalInt estimation =
+				range.values().stream().mapToInt(set -> set.size())
+						.reduce((a, b) -> a * b);
 		return (estimation.isPresent()) ? estimation.getAsInt() : 1;
 	}
 

@@ -23,6 +23,8 @@
 
 package opendial.gui.stateviewer;
 
+import java.util.logging.*;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -38,8 +40,6 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentProbDistribution;
@@ -72,7 +72,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class DistributionViewer extends JDialog {
 
 	// logger
-	public static Logger log = new Logger("DistributionViewer", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	String queryVar;
 	IndependentProbDistribution lastDistrib;
@@ -127,8 +127,8 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
 		try {
-			IndependentProbDistribution indepDistrib = currentState
-					.queryProb(queryVar);
+			IndependentProbDistribution indepDistrib =
+					currentState.queryProb(queryVar);
 			if (indepDistrib instanceof ContinuousDistribution) {
 				container.add(generatePanel(indepDistrib.toContinuous()),
 						BorderLayout.CENTER);
@@ -138,7 +138,7 @@ public class DistributionViewer extends JDialog {
 						BorderLayout.CENTER);
 			}
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not generate distribution viewer: " + e);
 		}
 		setContentPane(container);
@@ -166,16 +166,17 @@ public class DistributionViewer extends JDialog {
 		distrib.getValues().stream()
 				.forEach(d -> dataset.addValue(distrib.getProb(d), "", "" + d));
 
-		JFreeChart chart = ChartFactory.createBarChart("Probability distribution P("
-				+ variableName + ")", // chart
-										// title
-				"Value", // domain axis label
-				"Probability", // range axis label
-				dataset, // data
-				PlotOrientation.VERTICAL, // orientation
-				false, // include legend
-				true, // tooltips
-				false); // URLs
+		JFreeChart chart =
+				ChartFactory.createBarChart("Probability distribution P("
+						+ variableName + ")", // chart
+												// title
+						"Value", // domain axis label
+						"Probability", // range axis label
+						dataset, // data
+						PlotOrientation.VERTICAL, // orientation
+						false, // include legend
+						true, // tooltips
+						false); // URLs
 
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		BarRenderer renderer = (BarRenderer) plot.getRenderer();
@@ -197,17 +198,17 @@ public class DistributionViewer extends JDialog {
 	 * 
 	 * @param distrib the continuous distribution
 	 * @return the generated chart panel
-	 * @throws DialException if the distribution could not be displayed
+	 * @throws RuntimeException if the distribution could not be displayed
 	 */
 	private ChartPanel generatePanel(ContinuousDistribution distrib)
-			throws DialException {
+			throws RuntimeException {
 
 		final String variableName = distrib.getVariable();
 
 		List<XYSeries> series = extractSeries(distrib.getFunction());
 
-		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(new NumberAxis(
-				"Value"));
+		CombinedDomainXYPlot combined =
+				new CombinedDomainXYPlot(new NumberAxis("Value"));
 		for (XYSeries serie : series) {
 
 			JFreeChart chart = ChartFactory.createXYLineChart("", // chart title
@@ -232,7 +233,7 @@ public class DistributionViewer extends JDialog {
 	}
 
 	private List<XYSeries> extractSeries(DensityFunction function)
-			throws DialException {
+			throws RuntimeException {
 
 		List<XYSeries> series = new ArrayList<XYSeries>();
 
@@ -251,8 +252,9 @@ public class DistributionViewer extends JDialog {
 		points.stream().forEach(addToSeries);
 
 		for (XYSeries serie : series) {
-			boolean doSmoothing = (function instanceof KernelDensityFunction)
-					|| (function instanceof DirichletDensityFunction);
+			boolean doSmoothing =
+					(function instanceof KernelDensityFunction)
+							|| (function instanceof DirichletDensityFunction);
 			while (doSmoothing) {
 				int nbFluctuations = 0;
 				double prevPrevY = serie.getY(0).doubleValue();

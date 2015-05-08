@@ -23,6 +23,8 @@
 
 package opendial.modules.simulation;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,8 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ChanceNode;
@@ -54,7 +54,7 @@ import opendial.state.DialogueState;
 public class RewardLearner implements Module {
 
 	// logger
-	public static Logger log = new Logger("RewardLearner", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the dialogue system
 	DialogueSystem system;
@@ -114,14 +114,16 @@ public class RewardLearner implements Module {
 
 		for (String evidenceVar : state.getEvidence().getVariables()) {
 			if (evidenceVar.startsWith("R(") && evidenceVar.endsWith(")")) {
-				Assignment actualAction = Assignment.createFromString(evidenceVar
-						.substring(2, evidenceVar.length() - 1));
-				double actualUtility = ((DoubleVal) state.getEvidence().getValue(
-						evidenceVar)).getDouble();
+				Assignment actualAction =
+						Assignment.createFromString(evidenceVar.substring(2,
+								evidenceVar.length() - 1));
+				double actualUtility =
+						((DoubleVal) state.getEvidence().getValue(evidenceVar))
+								.getDouble();
 
 				if (previousStates.containsKey(actualAction.getVariables())) {
-					DialogueState previousState = previousStates.get(actualAction
-							.getVariables());
+					DialogueState previousState =
+							previousStates.get(actualAction.getVariables());
 					learnFromFeedback(previousState, actualAction, actualUtility);
 				}
 				state.clearEvidence(Arrays.asList(evidenceVar));
@@ -133,7 +135,7 @@ public class RewardLearner implements Module {
 				previousStates.put(new HashSet<String>(state.getActionNodeIds()),
 						state.copy());
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("cannot copy state: " + e);
 			}
 		}
@@ -154,26 +156,30 @@ public class RewardLearner implements Module {
 		try {
 
 			// determine the relevant parameters (discard the isolated ones)
-			Set<String> relevantParams = state.getParameterIds().stream()
-					.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
-					.collect(Collectors.toSet());
+			Set<String> relevantParams =
+					state.getParameterIds()
+							.stream()
+							.filter(p -> !state.getChanceNode(p).getOutputNodes()
+									.isEmpty()).collect(Collectors.toSet());
 
 			if (!relevantParams.isEmpty()) {
 
-				Query query = new Query.UtilQuery(state, relevantParams,
-						actualAction);
-				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
-						query, cs -> reweightSamples(cs, actualUtility));
+				Query query =
+						new Query.UtilQuery(state, relevantParams, actualAction);
+				EmpiricalDistribution empiricalDistrib =
+						sampler.getWeightedSamples(query,
+								cs -> reweightSamples(cs, actualUtility));
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = system.getState().getChanceNode(param);
-					ProbDistribution newDistrib = empiricalDistrib.getMarginal(
-							param, paramNode.getInputNodeIds());
+					ProbDistribution newDistrib =
+							empiricalDistrib.getMarginal(param,
+									paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not learn from action feedback: " + e);
 		}
 

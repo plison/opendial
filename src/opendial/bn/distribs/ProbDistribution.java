@@ -25,7 +25,6 @@ package opendial.bn.distribs;
 
 import java.util.Set;
 
-import opendial.arch.DialException;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
@@ -53,9 +52,9 @@ public interface ProbDistribution {
 	 * @param condition the conditional assignment for Y1,..., Ym
 	 * @param head the value for the random variable
 	 * @return the associated probability, if one exists.
-	 * @throws DialException if the probability could not be extracted
+	 * @throws RuntimeException if the probability could not be extracted
 	 */
-	public double getProb(Assignment condition, Value head) throws DialException;
+	public double getProb(Assignment condition, Value head) throws RuntimeException;
 
 	/**
 	 * Returns the (unconditional) probability distribution associated with the
@@ -63,10 +62,10 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
 	 * @return the independent probability distribution on X.
-	 * @throws DialException if the unconditional distribution could not be extracted
+	 * @throws RuntimeException if the unconditional distribution could not be extracted
 	 */
 	public IndependentProbDistribution getProbDistrib(Assignment condition)
-			throws DialException;
+			throws RuntimeException;
 
 	/**
 	 * Returns a sample value for the distribution given a particular conditional
@@ -74,17 +73,17 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment for Y1,...,Ym
 	 * @return the sampled values for the random variable
-	 * @throws DialException if no value(s) could be sampled
+	 * @throws RuntimeException if no value(s) could be sampled
 	 */
-	public Value sample(Assignment condition) throws DialException;
+	public Value sample(Assignment condition) throws RuntimeException;
 
 	/**
 	 * Returns the set of possible values for the distribution. If the distribution
 	 * is continuous, the method returns a discretised set.
 	 * 
-	 * @throws DialException if the values could not be extracted
+	 * @throws RuntimeException if the values could not be extracted
 	 */
-	public Set<Value> getValues() throws DialException;
+	public Set<Value> getValues() throws RuntimeException;
 
 	/**
 	 * Returns a new probability distribution that is the posterior of the current
@@ -93,10 +92,10 @@ public interface ProbDistribution {
 	 * @param condition an assignment of values to (a subset of) the conditional
 	 *            variables
 	 * @return the posterior distribution
-	 * @throws DialException if the posterior could not be computed.
+	 * @throws RuntimeException if the posterior could not be computed.
 	 */
 	public abstract ProbDistribution getPosterior(Assignment condition)
-			throws DialException;
+			throws RuntimeException;
 
 	/**
 	 * Prunes values whose frequency in the distribution is lower than the given
@@ -106,14 +105,6 @@ public interface ProbDistribution {
 	 * @return true if at least one value has been removed, false otherwise
 	 */
 	public boolean pruneValues(double threshold);
-
-	/**
-	 * Checks that the probability distribution is well-formed (all assignments are
-	 * covered, and the probabilities add up to 1.0f)
-	 * 
-	 * @return true is the distribution is well-formed, false otherwise
-	 */
-	public boolean isWellFormed();
 
 	/**
 	 * Creates a copy of the probability distribution

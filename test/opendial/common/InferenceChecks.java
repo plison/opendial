@@ -23,6 +23,8 @@
 
 package opendial.common;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -30,8 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -47,7 +47,7 @@ import opendial.inference.exact.VariableElimination;
 public class InferenceChecks {
 
 	// logger
-	public static Logger log = new Logger("InferenceChecks", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	VariableElimination ve;
 	SamplingAlgorithm is;
@@ -86,10 +86,10 @@ public class InferenceChecks {
 	}
 
 	public void checkProb(BNetwork network, Collection<String> queryVars,
-			Assignment evidence) throws DialException {
+			Assignment evidence) throws RuntimeException {
 
-		Query.ProbQuery query = new Query.ProbQuery(network, queryVars,
-				new Assignment());
+		Query.ProbQuery query =
+				new Query.ProbQuery(network, queryVars, new Assignment());
 		MultivariateDistribution distrib1 = computeProb(query, ve);
 		MultivariateDistribution distrib2 = computeProb(query, is);
 
@@ -98,7 +98,7 @@ public class InferenceChecks {
 		}
 		catch (AssertionError e) {
 			distrib2 = computeProb(query, is2);
-			log.debug("resampling for query "
+			log.fine("resampling for query "
 					+ new Query.ProbQuery(network, queryVars, evidence));
 			compareDistributions(distrib1, distrib2, 0.1);
 		}
@@ -109,22 +109,22 @@ public class InferenceChecks {
 	}
 
 	public void checkProb(BNetwork network, String queryVar, String a,
-			double expected) throws DialException {
+			double expected) throws RuntimeException {
 		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 	}
 
 	public void checkProb(BNetwork network, String queryVar, Value a, double expected)
-			throws DialException {
+			throws RuntimeException {
 		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 	}
 
 	public void checkProb(BNetwork network, Collection<String> queryVars,
-			Assignment a, double expected) throws DialException {
+			Assignment a, double expected) throws RuntimeException {
 
-		Query.ProbQuery query = new Query.ProbQuery(network, queryVars,
-				new Assignment());
+		Query.ProbQuery query =
+				new Query.ProbQuery(network, queryVars, new Assignment());
 
 		MultivariateDistribution distrib1 = computeProb(query, ve);
 		MultivariateDistribution distrib2 = computeProb(query, is);
@@ -146,14 +146,15 @@ public class InferenceChecks {
 	}
 
 	public void checkCDF(BNetwork network, String variable, double value,
-			double expected) throws DialException {
+			double expected) throws RuntimeException {
 
-		Query.ProbQuery query = new Query.ProbQuery(network,
-				Arrays.asList(variable), new Assignment());
-		ContinuousDistribution distrib1 = computeProb(query, ve).getMarginal(
-				variable).toContinuous();
-		ContinuousDistribution distrib2 = computeProb(query, is).getMarginal(
-				variable).toContinuous();
+		Query.ProbQuery query =
+				new Query.ProbQuery(network, Arrays.asList(variable),
+						new Assignment());
+		ContinuousDistribution distrib1 =
+				computeProb(query, ve).getMarginal(variable).toContinuous();
+		ContinuousDistribution distrib2 =
+				computeProb(query, is).getMarginal(variable).toContinuous();
 
 		assertEquals(expected, distrib1.getCumulativeProb(value), EXACT_THRESHOLD);
 
@@ -168,25 +169,25 @@ public class InferenceChecks {
 		}
 
 		if (includeNaive) {
-			ContinuousDistribution distrib3 = computeProb(query, naive).getMarginal(
-					variable).toContinuous();
+			ContinuousDistribution distrib3 =
+					computeProb(query, naive).getMarginal(variable).toContinuous();
 			assertEquals(expected, distrib3.toDiscrete().getProb(value),
 					EXACT_THRESHOLD);
 		}
 	}
 
 	public void checkUtil(BNetwork network, String queryVar, String a,
-			double expected) throws DialException {
+			double expected) throws RuntimeException {
 		checkUtil(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 
 	}
 
 	public void checkUtil(BNetwork network, Collection<String> queryVars,
-			Assignment a, double expected) throws DialException {
+			Assignment a, double expected) throws RuntimeException {
 
-		Query.UtilQuery query = new Query.UtilQuery(network, queryVars,
-				new Assignment());
+		Query.UtilQuery query =
+				new Query.UtilQuery(network, queryVars, new Assignment());
 		UtilityFunction distrib1 = computeUtil(query, ve);
 		UtilityFunction distrib2 = computeUtil(query, is);
 
@@ -206,7 +207,7 @@ public class InferenceChecks {
 	}
 
 	private MultivariateDistribution computeProb(Query.ProbQuery query,
-			InferenceAlgorithm algo) throws DialException {
+			InferenceAlgorithm algo) throws RuntimeException {
 
 		long time1 = System.nanoTime();
 		MultivariateDistribution distrib = algo.queryProb(query);
@@ -217,7 +218,7 @@ public class InferenceChecks {
 	}
 
 	private UtilityFunction computeUtil(Query.UtilQuery query,
-			InferenceAlgorithm algo) throws DialException {
+			InferenceAlgorithm algo) throws RuntimeException {
 
 		long time1 = System.nanoTime();
 		UtilityFunction distrib = algo.queryUtil(query);
@@ -230,7 +231,7 @@ public class InferenceChecks {
 	}
 
 	private void compareDistributions(MultivariateDistribution distrib1,
-			MultivariateDistribution distrib2, double margin) throws DialException {
+			MultivariateDistribution distrib2, double margin) throws RuntimeException {
 
 		Collection<Assignment> rows = distrib1.getValues();
 		for (Assignment value : rows) {
@@ -239,7 +240,6 @@ public class InferenceChecks {
 	}
 
 	public void showPerformance() {
-		log.info("--------------------");
 		if (includeNaive) {
 			log.info("Average time for naive inference: "
 					+ (timings.get(naive) / (1000000.0 * numbers.get(naive)))
@@ -251,7 +251,6 @@ public class InferenceChecks {
 				+ ((timings.get(is) + timings.get(is2)) / (1000000.0 * numbers
 						.get(is))) + " ms. (with "
 				+ (numbers.get(is2) * 100 / numbers.get(is)) + "% of repeats)");
-		log.info("--------------------");
 	}
 
 }

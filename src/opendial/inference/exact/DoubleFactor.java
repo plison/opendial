@@ -23,15 +23,17 @@
 
 package opendial.inference.exact;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.utils.InferenceUtils;
 
@@ -44,7 +46,7 @@ import opendial.utils.InferenceUtils;
 public class DoubleFactor {
 
 	// logger
-	public static Logger log = new Logger("DoubleFactor", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the matrix, mapping each assignment to two double values
 	// (the probability and the utility)
@@ -135,15 +137,15 @@ public class DoubleFactor {
 	 * 
 	 */
 	public void normalise() {
-		Map<Assignment, Double> probMatrix = InferenceUtils
-				.normalise(getProbMatrix());
+		Map<Assignment, Double> probMatrix =
+				InferenceUtils.normalise(getProbMatrix());
 		Map<Assignment, Double> utilityMatrix = getUtilityMatrix();
 
 		matrix = new HashMap<Assignment, double[]>(probMatrix.size());
 		if (probMatrix.size() != utilityMatrix.size()) {
 			log.warning("prob. and utility matrices have different sizes");
-			log.debug("prob matrix: " + probMatrix);
-			log.debug("utility matrix: " + utilityMatrix);
+			log.fine("prob matrix: " + probMatrix);
+			log.fine("utility matrix: " + utilityMatrix);
 		}
 		for (Assignment a : probMatrix.keySet()) {
 			matrix.put(a, new double[] { probMatrix.get(a), utilityMatrix.get(a) });
@@ -169,16 +171,16 @@ public class DoubleFactor {
 	 * @param condVars the conditional variables
 	 */
 	public void normalise(Collection<String> condVars) {
-		Map<Assignment, Double> probMatrix = InferenceUtils.normalise(
-				getProbMatrix(), condVars);
+		Map<Assignment, Double> probMatrix =
+				InferenceUtils.normalise(getProbMatrix(), condVars);
 
-		matrix = probMatrix
-				.keySet()
-				.stream()
-				.collect(
-						Collectors.toMap(a -> a,
-								a -> new double[] { probMatrix.get(a),
-										matrix.get(a)[1] }));
+		matrix =
+				probMatrix
+						.keySet()
+						.stream()
+						.collect(
+								Collectors.toMap(a -> a, a -> new double[] {
+										probMatrix.get(a), matrix.get(a)[1] }));
 	}
 
 	/**
@@ -187,12 +189,12 @@ public class DoubleFactor {
 	 * @param headVars the variables to retain.
 	 */
 	public void trim(Collection<String> headVars) {
-		matrix = matrix
-				.keySet()
-				.stream()
-				.collect(
-						Collectors.toMap(a -> a.getTrimmed(headVars),
-								a -> matrix.get(a)));
+		matrix =
+				matrix.keySet()
+						.stream()
+						.collect(
+								Collectors.toMap(a -> a.getTrimmed(headVars),
+										a -> matrix.get(a)));
 	}
 
 	// ===================================
@@ -293,7 +295,7 @@ public class DoubleFactor {
 			return matrix.keySet().iterator().next().getVariables();
 		}
 		else {
-			return new HashSet<String>();
+			return Collections.emptySet();
 		}
 	}
 
@@ -305,6 +307,17 @@ public class DoubleFactor {
 	 */
 	public boolean hasAssignment(Assignment a) {
 		return matrix.containsKey(a);
+	}
+
+	/**
+	 * Returns the set of possible values for the given variable
+	 * 
+	 * @param variable the variable label
+	 * @return the set of possible values
+	 */
+	public Set<Value> getValues(String variable) {
+		return matrix.keySet().stream().map(a -> a.getValue(variable))
+				.collect(Collectors.toSet());
 	}
 
 	// ===================================

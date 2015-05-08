@@ -23,6 +23,8 @@
 
 package opendial.utils;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +37,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -49,7 +50,7 @@ import opendial.datastructs.Assignment;
 public class InferenceUtils {
 
 	// logger
-	public static Logger log = new Logger("InferenceUtils", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	static Random sampler = new Random();
 
@@ -69,8 +70,11 @@ public class InferenceUtils {
 			return distrib;
 		}
 
-		Map<T, Double> normalisedDistrib = distrib.keySet().stream()
-				.collect(Collectors.toMap(a -> a, a -> distrib.get(a) / total));
+		Map<T, Double> normalisedDistrib =
+				distrib.keySet()
+						.stream()
+						.collect(
+								Collectors.toMap(a -> a, a -> distrib.get(a) / total));
 
 		return normalisedDistrib;
 	}
@@ -94,7 +98,8 @@ public class InferenceUtils {
 			totals.put(condition, totals.get(condition) + distrib.get(a));
 		}
 
-		Map<Assignment, Double> normalisedDistrib = new HashMap<Assignment, Double>();
+		Map<Assignment, Double> normalisedDistrib =
+				new HashMap<Assignment, Double>();
 		for (Assignment a : distrib.keySet()) {
 			Assignment condition = a.getTrimmed(condVars);
 			double total = totals.get(condition);
@@ -176,8 +181,8 @@ public class InferenceUtils {
 			nbest = 1;
 		}
 
-		List<Map.Entry<T, Double>> entries = new ArrayList<Map.Entry<T, Double>>(
-				initTable.entrySet());
+		List<Map.Entry<T, Double>> entries =
+				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
 
 		Collections.sort(entries, new EntryComparator<T>(0.0001));
 		Collections.reverse(entries);
@@ -214,8 +219,8 @@ public class InferenceUtils {
 	public static <T> int getRanking(Map<T, Double> initTable, T assign,
 			double minDifference) {
 
-		List<Map.Entry<T, Double>> entries = new ArrayList<Map.Entry<T, Double>>(
-				initTable.entrySet());
+		List<Map.Entry<T, Double>> entries =
+				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
 		EntryComparator<T> comp = new EntryComparator<T>(minDifference);
 		Collections.sort(entries, comp);
 		Collections.reverse(entries);

@@ -23,6 +23,8 @@
 
 package opendial.utils;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +32,6 @@ import java.util.stream.IntStream;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
-import opendial.arch.Logger;
 
 /**
  * Math utilities.
@@ -40,7 +41,7 @@ import opendial.arch.Logger;
 public class MathUtils {
 
 	// logger
-	public static Logger log = new Logger("MathUtils", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Returns true is all elements in the array a have a lower value than the
@@ -70,8 +71,9 @@ public class MathUtils {
 		if (point1 == null || point2 == null || point1.length != point2.length) {
 			return Double.MAX_VALUE;
 		}
-		double dist = IntStream.range(0, point1.length)
-				.mapToDouble(i -> Math.pow(point1[i] - point2[i], 2)).sum();
+		double dist =
+				IntStream.range(0, point1.length)
+						.mapToDouble(i -> Math.pow(point1[i] - point2[i], 2)).sum();
 		return Math.sqrt(dist);
 	}
 
@@ -121,9 +123,10 @@ public class MathUtils {
 	 */
 	static double logGamma(double x) {
 		double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
-		double ser = 1.0 + 76.18009173 / (x + 0) - 86.50532033 / (x + 1)
-				+ 24.01409822 / (x + 2) - 1.231739516 / (x + 3) + 0.00120858003
-				/ (x + 4) - 0.00000536382 / (x + 5);
+		double ser =
+				1.0 + 76.18009173 / (x + 0) - 86.50532033 / (x + 1) + 24.01409822
+						/ (x + 2) - 1.231739516 / (x + 3) + 0.00120858003 / (x + 4)
+						- 0.00000536382 / (x + 5);
 		return tmp + Math.log(ser * Math.sqrt(2 * Math.PI));
 	}
 

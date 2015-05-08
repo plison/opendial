@@ -22,6 +22,7 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -38,8 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.utils.StringUtils;
 
 /**
@@ -52,7 +52,7 @@ public class SettingsPanel extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	// logger
-	public static Logger log = new Logger("SettingsPanel", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Creates a new settings panel attached to the GUI frame.
@@ -154,7 +154,8 @@ public class SettingsPanel extends JDialog {
 			try {
 				Settings.nbSamples = Integer.parseInt(sampleNumber.getText());
 				Settings.maxSamplingTime = Integer.parseInt(sampleTime.getText());
-				Settings.discretisationBuckets = Integer.parseInt(discrete.getText());
+				Settings.discretisationBuckets =
+						Integer.parseInt(discrete.getText());
 				settings.horizon = Integer.parseInt(horizon.getText());
 				settings.discountFactor = Double.parseDouble(discount.getText());
 			}

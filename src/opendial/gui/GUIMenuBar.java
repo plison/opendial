@@ -23,6 +23,7 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -52,15 +53,13 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.arch.Settings.Recording;
+import opendial.Settings;
+import opendial.Settings.Recording;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
-import opendial.modules.core.AudioModule;
-import opendial.modules.core.DialogueImporter;
-import opendial.modules.core.DialogueRecorder;
+import opendial.modules.AudioModule;
+import opendial.modules.DialogueImporter;
+import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
@@ -80,10 +79,11 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class GUIMenuBar extends JMenuBar {
 
-	public static final String OPENDIAL_DOC = "http://www.opendial-toolkit.net/user-manual";
+	public static final String OPENDIAL_DOC =
+			"http://www.opendial-toolkit.net/user-manual";
 
 	// logger
-	public static Logger log = new Logger("ToolkitMenu", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	GUIFrame frame;
 	JMenuItem exportState;
@@ -150,8 +150,9 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenuItem connect = new JMenuItem("Connect to Remote Client");
 		connect.addActionListener(e -> {
-			String fullAddress = JOptionPane.showInputDialog(this,
-					"Enter address of remote client (IP_address:port):");
+			String fullAddress =
+					JOptionPane.showInputDialog(this,
+							"Enter address of remote client (IP_address:port):");
 			if (fullAddress != null && fullAddress.contains(":")) {
 				String ipaddress = fullAddress.split(":")[0];
 				int port = Integer.parseInt(fullAddress.split(":")[1]);
@@ -209,8 +210,8 @@ public class GUIMenuBar extends JMenuBar {
 		ButtonGroup inputGroup = new ButtonGroup();
 		List<Mixer.Info> mixers = AudioUtils.getInputMixers();
 		for (final Mixer.Info mixer : mixers) {
-			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(
-					mixer.getName());
+			JRadioButtonMenuItem mixerButton =
+					new JRadioButtonMenuItem(mixer.getName());
 			mixerButton.addActionListener(e -> {
 				frame.getSystem().getSettings().inputMixer = mixer;
 				if (frame.getSystem().getModule(AudioModule.class) != null) {
@@ -230,10 +231,11 @@ public class GUIMenuBar extends JMenuBar {
 		outputMenu = new JMenu("Audio output");
 		ButtonGroup outputGroup = new ButtonGroup();
 		for (final Mixer.Info mixer : AudioUtils.getOutputMixers()) {
-			JRadioButtonMenuItem mixerButton = new JRadioButtonMenuItem(
-					mixer.getName());
+			JRadioButtonMenuItem mixerButton =
+					new JRadioButtonMenuItem(mixer.getName());
 			mixerButton
-					.addActionListener(e -> frame.getSystem().getSettings().outputMixer = mixer);
+					.addActionListener(e -> frame.getSystem().getSettings().outputMixer =
+							mixer);
 
 			outputGroup.add(mixerButton);
 			outputMenu.add(mixerButton);
@@ -361,10 +363,10 @@ public class GUIMenuBar extends JMenuBar {
 			String interactionFile = fc.getSelectedFile().getAbsolutePath();
 			frame.addComment("Importing interaction " + interactionFile);
 			try {
-				List<DialogueState> interaction = XMLInteractionReader
-						.extractInteraction(interactionFile);
-				DialogueImporter importer = new DialogueImporter(frame.getSystem(),
-						interaction);
+				List<DialogueState> interaction =
+						XMLInteractionReader.extractInteraction(interactionFile);
+				DialogueImporter importer =
+						new DialogueImporter(frame.getSystem(), interaction);
 				importer.setWizardOfOzMode(isWizardOfOz);
 				importer.start();
 			}
@@ -402,26 +404,27 @@ public class GUIMenuBar extends JMenuBar {
 			Font font = label.getFont();
 
 			// create some css from the label's font
-			StringBuffer style = new StringBuffer("font-family:" + font.getFamily()
-					+ ";");
+			StringBuffer style =
+					new StringBuffer("font-family:" + font.getFamily() + ";");
 			style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
 			style.append("font-size:" + font.getSize() + "pt;");
 
-			JEditorPane ep = new JEditorPane(
-					"text/html",
-					"<html><body style=\""
-							+ style
-							+ "\"><b>OpenDial dialogue toolkit, version 1.3</b><br>"
-							+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
-							+ "OpenDial is distributed as free software under<br>"
-							+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
-							+ "<i>Project website</i>: <a href=\"http://opendial-toolkit.net\">"
-							+ "http://opendial-toolkit.net</a><br>"
-							+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
-							+ "plison@ifi.uio.no</a>)<br><br>"
-							+ "<b>Local address:</b>: <i>"
-							+ frame.getSystem().getLocalAddress() + "</i>"
-							+ "</body></html>");
+			JEditorPane ep =
+					new JEditorPane(
+							"text/html",
+							"<html><body style=\""
+									+ style
+									+ "\"><b>OpenDial dialogue toolkit, version 1.3</b><br>"
+									+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
+									+ "OpenDial is distributed as free software under<br>"
+									+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
+									+ "<i>Project website</i>: <a href=\"http://opendial-toolkit.net\">"
+									+ "http://opendial-toolkit.net</a><br>"
+									+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
+									+ "plison@ifi.uio.no</a>)<br><br>"
+									+ "<b>Local address:</b>: <i>"
+									+ frame.getSystem().getLocalAddress() + "</i>"
+									+ "</body></html>");
 
 			// handle link events
 			ep.addHyperlinkListener(e -> {
@@ -489,10 +492,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file that contains the state or parameter content
 	 * @param tag the expected top XML tag.
-	 * @throws DialException if the content could not be imported into the system
+	 * @throws RuntimeException if the content could not be imported into the system
 	 */
 	public static void importContent(DialogueSystem system, String file, String tag)
-			throws DialException {
+			throws RuntimeException {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
@@ -524,7 +527,7 @@ public class GUIMenuBar extends JMenuBar {
 				frame.addComment(tag.substring(0, 1).toUpperCase()
 						+ tag.substring(1) + " saved to " + recordFile);
 			}
-			catch (DialException j) {
+			catch (RuntimeException j) {
 				log.warning("could not save parameter distribution: " + j);
 			}
 		}
@@ -536,19 +539,19 @@ public class GUIMenuBar extends JMenuBar {
 	 * @param system the dialogue system
 	 * @param file the file in which to write the state or parameter content
 	 * @param tag the expected top XML tag.
-	 * @throws DialException if the content could not be exported from the system
+	 * @throws RuntimeException if the content could not be exported from the system
 	 */
 	public static void exportContent(DialogueSystem system, String file, String tag)
-			throws DialException {
+			throws RuntimeException {
 		Document doc = XMLUtils.newXMLDocument();
 
-		Set<String> parameterIds = new HashSet<String>(system.getState()
-				.getParameterIds());
-		Set<String> otherVarsIds = new HashSet<String>(system.getState()
-				.getChanceNodeIds());
+		Set<String> parameterIds =
+				new HashSet<String>(system.getState().getParameterIds());
+		Set<String> otherVarsIds =
+				new HashSet<String>(system.getState().getChanceNodeIds());
 		otherVarsIds.removeAll(parameterIds);
-		Set<String> variables = (tag.equals("parameters")) ? parameterIds
-				: otherVarsIds;
+		Set<String> variables =
+				(tag.equals("parameters")) ? parameterIds : otherVarsIds;
 		Node paramXML = system.getState().generateXML(doc, variables);
 		doc.renameNode(paramXML, null, tag);
 		doc.appendChild(paramXML);
@@ -569,7 +572,7 @@ public class GUIMenuBar extends JMenuBar {
 				frame.getSystem().changeDomain(domain);
 				frame.addComment("Now using domain: " + domainFile);
 			}
-			catch (DialException j) {
+			catch (RuntimeException j) {
 				frame.addComment("Cannot use domain: " + j);
 			}
 		}
@@ -579,10 +582,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * Updates the menu bar.
 	 */
 	public void update() {
-		Set<String> parameterIds = new HashSet<String>(frame.getSystem().getState()
-				.getParameterIds());
-		Set<String> otherVarsIds = new HashSet<String>(frame.getSystem().getState()
-				.getChanceNodeIds());
+		Set<String> parameterIds =
+				new HashSet<String>(frame.getSystem().getState().getParameterIds());
+		Set<String> otherVarsIds =
+				new HashSet<String>(frame.getSystem().getState().getChanceNodeIds());
 		otherVarsIds.removeAll(parameterIds);
 		exportState.setEnabled(!otherVarsIds.isEmpty());
 		exportParams.setEnabled(!parameterIds.isEmpty());

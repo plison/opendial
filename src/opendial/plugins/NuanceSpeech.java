@@ -23,6 +23,8 @@
 
 package opendial.plugins;
 
+import java.util.logging.*;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -37,11 +39,8 @@ import java.util.Map;
 import javax.sound.sampled.AudioFormat;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
-import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
@@ -73,7 +72,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public class NuanceSpeech implements Module {
 
 	// logger
-	public static Logger log = new Logger("NuanceSpeech", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** dialogue state */
 	DialogueSystem system;
@@ -96,15 +95,15 @@ public class NuanceSpeech implements Module {
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
 	 * @param system the dialogue system to attach
-	 * @throws DialException in case of missing parameters
+	 * @throws RuntimeException in case of missing parameters
 	 */
-	public NuanceSpeech(DialogueSystem system) throws DialException {
+	public NuanceSpeech(DialogueSystem system) throws RuntimeException {
 		this.system = system;
-		List<String> missingParams = new LinkedList<String>(Arrays.asList("id",
-				"key", "lang"));
+		List<String> missingParams =
+				new LinkedList<String>(Arrays.asList("id", "key", "lang"));
 		missingParams.removeAll(system.getSettings().params.keySet());
 		if (!missingParams.isEmpty()) {
-			throw new DialException("Missing parameters: " + missingParams);
+			throw new RuntimeException("Missing parameters: " + missingParams);
 		}
 
 		buildClients();
@@ -116,11 +115,11 @@ public class NuanceSpeech implements Module {
 	 * Starts the Nuance speech plugin.
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new DialException("Nuance connection requires access to the GUI");
+			throw new RuntimeException("Nuance connection requires access to the GUI");
 		}
 		ttsCache = new HashMap<String, SpeechData>();
 	}
@@ -183,13 +182,14 @@ public class NuanceSpeech implements Module {
 	private void recognise(SpeechData stream) {
 
 		int sampleRate = (int) stream.getFormat().getSampleRate();
-		log.debug("calling Nuance server for recognition... " + "(sample rate: "
+		log.fine("calling Nuance server for recognition... " + "(sample rate: "
 				+ sampleRate + " Hz.)");
 		try {
 
 			HttpPost httppost = new HttpPost(asrURI);
-			String format = "audio/x-wav;codec=pcm;bit="
-					+ stream.getFormat().getFrameSize() * 8 + ";rate=" + sampleRate;
+			String format =
+					"audio/x-wav;codec=pcm;bit=" + stream.getFormat().getFrameSize()
+							* 8 + ";rate=" + sampleRate;
 			String lang = system.getSettings().params.getProperty("lang");
 			httppost.addHeader("Content-Type", format);
 			httppost.addHeader("Accept", "application/xml");
@@ -205,8 +205,9 @@ public class NuanceSpeech implements Module {
 				log.info("(speech could not be recognised)");
 			}
 			else {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-						resEntity.getContent()));
+				BufferedReader reader =
+						new BufferedReader(new InputStreamReader(
+								resEntity.getContent()));
 
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
@@ -218,7 +219,7 @@ public class NuanceSpeech implements Module {
 					lines.put(s, ((int) (lines.get(s) * 100)) / 100.0);
 				}
 
-				log.debug("recognition results: " + lines);
+				log.fine("recognition results: " + lines);
 				reader.close();
 				if (!lines.isEmpty()) {
 					system.addUserInput(lines);
@@ -244,12 +245,12 @@ public class NuanceSpeech implements Module {
 		if (ttsCache.containsKey(utterance)) {
 			SpeechData outputSpeech = ttsCache.get(utterance);
 			outputSpeech.rewind();
-			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
+			system.addContent(systemSpeechVar, outputSpeech);
 		}
 		else {
 			AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
 			SpeechData outputSpeech = new SpeechData(format);
-			system.addContent(new Assignment(systemSpeechVar, outputSpeech));
+			system.addContent(systemSpeechVar, outputSpeech);
 			new Thread(() -> synthesise(utterance, outputSpeech)).start();
 		}
 	}
@@ -264,7 +265,7 @@ public class NuanceSpeech implements Module {
 	private void synthesise(String utterance, SpeechData output) {
 
 		try {
-			log.debug("calling Nuance server to synthesise utterance \"" + utterance
+			log.fine("calling Nuance server to synthesise utterance \"" + utterance
 					+ "\"");
 
 			HttpPost httppost = new HttpPost(ttsURI);
@@ -286,7 +287,7 @@ public class NuanceSpeech implements Module {
 			httppost.releaseConnection();
 			output.setAsFinal();
 			ttsCache.put(utterance, output);
-			log.debug("... Speech synthesis completed (speech duration: "
+			log.fine("... Speech synthesis completed (speech duration: "
 					+ StringUtils.getShortForm((double) output.length() / 1000)
 					+ " s.)");
 
@@ -299,9 +300,9 @@ public class NuanceSpeech implements Module {
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
 	 * 
-	 * @throws DialException
+	 * @throws RuntimeException
 	 */
-	private void buildClients() throws DialException {
+	private void buildClients() throws RuntimeException {
 
 		// Initialize the HTTP clients
 		asrClient = HttpClientBuilder.create().build();
@@ -329,7 +330,7 @@ public class NuanceSpeech implements Module {
 
 		}
 		catch (Exception e) {
-			throw new DialException("cannot build client: " + e);
+			throw new RuntimeException("cannot build client: " + e);
 		}
 	}
 

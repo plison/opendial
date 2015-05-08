@@ -23,6 +23,8 @@
 
 package opendial.datastructs;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
@@ -55,7 +56,7 @@ import opendial.utils.StringUtils;
 public class Template {
 
 	// logger
-	public static Logger log = new Logger("Template", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the initial string, containing the slots in raw form
 	final String rawString;
@@ -293,8 +294,9 @@ public class Template {
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
 			if (fillers.getValue(slot) != ValueFactory.none()) {
-				filledTemplate = filledTemplate.replace("{" + slot + "}", fillers
-						.getValue(slot).toString());
+				filledTemplate =
+						filledTemplate.replace("{" + slot + "}",
+								fillers.getValue(slot).toString());
 			}
 		}
 

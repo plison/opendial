@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 
@@ -49,7 +49,7 @@ import opendial.datastructs.Assignment;
 public class ChanceNode extends BNode {
 
 	// logger
-	public static Logger log = new Logger("ChanceNode", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the probability distribution for the node
 	protected ProbDistribution distrib;
@@ -89,19 +89,25 @@ public class ChanceNode extends BNode {
 	}
 
 	/**
+	 * Creates a change node with a unique value (associated with a probability 1.0)
+	 * 
+	 * @param nodeId the node identifier
+	 * @param value the single value for the node
+	 */
+	public ChanceNode(String nodeId, Value value) {
+		this(nodeId);
+		this.distrib = new SingleValueDistribution(nodeId, value);
+	}
+
+	/**
 	 * Sets the probability distribution of the node, and erases the existing one.
 	 * 
 	 * @param distrib the distribution for the node
-	 * @throws DialException if the distribution is not well-formed
 	 */
-	public void setDistrib(ProbDistribution distrib) throws DialException {
+	public void setDistrib(ProbDistribution distrib) {
 		this.distrib = distrib;
 		if (!distrib.getVariable().equals(nodeId)) {
 			log.warning(nodeId + "  != " + distrib.getVariable());
-		}
-		if (!distrib.isWellFormed()) {
-			throw new DialException("Distribution for node " + nodeId + " (type "
-					+ distrib.getClass().getSimpleName() + ") is not well-formed");
 		}
 		cachedValues = null;
 	}
@@ -110,10 +116,10 @@ public class ChanceNode extends BNode {
 	 * Adds a new (input) relation for the node
 	 *
 	 * @param inputNode the input node to connect
-	 * @throws DialException if the network becomes corrupted
+	 * @throws RuntimeException if the network becomes corrupted
 	 */
 	@Override
-	public void addInputNode(BNode inputNode) throws DialException {
+	public void addInputNode(BNode inputNode) throws RuntimeException {
 		super.addInputNode(inputNode);
 	}
 
@@ -182,7 +188,7 @@ public class ChanceNode extends BNode {
 	 */
 	@Override
 	public void setId(String newId) {
-		// log.debug("changing id from " + this.nodeId + " to " + nodeId);
+		// log.fine("changing id from " + this.nodeId + " to " + nodeId);
 		String oldId = nodeId;
 		super.setId(newId);
 		distrib.modifyVariableId(oldId, newId);
@@ -226,7 +232,7 @@ public class ChanceNode extends BNode {
 			return ((IndependentProbDistribution) distrib).getProb(nodeValue);
 		}
 
-		// log.debug("Must marginalise to compute P(" + nodeId + "="+ nodeValue
+		// log.fine("Must marginalise to compute P(" + nodeId + "="+ nodeValue
 		// + ")");
 		Set<Assignment> combinations = getPossibleConditions();
 		double totalProb = 0.0;
@@ -256,7 +262,7 @@ public class ChanceNode extends BNode {
 		try {
 			return distrib.getProb(condition, nodeValue);
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("exception: " + e);
 			return 0.0;
 		}
@@ -271,9 +277,9 @@ public class ChanceNode extends BNode {
 	 * node. If it isn't, one should use the sample(condition) method instead.
 	 * 
 	 * @return the sample value
-	 * @throws DialException if no sample can be selected
+	 * @throws RuntimeException if no sample can be selected
 	 */
-	public Value sample() throws DialException {
+	public Value sample() throws RuntimeException {
 
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution) distrib).sample();
@@ -298,9 +304,9 @@ public class ChanceNode extends BNode {
 	 * 
 	 * @param condition the value assignment on conditional nodes
 	 * @return the sample value
-	 * @throws DialException if no sample can be selected
+	 * @throws RuntimeException if no sample can be selected
 	 */
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution) distrib).sample();
 		}
@@ -359,8 +365,8 @@ public class ChanceNode extends BNode {
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
 
-			IndependentProbDistribution posterior = distrib
-					.getProbDistrib(combination);
+			IndependentProbDistribution posterior =
+					distrib.getProbDistrib(combination);
 			for (Value value : posterior.getValues()) {
 				factor.put(new Assignment(combination, nodeId, value),
 						posterior.getProb(value));
@@ -378,10 +384,10 @@ public class ChanceNode extends BNode {
 	 * connection with other nodes.
 	 *
 	 * @return the copy
-	 * @throws DialException if the node could not be copied.
+	 * @throws RuntimeException if the node could not be copied.
 	 */
 	@Override
-	public ChanceNode copy() throws DialException {
+	public ChanceNode copy() throws RuntimeException {
 		ChanceNode cn = new ChanceNode(nodeId, distrib.copy());
 		if (cachedValues != null) {
 			cn.cachedValues = new HashSet<Value>(cachedValues);

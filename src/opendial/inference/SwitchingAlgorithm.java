@@ -23,8 +23,8 @@
 
 package opendial.inference;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
+import java.util.logging.*;
+
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -56,7 +56,7 @@ import opendial.inference.exact.VariableElimination;
 public class SwitchingAlgorithm implements InferenceAlgorithm {
 
 	// logger
-	public static Logger log = new Logger("SwitchingAlgorithm", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// maximum branching factor (in-degree) for VE
 	public static int MAX_BRANCHING_FACTOR = 10;
@@ -81,7 +81,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 */
 	@Override
 	public MultivariateDistribution queryProb(Query.ProbQuery query)
-			throws DialException {
+			throws RuntimeException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
@@ -94,7 +94,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws DialException {
+	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryUtil(query);
 	}
@@ -115,7 +115,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws DialException {
+	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
 		// select the best reduction algorithm and performs the reduction
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		BNetwork result = algo.reduce(query);

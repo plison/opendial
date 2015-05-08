@@ -21,8 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
+import java.util.logging.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,16 +32,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
-import opendial.bn.nodes.ActionNode;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
-import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
@@ -63,7 +60,7 @@ import opendial.state.DialogueState;
 public class ForwardPlanner implements Module {
 
 	// logger
-	public static Logger log = new Logger("ForwardPlanner", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Maximum number of actions to consider at each planning step */
 	public static int NB_BEST_ACTIONS = 100;
@@ -103,7 +100,7 @@ public class ForwardPlanner implements Module {
 	public void pause(boolean shouldBePaused) {
 		paused = shouldBePaused;
 		if (currentProcess != null && !currentProcess.isTerminated) {
-			log.debug("trying to terminate the process?");
+			log.fine("trying to terminate the process?");
 			currentProcess.isTerminated = true;
 		}
 	}
@@ -129,12 +126,10 @@ public class ForwardPlanner implements Module {
 	@Override
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
 
-		Settings settings = system.getSettings();
-		if (state.hasChanceNode(settings.userSpeech)
-				&& state.hasActionNode(settings.systemOutput + "'")) {
-			ActionNode sysOutNode = state.getActionNode(settings.systemOutput + "'");
-			state.removeNodes(sysOutNode.getOutputNodesIds());
-			state.removeNode(sysOutNode.getId());
+		// disallows action selection while the user is still talking
+		if (system.getFloor().equals("user")) {
+			state.removeNodes(state.getActionNodeIds());
+			state.removeNodes(state.getUtilityNodeIds());
 		}
 
 		if (!paused && !state.getActionNodeIds().isEmpty()) {
@@ -168,8 +163,9 @@ public class ForwardPlanner implements Module {
 			long timeout = Settings.maxSamplingTime * 2;
 			// if the speech stream is not finished, only allow fast, reactive
 			// responses
-			timeout = (initState.hasChanceNode(settings.userSpeech)) ? timeout / 5
-					: timeout;
+			timeout =
+					(initState.hasChanceNode(settings.userSpeech)) ? timeout / 5
+							: timeout;
 			service.schedule(() -> isTerminated = true, timeout,
 					TimeUnit.MILLISECONDS);
 
@@ -185,16 +181,16 @@ public class ForwardPlanner implements Module {
 
 				// step 3: remove the action and utility nodes
 				initState.removeNodes(initState.getUtilityNodeIds());
-				Set<String> actionVars = new HashSet<String>(
-						initState.getActionNodeIds());
+				Set<String> actionVars =
+						new HashSet<String>(initState.getActionNodeIds());
 				initState.removeNodes(actionVars);
 
 				// step 4: add the selection action to the dialogue state
 				initState.addToState(bestAction.removePrimes());
-				// log.debug("BEST ACTION: " + bestAction);
+				// log.fine("BEST ACTION: " + bestAction);
 				isTerminated = true;
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("could not perform planning, aborting action selection: "
 						+ e);
 				e.printStackTrace();
@@ -208,10 +204,10 @@ public class ForwardPlanner implements Module {
 		 * @param state the dialogue state
 		 * @param horizon the planning horizon
 		 * @return the estimated utility table for the Q-values
-		 * @throws DialException
+		 * @throws RuntimeException
 		 */
 		private UtilityTable getQValues(DialogueState state, int horizon)
-				throws DialException {
+				throws RuntimeException {
 			Set<String> actionNodes = state.getActionNodeIds();
 
 			if (actionNodes.isEmpty()) {
@@ -236,8 +232,8 @@ public class ForwardPlanner implements Module {
 					updateState(copy);
 
 					if (!action.isDefault()) {
-						double expected = discount
-								* getExpectedValue(copy, horizon - 1);
+						double expected =
+								discount * getExpectedValue(copy, horizon - 1);
 						qValues.setUtil(action, qValues.getUtil(action) + expected);
 					}
 				}
@@ -250,9 +246,9 @@ public class ForwardPlanner implements Module {
 		 * 
 		 * @param state the dialogue state
 		 * @param newContent the content to add
-		 * @throws DialException if the update operation could not be performed
+		 * @throws RuntimeException if the update operation could not be performed
 		 */
-		private void updateState(DialogueState state) throws DialException {
+		private void updateState(DialogueState state) throws RuntimeException {
 
 			while (!state.getNewVariables().isEmpty()) {
 				Set<String> toProcess = state.getNewVariables();
@@ -291,10 +287,10 @@ public class ForwardPlanner implements Module {
 		 * @param state the dialogue state
 		 * @param horizon the planning horizon
 		 * @return the expected value.
-		 * @throws DialException
+		 * @throws RuntimeException
 		 */
 		private double getExpectedValue(DialogueState state, int horizon)
-				throws DialException {
+				throws RuntimeException {
 
 			MultivariateTable observations = getObservations(state);
 			MultivariateTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
@@ -324,10 +320,10 @@ public class ForwardPlanner implements Module {
 		 * 
 		 * @param state the dialogue state from which to extract observations
 		 * @return the inferred observations
-		 * @throws DialException
+		 * @throws RuntimeException
 		 */
 		private MultivariateTable getObservations(DialogueState state)
-				throws DialException {
+				throws RuntimeException {
 			Set<String> predictionNodes = new HashSet<String>();
 			for (String nodeId : state.getChanceNodeIds()) {
 				if (nodeId.contains("^p")) {
@@ -343,8 +339,8 @@ public class ForwardPlanner implements Module {
 
 			MultivariateTable modified = new MultivariateTable();
 			if (!predictionNodes.isEmpty()) {
-				MultivariateDistribution observations = state
-						.queryProb(predictionNodes);
+				MultivariateDistribution observations =
+						state.queryProb(predictionNodes);
 
 				for (Assignment a : observations.getValues()) {
 					Assignment newA = new Assignment();

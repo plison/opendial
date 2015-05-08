@@ -23,6 +23,7 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -36,9 +37,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.modules.core.AudioModule;
+
+import opendial.modules.AudioModule;
 
 /**
  * Panel employed to capture audio input through a press and hold button, accompanied
@@ -51,7 +51,7 @@ import opendial.modules.core.AudioModule;
 public class SpeechInputPanel extends JPanel implements MouseListener {
 
 	// logger
-	public static Logger log = new Logger("AudioPanel", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the audio recorder
 	AudioModule recorder;
@@ -78,7 +78,9 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		Container container = new Container();
 		container.setLayout(new FlowLayout());
 		container.add(new JLabel(""));
-		JButton button = new JButton("<html>&nbsp;&nbsp;Press & hold to record speech&nbsp;&nbsp;&nbsp;&nbsp;</html>");
+		JButton button =
+				new JButton(
+						"<html>&nbsp;&nbsp;Press & hold to record speech&nbsp;&nbsp;&nbsp;&nbsp;</html>");
 		button.addMouseListener(this);
 		container.add(button);
 		container.add(new JLabel(""));
@@ -107,7 +109,7 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		try {
 			recorder.startRecording();
 		}
-		catch (DialException ex) {
+		catch (RuntimeException ex) {
 			log.warning(ex.toString());
 		}
 	}

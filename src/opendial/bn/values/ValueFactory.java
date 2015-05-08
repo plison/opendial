@@ -23,6 +23,8 @@
 
 package opendial.bn.values;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,7 +32,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import opendial.arch.Logger;
 
 /**
  * Factory for creating variable values
@@ -41,7 +42,7 @@ import opendial.arch.Logger;
 public class ValueFactory {
 
 	// logger
-	public static Logger log = new Logger("ValueFactory", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// none value (no need to recreate one everytime)
 	static final NoneVal noneValue = new NoneVal();

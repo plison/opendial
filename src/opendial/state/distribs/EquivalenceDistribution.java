@@ -23,12 +23,12 @@
 
 package opendial.state.distribs;
 
+import java.util.logging.*;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -54,8 +54,7 @@ import opendial.datastructs.Template;
 public class EquivalenceDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("EquivalenceDistribution",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the variable label
 	String baseVar;
@@ -116,7 +115,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Generates a sample from the distribution given the conditional assignment.
 	 */
 	@Override
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 		double prob = getProb(condition);
 
 		if (sampler.nextDouble() < prob) {
@@ -160,7 +159,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 			}
 			log.warning("cannot extract prob for P(" + head + "|" + condition + ")");
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning(e.toString());
 		}
 		return 0.0;
@@ -171,7 +170,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * fixed input.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -180,11 +179,11 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the corresponding categorical table on the true and false values
-	 * @throws DialException if the table could not be extracted for the condition
+	 * @throws RuntimeException if the table could not be extracted for the condition
 	 */
 	@Override
 	public CategoricalTable getProbDistrib(Assignment condition)
-			throws DialException {
+			throws RuntimeException {
 		double positiveProb = getProb(condition);
 		CategoricalTable table = new CategoricalTable(getVariable());
 		table.addRow(true, positiveProb);
@@ -211,9 +210,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @return the probability of eq=true
-	 * @throws DialException if the distribution is ill-formed
+	 * @throws RuntimeException if the distribution is ill-formed
 	 */
-	private double getProb(Assignment condition) throws DialException {
+	private double getProb(Assignment condition) throws RuntimeException {
 
 		Value predicted = null;
 		Value actual = null;
@@ -229,7 +228,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 			}
 		}
 		if (predicted == null || actual == null) {
-			throw new DialException("equivalence distribution with variable "
+			throw new RuntimeException("equivalence distribution with variable "
 					+ baseVar + " cannot handle condition " + condition);
 		}
 
@@ -259,14 +258,6 @@ public class EquivalenceDistribution implements ProbDistribution {
 			return 0.0;
 		}
 
-	}
-
-	/**
-	 * Returns true.
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return true;
 	}
 
 }

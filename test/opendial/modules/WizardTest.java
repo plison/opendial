@@ -23,6 +23,8 @@
 
 package opendial.modules;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -34,13 +36,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
-import opendial.modules.core.DialogueRecorder;
-import opendial.modules.core.WizardLearner;
 import opendial.modules.examples.WizardControl;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
@@ -51,17 +48,17 @@ import org.junit.Test;
 public class WizardTest {
 
 	// logger
-	public static Logger log = new Logger("WizardTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String interactionFile = "test//domains//woz-dialogue.xml";
 	public static final String domainFile = "test//domains//domain-woz.xml";
 
 	@Test
-	public void testWizardLearning() throws DialException {
-		List<DialogueState> interaction = XMLInteractionReader
-				.extractInteraction(interactionFile);
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+	public void testWizardLearning() throws RuntimeException {
+		List<DialogueState> interaction =
+				XMLInteractionReader.extractInteraction(interactionFile);
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 
 		system.attachModule(WizardLearner.class);
@@ -69,13 +66,13 @@ public class WizardTest {
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
 		}
-		log.debug("theta 1: "
+		log.fine("theta 1: "
 				+ ((ContinuousDistribution) system.getState()
 						.getChanceNode("theta_1").getDistrib()).getFunction()
 						.getMean()[0]);
 		assertTrue(((ContinuousDistribution) system.getState()
 				.getChanceNode("theta_1").getDistrib()).getFunction().getMean()[0] > 16.0);
-		log.debug("theta 2: "
+		log.fine("theta 2: "
 				+ ((ContinuousDistribution) system.getState()
 						.getChanceNode("theta_2").getDistrib()).getFunction()
 						.getMean()[0]);
@@ -86,16 +83,16 @@ public class WizardTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testWizardControl() throws DialException, InterruptedException {
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+	public void testWizardControl() throws RuntimeException, InterruptedException {
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;
 		system.attachModule(WizardControl.class);
 		system.startSystem();
 
 		assertEquals(2, system.getModule(GUIFrame.class).getChatTab()
 				.getComponentCount());
-		system.addContent(new Assignment("u_u", "hi"));
+		system.addContent("u_u", "hi");
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
 				.getComponentCount());
 		assertEquals(3,
@@ -103,8 +100,8 @@ public class WizardTest {
 						.getModule(GUIFrame.class).getChatTab().getComponent(2))
 						.getComponent(0)).getComponent(0)).getComponent(0))
 						.getModel().getSize());
-		system.addContent(new Assignment("a_m", "Say(Greet)"));
-		system.addContent(new Assignment("u_u", "move left"));
+		system.addContent("a_m", "Say(Greet)");
+		system.addContent("u_u", "move left");
 		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
 				.getComponentCount());
 		assertEquals(4,

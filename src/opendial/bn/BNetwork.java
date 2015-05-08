@@ -22,6 +22,8 @@
 
 package opendial.bn;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,8 +36,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -51,7 +51,7 @@ import opendial.bn.nodes.UtilityNode;
 public class BNetwork {
 
 	// logger
-	public static Logger log = new Logger("BNetwork", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the set of nodes for the network
 	Map<String, BNode> nodes;
@@ -167,7 +167,7 @@ public class BNetwork {
 	 */
 	public void replaceNode(BNode node) {
 		if (!nodes.containsKey(node.getId())) {
-			log.debug("network does not contain a node with identifier "
+			log.fine("network does not contain a node with identifier "
 					+ node.getId());
 		}
 		else {
@@ -632,7 +632,7 @@ public class BNetwork {
 	 * Returns a copy of the Bayesian network
 	 * 
 	 * @return the copy
-	 * @throws DialException if the copy operation failed
+	 * @throws RuntimeException if the copy operation failed
 	 */
 	public BNetwork copy() {
 		BNetwork copyNetwork = new BNetwork();
@@ -643,7 +643,7 @@ public class BNetwork {
 			BNode nodeCopy = node.copy();
 			for (BNode inputNode : node.getInputNodes()) {
 				if (!copyNetwork.hasNode(inputNode.getId())) {
-					throw new DialException("cannot copy the network: structure "
+					throw new RuntimeException("cannot copy the network: structure "
 							+ "is corrupt (" + inputNode.getId()
 							+ " is not present, but " + "should be input node to "
 							+ node.getId() + ")");

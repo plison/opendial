@@ -23,16 +23,16 @@
 
 package opendial.inference;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Assignment;
 import opendial.domains.Domain;
 import opendial.readers.XMLDomainReader;
 
@@ -41,19 +41,19 @@ import org.junit.Test;
 public class IncrementalTest {
 
 	// logger
-	public static Logger log = new Logger("IncrementalTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//incremental-domain.xml";
 
 	@Test
-	public void test1() throws DialException, InterruptedException {
+	public void test1() throws RuntimeException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.getSettings().recording = Settings.Recording.ALL;
 		system.startSystem();
-		system.addContent(new Assignment(system.getSettings().userSpeech, "busy"));
-		system.addIncrementalContent(new CategoricalTable("u_u", "go"), false);
+		system.addContent(system.getSettings().userSpeech, "busy");
+		system.addIncrementalContent(new SingleValueDistribution("u_u", "go"), false);
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("go")));
@@ -66,8 +66,9 @@ public class IncrementalTest {
 				.contains(ValueFactory.create("go forward")));
 		assertEquals(system.getContent("u_u").getProb("go backward"), 0.2, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
-		system.addContent(new Assignment(system.getSettings().userSpeech, "None"));
-		system.addIncrementalContent(new CategoricalTable("u_u", "please"), true);
+		system.addContent(system.getSettings().userSpeech, "None");
+		system.addIncrementalContent(new SingleValueDistribution("u_u", "please"),
+				true);
 		assertEquals(system.getContent("u_u").getProb("go please"), 0.1, 0.001);
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
@@ -82,8 +83,8 @@ public class IncrementalTest {
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
 		assertFalse(system.getState().hasChanceNode("nlu"));
-		system.addIncrementalContent(
-				new CategoricalTable("u_u", "yes that is right"), false);
+		system.addIncrementalContent(new SingleValueDistribution("u_u",
+				"yes that is right"), false);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("yes that is right")));
 	}

@@ -28,8 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -44,7 +44,7 @@ import opendial.datastructs.Assignment;
 public class ActionNode extends BNode {
 
 	// logger
-	public static Logger log = new Logger("ActionNode", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the list of values for the node
 	private Set<Value> actionValues;
@@ -174,8 +174,8 @@ public class ActionNode extends BNode {
 	public Value sample() {
 		int index = sampler.nextInt(actionValues.size());
 		if (actionValuesAsArray == null) {
-			actionValuesAsArray = actionValues
-					.toArray(new Value[actionValues.size()]);
+			actionValuesAsArray =
+					actionValues.toArray(new Value[actionValues.size()]);
 		}
 		return actionValuesAsArray[index];
 	}

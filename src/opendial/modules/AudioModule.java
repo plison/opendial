@@ -21,10 +21,11 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -34,11 +35,10 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import opendial.DialogueSystem;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.SpeechInputPanel;
-import opendial.modules.Module;
 import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 
@@ -80,7 +80,7 @@ import opendial.utils.AudioUtils;
 public class AudioModule implements Module {
 
 	// logger
-	public static Logger log = new Logger("AudioModule", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** the dialogue system */
 	DialogueSystem system;
@@ -225,7 +225,7 @@ public class AudioModule implements Module {
 						SAVE_SPEECH));
 			}
 			inputSpeech = null;
-			system.removeContent(system.getSettings().userSpeech);
+			system.addContent(system.getSettings().floor, "free");
 		}
 	}
 
@@ -241,19 +241,32 @@ public class AudioModule implements Module {
 		if (updatedVars.contains(systemSpeech) && state.hasChanceNode(systemSpeech)) {
 			Value v = state.queryProb(systemSpeech).getBest();
 			if (v instanceof SpeechData) {
-
-				// normal case: no previous speech is playing
-				if (outputSpeech == null) {
-					outputSpeech = (SpeechData) v;
-					(new Thread(new SpeechPlayer())).start();
-				}
-
-				// if the system is already playing a sound, concatenate to the
-				// existing one
-				else {
-					outputSpeech = outputSpeech.concatenate(v);
-				}
+				system.addContent(new Assignment(system.getSettings().floor,
+						"system"));
+				playSpeech((SpeechData) v);
 			}
+		}
+	}
+
+	/**
+	 * Plays the speech data onto the default target line.
+	 * 
+	 * @param sound the sound to play
+	 */
+	public void playSpeech(SpeechData sound) {
+
+		sound.rewind();
+
+		// normal case: no previous speech is playing
+		if (outputSpeech == null) {
+			outputSpeech = sound;
+			(new Thread(new SpeechPlayer())).start();
+		}
+
+		// if the system is already playing a sound, concatenate to the
+		// existing one
+		else {
+			outputSpeech = outputSpeech.concatenate(sound);
 		}
 	}
 
@@ -382,11 +395,10 @@ public class AudioModule implements Module {
 				}
 				Mixer.Info outputMixer = system.getSettings().outputMixer;
 				AudioFormat format = outputSpeech.getFormat();
-				SourceDataLine line = AudioSystem.getSourceDataLine(format,
-						outputMixer);
+				SourceDataLine line =
+						AudioSystem.getSourceDataLine(format, outputMixer);
 				line.open(format);
 				line.start();
-
 				int nBytesRead = 0;
 				byte[] abData = new byte[256 * 16];
 				while (nBytesRead != -1) {
@@ -412,7 +424,9 @@ public class AudioModule implements Module {
 			catch (LineUnavailableException e) {
 				log.warning("Audio line is unavailable: " + e);
 			}
-			system.removeContent(system.getSettings().systemSpeech);
+			if (inputSpeech == null) {
+				system.addContent(system.getSettings().floor, "free");
+			}
 		}
 
 	}

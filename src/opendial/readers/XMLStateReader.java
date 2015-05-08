@@ -23,14 +23,15 @@
 
 package opendial.readers;
 
+import java.util.logging.*;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.GaussianDensityFunction;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
@@ -51,7 +52,7 @@ import org.w3c.dom.Node;
 public class XMLStateReader {
 
 	// logger
-	static Logger log = new Logger("XMLStateReader", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// ===================================
 	// INITIAL STATE
@@ -64,10 +65,10 @@ public class XMLStateReader {
 	 * @param file the file to process
 	 * @param tag the XML tag to search for
 	 * @return the specified Bayesian network
-	 * @throws DialException if XML document is ill-formatted
+	 * @throws RuntimeException if XML document is ill-formatted
 	 */
 	public static BNetwork extractBayesianNetwork(String file, String tag)
-			throws DialException {
+			throws RuntimeException {
 
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(file);
@@ -83,7 +84,7 @@ public class XMLStateReader {
 				return getBayesianNetwork(childNode);
 			}
 		}
-		throw new DialException("No tag " + tag + " found in file " + file);
+		throw new RuntimeException("No tag " + tag + " found in file " + file);
 	}
 
 	/**
@@ -92,9 +93,9 @@ public class XMLStateReader {
 	 * 
 	 * @param mainNode the main node for the XML document
 	 * @return the corresponding dialogue state
-	 * @throws DialException if XML document is ill-formatted
+	 * @throws RuntimeException if XML document is ill-formatted
 	 */
-	public static BNetwork getBayesianNetwork(Node mainNode) throws DialException {
+	public static BNetwork getBayesianNetwork(Node mainNode) throws RuntimeException {
 
 		BNetwork state = new BNetwork();
 
@@ -114,12 +115,12 @@ public class XMLStateReader {
 	 * 
 	 * @param node the XML node
 	 * @return the resulting chance node
-	 * @throws DialException if the distribution is not properly encoded
+	 * @throws RuntimeException if the distribution is not properly encoded
 	 */
-	public static ChanceNode createChanceNode(Node node) throws DialException {
+	public static ChanceNode createChanceNode(Node node) throws RuntimeException {
 
 		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id") == null) {
-			throw new DialException("variable id is mandatory");
+			throw new RuntimeException("variable id is mandatory");
 		}
 
 		String label = node.getAttributes().getNamedItem("id").getNodeValue();
@@ -147,24 +148,28 @@ public class XMLStateReader {
 			else if (subnode.getNodeName().equals("distrib")) {
 
 				if (subnode.getAttributes().getNamedItem("type") != null) {
-					String distribType = subnode.getAttributes()
-							.getNamedItem("type").getNodeValue().trim();
+					String distribType =
+							subnode.getAttributes().getNamedItem("type")
+									.getNodeValue().trim();
 
 					if (distribType.equalsIgnoreCase("gaussian")) {
-						distrib = new ContinuousDistribution(label,
-								getGaussian(subnode));
+						distrib =
+								new ContinuousDistribution(label,
+										getGaussian(subnode));
 					}
 
 					else if (distribType.equalsIgnoreCase("uniform")) {
-						distrib = new ContinuousDistribution(label,
-								getUniform(subnode));
+						distrib =
+								new ContinuousDistribution(label,
+										getUniform(subnode));
 					}
 					else if (distribType.equalsIgnoreCase("dirichlet")) {
-						distrib = new ContinuousDistribution(label,
-								getDirichlet(subnode));
+						distrib =
+								new ContinuousDistribution(label,
+										getDirichlet(subnode));
 					}
 					else {
-						throw new DialException("distribution is not recognised: "
+						throw new RuntimeException("distribution is not recognised: "
 								+ distribType);
 					}
 
@@ -175,6 +180,10 @@ public class XMLStateReader {
 		ChanceNode variable = new ChanceNode(label);
 		if (distrib != null) {
 			variable.setDistrib(distrib);
+		}
+		else if (table.getValues().size() == 1) {
+			variable.setDistrib(new SingleValueDistribution(label, table.getValues()
+					.iterator().next()));
 		}
 		else {
 			variable.setDistrib(table);
@@ -188,7 +197,7 @@ public class XMLStateReader {
 	 * 
 	 * @param node the XML node
 	 * @return the value probability
-	 * @throws DialException if probability is ill-formatted
+	 * @throws RuntimeException if probability is ill-formatted
 	 */
 	private static float getProbability(Node node) {
 
@@ -196,8 +205,8 @@ public class XMLStateReader {
 
 		if (node.hasAttributes()
 				&& node.getAttributes().getNamedItem("prob") != null) {
-			String probStr = node.getAttributes().getNamedItem("prob")
-					.getNodeValue();
+			String probStr =
+					node.getAttributes().getNamedItem("prob").getNodeValue();
 
 			try {
 				prob = Float.parseFloat(probStr);
@@ -215,10 +224,10 @@ public class XMLStateReader {
 	 * 
 	 * @param node the XML node
 	 * @return the corresponding Gaussian PDF
-	 * @throws DialException if the density function is not properly encoded
+	 * @throws RuntimeException if the density function is not properly encoded
 	 */
 	private static GaussianDensityFunction getGaussian(Node node)
-			throws DialException {
+			throws RuntimeException {
 		double[] mean = null;
 		double[] variance = null;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
@@ -235,8 +244,8 @@ public class XMLStateReader {
 			if (subsubnode.getNodeName().equals("variance")) {
 				String varianceStr = subsubnode.getFirstChild().getNodeValue();
 				if (varianceStr.contains("[")) {
-					variance = ((ArrayVal) ValueFactory.create(varianceStr))
-							.getArray();
+					variance =
+							((ArrayVal) ValueFactory.create(varianceStr)).getArray();
 				}
 				else {
 					variance = new double[] { Double.parseDouble(varianceStr) };
@@ -246,7 +255,7 @@ public class XMLStateReader {
 		if (mean != null && variance != null && mean.length == variance.length) {
 			return new GaussianDensityFunction(mean, variance);
 		}
-		throw new DialException("gaussian must specify both mean and variance");
+		throw new RuntimeException("gaussian must specify both mean and variance");
 	}
 
 	/**
@@ -254,9 +263,9 @@ public class XMLStateReader {
 	 * 
 	 * @param node the XML node
 	 * @return the corresponding uniform PDF
-	 * @throws DialException if the density function is not properly encoded
+	 * @throws RuntimeException if the density function is not properly encoded
 	 */
-	private static UniformDensityFunction getUniform(Node node) throws DialException {
+	private static UniformDensityFunction getUniform(Node node) throws RuntimeException {
 		double min = Double.MAX_VALUE;
 		double max = Double.MAX_VALUE;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
@@ -271,7 +280,7 @@ public class XMLStateReader {
 		if (min != Double.MAX_VALUE && max != Double.MAX_VALUE) {
 			return new UniformDensityFunction(min, max);
 		}
-		throw new DialException("uniform must specify both min and max");
+		throw new RuntimeException("uniform must specify both min and max");
 	}
 
 	/**
@@ -279,23 +288,23 @@ public class XMLStateReader {
 	 * 
 	 * @param node the XML node
 	 * @return the corresponding Dirichlet PDF
-	 * @throws DialException if the density function is not properly encoded
+	 * @throws RuntimeException if the density function is not properly encoded
 	 */
 	private static DirichletDensityFunction getDirichlet(Node node)
-			throws DialException {
+			throws RuntimeException {
 		List<Double> alphas = new LinkedList<Double>();
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
 			Node subsubnode = node.getChildNodes().item(j);
 			if (subsubnode.getNodeName().equals("alpha")) {
-				double alpha = Double.parseDouble(subsubnode.getFirstChild()
-						.getNodeValue());
+				double alpha =
+						Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
 				alphas.add(alpha);
 			}
 		}
 		if (!alphas.isEmpty()) {
 			return new DirichletDensityFunction((new ArrayVal(alphas)).getArray());
 		}
-		throw new DialException("Dirichlet must have at least one alpha count");
+		throw new RuntimeException("Dirichlet must have at least one alpha count");
 	}
 
 }

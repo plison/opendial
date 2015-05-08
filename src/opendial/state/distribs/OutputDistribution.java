@@ -23,6 +23,8 @@
 
 package opendial.state.distribs;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -55,7 +55,7 @@ import opendial.utils.CombinatoricsUtils;
 public class OutputDistribution implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("OutputDistribution", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// output variables
 	String baseVar;
@@ -106,10 +106,10 @@ public class OutputDistribution implements ProbDistribution {
 	 * 
 	 * @param condition the values of the parent (rule) nodes
 	 * @return an assignment with the output value
-	 * @throws DialException if no value could be sampled
+	 * @throws RuntimeException if no value could be sampled
 	 */
 	@Override
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 		CategoricalTable result = getProbDistrib(condition);
 		return result.sample();
 	}
@@ -229,14 +229,6 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Returns true.
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return true;
-	}
-
-	/**
 	 * Returns a copy of the distribution
 	 */
 	@Override
@@ -269,9 +261,10 @@ public class OutputDistribution implements ProbDistribution {
 			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
 		}
 		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(range);
-		Set<Value> values = combinations.stream()
-				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
-				.collect(Collectors.toSet());
+		Set<Value> values =
+				combinations.stream()
+						.flatMap(cond -> getProbDistrib(cond).getValues().stream())
+						.collect(Collectors.toSet());
 		if (values.isEmpty()) {
 			values.add(ValueFactory.none());
 		}

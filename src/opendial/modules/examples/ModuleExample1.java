@@ -22,6 +22,8 @@
 
 package opendial.modules.examples;
 
+import java.util.logging.*;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Collection;
@@ -31,8 +33,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.modules.Module;
 import opendial.state.DialogueState;
 
@@ -49,7 +49,7 @@ import opendial.state.DialogueState;
 public class ModuleExample1 implements Module {
 
 	// logger
-	public static Logger log = new Logger("ModuleExample1", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static int GRID_SIZE = 11;
 
@@ -67,7 +67,7 @@ public class ModuleExample1 implements Module {
 	 * middle of this grid.
 	 */
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		frame = new JFrame();
 
 		frame.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE));
@@ -94,8 +94,8 @@ public class ModuleExample1 implements Module {
 		if (updatedVars.contains("a_m") && state.hasChanceNode("a_m") && !paused) {
 			String actionValue = state.queryProb("a_m").getBest().toString();
 			if (actionValue.startsWith("Move(")) {
-				String direction = actionValue
-						.substring(5, actionValue.length() - 1);
+				String direction =
+						actionValue.substring(5, actionValue.length() - 1);
 				changePosition(direction);
 			}
 		}

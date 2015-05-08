@@ -21,8 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
+import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,8 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
@@ -40,7 +39,6 @@ import opendial.datastructs.Assignment;
 import opendial.inference.Query;
 import opendial.inference.approximate.Sample;
 import opendial.inference.approximate.SamplingAlgorithm;
-import opendial.modules.Module;
 import opendial.state.DialogueState;
 
 /**
@@ -52,7 +50,7 @@ import opendial.state.DialogueState;
 public class WizardLearner implements Module {
 
 	// logger
-	public static Logger log = new Logger("WizardLearner", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueSystem system;
 
@@ -84,13 +82,13 @@ public class WizardLearner implements Module {
 		if (!state.getActionNodeIds().isEmpty()) {
 			if (state.getEvidence().containsVars(state.getActionNodeIds())) {
 				try {
-					Assignment wizardAction = state.getEvidence().getTrimmed(
-							state.getActionNodeIds());
+					Assignment wizardAction =
+							state.getEvidence().getTrimmed(state.getActionNodeIds());
 					state.clearEvidence(wizardAction.getVariables());
 					learnFromWizardAction(wizardAction);
 					state.addToState(wizardAction.removePrimes());
 				}
-				catch (DialException e) {
+				catch (RuntimeException e) {
 					log.warning("could not learn from wizard actions: " + e);
 				}
 			}
@@ -109,34 +107,39 @@ public class WizardLearner implements Module {
 	 * @param state the dialogue state to update
 	 * @param wizardAction the wizard action
 	 * @return the list of updated parameters
-	 * @throws DialException if the update fails
+	 * @throws RuntimeException if the update fails
 	 */
 	protected Set<String> learnFromWizardAction(Assignment wizardAction) {
 
 		DialogueState state = system.getState();
 		// determine the relevant parameters (discard the isolated ones)
-		Set<String> relevantParams = state.getParameterIds().stream()
-				.filter(p -> !state.getChanceNode(p).getOutputNodes().isEmpty())
-				.collect(Collectors.toSet());
+		Set<String> relevantParams =
+				state.getParameterIds()
+						.stream()
+						.filter(p -> !state.getChanceNode(p).getOutputNodes()
+								.isEmpty()).collect(Collectors.toSet());
 
 		if (!relevantParams.isEmpty()) {
 			try {
 				List<String> queryVars = new ArrayList<String>(relevantParams);
 				queryVars.addAll(wizardAction.getVariables());
 
-				Query query = new Query.UtilQuery(state, queryVars, new Assignment());
-				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
-						query, cs -> reweightSamples(cs, wizardAction));
+				Query query =
+						new Query.UtilQuery(state, queryVars, new Assignment());
+				EmpiricalDistribution empiricalDistrib =
+						sampler.getWeightedSamples(query,
+								cs -> reweightSamples(cs, wizardAction));
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = state.getChanceNode(param);
 
-					ProbDistribution newDistrib = empiricalDistrib.getMarginal(
-							param, paramNode.getInputNodeIds());
+					ProbDistribution newDistrib =
+							empiricalDistrib.getMarginal(param,
+									paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("cannot update parameters based on wizard action: " + e);
 			}
 		}
@@ -163,8 +166,9 @@ public class WizardLearner implements Module {
 			copy.setUtil(sampleAssign, sample.getUtility());
 			int ranking = copy.getRanking(wizardAction, 0.1);
 			if (ranking != -1) {
-				double logweight = Math.log((GEOMETRIC_FACTOR * Math.pow(
-						1 - GEOMETRIC_FACTOR, ranking)) + 0.00001);
+				double logweight =
+						Math.log((GEOMETRIC_FACTOR * Math.pow(1 - GEOMETRIC_FACTOR,
+								ranking)) + 0.00001);
 				sample.addLogWeight(logweight);
 			}
 		}

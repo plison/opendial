@@ -23,12 +23,12 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.common.InferenceChecks;
 import opendial.domains.rules.effects.Effect;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
 import opendial.state.StatePruner;
@@ -38,7 +38,7 @@ import org.junit.Test;
 public class DialogueStateTest {
 
 	// logger
-	public static Logger log = new Logger("DialogueStateTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//domain1.xml";
 
@@ -50,13 +50,13 @@ public class DialogueStateTest {
 			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Test
-	public void testStateCopy() throws DialException, InterruptedException {
+	public void testStateCopy() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -86,7 +86,7 @@ public class DialogueStateTest {
 	}
 
 	@Test
-	public void testStateCopy2() throws DialException, InterruptedException {
+	public void testStateCopy2() throws RuntimeException, InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.08;
 

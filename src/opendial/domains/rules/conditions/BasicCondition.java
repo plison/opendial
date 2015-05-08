@@ -23,13 +23,14 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.Logger;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -46,7 +47,7 @@ import opendial.domains.rules.RuleGrounding;
  */
 public final class BasicCondition implements Condition {
 
-	static Logger log = new Logger("BasicCondition", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// variable label (can include slots to fill)
 	final Template variable;

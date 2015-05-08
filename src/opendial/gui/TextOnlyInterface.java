@@ -23,14 +23,14 @@
 
 package opendial.gui;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Scanner;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
@@ -46,7 +46,7 @@ import opendial.utils.StringUtils;
  */
 public class TextOnlyInterface implements Module {
 
-	public static Logger log = new Logger("TextOnlyInterface", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueSystem system;
 	boolean paused = true;
@@ -65,7 +65,7 @@ public class TextOnlyInterface implements Module {
 	 */
 	@SuppressWarnings("resource")
 	@Override
-	public void start() throws DialException {
+	public void start() throws RuntimeException {
 		paused = false;
 		log.info("Starting text-only user interface...");
 		log.info("Local address: " + system.getLocalAddress());
@@ -142,8 +142,9 @@ public class TextOnlyInterface implements Module {
 			if (!(value instanceof NoneVal)) {
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content += " (" + StringUtils.getShortForm(table.getProb(value))
-							+ ")";
+					content +=
+							" (" + StringUtils.getShortForm(table.getProb(value))
+									+ ")";
 				}
 				textTable += content + "\n\t\t";
 			}

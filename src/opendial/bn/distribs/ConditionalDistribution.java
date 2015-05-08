@@ -23,19 +23,17 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
+import opendial.utils.StringUtils;
 
 /**
  * Conditional probability distribution represented as a probability table. The table
@@ -54,8 +52,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		implements ProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("ConditionalDistribution",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// head variable
 	String headVar;
@@ -118,12 +115,12 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based
 	 *            representation)
-	 * @throws DialException if distrib relates to a different random variable
+	 * @throws RuntimeException if distrib relates to a different random variable
 	 */
-	public void addDistrib(Assignment condition, T distrib) throws DialException {
+	public void addDistrib(Assignment condition, T distrib) throws RuntimeException {
 		table.put(condition, distrib);
 		if (!distrib.getVariable().equals(this.headVar)) {
-			throw new DialException("Variable is " + this.headVar + ", not "
+			throw new RuntimeException("Variable is " + this.headVar + ", not "
 					+ distrib.getVariable());
 		}
 		conditionalVars.addAll(condition.getVariables());
@@ -164,10 +161,10 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the condition
 	 * @return the sampled assignment
-	 * @throws DialException if the sample could not be extracted given the condition
+	 * @throws RuntimeException if the sample could not be extracted given the condition
 	 */
 	@Override
-	public Value sample(Assignment condition) throws DialException {
+	public Value sample(Assignment condition) throws RuntimeException {
 
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
@@ -175,8 +172,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 			return table.get(trimmed).sample();
 		}
 
-		log.debug("could not find the distribution for " + condition + " (vars: "
-				+ conditionalVars + ", distribution is " + toString() + ")");
+		// log.fine("could not find the distribution for " + condition + " (vars: "
+		// + conditionalVars + ", distribution is " + toString() + ")");
 
 		return ValueFactory.none();
 	}
@@ -189,10 +186,10 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
 	 * @return the resulting probability
-	 * @throws DialException if the probability could not be extracted
+	 * @throws RuntimeException if the probability could not be extracted
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws DialException {
+	public double getProb(Assignment condition, Value head) throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed).getProb(head);
@@ -206,8 +203,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 			return total;
 		}
 		else {
-			log.warning("could not find the corresponding condition for "
-					+ condition + ")");
+			// log.warning("could not find the corresponding condition for "
+			// + condition + ")");
 			return 0.0;
 		}
 	}
@@ -220,14 +217,14 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the corresponding probability distribution
 	 */
 	@Override
-	public T getProbDistrib(Assignment condition) throws DialException {
+	public IndependentProbDistribution getProbDistrib(Assignment condition)
+			throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
 		}
 		else {
-			throw new DialException("could not find the corresponding "
-					+ "condition for " + condition + " in " + toString());
+			return new SingleValueDistribution(headVar, ValueFactory.none());
 		}
 	}
 
@@ -239,14 +236,14 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws DialException {
+	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
 		}
 
-		ConditionalDistribution<T> newDistrib = new ConditionalDistribution<T>(
-				headVar);
+		ConditionalDistribution<T> newDistrib =
+				new ConditionalDistribution<T>(headVar);
 		for (Assignment a : table.keySet()) {
 			if (a.consistentWith(condition)) {
 				Assignment remaining = a.getTrimmedInverse(condition.getVariables());
@@ -277,6 +274,15 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		return headRows;
 	}
 
+	/**
+	 * Returns the set of possible conditional assignments in the table.
+	 * 
+	 * @return
+	 */
+	public Set<Assignment> getConditions() {
+		return table.keySet();
+	}
+
 	// ===================================
 	// UTILITIES
 	// ===================================
@@ -297,12 +303,13 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	@SuppressWarnings("unchecked")
 	@Override
 	public ConditionalDistribution<T> copy() {
-		ConditionalDistribution<T> newTable = new ConditionalDistribution<T>(headVar);
+		ConditionalDistribution<T> newTable =
+				new ConditionalDistribution<T>(headVar);
 		for (Assignment condition : table.keySet()) {
 			try {
 				newTable.addDistrib(condition, (T) table.get(condition).copy());
 			}
-			catch (DialException e) {
+			catch (RuntimeException e) {
 				log.warning("Copy error: " + e);
 			}
 		}
@@ -318,16 +325,18 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	public String toString() {
 		String s = "";
 		for (Assignment condition : table.keySet()) {
-			String distribString = table.get(condition).toString();
-			Pattern p = Pattern.compile("PDF\\((.)*\\)=");
-			Matcher m = p.matcher(distribString);
-			while (m.find()) {
-				String toreplace = m.group();
-				distribString = distribString.replace(toreplace,
-						toreplace.substring(0, toreplace.length() - 2) + "|"
-								+ condition + ")=");
+			T distrib = table.get(condition);
+			for (Value head : distrib.getValues()) {
+				String prob = StringUtils.getShortForm(distrib.getProb(head));
+				if (condition.size() > 0) {
+					s +=
+							"P(" + headVar + "=" + head + " | " + condition + "):="
+									+ prob + "\n";
+				}
+				else {
+					s += "P(" + headVar + "=" + head + "):=" + prob + "\n";
+				}
 			}
-			s += distribString + "\n";
 		}
 		return s;
 	}
@@ -339,7 +348,6 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
-	@Override
 	public boolean isWellFormed() {
 
 		// checks that all possible assignments are covered in the table
@@ -354,16 +362,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 						+ possibleCondAssignments.size()
 						+ ", but number of actual conditional assignments: "
 						+ table.keySet().size());
-				log.debug("possible conditional assignments: "
+				log.fine("possible conditional assignments: "
 						+ possibleCondAssignments);
-				log.debug("actual assignments: " + table.keySet());
-				return false;
-			}
-		}
-
-		for (Assignment condition : table.keySet()) {
-			if (!table.get(condition).isWellFormed()) {
-				log.debug(table.get(condition) + " is ill-formed");
+				log.fine("actual assignments: " + table.keySet());
 				return false;
 			}
 		}
@@ -380,8 +381,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ConditionalDistribution) {
-			Set<Assignment> conditions = ((ConditionalDistribution) o).table
-					.keySet();
+			Set<Assignment> conditions =
+					((ConditionalDistribution) o).table.keySet();
 			if (!conditions.equals(table.keySet())) {
 				return false;
 			}

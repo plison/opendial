@@ -23,10 +23,10 @@
 
 package opendial.domains.rules.effects;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.logging.*;
 
-import opendial.arch.Logger;
+import java.util.Collection;
+import java.util.Collections;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -52,7 +52,7 @@ import opendial.domains.rules.conditions.Condition;
 public class BasicEffect {
 
 	// logger
-	static Logger log = new Logger("BasicEffect", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Variable label */
 	final String variableLabel;
@@ -167,7 +167,7 @@ public class BasicEffect {
 	 * @return an empty set
 	 */
 	public Collection<String> getSlots() {
-		return new HashSet<String>();
+		return Collections.emptySet();
 	}
 
 	/**
@@ -229,9 +229,10 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		int hashcode = ((negated) ? -2 : 1) * variableLabel.hashCode()
-				^ (new Boolean(add)).hashCode() ^ priority
-				^ variableValue.hashCode();
+		int hashcode =
+				((negated) ? -2 : 1) * variableLabel.hashCode()
+						^ (new Boolean(add)).hashCode() ^ priority
+						^ variableValue.hashCode();
 		return hashcode;
 	}
 
@@ -271,8 +272,8 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority,
-				add, negated);
+		BasicEffect copy =
+				new BasicEffect(variableLabel, variableValue, priority, add, negated);
 		return copy;
 	}
 

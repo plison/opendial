@@ -23,6 +23,8 @@
 
 package opendial.utils;
 
+import java.util.logging.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,8 +47,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -68,16 +68,16 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLUtils {
 
 	// logger
-	static Logger log = new Logger("XMLUtils", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	/**
 	 * Opens the XML document referenced by the filename, and returns it
 	 * 
 	 * @param filename the filename
 	 * @return the XML document
-	 * @throws DialException if the XML document could not be read.
+	 * @throws RuntimeException if the XML document could not be read.
 	 */
-	public static Document getXMLDocument(String filename) throws DialException {
+	public static Document getXMLDocument(String filename) throws RuntimeException {
 		InputStream is = null;
 		if (new File(filename).exists()) {
 			try {
@@ -85,14 +85,15 @@ public class XMLUtils {
 			}
 			catch (IOException e) {
 				log.warning(e.getMessage());
-				throw new DialException(e.getMessage());
+				throw new RuntimeException(e.getMessage());
 			}
 		}
 		else {
-			is = XMLUtils.class.getResourceAsStream("/"
-					+ filename.replace("//", "/"));
+			is =
+					XMLUtils.class.getResourceAsStream("/"
+							+ filename.replace("//", "/"));
 			if (is == null) {
-				throw new DialException("Resource cannot be found: " + filename);
+				throw new RuntimeException("Resource cannot be found: " + filename);
 			}
 		}
 
@@ -105,10 +106,10 @@ public class XMLUtils {
 	 * 
 	 * @param is the input source
 	 * @return the XML document
-	 * @throws DialException if the XML document could not be read.
+	 * @throws RuntimeException if the XML document could not be read.
 	 */
-	public static Document getXMLDocument(InputSource is) throws DialException {
-		log.debug("parsing file: " + is);
+	public static Document getXMLDocument(InputSource is) throws RuntimeException {
+		log.fine("parsing file: " + is);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
@@ -120,15 +121,15 @@ public class XMLUtils {
 		}
 		catch (SAXException e) {
 			log.warning("Reading aborted: \n" + e.getMessage());
-			throw new DialException(e.getMessage());
+			throw new RuntimeException(e.getMessage());
 		}
 		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
-			throw new DialException(e.getMessage());
+			throw new RuntimeException(e.getMessage());
 		}
 		catch (IOException e) {
 			log.warning(e.getMessage());
-			throw new DialException(e.getMessage());
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 
@@ -140,15 +141,15 @@ public class XMLUtils {
 	 */
 	public static String serialise(Node node) {
 		try {
-			DOMImplementationRegistry registry = DOMImplementationRegistry
-					.newInstance();
-			DOMImplementationLS lsImpl = (DOMImplementationLS) registry
-					.getDOMImplementation("LS");
+			DOMImplementationRegistry registry =
+					DOMImplementationRegistry.newInstance();
+			DOMImplementationLS lsImpl =
+					(DOMImplementationLS) registry.getDOMImplementation("LS");
 			LSSerializer serializer = lsImpl.createLSSerializer();
 			return serializer.writeToString(node);
 		}
 		catch (Exception e) {
-			log.debug("could not serialise XML node: " + e);
+			log.fine("could not serialise XML node: " + e);
 			return "";
 		}
 	}
@@ -157,9 +158,9 @@ public class XMLUtils {
 	 * Creates a new XML, empty document
 	 * 
 	 * @return the empty XML document
-	 * @throws DialException if the document could not be created
+	 * @throws RuntimeException if the document could not be created
 	 */
-	public static Document newXMLDocument() throws DialException {
+	public static Document newXMLDocument() throws RuntimeException {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -172,7 +173,7 @@ public class XMLUtils {
 
 		catch (ParserConfigurationException e) {
 			log.warning(e.getMessage());
-			throw new DialException("cannot create XML file");
+			throw new RuntimeException("cannot create XML file");
 		}
 	}
 
@@ -181,10 +182,10 @@ public class XMLUtils {
 	 * 
 	 * @param doc the document
 	 * @param filename the path to the file in which to write the XML data
-	 * @throws DialException if the writing operation fails
+	 * @throws RuntimeException if the writing operation fails
 	 */
 	public static void writeXMLDocument(Document doc, String filename)
-			throws DialException {
+			throws RuntimeException {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer;
@@ -193,7 +194,7 @@ public class XMLUtils {
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
-			log.info("writing operation to " + filename + " successful!");
+			log.fine("writing operation to " + filename + " successful!");
 		}
 		catch (TransformerConfigurationException e) {
 			log.warning(e.getMessage());
@@ -216,9 +217,9 @@ public class XMLUtils {
 	 * 
 	 * @param doc the XML document
 	 * @return the main node
-	 * @throws DialException if node is ill-formatted
+	 * @throws RuntimeException if node is ill-formatted
 	 */
-	public static Node getMainNode(Document doc) throws DialException {
+	public static Node getMainNode(Document doc) throws RuntimeException {
 		for (int i = 0; i < doc.getChildNodes().getLength(); i++) {
 			Node node = doc.getChildNodes().item(i);
 			if (!node.getNodeName().equals("#text")
@@ -226,7 +227,7 @@ public class XMLUtils {
 				return node;
 			}
 		}
-		throw new DialException("main node in XML file could not be retrieved");
+		throw new RuntimeException("main node in XML file could not be retrieved");
 	}
 
 	/**
@@ -236,18 +237,18 @@ public class XMLUtils {
 	 * @param dialSpecs the domain file
 	 * @param schemaFile the schema file
 	 * @return true if document is validated, false otherwise
-	 * @throws DialException if problem appears when parsing XML
+	 * @throws RuntimeException if problem appears when parsing XML
 	 */
 	public static boolean validateXML(String dialSpecs, String schemaFile)
-			throws DialException {
+			throws RuntimeException {
 
-		log.debug("Checking the validation of file " + dialSpecs
+		log.fine("Checking the validation of file " + dialSpecs
 				+ " against XML schema " + schemaFile + "...");
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
-			SchemaFactory schema = SchemaFactory
-					.newInstance("http://www.w3.org/2001/XMLSchema");
+			SchemaFactory schema =
+					SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 			factory.setSchema(schema.newSchema(new Source[] { new StreamSource(
 					schemaFile) }));
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -255,11 +256,11 @@ public class XMLUtils {
 			try {
 				builder.setErrorHandler(new XMLErrorHandler());
 				Document doc = builder.parse(new InputSource(dialSpecs));
-				log.debug("XML parsing of file: " + dialSpecs + " successful!");
+				log.fine("XML parsing of file: " + dialSpecs + " successful!");
 
 				// extracting included files, and validating them as well
-				String rootpath = dialSpecs.substring(0,
-						dialSpecs.lastIndexOf("//") + 1);
+				String rootpath =
+						dialSpecs.substring(0, dialSpecs.lastIndexOf("//") + 1);
 				Vector<String> includedFiles = extractIncludedFiles(doc);
 				for (String file : includedFiles) {
 					boolean validation = validateXML(rootpath + file, schemaFile);
@@ -269,7 +270,7 @@ public class XMLUtils {
 				}
 			}
 			catch (Exception e) {
-				throw new DialException(e.getMessage());
+				throw new RuntimeException(e.getMessage());
 			}
 			return true;
 		}
@@ -304,8 +305,9 @@ public class XMLUtils {
 					Node node = midNode.getChildNodes().item(k);
 					if (node.hasAttributes()
 							&& node.getAttributes().getNamedItem("href") != null) {
-						String fileName = node.getAttributes().getNamedItem("href")
-								.getNodeValue();
+						String fileName =
+								node.getAttributes().getNamedItem("href")
+										.getNodeValue();
 						includedFiles.add(fileName);
 					}
 				}
@@ -324,7 +326,7 @@ public class XMLUtils {
  */
 final class XMLErrorHandler extends DefaultHandler {
 
-	static Logger log = new Logger("XMLErrorHandler", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Override
 	public void error(SAXParseException e) throws SAXParseException {

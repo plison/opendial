@@ -9,6 +9,7 @@
 	<user>u_u</user>
 	<speech_user>s_u</speech_user>
 	<speech_system>s_m</speech_system>
+	<floor>floor</floor>
 	<discretisation>50</discretisation>
 	<recording>last</recording>
 	<timeout>400</timeout>

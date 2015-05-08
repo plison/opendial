@@ -23,12 +23,11 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -50,8 +49,7 @@ import org.w3c.dom.Node;
  */
 public class ContinuousDistribution implements IndependentProbDistribution {
 
-	public static Logger log = new Logger("ContinuousDistribution",
-			Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the variable for the distribution
 	String variable;
@@ -96,8 +94,9 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	 */
 	@Override
 	public Value sample() {
-		Value v = (function.getDimensions() > 1) ? ValueFactory.create(function
-				.sample()) : ValueFactory.create(function.sample()[0]);
+		Value v =
+				(function.getDimensions() > 1) ? ValueFactory.create(function
+						.sample()) : ValueFactory.create(function.sample()[0]);
 		return v;
 	}
 
@@ -131,12 +130,13 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	public CategoricalTable toDiscrete() {
 
 		if (discreteCache == null) {
-			Map<double[], Double> discretisation = function
-					.discretise(Settings.discretisationBuckets);
+			Map<double[], Double> discretisation =
+					function.discretise(Settings.discretisationBuckets);
 			discreteCache = new CategoricalTable(variable);
 			for (double[] value : discretisation.keySet()) {
-				Value val = (value.length > 1) ? new ArrayVal(value) : ValueFactory
-						.create(value[0]);
+				Value val =
+						(value.length > 1) ? new ArrayVal(value) : ValueFactory
+								.create(value[0]);
 				discreteCache.addRow(val, discretisation.get(value));
 			}
 		}
@@ -223,7 +223,7 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 						.getCDF(new double[] { ((DoubleVal) val).getDouble() });
 			}
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
@@ -241,7 +241,7 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 		try {
 			return function.getCDF(val);
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
@@ -259,7 +259,7 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 		try {
 			return function.getCDF(val);
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("exception: " + e);
 		}
 		return 0.0;
@@ -278,17 +278,6 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	// ===================================
 	// UTILITY FUNCTIONS
 	// ===================================
-
-	/**
-	 * Returns true if the distribution is well-formed -- more specifically, if the
-	 * cumulative density function sums up to 1.0 as it should.
-	 * 
-	 * @return true if well-formed, false otherwise.
-	 */
-	@Override
-	public boolean isWellFormed() {
-		return true;
-	}
 
 	/**
 	 * Returns a copy of the probability distribution
@@ -331,7 +320,7 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	 * 
 	 * @param doc the document to which the XML node belongs
 	 * @return the corresponding node
-	 * @throws DialException if the XML representation could not be generated.
+	 * @throws RuntimeException if the XML representation could not be generated.
 	 */
 	@Override
 	public Node generateXML(Document doc) {

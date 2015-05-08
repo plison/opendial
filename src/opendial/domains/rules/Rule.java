@@ -23,6 +23,8 @@
 
 package opendial.domains.rules;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
@@ -50,7 +51,7 @@ import opendial.domains.rules.parameters.Parameter;
  */
 public class Rule {
 
-	static Logger log = new Logger("Rule", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the rule identifier
 	String id;
@@ -95,7 +96,7 @@ public class Rule {
 	public void addCase(RuleCase newCase) {
 		if (!cases.isEmpty()
 				&& cases.get(cases.size() - 1).getCondition() instanceof VoidCondition) {
-			log.info("new case for rule " + id
+			log.warning("new case for rule " + id
 					+ " is unreachable (previous case is trivially true)");
 		}
 		cases.add(newCase);
@@ -171,9 +172,10 @@ public class Rule {
 
 		for (Assignment g : groundings.getAlternatives()) {
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
-			RuleCase match = cases.stream()
-					.filter(c -> c.getCondition().isSatisfiedBy(full))
-					.map(c -> c.ground(full)).findFirst().orElse(new RuleCase());
+			RuleCase match =
+					cases.stream().filter(c -> c.getCondition().isSatisfiedBy(full))
+							.map(c -> c.ground(full)).findFirst()
+							.orElse(new RuleCase());
 
 			if (!match.getEffects().isEmpty()) {
 				output.addCase(match);
@@ -208,8 +210,8 @@ public class Rule {
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding groundings = new RuleGrounding();
 		for (RuleCase c : cases) {
-			RuleGrounding caseGrounding = c.getGroundings(input,
-					ruleType == RuleType.UTIL);
+			RuleGrounding caseGrounding =
+					c.getGroundings(input, ruleType == RuleType.UTIL);
 			groundings.add(caseGrounding);
 		}
 		return groundings;

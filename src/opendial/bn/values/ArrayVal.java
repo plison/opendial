@@ -23,11 +23,12 @@
 
 package opendial.bn.values;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
 
-import opendial.arch.Logger;
 import opendial.utils.StringUtils;
 
 /**
@@ -38,7 +39,7 @@ import opendial.utils.StringUtils;
 public final class ArrayVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("ArrayVal", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the array of doubles
 	final double[] array;
@@ -153,8 +154,8 @@ public final class ArrayVal implements Value {
 	@Override
 	public Value concatenate(Value v) {
 		if (v instanceof ArrayVal) {
-			double[] newvals = new double[array.length
-					+ ((ArrayVal) v).getArray().length];
+			double[] newvals =
+					new double[array.length + ((ArrayVal) v).getArray().length];
 			for (int i = 0; i < array.length; i++) {
 				newvals[i] = array[i];
 			}

@@ -23,6 +23,8 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -30,13 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 
@@ -45,7 +45,7 @@ import org.junit.Test;
 public class RuleTest3 {
 
 	// logger
-	public static Logger log = new Logger("RuleTest3", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test/domains/rulepriorities.xml";
 
@@ -58,10 +58,10 @@ public class RuleTest3 {
 	static DialogueSystem system;
 
 	@Test
-	public void priorityTest() throws DialException, InterruptedException {
+	public void priorityTest() throws RuntimeException, InterruptedException {
 
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(domainFile));
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		assertEquals(system.getContent("a_u").getProb("Opening"), 0.8, 0.01);
@@ -72,7 +72,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void test1() throws DialException {
+	public void test1() throws RuntimeException {
 
 		Domain domain = XMLDomainReader.extractDomain(test1domainFile);
 		inference = new InferenceChecks();
@@ -92,7 +92,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void test2() throws DialException, InterruptedException {
+	public void test2() throws RuntimeException, InterruptedException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(test2domainFile);
@@ -132,7 +132,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void testIncondition() throws DialException, InterruptedException {
+	public void testIncondition() throws RuntimeException, InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(inconditionFile);
 
 		DialogueSystem system = new DialogueSystem(domain);

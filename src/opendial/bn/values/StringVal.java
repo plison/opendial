@@ -23,7 +23,8 @@
 
 package opendial.bn.values;
 
-import opendial.arch.Logger;
+import java.util.logging.*;
+
 import opendial.datastructs.Template;
 
 /**
@@ -35,7 +36,7 @@ import opendial.datastructs.Template;
 
 public final class StringVal implements Value {
 
-	public static Logger log = new Logger("StringVal", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the string
 	final String str;

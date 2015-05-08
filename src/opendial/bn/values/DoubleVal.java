@@ -23,7 +23,8 @@
 
 package opendial.bn.values;
 
-import opendial.arch.Logger;
+import java.util.logging.*;
+
 import opendial.utils.StringUtils;
 
 /**
@@ -36,7 +37,7 @@ import opendial.utils.StringUtils;
 public final class DoubleVal implements Value {
 
 	// logger
-	public static Logger log = new Logger("DoubleVal", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the double
 	final double d;
@@ -70,8 +71,9 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		boolean result = (o instanceof DoubleVal && Math.abs(((DoubleVal) o)
-				.getDouble() - getDouble()) < 0.000001);
+		boolean result =
+				(o instanceof DoubleVal && Math.abs(((DoubleVal) o).getDouble()
+						- getDouble()) < 0.000001);
 		return result;
 	}
 

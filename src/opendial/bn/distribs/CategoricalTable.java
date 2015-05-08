@@ -23,6 +23,8 @@
 
 package opendial.bn.distribs;
 
+import java.util.logging.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.densityfunctions.DiscreteDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
 public class CategoricalTable implements IndependentProbDistribution {
 
 	// logger
-	public static Logger log = new Logger("CategoricalTable", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the variable name
 	String variable;
@@ -118,28 +118,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 		if (addDefaultValue && totalProb < 0.99999) {
 			incrementRow(ValueFactory.none(), 1.0 - totalProb);
 		}
-	}
-
-	/**
-	 * Create a categorical table with a unique value with probability 1.0.
-	 * 
-	 * @param variable the name of the random variable
-	 * @param uniqueValue the unique value for the table
-	 */
-	public CategoricalTable(String variable, Value uniqueValue) {
-		this(variable);
-		addRow(uniqueValue, 1.0);
-	}
-
-	/**
-	 * Create a categorical table with a unique value with probability 1.0.
-	 * 
-	 * @param variable the name of the random variable
-	 * @param uniqueValue the unique value for the table (as a string)
-	 */
-	public CategoricalTable(String variable, String uniqueValue) {
-		this(variable);
-		addRow(uniqueValue, 1.0);
 	}
 
 	/**
@@ -279,7 +257,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 					Value concat = thisA.concatenate(otherA);
 					newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
 				}
-				catch (DialException e) {
+				catch (RuntimeException e) {
 					log.warning("could not concatenated the tables " + this
 							+ " and " + other);
 					return this.copy();
@@ -356,25 +334,27 @@ public class CategoricalTable implements IndependentProbDistribution {
 		// element
 		else if (val instanceof DoubleVal && isContinuous()) {
 			double toFind = ((DoubleVal) val).getDouble();
-			Value closest = table
-					.keySet()
-					.stream()
-					.filter(v -> v instanceof DoubleVal)
-					.min((v1, v2) -> Double.compare(
-							Math.abs(((DoubleVal) v1).getDouble() - toFind),
-							Math.abs(((DoubleVal) v2).getDouble() - toFind))).get();
+			Value closest =
+					table.keySet()
+							.stream()
+							.filter(v -> v instanceof DoubleVal)
+							.min((v1, v2) -> Double.compare(
+									Math.abs(((DoubleVal) v1).getDouble() - toFind),
+									Math.abs(((DoubleVal) v2).getDouble() - toFind)))
+							.get();
 			return getProb(closest);
 		}
 
 		else if (val instanceof ArrayVal && isContinuous()) {
 			double[] toFind = ((ArrayVal) val).getArray();
-			Value closest = table
-					.keySet()
-					.stream()
-					.filter(v -> v instanceof ArrayVal)
-					.min((v1, v2) -> Double.compare(MathUtils.getDistance(
-							((ArrayVal) v1).getArray(), toFind), MathUtils
-							.getDistance(((ArrayVal) v2).getArray(), toFind))).get();
+			Value closest =
+					table.keySet()
+							.stream()
+							.filter(v -> v instanceof ArrayVal)
+							.min((v1, v2) -> Double.compare(MathUtils.getDistance(
+									((ArrayVal) v1).getArray(), toFind), MathUtils
+									.getDistance(((ArrayVal) v2).getArray(), toFind)))
+							.get();
 			return getProb(closest);
 		}
 		return 0.0f;
@@ -395,10 +375,10 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * e.g. an ill-formed distribution), returns a none value.
 	 * 
 	 * @return the sampled assignment
-	 * @throws DialException if no assignment could be sampled
+	 * @throws RuntimeException if no assignment could be sampled
 	 */
 	@Override
-	public Value sample() throws DialException {
+	public Value sample() throws RuntimeException {
 
 		if (intervals == null) {
 			if (table.isEmpty()) {
@@ -419,10 +399,10 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * table
 	 * 
 	 * @return the continuous equivalent for the distribution
-	 * @throws DialException if the distribution could not be converted
+	 * @throws RuntimeException if the distribution could not be converted
 	 */
 	@Override
-	public ContinuousDistribution toContinuous() throws DialException {
+	public ContinuousDistribution toContinuous() throws RuntimeException {
 
 		if (isContinuous()) {
 			Map<double[], Double> points = new HashMap<double[], Double>();
@@ -439,7 +419,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 			return new ContinuousDistribution(variable, fun);
 		}
 
-		throw new DialException("Distribution could not be converted to a "
+		throw new RuntimeException("Distribution could not be converted to a "
 				+ "continuous distribution: " + variable);
 	}
 
@@ -532,18 +512,36 @@ public class CategoricalTable implements IndependentProbDistribution {
 	}
 
 	/**
+	 * Returns true if the table has only one possible value (with probability 1.0).
+	 * 
+	 * @return true if the distribution is deterministic, false otherwise
+	 */
+	public boolean isDeterministic() {
+		return (table.size() == 1);
+	}
+
+	/**
+	 * Returns a deterministic distribution that corresponds to the value with
+	 * highest probability in the distribution.
+	 * 
+	 * @return the corresponding deterministic distribution
+	 */
+	public SingleValueDistribution getDeterministic() {
+		return new SingleValueDistribution(variable, getBest());
+	}
+
+	/**
 	 * Returns true if the probability table is well-formed. The method checks that
 	 * all possible assignments for the condition and head parts are covered in the
 	 * table, and that the probabilities add up to 1.0f.
 	 * 
 	 * @return true if the table is well-formed, false otherwise
 	 */
-	@Override
 	public boolean isWellFormed() {
 		// checks that the total probability is roughly equal to 1.0f
 		double totalProb = countTotalProb() + getProb(ValueFactory.none());
 		if (totalProb < 0.9f || totalProb > 1.1f) {
-			log.debug("total probability is " + totalProb);
+			log.fine("total probability is " + totalProb);
 			return false;
 		}
 
@@ -558,8 +556,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public String toString() {
 
-		Map<Value, Double> sortedTable = InferenceUtils.getNBest(table,
-				Math.max(table.size(), 1));
+		Map<Value, Double> sortedTable =
+				InferenceUtils.getNBest(table, Math.max(table.size(), 1));
 
 		String str = "";
 		for (Entry<Value, Double> entry : sortedTable.entrySet()) {

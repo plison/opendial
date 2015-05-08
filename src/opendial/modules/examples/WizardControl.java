@@ -23,6 +23,7 @@
 
 package opendial.modules.examples;
 
+import java.util.logging.*;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -43,16 +44,14 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.gui.GUIFrame;
+import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
-import opendial.modules.core.ForwardPlanner;
-import opendial.modules.core.WizardLearner;
+import opendial.modules.WizardLearner;
 import opendial.state.AnchoredRule;
 import opendial.state.DialogueState;
 import opendial.state.distribs.RuleUtilDistribution;
@@ -71,7 +70,7 @@ import opendial.state.distribs.RuleUtilDistribution;
 public class WizardControl implements Module {
 
 	// logger
-	public static Logger log = new Logger("WizardControl", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	DialogueSystem system;
 	GUIFrame gui;
@@ -80,13 +79,13 @@ public class WizardControl implements Module {
 	 * Creates a new wizard control for the dialogue system.
 	 * 
 	 * @param system the dialogue system
-	 * @throws DialException if the GUI is not activated
+	 * @throws RuntimeException if the GUI is not activated
 	 */
-	public WizardControl(DialogueSystem system) throws DialException {
+	public WizardControl(DialogueSystem system) throws RuntimeException {
 		this.system = system;
 
 		if (system.getModule(GUIFrame.class) == null) {
-			throw new DialException("could not create wizard control: no GUI");
+			throw new RuntimeException("could not create wizard control: no GUI");
 		}
 		else {
 			gui = system.getModule(GUIFrame.class);
@@ -135,8 +134,8 @@ public class WizardControl implements Module {
 		if (state.getUtilityNodes().size() == 1) {
 			UtilityNode urnode = state.getUtilityNodes().stream().findFirst().get();
 			if (urnode.getFunction() instanceof RuleUtilDistribution) {
-				AnchoredRule arule = ((RuleUtilDistribution) urnode.getFunction())
-						.getAnchor();
+				AnchoredRule arule =
+						((RuleUtilDistribution) urnode.getFunction()).getAnchor();
 				if (arule.getInputRange().linearise().size() == 1
 						&& arule.getParameters().isEmpty()) {
 					system.getModule(ForwardPlanner.class).trigger(state,
@@ -155,7 +154,7 @@ public class WizardControl implements Module {
 			state.removeNodes(state.getActionNodeIds());
 			state.removeNodes(state.getUtilityNodeIds());
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not apply wizard control: " + e);
 		}
 	}
@@ -165,10 +164,10 @@ public class WizardControl implements Module {
 	 * the action node.
 	 * 
 	 * @param actionNode the action node
-	 * @throws DialException if the action values could not be extracted
+	 * @throws RuntimeException if the action values could not be extracted
 	 */
 	@SuppressWarnings("serial")
-	private void displayWizardBox(ActionNode actionNode) throws DialException {
+	private void displayWizardBox(ActionNode actionNode) throws RuntimeException {
 
 		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (Value v : actionNode.getValues()) {
@@ -209,8 +208,9 @@ public class WizardControl implements Module {
 
 	public void recordAction(DialogueState previousState, JList<String> listBox,
 			String actionVar) {
-		String actionValue = listBox.getModel()
-				.getElementAt(listBox.getMinSelectionIndex()).toString();
+		String actionValue =
+				listBox.getModel().getElementAt(listBox.getMinSelectionIndex())
+						.toString();
 		Assignment action = new Assignment(actionVar, actionValue);
 
 		if (system.getModule(WizardLearner.class) != null) {

@@ -22,15 +22,14 @@
 
 package opendial.modules;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
+import opendial.Settings;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.domains.Domain;
-import opendial.modules.core.DialogueRecorder;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 
@@ -39,7 +38,7 @@ import org.junit.Test;
 public class SimulatorTest {
 
 	// logger
-	public static Logger log = new Logger("SimulatorTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static String mainDomain = "test//domains//domain-demo.xml";
 	public static String simDomain = "test//domains//domain-simulator.xml";
@@ -48,10 +47,10 @@ public class SimulatorTest {
 	public static String simDomain2 = "test//domains//example-simulator.xml";
 
 	@Test
-	public void testSimulator() throws DialException, InterruptedException {
+	public void testSimulator() throws RuntimeException, InterruptedException {
 
-		DialogueSystem system = new DialogueSystem(
-				XMLDomainReader.extractDomain(mainDomain));
+		DialogueSystem system =
+				new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
 		system.getDomain().getModels().remove(0);
 		system.getDomain().getModels().remove(0);
 		system.getDomain().getModels().remove(0);
@@ -83,9 +82,12 @@ public class SimulatorTest {
 	}
 
 	@Test
-	public void testRewardLearner() throws DialException, InterruptedException {
+	public void testRewardLearner() throws RuntimeException, InterruptedException {
 		DialogueSystem system = null;
-		outloop: for (int k = 0; k < 2; k++) {
+		outloop: for (int k = 0; k < 3; k++) {
+			if (k > 0) {
+				log.info("restarting the learner...");
+			}
 			system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain2));
 
 			Domain simDomain3 = XMLDomainReader.extractDomain(simDomain2);
@@ -95,14 +97,15 @@ public class SimulatorTest {
 			Settings.nbSamples = Settings.nbSamples * 2;
 			system.startSystem();
 
-			for (int i = 0; i < 20 && !system.isPaused(); i++) {
-				Thread.sleep(500);
+			for (int i = 0; i < 10 && !system.isPaused(); i++) {
+				Thread.sleep(300);
 				try {
 					checkCondition2(system);
 					system.pause(true);
 					break outloop;
 				}
 				catch (AssertionError e) {
+
 				}
 			}
 
@@ -110,15 +113,15 @@ public class SimulatorTest {
 		checkCondition2(system);
 		system.pause(true);
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
-		theta_correct = system.getContent("theta_correct").toContinuous()
-				.getFunction();
-		theta_incorrect = system.getContent("theta_incorrect").toContinuous()
-				.getFunction();
-		theta_repeat = system.getContent("theta_repeat").toContinuous()
-				.getFunction();
-		log.debug("theta_correct " + theta_correct);
-		log.debug("theta_incorrect " + theta_incorrect);
-		log.debug("theta_repeat " + theta_repeat);
+		theta_correct =
+				system.getContent("theta_correct").toContinuous().getFunction();
+		theta_incorrect =
+				system.getContent("theta_incorrect").toContinuous().getFunction();
+		theta_repeat =
+				system.getContent("theta_repeat").toContinuous().getFunction();
+		log.fine("theta_correct " + theta_correct);
+		log.fine("theta_incorrect " + theta_incorrect);
+		log.fine("theta_repeat " + theta_repeat);
 		Settings.nbSamples = Settings.nbSamples / 2;
 	}
 
@@ -130,14 +133,14 @@ public class SimulatorTest {
 		assertTrue(str.contains("Do(Pick"));
 	}
 
-	private static void checkCondition2(DialogueSystem system) throws DialException {
+	private static void checkCondition2(DialogueSystem system) throws RuntimeException {
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
-		theta_correct = system.getContent("theta_correct").toContinuous()
-				.getFunction();
-		theta_incorrect = system.getContent("theta_incorrect").toContinuous()
-				.getFunction();
-		theta_repeat = system.getContent("theta_repeat").toContinuous()
-				.getFunction();
+		theta_correct =
+				system.getContent("theta_correct").toContinuous().getFunction();
+		theta_incorrect =
+				system.getContent("theta_incorrect").toContinuous().getFunction();
+		theta_repeat =
+				system.getContent("theta_repeat").toContinuous().getFunction();
 		assertEquals(2.0, theta_correct.getMean()[0], 0.5);
 		assertEquals(-2.0, theta_incorrect.getMean()[0], 1.5);
 		assertEquals(0.5, theta_repeat.getMean()[0], 0.7);

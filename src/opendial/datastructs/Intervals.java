@@ -23,14 +23,14 @@
 
 package opendial.datastructs;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 
 /**
  * Representation of a collection of intervals, each of which is associated with a
@@ -47,7 +47,7 @@ import opendial.arch.Logger;
 public class Intervals<T> {
 
 	// logger
-	public static Logger log = new Logger("Intervals", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the intervals
 	final Interval<T>[] intervals;
@@ -62,10 +62,10 @@ public class Intervals<T> {
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
 	 * @param table the tables from which to create the intervals
-	 * @throws DialException if the intervals could not be created
+	 * @throws RuntimeException if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Map<T, Double> table) throws DialException {
+	public Intervals(Map<T, Double> table) throws RuntimeException {
 
 		intervals = new Interval[table.size()];
 		int i = 0;
@@ -74,14 +74,14 @@ public class Intervals<T> {
 		for (T a : new ArrayList<T>(table.keySet())) {
 			double prob = table.get(a);
 			if (prob == Double.NaN) {
-				throw new DialException("probability is NaN: " + table);
+				throw new RuntimeException("probability is NaN: " + table);
 			}
 			intervals[i++] = new Interval<T>(a, total, total + prob);
 			total += prob;
 		}
 
 		if (total < 0.0001) {
-			throw new DialException("total prob is null: " + table);
+			throw new RuntimeException("total prob is null: " + table);
 		}
 		totalProb = total;
 	}
@@ -92,11 +92,11 @@ public class Intervals<T> {
 	 * 
 	 * @param content the collection of content objects
 	 * @param probs the function associating a weight to each object
-	 * @throws DialException if the intervals could not be created
+	 * @throws RuntimeException if the intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Collection<T> content, Function<T, Double> probs)
-			throws DialException {
+			throws RuntimeException {
 
 		intervals = new Interval[content.size()];
 		int i = 0;
@@ -105,14 +105,14 @@ public class Intervals<T> {
 		for (T a : content) {
 			double prob = probs.apply(a);
 			if (prob == Double.NaN) {
-				throw new DialException("probability is NaN: " + a);
+				throw new RuntimeException("probability is NaN: " + a);
 			}
 			intervals[i++] = new Interval<T>(a, total, total + prob);
 			total += prob;
 		}
 
 		if (total < 0.0001) {
-			throw new DialException("total prob is null: " + content);
+			throw new RuntimeException("total prob is null: " + content);
 		}
 		totalProb = total;
 	}
@@ -122,12 +122,12 @@ public class Intervals<T> {
 	 * procedure.
 	 * 
 	 * @return the sampled object
-	 * @throws DialException if the sampling could not be performed
+	 * @throws RuntimeException if the sampling could not be performed
 	 */
-	public T sample() throws DialException {
+	public T sample() throws RuntimeException {
 
 		if (intervals.length == 0) {
-			throw new DialException("could not sample: empty interval");
+			throw new RuntimeException("could not sample: empty interval");
 		}
 
 		double rand = sampler.nextDouble() * totalProb;
@@ -148,7 +148,7 @@ public class Intervals<T> {
 			}
 		}
 
-		throw new DialException("could not sample given the intervals: "
+		throw new RuntimeException("could not sample given the intervals: "
 				+ toString());
 
 	}

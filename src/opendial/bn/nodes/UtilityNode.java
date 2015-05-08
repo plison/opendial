@@ -23,13 +23,13 @@
 
 package opendial.bn.nodes;
 
+import java.util.logging.*;
+
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.Value;
@@ -44,7 +44,7 @@ import opendial.datastructs.Assignment;
 public class UtilityNode extends BNode {
 
 	// logger
-	public static Logger log = new Logger("UtilityNode", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the utility distribution
 	protected UtilityFunction distrib;
@@ -136,7 +136,7 @@ public class UtilityNode extends BNode {
 	 */
 	@Override
 	public Set<Value> getValues() {
-		return new HashSet<Value>();
+		return Collections.emptySet();
 	}
 
 	/**
@@ -175,10 +175,10 @@ public class UtilityNode extends BNode {
 	 * not its connection with other nodes.
 	 * 
 	 * @return the copy
-	 * @throws DialException if the node could not be copied
+	 * @throws RuntimeException if the node could not be copied
 	 */
 	@Override
-	public UtilityNode copy() throws DialException {
+	public UtilityNode copy() throws RuntimeException {
 		UtilityNode copy = new UtilityNode(nodeId, distrib.copy());
 		return copy;
 	}

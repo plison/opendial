@@ -23,9 +23,11 @@
 
 package opendial.gui.stateviewer;
 
+import java.util.logging.*;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,9 +35,12 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import opendial.arch.Logger;
+import opendial.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityFunction;
+import opendial.bn.values.Value;
+import opendial.datastructs.SpeechData;
+import opendial.modules.AudioModule;
 import opendial.state.DialogueState;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 
@@ -49,9 +54,11 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 		MouseListener {
 
 	// logger
-	public static Logger log = new Logger("GraphViewerPopupMenu", Logger.Level.DEBUG);
+	public final static Logger log = Logger.getLogger("OpenDial");
 
 	private StateViewer viewer;
+	List<String> speechVars;
+	AudioModule audio;
 
 	/**
 	 * Constructs the popup handler for the state viewer.
@@ -61,6 +68,9 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 	public PopupHandler(StateViewer viewer) {
 		super(InputEvent.BUTTON3_MASK);
 		this.viewer = viewer;
+		Settings settings = viewer.getSystem().getSettings();
+		speechVars = Arrays.asList(settings.userSpeech, settings.systemSpeech);
+		audio = viewer.getSystem().getModule(AudioModule.class);
 	}
 
 	/**
@@ -77,7 +87,8 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 
 		JPopupMenu popup = new JPopupMenu();
 		if (!pickedVertices.isEmpty() && state.hasChanceNodes(pickedVertices)) {
-			JMenuItem marginalItem = new JMenuItem("Calculate marginal distribution");
+			JMenuItem marginalItem =
+					new JMenuItem("Calculate marginal distribution");
 
 			marginalItem.addActionListener(ev -> {
 				MultivariateDistribution distrib = state.queryProb(pickedVertices);
@@ -97,14 +108,27 @@ public class PopupHandler extends AbstractPopupGraphMousePlugin implements
 
 			popup.add(distribItem);
 		}
+		if (pickedVertices.size() == 1 && speechVars.contains(pickedVertices.get(0))) {
+			JMenuItem playItem = new JMenuItem("Play sound");
+
+			playItem.addActionListener(ev -> {
+				String speechVar = pickedVertices.iterator().next();
+				Value v = viewer.getState().queryProb(speechVar).getBest();
+				if (audio != null && v instanceof SpeechData) {
+					audio.playSpeech((SpeechData) v);
+				}
+			});
+
+			popup.add(playItem);
+		}
 		if (!pickedVertices.isEmpty() && !state.getUtilityNodeIds().isEmpty()) {
 			JMenuItem utilityItem = new JMenuItem("Calculate utility");
 
 			utilityItem
 					.addActionListener(ev -> {
 
-						UtilityFunction result = viewer.getState().queryUtil(
-								pickedVertices);
+						UtilityFunction result =
+								viewer.getState().queryUtil(pickedVertices);
 						viewer.getStateMonitorTab().writeToLogArea(result);
 						resetPickedVertices();
 					});

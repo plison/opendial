@@ -23,10 +23,10 @@
 
 package opendial.readers;
 
+import java.util.logging.*;
+
 import java.util.Properties;
 
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -41,7 +41,7 @@ import org.w3c.dom.NodeList;
  */
 public class XMLSettingsReader {
 
-	public static Logger log = new Logger("XMLSettingsReader", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// ===================================
 	// TOP DOMAIN
@@ -59,7 +59,7 @@ public class XMLSettingsReader {
 			Properties mapping = extractMapping(XMLUtils.getMainNode(doc));
 			return mapping;
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("error extracting the settings: " + e);
 			return new Properties();
 		}

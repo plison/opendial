@@ -23,16 +23,15 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
 import java.util.Arrays;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
-import opendial.modules.core.ForwardPlanner;
+import opendial.modules.ForwardPlanner;
 import opendial.readers.XMLDomainReader;
 import opendial.state.StatePruner;
 import opendial.state.distribs.EquivalenceDistribution;
@@ -48,7 +47,7 @@ import org.junit.Test;
 public class RuleTest2 {
 
 	// logger
-	public static Logger log = new Logger("RuleTest2", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//domain2.xml";
 	public static final String domainFile2 = "test//domains//domain3.xml";
@@ -70,7 +69,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test() throws DialException, InterruptedException {
+	public void test() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		double eqFactor = EquivalenceDistribution.NONE_PROB;
@@ -110,7 +109,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test2() throws DialException, InterruptedException {
+	public void test2() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -145,7 +144,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test3() throws DialException, InterruptedException {
+	public void test3() throws RuntimeException, InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -174,7 +173,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test4() throws DialException, InterruptedException {
+	public void test4() throws RuntimeException, InterruptedException {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2);
 		DialogueSystem system2 = new DialogueSystem(domain2);
@@ -200,7 +199,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test5() throws DialException, InterruptedException {
+	public void test5() throws RuntimeException, InterruptedException {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile3);
 		DialogueSystem system2 = new DialogueSystem(domain2);
@@ -208,7 +207,7 @@ public class RuleTest2 {
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem();
 
-		// log.debug((new VariableElimination()).queryUtility(query));
+		// log.fine((new VariableElimination()).queryUtility(query));
 
 		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
 				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
@@ -226,7 +225,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test6() throws DialException {
+	public void test6() throws RuntimeException {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile4);
 		DialogueSystem system2 = new DialogueSystem(domain2);

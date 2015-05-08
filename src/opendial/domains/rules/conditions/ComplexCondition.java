@@ -23,13 +23,14 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.logging.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
@@ -44,7 +45,7 @@ import opendial.domains.rules.RuleGrounding;
 public final class ComplexCondition implements Condition {
 
 	// logger
-	static Logger log = new Logger("ComplexCondition", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the collection of subconditions
 	final Collection<Condition> subconditions;
@@ -162,8 +163,8 @@ public final class ComplexCondition implements Condition {
 
 				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
 				for (Assignment g : groundings.getAlternatives()) {
-					RuleGrounding newGround = cond.getGroundings(new Assignment(
-							input, g));
+					RuleGrounding newGround =
+							cond.getGroundings(new Assignment(input, g));
 					newGround.extend(g);
 					alternatives.add(newGround);
 				}

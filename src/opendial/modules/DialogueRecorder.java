@@ -21,17 +21,15 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.modules.core;
+package opendial.modules;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Settings;
-import opendial.modules.Module;
+import opendial.Settings;
 import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
@@ -52,7 +50,7 @@ import org.w3c.dom.Node;
 public class DialogueRecorder implements Module {
 
 	// logger
-	public static Logger log = new Logger("DialogueRecorder", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	Node rootNode;
 	Document doc;
@@ -77,7 +75,7 @@ public class DialogueRecorder implements Module {
 			doc.appendChild(doc.createElement("interaction"));
 			rootNode = XMLUtils.getMainNode(doc);
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not create dialogue recorder");
 		}
 	}
@@ -131,7 +129,7 @@ public class DialogueRecorder implements Module {
 				}
 			}
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("cannot record dialogue turn " + e);
 		}
 	}
@@ -163,11 +161,11 @@ public class DialogueRecorder implements Module {
 	 * @param recordFile the pathname for the file
 	 */
 	public void writeToFile(String recordFile) {
-		log.debug("recording interaction in file " + recordFile);
+		log.fine("recording interaction in file " + recordFile);
 		try {
 			XMLUtils.writeXMLDocument(doc, recordFile);
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			log.warning("could not create file " + recordFile);
 		}
 	}

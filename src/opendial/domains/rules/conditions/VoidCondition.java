@@ -23,12 +23,13 @@
 
 package opendial.domains.rules.conditions;
 
+import java.util.logging.*;
+
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
-import opendial.arch.Logger;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.RuleGrounding;
@@ -42,7 +43,7 @@ import opendial.domains.rules.RuleGrounding;
 public final class VoidCondition implements Condition {
 
 	// logger
-	static Logger log = new Logger("VoidCondition", Logger.Level.NORMAL);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	static VoidCondition instance;
 
@@ -82,7 +83,7 @@ public final class VoidCondition implements Condition {
 	 */
 	@Override
 	public Set<String> getSlots() {
-		return new HashSet<String>();
+		return Collections.emptySet();
 	}
 
 	/**

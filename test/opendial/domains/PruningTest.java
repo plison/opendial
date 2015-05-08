@@ -23,16 +23,16 @@
 
 package opendial.domains;
 
+import java.util.logging.*;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import opendial.DialogueSystem;
-import opendial.arch.DialException;
-import opendial.arch.Logger;
-import opendial.arch.Logger.Level;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -46,7 +46,7 @@ import org.junit.Test;
 public class PruningTest {
 
 	// logger
-	public static Logger log = new Logger("PruningTest", Logger.Level.DEBUG);
+	final static Logger log = Logger.getLogger("OpenDial");
 
 	public static final String domainFile = "test//domains//domain1.xml";
 
@@ -55,7 +55,6 @@ public class PruningTest {
 	static DialogueSystem system;
 
 	static {
-		MathUtils.log.setLevel(Level.DEBUG);
 		try {
 			domain = XMLDomainReader.extractDomain(domainFile);
 			inference = new InferenceChecks();
@@ -66,34 +65,34 @@ public class PruningTest {
 
 			system.startSystem();
 		}
-		catch (DialException e) {
+		catch (RuntimeException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Test
-	public void testPruning0() throws DialException, InterruptedException {
+	public void testPruning0() throws RuntimeException, InterruptedException {
 
 		assertEquals(15, system.getState().getNodeIds().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
 	}
 
 	@Test
-	public void testPruning1() throws DialException, InterruptedException {
+	public void testPruning1() throws RuntimeException, InterruptedException {
 
 		inference.checkProb(system.getState(), "a_u", "Greeting", 0.8);
 		inference.checkProb(system.getState(), "a_u", "None", 0.2);
 	}
 
 	@Test
-	public void testPruning2() throws DialException {
+	public void testPruning2() throws RuntimeException {
 
 		inference.checkProb(system.getState(), "i_u", "Inform", 0.7 * 0.8);
 		inference.checkProb(system.getState(), "i_u", "None", 1 - 0.7 * 0.8);
 	}
 
 	@Test
-	public void testPruning3() throws DialException {
+	public void testPruning3() throws RuntimeException {
 
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
@@ -102,7 +101,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning4() throws DialException {
+	public void testPruning4() throws RuntimeException {
 
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
 		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
@@ -112,7 +111,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning5() throws DialException {
+	public void testPruning5() throws RuntimeException {
 
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
 		inference.checkProb(system.getState(), "o2", "and value2 is over there",
@@ -122,7 +121,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning6() throws DialException, InterruptedException {
+	public void testPruning6() throws RuntimeException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 
@@ -141,7 +140,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning7() throws DialException, InterruptedException {
+	public void testPruning7() throws RuntimeException, InterruptedException {
 
 		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
@@ -150,7 +149,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning8() throws DialException, InterruptedException {
+	public void testPruning8() throws RuntimeException, InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 
@@ -165,8 +164,8 @@ public class PruningTest {
 
 		String greetNode = "";
 		String howareyouNode = "";
-		Set<Value> values = system.getState().getNode(createdNodes.first() + "")
-				.getValues();
+		Set<Value> values =
+				system.getState().getNode(createdNodes.first() + "").getValues();
 		if (values.contains(ValueFactory.create("Greet"))) {
 			greetNode = createdNodes.first();
 			howareyouNode = createdNodes.last();
