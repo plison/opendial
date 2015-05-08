@@ -25,7 +25,6 @@ package opendial.datastructs;
 
 import java.util.logging.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
@@ -70,7 +69,7 @@ public class Intervals<T> {
 		int i = 0;
 		double total = 0.0f;
 
-		for (T a : new ArrayList<T>(table.keySet())) {
+		for (T a : table.keySet()) {
 			double prob = table.get(a);
 			if (prob == Double.NaN) {
 				throw new RuntimeException("probability is NaN: " + table);

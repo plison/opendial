@@ -291,7 +291,7 @@ public class InferenceTest {
 						Arrays.asList("Action"),
 						new Assignment(new Assignment("JohnCalls"), new Assignment(
 								"MaryCalls"))).getUtil(
-						new Assignment("Action", "DoNothing")), 1.2);
+						new Assignment("Action", "DoNothing")), 1.5);
 
 		assertEquals(
 				-0.1667,

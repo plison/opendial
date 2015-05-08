@@ -24,10 +24,10 @@
 package opendial.domains.rules.effects;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -89,9 +89,10 @@ public final class Effect implements Value {
 	 * @param effects the effects to include
 	 */
 	public Effect(Collection<BasicEffect> effects) {
-		subeffects = new LinkedHashSet<BasicEffect>();
-		effects.stream().sorted((e1, e2) -> Boolean.compare(e1.negated, e2.negated))
-				.forEach(e -> subeffects.add(e));
+		List<BasicEffect> effectsList = new ArrayList<BasicEffect>(effects);
+		Collections.sort(effectsList,
+				(e1, e2) -> Boolean.compare(e1.negated, e2.negated));
+		subeffects = new LinkedHashSet<BasicEffect>(effectsList);
 	}
 
 	// ===================================

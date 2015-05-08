@@ -142,21 +142,19 @@ public class Simulator implements Module {
 		DialogueState systemState = system.getState();
 		final String outputVar = system.getSettings().systemOutput;
 		try {
-			synchronized (systemState) {
 
-				Value systemAction = ValueFactory.none();
-				if (systemState.hasChanceNode(outputVar)) {
-					systemAction = systemState.queryProb(outputVar).getBest();
-				}
+			Value systemAction = ValueFactory.none();
+			if (systemState.hasChanceNode(outputVar)) {
+				systemAction = systemState.queryProb(outputVar).getBest();
+			}
 
-				log.fine("Simulator input: " + systemAction);
-				boolean turnPerformed = performTurn(systemAction);
-				int repeat = 0;
-				while (!turnPerformed && repeat < 5
-						&& system.getModules().contains(this)) {
-					turnPerformed = performTurn(systemAction);
-					repeat++;
-				}
+			log.fine("Simulator input: " + systemAction);
+			boolean turnPerformed = performTurn(systemAction);
+			int repeat = 0;
+			while (!turnPerformed && repeat < 5
+					&& system.getModules().contains(this)) {
+				turnPerformed = performTurn(systemAction);
+				repeat++;
 			}
 		}
 		catch (RuntimeException e) {
