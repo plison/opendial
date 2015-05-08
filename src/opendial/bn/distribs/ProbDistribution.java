@@ -62,7 +62,8 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
 	 * @return the independent probability distribution on X.
-	 * @throws RuntimeException if the unconditional distribution could not be extracted
+	 * @throws RuntimeException if the unconditional distribution could not be
+	 *             extracted
 	 */
 	public IndependentProbDistribution getProbDistrib(Assignment condition)
 			throws RuntimeException;

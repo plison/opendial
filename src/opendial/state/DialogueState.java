@@ -289,7 +289,8 @@ public class DialogueState extends BNetwork {
 	 * @param newState the state to merge into the current state
 	 * @throws RuntimeException if the new dialogue state could not be merged
 	 */
-	public synchronized void addToState(DialogueState newState) throws RuntimeException {
+	public synchronized void addToState(DialogueState newState)
+			throws RuntimeException {
 		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}

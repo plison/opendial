@@ -179,7 +179,8 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		MultivariateTable extended = uncondDistrib.toDiscrete();
 		extended.extendRows(condition);
 		return new MarginalDistribution(condDistrib, extended);

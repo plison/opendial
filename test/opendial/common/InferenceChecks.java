@@ -231,7 +231,8 @@ public class InferenceChecks {
 	}
 
 	private void compareDistributions(MultivariateDistribution distrib1,
-			MultivariateDistribution distrib2, double margin) throws RuntimeException {
+			MultivariateDistribution distrib2, double margin)
+			throws RuntimeException {
 
 		Collection<Assignment> rows = distrib1.getValues();
 		for (Assignment value : rows) {

@@ -69,7 +69,8 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @throws RuntimeException if the inference process failed to deliver a result
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query) throws RuntimeException {
+	public MultivariateTable queryProb(Query.ProbQuery query)
+			throws RuntimeException {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();

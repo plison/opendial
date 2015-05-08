@@ -169,8 +169,8 @@ public class XMLStateReader {
 										getDirichlet(subnode));
 					}
 					else {
-						throw new RuntimeException("distribution is not recognised: "
-								+ distribType);
+						throw new RuntimeException(
+								"distribution is not recognised: " + distribType);
 					}
 
 				}
@@ -265,7 +265,8 @@ public class XMLStateReader {
 	 * @return the corresponding uniform PDF
 	 * @throws RuntimeException if the density function is not properly encoded
 	 */
-	private static UniformDensityFunction getUniform(Node node) throws RuntimeException {
+	private static UniformDensityFunction getUniform(Node node)
+			throws RuntimeException {
 		double min = Double.MAX_VALUE;
 		double max = Double.MAX_VALUE;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {

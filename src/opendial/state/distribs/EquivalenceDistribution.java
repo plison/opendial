@@ -170,7 +170,8 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * fixed input.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		return new MarginalDistribution(this, condition);
 	}
 

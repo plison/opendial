@@ -25,7 +25,6 @@ package opendial.bn.values;
 
 import java.util.logging.Logger;
 
-
 /**
  * Representation of a boolean value.
  * 

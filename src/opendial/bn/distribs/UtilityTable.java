@@ -211,8 +211,8 @@ public class UtilityTable implements UtilityFunction {
 
 		for (Assignment assignment : possibleAssignments) {
 			if (!table.containsKey(assignment)) {
-	//			log.warning("assignment " + assignment
-	//					+ " not defined in utility distribution");
+				// log.warning("assignment " + assignment
+				// + " not defined in utility distribution");
 				return false;
 			}
 		}

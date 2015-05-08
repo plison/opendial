@@ -181,8 +181,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 			table.get(condition).removeRow(head);
 		}
 		else {
-			log.fine("cannot remove row: condition " + condition
-					+ " is not present");
+			log.fine("cannot remove row: condition " + condition + " is not present");
 		}
 	}
 
@@ -313,7 +312,8 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @return the resulting probability distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);

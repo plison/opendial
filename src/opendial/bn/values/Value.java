@@ -23,7 +23,6 @@
 
 package opendial.bn.values;
 
-
 /**
  * Generic class for a variable value. The value can be:
  * <ol>

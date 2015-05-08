@@ -78,7 +78,8 @@ public interface InferenceAlgorithm {
 	 * @throws RuntimeException if the inference process failed to deliver a result
 	 */
 	public default MultivariateDistribution queryProb(BNetwork network,
-			Collection<String> queryVars, Assignment evidence) throws RuntimeException {
+			Collection<String> queryVars, Assignment evidence)
+			throws RuntimeException {
 		return queryProb(new Query.ProbQuery(network, queryVars, evidence));
 	}
 
@@ -152,7 +153,8 @@ public interface InferenceAlgorithm {
 	 * @throws RuntimeException if the inference process failed to deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network,
-			Collection<String> queryVars, Assignment evidence) throws RuntimeException {
+			Collection<String> queryVars, Assignment evidence)
+			throws RuntimeException {
 		return queryUtil(new Query.UtilQuery(network, queryVars, evidence));
 	}
 

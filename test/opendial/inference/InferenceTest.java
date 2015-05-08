@@ -61,8 +61,9 @@ public class InferenceTest {
 
 	public static void main(String[] args) throws RuntimeException {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		log.info(""+(new VariableElimination()).queryProb(bn,
-				Arrays.asList("Burglary"), new Assignment(new Assignment(
+		log.info(""
+				+ (new VariableElimination()).queryProb(bn, Arrays
+						.asList("Burglary"), new Assignment(new Assignment(
 						"JohnCalls", true), new Assignment("MaryCalls", false))));
 	}
 

@@ -133,7 +133,8 @@ public class SimulatorTest {
 		assertTrue(str.contains("Do(Pick"));
 	}
 
-	private static void checkCondition2(DialogueSystem system) throws RuntimeException {
+	private static void checkCondition2(DialogueSystem system)
+			throws RuntimeException {
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct =
 				system.getContent("theta_correct").toContinuous().getFunction();

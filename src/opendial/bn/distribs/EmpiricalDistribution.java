@@ -150,7 +150,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * @return the compatible sample
 	 * @throws RuntimeException if no samples are consistent with the evidence.
 	 */
-	public Assignment getCompatibleSample(Assignment evidence) throws RuntimeException {
+	public Assignment getCompatibleSample(Assignment evidence)
+			throws RuntimeException {
 		for (int i = 0; i < 10; i++) {
 			Assignment sampled = sample();
 			if (sampled.consistentWith(evidence)) {

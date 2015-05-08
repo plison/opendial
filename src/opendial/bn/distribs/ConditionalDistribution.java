@@ -161,7 +161,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the condition
 	 * @return the sampled assignment
-	 * @throws RuntimeException if the sample could not be extracted given the condition
+	 * @throws RuntimeException if the sample could not be extracted given the
+	 *             condition
 	 */
 	@Override
 	public Value sample(Assignment condition) throws RuntimeException {
@@ -236,7 +237,8 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);

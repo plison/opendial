@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
-
 /**
  * Representation of a collection of intervals, each of which is associated with a
  * content object, and start and end values. The difference between the start and end

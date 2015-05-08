@@ -132,8 +132,8 @@ public class Settings {
 		explicitSettings.clear();
 		selectAudioMixers();
 
-		System.getProperties().setProperty("java.util.logging.SimpleFormatter.format", 
-				"[%3$s] %4$s: %5$s %n");
+		System.getProperties().setProperty(
+				"java.util.logging.SimpleFormatter.format", "[%3$s] %4$s: %5$s %n");
 
 	}
 

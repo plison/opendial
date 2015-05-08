@@ -78,7 +78,7 @@ public class DialogueSystem {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
-	
+
 	// the dialogue state
 	protected DialogueState curState;
 
@@ -107,7 +107,7 @@ public class DialogueSystem {
 	 * @throws RuntimeException if the system could not be created
 	 */
 	public DialogueSystem() throws RuntimeException {
-		
+
 		settings = new Settings();
 		curState = new DialogueState();
 
@@ -118,7 +118,7 @@ public class DialogueSystem {
 		modules.add(new RemoteConnector(this));
 		modules.add(new ForwardPlanner(this));
 		domain = new Domain();
-		
+
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class DialogueSystem {
 			return Collections.emptySet();
 		}
 	}
- 
+
 	/**
 	 * Adds the content (expressed as a pair of variable=value) to the current
 	 * dialogue state, and subsequently updates the dialogue state.

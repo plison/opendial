@@ -331,8 +331,8 @@ public class BNetworkStructureTest {
 
 	/**
 	 * @throws RuntimeException
-	 * @Test public void derivedActionNodes () throws RuntimeException { BNetwork bn =
-	 *       NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
+	 * @Test public void derivedActionNodes () throws RuntimeException { BNetwork bn
+	 *       = NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
 	 *       NetworkExamples.constructBasicNetwork3();
 	 *       assertTrue(bn2.getActionNode("Action") instanceof ActionNode);
 	 *       assertEquals(2,

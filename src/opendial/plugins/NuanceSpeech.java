@@ -119,7 +119,8 @@ public class NuanceSpeech implements Module {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
-			throw new RuntimeException("Nuance connection requires access to the GUI");
+			throw new RuntimeException(
+					"Nuance connection requires access to the GUI");
 		}
 		ttsCache = new HashMap<String, SpeechData>();
 	}
@@ -202,7 +203,7 @@ public class NuanceSpeech implements Module {
 
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
-				log.info("(speech could not be recognised)");
+				log.warning("(speech could not be recognised)");
 			}
 			else {
 				BufferedReader reader =

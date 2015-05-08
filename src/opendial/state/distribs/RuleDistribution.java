@@ -124,7 +124,8 @@ public class RuleDistribution implements ProbDistribution {
 	 * @throws RuntimeException if the distribution could not be calculated.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition) throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition)
+			throws RuntimeException {
 		return new MarginalDistribution(this, condition);
 	}
 

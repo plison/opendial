@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Value that is defined as a set of values.
  * 

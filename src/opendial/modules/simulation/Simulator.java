@@ -130,7 +130,8 @@ public class Simulator implements Module {
 		}
 	}
 
-	private static Domain extractDomain(String simulatorDomain) throws RuntimeException {
+	private static Domain extractDomain(String simulatorDomain)
+			throws RuntimeException {
 		if (simulatorDomain == null) {
 			throw new RuntimeException("Required parameter: simulatorDomain");
 		}

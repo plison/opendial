@@ -166,7 +166,8 @@ public class LikelihoodWeighting {
 	 * @param n the chance node to sample
 	 * @throws RuntimeException if the sampling operation failed
 	 */
-	private void sampleChanceNode(ChanceNode n, Sample sample) throws RuntimeException {
+	private void sampleChanceNode(ChanceNode n, Sample sample)
+			throws RuntimeException {
 
 		String id = n.getId();
 		// if the node is chance node and not evidence, sample from the values

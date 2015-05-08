@@ -23,8 +23,6 @@
 
 package opendial.domains;
 
-import java.util.logging.*;
-
 import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
@@ -39,8 +37,6 @@ import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.readers.XMLDomainReader;
 import opendial.state.DialogueState;
-import opendial.utils.MathUtils;
-
 import org.junit.Test;
 
 public class PruningTest {

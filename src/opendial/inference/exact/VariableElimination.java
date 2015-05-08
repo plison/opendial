@@ -74,7 +74,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @throws RuntimeException if the inference operation failed
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query) throws RuntimeException {
+	public MultivariateTable queryProb(Query.ProbQuery query)
+			throws RuntimeException {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
 		return new MultivariateTable(queryFactor.getProbMatrix());
