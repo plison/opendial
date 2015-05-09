@@ -90,7 +90,8 @@ public final class Effect implements Value {
 	 */
 	public Effect(Collection<BasicEffect> effects) {
 		List<BasicEffect> effectsList = new ArrayList<BasicEffect>(effects);
-		Collections.sort(effectsList, (e1,e2) -> Boolean.compare(e1.negated, e2.negated));
+		Collections.sort(effectsList,
+				(e1, e2) -> Boolean.compare(e1.negated, e2.negated));
 		subeffects = new LinkedHashSet<BasicEffect>(effectsList);
 	}
 

@@ -170,7 +170,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 
 		T subdistrib = table.get(trimmed);
-		if (subdistrib!= null) {
+		if (subdistrib != null) {
 			return subdistrib.sample();
 		}
 

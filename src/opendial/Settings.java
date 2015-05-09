@@ -132,6 +132,7 @@ public class Settings {
 		explicitSettings.clear();
 		selectAudioMixers();
 
+		// formatter for the system logs
 		System.getProperties().setProperty(
 				"java.util.logging.SimpleFormatter.format", "[%3$s] %4$s: %5$s %n");
 

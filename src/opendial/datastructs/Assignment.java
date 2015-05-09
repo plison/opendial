@@ -627,7 +627,7 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
-		Map<String,Value> submap = new HashMap<String,Value>(map);
+		Map<String, Value> submap = new HashMap<String, Value>(map);
 		submap.keySet().retainAll(variables);
 		return new Assignment(submap);
 	}
