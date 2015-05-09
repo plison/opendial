@@ -615,7 +615,7 @@ public class DialogueSystem {
 	 * 
 	 * @return the set of updated variables
 	 */
-	public Set<String> update() {
+	private Set<String> update() {
 
 		// set of variables that have been updated
 		Set<String> updatedVars = new HashSet<String>();
