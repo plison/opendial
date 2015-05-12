@@ -131,7 +131,7 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(labelTemplate.getRawString(),
+		return new BasicCondition(labelTemplate.getRawString() + "'",
 				valueTemplate.getRawString(), r);
 	}
 

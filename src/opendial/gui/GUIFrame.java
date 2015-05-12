@@ -24,7 +24,6 @@
 package opendial.gui;
 
 import java.util.logging.*;
-
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
@@ -37,9 +36,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 /**
  * Main GUI frame for the OpenDial toolkit, encompassing various tabs and menus to

@@ -35,13 +35,13 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.gui.GUIFrame;
 import opendial.modules.examples.WizardControl;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
-import opendial.state.DialogueState;
 
 import org.junit.Test;
 

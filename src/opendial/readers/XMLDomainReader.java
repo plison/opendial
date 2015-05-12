@@ -24,17 +24,16 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.io.File;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import opendial.DialogueState;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;

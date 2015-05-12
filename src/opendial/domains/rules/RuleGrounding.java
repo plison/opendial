@@ -140,6 +140,9 @@ public class RuleGrounding {
 	 * @param assign the new assignment
 	 */
 	public void extend(Assignment assign) {
+		if (assign.isEmpty()) {
+			return;
+		}
 		groundings.stream().forEach(g -> g.addAssignment(assign));
 	}
 

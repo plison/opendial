@@ -21,10 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state.distribs;
+package opendial.domains.rules.distribs;
 
 import java.util.logging.*;
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;

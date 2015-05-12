@@ -62,6 +62,9 @@ public final class Effect implements Value {
 	// "equivalent" condition (inverse view)
 	Condition equivalentCondition;
 
+	// whether the effect is fully grounded or not
+	final boolean fullyGrounded;
+
 	// ===================================
 	// EFFECT CONSTRUCTION
 	// ===================================
@@ -72,6 +75,7 @@ public final class Effect implements Value {
 	 */
 	public Effect() {
 		subeffects = new HashSet<BasicEffect>();
+		fullyGrounded = true;
 	}
 
 	/**
@@ -81,6 +85,7 @@ public final class Effect implements Value {
 	 */
 	public Effect(BasicEffect effect) {
 		subeffects = new HashSet<BasicEffect>(Arrays.asList(effect));
+		fullyGrounded = !effect.containsSlots();
 	}
 
 	/**
@@ -93,20 +98,22 @@ public final class Effect implements Value {
 		Collections.sort(effectsList,
 				(e1, e2) -> Boolean.compare(e1.negated, e2.negated));
 		subeffects = new LinkedHashSet<BasicEffect>(effectsList);
+		fullyGrounded = subeffects.stream().allMatch(e -> !e.containsSlots());
+	}
+
+	/**
+	 * Creates a new complex effect with a collection of existing effects
+	 * 
+	 * @param effects the effects to include
+	 */
+	public Effect(Effect... effects) {
+		this(Arrays.stream(effects).flatMap(e -> e.getSubEffects().stream())
+				.collect(Collectors.toList()));
 	}
 
 	// ===================================
 	// GETTERS
 	// ===================================
-
-	/**
-	 * Returns true if the effect is fully grounded, and false otherwise
-	 * 
-	 * @return true if fully grounded, false otherwise
-	 */
-	public boolean isFullyGrounded() {
-		return subeffects.stream().allMatch(e -> !e.containsSlots());
-	}
 
 	/**
 	 * Returns all the sub-effect included in the complex effect
@@ -124,7 +131,7 @@ public final class Effect implements Value {
 	 * @return the resulting grounded effect
 	 */
 	public Effect ground(Assignment grounding) {
-		if (isFullyGrounded()) {
+		if (fullyGrounded) {
 			return this;
 		}
 		List<BasicEffect> grounded =
@@ -251,11 +258,13 @@ public final class Effect implements Value {
 			else if (conditions.size() == 1) {
 				equivalentCondition = conditions.get(0);
 			}
+			else if (getOutputVariables().size() == 1) {
+				equivalentCondition =
+						new ComplexCondition(conditions, BinaryOperator.OR);
+			}
 			else {
 				equivalentCondition =
-						new ComplexCondition(conditions, (this.getOutputVariables()
-								.size() == 1) ? BinaryOperator.OR
-								: BinaryOperator.AND);
+						new ComplexCondition(conditions, BinaryOperator.AND);
 			}
 		}
 		return equivalentCondition;

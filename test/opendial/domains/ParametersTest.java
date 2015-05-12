@@ -151,7 +151,7 @@ public class ParametersTest {
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
 		Assignment input =
 				new Assignment("theta_4", ValueFactory.create("[0.36, 0.64]"));
-		assertEquals(0.64, outputs.getParameter(o).getParameterValue(input), 0.01);
+		assertEquals(0.64, outputs.getParameter(o).getValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
@@ -179,7 +179,7 @@ public class ParametersTest {
 		assertTrue(outputs.getParameter(o) instanceof SingleParameter);
 		Assignment input =
 				new Assignment("theta_5", ValueFactory.create("[0.36, 0.24, 0.40]"));
-		assertEquals(0.36, outputs.getParameter(o).getParameterValue(input), 0.01);
+		assertEquals(0.36, outputs.getParameter(o).getValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
@@ -218,7 +218,7 @@ public class ParametersTest {
 		Assignment input =
 				new Assignment(new Assignment("theta_6", 2.1), new Assignment(
 						"theta_7", 1.3));
-		assertEquals(3.4, outputs.getParameter(o).getParameterValue(input), 0.01);
+		assertEquals(3.4, outputs.getParameter(o).getValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());

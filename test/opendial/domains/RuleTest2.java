@@ -31,10 +31,10 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.distribs.EquivalenceDistribution;
 import opendial.modules.ForwardPlanner;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.StatePruner;
-import opendial.state.distribs.EquivalenceDistribution;
 
 import org.junit.Test;
 

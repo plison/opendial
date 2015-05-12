@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
@@ -40,7 +41,6 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -35,13 +35,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import opendial.DialogueState;
 import opendial.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.bn.values.Value;
 import opendial.datastructs.SpeechData;
 import opendial.modules.AudioModule;
-import opendial.state.DialogueState;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 
 /**

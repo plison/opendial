@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
@@ -48,12 +47,12 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.distribs.AnchoredRule;
+import opendial.domains.rules.distribs.EquivalenceDistribution;
+import opendial.domains.rules.distribs.OutputDistribution;
 import opendial.inference.SwitchingAlgorithm;
 import opendial.inference.approximate.SamplingAlgorithm;
-import opendial.state.distribs.EquivalenceDistribution;
-import opendial.state.distribs.OutputDistribution;
-import opendial.state.distribs.RuleDistribution;
-import opendial.state.distribs.RuleUtilDistribution;
+import opendial.modules.StatePruner;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -540,41 +539,23 @@ public class DialogueState extends BNetwork {
 		return newVars;
 	}
 
+	/**
+	 * Returns true if the given variable is in incremental mode, false otherwise
+	 * 
+	 * @param var the variable label
+	 * @return true if the variable is incremental, false otherwise
+	 */
 	public boolean isIncremental(String var) {
 		return incrementalVars.contains(var.replace("'", ""));
 	}
 
 	/**
-	 * Returns all rule nodes in the dialogue state (both probability and utility
-	 * rules)
+	 * Returns the set of state variables that are in incremental mode
 	 * 
-	 * @return the set of identifiers for the rule nodes
+	 * @return the set of incremental variables
 	 */
-	public Set<String> getRuleNodeIds() {
-		return getNodeIds().stream().filter(i -> isRuleNode(i))
-				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Returns true if the node identifier refers to a rule node, and false otherwise
-	 * 
-	 * @param id the node identifier
-	 * @return true if the node with identifier id is a (probability or utility) rule
-	 *         node
-	 */
-	public boolean isRuleNode(String id) {
-		if (hasNode(id)) {
-			BNode n = getNode(id);
-			if ((n instanceof ChanceNode)
-					&& ((ChanceNode) n).getDistrib() instanceof RuleDistribution) {
-				return true;
-			}
-			else if (n instanceof UtilityNode
-					&& ((UtilityNode) n).getFunction() instanceof RuleUtilDistribution) {
-				return true;
-			}
-		}
-		return false;
+	public Set<String> getIncrementalVars() {
+		return incrementalVars;
 	}
 
 	// ===================================
@@ -676,7 +657,7 @@ public class DialogueState extends BNetwork {
 		}
 
 		ChanceNode ruleNode = new ChanceNode(ruleId);
-		ruleNode.setDistrib(new RuleDistribution(arule));
+		ruleNode.setDistrib(arule);
 		ruleNode.getValues();
 
 		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
@@ -723,7 +704,7 @@ public class DialogueState extends BNetwork {
 			removeNode(ruleId);
 		}
 		UtilityNode ruleNode = new UtilityNode(ruleId);
-		ruleNode.setDistrib(new RuleUtilDistribution(arule));
+		ruleNode.setDistrib(arule);
 		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);

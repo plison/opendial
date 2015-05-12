@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -38,7 +39,6 @@ import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
-import opendial.state.DialogueState;
 
 /**
  * Online forward planner for OpenDial. The planner constructs a lookahead tree (with

@@ -138,7 +138,7 @@ public class BasicEffect {
 	 */
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(variableLabel, variableValue, r);
+		return new BasicCondition(variableLabel + "'", variableValue, r);
 	}
 
 	/**

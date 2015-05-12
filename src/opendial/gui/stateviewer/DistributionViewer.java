@@ -24,7 +24,6 @@
 package opendial.gui.stateviewer;
 
 import java.util.logging.*;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -40,13 +39,13 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import opendial.DialogueState;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
-import opendial.state.DialogueState;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

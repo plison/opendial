@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -39,7 +40,6 @@ import opendial.datastructs.Assignment;
 import opendial.inference.Query;
 import opendial.inference.approximate.Sample;
 import opendial.inference.approximate.SamplingAlgorithm;
-import opendial.state.DialogueState;
 
 /**
  * Module employed to update parameters when provided with gold-standard actions from

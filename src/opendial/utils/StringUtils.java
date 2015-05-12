@@ -301,6 +301,31 @@ public class StringUtils {
 	}
 
 	/**
+	 * Checks whether the string could possibly represent a regular expression (this
+	 * is just a first, fast guess, which will need to be verified by actually
+	 * constructing the regex using the constructRegex method below).
+	 * 
+	 * @param str the string
+	 * @return true if the string is likely to be a regular expression, else false
+	 */
+	public static boolean isPossibleRegex(String str) {
+		for (int i = 0; i < str.length(); i++) {
+			switch (str.charAt(i)) {
+			case '*':
+				return true;
+			case '{':
+				return true;
+			case '|':
+			case '?':
+				return true;
+			default:
+				break;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Formats the regular expression corresponding to the provided string
 	 * 
 	 * @param init the initial string

@@ -24,18 +24,17 @@
 package opendial.gui;
 
 import java.util.logging.*;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Scanner;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**

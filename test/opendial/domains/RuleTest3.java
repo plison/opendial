@@ -37,8 +37,8 @@ import opendial.common.InferenceChecks;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.modules.ForwardPlanner;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.StatePruner;
 
 import org.junit.Test;
 

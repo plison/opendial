@@ -24,15 +24,15 @@
 package opendial.domains.rules.parameters;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import opendial.bn.values.DoubleVal;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 
@@ -77,17 +77,26 @@ public class ComplexParameter implements Parameter {
 	 * of values to the unknown parameters.
 	 */
 	@Override
-	public double getParameterValue(Assignment input) {
+	public double getValue(Assignment input) {
 		if (template.isFilledBy(input)) {
-			Map<String, Double> valueMap =
-					input.getEntrySet()
-							.stream()
-							.filter(e -> e.getValue() instanceof DoubleVal)
-							.collect(
-									Collectors.toMap(e -> e.getKey(),
-											e -> ((DoubleVal) e.getValue())
-													.getDouble()));
-			return expression.setVariables(valueMap).evaluate();
+			Map<String, Double> valueMap = new HashMap<String, Double>();
+			for (String var : input.getVariables()) {
+				Value v = input.getValue(var);
+				if (v instanceof DoubleVal) {
+					valueMap.put(var, ((DoubleVal) v).getDouble());
+				}
+				else {
+					valueMap.put(var, 0.0);
+				}
+			}
+			try {
+				return expression.setVariables(valueMap).evaluate();
+			}
+			catch (IllegalArgumentException e) {
+				log.warning("problem grounding template " + template + " with "
+						+ input);
+				return getValue(input);
+			}
 		}
 		else {
 			log.warning("cannot evaluate parameter " + this + " given " + input);
@@ -104,7 +113,7 @@ public class ComplexParameter implements Parameter {
 	 */
 	public Parameter ground(Assignment input) {
 		if (template.isFilledBy(input)) {
-			return new FixedParameter(getParameterValue(input));
+			return new FixedParameter(getValue(input));
 		}
 		else {
 			return new ComplexParameter(template.fillSlots(input).toString(),

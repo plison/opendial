@@ -200,13 +200,10 @@ public class BNetworkStructureTest {
 		assertTrue(((ConditionalTable) a.getDistrib()).isWellFormed());
 
 		UtilityNode v = bn.getUtilityNode("Util1");
-		assertTrue(v.getFunction().isWellFormed());
 		v.removeUtility(new Assignment(new Assignment("Burglary", false), "Action",
 				ValueFactory.create("CallPolice")));
-		assertFalse(v.getFunction().isWellFormed());
 		v.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
 				ValueFactory.create("CallPolice")), 100f);
-		assertTrue(v.getFunction().isWellFormed());
 	}
 
 	@Test

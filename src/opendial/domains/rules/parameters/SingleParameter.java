@@ -92,7 +92,7 @@ public class SingleParameter implements Parameter {
 	 * @return the actual value for the parameter
 	 */
 	@Override
-	public double getParameterValue(Assignment input) {
+	public double getValue(Assignment input) {
 		Value value = input.getValue(paramId);
 		if (input.containsVar(paramId) && value instanceof DoubleVal) {
 			return ((DoubleVal) input.getValue(paramId)).getDouble();

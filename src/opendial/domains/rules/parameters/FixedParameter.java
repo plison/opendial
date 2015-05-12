@@ -57,7 +57,7 @@ public class FixedParameter implements Parameter {
 	 * 
 	 * @return the value for the parameter
 	 */
-	public double getParameterValue() {
+	public double getValue() {
 		return param;
 	}
 
@@ -67,8 +67,8 @@ public class FixedParameter implements Parameter {
 	 * @return the value for the parameter
 	 */
 	@Override
-	public double getParameterValue(Assignment input) {
-		return getParameterValue();
+	public double getValue(Assignment input) {
+		return param;
 	}
 
 	/**

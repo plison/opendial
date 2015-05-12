@@ -43,18 +43,17 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.distribs.AnchoredRule;
 import opendial.gui.GUIFrame;
 import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
 import opendial.modules.WizardLearner;
-import opendial.state.AnchoredRule;
-import opendial.state.DialogueState;
-import opendial.state.distribs.RuleUtilDistribution;
 
 /**
  * Module employed in the "Wizard-of-Oz" interaction mode. The module extracts all
@@ -133,9 +132,8 @@ public class WizardControl implements Module {
 		// directly select the action
 		if (state.getUtilityNodes().size() == 1) {
 			UtilityNode urnode = state.getUtilityNodes().stream().findFirst().get();
-			if (urnode.getFunction() instanceof RuleUtilDistribution) {
-				AnchoredRule arule =
-						((RuleUtilDistribution) urnode.getFunction()).getAnchor();
+			if (urnode.getFunction() instanceof AnchoredRule) {
+				AnchoredRule arule = (AnchoredRule) urnode.getFunction();
 				if (arule.getInputRange().linearise().size() == 1
 						&& arule.getParameters().isEmpty()) {
 					system.getModule(ForwardPlanner.class).trigger(state,

@@ -24,8 +24,8 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -270,7 +270,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 */
 	@Override
 	public IndependentProbDistribution getMarginal(String var) {
-		if (sample().getTrimmed(var).containContinuousValues()
+		if (sample().getTrimmed(Arrays.asList(var)).containContinuousValues()
 				&& samples.stream().distinct().limit(5).count() == 5) {
 			return this.createContinuousDistribution(var);
 		}

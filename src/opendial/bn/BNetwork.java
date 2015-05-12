@@ -23,7 +23,6 @@
 package opendial.bn;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +35,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -400,6 +400,28 @@ public class BNetwork {
 	 */
 	public Set<String> getChanceNodeIds() {
 		return chanceNodes.keySet();
+	}
+
+	/**
+	 * Returns the collection of node identifiers currently in the network and that
+	 * have a distribution or utility function of a certain class
+	 * 
+	 * @param cls the class of the distribution
+	 * @return the collection of identifiers of chance nodes
+	 */
+	public <T extends ProbDistribution> Set<String> getNodeIds(Class<T> cls) {
+		Set<String> ids = new HashSet<String>();
+		for (ChanceNode cn : chanceNodes.values()) {
+			if (cls.isInstance(cn.getDistrib())) {
+				ids.add(cn.getId());
+			}
+		}
+		for (UtilityNode un : utilityNodes.values()) {
+			if (cls.isInstance(un.getFunction())) {
+				ids.add(un.getId());
+			}
+		}
+		return ids;
 	}
 
 	/**

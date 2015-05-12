@@ -25,7 +25,7 @@ package opendial.modules;
 
 import java.util.Collection;
 
-import opendial.state.DialogueState;
+import opendial.DialogueState;
 
 /**
  * Representation of a system module. A module is connected to the dialogue system

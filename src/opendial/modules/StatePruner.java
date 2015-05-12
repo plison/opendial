@@ -21,10 +21,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.state;
+package opendial.modules;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import opendial.DialogueState;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.MarginalDistribution;
@@ -41,9 +41,9 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.distribs.AnchoredRule;
+import opendial.domains.rules.distribs.EquivalenceDistribution;
 import opendial.inference.SwitchingAlgorithm;
-import opendial.state.distribs.EquivalenceDistribution;
-import opendial.state.distribs.RuleDistribution;
 
 /**
  * Prunes the dialogue state by removing all intermediary nodes (that is, rule nodes,
@@ -119,7 +119,7 @@ public class StatePruner {
 					|| node.getId().endsWith("^o")) {
 				continue;
 			}
-			else if (ENABLE_PRUNING & node.getDistrib() instanceof RuleDistribution) {
+			else if (ENABLE_PRUNING & node.getDistrib() instanceof AnchoredRule) {
 				continue;
 			}
 			else if (node.getInputNodeIds().size() < 3
@@ -147,7 +147,7 @@ public class StatePruner {
 			if (state.getParameterIds().contains(node.getId())
 					&& !node.hasDescendant(state.getEvidence().getVariables())) {
 				node.getOutputNodes(ChanceNode.class).stream()
-						.filter(n -> n.getDistrib() instanceof RuleDistribution)
+						.filter(n -> n.getDistrib() instanceof AnchoredRule)
 						.forEach(n -> nodesToKeep.add(n.getId()));
 			}
 		}
@@ -204,7 +204,8 @@ public class StatePruner {
 
 		}
 		// if some rule nodes are included
-		else if (!Collections.disjoint(nodesToKeep, state.getRuleNodeIds())) {
+		else if (!Collections.disjoint(nodesToKeep,
+				state.getNodeIds(AnchoredRule.class))) {
 			return reduce_light(state, nodesToKeep);
 		}
 
@@ -217,7 +218,7 @@ public class StatePruner {
 				clique.retainAll(nodesToKeep);
 				DialogueState cliqueState = reduce(state, clique);
 				fullState.addNetwork(cliqueState);
-				fullState.addEvidence(cliqueState.evidence);
+				fullState.addEvidence(cliqueState.getEvidence());
 			}
 			return fullState;
 		}
@@ -240,7 +241,7 @@ public class StatePruner {
 	private static DialogueState reduce_light(DialogueState state,
 			Collection<String> nodesToKeep) throws RuntimeException {
 
-		DialogueState newState = new DialogueState(state, state.evidence);
+		DialogueState newState = new DialogueState(state, state.getEvidence());
 		for (ChanceNode node : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 
 			if (!nodesToKeep.contains(node.getId())) {
@@ -319,7 +320,7 @@ public class StatePruner {
 			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
 					&& !node.getOutputNodes().isEmpty()
 					&& reduced.getUtilityNodeIds().isEmpty()
-					&& reduced.incrementalVars.isEmpty()) {
+					&& reduced.getIncrementalVars().isEmpty()) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
 					ProbDistribution curDistrib = outputNode.getDistrib();

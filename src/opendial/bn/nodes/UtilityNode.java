@@ -111,7 +111,7 @@ public class UtilityNode extends BNode {
 	@Override
 	public void setId(String newId) {
 		super.setId(newId);
-		distrib.modifyVarId(this.nodeId, newId);
+		distrib.modifyVariableId(this.nodeId, newId);
 	}
 
 	// ===================================
@@ -126,7 +126,7 @@ public class UtilityNode extends BNode {
 	 * @return the associated utility
 	 */
 	public double getUtility(Assignment input) {
-		return distrib.getUtil(new Assignment(input));
+		return distrib.getUtil(input);
 	}
 
 	/**

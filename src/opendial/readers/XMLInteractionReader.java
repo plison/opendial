@@ -24,13 +24,12 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.DialogueState;
 import opendial.datastructs.Assignment;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;

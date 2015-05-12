@@ -52,6 +52,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.Settings;
 import opendial.Settings.Recording;
@@ -63,7 +64,6 @@ import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
-import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 import opendial.utils.XMLUtils;
 

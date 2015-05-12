@@ -57,28 +57,28 @@ public class SimulatorTest {
 		Domain simDomain2 = XMLDomainReader.extractDomain(simDomain);
 		Simulator sim = new Simulator(system, simDomain2);
 		int nbSamples = Settings.nbSamples;
-		Settings.nbSamples = nbSamples / 10;
+		Settings.nbSamples = nbSamples / 5;
 		system.attachModule(sim);
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
 
 		String str = "";
-		for (int i = 0; i < 30 && !system.isPaused(); i++) {
-			Thread.sleep(250);
+		for (int i = 0; i < 40 && system.getModule(Simulator.class) != null; i++) {
+			Thread.sleep(200);
 			str = system.getModule(DialogueRecorder.class).getRecord();
 			try {
 				checkCondition(str);
-				system.pause(true);
+				system.detachModule(Simulator.class);
 			}
 			catch (AssertionError e) {
 			}
 		}
 
 		checkCondition(str);
-		system.pause(true);
+		system.detachModule(Simulator.class);
 
-		Settings.nbSamples = nbSamples * 10;
+		Settings.nbSamples = nbSamples * 5;
 	}
 
 	@Test
@@ -97,11 +97,11 @@ public class SimulatorTest {
 			Settings.nbSamples = Settings.nbSamples * 2;
 			system.startSystem();
 
-			for (int i = 0; i < 10 && !system.isPaused(); i++) {
-				Thread.sleep(300);
+			for (int i = 0; i < 10 && system.getModule(Simulator.class) != null; i++) {
+				Thread.sleep(100);
 				try {
 					checkCondition2(system);
-					system.pause(true);
+					system.detachModule(Simulator.class);
 					break outloop;
 				}
 				catch (AssertionError e) {
@@ -111,7 +111,7 @@ public class SimulatorTest {
 
 		}
 		checkCondition2(system);
-		system.pause(true);
+		system.detachModule(Simulator.class);
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct =
 				system.getContent("theta_correct").toContinuous().getFunction();

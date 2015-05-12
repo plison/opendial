@@ -24,13 +24,9 @@
 package opendial.domains.rules;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,10 +61,6 @@ public class Rule {
 
 	RuleType ruleType;
 
-	// cache with the outputs for a given assignment
-	public static final int MAX_CACHE_SIZE = 500;
-	Map<Assignment, RuleOutput> cache;
-
 	// ===================================
 	// RULE CONSTRUCTION
 	// ===================================
@@ -84,8 +76,6 @@ public class Rule {
 		this.id = id;
 		this.ruleType = ruleType;
 		cases = new ArrayList<RuleCase>();
-		cache = new HashMap<Assignment, RuleOutput>(10);
-		cache = Collections.synchronizedMap(cache);
 	}
 
 	/**
@@ -99,6 +89,7 @@ public class Rule {
 			log.warning("new case for rule " + id
 					+ " is unreachable (previous case is trivially true)");
 		}
+		newCase.rule = this;
 		cases.add(newCase);
 	}
 
@@ -110,7 +101,7 @@ public class Rule {
 	public void setPriority(int priority) {
 		List<RuleCase> newCases = new ArrayList<RuleCase>();
 		for (RuleCase c : cases) {
-			RuleCase newCase = new RuleCase(c.getCondition());
+			RuleCase newCase = new RuleCase(this, c.getCondition());
 			for (Effect e : c.getEffects()) {
 				Parameter param = c.getParameter(e);
 				List<BasicEffect> newEffects = new ArrayList<BasicEffect>();
@@ -161,33 +152,18 @@ public class Rule {
 	 */
 	public RuleOutput getOutput(Assignment input) {
 
-		if (cache != null) {
-			RuleOutput v = cache.get(input);
-			if (v != null) {
-				return v;
-			}
-		}
-		RuleOutput output = new RuleOutput(ruleType);
+		RuleOutput output = new RuleOutput(this);
 		RuleGrounding groundings = getGroundings(input);
-
 		for (Assignment g : groundings.getAlternatives()) {
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
 			RuleCase match =
 					cases.stream().filter(c -> c.getCondition().isSatisfiedBy(full))
-							.map(c -> c.ground(full)).findFirst()
-							.orElse(new RuleCase());
+							.findFirst().orElse(new RuleCase(this));
+			match = match.ground(full);
+			output.addCase(match);
 
-			if (!match.getEffects().isEmpty()) {
-				output.addCase(match);
-			}
 		}
 
-		if (cache != null) {
-			cache.put(input, output);
-			if (cache != null && cache.size() > MAX_CACHE_SIZE) {
-				cache = null;
-			}
-		}
 		return output;
 	}
 
@@ -210,21 +186,10 @@ public class Rule {
 	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding groundings = new RuleGrounding();
 		for (RuleCase c : cases) {
-			RuleGrounding caseGrounding =
-					c.getGroundings(input, ruleType == RuleType.UTIL);
+			RuleGrounding caseGrounding = c.getGroundings(input);
 			groundings.add(caseGrounding);
 		}
 		return groundings;
-	}
-
-	/**
-	 * Returns the set of all (templated) output variables defined inside the rule
-	 * 
-	 * @return the set of all possible output variables
-	 */
-	public Set<String> getOutputVariables() {
-		return cases.stream().flatMap(c -> c.getOutputVariables().stream())
-				.collect(Collectors.toSet());
 	}
 
 	/**

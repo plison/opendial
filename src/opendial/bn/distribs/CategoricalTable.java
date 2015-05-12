@@ -379,7 +379,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 */
 	@Override
 	public Value sample() throws RuntimeException {
-
 		if (intervals == null) {
 			if (table.isEmpty()) {
 				log.warning("creating intervals for an empty table");
@@ -391,7 +390,8 @@ public class CategoricalTable implements IndependentProbDistribution {
 			return ValueFactory.none();
 		}
 
-		return intervals.sample();
+		Value sample = intervals.sample();
+		return sample;
 	}
 
 	/**

@@ -45,6 +45,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import net.java.balloontip.BalloonTip;
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.NoneVal;
@@ -52,7 +53,6 @@ import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.modules.AudioModule;
-import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**

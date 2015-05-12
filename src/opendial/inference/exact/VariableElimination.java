@@ -49,8 +49,6 @@ import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 
-import org.apache.commons.collections15.ListUtils;
-
 /**
  * Implementation of the Variable Elimination algorithm.
  * 
@@ -78,7 +76,7 @@ public class VariableElimination implements InferenceAlgorithm {
 			throws RuntimeException {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
-		return new MultivariateTable(queryFactor.getProbMatrix());
+		return new MultivariateTable(queryFactor.getProbTable());
 	}
 
 	/**
@@ -93,7 +91,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
-		return new UtilityTable(queryFactor.getUtilityMatrix());
+		return new UtilityTable(queryFactor.getUtilTable());
 	}
 
 	// ===================================
@@ -204,17 +202,22 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	private DoubleFactor pointwiseProduct(List<DoubleFactor> factors) {
 
-		if (factors.size() == 1) {
+		if (factors.isEmpty()) {
+			DoubleFactor factor = new DoubleFactor();
+			factor.addEntry(new Assignment(), 1.0, 0.0);
+			return factor;
+		}
+		else if (factors.size() == 1) {
 			return factors.get(0);
 		}
-
-		DoubleFactor factor = new DoubleFactor();
-
-		factor.addEntry(new Assignment(), 1.0f, 0.0f);
-
+		List<DoubleFactor> init = new LinkedList<DoubleFactor>(factors);
+		DoubleFactor factor = factors.get(0);
+		factors.remove(0);
 		for (DoubleFactor f : factors) {
 
 			DoubleFactor tempFactor = new DoubleFactor();
+			Set<String> sharedVars = new HashSet<String>(f.getVariables());
+			sharedVars.retainAll(factor.getVariables());
 
 			for (Assignment a : f.getValues()) {
 
@@ -223,7 +226,7 @@ public class VariableElimination implements InferenceAlgorithm {
 				double util = entry[1];
 
 				for (Assignment b : factor.getValues()) {
-					if (b.consistentWith(a)) {
+					if (b.consistentWith(a, sharedVars)) {
 						double[] entry2 = factor.getEntry(b);
 						double prob2 = entry2[0];
 						double util2 = entry2[1];
@@ -284,17 +287,15 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	private DoubleFactor addEvidencePairs(DoubleFactor factor, Query query) {
 
-		List<String> inter =
-				ListUtils.intersection(new ArrayList<String>(query.getQueryVars()),
-						new ArrayList<String>(query.getEvidence().getVariables()));
-
+		Set<String> inter = new HashSet<String>(query.getQueryVars());
+		inter.retainAll(query.getEvidence().getVariables());
+		Assignment evidence = query.getEvidence().getTrimmed(inter);
 		if (!inter.isEmpty()) {
 			DoubleFactor newFactor = new DoubleFactor();
-			for (Assignment a : factor.getMatrix().keySet()) {
-				Assignment assign =
-						new Assignment(a, query.getEvidence().getTrimmed(inter));
-				newFactor.addEntry(assign, factor.getProbEntry(a),
-						factor.getUtilityEntry(a));
+			for (Assignment a : factor.getAssignments()) {
+				Assignment assign = new Assignment(a, evidence);
+				double[] entry = factor.getEntry(a);
+				newFactor.addEntry(assign, entry[0], entry[1]);
 			}
 			return newFactor;
 		}
@@ -324,7 +325,6 @@ public class VariableElimination implements InferenceAlgorithm {
 
 		// create the query factor
 		DoubleFactor queryFactor = createQueryFactor(query);
-
 		BNetwork reduced = new BNetwork();
 
 		List<String> sortedNodesIds = network.getSortedNodesIds();
@@ -398,7 +398,7 @@ public class VariableElimination implements InferenceAlgorithm {
 
 			factor.normalise();
 			CategoricalTable table = new CategoricalTable(variable);
-			for (Assignment a : factor.getMatrix().keySet()) {
+			for (Assignment a : factor.getAssignments()) {
 				table.addRow(a.getValue(variable), factor.getProbEntry(a));
 			}
 			if (table.isDeterministic()) {
@@ -414,7 +414,7 @@ public class VariableElimination implements InferenceAlgorithm {
 
 			factor.normalise(depVariables);
 			ConditionalTable table = new ConditionalTable(variable);
-			for (Assignment a : factor.getMatrix().keySet()) {
+			for (Assignment a : factor.getAssignments()) {
 				Assignment cond = a.getTrimmed(depVariables);
 				table.addRow(cond, a.getValue(variable), factor.getProbEntry(a));
 			}

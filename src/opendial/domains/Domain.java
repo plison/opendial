@@ -27,9 +27,9 @@ import java.util.logging.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.DialogueState;
 import opendial.Settings;
 import opendial.bn.BNetwork;
-import opendial.state.DialogueState;
 
 /**
  * Representation of a dialogue domain, composed of (1) an initial dialogue state and

@@ -24,18 +24,16 @@
 package opendial.inference.exact;
 
 import java.util.logging.*;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.utils.InferenceUtils;
 
 /**
  * Double factor, combining probability and utility distributions
@@ -69,37 +67,7 @@ public class DoubleFactor {
 	 * @param existingFactor the existing factor
 	 */
 	public DoubleFactor(DoubleFactor existingFactor) {
-		matrix = new HashMap<Assignment, double[]>(existingFactor.getMatrix());
-	}
-
-	/**
-	 * Adds a new entry to the matrix
-	 * 
-	 * @param a the assignment
-	 * @param value the probability value
-	 */
-	public void addProbEntry(Assignment a, double value) {
-		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[] { value, matrix.get(a)[1] });
-		}
-		else {
-			matrix.put(a, new double[] { value, 0.0 });
-		}
-	}
-
-	/**
-	 * Adds a new entry to the matrix
-	 * 
-	 * @param a the assignment
-	 * @param value the probability value
-	 */
-	public void addUtilityEntry(Assignment a, double value) {
-		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[] { matrix.get(a)[0], value });
-		}
-		else {
-			matrix.put(a, new double[] { 1.0, value });
-		}
+		matrix = new HashMap<Assignment, double[]>(existingFactor.matrix);
 	}
 
 	public void addEntry(Assignment a, double probValue, double utilityValue) {
@@ -114,22 +82,9 @@ public class DoubleFactor {
 	 * @param utilIncr utility increment
 	 */
 	public void incrementEntry(Assignment a, double probIncr, double utilIncr) {
-		if (matrix.containsKey(a)) {
-			matrix.put(a, new double[] { getProbEntry(a) + probIncr,
-					getUtilityEntry(a) + utilIncr });
-		}
-		else {
-			matrix.put(a, new double[] { probIncr, utilIncr });
-		}
-	}
-
-	/**
-	 * Removes an entry from the matrix
-	 * 
-	 * @param a the entry to remove
-	 */
-	public void removeEntry(Assignment a) {
-		matrix.remove(a);
+		double[] old = matrix.getOrDefault(a, new double[] { 0.0, 0.0 });
+		double[] val = new double[] { old[0] + probIncr, old[1] + utilIncr };
+		matrix.put(a, val);
 	}
 
 	/**
@@ -137,18 +92,10 @@ public class DoubleFactor {
 	 * 
 	 */
 	public void normalise() {
-		Map<Assignment, Double> probMatrix =
-				InferenceUtils.normalise(getProbMatrix());
-		Map<Assignment, Double> utilityMatrix = getUtilityMatrix();
-
-		matrix = new HashMap<Assignment, double[]>(probMatrix.size());
-		if (probMatrix.size() != utilityMatrix.size()) {
-			log.warning("prob. and utility matrices have different sizes");
-			log.fine("prob matrix: " + probMatrix);
-			log.fine("utility matrix: " + utilityMatrix);
-		}
-		for (Assignment a : probMatrix.keySet()) {
-			matrix.put(a, new double[] { probMatrix.get(a), utilityMatrix.get(a) });
+		double total = matrix.values().stream().mapToDouble(v -> v[0]).sum();
+		for (Entry<Assignment, double[]> e : matrix.entrySet()) {
+			double[] old = e.getValue();
+			e.setValue(new double[] { old[0] / total, old[1] });
 		}
 	}
 
@@ -157,10 +104,10 @@ public class DoubleFactor {
 	 * factor.
 	 */
 	public void normaliseUtil() {
-		for (Assignment a : new ArrayList<Assignment>(matrix.keySet())) {
-			double[] entries = matrix.get(a);
-			if (entries[0] > 0.0 && entries[1] != 0 && entries[0] != 1) {
-				matrix.put(a, new double[] { entries[0], entries[1] / entries[0] });
+		for (Entry<Assignment, double[]> e : matrix.entrySet()) {
+			double[] old = e.getValue();
+			if (old[0] > 0.0 && old[1] != 0 && old[0] != 1) {
+				e.setValue(new double[] { old[0], old[1] / old[0] });
 			}
 		}
 	}
@@ -171,16 +118,18 @@ public class DoubleFactor {
 	 * @param condVars the conditional variables
 	 */
 	public void normalise(Collection<String> condVars) {
-		Map<Assignment, Double> probMatrix =
-				InferenceUtils.normalise(getProbMatrix(), condVars);
 
-		matrix =
-				probMatrix
-						.keySet()
-						.stream()
-						.collect(
-								Collectors.toMap(a -> a, a -> new double[] {
-										probMatrix.get(a), matrix.get(a)[1] }));
+		Map<Assignment, Double> totals = new HashMap<Assignment, Double>();
+		for (Assignment a : matrix.keySet()) {
+			Assignment cond = a.getTrimmed(condVars);
+			double prob = totals.getOrDefault(cond, 0.0);
+			totals.put(cond, prob + matrix.get(a)[0]);
+		}
+		for (Entry<Assignment, double[]> e : matrix.entrySet()) {
+			Assignment cond = e.getKey().getTrimmed(condVars);
+			double[] old = e.getValue();
+			e.setValue(new double[] { old[0] / totals.get(cond), old[1] });
+		}
 	}
 
 	/**
@@ -189,12 +138,14 @@ public class DoubleFactor {
 	 * @param headVars the variables to retain.
 	 */
 	public void trim(Collection<String> headVars) {
-		matrix =
-				matrix.keySet()
-						.stream()
-						.collect(
-								Collectors.toMap(a -> a.getTrimmed(headVars),
-										a -> matrix.get(a)));
+		Map<Assignment, double[]> matrix2 = new HashMap<Assignment, double[]>();
+		for (Entry<Assignment, double[]> e : matrix.entrySet()) {
+			Assignment a = e.getKey();
+			a.trim(headVars);
+			double[] val = e.getValue();
+			matrix2.put(a, val);
+		}
+		matrix = matrix2;
 	}
 
 	// ===================================
@@ -251,8 +202,8 @@ public class DoubleFactor {
 	 * 
 	 * @return the matrix
 	 */
-	public Map<Assignment, double[]> getMatrix() {
-		return matrix;
+	public Set<Assignment> getAssignments() {
+		return matrix.keySet();
 	}
 
 	/**
@@ -260,7 +211,7 @@ public class DoubleFactor {
 	 * 
 	 * @return the probability matrix
 	 */
-	public Map<Assignment, Double> getProbMatrix() {
+	public Map<Assignment, Double> getProbTable() {
 		return matrix.keySet().stream()
 				.collect(Collectors.toMap(a -> a, a -> matrix.get(a)[0]));
 	}
@@ -270,7 +221,7 @@ public class DoubleFactor {
 	 * 
 	 * @return the utility matrix
 	 */
-	public Map<Assignment, Double> getUtilityMatrix() {
+	public Map<Assignment, Double> getUtilTable() {
 		return matrix.keySet().stream()
 				.collect(Collectors.toMap(a -> a, a -> matrix.get(a)[1]));
 	}

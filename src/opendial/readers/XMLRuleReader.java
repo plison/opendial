@@ -134,7 +134,7 @@ public class XMLRuleReader {
 	private static RuleCase getCase(Node caseNode, RuleType type)
 			throws RuntimeException {
 
-		RuleCase newCase = new RuleCase();
+		RuleCase newCase = new RuleCase(null);
 
 		for (int i = 0; i < caseNode.getChildNodes().getLength(); i++) {
 			Node node = caseNode.getChildNodes().item(i);
@@ -142,7 +142,7 @@ public class XMLRuleReader {
 			// extracting the condition
 			if (node.getNodeName().equals("condition")) {
 				Condition condition = getFullCondition(node);
-				newCase = new RuleCase(condition);
+				newCase = new RuleCase(null, condition);
 			}
 			// extracting an effect
 			else if (node.getNodeName().equals("effect")) {

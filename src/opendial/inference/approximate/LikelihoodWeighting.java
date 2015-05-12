@@ -1,7 +1,6 @@
 package opendial.inference.approximate;
 
 import java.util.logging.*;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import opendial.bn.distribs.ContinuousDistribution;
@@ -39,7 +37,7 @@ public class LikelihoodWeighting {
 	public static double WEIGHT_THRESHOLD = 0.0001f;
 
 	// the stack of weighted samples which have been collected so far
-	List<Sample> samples;
+	Stack<Sample> samples = new Stack<Sample>();
 
 	// the query
 	Query query;
@@ -73,21 +71,22 @@ public class LikelihoodWeighting {
 		this.evidence = query.getEvidence();
 		this.queryVars = query.getQueryVars();
 
-		samples = new Stack<Sample>();
 		this.nbSamples = nbSamples;
 		sortedNodes = query.getFilteredSortedNodes();
 		Collections.reverse(sortedNodes);
-
 		service.schedule(() -> isTerminated = true, maxSamplingTime,
 				TimeUnit.MILLISECONDS);
-
-		samples = Stream.generate(() -> this) // creates infinite stream
-				.parallel() // parallelise
-				.map(p -> p.sample()) // generate a sample
-				.limit(nbSamples) // stop when nbSamples are collected
-				.filter(s -> s.getWeight() > WEIGHT_THRESHOLD) // discard empty
-																// samples
-				.collect(Collectors.toList()); // makes a list of samples
+		Stream.generate(() -> this)
+				// creates infinite stream
+				.parallel()
+				// parallelise
+				.map(p -> p.sample())
+				// generate a sample
+				.limit(nbSamples)
+				// stop when nbSamples are collected
+				.filter(s -> s.getWeight() > WEIGHT_THRESHOLD)
+				.filter(s -> !s.isEmpty()) // discard empty samples
+				.forEach(s -> samples.add(s)); // makes a list of samples
 	}
 
 	/**
@@ -116,7 +115,6 @@ public class LikelihoodWeighting {
 	 * 
 	 */
 	protected Sample sample() {
-
 		Sample sample = new Sample();
 		if (isTerminated) {
 			return sample;
@@ -145,7 +143,6 @@ public class LikelihoodWeighting {
 					sample.addUtility(newUtil);
 				}
 			}
-
 			sample.trim(queryVars);
 		}
 		catch (RuntimeException e) {
@@ -223,11 +220,9 @@ public class LikelihoodWeighting {
 	 * @throws RuntimeException if the samples could not be redrawn.
 	 */
 	private void redrawSamples() {
-
 		try {
 			Intervals<Sample> intervals =
 					new Intervals<Sample>(samples, s -> s.getWeight());
-
 			Stack<Sample> newSamples = new Stack<Sample>();
 			int sampleSize = samples.size();
 			for (int j = 0; j < sampleSize; j++) {
@@ -237,6 +232,7 @@ public class LikelihoodWeighting {
 		}
 		catch (RuntimeException e) {
 			log.warning("could not redraw samples: " + e);
+			e.printStackTrace();
 		}
 	}
 

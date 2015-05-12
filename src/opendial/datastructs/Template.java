@@ -24,7 +24,6 @@
 package opendial.datastructs;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
@@ -293,10 +293,10 @@ public class Template {
 		}
 		String filledTemplate = rawString;
 		for (String slot : slots.keySet()) {
-			if (fillers.getValue(slot) != ValueFactory.none()) {
+			Value v = fillers.getValue(slot);
+			if (v != ValueFactory.none()) {
 				filledTemplate =
-						filledTemplate.replace("{" + slot + "}",
-								fillers.getValue(slot).toString());
+						filledTemplate.replace("{" + slot + "}", v.toString());
 			}
 		}
 

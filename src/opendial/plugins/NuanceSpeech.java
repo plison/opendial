@@ -24,7 +24,6 @@
 package opendial.plugins;
 
 import java.util.logging.*;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -38,13 +37,13 @@ import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 

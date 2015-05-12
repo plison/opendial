@@ -116,7 +116,7 @@ public class InferenceLargeScaleTest {
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 		for (Assignment a : fullJoint.keySet()) {
 			Set<Set<Entry<String, Value>>> partialAssigns =
-					generatePowerset(a.getPairs().entrySet());
+					generatePowerset(a.getEntrySet());
 			for (Set<Entry<String, Value>> partial : partialAssigns) {
 				Assignment p = new Assignment(partial);
 				allAssignments.add(p);

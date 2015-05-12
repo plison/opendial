@@ -24,15 +24,14 @@
 package opendial.domains;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.DialogueState;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
-import opendial.state.DialogueState;
 
 /**
  * Representation of a rule model -- that is, a collection of rules of identical
@@ -165,6 +164,7 @@ public class Model {
 			catch (RuntimeException e) {
 				log.warning("rule " + r.getRuleId() + " could not be applied: "
 						+ e.toString());
+				e.printStackTrace();
 			}
 		}
 	}

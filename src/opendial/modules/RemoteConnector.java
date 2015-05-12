@@ -36,6 +36,7 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
@@ -43,7 +44,6 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.readers.XMLStateReader;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.apache.commons.io.IOUtils;

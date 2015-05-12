@@ -55,7 +55,6 @@ import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
-import opendial.state.DialogueState;
 
 /**
  * <p>
@@ -296,6 +295,8 @@ public class DialogueSystem {
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
+			settings.selectAudioMixers();
+
 			attachModule(AudioModule.class);
 			if (settings.showGUI) {
 				getModule(GUIFrame.class).enableSpeech(true);

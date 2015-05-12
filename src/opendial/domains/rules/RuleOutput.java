@@ -23,8 +23,6 @@
 
 package opendial.domains.rules;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,7 +30,6 @@ import java.util.Set;
 
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
@@ -50,17 +47,22 @@ import opendial.domains.rules.parameters.SingleParameter;
  */
 public class RuleOutput extends RuleCase {
 
-	// the rule type
-	RuleType type;
-
 	/**
 	 * Creates an empty output for a particular rule type.
 	 * 
 	 * @param type the rule type
 	 */
-	public RuleOutput(RuleType type) {
-		super();
-		this.type = type;
+	public RuleOutput(Rule rule) {
+		super(rule);
+	}
+
+	/**
+	 * Returns the set of (effect,parameters) pairs in the rule output
+	 * 
+	 * @return the set of associated pairs
+	 */
+	public Set<Map.Entry<Effect, Parameter>> getPairs() {
+		return effects.entrySet();
 	}
 
 	/**
@@ -72,37 +74,31 @@ public class RuleOutput extends RuleCase {
 	 */
 	public void addCase(RuleCase newCase) {
 
-		if (type == RuleType.PROB) {
-			newCase.pruneEffects();
-		}
-
-		if (newCase.getEffects().isEmpty()) {
-			return;
-		}
-
-		if (effects.hashCode() == newCase.getEffectMap().hashCode()) {
-			return;
-		}
-
-		if (effects.isEmpty()) {
+		if (isVoid()) {
+			effects.clear();
 			effects.putAll(newCase.getEffectMap());
 		}
 
-		else if (type == RuleType.PROB) {
+		else if (newCase.isVoid()) {
+			return;
+		}
+
+		else if (effects.hashCode() == newCase.effects.hashCode()) {
+			return;
+		}
+
+		else if (rule.getRuleType() == RuleType.PROB) {
+
 			Map<Effect, Parameter> newOutput = new HashMap<Effect, Parameter>();
-
-			addVoidEffect();
-			newCase.addVoidEffect();
-
+			if (rule.getRuleId().equals("rule5")) {
+				log.info("cur " + effects);
+				log.info("new " + newCase);
+			}
 			for (Effect o : effects.keySet()) {
 				Parameter param = effects.get(o);
 				for (Effect o2 : newCase.getEffects()) {
 					Parameter newParam = newCase.getParameter(o2);
-
-					Collection<BasicEffect> effectsList =
-							new ArrayList<BasicEffect>(o.getSubEffects());
-					effectsList.addAll(o2.getSubEffects());
-					Effect newEffect = new Effect(effectsList);
+					Effect newEffect = new Effect(o, o2);
 					Parameter mergeParam = multiplyParameter(param, newParam);
 					if (!newOutput.containsKey(newEffect)) {
 						newOutput.put(newEffect, mergeParam);
@@ -117,7 +113,7 @@ public class RuleOutput extends RuleCase {
 			effects = newOutput;
 			newCase.pruneEffects();
 		}
-		else if (type == RuleType.UTIL) {
+		else if (rule.getRuleType() == RuleType.UTIL) {
 			for (Effect o2 : newCase.getEffects()) {
 				if (effects.containsKey(o2)) {
 					Parameter mergeParam =
@@ -137,11 +133,9 @@ public class RuleOutput extends RuleCase {
 	 * 
 	 * @param input input assignment (with parameters values)
 	 * @return the corresponding mass
-	 * @throws RuntimeException if some parameters could not be found.
 	 */
 	public double getTotalMass(Assignment input) {
-		return effects.values().stream()
-				.mapToDouble(p -> p.getParameterValue(input)).sum();
+		return effects.values().stream().mapToDouble(p -> p.getValue(input)).sum();
 	}
 
 	/**
@@ -154,8 +148,8 @@ public class RuleOutput extends RuleCase {
 	private Parameter sumParameter(Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
 			double sum =
-					((FixedParameter) p1).getParameterValue()
-							+ ((FixedParameter) p2).getParameterValue();
+					((FixedParameter) p1).getValue()
+							+ ((FixedParameter) p2).getValue();
 			return new FixedParameter(sum);
 		}
 		else {
@@ -180,8 +174,8 @@ public class RuleOutput extends RuleCase {
 	private Parameter multiplyParameter(Parameter p1, Parameter p2) {
 		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
 			double sum =
-					((FixedParameter) p1).getParameterValue()
-							* ((FixedParameter) p2).getParameterValue();
+					((FixedParameter) p1).getValue()
+							* ((FixedParameter) p2).getValue();
 			return new FixedParameter(sum);
 		}
 		else {

@@ -43,7 +43,7 @@ public interface Parameter {
 	 * @param input the input assignment
 	 * @return the actual parameter value
 	 */
-	public double getParameterValue(Assignment input);
+	public double getValue(Assignment input);
 
 	/**
 	 * Returns the (possibly empty) set of parameter identifiers used in the

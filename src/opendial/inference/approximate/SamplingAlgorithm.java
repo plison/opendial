@@ -105,7 +105,6 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 
 		// extract and redraw the samples according to their weight.
 		List<Sample> samples = isquery.getSamples();
-
 		// creates an empirical distribution from the samples
 		return new EmpiricalDistribution(samples);
 	}

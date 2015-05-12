@@ -29,8 +29,8 @@ import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.common.InferenceChecks;
 import opendial.modules.ForwardPlanner;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.StatePruner;
 
 import org.junit.Test;
 

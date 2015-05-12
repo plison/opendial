@@ -24,7 +24,6 @@
 package opendial.datastructs;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -44,6 +42,8 @@ import opendial.bn.values.ValueFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.google.common.collect.Maps;
 
 /**
  * Representation of an assignment of variables (expressed via their unique
@@ -64,11 +64,9 @@ public class Assignment {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the hashmap encoding the assignment
-	final Map<String, Value> map;
+	protected final Map<String, Value> map;
 
-	// the initial size of the hash
-	public static final int MAP_SIZE = 5;
-
+	// the cached value for the hash
 	int cachedHash = 0;
 
 	// ===================================
@@ -79,7 +77,7 @@ public class Assignment {
 	 * Creates a new, empty assignment
 	 */
 	public Assignment() {
-		map = new HashMap<String, Value>(MAP_SIZE);
+		map = new HashMap<String, Value>();
 	}
 
 	/**
@@ -98,7 +96,7 @@ public class Assignment {
 	 * @param val the value
 	 */
 	public Assignment(String var, Value val) {
-		map = new HashMap<String, Value>(MAP_SIZE);
+		map = new HashMap<String, Value>();
 		map.put(var, val);
 	}
 
@@ -183,9 +181,9 @@ public class Assignment {
 	 * 
 	 * @param pairs the pairs
 	 */
-	public Assignment(Map<String, ? extends Value> pairs) {
+	public Assignment(Map<String, Value> pairs) {
 		this();
-		map.putAll(pairs);
+		addPairs(pairs);
 	}
 
 	/**
@@ -278,10 +276,9 @@ public class Assignment {
 	 * @return the resulting default assignment
 	 */
 	public static Assignment createDefault(Collection<String> variables) {
-		Map<String, Value> noneMap =
-				variables.stream().collect(
-						Collectors.toMap(v -> v, v -> ValueFactory.none()));
-		return new Assignment(noneMap);
+		Assignment a = new Assignment();
+		variables.stream().forEach(v -> a.addPair(v, ValueFactory.none()));
+		return a;
 	}
 
 	/**
@@ -293,10 +290,9 @@ public class Assignment {
 	 */
 	public static Assignment createOneValue(Collection<String> variables,
 			Value commonValue) {
-		Map<String, Value> oneValMap =
-				variables.stream().collect(
-						Collectors.toMap(v -> v, v -> commonValue));
-		return new Assignment(oneValMap);
+		Assignment a = new Assignment();
+		variables.stream().forEach(v -> a.addPair(v, commonValue));
+		return a;
 	}
 
 	/**
@@ -550,13 +546,10 @@ public class Assignment {
 	}
 
 	public Assignment addPrimes() {
-		Map<String, Value> newMap =
-				map.keySet()
-						.stream()
-						.collect(
-								Collectors.toMap(var -> var + "'",
-										var -> map.get(var)));
-		return new Assignment(newMap);
+		Assignment a = new Assignment();
+		map.entrySet().stream()
+				.forEach(e -> a.addPair(e.getKey() + "'", e.getValue()));
+		return a;
 	}
 
 	/**
@@ -598,6 +591,18 @@ public class Assignment {
 	}
 
 	/**
+	 * Returns true if the assignment contains the given entry
+	 * 
+	 * @param variable the variable label
+	 * @param value the variable value
+	 * @return true if the assignment contains the pair, false otherwise
+	 */
+	public boolean containsPair(String variable, Value value) {
+		Value v = map.get(variable);
+		return v != null && v.equals(value);
+	}
+
+	/**
 	 * Returns true if the assignment contains all of the given variables, and false
 	 * otherwise
 	 * 
@@ -627,23 +632,29 @@ public class Assignment {
 	 * @return a new, trimmed assignment
 	 */
 	public Assignment getTrimmed(Collection<String> variables) {
-		Map<String, Value> submap = new HashMap<String, Value>(map);
-		submap.keySet().retainAll(variables);
-		return new Assignment(submap);
+		Assignment a = new Assignment();
+		int trimmedHash = 0;
+		for (Entry<String, Value> e : map.entrySet()) {
+			String var = e.getKey();
+			if (variables.contains(var)) {
+				Value val = e.getValue();
+				a.addPair(var, val);
+				trimmedHash += var.hashCode() ^ val.hashCode();
+			}
+		}
+		a.cachedHash = trimmedHash;
+		return a;
 	}
 
 	/**
-	 * Returns a trimmed version of the assignment, where only the variables NOT
-	 * given as parameters are considered
+	 * Returns a prunes version of the assignment, where the the variables given as
+	 * parameters are pruned out of the assignment
 	 * 
 	 * @param variables the variables to remove
-	 * @return a new, trimmed assignment
+	 * @return a new, pruned assignment
 	 */
-
-	public Assignment getTrimmedInverse(Collection<String> variables) {
-		Assignment a = copy();
-		a.removePairs(variables);
-		return a;
+	public Assignment getPruned(Collection<String> variables) {
+		return new Assignment(Maps.filterKeys(map, k -> !variables.contains(k)));
 	}
 
 	/**
@@ -655,21 +666,6 @@ public class Assignment {
 	 */
 	public Assignment getTrimmed(String... variables) {
 		return getTrimmed(Arrays.asList(variables));
-	}
-
-	/**
-	 * Returns a trimmed version of the assignment, where only the variables NOT
-	 * given as parameters are considered
-	 * 
-	 * @param variables the variables to consider
-	 * @return a new, trimmed assignment
-	 */
-	public Assignment getTrimmedInverse(String... variables) {
-		Assignment a = copy();
-		for (String var : variables) {
-			a.removePair(var);
-		}
-		return a;
 	}
 
 	/**
@@ -709,12 +705,7 @@ public class Assignment {
 	 * @return the associated value
 	 */
 	public Value getValue(String var) {
-		if (map.containsKey(var)) {
-			return map.get(var);
-		}
-		else {
-			return ValueFactory.none();
-		}
+		return map.getOrDefault(var, ValueFactory.none());
 	}
 
 	/**
@@ -724,6 +715,22 @@ public class Assignment {
 	 */
 	public Collection<Value> getValues() {
 		return map.values();
+	}
+
+	/**
+	 * Returns the list of values corresponding to a subset of variables in the
+	 * assignment (in the same order)
+	 * 
+	 * @param subsetVars the subset of variable labels
+	 * @return the corresponding values
+	 */
+	public List<Value> getValues(List<String> subsetVars) {
+		List<Value> vals = new ArrayList<Value>();
+		for (String var : subsetVars) {
+			Value v = map.getOrDefault(var, ValueFactory.none());
+			vals.add(v);
+		}
+		return vals;
 	}
 
 	/**
@@ -737,12 +744,13 @@ public class Assignment {
 		for (String key : a.getVariables()) {
 			if (map.containsKey(key)) {
 				Value val = a.getValue(key);
-				if (map.get(key) == null) {
+				Value val2 = map.get(key);
+				if (val2 == null) {
 					if (val != null) {
 						return false;
 					}
 				}
-				else if (!map.get(key).equals(val)) {
+				else if (!val2.equals(val)) {
 					return false;
 				}
 			}
@@ -761,13 +769,37 @@ public class Assignment {
 	 * @return true if assignments are consistent, false otherwise
 	 */
 	public boolean consistentWith(Assignment a) {
-		for (String evidenceVar : a.getVariables()) {
-			Value v2 = map.get(evidenceVar);
+
+		Map<String, Value> firstMap = (a.size() < map.size()) ? a.map : map;
+		Map<String, Value> secondMap = (a.size() < map.size()) ? map : a.map;
+
+		for (String evidenceVar : firstMap.keySet()) {
+			Value v2 = secondMap.get(evidenceVar);
 			if (v2 == null) {
 				continue;
 			}
-			Value v1 = a.getValue(evidenceVar);
+			Value v1 = firstMap.get(evidenceVar);
 			if (!v1.equals(v2)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if the two assignments are mutually consistent, i.e. if there is
+	 * a label l which appears in both assignment, then their value must be equal.
+	 * The checks are here only done on the subset of variables subvars
+	 * 
+	 * @param a the second assignment
+	 * @param subvars the subset of variables to check
+	 * @return true if assignments are consistent, false otherwise
+	 */
+	public boolean consistentWith(Assignment a, Set<String> subvars) {
+		for (String subvar : subvars) {
+			Value v2 = map.get(subvar);
+			Value v1 = a.getValue(subvar);
+			if (v1 == null || v2 == null || !v1.equals(v2)) {
 				return false;
 			}
 		}

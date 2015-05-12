@@ -25,13 +25,13 @@ package opendial.domains;
 
 import java.util.logging.*;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.common.InferenceChecks;
 import opendial.domains.rules.effects.Effect;
 import opendial.modules.ForwardPlanner;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.DialogueState;
-import opendial.state.StatePruner;
 
 import org.junit.Test;
 

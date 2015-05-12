@@ -23,12 +23,12 @@
 package opendial.modules.simulation;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.values.Value;
@@ -38,7 +38,6 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.modules.Module;
 import opendial.readers.XMLDomainReader;
-import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**

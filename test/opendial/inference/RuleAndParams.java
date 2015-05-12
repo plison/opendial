@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.domains.Domain;
+import opendial.domains.rules.distribs.AnchoredRule;
 import opendial.readers.XMLDomainReader;
-import opendial.state.distribs.RuleDistribution;
 
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class RuleAndParams {
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 1);
 		assertTrue(system.getState().hasChanceNode("movements"));
-		assertTrue(system.getState().getChanceNode("movements").getDistrib() instanceof RuleDistribution);
+		assertTrue(system.getState().getChanceNode("movements").getDistrib() instanceof AnchoredRule);
 		CategoricalTable t = new CategoricalTable("a_u");
 		t.addRow("I want left", 0.8);
 		t.addRow("I want forward", 0.1);

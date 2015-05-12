@@ -24,23 +24,24 @@
 package opendial.domains.rules;
 
 import java.util.logging.*;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
+import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.ComplexParameter;
 import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
-import opendial.state.StatePruner;
+import opendial.modules.StatePruner;
 
 /**
  * Representation of a rule case, containing a condition and a list of alternative
@@ -55,6 +56,9 @@ public class RuleCase {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
+	// pointer to the rule containing the case
+	Rule rule;
+
 	// the condition for the case
 	final Condition condition;
 
@@ -68,17 +72,17 @@ public class RuleCase {
 	/**
 	 * Creates a new case, with a void condition and an empty list of effects
 	 */
-	public RuleCase() {
-		condition = new VoidCondition();
+	public RuleCase(Rule rule) {
+		this.rule = rule;
+		this.condition = new VoidCondition();
 		effects = new HashMap<Effect, Parameter>();
 	}
 
 	/**
-	 * Creates a new case, with the given condition and an empty list of effects
-	 * 
-	 * @param condition the condition for the case
+	 * Creates a new case, with a given condition and an empty list of effects
 	 */
-	public RuleCase(Condition condition) {
+	public RuleCase(Rule rule, Condition condition) {
+		this.rule = rule;
 		this.condition = condition;
 		effects = new HashMap<Effect, Parameter>();
 	}
@@ -120,7 +124,7 @@ public class RuleCase {
 	 * @return the grounded copy of the case.
 	 */
 	public RuleCase ground(Assignment grounding) {
-		RuleCase groundCase = new RuleCase();
+		RuleCase groundCase = new RuleCase(this.rule, this.condition);
 		for (Effect e : effects.keySet()) {
 			Effect groundedEffect = e.ground(grounding);
 			if (!groundedEffect.getSubEffects().isEmpty()
@@ -132,12 +136,26 @@ public class RuleCase {
 				groundCase.addEffect(groundedEffect, param);
 			}
 		}
+		if (rule.getRuleType() == RuleType.PROB) {
+			groundCase.pruneEffects();
+			groundCase.addVoidEffect();
+		}
+
 		return groundCase;
 	}
 
 	// ===================================
 	// GETTERS
 	// ===================================
+
+	/**
+	 * Returns the type of the case
+	 * 
+	 * @return the type
+	 */
+	public RuleType getRuleType() {
+		return rule.getRuleType();
+	}
 
 	/**
 	 * Returns all the effects specified in the case.
@@ -166,6 +184,17 @@ public class RuleCase {
 	 */
 	public Condition getCondition() {
 		return condition;
+	}
+
+	/**
+	 * Returns true if the case is void (empty or with a single void effect)
+	 * 
+	 * @return true if void, false otherwise
+	 */
+	public boolean isVoid() {
+		return effects.isEmpty()
+				|| (rule.getRuleType() == RuleType.PROB && effects.size() == 1 && effects
+						.containsKey(new Effect()));
 	}
 
 	/**
@@ -202,23 +231,24 @@ public class RuleCase {
 	 * assignment.
 	 * 
 	 * @param input the input assignment
-	 * @param withEffects whether to take the effects into account when extracting
-	 *            the groundings
 	 * @return the set of possible groundings
 	 */
-	public RuleGrounding getGroundings(Assignment input, boolean withEffects) {
+	public RuleGrounding getGroundings(Assignment input) {
 		RuleGrounding grounding = condition.getGroundings(input);
-		if (withEffects) {
-			Assignment input2 = input.removePrimes();
+
+		if (rule.getRuleType() == RuleType.UTIL) {
+			boolean hasActionVars =
+					getOutputVariables().stream().allMatch(
+							v -> input.containsVar(v + "'"));
 			for (Effect e : effects.keySet()) {
-				if (input2.containsVars(e.getOutputVariables())) {
+				if (hasActionVars) {
 					Condition co = e.convertToCondition();
-					RuleGrounding effectGrounding = co.getGroundings(input2);
+					RuleGrounding effectGrounding = co.getGroundings(input);
 					grounding.add(effectGrounding);
 				}
 				else {
 					Set<String> slots = e.getValueSlots();
-					slots.removeAll(input2.getVariables());
+					slots.removeAll(input.getVariables());
 					grounding.add(Assignment.createOneValue(slots,
 							ValueFactory.create("")));
 				}
@@ -295,23 +325,33 @@ public class RuleCase {
 		for (Effect e : new HashSet<Effect>(effects.keySet())) {
 			Parameter p = effects.get(e);
 			if (p instanceof FixedParameter
-					&& ((FixedParameter) p).getParameterValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
+					&& ((FixedParameter) p).getValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
 				effects.remove(e);
 			}
 		}
 	}
 
 	/**
-	 * Adds a void effect if there is a remaining probability mass to allocate
+	 * Adds a void effect to the rule if the fixed mass is lower than 0.99. Does not
+	 * do anything if the rule contains unknown parameters or already contains an
+	 * empty effect.
 	 */
-	protected void addVoidEffect() {
-		double fixedMass =
-				effects.keySet().stream().map(e -> this.getParameter(e))
-						.filter(e -> e instanceof FixedParameter)
-						.mapToDouble(e -> ((FixedParameter) e).getParameterValue())
-						.sum();
-		if (fixedMass > 0 && fixedMass < 0.99) {
-			addEffect(new Effect(), new FixedParameter(1.0 - fixedMass));
+	private void addVoidEffect() {
+		double fixedMass = 0;
+		for (Entry<Effect, Parameter> e : effects.entrySet()) {
+			Effect eff = e.getKey();
+			Parameter param = e.getValue();
+			if (eff.length() == 0 || (!(param instanceof FixedParameter))) {
+				return;
+			}
+			else {
+				fixedMass += ((FixedParameter) param).getValue();
+			}
+		}
+
+		if (fixedMass < 0.99) {
+			FixedParameter param = new FixedParameter(1 - fixedMass);
+			addEffect(new Effect(), param);
 		}
 	}
 

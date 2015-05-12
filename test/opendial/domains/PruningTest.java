@@ -30,13 +30,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.readers.XMLDomainReader;
-import opendial.state.DialogueState;
+
 import org.junit.Test;
 
 public class PruningTest {
