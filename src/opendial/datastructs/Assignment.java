@@ -43,8 +43,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.collect.Maps;
-
 /**
  * Representation of an assignment of variables (expressed via their unique
  * identifiers) to specific values. The assignment is logically represented as a

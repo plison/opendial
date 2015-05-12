@@ -210,7 +210,6 @@ public class VariableElimination implements InferenceAlgorithm {
 		else if (factors.size() == 1) {
 			return factors.get(0);
 		}
-		List<DoubleFactor> init = new LinkedList<DoubleFactor>(factors);
 		DoubleFactor factor = factors.get(0);
 		factors.remove(0);
 		for (DoubleFactor f : factors) {
