@@ -48,14 +48,6 @@ public interface UtilityFunction {
 	public double getUtil(Assignment input);
 
 	/**
-	 * Checks that the utility function is well-formed (all assignments are covered)
-	 * 
-	 * @return true is the distribution is well-formed, false otherwise
-	 */
-
-	public boolean isWellFormed();
-
-	/**
 	 * Creates a copy of the utility distribution
 	 * 
 	 * @return the copy
@@ -68,6 +60,6 @@ public interface UtilityFunction {
 	 * @param oldId the old variable label
 	 * @param newId the new variable label
 	 */
-	public void modifyVarId(String oldId, String newId);
+	public void modifyVariableId(String oldId, String newId);
 
 }

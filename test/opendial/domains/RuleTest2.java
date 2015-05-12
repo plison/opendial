@@ -31,10 +31,10 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.distribs.EquivalenceDistribution;
 import opendial.modules.ForwardPlanner;
+import opendial.modules.StatePruner;
 import opendial.readers.XMLDomainReader;
-import opendial.state.StatePruner;
-import opendial.state.distribs.EquivalenceDistribution;
 
 import org.junit.Test;
 
@@ -69,7 +69,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test() throws RuntimeException, InterruptedException {
+	public void test() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		double eqFactor = EquivalenceDistribution.NONE_PROB;
@@ -109,7 +109,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test2() throws RuntimeException, InterruptedException {
+	public void test2() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -144,7 +144,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test3() throws RuntimeException, InterruptedException {
+	public void test3() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -173,7 +173,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test4() throws RuntimeException, InterruptedException {
+	public void test4() throws InterruptedException {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile2);
 		DialogueSystem system2 = new DialogueSystem(domain2);
@@ -199,7 +199,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test5() throws RuntimeException, InterruptedException {
+	public void test5() throws InterruptedException {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile3);
 		DialogueSystem system2 = new DialogueSystem(domain2);
@@ -225,7 +225,7 @@ public class RuleTest2 {
 	}
 
 	@Test
-	public void test6() throws RuntimeException {
+	public void test6() {
 
 		Domain domain2 = XMLDomainReader.extractDomain(domainFile4);
 		DialogueSystem system2 = new DialogueSystem(domain2);

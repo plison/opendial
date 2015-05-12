@@ -34,11 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.datastructs.Assignment;
 import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
-import opendial.state.DialogueState;
 
 import org.junit.Test;
 

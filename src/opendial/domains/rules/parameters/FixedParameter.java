@@ -25,6 +25,8 @@ package opendial.domains.rules.parameters;
 
 import java.util.Collections;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import opendial.datastructs.Assignment;
@@ -41,7 +43,7 @@ public class FixedParameter implements Parameter {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// the parameter value
-	double param;
+	final double param;
 
 	/**
 	 * Constructs a fixed parameter with the given value.
@@ -57,7 +59,7 @@ public class FixedParameter implements Parameter {
 	 * 
 	 * @return the value for the parameter
 	 */
-	public double getParameterValue() {
+	public double getValue() {
 		return param;
 	}
 
@@ -67,8 +69,8 @@ public class FixedParameter implements Parameter {
 	 * @return the value for the parameter
 	 */
 	@Override
-	public double getParameterValue(Assignment input) {
-		return getParameterValue();
+	public double getValue(Assignment input) {
+		return param;
 	}
 
 	/**
@@ -99,6 +101,38 @@ public class FixedParameter implements Parameter {
 	@Override
 	public int hashCode() {
 		return 2 * new Double(param).hashCode();
+	}
+
+	/**
+	 * Sums the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the sum of the two
+	 */
+	@Override
+	public Parameter sum(Parameter p2) {
+		if (p2 instanceof FixedParameter) {
+			double newParam = param + ((FixedParameter) p2).getValue();
+			return new FixedParameter(newParam);
+		}
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		return new ComplexParameter(param + "+" + p2.toString(), unknowns);
+	}
+
+	/**
+	 * Multiplies the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the product of the two
+	 */
+	@Override
+	public Parameter multiply(Parameter p2) {
+		if (p2 instanceof FixedParameter) {
+			double newParam = param * ((FixedParameter) p2).getValue();
+			return new FixedParameter(newParam);
+		}
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		return new ComplexParameter(param + "*" + p2.toString(), unknowns);
 	}
 
 }

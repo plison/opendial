@@ -43,18 +43,17 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.domains.rules.distribs.AnchoredRule;
 import opendial.gui.GUIFrame;
 import opendial.modules.ForwardPlanner;
 import opendial.modules.Module;
 import opendial.modules.WizardLearner;
-import opendial.state.AnchoredRule;
-import opendial.state.DialogueState;
-import opendial.state.distribs.RuleUtilDistribution;
 
 /**
  * Module employed in the "Wizard-of-Oz" interaction mode. The module extracts all
@@ -78,10 +77,9 @@ public class WizardControl implements Module {
 	/**
 	 * Creates a new wizard control for the dialogue system.
 	 * 
-	 * @param system the dialogue system
-	 * @throws RuntimeException if the GUI is not activated
+	 * @param system the dialogue system @ if the GUI is not activated
 	 */
-	public WizardControl(DialogueSystem system) throws RuntimeException {
+	public WizardControl(DialogueSystem system) {
 		this.system = system;
 
 		if (system.getModule(GUIFrame.class) == null) {
@@ -133,9 +131,8 @@ public class WizardControl implements Module {
 		// directly select the action
 		if (state.getUtilityNodes().size() == 1) {
 			UtilityNode urnode = state.getUtilityNodes().stream().findFirst().get();
-			if (urnode.getFunction() instanceof RuleUtilDistribution) {
-				AnchoredRule arule =
-						((RuleUtilDistribution) urnode.getFunction()).getAnchor();
+			if (urnode.getFunction() instanceof AnchoredRule) {
+				AnchoredRule arule = (AnchoredRule) urnode.getFunction();
 				if (arule.getInputRange().linearise().size() == 1
 						&& arule.getParameters().isEmpty()) {
 					system.getModule(ForwardPlanner.class).trigger(state,
@@ -163,11 +160,11 @@ public class WizardControl implements Module {
 	 * Displays the Wizard-of-Oz window with the possible action values specified in
 	 * the action node.
 	 * 
-	 * @param actionNode the action node
-	 * @throws RuntimeException if the action values could not be extracted
+	 * @param actionNode the action node @ if the action values could not be
+	 *            extracted
 	 */
 	@SuppressWarnings("serial")
-	private void displayWizardBox(ActionNode actionNode) throws RuntimeException {
+	private void displayWizardBox(ActionNode actionNode) {
 
 		DefaultListModel<String> model = new DefaultListModel<String>();
 		for (Value v : actionNode.getValues()) {

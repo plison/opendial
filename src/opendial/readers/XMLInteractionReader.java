@@ -24,13 +24,12 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import opendial.DialogueState;
 import opendial.datastructs.Assignment;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -51,11 +50,9 @@ public class XMLInteractionReader {
 	 * dialogue state (one for each turn).
 	 * 
 	 * @param dataFile the XML file containing the turns
-	 * @return the list of dialogue states
-	 * @throws RuntimeException if the XML file is corrupted.
+	 * @return the list of dialogue states @ if the XML file is corrupted.
 	 */
-	public static List<DialogueState> extractInteraction(String dataFile)
-			throws RuntimeException {
+	public static List<DialogueState> extractInteraction(String dataFile) {
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(dataFile);
 		Node mainNode = XMLUtils.getMainNode(doc);

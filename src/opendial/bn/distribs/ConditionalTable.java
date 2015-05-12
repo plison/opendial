@@ -312,8 +312,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @return the resulting probability distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);
@@ -322,7 +321,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 		ConditionalTable newDistrib = new ConditionalTable(headVar);
 		for (Assignment a : table.keySet()) {
 			if (a.consistentWith(condition)) {
-				Assignment remaining = a.getTrimmedInverse(condition.getVariables());
+				Assignment remaining = a.getPruned(condition.getVariables());
 				if (!newDistrib.table.containsKey(remaining)) {
 					newDistrib.addDistrib(remaining, table.get(a));
 				}

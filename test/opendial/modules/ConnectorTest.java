@@ -40,8 +40,7 @@ public class ConnectorTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void remoteConnection() throws RuntimeException, UnknownHostException,
-			InterruptedException {
+	public void remoteConnection() throws UnknownHostException, InterruptedException {
 		DialogueSystem system1 = new DialogueSystem();
 		system1.getSettings().showGUI = false;
 		DialogueSystem system2 = new DialogueSystem();

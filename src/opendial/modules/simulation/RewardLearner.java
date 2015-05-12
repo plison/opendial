@@ -24,7 +24,6 @@
 package opendial.modules.simulation;
 
 import java.util.logging.*;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -43,7 +43,6 @@ import opendial.inference.Query;
 import opendial.inference.approximate.Sample;
 import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 /**
  * Module employed during simulated dialogues to automatically estimate a utility

@@ -117,11 +117,11 @@ public class UniformDensityFunction implements DensityFunction {
 	 * Returns the cumulative probability up to the given point
 	 *
 	 * @param x the point
-	 * @return the cumulative probability
-	 * @throws RuntimeException if the dimensionality of the point is greater than 1
+	 * @return the cumulative probability @ if the dimensionality of the point is
+	 *         greater than 1
 	 */
 	@Override
-	public double getCDF(double... x) throws RuntimeException {
+	public double getCDF(double... x) {
 		if (x.length != 1) {
 			throw new RuntimeException(
 					"Uniform distribution currently only accepts a dimensionality == 1");

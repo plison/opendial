@@ -60,12 +60,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import opendial.DialogueState;
 import opendial.Settings;
 import opendial.Settings.Recording;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityFunction;
 import opendial.gui.stateviewer.StateViewer;
-import opendial.state.DialogueState;
 import opendial.utils.StringUtils;
 
 /**

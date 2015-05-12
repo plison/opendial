@@ -46,7 +46,7 @@ public class ImporterTest {
 	public static String dialogueFile2 = "test/domains/dialogue.xml";
 
 	@Test
-	public void testImporter() throws RuntimeException, InterruptedException {
+	public void testImporter() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
@@ -68,7 +68,7 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter2() throws RuntimeException, InterruptedException {
+	public void testImporter2() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
@@ -92,7 +92,7 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter3() throws RuntimeException, InterruptedException {
+	public void testImporter3() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		system.getSettings().showGUI = false;
@@ -115,7 +115,7 @@ public class ImporterTest {
 	}
 
 	@Test
-	public void testImporter4() throws RuntimeException, InterruptedException {
+	public void testImporter4() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));
 		Settings.nbSamples = Settings.nbSamples * 3;

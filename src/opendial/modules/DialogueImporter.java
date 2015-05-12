@@ -26,8 +26,8 @@ package opendial.modules;
 import java.util.List;
 import java.util.logging.Logger;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
-import opendial.state.DialogueState;
 
 /**
  * Functionality to import a previously recorded dialogue in the dialogue system. The

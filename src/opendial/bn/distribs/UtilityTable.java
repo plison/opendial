@@ -33,7 +33,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
-import opendial.datastructs.ValueRange;
 import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 
@@ -127,9 +126,12 @@ public class UtilityTable implements UtilityFunction {
 	 */
 	@Override
 	public double getUtil(Assignment input) {
-		Assignment trimmedInput = input.getTrimmed(variables);
-		if (table.containsKey(trimmedInput)) {
-			return table.get(trimmedInput).getValue();
+
+		if (input.size() != variables.size()) {
+			input = input.getTrimmed(variables);
+		}
+		if (table.containsKey(input)) {
+			return table.get(input).getValue();
 		}
 		return 0.0f;
 	}
@@ -200,26 +202,6 @@ public class UtilityTable implements UtilityFunction {
 	// ===================================
 
 	/**
-	 * Returns true is the table is well-formed, and false otherwise
-	 * 
-	 * @return true if the table is well-formed, false otherwise
-	 */
-	@Override
-	public boolean isWellFormed() {
-		ValueRange possiblePairs = new ValueRange(table.keySet());
-		Set<Assignment> possibleAssignments = possiblePairs.linearise();
-
-		for (Assignment assignment : possibleAssignments) {
-			if (!table.containsKey(assignment)) {
-				// log.warning("assignment " + assignment
-				// + " not defined in utility distribution");
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Returns a copy of the utility table
 	 * 
 	 * @return the copy
@@ -266,7 +248,7 @@ public class UtilityTable implements UtilityFunction {
 	 * @param newId the new label
 	 */
 	@Override
-	public void modifyVarId(String nodeId, String newId) {
+	public void modifyVariableId(String nodeId, String newId) {
 		Map<Assignment, UtilityEstimate> utilities2 =
 				new HashMap<Assignment, UtilityEstimate>();
 		for (Assignment a : table.keySet()) {

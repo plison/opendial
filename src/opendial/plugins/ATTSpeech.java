@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
@@ -40,7 +41,6 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -88,10 +88,10 @@ public class ATTSpeech implements Module {
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
-	 * @param system the dialogue system to attach
-	 * @throws RuntimeException if the module could not be established
+	 * @param system the dialogue system to attach @ if the module could not be
+	 *            established
 	 */
-	public ATTSpeech(DialogueSystem system) throws RuntimeException {
+	public ATTSpeech(DialogueSystem system) {
 		this.system = system;
 		List<String> missingParams =
 				new LinkedList<String>(Arrays.asList("key", "secret"));
@@ -132,7 +132,7 @@ public class ATTSpeech implements Module {
 	 * Starts the AT&amp;T speech plugin.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
@@ -260,9 +260,9 @@ public class ATTSpeech implements Module {
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
 	 * 
-	 * @throws RuntimeException
+	 * @
 	 */
-	private void buildClients() throws RuntimeException {
+	private void buildClients() {
 
 		String key = system.getSettings().params.getProperty("key");
 		String secret = system.getSettings().params.getProperty("secret");

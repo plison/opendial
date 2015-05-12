@@ -93,7 +93,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testConversion1Distrib() throws RuntimeException {
+	public void testConversion1Distrib() {
 
 		CategoricalTable table = new CategoricalTable("var1");
 		table.addRow(1.5, 0.7);
@@ -119,7 +119,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testContinuous() throws RuntimeException {
+	public void testContinuous() {
 
 		ContinuousDistribution distrib =
 				new ContinuousDistribution("X", new UniformDensityFunction(-2, 4));
@@ -138,7 +138,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testGaussian() throws RuntimeException {
+	public void testGaussian() {
 
 		ContinuousDistribution distrib =
 				new ContinuousDistribution("X",
@@ -172,7 +172,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testDiscrete() throws RuntimeException {
+	public void testDiscrete() {
 
 		CategoricalTable table = new CategoricalTable("A");
 		table.addRow(1, 0.6);
@@ -277,7 +277,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testEmpiricalDistrib() throws RuntimeException {
+	public void testEmpiricalDistrib() {
 
 		CategoricalTable st = new CategoricalTable("var1");
 		st.addRow("val1", 0.6);
@@ -316,7 +316,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void empiricalDistribContinuous() throws RuntimeException {
+	public void empiricalDistribContinuous() {
 		ContinuousDistribution continuous =
 				new ContinuousDistribution("var1", new UniformDensityFunction(-1, 3));
 
@@ -345,8 +345,7 @@ public class DistributionsTest {
 	}
 
 	@Test
-	public void testDepEmpiricalDistribContinuous() throws RuntimeException,
-			InterruptedException {
+	public void testDepEmpiricalDistribContinuous() throws InterruptedException {
 		BNetwork bn = new BNetwork();
 		ChanceNode var1 = new ChanceNode("var1");
 		var1.addProb(ValueFactory.create("one"), 0.7);

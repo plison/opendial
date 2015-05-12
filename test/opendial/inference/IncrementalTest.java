@@ -46,7 +46,7 @@ public class IncrementalTest {
 	public static final String domainFile = "test//domains//incremental-domain.xml";
 
 	@Test
-	public void test1() throws RuntimeException, InterruptedException {
+	public void test1() throws InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

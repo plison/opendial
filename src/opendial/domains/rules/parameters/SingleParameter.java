@@ -24,9 +24,10 @@
 package opendial.domains.rules.parameters;
 
 import java.util.logging.*;
-
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
@@ -47,11 +48,11 @@ public class SingleParameter implements Parameter {
 	public final static Logger log = Logger.getLogger("OpenDial");
 
 	// the parameter identifier
-	String paramId;
+	final String paramId;
 
 	// the selected dimension for the parameter. If the parameter is univariate,
 	// the default value is -1.
-	int dimension = -1;
+	final int dimension;
 
 	/**
 	 * Creates a new stochastic parameter for a univariate distribution.
@@ -60,6 +61,7 @@ public class SingleParameter implements Parameter {
 	 */
 	public SingleParameter(String paramId) {
 		this.paramId = paramId;
+		this.dimension = -1;
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class SingleParameter implements Parameter {
 	 * @param dimension the dimension for the multivariate variable
 	 */
 	public SingleParameter(String paramId, int dimension) {
-		this(paramId);
+		this.paramId = paramId;
 		this.dimension = dimension;
 	}
 
@@ -92,7 +94,7 @@ public class SingleParameter implements Parameter {
 	 * @return the actual value for the parameter
 	 */
 	@Override
-	public double getParameterValue(Assignment input) {
+	public double getValue(Assignment input) {
 		Value value = input.getValue(paramId);
 		if (input.containsVar(paramId) && value instanceof DoubleVal) {
 			return ((DoubleVal) input.getValue(paramId)).getDouble();
@@ -106,6 +108,32 @@ public class SingleParameter implements Parameter {
 			log.warning("input " + input + " does not contain " + paramId);
 			return 0.0;
 		}
+	}
+
+	/**
+	 * Sums the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the sum of the two
+	 */
+	@Override
+	public Parameter sum(Parameter p2) {
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		unknowns.add(paramId);
+		return new ComplexParameter(paramId + "+" + p2.toString(), unknowns);
+	}
+
+	/**
+	 * Multiplies the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the product of the two
+	 */
+	@Override
+	public Parameter multiply(Parameter p2) {
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		unknowns.add(paramId);
+		return new ComplexParameter(paramId + "*" + p2.toString(), unknowns);
 	}
 
 	/**

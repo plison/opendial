@@ -70,7 +70,7 @@ public class BasicEffect {
 	final boolean negated;
 
 	/** Priority level (default is 1) */
-	final int priority;
+	int priority;
 
 	// ===================================
 	// EFFECT CONSTRUCTION
@@ -138,7 +138,7 @@ public class BasicEffect {
 	 */
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(variableLabel, variableValue, r);
+		return new BasicCondition(variableLabel + "'", variableValue, r);
 	}
 
 	/**
@@ -278,13 +278,12 @@ public class BasicEffect {
 	}
 
 	/**
-	 * Returns a copy of the effect with a new priority
+	 * Changes the priority of the basic effects
 	 * 
 	 * @param priority the new priority
-	 * @return a new basic effect with the changed priority
 	 */
-	public BasicEffect changePriority(int priority) {
-		return new BasicEffect(variableLabel, variableValue, priority, add, negated);
+	public void changePriority(int priority) {
+		this.priority = priority;
 	}
 
 }

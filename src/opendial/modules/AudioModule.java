@@ -34,12 +34,12 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.SpeechInputPanel;
-import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 
 /**

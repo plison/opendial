@@ -62,7 +62,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	public static int MAX_BRANCHING_FACTOR = 10;
 
 	// maximum number of values to use VE
-	public static int MAX_NBVALUES = 100000;
+	public static int MAX_NBVALUES = 5000;
 
 	VariableElimination ve;
 	SamplingAlgorithm lw;
@@ -80,8 +80,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public MultivariateDistribution queryProb(Query.ProbQuery query)
-			throws RuntimeException {
+	public MultivariateDistribution queryProb(Query.ProbQuery query) {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryProb(query);
 	}
@@ -94,7 +93,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the inference result
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
+	public UtilityTable queryUtil(Query.UtilQuery query) {
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		return algo.queryUtil(query);
 	}
@@ -115,7 +114,7 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
+	public BNetwork reduce(Query.ReduceQuery query) {
 		// select the best reduction algorithm and performs the reduction
 		InferenceAlgorithm algo = selectBestAlgorithm(query);
 		BNetwork result = algo.reduce(query);

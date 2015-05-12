@@ -161,18 +161,20 @@ public final class ComplexCondition implements Condition {
 		if (operator == BinaryOperator.AND) {
 			for (Condition cond : subconditions) {
 
-				List<RuleGrounding> alternatives = new ArrayList<RuleGrounding>();
+				RuleGrounding newGrounding = new RuleGrounding();
+				boolean failed = true;
 				for (Assignment g : groundings.getAlternatives()) {
-					RuleGrounding newGround =
-							cond.getGroundings(new Assignment(input, g));
-					newGround.extend(g);
-					alternatives.add(newGround);
+					Assignment input2 =
+							(g.isEmpty()) ? input : new Assignment(input, g);
+					RuleGrounding ground = cond.getGroundings(input2);
+					ground.extend(g);
+					failed = failed && ground.isFailed();
+					newGrounding.add(ground);
 				}
-				groundings = new RuleGrounding();
-				groundings.add(alternatives);
-				if (groundings.isFailed()) {
-					return groundings;
+				if (failed) {
+					return new RuleGrounding.Failed();
 				}
+				groundings = newGrounding;
 			}
 		}
 		else if (operator == BinaryOperator.OR) {

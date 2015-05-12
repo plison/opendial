@@ -25,7 +25,7 @@ package opendial.modules;
 
 import java.util.Collection;
 
-import opendial.state.DialogueState;
+import opendial.DialogueState;
 
 /**
  * Representation of a system module. A module is connected to the dialogue system
@@ -59,9 +59,9 @@ public interface Module {
 	/**
 	 * Starts the module.
 	 * 
-	 * @throws RuntimeException if the initialisation fails
+	 * @ if the initialisation fails
 	 */
-	public void start() throws RuntimeException;
+	public void start();
 
 	/**
 	 * Triggers the module after a state update

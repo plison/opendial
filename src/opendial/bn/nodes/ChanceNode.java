@@ -115,11 +115,10 @@ public class ChanceNode extends BNode {
 	/**
 	 * Adds a new (input) relation for the node
 	 *
-	 * @param inputNode the input node to connect
-	 * @throws RuntimeException if the network becomes corrupted
+	 * @param inputNode the input node to connect @ if the network becomes corrupted
 	 */
 	@Override
-	public void addInputNode(BNode inputNode) throws RuntimeException {
+	public void addInputNode(BNode inputNode) {
 		super.addInputNode(inputNode);
 	}
 
@@ -276,10 +275,9 @@ public class ChanceNode extends BNode {
 	 * The method assumes that the node is conditionally independent of every other
 	 * node. If it isn't, one should use the sample(condition) method instead.
 	 * 
-	 * @return the sample value
-	 * @throws RuntimeException if no sample can be selected
+	 * @return the sample value @ if no sample can be selected
 	 */
-	public Value sample() throws RuntimeException {
+	public Value sample() {
 
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution) distrib).sample();
@@ -303,10 +301,9 @@ public class ChanceNode extends BNode {
 	 * according to the probability distribution for the node.
 	 * 
 	 * @param condition the value assignment on conditional nodes
-	 * @return the sample value
-	 * @throws RuntimeException if no sample can be selected
+	 * @return the sample value @ if no sample can be selected
 	 */
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 		if (distrib instanceof IndependentProbDistribution) {
 			return ((IndependentProbDistribution) distrib).sample();
 		}
@@ -383,11 +380,10 @@ public class ChanceNode extends BNode {
 	 * Returns a copy of the node. Note that only the node content is copied, not its
 	 * connection with other nodes.
 	 *
-	 * @return the copy
-	 * @throws RuntimeException if the node could not be copied.
+	 * @return the copy @ if the node could not be copied.
 	 */
 	@Override
-	public ChanceNode copy() throws RuntimeException {
+	public ChanceNode copy() {
 		ChanceNode cn = new ChanceNode(nodeId, distrib.copy());
 		if (cachedValues != null) {
 			cn.cachedValues = new HashSet<Value>(cachedValues);

@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.Settings;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -38,7 +39,6 @@ import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
 import opendial.domains.Model;
-import opendial.state.DialogueState;
 
 /**
  * Online forward planner for OpenDial. The planner constructs a lookahead tree (with
@@ -203,11 +203,9 @@ public class ForwardPlanner implements Module {
 		 * 
 		 * @param state the dialogue state
 		 * @param horizon the planning horizon
-		 * @return the estimated utility table for the Q-values
-		 * @throws RuntimeException
+		 * @return the estimated utility table for the Q-values @
 		 */
-		private UtilityTable getQValues(DialogueState state, int horizon)
-				throws RuntimeException {
+		private UtilityTable getQValues(DialogueState state, int horizon) {
 			Set<String> actionNodes = state.getActionNodeIds();
 
 			if (actionNodes.isEmpty()) {
@@ -245,10 +243,10 @@ public class ForwardPlanner implements Module {
 		 * Adds a particular content to the dialogue state
 		 * 
 		 * @param state the dialogue state
-		 * @param newContent the content to add
-		 * @throws RuntimeException if the update operation could not be performed
+		 * @param newContent the content to add @ if the update operation could not
+		 *            be performed
 		 */
-		private void updateState(DialogueState state) throws RuntimeException {
+		private void updateState(DialogueState state) {
 
 			while (!state.getNewVariables().isEmpty()) {
 				Set<String> toProcess = state.getNewVariables();
@@ -286,11 +284,9 @@ public class ForwardPlanner implements Module {
 		 * 
 		 * @param state the dialogue state
 		 * @param horizon the planning horizon
-		 * @return the expected value.
-		 * @throws RuntimeException
+		 * @return the expected value. @
 		 */
-		private double getExpectedValue(DialogueState state, int horizon)
-				throws RuntimeException {
+		private double getExpectedValue(DialogueState state, int horizon) {
 
 			MultivariateTable observations = getObservations(state);
 			MultivariateTable nbestObs = observations.getNBest(NB_BEST_OBSERVATIONS);
@@ -319,11 +315,9 @@ public class ForwardPlanner implements Module {
 		 * the dialogue state
 		 * 
 		 * @param state the dialogue state from which to extract observations
-		 * @return the inferred observations
-		 * @throws RuntimeException
+		 * @return the inferred observations @
 		 */
-		private MultivariateTable getObservations(DialogueState state)
-				throws RuntimeException {
+		private MultivariateTable getObservations(DialogueState state) {
 			Set<String> predictionNodes = new HashSet<String>();
 			for (String nodeId : state.getChanceNodeIds()) {
 				if (nodeId.contains("^p")) {

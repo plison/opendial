@@ -231,7 +231,7 @@ public class DiscreteDensityFunction implements DensityFunction {
 	 * points with a value that is lower than x).
 	 */
 	@Override
-	public double getCDF(double... x) throws RuntimeException {
+	public double getCDF(double... x) {
 		if (x.length != getDimensions()) {
 			throw new RuntimeException("Illegal dimensionality: " + x.length + "!="
 					+ getDimensions());

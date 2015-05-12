@@ -55,7 +55,7 @@ public class DemoTest {
 	public static final String domainFile2 = "test//domains//domain-demo.xml";
 
 	// @Test
-	public void testParam1() throws RuntimeException, InterruptedException {
+	public void testParam1() throws InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		BNetwork params =
 				XMLStateReader.extractBayesianNetwork(paramFile, "parameters");
@@ -84,7 +84,7 @@ public class DemoTest {
 	}
 
 	@Test
-	public void testDemo() throws RuntimeException, InterruptedException {
+	public void testDemo() throws InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(domainFile2);
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

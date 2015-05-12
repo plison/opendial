@@ -24,12 +24,11 @@
 package opendial.modules.examples;
 
 import java.util.logging.*;
-
 import java.util.Collection;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 /**
  * Example of simple external module used for the flight-booking dialogue domain. The
@@ -66,7 +65,7 @@ public class FlightBookingExample implements Module {
 	 * Starts the module.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		paused = false;
 	}
 

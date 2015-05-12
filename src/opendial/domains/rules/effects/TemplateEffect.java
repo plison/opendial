@@ -131,7 +131,7 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(labelTemplate.getRawString(),
+		return new BasicCondition(labelTemplate.getRawString() + "'",
 				valueTemplate.getRawString(), r);
 	}
 
@@ -227,18 +227,6 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public TemplateEffect copy() {
-		return new TemplateEffect(labelTemplate, valueTemplate, priority, add,
-				negated);
-	}
-
-	/**
-	 * Returns a copy of the effect with a new priority
-	 * 
-	 * @param priority the new priority
-	 * @return a new basic effect with the changed priority
-	 */
-	@Override
-	public TemplateEffect changePriority(int priority) {
 		return new TemplateEffect(labelTemplate, valueTemplate, priority, add,
 				negated);
 	}

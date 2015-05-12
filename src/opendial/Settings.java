@@ -59,10 +59,10 @@ public class Settings {
 	public static final String SETTINGS_FILE = "resources//settings.xml";
 
 	/** maximum number of samples to use for likelihood weighting */
-	public static int nbSamples;
+	public static int nbSamples = 3000;
 
 	/** maximum sampling time (in milliseconds) */
-	public static long maxSamplingTime;
+	public static long maxSamplingTime = 250;
 
 	/** Number of discretisation buckets to convert continuous distributions */
 	public static int discretisationBuckets = 50;
@@ -130,7 +130,6 @@ public class Settings {
 		explicitSettings = new HashSet<String>();
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
 		explicitSettings.clear();
-		selectAudioMixers();
 
 		// formatter for the system logs
 		System.getProperties().setProperty(
@@ -138,7 +137,7 @@ public class Settings {
 
 	}
 
-	private void selectAudioMixers() {
+	public void selectAudioMixers() {
 		List<Mixer.Info> inputMixers = AudioUtils.getInputMixers();
 		inputMixer = (!inputMixers.isEmpty()) ? inputMixers.get(0) : null;
 		List<Mixer.Info> outputMixers = AudioUtils.getOutputMixers();
@@ -156,7 +155,6 @@ public class Settings {
 		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
 		explicitSettings.clear();
 		fillSettings(mapping);
-		selectAudioMixers();
 	}
 
 	/**
@@ -321,10 +319,9 @@ public class Settings {
 	 * Generates an XML element that encodes the settings
 	 * 
 	 * @param doc the document to which the element must comply
-	 * @return the resulting XML element
-	 * @throws RuntimeException if the XML generation failed
+	 * @return the resulting XML element @ if the XML generation failed
 	 */
-	public Element generateXML(Document doc) throws RuntimeException {
+	public Element generateXML(Document doc) {
 
 		Element root = doc.createElement("settings");
 

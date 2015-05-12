@@ -36,6 +36,7 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.BNetwork;
 import opendial.bn.values.Value;
@@ -43,7 +44,6 @@ import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.gui.GUIFrame;
 import opendial.readers.XMLStateReader;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.apache.commons.io.IOUtils;
@@ -87,10 +87,10 @@ public class RemoteConnector implements Module {
 	 * A server socket is created, using an arbitrary open port (NB: the port can be
 	 * read in the "About" page in the GUI).
 	 * 
-	 * @param system the local dialogue system
-	 * @throws RuntimeException if the server socket could not be opened
+	 * @param system the local dialogue system @ if the server socket could not be
+	 *            opened
 	 */
-	public RemoteConnector(DialogueSystem system) throws RuntimeException {
+	public RemoteConnector(DialogueSystem system) {
 		this.system = system;
 		try {
 			local = new ServerSocket(0);

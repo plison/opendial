@@ -112,7 +112,7 @@ public class SingleValueDistribution implements IndependentProbDistribution {
 	 * Returns the value.
 	 */
 	@Override
-	public Value sample() throws RuntimeException {
+	public Value sample() {
 		return this.value;
 	}
 
@@ -128,7 +128,7 @@ public class SingleValueDistribution implements IndependentProbDistribution {
 	 * Returns a continuous representation of the distribution (if possible)
 	 */
 	@Override
-	public ContinuousDistribution toContinuous() throws RuntimeException {
+	public ContinuousDistribution toContinuous() {
 		return toDiscrete().toContinuous();
 	}
 

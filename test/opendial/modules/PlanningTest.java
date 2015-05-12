@@ -63,7 +63,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning() throws RuntimeException, InterruptedException {
+	public void testPlanning() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
@@ -77,7 +77,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning2() throws RuntimeException, InterruptedException {
+	public void testPlanning2() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -89,7 +89,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning3() throws RuntimeException, InterruptedException {
+	public void testPlanning3() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.getSettings().showGUI = false;
@@ -100,7 +100,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning4() throws RuntimeException, InterruptedException {
+	public void testPlanning4() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain3);
 		system.getSettings().showGUI = false;
@@ -117,7 +117,7 @@ public class PlanningTest {
 	}
 
 	@Test
-	public void testPlanning5() throws RuntimeException, InterruptedException {
+	public void testPlanning5() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain3);
 		system.getSettings().showGUI = false;

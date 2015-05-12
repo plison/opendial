@@ -49,8 +49,6 @@ import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 
-import org.apache.commons.collections15.ListUtils;
-
 /**
  * Implementation of the Variable Elimination algorithm.
  * 
@@ -70,15 +68,14 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the corresponding categorical table
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the corresponding categorical table @ if the inference operation
+	 *         failed
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query)
-			throws RuntimeException {
+	public MultivariateTable queryProb(Query.ProbQuery query) {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
-		return new MultivariateTable(queryFactor.getProbMatrix());
+		return new MultivariateTable(queryFactor.getProbTable());
 	}
 
 	/**
@@ -86,14 +83,13 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the utility distribution
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the utility distribution @ if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
+	public UtilityTable queryUtil(Query.UtilQuery query) {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
-		return new UtilityTable(queryFactor.getUtilityMatrix());
+		return new UtilityTable(queryFactor.getUtilTable());
 	}
 
 	// ===================================
@@ -105,10 +101,10 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * the variable-elimination algorithm.
 	 * 
 	 * @param query the query
-	 * @return the full double factor containing all query variables
-	 * @throws RuntimeException if an error occurred during the inference
+	 * @return the full double factor containing all query variables @ if an error
+	 *         occurred during the inference
 	 */
-	private DoubleFactor createQueryFactor(Query query) throws RuntimeException {
+	private DoubleFactor createQueryFactor(Query query) {
 
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 		Collection<String> queryVars = query.getQueryVars();
@@ -204,17 +200,21 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	private DoubleFactor pointwiseProduct(List<DoubleFactor> factors) {
 
-		if (factors.size() == 1) {
+		if (factors.isEmpty()) {
+			DoubleFactor factor = new DoubleFactor();
+			factor.addEntry(new Assignment(), 1.0, 0.0);
+			return factor;
+		}
+		else if (factors.size() == 1) {
 			return factors.get(0);
 		}
-
-		DoubleFactor factor = new DoubleFactor();
-
-		factor.addEntry(new Assignment(), 1.0f, 0.0f);
-
+		DoubleFactor factor = factors.get(0);
+		factors.remove(0);
 		for (DoubleFactor f : factors) {
 
 			DoubleFactor tempFactor = new DoubleFactor();
+			Set<String> sharedVars = new HashSet<String>(f.getVariables());
+			sharedVars.retainAll(factor.getVariables());
 
 			for (Assignment a : f.getValues()) {
 
@@ -223,7 +223,7 @@ public class VariableElimination implements InferenceAlgorithm {
 				double util = entry[1];
 
 				for (Assignment b : factor.getValues()) {
-					if (b.consistentWith(a)) {
+					if (b.consistentWith(a, sharedVars)) {
 						double[] entry2 = factor.getEntry(b);
 						double prob2 = entry2[0];
 						double util2 = entry2[1];
@@ -284,17 +284,15 @@ public class VariableElimination implements InferenceAlgorithm {
 	 */
 	private DoubleFactor addEvidencePairs(DoubleFactor factor, Query query) {
 
-		List<String> inter =
-				ListUtils.intersection(new ArrayList<String>(query.getQueryVars()),
-						new ArrayList<String>(query.getEvidence().getVariables()));
-
+		Set<String> inter = new HashSet<String>(query.getQueryVars());
+		inter.retainAll(query.getEvidence().getVariables());
+		Assignment evidence = query.getEvidence().getTrimmed(inter);
 		if (!inter.isEmpty()) {
 			DoubleFactor newFactor = new DoubleFactor();
-			for (Assignment a : factor.getMatrix().keySet()) {
-				Assignment assign =
-						new Assignment(a, query.getEvidence().getTrimmed(inter));
-				newFactor.addEntry(assign, factor.getProbEntry(a),
-						factor.getUtilityEntry(a));
+			for (Assignment a : factor.getAssignments()) {
+				Assignment assign = new Assignment(a, evidence);
+				double[] entry = factor.getEntry(a);
+				newFactor.addEntry(assign, entry[0], entry[1]);
 			}
 			return newFactor;
 		}
@@ -313,18 +311,17 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param query the query containing the network to reduce, the variables to
 	 *            retain, and possible evidence.
-	 * @return the probability distributions for the retained variables
-	 * @throws RuntimeException if the reduction operation failed
+	 * @return the probability distributions for the retained variables @ if the
+	 *         reduction operation failed
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
+	public BNetwork reduce(Query.ReduceQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
 
 		// create the query factor
 		DoubleFactor queryFactor = createQueryFactor(query);
-
 		BNetwork reduced = new BNetwork();
 
 		List<String> sortedNodesIds = network.getSortedNodesIds();
@@ -359,11 +356,11 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param factors the collection of factors in which to search
 	 * @param toEstimate the variable to estimate
-	 * @return the relevant factor associated with the node
-	 * @throws RuntimeException if not relevant factor could be found
+	 * @return the relevant factor associated with the node @ if not relevant factor
+	 *         could be found
 	 */
 	private DoubleFactor getRelevantFactor(DoubleFactor fullFactor, String headVar,
-			Set<String> inputVars) throws RuntimeException {
+			Set<String> inputVars) {
 
 		// summing out unrelated variables
 		DoubleFactor factor = fullFactor.copy();
@@ -398,7 +395,7 @@ public class VariableElimination implements InferenceAlgorithm {
 
 			factor.normalise();
 			CategoricalTable table = new CategoricalTable(variable);
-			for (Assignment a : factor.getMatrix().keySet()) {
+			for (Assignment a : factor.getAssignments()) {
 				table.addRow(a.getValue(variable), factor.getProbEntry(a));
 			}
 			if (table.isDeterministic()) {
@@ -414,7 +411,7 @@ public class VariableElimination implements InferenceAlgorithm {
 
 			factor.normalise(depVariables);
 			ConditionalTable table = new ConditionalTable(variable);
-			for (Assignment a : factor.getMatrix().keySet()) {
+			for (Assignment a : factor.getAssignments()) {
 				Assignment cond = a.getTrimmed(depVariables);
 				table.addRow(cond, a.getValue(variable), factor.getProbEntry(a));
 			}

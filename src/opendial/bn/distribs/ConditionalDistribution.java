@@ -24,11 +24,11 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -114,10 +114,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based
-	 *            representation)
-	 * @throws RuntimeException if distrib relates to a different random variable
+	 *            representation) @ if distrib relates to a different random variable
 	 */
-	public void addDistrib(Assignment condition, T distrib) throws RuntimeException {
+	public void addDistrib(Assignment condition, T distrib) {
 		table.put(condition, distrib);
 		if (!distrib.getVariable().equals(this.headVar)) {
 			throw new RuntimeException("Variable is " + this.headVar + ", not "
@@ -160,16 +159,16 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * distribution), returns an empty assignment.
 	 * 
 	 * @param condition the condition
-	 * @return the sampled assignment
-	 * @throws RuntimeException if the sample could not be extracted given the
-	 *             condition
+	 * @return the sampled assignment @ if the sample could not be extracted given
+	 *         the condition
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 
-		Assignment trimmed = condition.getTrimmed(conditionalVars);
-
-		T subdistrib = table.get(trimmed);
+		if (condition.size() != conditionalVars.size()) {
+			condition = condition.getTrimmed(conditionalVars);
+		}
+		T subdistrib = table.get(condition);
 		if (subdistrib != null) {
 			return subdistrib.sample();
 		}
@@ -187,14 +186,12 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the resulting probability
-	 * @throws RuntimeException if the probability could not be extracted
+	 * @return the resulting probability @ if the probability could not be extracted
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws RuntimeException {
-		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		if (table.containsKey(trimmed)) {
-			return table.get(trimmed).getProb(head);
+	public double getProb(Assignment condition, Value head) {
+		if (table.containsKey(condition)) {
+			return table.get(condition).getProb(head);
 		}
 		else if (condition.isDefault()) {
 			log.warning("void condition cannot be found in " + toString());
@@ -219,11 +216,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the corresponding probability distribution
 	 */
 	@Override
-	public IndependentProbDistribution getProbDistrib(Assignment condition)
-			throws RuntimeException {
-		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		if (table.containsKey(trimmed)) {
-			return table.get(trimmed);
+	public IndependentProbDistribution getProbDistrib(Assignment condition) {
+		if (table.containsKey(condition)) {
+			return table.get(condition);
 		}
 		else {
 			return new SingleValueDistribution(headVar, ValueFactory.none());
@@ -238,18 +233,16 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
-		Assignment trimmed = condition.getTrimmed(conditionalVars);
-		if (table.containsKey(trimmed)) {
-			return table.get(trimmed);
+	public ProbDistribution getPosterior(Assignment condition) {
+		if (table.containsKey(condition)) {
+			return table.get(condition);
 		}
 
 		ConditionalDistribution<T> newDistrib =
 				new ConditionalDistribution<T>(headVar);
 		for (Assignment a : table.keySet()) {
 			if (a.consistentWith(condition)) {
-				Assignment remaining = a.getTrimmedInverse(condition.getVariables());
+				Assignment remaining = a.getPruned(condition.getVariables());
 				if (!newDistrib.table.containsKey(remaining)) {
 					newDistrib.addDistrib(remaining, table.get(a));
 				}

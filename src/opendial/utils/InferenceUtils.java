@@ -26,7 +26,6 @@ package opendial.utils;
 import java.util.logging.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -76,40 +75,6 @@ public class InferenceUtils {
 						.collect(
 								Collectors.toMap(a -> a, a -> distrib.get(a) / total));
 
-		return normalisedDistrib;
-	}
-
-	/**
-	 * Normalises the given distribution, assuming a set of conditional variables.
-	 * 
-	 * @param distrib the distribution to normalise
-	 * @param condVars the conditional variables
-	 * @return the normalised distribution
-	 */
-	public static Map<Assignment, Double> normalise(Map<Assignment, Double> distrib,
-			Collection<String> condVars) {
-
-		Map<Assignment, Double> totals = new HashMap<Assignment, Double>();
-		for (Assignment a : distrib.keySet()) {
-			Assignment condition = a.getTrimmed(condVars);
-			if (!totals.containsKey(condition)) {
-				totals.put(condition, 0.0);
-			}
-			totals.put(condition, totals.get(condition) + distrib.get(a));
-		}
-
-		Map<Assignment, Double> normalisedDistrib =
-				new HashMap<Assignment, Double>();
-		for (Assignment a : distrib.keySet()) {
-			Assignment condition = a.getTrimmed(condVars);
-			double total = totals.get(condition);
-			if (total == 0) {
-				log.warning("all assignments in the distribution have a zero "
-						+ "probability, cannot be normalised");
-				total = 1.0f;
-			}
-			normalisedDistrib.put(a, distrib.get(a) / total);
-		}
 		return normalisedDistrib;
 	}
 

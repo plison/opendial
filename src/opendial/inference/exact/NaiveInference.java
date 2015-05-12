@@ -65,12 +65,11 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * Queries the probability distribution encoded in the Bayesian Network, given a
 	 * set of query variables, and some evidence.
 	 * 
-	 * @param query the full query
-	 * @throws RuntimeException if the inference process failed to deliver a result
+	 * @param query the full query @ if the inference process failed to deliver a
+	 *            result
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query)
-			throws RuntimeException {
+	public MultivariateTable queryProb(Query.ProbQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -220,7 +219,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * @return the reduced network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
+	public BNetwork reduce(Query.ReduceQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();

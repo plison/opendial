@@ -202,7 +202,7 @@ public class TemplateStringTest {
 	 */
 
 	@Test
-	public void testTemplateQuick() throws RuntimeException {
+	public void testTemplateQuick() {
 		Domain domain = XMLDomainReader.extractDomain("test/domains/quicktest.xml");
 		DialogueSystem system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;

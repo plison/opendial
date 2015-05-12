@@ -23,7 +23,6 @@
 package opendial.modules.examples;
 
 import java.util.logging.*;
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Collection;
@@ -32,9 +31,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 /**
  * Simple example of a synchronous module for the domain specified in
@@ -67,7 +66,7 @@ public class ModuleExample1 implements Module {
 	 * middle of this grid.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		frame = new JFrame();
 
 		frame.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE));

@@ -73,10 +73,9 @@ public class XMLUtils {
 	 * Opens the XML document referenced by the filename, and returns it
 	 * 
 	 * @param filename the filename
-	 * @return the XML document
-	 * @throws RuntimeException if the XML document could not be read.
+	 * @return the XML document @ if the XML document could not be read.
 	 */
-	public static Document getXMLDocument(String filename) throws RuntimeException {
+	public static Document getXMLDocument(String filename) {
 		InputStream is = null;
 		if (new File(filename).exists()) {
 			try {
@@ -104,10 +103,9 @@ public class XMLUtils {
 	 * Opens the XML document referenced by the input source, and returns it
 	 * 
 	 * @param is the input source
-	 * @return the XML document
-	 * @throws RuntimeException if the XML document could not be read.
+	 * @return the XML document @ if the XML document could not be read.
 	 */
-	public static Document getXMLDocument(InputSource is) throws RuntimeException {
+	public static Document getXMLDocument(InputSource is) {
 		log.fine("parsing file: " + is);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -156,10 +154,9 @@ public class XMLUtils {
 	/**
 	 * Creates a new XML, empty document
 	 * 
-	 * @return the empty XML document
-	 * @throws RuntimeException if the document could not be created
+	 * @return the empty XML document @ if the document could not be created
 	 */
-	public static Document newXMLDocument() throws RuntimeException {
+	public static Document newXMLDocument() {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -180,11 +177,10 @@ public class XMLUtils {
 	 * Writes the XML document to the particular file specified as argument
 	 * 
 	 * @param doc the document
-	 * @param filename the path to the file in which to write the XML data
-	 * @throws RuntimeException if the writing operation fails
+	 * @param filename the path to the file in which to write the XML data @ if the
+	 *            writing operation fails
 	 */
-	public static void writeXMLDocument(Document doc, String filename)
-			throws RuntimeException {
+	public static void writeXMLDocument(Document doc, String filename) {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer;
@@ -215,10 +211,9 @@ public class XMLUtils {
 	 * Returns the main node of the XML document
 	 * 
 	 * @param doc the XML document
-	 * @return the main node
-	 * @throws RuntimeException if node is ill-formatted
+	 * @return the main node @ if node is ill-formatted
 	 */
-	public static Node getMainNode(Document doc) throws RuntimeException {
+	public static Node getMainNode(Document doc) {
 		for (int i = 0; i < doc.getChildNodes().getLength(); i++) {
 			Node node = doc.getChildNodes().item(i);
 			if (!node.getNodeName().equals("#text")
@@ -235,11 +230,10 @@ public class XMLUtils {
 	 * 
 	 * @param dialSpecs the domain file
 	 * @param schemaFile the schema file
-	 * @return true if document is validated, false otherwise
-	 * @throws RuntimeException if problem appears when parsing XML
+	 * @return true if document is validated, false otherwise @ if problem appears
+	 *         when parsing XML
 	 */
-	public static boolean validateXML(String dialSpecs, String schemaFile)
-			throws RuntimeException {
+	public static boolean validateXML(String dialSpecs, String schemaFile) {
 
 		log.fine("Checking the validation of file " + dialSpecs
 				+ " against XML schema " + schemaFile + "...");

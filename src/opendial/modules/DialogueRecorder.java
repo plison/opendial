@@ -28,9 +28,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.Settings;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Comment;

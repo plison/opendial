@@ -60,7 +60,7 @@ public class RecordingTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void testRecord() throws RuntimeException, InterruptedException {
+	public void testRecord() throws InterruptedException {
 
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
@@ -101,7 +101,7 @@ public class RecordingTest {
 	}
 
 	@Test
-	public void testXML() throws RuntimeException, InterruptedException, IOException {
+	public void testXML() throws InterruptedException, IOException {
 
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile2));

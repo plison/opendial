@@ -51,40 +51,38 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment for Y1,..., Ym
 	 * @param head the value for the random variable
-	 * @return the associated probability, if one exists.
-	 * @throws RuntimeException if the probability could not be extracted
+	 * @return the associated probability, if one exists. @ if the probability could
+	 *         not be extracted
 	 */
-	public double getProb(Assignment condition, Value head) throws RuntimeException;
+	public double getProb(Assignment condition, Value head);
 
 	/**
 	 * Returns the (unconditional) probability distribution associated with the
 	 * conditional assignment provided as argument.
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
-	 * @return the independent probability distribution on X.
-	 * @throws RuntimeException if the unconditional distribution could not be
-	 *             extracted
+	 * @return the independent probability distribution on X. @ if the unconditional
+	 *         distribution could not be extracted
 	 */
-	public IndependentProbDistribution getProbDistrib(Assignment condition)
-			throws RuntimeException;
+	public IndependentProbDistribution getProbDistrib(Assignment condition);
 
 	/**
 	 * Returns a sample value for the distribution given a particular conditional
 	 * assignment.
 	 * 
 	 * @param condition the conditional assignment for Y1,...,Ym
-	 * @return the sampled values for the random variable
-	 * @throws RuntimeException if no value(s) could be sampled
+	 * @return the sampled values for the random variable @ if no value(s) could be
+	 *         sampled
 	 */
-	public Value sample(Assignment condition) throws RuntimeException;
+	public Value sample(Assignment condition);
 
 	/**
 	 * Returns the set of possible values for the distribution. If the distribution
 	 * is continuous, the method returns a discretised set.
 	 * 
-	 * @throws RuntimeException if the values could not be extracted
+	 * @ if the values could not be extracted
 	 */
-	public Set<Value> getValues() throws RuntimeException;
+	public Set<Value> getValues();
 
 	/**
 	 * Returns a new probability distribution that is the posterior of the current
@@ -92,11 +90,9 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition an assignment of values to (a subset of) the conditional
 	 *            variables
-	 * @return the posterior distribution
-	 * @throws RuntimeException if the posterior could not be computed.
+	 * @return the posterior distribution @ if the posterior could not be computed.
 	 */
-	public abstract ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException;
+	public abstract ProbDistribution getPosterior(Assignment condition);
 
 	/**
 	 * Prunes values whose frequency in the distribution is lower than the given

@@ -117,7 +117,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting probability
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws RuntimeException {
+	public double getProb(Assignment condition, Value head) {
 		double totalProb = 0.0;
 		for (Assignment assign : uncondDistrib.getValues()) {
 			Assignment augmentedCond = new Assignment(condition, assign);
@@ -133,7 +133,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the sampled value for X
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 		Assignment augmentedCond = new Assignment(condition, uncondDistrib.sample());
 		return condDistrib.sample(augmentedCond);
 	}
@@ -146,8 +146,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the categorical table for the random variable X
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition)
-			throws RuntimeException {
+	public CategoricalTable getProbDistrib(Assignment condition) {
 		CategoricalTable result = new CategoricalTable(condDistrib.getVariable());
 		for (Assignment assign : uncondDistrib.getValues()) {
 			double assignProb = uncondDistrib.getProb(assign);
@@ -167,7 +166,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the set of possible values
 	 */
 	@Override
-	public Set<Value> getValues() throws RuntimeException {
+	public Set<Value> getValues() {
 		return condDistrib.getValues();
 	}
 
@@ -179,8 +178,7 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		MultivariateTable extended = uncondDistrib.toDiscrete();
 		extended.extendRows(condition);
 		return new MarginalDistribution(condDistrib, extended);

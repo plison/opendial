@@ -111,7 +111,7 @@ public class UtilityNode extends BNode {
 	@Override
 	public void setId(String newId) {
 		super.setId(newId);
-		distrib.modifyVarId(this.nodeId, newId);
+		distrib.modifyVariableId(this.nodeId, newId);
 	}
 
 	// ===================================
@@ -126,7 +126,7 @@ public class UtilityNode extends BNode {
 	 * @return the associated utility
 	 */
 	public double getUtility(Assignment input) {
-		return distrib.getUtil(new Assignment(input));
+		return distrib.getUtil(input);
 	}
 
 	/**
@@ -174,11 +174,10 @@ public class UtilityNode extends BNode {
 	 * Returns a copy of the utility node. Note that only the node content is copied,
 	 * not its connection with other nodes.
 	 * 
-	 * @return the copy
-	 * @throws RuntimeException if the node could not be copied
+	 * @return the copy @ if the node could not be copied
 	 */
 	@Override
-	public UtilityNode copy() throws RuntimeException {
+	public UtilityNode copy() {
 		UtilityNode copy = new UtilityNode(nodeId, distrib.copy());
 		return copy;
 	}

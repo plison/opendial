@@ -77,11 +77,9 @@ public class AudioUtils {
 	 * Selects an target data line for a particular audio mixer.
 	 * 
 	 * @param mixer the name of the audio mixer
-	 * @return the selected line
-	 * @throws RuntimeException if no line could be selected
+	 * @return the selected line @ if no line could be selected
 	 */
-	public static TargetDataLine selectAudioLine(Mixer.Info mixer)
-			throws RuntimeException {
+	public static TargetDataLine selectAudioLine(Mixer.Info mixer) {
 
 		for (AudioFormat format : Arrays.asList(IN_HIGH, IN_LOW)) {
 			try {
@@ -186,8 +184,7 @@ public class AudioUtils {
 	 * @param byteArray the byte array
 	 * @return the converted audio stream
 	 */
-	public static AudioInputStream getAudioStream(byte[] byteArray)
-			throws RuntimeException {
+	public static AudioInputStream getAudioStream(byte[] byteArray) {
 		try {
 			try {
 				ByteArrayInputStream byteStream =
@@ -232,11 +229,10 @@ public class AudioUtils {
 	/**
 	 * Generates an audio file from the stream. The file must be a WAV file.
 	 * 
-	 * @param outputFile the file in which to write the audio data
-	 * @throws RuntimeException if the audio could not be written onto the file
+	 * @param outputFile the file in which to write the audio data @ if the audio
+	 *            could not be written onto the file
 	 */
-	public static void generateFile(byte[] data, File outputFile)
-			throws RuntimeException {
+	public static void generateFile(byte[] data, File outputFile) {
 		try {
 			AudioInputStream audioStream = getAudioStream(data);
 			if (outputFile.getName().endsWith("wav")) {

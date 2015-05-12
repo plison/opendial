@@ -86,7 +86,7 @@ public class InferenceChecks {
 	}
 
 	public void checkProb(BNetwork network, Collection<String> queryVars,
-			Assignment evidence) throws RuntimeException {
+			Assignment evidence) {
 
 		Query.ProbQuery query =
 				new Query.ProbQuery(network, queryVars, new Assignment());
@@ -109,19 +109,18 @@ public class InferenceChecks {
 	}
 
 	public void checkProb(BNetwork network, String queryVar, String a,
-			double expected) throws RuntimeException {
+			double expected) {
 		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 	}
 
-	public void checkProb(BNetwork network, String queryVar, Value a, double expected)
-			throws RuntimeException {
+	public void checkProb(BNetwork network, String queryVar, Value a, double expected) {
 		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 	}
 
 	public void checkProb(BNetwork network, Collection<String> queryVars,
-			Assignment a, double expected) throws RuntimeException {
+			Assignment a, double expected) {
 
 		Query.ProbQuery query =
 				new Query.ProbQuery(network, queryVars, new Assignment());
@@ -146,7 +145,7 @@ public class InferenceChecks {
 	}
 
 	public void checkCDF(BNetwork network, String variable, double value,
-			double expected) throws RuntimeException {
+			double expected) {
 
 		Query.ProbQuery query =
 				new Query.ProbQuery(network, Arrays.asList(variable),
@@ -177,14 +176,14 @@ public class InferenceChecks {
 	}
 
 	public void checkUtil(BNetwork network, String queryVar, String a,
-			double expected) throws RuntimeException {
+			double expected) {
 		checkUtil(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 
 	}
 
 	public void checkUtil(BNetwork network, Collection<String> queryVars,
-			Assignment a, double expected) throws RuntimeException {
+			Assignment a, double expected) {
 
 		Query.UtilQuery query =
 				new Query.UtilQuery(network, queryVars, new Assignment());
@@ -207,7 +206,7 @@ public class InferenceChecks {
 	}
 
 	private MultivariateDistribution computeProb(Query.ProbQuery query,
-			InferenceAlgorithm algo) throws RuntimeException {
+			InferenceAlgorithm algo) {
 
 		long time1 = System.nanoTime();
 		MultivariateDistribution distrib = algo.queryProb(query);
@@ -218,7 +217,7 @@ public class InferenceChecks {
 	}
 
 	private UtilityFunction computeUtil(Query.UtilQuery query,
-			InferenceAlgorithm algo) throws RuntimeException {
+			InferenceAlgorithm algo) {
 
 		long time1 = System.nanoTime();
 		UtilityFunction distrib = algo.queryUtil(query);
@@ -231,8 +230,7 @@ public class InferenceChecks {
 	}
 
 	private void compareDistributions(MultivariateDistribution distrib1,
-			MultivariateDistribution distrib2, double margin)
-			throws RuntimeException {
+			MultivariateDistribution distrib2, double margin) {
 
 		Collection<Assignment> rows = distrib1.getValues();
 		for (Assignment value : rows) {

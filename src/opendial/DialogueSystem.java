@@ -55,7 +55,6 @@ import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLSettingsReader;
-import opendial.state.DialogueState;
 
 /**
  * <p>
@@ -104,9 +103,9 @@ public class DialogueSystem {
 	/**
 	 * Creates a new dialogue system with an empty dialogue system
 	 * 
-	 * @throws RuntimeException if the system could not be created
+	 * @ if the system could not be created
 	 */
-	public DialogueSystem() throws RuntimeException {
+	public DialogueSystem() {
 
 		settings = new Settings();
 		curState = new DialogueState();
@@ -124,10 +123,10 @@ public class DialogueSystem {
 	/**
 	 * Creates a new dialogue system with the provided dialogue domain
 	 * 
-	 * @param domain the dialogue domain to employ
-	 * @throws RuntimeException if the system could not be created
+	 * @param domain the dialogue domain to employ @ if the system could not be
+	 *            created
 	 */
-	public DialogueSystem(Domain domain) throws RuntimeException {
+	public DialogueSystem(Domain domain) {
 		this();
 		changeDomain(domain);
 	}
@@ -161,10 +160,10 @@ public class DialogueSystem {
 	/**
 	 * Changes the dialogue domain for the dialogue domain
 	 * 
-	 * @param domain the dialogue domain to employ
-	 * @throws RuntimeException if the system could not be created
+	 * @param domain the dialogue domain to employ @ if the system could not be
+	 *            created
 	 */
-	public void changeDomain(Domain domain) throws RuntimeException {
+	public void changeDomain(Domain domain) {
 		this.domain = domain;
 		changeSettings(domain.getSettings());
 		curState = domain.getInitialState().copy();
@@ -296,6 +295,8 @@ public class DialogueSystem {
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
+			settings.selectAudioMixers();
+
 			attachModule(AudioModule.class);
 			if (settings.showGUI) {
 				getModule(GUIFrame.class).enableSpeech(true);
@@ -321,10 +322,10 @@ public class DialogueSystem {
 	 * state and subsequently updates it.
 	 * 
 	 * @param userInput the user input as a string
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated
 	 */
-	public Set<String> addUserInput(String userInput) throws RuntimeException {
+	public Set<String> addUserInput(String userInput) {
 		Assignment a = new Assignment(settings.userInput, userInput);
 		return addContent(a);
 	}
@@ -334,8 +335,8 @@ public class DialogueSystem {
 	 * with a probability) to the dialogue state and subsequently updates it.
 	 * 
 	 * @param userInput the user input as an N-best list
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated
 	 */
 	public Set<String> addUserInput(Map<String, Double> userInput) {
 		String var =
@@ -353,8 +354,8 @@ public class DialogueSystem {
 	 * subsequently updates it.
 	 * 
 	 * @param inputSpeech the speech data containing the user utterance
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated
 	 */
 	public Set<String> addUserInput(SpeechData inputSpeech) {
 		Assignment a = new Assignment(settings.userSpeech, inputSpeech);
@@ -368,8 +369,8 @@ public class DialogueSystem {
 	 * 
 	 * @param variable the variable label
 	 * @param value the variable value
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(String variable, String value) {
 		if (!paused) {
@@ -389,8 +390,8 @@ public class DialogueSystem {
 	 * 
 	 * @param variable the variable label
 	 * @param value the variable value
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(String variable, boolean value) {
 		if (!paused) {
@@ -410,8 +411,8 @@ public class DialogueSystem {
 	 * 
 	 * @param variable the variable label
 	 * @param value the variable value
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(String variable, Value value) {
 		if (!paused) {
@@ -431,8 +432,8 @@ public class DialogueSystem {
 	 * 
 	 * @param variable the variable label
 	 * @param value the variable value
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(String variable, double value) {
 		if (!paused) {
@@ -451,8 +452,8 @@ public class DialogueSystem {
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param distrib the (independent) probability distribution to add
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(IndependentProbDistribution distrib) {
 		if (!paused) {
@@ -475,8 +476,8 @@ public class DialogueSystem {
 	 * @param followPrevious whether the results should be concatenated to the
 	 *            previous values, or reset the content (e.g. when starting a new
 	 *            utterance)
-	 * @return the set of variables that have been updated
-	 * @throws RuntimeException if the incremental update failed
+	 * @return the set of variables that have been updated @ if the incremental
+	 *         update failed
 	 */
 	public Set<String> addIncrementalContent(IndependentProbDistribution content,
 			boolean followPrevious) {
@@ -501,8 +502,8 @@ public class DialogueSystem {
 	 * @param followPrevious whether the results should be concatenated to the
 	 *            previous values, or reset the content (e.g. when starting a new
 	 *            utterance)
-	 * @return the set of variables that have been updated
-	 * @throws RuntimeException if the incremental update failed
+	 * @return the set of variables that have been updated @ if the incremental
+	 *         update failed
 	 */
 	public Set<String> addIncrementalUserInput(Map<String, Double> userInput,
 			boolean followPrevious) {
@@ -518,8 +519,8 @@ public class DialogueSystem {
 	 * current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param assign the value assignment to add
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(Assignment assign) {
 		if (!paused) {
@@ -537,8 +538,8 @@ public class DialogueSystem {
 	 * the current dialogue state, and subsequently updates the dialogue state.
 	 * 
 	 * @param distrib the multivariate distribution to add
-	 * @return the variables that were updated in the process
-	 * @throws RuntimeException if the state could not be updated.
+	 * @return the variables that were updated in the process @ if the state could
+	 *         not be updated.
 	 */
 	public Set<String> addContent(MultivariateDistribution distrib) {
 		if (!paused) {
@@ -556,10 +557,9 @@ public class DialogueSystem {
 	 * updates the dialogue state.
 	 * 
 	 * @param network the Bayesian network to merge into the current state
-	 * @return the set of variables that have been updated
-	 * @throws RuntimeException if the update failed
+	 * @return the set of variables that have been updated @ if the update failed
 	 */
-	public Set<String> addContent(BNetwork network) throws RuntimeException {
+	public Set<String> addContent(BNetwork network) {
 		if (!paused) {
 			curState.addToState(network);
 			return update();
@@ -575,10 +575,9 @@ public class DialogueSystem {
 	 * updates the dialogue state.
 	 * 
 	 * @param newState the state to merge into the current state
-	 * @return the set of variables that have been updated
-	 * @throws RuntimeException if the update failed
+	 * @return the set of variables that have been updated @ if the update failed
 	 */
-	public Set<String> addContent(DialogueState newState) throws RuntimeException {
+	public Set<String> addContent(DialogueState newState) {
 		if (!paused) {
 			curState.addToState(newState);
 			return update();

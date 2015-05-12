@@ -319,8 +319,8 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 	 * Returns the XML representation of the distribution
 	 * 
 	 * @param doc the document to which the XML node belongs
-	 * @return the corresponding node
-	 * @throws RuntimeException if the XML representation could not be generated.
+	 * @return the corresponding node @ if the XML representation could not be
+	 *         generated.
 	 */
 	@Override
 	public Node generateXML(Document doc) {

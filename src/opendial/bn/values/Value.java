@@ -61,10 +61,9 @@ public interface Value extends Comparable<Value> {
 	 * Returns a value that is the concatenation of the two values
 	 * 
 	 * @param value the value to concatenate with the current one
-	 * @return the concatenated result
-	 * @throws RuntimeException if the values could not be concatenated
+	 * @return the concatenated result @ if the values could not be concatenated
 	 */
-	public Value concatenate(Value value) throws RuntimeException;
+	public Value concatenate(Value value);
 
 	/**
 	 * Returns the length of the value

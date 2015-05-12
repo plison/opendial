@@ -52,6 +52,7 @@ import javax.swing.JSeparator;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.Settings;
 import opendial.Settings.Recording;
@@ -63,7 +64,6 @@ import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
-import opendial.state.DialogueState;
 import opendial.utils.AudioUtils;
 import opendial.utils.XMLUtils;
 
@@ -491,11 +491,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * 
 	 * @param system the dialogue system
 	 * @param file the file that contains the state or parameter content
-	 * @param tag the expected top XML tag.
-	 * @throws RuntimeException if the content could not be imported into the system
+	 * @param tag the expected top XML tag. @ if the content could not be imported
+	 *            into the system
 	 */
-	public static void importContent(DialogueSystem system, String file, String tag)
-			throws RuntimeException {
+	public static void importContent(DialogueSystem system, String file, String tag) {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
@@ -538,11 +537,10 @@ public class GUIMenuBar extends JMenuBar {
 	 * 
 	 * @param system the dialogue system
 	 * @param file the file in which to write the state or parameter content
-	 * @param tag the expected top XML tag.
-	 * @throws RuntimeException if the content could not be exported from the system
+	 * @param tag the expected top XML tag. @ if the content could not be exported
+	 *            from the system
 	 */
-	public static void exportContent(DialogueSystem system, String file, String tag)
-			throws RuntimeException {
+	public static void exportContent(DialogueSystem system, String file, String tag) {
 		Document doc = XMLUtils.newXMLDocument();
 
 		Set<String> parameterIds =

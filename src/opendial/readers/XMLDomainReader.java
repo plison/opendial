@@ -24,17 +24,16 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.io.File;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import opendial.DialogueState;
 import opendial.bn.BNetwork;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
-import opendial.state.DialogueState;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -59,10 +58,9 @@ public class XMLDomainReader {
 	 * Extract a dialogue domain from the XML specification
 	 * 
 	 * @param topDomainFile the filename of the top XML file
-	 * @return the extracted dialogue domain
-	 * @throws RuntimeException if a format error occurs
+	 * @return the extracted dialogue domain @ if a format error occurs
 	 */
-	public static Domain extractDomain(String topDomainFile) throws RuntimeException {
+	public static Domain extractDomain(String topDomainFile) {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
@@ -101,11 +99,10 @@ public class XMLDomainReader {
 	 * @param mainNode main XML node
 	 * @param domain dialogue domain
 	 * @param rootpath rooth path (necessary to handle references)
-	 * @return the augmented dialogue domain
-	 * @throws RuntimeException
+	 * @return the augmented dialogue domain @
 	 */
 	private static Domain extractPartialDomain(Node mainNode, Domain domain,
-			String rootpath) throws RuntimeException {
+			String rootpath) {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("domain")) {
@@ -163,10 +160,9 @@ public class XMLDomainReader {
 	 * Given an XML node, extracts the rule-based model that corresponds to it.
 	 * 
 	 * @param topNode the XML node
-	 * @return the corresponding model
-	 * @throws RuntimeException if the specification is ill-defined
+	 * @return the corresponding model @ if the specification is ill-defined
 	 */
-	private static Model createModel(Node topNode) throws RuntimeException {
+	private static Model createModel(Node topNode) {
 		Model model = new Model();
 		for (int i = 0; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);

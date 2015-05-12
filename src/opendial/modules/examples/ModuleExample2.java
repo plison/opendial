@@ -23,7 +23,6 @@
 package opendial.modules.examples;
 
 import java.util.logging.*;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,9 +34,9 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.modules.Module;
-import opendial.state.DialogueState;
 
 /**
  * Simple example of an asynchronous module for the domain specified in
@@ -74,7 +73,7 @@ public class ModuleExample2 implements Module {
 	 * and add it to the dialogue state.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		frame = new JFrame();
 		ActionListener listener = new CustomActionListener();
 		frame.setLayout(new BorderLayout());

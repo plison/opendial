@@ -270,7 +270,8 @@ public final class BasicCondition implements Condition {
 
 		Template filledTemplate = templateValue;
 		Value expectedValue = groundValue;
-		if (!filledTemplate.getSlots().isEmpty()) {
+		if (!filledTemplate.getSlots().isEmpty() && input.size() > 1
+				&& input.containsOneVar(filledTemplate.getSlots())) {
 			filledTemplate = new Template(templateValue.fillSlots(input));
 			if (!filledTemplate.isUnderspecified()) {
 				expectedValue = ValueFactory.create(filledTemplate.toString());

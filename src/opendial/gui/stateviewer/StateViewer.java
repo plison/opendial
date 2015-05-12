@@ -24,7 +24,6 @@
 package opendial.gui.stateviewer;
 
 import java.util.logging.*;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -47,15 +46,15 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.ToolTipManager;
 
+import opendial.DialogueState;
 import opendial.DialogueSystem;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
+import opendial.domains.rules.distribs.AnchoredRule;
 import opendial.gui.StateViewerTab;
-import opendial.state.DialogueState;
-import opendial.state.distribs.RuleDistribution;
 import opendial.utils.StringUtils;
 
 import org.apache.commons.collections15.Transformer;
@@ -426,7 +425,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				BNode node = getBNode((String) arg4);
 				if (node != null) {
 					String str = StringUtils.getHtmlRendering(node.getId());
-					if (currentState.isRuleNode(node.getId())) {
+					if (currentState.getNodeIds(AnchoredRule.class).contains(
+							node.getId())) {
 						str = "<font size=\"6\" color=\"gray\">" + str + "</font>";
 					}
 					JLabel jlabel = new JLabel("<html>" + str + "</html>");
@@ -477,7 +477,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		public Shape transform(String arg0) {
 			BNode node = getBNode(arg0);
 			if (node instanceof ChanceNode) {
-				if (((ChanceNode) node).getDistrib() instanceof RuleDistribution) {
+				if (((ChanceNode) node).getDistrib() instanceof AnchoredRule) {
 					return new Ellipse2D.Double(-5.0, -5.0, 20.0, 20.0);
 				}
 				else {
@@ -519,7 +519,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 			for (int i = 0; i < 3; i++) {
 				try {
 					allNodes.addAll(network.getNodeIds());
-					ruleNodes.addAll(network.getRuleNodeIds());
+					ruleNodes.addAll(network.getNodeIds(AnchoredRule.class));
 					break;
 				}
 				catch (ConcurrentModificationException | NullPointerException e) {
