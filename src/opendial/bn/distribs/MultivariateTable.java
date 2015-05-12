@@ -275,11 +275,10 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * Sample an assignment from the distribution. If no assignment can be sampled
 	 * (due to e.g. an ill-formed distribution), returns an empty assignment.
 	 * 
-	 * @return the sampled assignment
-	 * @throws RuntimeException if no assignment could be sampled
+	 * @return the sampled assignment @ if no assignment could be sampled
 	 */
 	@Override
-	public Assignment sample() throws RuntimeException {
+	public Assignment sample() {
 
 		if (intervals == null) {
 			intervals = new Intervals<Assignment>(table);

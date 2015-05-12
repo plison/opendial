@@ -68,12 +68,11 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the corresponding categorical table
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the corresponding categorical table @ if the inference operation
+	 *         failed
 	 */
 	@Override
-	public MultivariateTable queryProb(Query.ProbQuery query)
-			throws RuntimeException {
+	public MultivariateTable queryProb(Query.ProbQuery query) {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
 		return new MultivariateTable(queryFactor.getProbTable());
@@ -84,11 +83,10 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the utility distribution
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the utility distribution @ if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
+	public UtilityTable queryUtil(Query.UtilQuery query) {
 		DoubleFactor queryFactor = createQueryFactor(query);
 		queryFactor.normalise();
 		return new UtilityTable(queryFactor.getUtilTable());
@@ -103,10 +101,10 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * the variable-elimination algorithm.
 	 * 
 	 * @param query the query
-	 * @return the full double factor containing all query variables
-	 * @throws RuntimeException if an error occurred during the inference
+	 * @return the full double factor containing all query variables @ if an error
+	 *         occurred during the inference
 	 */
-	private DoubleFactor createQueryFactor(Query query) throws RuntimeException {
+	private DoubleFactor createQueryFactor(Query query) {
 
 		List<DoubleFactor> factors = new LinkedList<DoubleFactor>();
 		Collection<String> queryVars = query.getQueryVars();
@@ -313,11 +311,11 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param query the query containing the network to reduce, the variables to
 	 *            retain, and possible evidence.
-	 * @return the probability distributions for the retained variables
-	 * @throws RuntimeException if the reduction operation failed
+	 * @return the probability distributions for the retained variables @ if the
+	 *         reduction operation failed
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
+	public BNetwork reduce(Query.ReduceQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -358,11 +356,11 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param factors the collection of factors in which to search
 	 * @param toEstimate the variable to estimate
-	 * @return the relevant factor associated with the node
-	 * @throws RuntimeException if not relevant factor could be found
+	 * @return the relevant factor associated with the node @ if not relevant factor
+	 *         could be found
 	 */
 	private DoubleFactor getRelevantFactor(DoubleFactor fullFactor, String headVar,
-			Set<String> inputVars) throws RuntimeException {
+			Set<String> inputVars) {
 
 		// summing out unrelated variables
 		DoubleFactor factor = fullFactor.copy();

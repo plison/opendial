@@ -142,7 +142,7 @@ public final class Effect implements Value {
 	}
 
 	@Override
-	public Value concatenate(Value v) throws RuntimeException {
+	public Value concatenate(Value v) {
 		if (v instanceof Effect) {
 			Collection<BasicEffect> effects = new ArrayList<BasicEffect>(subeffects);
 			effects.addAll(((Effect) v).getSubEffects());

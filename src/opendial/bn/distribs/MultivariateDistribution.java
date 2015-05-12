@@ -61,10 +61,9 @@ public interface MultivariateDistribution {
 	/**
 	 * Returns a sample assignment for X1,...Xn.
 	 * 
-	 * @return the sampled assignment
-	 * @throws RuntimeException if no sample could be extracted
+	 * @return the sampled assignment @ if no sample could be extracted
 	 */
-	public Assignment sample() throws RuntimeException;
+	public Assignment sample();
 
 	/**
 	 * Returns the marginal probability distribution P(Xi) for a random variable Xi

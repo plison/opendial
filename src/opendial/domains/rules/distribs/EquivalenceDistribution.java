@@ -114,7 +114,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Generates a sample from the distribution given the conditional assignment.
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 		double prob = getProb(condition);
 
 		if (sampler.nextDouble() < prob) {
@@ -169,8 +169,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * fixed input.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -178,12 +177,11 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Returns the categorical table associated with the conditional assignment.
 	 * 
 	 * @param condition the conditional assignment
-	 * @return the corresponding categorical table on the true and false values
-	 * @throws RuntimeException if the table could not be extracted for the condition
+	 * @return the corresponding categorical table on the true and false values @ if
+	 *         the table could not be extracted for the condition
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition)
-			throws RuntimeException {
+	public CategoricalTable getProbDistrib(Assignment condition) {
 		double positiveProb = getProb(condition);
 		CategoricalTable table = new CategoricalTable(getVariable());
 		table.addRow(true, positiveProb);
@@ -209,10 +207,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Returns the probability of eq=true given the condition
 	 * 
 	 * @param condition the conditional assignment
-	 * @return the probability of eq=true
-	 * @throws RuntimeException if the distribution is ill-formed
+	 * @return the probability of eq=true @ if the distribution is ill-formed
 	 */
-	private double getProb(Assignment condition) throws RuntimeException {
+	private double getProb(Assignment condition) {
 
 		Value predicted = null;
 		Value actual = null;

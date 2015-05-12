@@ -93,10 +93,9 @@ public class NuanceSpeech implements Module {
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
-	 * @param system the dialogue system to attach
-	 * @throws RuntimeException in case of missing parameters
+	 * @param system the dialogue system to attach @ in case of missing parameters
 	 */
-	public NuanceSpeech(DialogueSystem system) throws RuntimeException {
+	public NuanceSpeech(DialogueSystem system) {
 		this.system = system;
 		List<String> missingParams =
 				new LinkedList<String>(Arrays.asList("id", "key", "lang"));
@@ -114,7 +113,7 @@ public class NuanceSpeech implements Module {
 	 * Starts the Nuance speech plugin.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		paused = false;
 		GUIFrame gui = system.getModule(GUIFrame.class);
 		if (gui == null) {
@@ -300,9 +299,9 @@ public class NuanceSpeech implements Module {
 	/**
 	 * Builds the REST clients for speech recognition and synthesis.
 	 * 
-	 * @throws RuntimeException
+	 * @
 	 */
-	private void buildClients() throws RuntimeException {
+	private void buildClients() {
 
 		// Initialize the HTTP clients
 		asrClient = HttpClientBuilder.create().build();

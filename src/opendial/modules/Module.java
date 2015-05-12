@@ -59,9 +59,9 @@ public interface Module {
 	/**
 	 * Starts the module.
 	 * 
-	 * @throws RuntimeException if the initialisation fails
+	 * @ if the initialisation fails
 	 */
-	public void start() throws RuntimeException;
+	public void start();
 
 	/**
 	 * Triggers the module after a state update

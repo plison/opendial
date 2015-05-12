@@ -24,7 +24,6 @@
 package opendial.domains.rules.parameters;
 
 import java.util.Collection;
-
 import opendial.datastructs.Assignment;
 
 /**
@@ -52,5 +51,21 @@ public interface Parameter {
 	 * @return the collection of parameter labels
 	 */
 	public Collection<String> getVariables();
+
+	/**
+	 * Sums the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the sum of the two
+	 */
+	public Parameter sum(Parameter p2);
+
+	/**
+	 * Multiplies the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the product of the two
+	 */
+	public Parameter multiply(Parameter p2);
 
 }

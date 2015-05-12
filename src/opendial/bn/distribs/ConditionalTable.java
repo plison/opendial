@@ -312,8 +312,7 @@ public class ConditionalTable extends ConditionalDistribution<CategoricalTable> 
 	 * @return the resulting probability distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		Assignment trimmed = condition.getTrimmed(conditionalVars);
 		if (table.containsKey(trimmed)) {
 			return table.get(trimmed);

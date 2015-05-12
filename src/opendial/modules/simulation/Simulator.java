@@ -62,11 +62,10 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param simulatorDomain the dialogue domain for the simulator
-	 * @throws RuntimeException if the simulator could not be created
+	 * @param simulatorDomain the dialogue domain for the simulator @ if the
+	 *            simulator could not be created
 	 */
-	public Simulator(DialogueSystem system, String simulatorDomain)
-			throws RuntimeException {
+	public Simulator(DialogueSystem system, String simulatorDomain) {
 		this(system, extractDomain(simulatorDomain));
 	}
 
@@ -74,10 +73,10 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param domain the dialogue domain for the simulator
-	 * @throws RuntimeException if the simulator could not be created
+	 * @param domain the dialogue domain for the simulator @ if the simulator could
+	 *            not be created
 	 */
-	public Simulator(DialogueSystem system, Domain domain) throws RuntimeException {
+	public Simulator(DialogueSystem system, Domain domain) {
 		this.system = system;
 		this.domain = domain;
 		simulatorState = domain.getInitialState().copy();
@@ -89,7 +88,7 @@ public class Simulator implements Module {
 	 * Adds an empty action to the dialogue system to start the interaction.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		Assignment emptyAction =
 				new Assignment(system.getSettings().systemOutput,
 						ValueFactory.none());
@@ -129,8 +128,7 @@ public class Simulator implements Module {
 		}
 	}
 
-	private static Domain extractDomain(String simulatorDomain)
-			throws RuntimeException {
+	private static Domain extractDomain(String simulatorDomain) {
 		if (simulatorDomain == null) {
 			throw new RuntimeException("Required parameter: simulatorDomain");
 		}
@@ -164,11 +162,9 @@ public class Simulator implements Module {
 	/**
 	 * Performs the dialogue turn in the simulator.
 	 * 
-	 * @param systemAction the last system action.
-	 * @throws RuntimeException
+	 * @param systemAction the last system action. @
 	 */
-	private synchronized boolean performTurn(Value systemAction)
-			throws RuntimeException {
+	private synchronized boolean performTurn(Value systemAction) {
 
 		boolean turnPerformed = false;
 		simulatorState.setParameters(domain.getParameters());
@@ -217,10 +213,9 @@ public class Simulator implements Module {
 	 * method returns true when a new user input has been generated, and false
 	 * otherwise.
 	 * 
-	 * @return whether a user input has been generated
-	 * @throws RuntimeException
+	 * @return whether a user input has been generated @
 	 */
-	private boolean addNewObservations() throws RuntimeException {
+	private boolean addNewObservations() {
 		List<String> newObsVars = new ArrayList<String>();
 		for (String var : simulatorState.getChanceNodeIds()) {
 			if (var.contains("^o'")) {

@@ -66,7 +66,7 @@ public class ModuleExample1 implements Module {
 	 * middle of this grid.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		frame = new JFrame();
 
 		frame.setLayout(new GridLayout(GRID_SIZE, GRID_SIZE));

@@ -64,7 +64,7 @@ public class TextOnlyInterface implements Module {
 	 */
 	@SuppressWarnings("resource")
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		paused = false;
 		log.info("Starting text-only user interface...");
 		log.info("Local address: " + system.getLocalAddress());

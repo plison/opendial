@@ -114,10 +114,9 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based
-	 *            representation)
-	 * @throws RuntimeException if distrib relates to a different random variable
+	 *            representation) @ if distrib relates to a different random variable
 	 */
-	public void addDistrib(Assignment condition, T distrib) throws RuntimeException {
+	public void addDistrib(Assignment condition, T distrib) {
 		table.put(condition, distrib);
 		if (!distrib.getVariable().equals(this.headVar)) {
 			throw new RuntimeException("Variable is " + this.headVar + ", not "
@@ -160,12 +159,11 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * distribution), returns an empty assignment.
 	 * 
 	 * @param condition the condition
-	 * @return the sampled assignment
-	 * @throws RuntimeException if the sample could not be extracted given the
-	 *             condition
+	 * @return the sampled assignment @ if the sample could not be extracted given
+	 *         the condition
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 
 		if (condition.size() != conditionalVars.size()) {
 			condition = condition.getTrimmed(conditionalVars);
@@ -188,11 +186,10 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the resulting probability
-	 * @throws RuntimeException if the probability could not be extracted
+	 * @return the resulting probability @ if the probability could not be extracted
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws RuntimeException {
+	public double getProb(Assignment condition, Value head) {
 		if (table.containsKey(condition)) {
 			return table.get(condition).getProb(head);
 		}
@@ -236,8 +233,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * @return the resulting posterior distribution.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		if (table.containsKey(condition)) {
 			return table.get(condition);
 		}

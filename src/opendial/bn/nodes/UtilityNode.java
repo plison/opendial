@@ -174,11 +174,10 @@ public class UtilityNode extends BNode {
 	 * Returns a copy of the utility node. Note that only the node content is copied,
 	 * not its connection with other nodes.
 	 * 
-	 * @return the copy
-	 * @throws RuntimeException if the node could not be copied
+	 * @return the copy @ if the node could not be copied
 	 */
 	@Override
-	public UtilityNode copy() throws RuntimeException {
+	public UtilityNode copy() {
 		UtilityNode copy = new UtilityNode(nodeId, distrib.copy());
 		return copy;
 	}

@@ -427,16 +427,6 @@ public class Template {
 	}
 
 	/**
-	 * Returns the raw string after removing the braces surrounding underspecified
-	 * variables
-	 * 
-	 * @return the string with the opening and closing braces removed.
-	 */
-	public String getStringWithoutBraces() {
-		return rawString.replaceAll("\\{(.+?)\\}", "$1");
-	}
-
-	/**
 	 * Representation of a matching result
 	 */
 	public class MatchResult {

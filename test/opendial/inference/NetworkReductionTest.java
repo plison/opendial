@@ -58,7 +58,7 @@ public class NetworkReductionTest {
 	NaiveInference naive;
 	SwitchingAlgorithm sw;
 
-	public NetworkReductionTest() throws RuntimeException {
+	public NetworkReductionTest() {
 		network = NetworkExamples.constructBasicNetwork2();
 
 		ve = new VariableElimination();
@@ -68,7 +68,7 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test1() throws RuntimeException, InterruptedException {
+	public void test1() throws InterruptedException {
 
 		BNetwork reducedNet =
 				ve.reduce(network,
@@ -153,7 +153,7 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test2() throws RuntimeException, InterruptedException {
+	public void test2() throws InterruptedException {
 
 		BNetwork reducedNet =
 				ve.reduce(network, Arrays.asList("Burglary", "MaryCalls"),
@@ -228,7 +228,7 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test3() throws RuntimeException, InterruptedException {
+	public void test3() throws InterruptedException {
 
 		BNetwork reducedNet =
 				ve.reduce(network, Arrays.asList("Burglary", "Earthquake"),
@@ -297,7 +297,7 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test5() throws RuntimeException {
+	public void test5() {
 		BNetwork reducedNet =
 				ve.reduce(network, Arrays.asList("Burglary"),
 						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
@@ -338,7 +338,7 @@ public class NetworkReductionTest {
 	}
 
 	@Test
-	public void test6() throws RuntimeException, InterruptedException {
+	public void test6() throws InterruptedException {
 		BNetwork old = network.copy();
 
 		network.getNode("Alarm").removeInputNode("Earthquake");

@@ -83,7 +83,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam1() throws RuntimeException, InterruptedException {
+	public void testParam1() throws InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 
@@ -115,7 +115,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam2() throws RuntimeException, InterruptedException {
+	public void testParam2() throws InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.1;
 
@@ -137,7 +137,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam3() throws RuntimeException, InterruptedException {
+	public void testParam3() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
@@ -164,7 +164,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void paramTest4() throws RuntimeException, InterruptedException {
+	public void paramTest4() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain1);
 		system.detachModule(ForwardPlanner.class);
@@ -202,7 +202,7 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void testParam5() throws RuntimeException, InterruptedException {
+	public void testParam5() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain2);
 		system.detachModule(ForwardPlanner.class);

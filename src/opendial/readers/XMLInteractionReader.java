@@ -50,11 +50,9 @@ public class XMLInteractionReader {
 	 * dialogue state (one for each turn).
 	 * 
 	 * @param dataFile the XML file containing the turns
-	 * @return the list of dialogue states
-	 * @throws RuntimeException if the XML file is corrupted.
+	 * @return the list of dialogue states @ if the XML file is corrupted.
 	 */
-	public static List<DialogueState> extractInteraction(String dataFile)
-			throws RuntimeException {
+	public static List<DialogueState> extractInteraction(String dataFile) {
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(dataFile);
 		Node mainNode = XMLUtils.getMainNode(doc);

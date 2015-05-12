@@ -59,7 +59,7 @@ public class InferenceTest {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	public static void main(String[] args) throws RuntimeException {
+	public static void main(String[] args) {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		log.info(""
 				+ (new VariableElimination()).queryProb(bn, Arrays
@@ -68,7 +68,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork1() throws RuntimeException {
+	public void testNetwork1() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -103,7 +103,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork1bis() throws RuntimeException {
+	public void testNetwork1bis() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
@@ -138,7 +138,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork2() throws RuntimeException {
+	public void testNetwork2() {
 
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
@@ -162,7 +162,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork2bis() throws RuntimeException {
+	public void testNetwork2bis() {
 
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
@@ -186,7 +186,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testNetwork3bis() throws RuntimeException {
+	public void testNetwork3bis() {
 
 		SamplingAlgorithm is = new SamplingAlgorithm(5000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
@@ -210,7 +210,7 @@ public class InferenceTest {
 	}
 
 	/**
-	 * @Test public void conditionalProbsTest() throws RuntimeException {
+	 * @Test public void conditionalProbsTest() {
 	 * 
 	 *       BNetwork bn2 = NetworkExamples.constructBasicNetwork2(); NaiveInference
 	 *       naive = new NaiveInference(); ProbQuery query = new ProbQuery(bn2,
@@ -237,7 +237,7 @@ public class InferenceTest {
 	 */
 
 	@Test
-	public void testNetworkUtil() throws RuntimeException {
+	public void testNetworkUtil() {
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 
 		VariableElimination ve = new VariableElimination();
@@ -345,7 +345,7 @@ public class InferenceTest {
 	}
 
 	@Test
-	public void testSwitching() throws RuntimeException {
+	public void testSwitching() {
 		int oldFactor = SwitchingAlgorithm.MAX_BRANCHING_FACTOR;
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = 4;
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
@@ -405,7 +405,7 @@ public class InferenceTest {
 	}
 
 	/**
-	 * @Test public void specialUtilQueryTest() throws RuntimeException {
+	 * @Test public void specialUtilQueryTest() {
 	 * 
 	 *       BNetwork network = new BNetwork(); ChanceNode n = new ChanceNode("s");
 	 *       n.addProb(ValueFactory.create("val1"), 0.3);

@@ -24,10 +24,11 @@
 package opendial.utils;
 
 import java.util.logging.*;
-
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -298,6 +299,32 @@ public class StringUtils {
 			}
 		}
 		return builder.toString();
+	}
+
+	/**
+	 * Returns the set of substrings that are surround by curly brackets in the
+	 * string, such as "oneslot" in "bla {oneslot} blo".
+	 * 
+	 * @param str the string in which to search the slots
+	 * @return the slots
+	 */
+	public static Set<String> getSlots(String str) {
+		Set<String> slots = new HashSet<String>();
+		Matcher m = slotRegex.matcher(str);
+		while (m.find()) {
+			slots.add(m.group(1));
+		}
+		return slots;
+	}
+
+	/**
+	 * Removes the braces from the string.
+	 * 
+	 * @param str the initial string
+	 * @return the filtered string
+	 */
+	public static String removeBraces(String str) {
+		return str.replaceAll(slotRegex.toString(), "$1");
 	}
 
 	/**

@@ -92,12 +92,11 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the resulting probability distribution
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the resulting probability distribution @ if the inference operation
+	 *         failed
 	 */
 	@Override
-	public EmpiricalDistribution queryProb(Query.ProbQuery query)
-			throws RuntimeException {
+	public EmpiricalDistribution queryProb(Query.ProbQuery query) {
 
 		// creates a new query thread
 		LikelihoodWeighting isquery =
@@ -114,11 +113,10 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * 
 	 * @param network the network on which to extract the sample
 	 * @param queryVars the variables to extract
-	 * @return the extracted sample
-	 * @throws RuntimeException if no sample could be extracted.
+	 * @return the extracted sample @ if no sample could be extracted.
 	 */
 	public static Assignment extractSample(BNetwork network,
-			Collection<String> queryVars) throws RuntimeException {
+			Collection<String> queryVars) {
 		// creates a new query thread
 		Query query = new Query.ProbQuery(network, queryVars, new Assignment());
 		LikelihoodWeighting isquery =
@@ -139,11 +137,10 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the utility distribution
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the utility distribution @ if the inference operation failed
 	 */
 	@Override
-	public UtilityTable queryUtil(Query.UtilQuery query) throws RuntimeException {
+	public UtilityTable queryUtil(Query.UtilQuery query) {
 
 		try {
 			// creates a new query thread
@@ -170,11 +167,10 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * Queries for the utility without any particular query variable
 	 * 
 	 * @param network the graphical model
-	 * @return the utility
-	 * @throws RuntimeException if the inference operation failed
+	 * @return the utility @ if the inference operation failed
 	 */
 
-	public double queryUtil(BNetwork network) throws RuntimeException {
+	public double queryUtil(BNetwork network) {
 
 		// creates a new query thread
 		Query query =
@@ -203,7 +199,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @return the reduced Bayesian network
 	 */
 	@Override
-	public BNetwork reduce(Query.ReduceQuery query) throws RuntimeException {
+	public BNetwork reduce(Query.ReduceQuery query) {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
@@ -256,11 +252,10 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @param query the query
 	 * @param weightScheme the weighting scheme for the samples
 	 * @return the resulting empirical distribution for the query variables, after
-	 *         reweigthing
-	 * @throws RuntimeException if the reweighting operation failed.
+	 *         reweigthing @ if the reweighting operation failed.
 	 */
 	public EmpiricalDistribution getWeightedSamples(Query query,
-			Consumer<Collection<Sample>> weightScheme) throws RuntimeException {
+			Consumer<Collection<Sample>> weightScheme) {
 
 		LikelihoodWeighting isquery =
 				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);

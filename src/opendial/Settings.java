@@ -319,10 +319,9 @@ public class Settings {
 	 * Generates an XML element that encodes the settings
 	 * 
 	 * @param doc the document to which the element must comply
-	 * @return the resulting XML element
-	 * @throws RuntimeException if the XML generation failed
+	 * @return the resulting XML element @ if the XML generation failed
 	 */
-	public Element generateXML(Document doc) throws RuntimeException {
+	public Element generateXML(Document doc) {
 
 		Element root = doc.createElement("settings");
 

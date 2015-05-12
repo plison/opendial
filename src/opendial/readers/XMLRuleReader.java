@@ -24,7 +24,6 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +36,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Template;
 import opendial.domains.rules.Rule;
 import opendial.domains.rules.Rule.RuleType;
-import opendial.domains.rules.RuleCase;
+import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.conditions.BasicCondition;
 import opendial.domains.rules.conditions.BasicCondition.Relation;
 import opendial.domains.rules.conditions.ComplexCondition;
@@ -54,6 +53,7 @@ import opendial.domains.rules.parameters.Parameter;
 import opendial.domains.rules.parameters.SingleParameter;
 import opendial.utils.XMLUtils;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -72,10 +72,9 @@ public class XMLRuleReader {
 	 * Extracts the rule corresponding to the XML specification.
 	 * 
 	 * @param topNode the XML node
-	 * @return the corresponding rule
-	 * @throws RuntimeException if the specification is ill-defined.
+	 * @return the corresponding rule @ if the specification is ill-defined.
 	 */
-	public static Rule getRule(Node topNode) throws RuntimeException {
+	public static Rule getRule(Node topNode) {
 
 		// extracting the rule type
 		RuleType type = RuleType.PROB;
@@ -97,13 +96,22 @@ public class XMLRuleReader {
 		// creating the rule
 		Rule rule = new Rule(ruleId, type);
 
+		int priority = 1;
+		if (topNode.hasAttributes()
+				&& topNode.getAttributes().getNamedItem("priority") != null) {
+			priority =
+					Integer.parseInt(topNode.getAttributes()
+							.getNamedItem("priority").getNodeValue());
+		}
+
 		// extracting the rule cases
 		for (int i = 0; i < topNode.getChildNodes().getLength(); i++) {
 			Node node = topNode.getChildNodes().item(i);
 
 			if (node.getNodeName().equals("case")) {
-				RuleCase newCase = getCase(node, type);
-				rule.addCase(newCase);
+				Condition cond = getCondition(node, type);
+				RuleOutput output = getOutput(node, type, cond, priority);
+				rule.addCase(cond, output);
 
 			}
 			else if (!node.getNodeName().equals("#text")
@@ -113,66 +121,66 @@ public class XMLRuleReader {
 			}
 		}
 
-		if (topNode.hasAttributes()
-				&& topNode.getAttributes().getNamedItem("priority") != null) {
-			int priority =
-					Integer.parseInt(topNode.getAttributes()
-							.getNamedItem("priority").getNodeValue());
-			rule.setPriority(priority);
-		}
 		return rule;
 	}
 
 	/**
-	 * Returns the case associated with the rule specification.
+	 * Returns the condition associated with the rule specification.
 	 * 
 	 * @param node the XML node
 	 * @param type the rule type
-	 * @return the associated rule case
-	 * @throws RuntimeException if the specification is ill-defined.
+	 * @return the associated rule condition @ if the specification is ill-defined.
 	 */
-	private static RuleCase getCase(Node caseNode, RuleType type)
-			throws RuntimeException {
-
-		RuleCase newCase = new RuleCase(null);
+	private static Condition getCondition(Node caseNode, RuleType type) {
 
 		for (int i = 0; i < caseNode.getChildNodes().getLength(); i++) {
 			Node node = caseNode.getChildNodes().item(i);
 
 			// extracting the condition
 			if (node.getNodeName().equals("condition")) {
-				Condition condition = getFullCondition(node);
-				newCase = new RuleCase(null, condition);
-			}
-			// extracting an effect
-			else if (node.getNodeName().equals("effect")) {
-				Effect effect = getFullEffect(node);
-				if (effect != null) {
-					Parameter prob =
-							getParameter(node, newCase.getCondition().getSlots(),
-									type);
-					newCase.addEffect(effect, prob);
-				}
-			}
-			else if (!node.getNodeName().equals("#text")
-					&& !node.getNodeName().equals("#comment")) {
-				throw new RuntimeException("Ill-formed rule: " + node.getNodeName()
-						+ " not accepted");
+				return getFullCondition(node);
 			}
 		}
 
-		return newCase;
+		return new VoidCondition();
+	}
+
+	/**
+	 * Returns the output associated with the rule specification.
+	 * 
+	 * @param node the XML node
+	 * @param type the rule type
+	 * @param condition the associated condition
+	 * @param priority the rule priority @ if the specification is ill-defined.
+	 */
+	private static RuleOutput getOutput(Node caseNode, RuleType type,
+			Condition condition, int priority) {
+
+		RuleOutput output = new RuleOutput(type);
+
+		for (int i = 0; i < caseNode.getChildNodes().getLength(); i++) {
+			Node node = caseNode.getChildNodes().item(i);
+
+			// extracting an effect
+			if (node.getNodeName().equals("effect")) {
+				Effect effect = getFullEffect(node, priority);
+				if (effect != null) {
+					Parameter prob = getParameter(node, condition.getSlots(), type);
+					output.addEffect(effect, prob);
+				}
+			}
+		}
+
+		return output;
 	}
 
 	/**
 	 * Extracting the condition associated with an XML specification.
 	 * 
 	 * @param node the XML node
-	 * @return the associated condition
-	 * @throws RuntimeException if the specification is ill-defined.
+	 * @return the associated condition @ if the specification is ill-defined.
 	 */
-	private static Condition getFullCondition(Node conditionNode)
-			throws RuntimeException {
+	private static Condition getFullCondition(Node conditionNode) {
 
 		List<Condition> subconditions = new LinkedList<Condition>();
 
@@ -219,10 +227,9 @@ public class XMLRuleReader {
 	 * Extracting a partial condition from a rule specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding condition
-	 * @throws RuntimeException if the condition is ill-defined
+	 * @return the corresponding condition @ if the condition is ill-defined
 	 */
-	private static Condition getSubcondition(Node node) throws RuntimeException {
+	private static Condition getSubcondition(Node node) {
 
 		// extracting a basic condition
 		if (node.getNodeName().equals("if") && node.hasAttributes()
@@ -314,10 +321,9 @@ public class XMLRuleReader {
 	 * Extracts the relation specified in a condition
 	 * 
 	 * @param node the XML node containing the relation
-	 * @return the corresponding relation
-	 * @throws RuntimeException if the relation is ill-defined
+	 * @return the corresponding relation @ if the relation is ill-defined
 	 */
-	private static Relation getRelation(Node node) throws RuntimeException {
+	private static Relation getRelation(Node node) {
 		Relation relation = Relation.EQUAL;
 		if (node.hasAttributes()
 				&& node.getAttributes().getNamedItem("relation") != null) {
@@ -368,10 +374,10 @@ public class XMLRuleReader {
 	 * Extracts a full effect from the XML specification.
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding effect
-	 * @throws RuntimeException
+	 * @param priority the rule priority
+	 * @return the corresponding effect @
 	 */
-	private static Effect getFullEffect(Node effectNode) throws RuntimeException {
+	private static Effect getFullEffect(Node effectNode, int priority) {
 
 		List<BasicEffect> effects = new LinkedList<BasicEffect>();
 
@@ -381,7 +387,7 @@ public class XMLRuleReader {
 			if (!node.getNodeName().equals("#text")
 					&& !node.getNodeName().equals("#comment")
 					&& node.hasAttributes()) {
-				BasicEffect subeffect = getSubEffect(node);
+				BasicEffect subeffect = getSubEffect(node, priority);
 				effects.add(subeffect);
 			}
 		}
@@ -392,27 +398,25 @@ public class XMLRuleReader {
 	 * Extracts a basic effect from the XML specification.
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding basic effect
-	 * @throws RuntimeException if the effect is ill-defined
+	 * @param priority the rule priority
+	 * @return the corresponding basic effect @ if the effect is ill-defined
 	 */
-	private static BasicEffect getSubEffect(Node node) throws RuntimeException {
+	private static BasicEffect getSubEffect(Node node, int priority) {
 
-		if (node.getAttributes().getNamedItem("var") == null) {
+		NamedNodeMap attrs = node.getAttributes();
+		if (attrs.getNamedItem("var") == null) {
 			throw new RuntimeException("invalid format for effect: "
-					+ node.getNodeName() + " and var "
-					+ node.getAttributes().getNamedItem("var"));
+					+ node.getNodeName() + " and var " + attrs.getNamedItem("var"));
 		}
 
-		String var = node.getAttributes().getNamedItem("var").getNodeValue();
+		String var = attrs.getNamedItem("var").getNodeValue();
 
 		String value = null;
-		if (node.getAttributes().getNamedItem("value") != null) {
-			value = node.getAttributes().getNamedItem("value").getNodeValue();
+		if (attrs.getNamedItem("value") != null) {
+			value = attrs.getNamedItem("value").getNodeValue();
 		}
-		else if (node.getAttributes().getNamedItem("var2") != null) {
-			value =
-					"{" + node.getAttributes().getNamedItem("var2").getNodeValue()
-							+ "}";
+		else if (attrs.getNamedItem("var2") != null) {
+			value = "{" + attrs.getNamedItem("var2").getNodeValue() + "}";
 		}
 		else {
 			value = "None";
@@ -421,12 +425,12 @@ public class XMLRuleReader {
 
 		boolean add =
 				node.getNodeName().equalsIgnoreCase("add")
-						|| (node.getAttributes().getNamedItem("add") != null && Boolean
-								.parseBoolean(node.getAttributes()
-										.getNamedItem("add").getNodeValue()));
+						|| (attrs.getNamedItem("add") != null && Boolean
+								.parseBoolean(attrs.getNamedItem("add")
+										.getNodeValue()));
 
 		boolean negated =
-				node.getAttributes().getNamedItem("relation") != null
+				attrs.getNamedItem("relation") != null
 						&& getRelation(node) == Relation.UNEQUAL;
 
 		// "clear" effect is outdated
@@ -435,8 +439,8 @@ public class XMLRuleReader {
 		}
 
 		// checking for other attributes
-		for (int i = 0; i < node.getAttributes().getLength(); i++) {
-			Node attr = node.getAttributes().item(i);
+		for (int i = 0; i < attrs.getLength(); i++) {
+			Node attr = attrs.item(i);
 			if (!attr.getNodeName().equals("var")
 					&& !attr.getNodeName().equals("var2")
 					&& !attr.getNodeName().equals("value")
@@ -450,11 +454,11 @@ public class XMLRuleReader {
 		Template tvar = new Template(var);
 		Template tval = new Template(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-			return new TemplateEffect(tvar, tval, 1, add, negated);
+			return new TemplateEffect(tvar, tval, priority, add, negated);
 		}
 		else {
-			return new BasicEffect(var, ValueFactory.create(tval.toString()), 1,
-					add, negated);
+			return new BasicEffect(var, ValueFactory.create(tval.toString()),
+					priority, add, negated);
 		}
 
 	}
@@ -464,11 +468,10 @@ public class XMLRuleReader {
 	 * 
 	 * @param node the XML node
 	 * @param type the rule type
-	 * @return the parameter representation
-	 * @throws RuntimeException
+	 * @return the parameter representation @
 	 */
 	private static Parameter getParameter(Node node, Set<String> caseSlots,
-			RuleType type) throws RuntimeException {
+			RuleType type) {
 
 		if (type == RuleType.PROB) {
 			if (node.getAttributes().getNamedItem("prob") != null) {
@@ -495,11 +498,9 @@ public class XMLRuleReader {
 	 * 
 	 * @param node the XML node
 	 * @param caseSlots the underspecified slots for the case
-	 * @return the parameter representation
-	 * @throws RuntimeException
+	 * @return the parameter representation @
 	 */
-	private static Parameter getInnerParameter(String paramStr, Set<String> caseSlots)
-			throws RuntimeException {
+	private static Parameter getInnerParameter(String paramStr, Set<String> caseSlots) {
 
 		// we first try to extract a fixed value
 		try {

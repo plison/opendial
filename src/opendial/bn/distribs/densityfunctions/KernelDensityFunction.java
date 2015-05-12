@@ -299,7 +299,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * @return the cumulative probability from 0 to x.
 	 */
 	@Override
-	public double getCDF(double... x) throws RuntimeException {
+	public double getCDF(double... x) {
 		if (x.length != getDimensions()) {
 			throw new RuntimeException("Illegal dimensionality: " + x.length + "!="
 					+ getDimensions());
@@ -361,8 +361,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * Converts the distribution to a Gaussian distribution and returns its XML
 	 * representation.
 	 * 
-	 * @param doc the XML document
-	 * @throws RuntimeException if the XML representation could not be generated
+	 * @param doc the XML document @ if the XML representation could not be generated
 	 * 
 	 */
 	@Override

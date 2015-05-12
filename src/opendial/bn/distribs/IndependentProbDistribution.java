@@ -96,10 +96,9 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	/**
 	 * Returns a sampled value for the distribution.
 	 * 
-	 * @return the sampled value
-	 * @throws RuntimeException if no sample could be extracted.
+	 * @return the sampled value @ if no sample could be extracted.
 	 */
-	public Value sample() throws RuntimeException;
+	public Value sample();
 
 	/**
 	 * Returns a set of possible values for the distribution. If the distribution is
@@ -113,11 +112,10 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	/**
 	 * Returns a continuous representation of the distribution.
 	 * 
-	 * @return the distribution in a continuous form
-	 * @throws RuntimeException if the distribution could not be converted to a
-	 *             continuous form
+	 * @return the distribution in a continuous form @ if the distribution could not
+	 *         be converted to a continuous form
 	 */
-	public ContinuousDistribution toContinuous() throws RuntimeException;
+	public ContinuousDistribution toContinuous();
 
 	/**
 	 * Returns a discrete representation of the distribution
@@ -139,8 +137,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Generates a XML node that represents the distribution.
 	 * 
 	 * @param document the XML node to which the node will be attached
-	 * @return the corresponding XML node
-	 * @throws RuntimeException if the XML generation failed.
+	 * @return the corresponding XML node @ if the XML generation failed.
 	 */
 	public Node generateXML(Document document);
 
@@ -168,12 +165,10 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the value for the head variable
-	 * @return the resulting probability
-	 * @throws RuntimeException if the probability could not be extracted.
+	 * @return the resulting probability @ if the probability could not be extracted.
 	 */
 	@Override
-	public default double getProb(Assignment condition, Value head)
-			throws RuntimeException {
+	public default double getProb(Assignment condition, Value head) {
 		return getProb(head);
 	}
 
@@ -181,7 +176,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns a sample from the distribution (the condition is ignored).
 	 */
 	@Override
-	public default Value sample(Assignment condition) throws RuntimeException {
+	public default Value sample(Assignment condition) {
 		return sample();
 	}
 

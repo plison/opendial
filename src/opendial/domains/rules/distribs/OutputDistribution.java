@@ -105,11 +105,10 @@ public class OutputDistribution implements ProbDistribution {
 	 * Samples a particular value for the output variable.
 	 * 
 	 * @param condition the values of the parent (rule) nodes
-	 * @return an assignment with the output value
-	 * @throws RuntimeException if no value could be sampled
+	 * @return an assignment with the output value @ if no value could be sampled
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 		CategoricalTable result = getProbDistrib(condition);
 		return result.sample();
 	}

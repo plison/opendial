@@ -652,10 +652,9 @@ public abstract class BNode implements Comparable<BNode> {
 	 * Creates a copy of the current node. Needs to be instantiated by the concrete
 	 * subclasses.
 	 * 
-	 * @return the copy of the node
-	 * @throws RuntimeException if the copy operation failed
+	 * @return the copy of the node @ if the copy operation failed
 	 */
-	public abstract BNode copy() throws RuntimeException;
+	public abstract BNode copy();
 
 	/**
 	 * Compares the node to other nodes, in order to derive the topological order of

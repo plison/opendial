@@ -87,10 +87,10 @@ public class RemoteConnector implements Module {
 	 * A server socket is created, using an arbitrary open port (NB: the port can be
 	 * read in the "About" page in the GUI).
 	 * 
-	 * @param system the local dialogue system
-	 * @throws RuntimeException if the server socket could not be opened
+	 * @param system the local dialogue system @ if the server socket could not be
+	 *            opened
 	 */
-	public RemoteConnector(DialogueSystem system) throws RuntimeException {
+	public RemoteConnector(DialogueSystem system) {
 		this.system = system;
 		try {
 			local = new ServerSocket(0);

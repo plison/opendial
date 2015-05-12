@@ -61,7 +61,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test1() throws RuntimeException, InterruptedException {
+	public void test1() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -76,7 +76,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test2() throws RuntimeException {
+	public void test2() {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -91,7 +91,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test3() throws RuntimeException, InterruptedException {
+	public void test3() throws InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
 
@@ -108,7 +108,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test4() throws RuntimeException {
+	public void test4() {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -126,7 +126,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test5() throws RuntimeException {
+	public void test5() {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
@@ -144,7 +144,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test6() throws RuntimeException, InterruptedException {
+	public void test6() throws InterruptedException {
 
 		inference.EXACT_THRESHOLD = 0.06;
 
@@ -166,7 +166,7 @@ public class RuleTest1 {
 	}
 
 	@Test
-	public void test7() throws RuntimeException, InterruptedException {
+	public void test7() throws InterruptedException {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);

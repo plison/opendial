@@ -231,16 +231,4 @@ public final class TemplateEffect extends BasicEffect {
 				negated);
 	}
 
-	/**
-	 * Returns a copy of the effect with a new priority
-	 * 
-	 * @param priority the new priority
-	 * @return a new basic effect with the changed priority
-	 */
-	@Override
-	public TemplateEffect changePriority(int priority) {
-		return new TemplateEffect(labelTemplate, valueTemplate, priority, add,
-				negated);
-	}
-
 }

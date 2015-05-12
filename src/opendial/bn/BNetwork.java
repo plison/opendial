@@ -653,8 +653,7 @@ public class BNetwork {
 	/**
 	 * Returns a copy of the Bayesian network
 	 * 
-	 * @return the copy
-	 * @throws RuntimeException if the copy operation failed
+	 * @return the copy @ if the copy operation failed
 	 */
 	public BNetwork copy() {
 		BNetwork copyNetwork = new BNetwork();

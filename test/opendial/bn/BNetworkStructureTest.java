@@ -53,7 +53,7 @@ public class BNetworkStructureTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void testBuildBasicNetwork() throws RuntimeException {
+	public void testBuildBasicNetwork() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 
@@ -96,7 +96,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testCopy() throws RuntimeException {
+	public void testCopy() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = bn.copy();
 
@@ -150,7 +150,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testStructure() throws RuntimeException {
+	public void testStructure() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(5, bn.getNode("Burglary").getDescendantIds().size());
@@ -172,7 +172,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testDistribution() throws RuntimeException {
+	public void testDistribution() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode e = bn.getChanceNode("Earthquake");
@@ -207,7 +207,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testRemoval() throws RuntimeException {
+	public void testRemoval() {
 
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		bn.removeNode("Earthquake");
@@ -225,7 +225,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testIdChance() throws RuntimeException {
+	public void testIdChance() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNode node = bn.getNode("Alarm");
 		node.setId("Alarm2");
@@ -240,7 +240,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testCopyIdChange() throws RuntimeException {
+	public void testCopyIdChange() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		BNetwork bn2 = bn.copy();
 		BNode node = bn.getNode("Earthquake");
@@ -256,7 +256,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void tableExpansion() throws RuntimeException {
+	public void tableExpansion() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode node = new ChanceNode("HouseSize");
 		node.addProb(ValueFactory.create("Small"), 0.7f);
@@ -290,7 +290,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testDefaultValue() throws RuntimeException {
+	public void testDefaultValue() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		ChanceNode node = bn.getChanceNode("Burglary");
 		node.addProb(ValueFactory.create(false), 0.8);
@@ -304,7 +304,7 @@ public class BNetworkStructureTest {
 	}
 
 	@Test
-	public void testSortedNodes() throws RuntimeException {
+	public void testSortedNodes() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals("Action", bn.getSortedNodes().get(7).getId());
 		assertEquals("Burglary", bn.getSortedNodes().get(6).getId());
@@ -327,21 +327,18 @@ public class BNetworkStructureTest {
 	}
 
 	/**
-	 * @throws RuntimeException
-	 * @Test public void derivedActionNodes () throws RuntimeException { BNetwork bn
-	 *       = NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
-	 *       NetworkExamples.constructBasicNetwork3();
-	 *       assertTrue(bn2.getActionNode("Action") instanceof ActionNode);
-	 *       assertEquals(2,
-	 *       bn2.getUtilityNode("Util1").getRelevantActions().size());
-	 *       assertEquals(2,
-	 *       bn2.getUtilityNode("Util2").getRelevantActions().size());
-	 *       assertEquals(bn.getActionNode("Action").getValues(),
-	 *       bn2.getActionNode("Action").getValues()); }
+	 * @ * @Test public void derivedActionNodes () { BNetwork bn =
+	 * NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
+	 * NetworkExamples.constructBasicNetwork3();
+	 * assertTrue(bn2.getActionNode("Action") instanceof ActionNode); assertEquals(2,
+	 * bn2.getUtilityNode("Util1").getRelevantActions().size()); assertEquals(2,
+	 * bn2.getUtilityNode("Util2").getRelevantActions().size());
+	 * assertEquals(bn.getActionNode("Action").getValues(),
+	 * bn2.getActionNode("Action").getValues()); }
 	 */
 
 	@Test
-	public void testCliques() throws RuntimeException {
+	public void testCliques() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		assertEquals(1, bn.getCliques().size());
 		assertEquals(8, bn.getCliques().get(0).size());

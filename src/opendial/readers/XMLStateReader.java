@@ -64,11 +64,9 @@ public class XMLStateReader {
 	 * 
 	 * @param file the file to process
 	 * @param tag the XML tag to search for
-	 * @return the specified Bayesian network
-	 * @throws RuntimeException if XML document is ill-formatted
+	 * @return the specified Bayesian network @ if XML document is ill-formatted
 	 */
-	public static BNetwork extractBayesianNetwork(String file, String tag)
-			throws RuntimeException {
+	public static BNetwork extractBayesianNetwork(String file, String tag) {
 
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(file);
@@ -92,10 +90,9 @@ public class XMLStateReader {
 	 * domain (where the variable types are already declared)
 	 * 
 	 * @param mainNode the main node for the XML document
-	 * @return the corresponding dialogue state
-	 * @throws RuntimeException if XML document is ill-formatted
+	 * @return the corresponding dialogue state @ if XML document is ill-formatted
 	 */
-	public static BNetwork getBayesianNetwork(Node mainNode) throws RuntimeException {
+	public static BNetwork getBayesianNetwork(Node mainNode) {
 
 		BNetwork state = new BNetwork();
 
@@ -114,10 +111,10 @@ public class XMLStateReader {
 	 * Creates a new chance node corresponding to the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the resulting chance node
-	 * @throws RuntimeException if the distribution is not properly encoded
+	 * @return the resulting chance node @ if the distribution is not properly
+	 *         encoded
 	 */
-	public static ChanceNode createChanceNode(Node node) throws RuntimeException {
+	public static ChanceNode createChanceNode(Node node) {
 
 		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id") == null) {
 			throw new RuntimeException("variable id is mandatory");
@@ -196,8 +193,7 @@ public class XMLStateReader {
 	 * is none is declared)
 	 * 
 	 * @param node the XML node
-	 * @return the value probability
-	 * @throws RuntimeException if probability is ill-formatted
+	 * @return the value probability @ if probability is ill-formatted
 	 */
 	private static float getProbability(Node node) {
 
@@ -223,11 +219,10 @@ public class XMLStateReader {
 	 * Extracts the gaussian density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding Gaussian PDF
-	 * @throws RuntimeException if the density function is not properly encoded
+	 * @return the corresponding Gaussian PDF @ if the density function is not
+	 *         properly encoded
 	 */
-	private static GaussianDensityFunction getGaussian(Node node)
-			throws RuntimeException {
+	private static GaussianDensityFunction getGaussian(Node node) {
 		double[] mean = null;
 		double[] variance = null;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
@@ -262,11 +257,10 @@ public class XMLStateReader {
 	 * Extracts the uniform density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding uniform PDF
-	 * @throws RuntimeException if the density function is not properly encoded
+	 * @return the corresponding uniform PDF @ if the density function is not
+	 *         properly encoded
 	 */
-	private static UniformDensityFunction getUniform(Node node)
-			throws RuntimeException {
+	private static UniformDensityFunction getUniform(Node node) {
 		double min = Double.MAX_VALUE;
 		double max = Double.MAX_VALUE;
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
@@ -288,11 +282,10 @@ public class XMLStateReader {
 	 * Extracts the Dirichlet density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding Dirichlet PDF
-	 * @throws RuntimeException if the density function is not properly encoded
+	 * @return the corresponding Dirichlet PDF @ if the density function is not
+	 *         properly encoded
 	 */
-	private static DirichletDensityFunction getDirichlet(Node node)
-			throws RuntimeException {
+	private static DirichletDensityFunction getDirichlet(Node node) {
 		List<Double> alphas = new LinkedList<Double>();
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
 			Node subsubnode = node.getChildNodes().item(j);

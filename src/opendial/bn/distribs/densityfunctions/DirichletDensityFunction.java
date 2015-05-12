@@ -271,7 +271,7 @@ public class DirichletDensityFunction implements DensityFunction {
 	 * 
 	 */
 	@Override
-	public double getCDF(double... x) throws RuntimeException {
+	public double getCDF(double... x) {
 		throw new RuntimeException(
 				"currently not implemented (CDF of Dirichlet has apparently no closed-form solution)");
 	}

@@ -177,10 +177,9 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds a set of parameter variables to the dialogue state.
 	 * 
-	 * @param parameters the parameters
-	 * @throws RuntimeException if the inclusion of parameters failed
+	 * @param parameters the parameters @ if the inclusion of parameters failed
 	 */
-	public void setParameters(BNetwork parameters) throws RuntimeException {
+	public void setParameters(BNetwork parameters) {
 		addNetwork(parameters);
 		this.parameterVars.clear();
 		this.parameterVars.addAll(parameters.getChanceNodeIds());
@@ -195,10 +194,9 @@ public class DialogueState extends BNetwork {
 	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
-	 * @param assign the value assignment to add
-	 * @throws RuntimeException if the content could not be added.
+	 * @param assign the value assignment to add @ if the content could not be added.
 	 */
-	public synchronized void addToState(Assignment assign) throws RuntimeException {
+	public synchronized void addToState(Assignment assign) {
 		for (String var : assign.getVariables()) {
 			addToState(new SingleValueDistribution(var, assign.getValue(var)));
 		}
@@ -209,11 +207,10 @@ public class DialogueState extends BNetwork {
 	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
-	 * @param distrib the multivariate distribution to add
-	 * @throws RuntimeException if the content could not be added.
+	 * @param distrib the multivariate distribution to add @ if the content could not
+	 *            be added.
 	 */
-	public synchronized void addToState(MultivariateDistribution distrib)
-			throws RuntimeException {
+	public synchronized void addToState(MultivariateDistribution distrib) {
 		for (String var : distrib.getVariables()) {
 			addToState(distrib.getMarginal(var));
 		}
@@ -229,11 +226,10 @@ public class DialogueState extends BNetwork {
 	 * trigger such chain of updates, the method addContent(...) in DialogueSystem
 	 * should be used instead.
 	 * 
-	 * @param distrib a distribution over values for particular state variables
-	 * @throws RuntimeException if the content could not be added.
+	 * @param distrib a distribution over values for particular state variables @ if
+	 *            the content could not be added.
 	 */
-	public synchronized void addToState(IndependentProbDistribution distrib)
-			throws RuntimeException {
+	public synchronized void addToState(IndependentProbDistribution distrib) {
 
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
@@ -259,11 +255,10 @@ public class DialogueState extends BNetwork {
 	 * @param distrib the distribution to add as incremental unit of content
 	 * @param followPrevious whether the results should be concatenated to the
 	 *            previous values, or reset the content (e.g. when starting a new
-	 *            utterance)
-	 * @throws RuntimeException if the incremental operation could not be performed
+	 *            utterance) @ if the incremental operation could not be performed
 	 */
 	public synchronized void addToState_incremental(CategoricalTable distrib,
-			boolean followPrevious) throws RuntimeException {
+			boolean followPrevious) {
 
 		if (!followPrevious) {
 			setAsCommitted(distrib.getVariable());
@@ -285,11 +280,10 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
-	 * @param newState the state to merge into the current state
-	 * @throws RuntimeException if the new dialogue state could not be merged
+	 * @param newState the state to merge into the current state @ if the new
+	 *            dialogue state could not be merged
 	 */
-	public synchronized void addToState(DialogueState newState)
-			throws RuntimeException {
+	public synchronized void addToState(DialogueState newState) {
 		addToState((BNetwork) newState);
 		evidence.addAssignment(newState.getEvidence().addPrimes());
 	}
@@ -297,10 +291,10 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
-	 * @param newState the state to merge into the current state
-	 * @throws RuntimeException if the new dialogue state could not be merged
+	 * @param newState the state to merge into the current state @ if the new
+	 *            dialogue state could not be merged
 	 */
-	public synchronized void addToState(BNetwork newState) throws RuntimeException {
+	public synchronized void addToState(BNetwork newState) {
 		for (ChanceNode cn : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
 			cn.setId(cn.getId() + "'");
 			addNode(cn);
@@ -333,10 +327,9 @@ public class DialogueState extends BNetwork {
 	 * nodes, and the directed edges resulting from the rule application. See Pierre
 	 * Lison's PhD thesis, Section 4.3 for details.
 	 * 
-	 * @param r the rule to apply.
-	 * @throws RuntimeException if the rule could not be applied.
+	 * @param r the rule to apply. @ if the rule could not be applied.
 	 */
-	public void applyRule(Rule r) throws RuntimeException {
+	public void applyRule(Rule r) {
 
 		AnchoredRule arule = new AnchoredRule(r, this);
 		if (arule.isRelevant()) {
@@ -516,10 +509,9 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Returns a sample of all the variables in the dialogue state
 	 * 
-	 * @return a sample assignment
-	 * @throws RuntimeException if no sample could be extracted
+	 * @return a sample assignment @ if no sample could be extracted
 	 */
-	public Assignment getSample() throws RuntimeException {
+	public Assignment getSample() {
 		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
 	}
 
@@ -585,7 +577,7 @@ public class DialogueState extends BNetwork {
 	 * @return the copy
 	 */
 	@Override
-	public DialogueState copy() throws RuntimeException {
+	public DialogueState copy() {
 		DialogueState sn = new DialogueState(super.copy());
 		sn.addEvidence(evidence.copy());
 		sn.parameterVars = new HashSet<String>(parameterVars);
@@ -622,11 +614,9 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @param doc the document to which the element must comply
 	 * @param varsToRecord the set of variables to record
-	 * @return the resulting XML element
-	 * @throws RuntimeException if the XML generation failed
+	 * @return the resulting XML element @ if the XML generation failed
 	 */
-	public Element generateXML(Document doc, Collection<String> varsToRecord)
-			throws RuntimeException {
+	public Element generateXML(Document doc, Collection<String> varsToRecord) {
 
 		Element root = doc.createElement("state");
 		for (String nodeId : varsToRecord) {
@@ -646,10 +636,10 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds the probability rule to the dialogue state
 	 * 
-	 * @param arule the anchored rule (must be of type PROB)
-	 * @throws RuntimeException if the creation of new nodes fails
+	 * @param arule the anchored rule (must be of type PROB) @ if the creation of new
+	 *            nodes fails
 	 */
-	private void addProbabilityRule(AnchoredRule arule) throws RuntimeException {
+	private void addProbabilityRule(AnchoredRule arule) {
 
 		String ruleId = arule.getRule().getRuleId();
 		if (hasChanceNode(ruleId)) {
@@ -693,10 +683,10 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds the utility rule to the dialogue state.
 	 * 
-	 * @param arule the anchored rule (must be of type UTIL)
-	 * @throws RuntimeException if the creation of new nodes fails
+	 * @param arule the anchored rule (must be of type UTIL) @ if the creation of new
+	 *            nodes fails
 	 */
-	private void addUtilityRule(AnchoredRule arule) throws RuntimeException {
+	private void addUtilityRule(AnchoredRule arule) {
 
 		String ruleId = arule.getRule().getRuleId();
 
@@ -733,10 +723,9 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Connects the chance node to its prior predictions (if any).
 	 * 
-	 * @param outputNode the output node to connect
-	 * @throws RuntimeException if the connection fails
+	 * @param outputNode the output node to connect @ if the connection fails
 	 */
-	private void connectToPredictions(ChanceNode outputNode) throws RuntimeException {
+	private void connectToPredictions(ChanceNode outputNode) {
 
 		String outputVar = outputNode.getId();
 

@@ -58,7 +58,7 @@ public class RuleTest3 {
 	static DialogueSystem system;
 
 	@Test
-	public void priorityTest() throws RuntimeException, InterruptedException {
+	public void priorityTest() throws InterruptedException {
 
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
@@ -72,7 +72,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void test1() throws RuntimeException {
+	public void test1() {
 
 		Domain domain = XMLDomainReader.extractDomain(test1domainFile);
 		inference = new InferenceChecks();
@@ -92,7 +92,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void test2() throws RuntimeException, InterruptedException {
+	public void test2() throws InterruptedException {
 		inference = new InferenceChecks();
 
 		Domain domain = XMLDomainReader.extractDomain(test2domainFile);
@@ -132,7 +132,7 @@ public class RuleTest3 {
 	}
 
 	@Test
-	public void testIncondition() throws RuntimeException, InterruptedException {
+	public void testIncondition() throws InterruptedException {
 		Domain domain = XMLDomainReader.extractDomain(inconditionFile);
 
 		DialogueSystem system = new DialogueSystem(domain);

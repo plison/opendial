@@ -34,7 +34,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Template;
+import opendial.utils.StringUtils;
 
 /**
  * Representation of a complex parameter expression. The class uses the exp4j package
@@ -48,14 +48,14 @@ public class ComplexParameter implements Parameter {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	// template expression for the parameter
-	Template template;
+	// the expression (as a string)
+	final String expressionStr;
 
 	// mathematical expression
-	Expression expression;
+	final Expression expression;
 
 	// unknown parameter variables
-	Set<String> unknowns;
+	final Set<String> unknowns;
 
 	/**
 	 * Constructs a new complex parameter with the given expression, and the list of
@@ -64,11 +64,15 @@ public class ComplexParameter implements Parameter {
 	 * @param expression the expression
 	 * @param unknowns the list of unknown parameter variables
 	 */
-	public ComplexParameter(String expression, Collection<String> unknowns) {
-		template = new Template(expression);
-		this.expression =
-				new ExpressionBuilder(template.getStringWithoutBraces()).variables(
-						template.getSlots()).build();
+	public ComplexParameter(String expression, Set<String> unknowns) {
+		Set<String> allSlots = new HashSet<String>(unknowns);
+		if (expression.contains("{")) {
+			allSlots.addAll(StringUtils.getSlots(expression));
+			expression = StringUtils.removeBraces(expression);
+		}
+		this.expressionStr = expression;
+		ExpressionBuilder builder = new ExpressionBuilder(expression);
+		this.expression = builder.variables(allSlots).build();
 		this.unknowns = new HashSet<String>(unknowns);
 	}
 
@@ -78,27 +82,20 @@ public class ComplexParameter implements Parameter {
 	 */
 	@Override
 	public double getValue(Assignment input) {
-		if (template.isFilledBy(input)) {
-			Map<String, Double> valueMap = new HashMap<String, Double>();
-			for (String var : input.getVariables()) {
-				Value v = input.getValue(var);
-				if (v instanceof DoubleVal) {
-					valueMap.put(var, ((DoubleVal) v).getDouble());
-				}
-				else {
-					valueMap.put(var, 0.0);
-				}
+		Map<String, Double> valueMap = new HashMap<String, Double>();
+		for (String var : input.getVariables()) {
+			Value v = input.getValue(var);
+			if (v instanceof DoubleVal) {
+				valueMap.put(var, ((DoubleVal) v).getDouble());
 			}
-			try {
-				return expression.setVariables(valueMap).evaluate();
-			}
-			catch (IllegalArgumentException e) {
-				log.warning("problem grounding template " + template + " with "
-						+ input);
-				return getValue(input);
+			else {
+				valueMap.put(var, 0.0);
 			}
 		}
-		else {
+		try {
+			return expression.setVariables(valueMap).evaluate();
+		}
+		catch (IllegalArgumentException e) {
 			log.warning("cannot evaluate parameter " + this + " given " + input);
 			return 0.0;
 		}
@@ -112,13 +109,43 @@ public class ComplexParameter implements Parameter {
 	 * @return the grounded parameter
 	 */
 	public Parameter ground(Assignment input) {
-		if (template.isFilledBy(input)) {
+		if (input.getVariables().containsAll(unknowns)) {
 			return new FixedParameter(getValue(input));
 		}
 		else {
-			return new ComplexParameter(template.fillSlots(input).toString(),
-					unknowns);
+			String filled = expressionStr;
+			for (String u : input.getVariables()) {
+				filled.replaceAll("\\{" + u + "\\}", input.getValue(u).toString());
+			}
+			unknowns.removeAll(input.getVariables());
+			return new ComplexParameter(filled, unknowns);
 		}
+	}
+
+	/**
+	 * Sums the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the sum of the two
+	 */
+	@Override
+	public Parameter sum(Parameter p2) {
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		unknowns.addAll(getVariables());
+		return new ComplexParameter(toString() + "+" + p2.toString(), unknowns);
+	}
+
+	/**
+	 * Multiplies the two parameters and returns the corresponding parameter
+	 * 
+	 * @param p2 the other parameter
+	 * @return the parameter describing the product of the two
+	 */
+	@Override
+	public Parameter multiply(Parameter p2) {
+		Set<String> unknowns = new HashSet<String>(p2.getVariables());
+		unknowns.addAll(getVariables());
+		return new ComplexParameter(toString() + "*" + p2.toString(), unknowns);
 	}
 
 	/**
@@ -136,7 +163,7 @@ public class ComplexParameter implements Parameter {
 	 */
 	@Override
 	public String toString() {
-		return template.toString();
+		return expression.toString();
 	}
 
 	/**

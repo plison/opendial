@@ -160,11 +160,9 @@ public class LikelihoodWeighting {
 	 * Samples the given chance node and add it to the sample. If the variable is
 	 * part of the evidence, updates the weight.
 	 * 
-	 * @param n the chance node to sample
-	 * @throws RuntimeException if the sampling operation failed
+	 * @param n the chance node to sample @ if the sampling operation failed
 	 */
-	private void sampleChanceNode(ChanceNode n, Sample sample)
-			throws RuntimeException {
+	private void sampleChanceNode(ChanceNode n, Sample sample) {
 
 		String id = n.getId();
 		// if the node is chance node and not evidence, sample from the values
@@ -216,8 +214,8 @@ public class LikelihoodWeighting {
 	 * the same as the one given as argument.
 	 * 
 	 * @param samples the initial samples (with their weight)
-	 * @return the redrawn samples given their weight
-	 * @throws RuntimeException if the samples could not be redrawn.
+	 * @return the redrawn samples given their weight @ if the samples could not be
+	 *         redrawn.
 	 */
 	private void redrawSamples() {
 		try {

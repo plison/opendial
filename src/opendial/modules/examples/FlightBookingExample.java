@@ -65,7 +65,7 @@ public class FlightBookingExample implements Module {
 	 * Starts the module.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		paused = false;
 	}
 

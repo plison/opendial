@@ -374,11 +374,10 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Sample a value from the distribution. If no assignment can be sampled (due to
 	 * e.g. an ill-formed distribution), returns a none value.
 	 * 
-	 * @return the sampled assignment
-	 * @throws RuntimeException if no assignment could be sampled
+	 * @return the sampled assignment @ if no assignment could be sampled
 	 */
 	@Override
-	public Value sample() throws RuntimeException {
+	public Value sample() {
 		if (intervals == null) {
 			if (table.isEmpty()) {
 				log.warning("creating intervals for an empty table");
@@ -398,11 +397,11 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Returns the continuous probability distribution equivalent to the current
 	 * table
 	 * 
-	 * @return the continuous equivalent for the distribution
-	 * @throws RuntimeException if the distribution could not be converted
+	 * @return the continuous equivalent for the distribution @ if the distribution
+	 *         could not be converted
 	 */
 	@Override
-	public ContinuousDistribution toContinuous() throws RuntimeException {
+	public ContinuousDistribution toContinuous() {
 
 		if (isContinuous()) {
 			Map<double[], Double> points = new HashMap<double[], Double>();

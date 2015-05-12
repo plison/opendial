@@ -169,11 +169,9 @@ public class StatePruner {
 	 * @param state the dialogue state to reduce
 	 * @param nodesToKeep the nodes to preserve in the reduction
 	 * 
-	 * @return the reduced dialogue state
-	 * @throws RuntimeException
+	 * @return the reduced dialogue state @
 	 */
-	private static DialogueState reduce(DialogueState state, Set<String> nodesToKeep)
-			throws RuntimeException {
+	private static DialogueState reduce(DialogueState state, Set<String> nodesToKeep) {
 
 		Assignment evidence = state.getEvidence();
 		// if all nodes to keep are included in the evidence, no inference is
@@ -235,11 +233,10 @@ public class StatePruner {
 	 * 
 	 * @param state the dialogue state
 	 * @param nodesToKeep the nodes to keep
-	 * @return the reduced dialogue state
-	 * @throws RuntimeException
+	 * @return the reduced dialogue state @
 	 */
 	private static DialogueState reduce_light(DialogueState state,
-			Collection<String> nodesToKeep) throws RuntimeException {
+			Collection<String> nodesToKeep) {
 
 		DialogueState newState = new DialogueState(state, state.getEvidence());
 		for (ChanceNode node : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
@@ -262,10 +259,9 @@ public class StatePruner {
 	/**
 	 * Removes the prime characters from the variable labels in the dialogue state.
 	 * 
-	 * @param reduced the reduced state
-	 * @throws RuntimeException
+	 * @param reduced the reduced state @
 	 */
-	private static void removePrimes(DialogueState reduced) throws RuntimeException {
+	private static void removePrimes(DialogueState reduced) {
 
 		for (ChanceNode cn : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
 			if (reduced.hasChanceNode(cn.getId() + "'")) {
@@ -291,11 +287,9 @@ public class StatePruner {
 	/**
 	 * Removes all non-necessary nodes from the dialogue state.
 	 * 
-	 * @param reduced the reduced dialogue state
-	 * @throws RuntimeException if the removal fails
+	 * @param reduced the reduced dialogue state @ if the removal fails
 	 */
-	private static void removeSpuriousNodes(DialogueState reduced)
-			throws RuntimeException {
+	private static void removeSpuriousNodes(DialogueState reduced) {
 
 		// looping on every chance node
 		for (ChanceNode node : new HashSet<ChanceNode>(reduced.getChanceNodes())) {
@@ -340,11 +334,10 @@ public class StatePruner {
 	 * Reinserts the action and utility nodes in the reduced dialogue state.
 	 * 
 	 * @param reduced the reduced state
-	 * @param original the original state
-	 * @throws RuntimeException
+	 * @param original the original state @
 	 */
 	private static void reinsertActionAndUtilityNodes(BNetwork reduced,
-			BNetwork original) throws RuntimeException {
+			BNetwork original) {
 
 		// action nodes
 		for (ActionNode n : original.getActionNodes()) {

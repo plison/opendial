@@ -59,11 +59,11 @@ public class Intervals<T> {
 	/**
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
-	 * @param table the tables from which to create the intervals
-	 * @throws RuntimeException if the intervals could not be created
+	 * @param table the tables from which to create the intervals @ if the intervals
+	 *            could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Map<T, Double> table) throws RuntimeException {
+	public Intervals(Map<T, Double> table) {
 
 		intervals = new Interval[table.size()];
 		int i = 0;
@@ -89,12 +89,11 @@ public class Intervals<T> {
 	 * specifying the probability of each value
 	 * 
 	 * @param content the collection of content objects
-	 * @param probs the function associating a weight to each object
-	 * @throws RuntimeException if the intervals could not be created
+	 * @param probs the function associating a weight to each object @ if the
+	 *            intervals could not be created
 	 */
 	@SuppressWarnings("unchecked")
-	public Intervals(Collection<T> content, Function<T, Double> probs)
-			throws RuntimeException {
+	public Intervals(Collection<T> content, Function<T, Double> probs) {
 
 		intervals = new Interval[content.size()];
 		int i = 0;
@@ -119,10 +118,9 @@ public class Intervals<T> {
 	 * Samples an object from the interval collection, using a simple binary search
 	 * procedure.
 	 * 
-	 * @return the sampled object
-	 * @throws RuntimeException if the sampling could not be performed
+	 * @return the sampled object @ if the sampling could not be performed
 	 */
-	public T sample() throws RuntimeException {
+	public T sample() {
 
 		if (intervals.length == 0) {
 			throw new RuntimeException("could not sample: empty interval");

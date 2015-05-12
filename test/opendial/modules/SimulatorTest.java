@@ -47,7 +47,7 @@ public class SimulatorTest {
 	public static String simDomain2 = "test//domains//example-simulator.xml";
 
 	@Test
-	public void testSimulator() throws RuntimeException, InterruptedException {
+	public void testSimulator() throws InterruptedException {
 
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
@@ -82,7 +82,7 @@ public class SimulatorTest {
 	}
 
 	@Test
-	public void testRewardLearner() throws RuntimeException, InterruptedException {
+	public void testRewardLearner() throws InterruptedException {
 		DialogueSystem system = null;
 		outloop: for (int k = 0; k < 3; k++) {
 			if (k > 0) {
@@ -133,8 +133,7 @@ public class SimulatorTest {
 		assertTrue(str.contains("Do(Pick"));
 	}
 
-	private static void checkCondition2(DialogueSystem system)
-			throws RuntimeException {
+	private static void checkCondition2(DialogueSystem system) {
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct =
 				system.getContent("theta_correct").toContinuous().getFunction();

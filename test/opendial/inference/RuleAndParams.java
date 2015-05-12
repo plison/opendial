@@ -16,7 +16,7 @@ public class RuleAndParams {
 	public static final String domainFile = "test//domains//rulesandparams.xml";
 
 	@Test
-	public void RuleAndParamsTest() throws RuntimeException, InterruptedException {
+	public void RuleAndParamsTest() throws InterruptedException {
 
 		Domain domain = XMLDomainReader.extractDomain(domainFile);
 		DialogueSystem system = new DialogueSystem(domain);

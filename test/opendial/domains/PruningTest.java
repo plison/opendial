@@ -68,28 +68,28 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning0() throws RuntimeException, InterruptedException {
+	public void testPruning0() throws InterruptedException {
 
 		assertEquals(15, system.getState().getNodeIds().size());
 		assertEquals(0, system.getState().getEvidence().getVariables().size());
 	}
 
 	@Test
-	public void testPruning1() throws RuntimeException, InterruptedException {
+	public void testPruning1() throws InterruptedException {
 
 		inference.checkProb(system.getState(), "a_u", "Greeting", 0.8);
 		inference.checkProb(system.getState(), "a_u", "None", 0.2);
 	}
 
 	@Test
-	public void testPruning2() throws RuntimeException {
+	public void testPruning2() {
 
 		inference.checkProb(system.getState(), "i_u", "Inform", 0.7 * 0.8);
 		inference.checkProb(system.getState(), "i_u", "None", 1 - 0.7 * 0.8);
 	}
 
 	@Test
-	public void testPruning3() throws RuntimeException {
+	public void testPruning3() {
 
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
@@ -98,7 +98,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning4() throws RuntimeException {
+	public void testPruning4() {
 
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.3);
 		inference.checkProb(system.getState(), "o", "and we have localvar=value1",
@@ -108,7 +108,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning5() throws RuntimeException {
+	public void testPruning5() {
 
 		inference.checkProb(system.getState(), "o2", "here is value1", 0.35);
 		inference.checkProb(system.getState(), "o2", "and value2 is over there",
@@ -118,7 +118,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning6() throws RuntimeException, InterruptedException {
+	public void testPruning6() throws InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 
@@ -137,7 +137,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning7() throws RuntimeException, InterruptedException {
+	public void testPruning7() throws InterruptedException {
 
 		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "none", 0.1);
@@ -146,7 +146,7 @@ public class PruningTest {
 	}
 
 	@Test
-	public void testPruning8() throws RuntimeException, InterruptedException {
+	public void testPruning8() throws InterruptedException {
 
 		DialogueState initialState = system.getState().copy();
 

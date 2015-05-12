@@ -54,7 +54,7 @@ public class WizardTest {
 	public static final String domainFile = "test//domains//domain-woz.xml";
 
 	@Test
-	public void testWizardLearning() throws RuntimeException {
+	public void testWizardLearning() {
 		List<DialogueState> interaction =
 				XMLInteractionReader.extractInteraction(interactionFile);
 		DialogueSystem system =
@@ -83,7 +83,7 @@ public class WizardTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testWizardControl() throws RuntimeException, InterruptedException {
+	public void testWizardControl() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = true;

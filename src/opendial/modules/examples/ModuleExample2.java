@@ -73,7 +73,7 @@ public class ModuleExample2 implements Module {
 	 * and add it to the dialogue state.
 	 */
 	@Override
-	public void start() throws RuntimeException {
+	public void start() {
 		frame = new JFrame();
 		ActionListener listener = new CustomActionListener();
 		frame.setLayout(new BorderLayout());

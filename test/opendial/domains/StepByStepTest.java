@@ -42,7 +42,7 @@ public class StepByStepTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void domain() throws RuntimeException {
+	public void domain() {
 		DialogueSystem system =
 				new DialogueSystem(
 						XMLDomainReader

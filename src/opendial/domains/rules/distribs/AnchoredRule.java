@@ -236,11 +236,10 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the probability
-	 * @throws RuntimeException if the probability could not be calculated.
+	 * @return the probability @ if the probability could not be calculated.
 	 */
 	@Override
-	public double getProb(Assignment condition, Value head) throws RuntimeException {
+	public double getProb(Assignment condition, Value head) {
 		CategoricalTable outputTable = getProbDistrib(condition);
 		double prob = outputTable.getProb(head);
 
@@ -275,12 +274,11 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * Returns the probability table associated with the given input assignment
 	 * 
 	 * @param condition the conditional assignment
-	 * @return the associated probability table (as a CategoricalTable)
-	 * @throws RuntimeException if the distribution could not be calculated.
+	 * @return the associated probability table (as a CategoricalTable) @ if the
+	 *         distribution could not be calculated.
 	 */
 	@Override
-	public ProbDistribution getPosterior(Assignment condition)
-			throws RuntimeException {
+	public ProbDistribution getPosterior(Assignment condition) {
 		return new MarginalDistribution(this, condition);
 	}
 
@@ -289,7 +287,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * 
 	 */
 	@Override
-	public Set<Value> getValues() throws RuntimeException {
+	public Set<Value> getValues() {
 		return new HashSet<Value>(getEffects());
 	}
 
@@ -297,11 +295,10 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * Samples one possible output value given the input assignment
 	 * 
 	 * @param condition the input assignment
-	 * @return the sampled value
-	 * @throws RuntimeException if sampling returned an error
+	 * @return the sampled value @ if sampling returned an error
 	 */
 	@Override
-	public Value sample(Assignment condition) throws RuntimeException {
+	public Value sample(Assignment condition) {
 		CategoricalTable outputTable = getProbDistrib(condition);
 		return outputTable.sample();
 	}
@@ -317,7 +314,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	}
 
 	@Override
-	public CategoricalTable getProbDistrib(Assignment input) throws RuntimeException {
+	public CategoricalTable getProbDistrib(Assignment input) {
 
 		// search for the matching case
 		RuleOutput output = getOutput(input);

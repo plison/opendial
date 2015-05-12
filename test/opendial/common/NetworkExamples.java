@@ -47,7 +47,7 @@ public class NetworkExamples {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	public static BNetwork constructBasicNetwork() throws RuntimeException {
+	public static BNetwork constructBasicNetwork() {
 		BNetwork bn = new BNetwork();
 
 		ChanceNode b = new ChanceNode("Burglary");
@@ -131,7 +131,7 @@ public class NetworkExamples {
 		return bn;
 	}
 
-	public static BNetwork constructBasicNetwork2() throws RuntimeException {
+	public static BNetwork constructBasicNetwork2() {
 		BNetwork network = constructBasicNetwork();
 		network.getChanceNode("Burglary").addProb(ValueFactory.create(true), 0.1f);
 		network.getChanceNode("Burglary").addProb(ValueFactory.create(false), 0.9f);
@@ -141,7 +141,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructBasicNetwork3() throws RuntimeException {
+	public static BNetwork constructBasicNetwork3() {
 		BNetwork network = constructBasicNetwork();
 		network.removeNode("Action");
 		ActionNode ddn = new ActionNode("Action");
@@ -154,7 +154,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructBasicNetwork4() throws RuntimeException {
+	public static BNetwork constructBasicNetwork4() {
 		BNetwork network = constructBasicNetwork();
 		ChanceNode node = new ChanceNode("gaussian");
 		node.setDistrib(new ContinuousDistribution("gaussian",
@@ -163,7 +163,7 @@ public class NetworkExamples {
 		return network;
 	}
 
-	public static BNetwork constructIWSDSNetwork() throws RuntimeException {
+	public static BNetwork constructIWSDSNetwork() {
 
 		BNetwork net = new BNetwork();
 

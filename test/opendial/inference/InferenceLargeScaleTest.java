@@ -57,7 +57,7 @@ public class InferenceLargeScaleTest {
 	public static double PERCENT_COMPARISONS = 0.5;
 
 	@Test
-	public void testNetwork() throws RuntimeException {
+	public void testNetwork() {
 
 		InferenceChecks inference = new InferenceChecks();
 		inference.includeNaive(true);

@@ -147,11 +147,10 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns a sample that is compatible with the provided evidence.
 	 * 
 	 * @param evidence the evidence.
-	 * @return the compatible sample
-	 * @throws RuntimeException if no samples are consistent with the evidence.
+	 * @return the compatible sample @ if no samples are consistent with the
+	 *         evidence.
 	 */
-	public Assignment getCompatibleSample(Assignment evidence)
-			throws RuntimeException {
+	public Assignment getCompatibleSample(Assignment evidence) {
 		for (int i = 0; i < 10; i++) {
 			Assignment sampled = sample();
 			if (sampled.consistentWith(evidence)) {
@@ -245,10 +244,10 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns a continuous representation of the distribution (if there is no
 	 * conditional variables in the distribution).
 	 * 
-	 * @return the corresponding continuous distribution.
-	 * @throws RuntimeException if the distribution content is discrete.
+	 * @return the corresponding continuous distribution. @ if the distribution
+	 *         content is discrete.
 	 */
-	public ContinuousDistribution toContinuous() throws RuntimeException {
+	public ContinuousDistribution toContinuous() {
 		if (continuousCache == null) {
 			if (variables.size() != 1) {
 				throw new RuntimeException(
@@ -286,11 +285,10 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * 
 	 * @param var the head variable
 	 * @param condVars the conditional variables
-	 * @return the resulting probability distribution
-	 * @throws RuntimeException if the distribution could not be generated.
+	 * @return the resulting probability distribution @ if the distribution could not
+	 *         be generated.
 	 */
-	public ProbDistribution getMarginal(String var, Set<String> condVars)
-			throws RuntimeException {
+	public ProbDistribution getMarginal(String var, Set<String> condVars) {
 
 		if (condVars.isEmpty()) {
 			return getMarginal(var);
