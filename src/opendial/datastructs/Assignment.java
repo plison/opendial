@@ -654,7 +654,18 @@ public class Assignment {
 	 * @return a new, pruned assignment
 	 */
 	public Assignment getPruned(Collection<String> variables) {
-		return new Assignment(Maps.filterKeys(map, k -> !variables.contains(k)));
+		Assignment a = new Assignment();
+		int trimmedHash = 0;
+		for (Entry<String, Value> e : map.entrySet()) {
+			String var = e.getKey();
+			if (!variables.contains(var)) {
+				Value val = e.getValue();
+				a.addPair(var, val);
+				trimmedHash += var.hashCode() ^ val.hashCode();
+			}
+		}
+		a.cachedHash = trimmedHash;
+		return a;
 	}
 
 	/**
