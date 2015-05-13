@@ -77,7 +77,7 @@ public class AudioUtils {
 	 * Selects an target data line for a particular audio mixer.
 	 * 
 	 * @param mixer the name of the audio mixer
-	 * @return the selected line @ if no line could be selected
+	 * @return the selected line
 	 */
 	public static TargetDataLine selectAudioLine(Mixer.Info mixer) {
 
@@ -229,8 +229,8 @@ public class AudioUtils {
 	/**
 	 * Generates an audio file from the stream. The file must be a WAV file.
 	 * 
-	 * @param outputFile the file in which to write the audio data @ if the audio
-	 *            could not be written onto the file
+	 * @param outputFile the file in which to write the audio data could not be
+	 *            written onto the file
 	 */
 	public static void generateFile(byte[] data, File outputFile) {
 		try {

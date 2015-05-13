@@ -285,7 +285,7 @@ public class StatePruner {
 	/**
 	 * Removes all non-necessary nodes from the dialogue state.
 	 * 
-	 * @param reduced the reduced dialogue state @ if the removal fails
+	 * @param reduced the reduced dialogue state
 	 */
 	private static void removeSpuriousNodes(DialogueState reduced) {
 

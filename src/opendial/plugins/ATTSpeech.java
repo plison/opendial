@@ -88,8 +88,7 @@ public class ATTSpeech implements Module {
 	/**
 	 * Creates a new plugin, attached to the dialogue system
 	 * 
-	 * @param system the dialogue system to attach @ if the module could not be
-	 *            established
+	 * @param system the dialogue system to attach established
 	 */
 	public ATTSpeech(DialogueSystem system) {
 		this.system = system;

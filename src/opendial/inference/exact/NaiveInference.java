@@ -65,8 +65,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	 * Queries the probability distribution encoded in the Bayesian Network, given a
 	 * set of query variables, and some evidence.
 	 * 
-	 * @param query the full query @ if the inference process failed to deliver a
-	 *            result
+	 * @param query the full query result
 	 */
 	@Override
 	public MultivariateTable queryProb(Query.ProbQuery query) {

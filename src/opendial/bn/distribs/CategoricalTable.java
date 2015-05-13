@@ -374,7 +374,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Sample a value from the distribution. If no assignment can be sampled (due to
 	 * e.g. an ill-formed distribution), returns a none value.
 	 * 
-	 * @return the sampled assignment @ if no assignment could be sampled
+	 * @return the sampled assignment
 	 */
 	@Override
 	public Value sample() {
@@ -397,8 +397,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * Returns the continuous probability distribution equivalent to the current
 	 * table
 	 * 
-	 * @return the continuous equivalent for the distribution @ if the distribution
-	 *         could not be converted
+	 * @return the continuous equivalent for the distribution could not be converted
 	 */
 	@Override
 	public ContinuousDistribution toContinuous() {

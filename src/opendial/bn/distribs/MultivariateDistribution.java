@@ -61,7 +61,7 @@ public interface MultivariateDistribution {
 	/**
 	 * Returns a sample assignment for X1,...Xn.
 	 * 
-	 * @return the sampled assignment @ if no sample could be extracted
+	 * @return the sampled assignment
 	 */
 	public Assignment sample();
 

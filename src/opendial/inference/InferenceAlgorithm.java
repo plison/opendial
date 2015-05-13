@@ -61,8 +61,7 @@ public interface InferenceAlgorithm {
 	 * provided evidence, all specified in the query
 	 * 
 	 * @param query the full query
-	 * @return the resulting probability distribution @ if the inference process
-	 *         failed to deliver a result
+	 * @return the resulting probability distribution failed to deliver a result
 	 */
 	public MultivariateDistribution queryProb(Query.ProbQuery query);
 
@@ -73,8 +72,7 @@ public interface InferenceAlgorithm {
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the collection of query variables
 	 * @param evidence the evidence
-	 * @return the resulting probability distribution @ if the inference process
-	 *         failed to deliver a result
+	 * @return the resulting probability distribution failed to deliver a result
 	 */
 	public default MultivariateDistribution queryProb(BNetwork network,
 			Collection<String> queryVars, Assignment evidence) {
@@ -87,8 +85,7 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the collection of query variables
-	 * @return the resulting probability distribution @ if the inference process
-	 *         failed to deliver a result
+	 * @return the resulting probability distribution failed to deliver a result
 	 */
 	public default MultivariateDistribution queryProb(BNetwork network,
 			Collection<String> queryVars) {
@@ -102,8 +99,8 @@ public interface InferenceAlgorithm {
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the (unique) query variable
 	 * @param evidence the evidence
-	 * @return the resulting probability distribution for the variable @ if the
-	 *         inference process failed to deliver a result
+	 * @return the resulting probability distribution for the variable inference
+	 *         process failed to deliver a result
 	 */
 	public default IndependentProbDistribution queryProb(BNetwork network,
 			String queryVar, Assignment evidence) {
@@ -118,8 +115,8 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the (unique) query variable
-	 * @return the resulting probability distribution for the variable @ if the
-	 *         inference process failed to deliver a result
+	 * @return the resulting probability distribution for the variable inference
+	 *         process failed to deliver a result
 	 */
 	public default IndependentProbDistribution queryProb(BNetwork network,
 			String queryVar) {
@@ -135,8 +132,7 @@ public interface InferenceAlgorithm {
 	 * variables), given the provided evidence.
 	 * 
 	 * @param query the full query
-	 * @return the resulting utility table @ if the inference process failed to
-	 *         deliver a result
+	 * @return the resulting utility table deliver a result
 	 */
 	public UtilityTable queryUtil(Query.UtilQuery query);
 
@@ -147,8 +143,8 @@ public interface InferenceAlgorithm {
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the query variables (usually action variables)
 	 * @param evidence the additional evidence
-	 * @return the resulting utility table for the query variables @ if the inference
-	 *         process failed to deliver a result
+	 * @return the resulting utility table for the query variables process failed to
+	 *         deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network,
 			Collection<String> queryVars, Assignment evidence) {
@@ -161,8 +157,8 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVars the query variables (usually action variables)
-	 * @return the resulting utility table for the query variables @ if the inference
-	 *         process failed to deliver a result
+	 * @return the resulting utility table for the query variables process failed to
+	 *         deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network,
 			Collection<String> queryVars) {
@@ -175,8 +171,8 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the query variable
-	 * @return the resulting utility table for the query variable @ if the inference
-	 *         process failed to deliver a result
+	 * @return the resulting utility table for the query variable process failed to
+	 *         deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network, String queryVar) {
 		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar),
@@ -190,8 +186,8 @@ public interface InferenceAlgorithm {
 	 * @param network the Bayesian network on which to perform the inference
 	 * @param queryVar the query variable
 	 * @param evidence the additional evidence
-	 * @return the resulting utility table for the query variable @ if the inference
-	 *         process failed to deliver a result
+	 * @return the resulting utility table for the query variable process failed to
+	 *         deliver a result
 	 */
 	public default UtilityTable queryUtil(BNetwork network, String queryVar,
 			Assignment evidence) {
@@ -208,8 +204,7 @@ public interface InferenceAlgorithm {
 	 * the original network and integrates the provided evidence.
 	 * 
 	 * @param query the full reduction query
-	 * @return the reduced Bayesian network @ if the inference process failed to
-	 *         deliver a result
+	 * @return the reduced Bayesian network deliver a result
 	 */
 	public BNetwork reduce(Query.ReduceQuery query);
 
@@ -220,8 +215,7 @@ public interface InferenceAlgorithm {
 	 * @param network the original Bayesian network
 	 * @param queryVars the variables to retain
 	 * @param evidence the additional evidence
-	 * @return the new, reduced Bayesian network @ if the inference process failed to
-	 *         deliver a result
+	 * @return the new, reduced Bayesian network deliver a result
 	 */
 	public default BNetwork reduce(BNetwork network, Collection<String> queryVars,
 			Assignment evidence) {
@@ -234,8 +228,7 @@ public interface InferenceAlgorithm {
 	 * 
 	 * @param network the original Bayesian network
 	 * @param queryVars the variables to retain
-	 * @return the new, reduced Bayesian network @ if the inference process failed to
-	 *         deliver a result
+	 * @return the new, reduced Bayesian network deliver a result
 	 */
 	public default BNetwork reduce(BNetwork network, Collection<String> queryVars) {
 		return reduce(new Query.ReduceQuery(network, queryVars, new Assignment()));

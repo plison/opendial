@@ -114,7 +114,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param distrib the distribution (in a continuous, function-based
-	 *            representation) @ if distrib relates to a different random variable
+	 *            representation)
 	 */
 	public void addDistrib(Assignment condition, T distrib) {
 		table.put(condition, distrib);
@@ -159,8 +159,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * distribution), returns an empty assignment.
 	 * 
 	 * @param condition the condition
-	 * @return the sampled assignment @ if the sample could not be extracted given
-	 *         the condition
+	 * @return the sampled assignment the condition
 	 */
 	@Override
 	public Value sample(Assignment condition) {
@@ -186,7 +185,7 @@ public class ConditionalDistribution<T extends IndependentProbDistribution>
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the resulting probability @ if the probability could not be extracted
+	 * @return the resulting probability
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) {

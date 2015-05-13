@@ -96,7 +96,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	/**
 	 * Returns a sampled value for the distribution.
 	 * 
-	 * @return the sampled value @ if no sample could be extracted.
+	 * @return the sampled value
 	 */
 	public Value sample();
 
@@ -112,8 +112,8 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	/**
 	 * Returns a continuous representation of the distribution.
 	 * 
-	 * @return the distribution in a continuous form @ if the distribution could not
-	 *         be converted to a continuous form
+	 * @return the distribution in a continuous form be converted to a continuous
+	 *         form
 	 */
 	public ContinuousDistribution toContinuous();
 
@@ -137,7 +137,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Generates a XML node that represents the distribution.
 	 * 
 	 * @param document the XML node to which the node will be attached
-	 * @return the corresponding XML node @ if the XML generation failed.
+	 * @return the corresponding XML node
 	 */
 	public Node generateXML(Document document);
 
@@ -165,7 +165,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the value for the head variable
-	 * @return the resulting probability @ if the probability could not be extracted.
+	 * @return the resulting probability
 	 */
 	@Override
 	public default double getProb(Assignment condition, Value head) {

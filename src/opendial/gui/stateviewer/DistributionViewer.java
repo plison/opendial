@@ -196,7 +196,7 @@ public class DistributionViewer extends JDialog {
 	 * Constructs a chart panel for the continuous distribution.
 	 * 
 	 * @param distrib the continuous distribution
-	 * @return the generated chart panel @ if the distribution could not be displayed
+	 * @return the generated chart panel
 	 */
 	private ChartPanel generatePanel(ContinuousDistribution distrib) {
 

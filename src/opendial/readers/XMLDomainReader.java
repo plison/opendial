@@ -58,7 +58,7 @@ public class XMLDomainReader {
 	 * Extract a dialogue domain from the XML specification
 	 * 
 	 * @param topDomainFile the filename of the top XML file
-	 * @return the extracted dialogue domain @ if a format error occurs
+	 * @return the extracted dialogue domain
 	 */
 	public static Domain extractDomain(String topDomainFile) {
 
@@ -160,7 +160,7 @@ public class XMLDomainReader {
 	 * Given an XML node, extracts the rule-based model that corresponds to it.
 	 * 
 	 * @param topNode the XML node
-	 * @return the corresponding model @ if the specification is ill-defined
+	 * @return the corresponding model
 	 */
 	private static Model createModel(Node topNode) {
 		Model model = new Model();

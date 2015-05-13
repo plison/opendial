@@ -177,7 +177,7 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds a set of parameter variables to the dialogue state.
 	 * 
-	 * @param parameters the parameters @ if the inclusion of parameters failed
+	 * @param parameters the parameters
 	 */
 	public void setParameters(BNetwork parameters) {
 		addNetwork(parameters);
@@ -194,7 +194,7 @@ public class DialogueState extends BNetwork {
 	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
-	 * @param assign the value assignment to add @ if the content could not be added.
+	 * @param assign the value assignment to add
 	 */
 	public synchronized void addToState(Assignment assign) {
 		for (String var : assign.getVariables()) {
@@ -207,8 +207,7 @@ public class DialogueState extends BNetwork {
 	 * variables in the assignment already exist, they are erased.
 	 * 
 	 * 
-	 * @param distrib the multivariate distribution to add @ if the content could not
-	 *            be added.
+	 * @param distrib the multivariate distribution to add be added.
 	 */
 	public synchronized void addToState(MultivariateDistribution distrib) {
 		for (String var : distrib.getVariables()) {
@@ -255,7 +254,7 @@ public class DialogueState extends BNetwork {
 	 * @param distrib the distribution to add as incremental unit of content
 	 * @param followPrevious whether the results should be concatenated to the
 	 *            previous values, or reset the content (e.g. when starting a new
-	 *            utterance) @ if the incremental operation could not be performed
+	 *            utterance)
 	 */
 	public synchronized void addToState_incremental(CategoricalTable distrib,
 			boolean followPrevious) {
@@ -280,8 +279,8 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
-	 * @param newState the state to merge into the current state @ if the new
-	 *            dialogue state could not be merged
+	 * @param newState the state to merge into the current state dialogue state could
+	 *            not be merged
 	 */
 	public synchronized void addToState(DialogueState newState) {
 		addToState((BNetwork) newState);
@@ -291,8 +290,8 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Merges the dialogue state included as argument into the current one.
 	 * 
-	 * @param newState the state to merge into the current state @ if the new
-	 *            dialogue state could not be merged
+	 * @param newState the state to merge into the current state dialogue state could
+	 *            not be merged
 	 */
 	public synchronized void addToState(BNetwork newState) {
 		for (ChanceNode cn : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
@@ -327,7 +326,7 @@ public class DialogueState extends BNetwork {
 	 * nodes, and the directed edges resulting from the rule application. See Pierre
 	 * Lison's PhD thesis, Section 4.3 for details.
 	 * 
-	 * @param r the rule to apply. @ if the rule could not be applied.
+	 * @param r the rule to apply.
 	 */
 	public void applyRule(Rule r) {
 
@@ -509,7 +508,7 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Returns a sample of all the variables in the dialogue state
 	 * 
-	 * @return a sample assignment @ if no sample could be extracted
+	 * @return a sample assignment
 	 */
 	public Assignment getSample() {
 		return SamplingAlgorithm.extractSample(this, getChanceNodeIds());
@@ -614,7 +613,7 @@ public class DialogueState extends BNetwork {
 	 * 
 	 * @param doc the document to which the element must comply
 	 * @param varsToRecord the set of variables to record
-	 * @return the resulting XML element @ if the XML generation failed
+	 * @return the resulting XML element
 	 */
 	public Element generateXML(Document doc, Collection<String> varsToRecord) {
 
@@ -636,8 +635,7 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds the probability rule to the dialogue state
 	 * 
-	 * @param arule the anchored rule (must be of type PROB) @ if the creation of new
-	 *            nodes fails
+	 * @param arule the anchored rule (must be of type PROB) nodes fails
 	 */
 	private void addProbabilityRule(AnchoredRule arule) {
 
@@ -683,8 +681,7 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Adds the utility rule to the dialogue state.
 	 * 
-	 * @param arule the anchored rule (must be of type UTIL) @ if the creation of new
-	 *            nodes fails
+	 * @param arule the anchored rule (must be of type UTIL) nodes fails
 	 */
 	private void addUtilityRule(AnchoredRule arule) {
 
@@ -723,7 +720,7 @@ public class DialogueState extends BNetwork {
 	/**
 	 * Connects the chance node to its prior predictions (if any).
 	 * 
-	 * @param outputNode the output node to connect @ if the connection fails
+	 * @param outputNode the output node to connect
 	 */
 	private void connectToPredictions(ChanceNode outputNode) {
 

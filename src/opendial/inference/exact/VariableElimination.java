@@ -68,8 +68,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the corresponding categorical table @ if the inference operation
-	 *         failed
+	 * @return the corresponding categorical table failed
 	 */
 	@Override
 	public MultivariateTable queryProb(Query.ProbQuery query) {
@@ -83,7 +82,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the utility distribution @ if the inference operation failed
+	 * @return the utility distribution
 	 */
 	@Override
 	public UtilityTable queryUtil(Query.UtilQuery query) {
@@ -101,8 +100,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * the variable-elimination algorithm.
 	 * 
 	 * @param query the query
-	 * @return the full double factor containing all query variables @ if an error
-	 *         occurred during the inference
+	 * @return the full double factor containing all query variables occurred during
+	 *         the inference
 	 */
 	private DoubleFactor createQueryFactor(Query query) {
 
@@ -311,8 +310,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param query the query containing the network to reduce, the variables to
 	 *            retain, and possible evidence.
-	 * @return the probability distributions for the retained variables @ if the
-	 *         reduction operation failed
+	 * @return the probability distributions for the retained variables reduction
+	 *         operation failed
 	 */
 	@Override
 	public BNetwork reduce(Query.ReduceQuery query) {
@@ -356,8 +355,7 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * 
 	 * @param factors the collection of factors in which to search
 	 * @param toEstimate the variable to estimate
-	 * @return the relevant factor associated with the node @ if not relevant factor
-	 *         could be found
+	 * @return the relevant factor associated with the node could be found
 	 */
 	private DoubleFactor getRelevantFactor(DoubleFactor fullFactor, String headVar,
 			Set<String> inputVars) {

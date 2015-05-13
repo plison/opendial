@@ -106,7 +106,7 @@ public class WizardLearner implements Module {
 	 * 
 	 * @param state the dialogue state to update
 	 * @param wizardAction the wizard action
-	 * @return the list of updated parameters @ if the update fails
+	 * @return the list of updated parameters
 	 */
 	protected Set<String> learnFromWizardAction(Assignment wizardAction) {
 
