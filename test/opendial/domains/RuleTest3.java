@@ -80,7 +80,7 @@ public class RuleTest3 {
 		system = new DialogueSystem(domain);
 		system.getSettings().showGUI = false;
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.startSystem();
 
 		inference.checkProb(system.getState(), "found", "A", 0.7);
@@ -88,7 +88,7 @@ public class RuleTest3 {
 		inference.checkProb(system.getState(), "found2", "D", 0.3);
 		inference.checkProb(system.getState(), "found2", "C", 0.5);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class RuleTest3 {
 		system.getSettings().showGUI = false;
 
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.startSystem();
 		inference.checkProb(system.getState(), "graspable(obj1)", "true", 0.81);
 
@@ -109,7 +109,7 @@ public class RuleTest3 {
 		// inference.checkUtil(system.getState(), "a_m'", "grasp(obj2)", -2.0);
 		// inference.checkUtil(system.getState(), "a_m'", "grasp(obj3)", -2.0);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 
 	}
 

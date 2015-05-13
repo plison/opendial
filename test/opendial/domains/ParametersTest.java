@@ -33,6 +33,7 @@ import java.util.List;
 
 import opendial.DialogueSystem;
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.ValueFactory;
@@ -218,7 +219,7 @@ public class ParametersTest {
 		Assignment input =
 				new Assignment(new Assignment("theta_6", 2.1), new Assignment(
 						"theta_7", 1.3));
-		assertEquals(3.4, outputs.getParameter(o).getValue(input), 0.01);
+		assertEquals(0.74, outputs.getParameter(o).getValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
@@ -227,10 +228,24 @@ public class ParametersTest {
 		assertEquals(1.0, system.getState().queryProb("theta_6").toContinuous()
 				.getFunction().getMean()[0], 0.08);
 
-		assertEquals(0.72, system.getContent("a_u").getProb("Approval"), 0.08);
+		assertEquals(0.63, system.getContent("a_u").getProb("Approval"), 0.08);
+		assertEquals(0.3, system.getContent("a_u").getProb("Irony"), 0.08);
 
-		assertEquals(0.28, system.getContent("a_u").getProb("Irony"), 0.08);
+	}
 
+	@Test
+	public void testParam6() {
+		DialogueSystem system =
+				new DialogueSystem(
+						XMLDomainReader
+								.extractDomain("test/domains/testparams3.xml"));
+		system.getSettings().showGUI = false;
+		system.startSystem();
+		CategoricalTable table = system.getContent("b").toDiscrete();
+		assertEquals(6, table.size());
+		assertEquals(0.45, table.getProb("something else"), 0.05);
+		assertEquals(0.175, table.getProb("value: first with type 1"), 0.05);
+		assertEquals(0.05, table.getProb("value: second with type 2"), 0.05);
 	}
 
 }

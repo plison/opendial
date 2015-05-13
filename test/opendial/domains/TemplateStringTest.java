@@ -30,10 +30,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import opendial.DialogueSystem;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.MathExpression;
 import opendial.datastructs.Template;
 import opendial.readers.XMLDomainReader;
-import opendial.utils.MathUtils;
-
 import org.junit.Test;
 
 /**
@@ -214,8 +213,8 @@ public class TemplateStringTest {
 
 	@Test
 	public void testTemplateMath() {
-		assertEquals(MathUtils.evaluateExpression("1+2"), 3.0, 0.001);
-		assertEquals(MathUtils.evaluateExpression("-1.2*3"), -3.6, 0.001);
+		assertEquals(new MathExpression("1+2").evaluate(), 3.0, 0.001);
+		assertEquals(new MathExpression("-1.2*3").evaluate(), -3.6, 0.001);
 		Template t = new Template("{X}+2");
 		assertEquals(t.fillSlots(new Assignment("X", "3")).toString(), "5");
 	}

@@ -65,14 +65,14 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
 		inference.checkProb(system.getState(), "a_u", "Greeting", 0.8);
 		inference.checkProb(system.getState(), "a_u", "None", 0.2);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -80,14 +80,14 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
 		inference.checkProb(system.getState(), "i_u", "Inform", 0.7 * 0.8);
 		inference.checkProb(system.getState(), "i_u", "None", 1 - 0.7 * 0.8);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -97,14 +97,14 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		inference.checkProb(system.getState(), "direction", "straight", 0.79);
 		inference.checkProb(system.getState(), "direction", "left", 0.20);
 		inference.checkProb(system.getState(), "direction", "right", 0.01);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
@@ -122,7 +122,7 @@ public class RuleTest1 {
 		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
 				0.28);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
@@ -139,7 +139,7 @@ public class RuleTest1 {
 				0.07);
 		inference.checkProb(system.getState(), "o2", "value3, finally", 0.28);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 
 	}
 
@@ -162,7 +162,7 @@ public class RuleTest1 {
 		inference.checkProb(system.getState(), "o", "and we have localvar=value3",
 				0.04);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test
@@ -170,14 +170,14 @@ public class RuleTest1 {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		inference.checkProb(system.getState(), "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(system.getState(), "a_u2", "[]", 0.1);
 		inference.checkProb(system.getState(), "a_u2", "[HowAreYou]", 0.2);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 }

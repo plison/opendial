@@ -24,9 +24,10 @@
 package opendial.bn.values;
 
 import java.util.logging.*;
-
+import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import opendial.utils.StringUtils;
@@ -143,6 +144,11 @@ public final class ArrayVal implements Value {
 	 */
 	public double[] getArray() {
 		return array;
+	}
+
+	public List<Value> getList() {
+		return Arrays.stream(array).mapToObj(d -> new DoubleVal(d))
+				.collect(Collectors.toList());
 	}
 
 	/**

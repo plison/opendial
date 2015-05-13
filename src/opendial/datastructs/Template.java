@@ -35,7 +35,6 @@ import java.util.regex.PatternSyntaxException;
 
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
 
 /**
@@ -301,7 +300,7 @@ public class Template {
 		}
 
 		if (StringUtils.isArithmeticExpression(filledTemplate)) {
-			double result = MathUtils.evaluateExpression(filledTemplate);
+			double result = new MathExpression(filledTemplate).evaluate();
 			filledTemplate = StringUtils.getShortForm(result);
 		}
 		return filledTemplate;

@@ -27,11 +27,11 @@ import java.util.logging.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.datastructs.Assignment;
+import opendial.datastructs.MathExpression;
 import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.ComplexParameter;
@@ -59,11 +59,11 @@ public class RuleOutput {
 	protected Map<Effect, Parameter> effects;
 
 	// ===================================
-	// CASE CONSTRUCTION
+	// OUTPUT CONSTRUCTION
 	// ===================================
 
 	/**
-	 * Creates a new case, with a void condition and an empty list of effects
+	 * Creates a new output, with a void condition and an empty list of effects
 	 */
 	public RuleOutput(RuleType type) {
 		this.type = type;
@@ -71,7 +71,7 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Adds an new effect and its associated probability/utility to the case
+	 * Adds an new effect and its associated probability/utility to the output'
 	 * 
 	 * @param effect the effect
 	 * @param param the effect's probability or utility
@@ -81,7 +81,7 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Adds a new effect and its associated parameter to the case
+	 * Adds a new effect and its associated parameter to the output
 	 * 
 	 * @param effect the effect
 	 * @param param the parameter for the effect's probability or utility
@@ -91,7 +91,7 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Removes an effect from the rule case
+	 * Removes an effect from the rule output
 	 * 
 	 * @param e the effect to remove
 	 */
@@ -100,11 +100,11 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Returns a grounded version of the rule case, based on the grounding
+	 * Returns a grounded version of the rule output, based on the grounding
 	 * assignment.
 	 * 
 	 * @param grounding the grounding associated with the filled values
-	 * @return the grounded copy of the case.
+	 * @return the grounded copy of the output.
 	 */
 	public RuleOutput ground(Assignment grounding) {
 		RuleOutput groundCase = new RuleOutput(type);
@@ -128,13 +128,13 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Adds a rule case to the current one. The result is a joint probability
-	 * distribution in the case of a probability rule, and an add table in the case
-	 * of a utility rule.
+	 * Adds a rule output to the current one. The result is a joint probability
+	 * distribution in the output of a probability rule, and an addition of utility
+	 * tables in the case of a utility rule.
 	 * 
 	 * @param newCase the new rule case to add
 	 */
-	public void addCase(RuleOutput newCase) {
+	public void addOutput(RuleOutput newCase) {
 
 		if (isVoid()) {
 			effects = newCase.effects;
@@ -153,9 +153,11 @@ public class RuleOutput {
 				for (Effect o2 : newCase.getEffects()) {
 					Parameter param2 = newCase.getParameter(o2);
 					Effect newEffect = new Effect(o, o2);
-					Parameter newParam = param1.multiply(param2);
+					Parameter newParam = mergeParameters(param1, param2, '*');
 					if (newOutput.containsKey(newEffect)) {
-						newParam = newOutput.get(newEffect).sum(newParam);
+						newParam =
+								mergeParameters(newOutput.get(newEffect), newParam,
+										'+');
 					}
 					newOutput.put(newEffect, newParam);
 				}
@@ -167,7 +169,7 @@ public class RuleOutput {
 			for (Effect o2 : newCase.getEffects()) {
 				Parameter param2 = newCase.getParameter(o2);
 				if (effects.containsKey(o2)) {
-					param2 = param2.sum(effects.get(o2));
+					param2 = mergeParameters(effects.get(o2), param2, '+');
 				}
 				effects.put(o2, newCase.getParameter(o2));
 			}
@@ -231,17 +233,6 @@ public class RuleOutput {
 		return effects.entrySet();
 	}
 
-	/**
-	 * Returns the total probability mass specified by the output (possibly given an
-	 * assignment of parameter values).
-	 * 
-	 * @param input input assignment (with parameters values)
-	 * @return the corresponding mass
-	 */
-	public double getTotalMass(Assignment input) {
-		return effects.values().stream().mapToDouble(p -> p.getValue(input)).sum();
-	}
-
 	// ===================================
 	// UTILITY METHODS
 	// ===================================
@@ -282,7 +273,7 @@ public class RuleOutput {
 	}
 
 	// ===================================
-	// PROTECTED METHODS
+	// PROTECTED AND PRIVATE METHODS
 	// ===================================
 
 	/**
@@ -301,27 +292,85 @@ public class RuleOutput {
 	}
 
 	/**
-	 * Adds a void effect to the rule if the fixed mass is lower than 0.99. Does not
-	 * do anything if the rule contains unknown parameters or already contains an
-	 * empty effect.
+	 * Adds a void effect to the rule if the fixed mass is lower than 1.0 and a void
+	 * effect is not already defined.
 	 */
 	private void addVoidEffect() {
+
+		// case 1: if there are no effects, insert a void one with prob.1
+		if (effects.isEmpty()) {
+			addEffect(new Effect(), new FixedParameter(1));
+			return;
+		}
 		double fixedMass = 0;
-		for (Entry<Effect, Parameter> e : effects.entrySet()) {
-			Effect eff = e.getKey();
-			Parameter param = e.getValue();
-			if (eff.length() == 0 || (!(param instanceof FixedParameter))) {
+		for (Effect e : effects.keySet()) {
+
+			// case 2: if there is already a void effect, do nothing
+			if (e.length() == 0) {
 				return;
 			}
-			else {
+
+			// sum up the fixed probability mass
+			Parameter param = effects.get(e);
+			if (param instanceof FixedParameter) {
 				fixedMass += ((FixedParameter) param).getValue();
 			}
 		}
 
-		if (fixedMass < 0.99) {
-			FixedParameter param = new FixedParameter(1 - fixedMass);
-			addEffect(new Effect(), param);
+		// case 3: if the fixed probability mass is = 1, do nothing
+		if (fixedMass > 0.99) {
+			return;
+		}
+
+		// case 4: if the fixed probability mass is < 1, fill the remaining mass
+		else if (fixedMass > 0.0) {
+			addEffect(new Effect(), new FixedParameter(1 - fixedMass));
+		}
+
+		// case 5: in case the rule output is structured via single or complex
+		// parameters p1, p2,... pn, create a new complex effect = 1 - (p1+p2+...pn)
+		// that fill the remaining probability mass
+		else {
+			MathExpression[] params =
+					effects.values().stream().map(p -> p.getExpression())
+							.toArray(s -> new MathExpression[s]);
+			MathExpression one = new MathExpression("1");
+			MathExpression negation = one.combine('-', params);
+			addEffect(new Effect(), new ComplexParameter(negation));
 		}
 	}
 
+	/**
+	 * Merges the two parameters and returns the merged parameter
+	 * 
+	 * @param p1 the first parameter
+	 * @param p2 the second parameter
+	 * @param operator the operator, such as +, * or -
+	 * @return the resulting parameter
+	 */
+	private static Parameter mergeParameters(Parameter p1, Parameter p2,
+			char operator) {
+
+		// if the two parameters are fixed, simply create a new fixed parameter
+		if (p1 instanceof FixedParameter && p2 instanceof FixedParameter) {
+			double v1 = ((FixedParameter) p1).getValue();
+			double v2 = ((FixedParameter) p2).getValue();
+			switch (operator) {
+			case '+':
+				return new FixedParameter(v1 + v2);
+			case '*':
+				return new FixedParameter(v1 * v2);
+			case '-':
+				return new FixedParameter(v1 - v2);
+			default:
+				throw new RuntimeException(operator + " is unsupported");
+			}
+		}
+
+		// otherwise, create a complex parameter
+		MathExpression exp1 = p1.getExpression();
+		MathExpression exp2 = p2.getExpression();
+		return new ComplexParameter(exp1.combine(operator, exp2));
+
+	}
 }

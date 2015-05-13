@@ -60,7 +60,7 @@ public class DialogueStateTest {
 
 		DialogueSystem system = new DialogueSystem(domain);
 		system.detachModule(ForwardPlanner.class);
-		StatePruner.ENABLE_PRUNING = false;
+		StatePruner.ENABLE_REDUCTION = false;
 
 		system.getSettings().showGUI = false;
 		system.startSystem();
@@ -82,7 +82,7 @@ public class DialogueStateTest {
 		inference.checkProb(initialState, "a_u2", "[Greet, HowAreYou]", 0.7);
 		inference.checkProb(initialState, "a_u2", "[]", 0.1);
 
-		StatePruner.ENABLE_PRUNING = true;
+		StatePruner.ENABLE_REDUCTION = true;
 	}
 
 	@Test

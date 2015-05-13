@@ -489,6 +489,15 @@ public class CategoricalTable implements IndependentProbDistribution {
 	}
 
 	/**
+	 * Returns the size of the table
+	 * 
+	 * @return the size of the table
+	 */
+	public int size() {
+		return table.size();
+	}
+
+	/**
 	 * Returns the rows of the table.
 	 * 
 	 * @return the table rows

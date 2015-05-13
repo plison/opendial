@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,7 +109,7 @@ public class XMLRuleReader {
 
 			if (node.getNodeName().equals("case")) {
 				Condition cond = getCondition(node, type);
-				RuleOutput output = getOutput(node, type, cond, priority);
+				RuleOutput output = getOutput(node, type, priority);
 				rule.addCase(cond, output);
 
 			}
@@ -153,8 +152,7 @@ public class XMLRuleReader {
 	 * @param condition the associated condition
 	 * @param priority the rule priority @ if the specification is ill-defined.
 	 */
-	private static RuleOutput getOutput(Node caseNode, RuleType type,
-			Condition condition, int priority) {
+	private static RuleOutput getOutput(Node caseNode, RuleType type, int priority) {
 
 		RuleOutput output = new RuleOutput(type);
 
@@ -165,7 +163,7 @@ public class XMLRuleReader {
 			if (node.getNodeName().equals("effect")) {
 				Effect effect = getFullEffect(node, priority);
 				if (effect != null) {
-					Parameter prob = getParameter(node, condition.getSlots(), type);
+					Parameter prob = getParameter(node, type);
 					output.addEffect(effect, prob);
 				}
 			}
@@ -470,14 +468,13 @@ public class XMLRuleReader {
 	 * @param type the rule type
 	 * @return the parameter representation @
 	 */
-	private static Parameter getParameter(Node node, Set<String> caseSlots,
-			RuleType type) {
+	private static Parameter getParameter(Node node, RuleType type) {
 
 		if (type == RuleType.PROB) {
 			if (node.getAttributes().getNamedItem("prob") != null) {
 				String prob =
 						node.getAttributes().getNamedItem("prob").getNodeValue();
-				return getInnerParameter(prob, caseSlots);
+				return getInnerParameter(prob);
 			}
 			else {
 				return new FixedParameter(1.0);
@@ -487,7 +484,7 @@ public class XMLRuleReader {
 			if (node.getAttributes().getNamedItem("util") != null) {
 				String util =
 						node.getAttributes().getNamedItem("util").getNodeValue();
-				return getInnerParameter(util, caseSlots);
+				return getInnerParameter(util);
 			}
 		}
 		throw new RuntimeException("parameter is not accepted");
@@ -497,10 +494,9 @@ public class XMLRuleReader {
 	 * Returns the parameter described by the XML specification.
 	 * 
 	 * @param node the XML node
-	 * @param caseSlots the underspecified slots for the case
 	 * @return the parameter representation @
 	 */
-	private static Parameter getInnerParameter(String paramStr, Set<String> caseSlots) {
+	private static Parameter getInnerParameter(String paramStr) {
 
 		// we first try to extract a fixed value
 		try {
@@ -511,11 +507,9 @@ public class XMLRuleReader {
 		// if it fails, we extract an actual unknown parameter
 		catch (NumberFormatException e) {
 			// if we have a complex expression of parameters
-			if (paramStr.contains("{")) {
-				Template t = new Template(paramStr);
-				Set<String> unknowns = t.getSlots();
-				unknowns.removeAll(caseSlots);
-				return new ComplexParameter(paramStr, unknowns);
+			if (paramStr.contains("{") || paramStr.contains("+")
+					|| paramStr.contains("*") || paramStr.contains("-")) {
+				return new ComplexParameter(paramStr);
 			}
 
 			// else, we extract a stochastic parameter
