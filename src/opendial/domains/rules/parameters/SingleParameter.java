@@ -26,13 +26,11 @@ package opendial.domains.rules.parameters;
 import java.util.logging.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
+import opendial.datastructs.MathExpression;
 
 /**
  * Parameter represented by a single distribution over a continuous variable. If the
@@ -111,29 +109,13 @@ public class SingleParameter implements Parameter {
 	}
 
 	/**
-	 * Sums the two parameters and returns the corresponding parameter
+	 * Returns the mathematical expression representing the parameter
 	 * 
-	 * @param p2 the other parameter
-	 * @return the parameter describing the sum of the two
+	 * @return the expression
 	 */
 	@Override
-	public Parameter sum(Parameter p2) {
-		Set<String> unknowns = new HashSet<String>(p2.getVariables());
-		unknowns.add(paramId);
-		return new ComplexParameter(paramId + "+" + p2.toString(), unknowns);
-	}
-
-	/**
-	 * Multiplies the two parameters and returns the corresponding parameter
-	 * 
-	 * @param p2 the other parameter
-	 * @return the parameter describing the product of the two
-	 */
-	@Override
-	public Parameter multiply(Parameter p2) {
-		Set<String> unknowns = new HashSet<String>(p2.getVariables());
-		unknowns.add(paramId);
-		return new ComplexParameter(paramId + "*" + p2.toString(), unknowns);
+	public MathExpression getExpression() {
+		return new MathExpression(toString());
 	}
 
 	/**

@@ -24,13 +24,13 @@
 package opendial.domains.rules.conditions;
 
 import java.util.logging.*;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import opendial.bn.values.ArrayVal;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -287,21 +287,25 @@ public final class BasicCondition implements Condition {
 			return grounding;
 		}
 
-		else {
-			// case 3: the expected value is a set and the relation is IN
-			if (relation == Relation.IN && expectedValue instanceof SetVal) {
+		// case 3: the the relation is IN
+		else if (relation == Relation.IN) {
+			if (expectedValue instanceof SetVal) {
 				return new RuleGrounding(filledVar,
 						((SetVal) expectedValue).getSet());
 			}
-
-			// case 4: none of this applies (usual case)
-			else if (isSatisfiedBy(input)) {
-				return new RuleGrounding();
+			else if (expectedValue instanceof ArrayVal) {
+				return new RuleGrounding(filledVar,
+						((ArrayVal) expectedValue).getList());
 			}
+		}
 
-			else {
-				return new RuleGrounding.Failed();
-			}
+		// case 4: none of this applies (usual case)
+		if (isSatisfiedBy(input)) {
+			return new RuleGrounding();
+		}
+
+		else {
+			return new RuleGrounding.Failed();
 		}
 	}
 

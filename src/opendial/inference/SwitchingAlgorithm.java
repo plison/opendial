@@ -40,16 +40,16 @@ import opendial.inference.exact.VariableElimination;
  * query.
  * 
  * <p>
- * The switching mechanism is defined via three thresholds:
+ * The switching mechanism is defined via two thresholds:
  * <ul>
  * <li>one threshold on the maximum branching factor of the network
- * <li>one threshold on the maximum number of query variables
- * <li>one threshold on the maximum number of continuous variables
+ * <li>one threshold on the maximum number of combination of values in a node factor
  * </ul>
  * 
  * <p>
- * If at least one of these thresholds is exceeded, the selected algorithm will be
- * likelihood weighting. Variable elimination is selected in the remaining cases.
+ * If one of these threshold is exceeded or if the Bayesian network contains a
+ * continuous distribution, the selected algorithm will be likelihood weighting.
+ * Variable elimination is selected in the remaining cases.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  */

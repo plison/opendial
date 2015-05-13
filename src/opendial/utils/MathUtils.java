@@ -24,14 +24,10 @@
 package opendial.utils;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
 
 /**
  * Math utilities.
@@ -101,19 +97,6 @@ public class MathUtils {
 	}
 
 	/**
-	 * Parse basic mathematical expressions comprised of two numbers joined by a
-	 * binary operator, such as 1+1, 3-2,3*7 or 6/2.
-	 * 
-	 * @param expression the mathematical expression as a string
-	 * @return the result of the evaluation
-	 */
-	public static double evaluateExpression(String expression) {
-
-		Expression e = new ExpressionBuilder(expression).build();
-		return e.evaluate();
-	}
-
-	/**
 	 * Returns the log-gamma value using Lanczos approximation formula
 	 * 
 	 * Reference: http://introcs.cs.princeton.edu/java/91float/Gamma.java
@@ -154,4 +137,5 @@ public class MathUtils {
 		double radius2 = Math.pow(radius, dimension);
 		return radius2 * numerator / denum;
 	}
+
 }

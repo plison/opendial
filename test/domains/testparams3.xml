@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<initialstate>
+		<variable id="a">
+			<value prob="0.7">first value of a</value>
+			<value prob="0.2">second value of a</value>
+		</variable>
+	</initialstate>
+
+	<parameters>
+		<variable id="theta">
+			<distrib type="dirichlet">
+				<alpha>2</alpha>
+				<alpha>2</alpha>
+			</distrib>
+		</variable>
+	</parameters>
+
+	<model trigger="a">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="type" relation="in" value="[1,2]" />
+					<if var="a" value="{NB} value of a" />
+				</condition>
+				<effect prob="theta[0]">
+					<set var="b" value="value: {NB} with type {type}" />
+				</effect>
+				<effect prob="theta[1]">
+					<set var="b" value="something else" />
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
+</domain>

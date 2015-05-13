@@ -49,41 +49,49 @@ public class SimulatorTest {
 	@Test
 	public void testSimulator() throws InterruptedException {
 
-		DialogueSystem system =
-				new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
-		system.getDomain().getModels().remove(0);
-		system.getDomain().getModels().remove(0);
-		system.getDomain().getModels().remove(0);
-		Domain simDomain2 = XMLDomainReader.extractDomain(simDomain);
-		Simulator sim = new Simulator(system, simDomain2);
+		DialogueSystem system = null;
 		int nbSamples = Settings.nbSamples;
 		Settings.nbSamples = nbSamples / 5;
-		system.attachModule(sim);
-		system.getSettings().showGUI = false;
-
-		system.startSystem();
-
-		String str = "";
-		for (int i = 0; i < 40 && system.getModule(Simulator.class) != null; i++) {
-			Thread.sleep(200);
-			str = system.getModule(DialogueRecorder.class).getRecord();
-			try {
-				checkCondition(str);
-				system.detachModule(Simulator.class);
+		outloop: for (int k = 0; k < 3; k++) {
+			system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
+			if (k > 0) {
+				log.info("restarting the simulator...");
 			}
-			catch (AssertionError e) {
+
+			system.getDomain().getModels().remove(0);
+			system.getDomain().getModels().remove(0);
+			system.getDomain().getModels().remove(0);
+			Domain simDomain2 = XMLDomainReader.extractDomain(simDomain);
+			Simulator sim = new Simulator(system, simDomain2);
+			system.attachModule(sim);
+			system.getSettings().showGUI = false;
+
+			system.startSystem();
+
+			String str = "";
+			for (int i = 0; i < 40 && system.getModule(Simulator.class) != null; i++) {
+				Thread.sleep(200);
+				str = system.getModule(DialogueRecorder.class).getRecord();
+				try {
+					checkCondition(str);
+					system.detachModule(Simulator.class);
+					break outloop;
+				}
+				catch (AssertionError e) {
+				}
 			}
+			system.detachModule(Simulator.class);
 		}
-
-		checkCondition(str);
+		checkCondition(system.getModule(DialogueRecorder.class).getRecord());
 		system.detachModule(Simulator.class);
-
+		system.pause(true);
 		Settings.nbSamples = nbSamples * 5;
 	}
 
 	@Test
 	public void testRewardLearner() throws InterruptedException {
 		DialogueSystem system = null;
+		Settings.nbSamples = Settings.nbSamples * 2;
 		outloop: for (int k = 0; k < 3; k++) {
 			if (k > 0) {
 				log.info("restarting the learner...");
@@ -94,10 +102,9 @@ public class SimulatorTest {
 			Simulator sim = new Simulator(system, simDomain3);
 			system.attachModule(sim);
 			system.getSettings().showGUI = false;
-			Settings.nbSamples = Settings.nbSamples * 2;
 			system.startSystem();
 
-			for (int i = 0; i < 10 && system.getModule(Simulator.class) != null; i++) {
+			for (int i = 0; i < 20 && system.getModule(Simulator.class) != null; i++) {
 				Thread.sleep(100);
 				try {
 					checkCondition2(system);
@@ -108,10 +115,11 @@ public class SimulatorTest {
 
 				}
 			}
-
+			system.detachModule(Simulator.class);
 		}
 		checkCondition2(system);
 		system.detachModule(Simulator.class);
+		system.pause(true);
 		DensityFunction theta_correct, theta_incorrect, theta_repeat;
 		theta_correct =
 				system.getContent("theta_correct").toContinuous().getFunction();

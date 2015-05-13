@@ -24,7 +24,9 @@
 package opendial.domains.rules.parameters;
 
 import java.util.Collection;
+
 import opendial.datastructs.Assignment;
+import opendial.datastructs.MathExpression;
 
 /**
  * Interface for a parameter associated with an effect
@@ -53,19 +55,10 @@ public interface Parameter {
 	public Collection<String> getVariables();
 
 	/**
-	 * Sums the two parameters and returns the corresponding parameter
+	 * Returns the mathematical expression representing the parameter
 	 * 
-	 * @param p2 the other parameter
-	 * @return the parameter describing the sum of the two
+	 * @return the expression
 	 */
-	public Parameter sum(Parameter p2);
-
-	/**
-	 * Multiplies the two parameters and returns the corresponding parameter
-	 * 
-	 * @param p2 the other parameter
-	 * @return the parameter describing the product of the two
-	 */
-	public Parameter multiply(Parameter p2);
+	public MathExpression getExpression();
 
 }

@@ -283,13 +283,13 @@ public class Assignment {
 	 * Creates an assignment where all variable share a single common value.
 	 * 
 	 * @param variables the variables of the assignment
-	 * @param commonValue the single value for all variables
+	 * @param string the single value for all variables
 	 * @return the corresponding assignment
 	 */
 	public static Assignment createOneValue(Collection<String> variables,
-			Value commonValue) {
+			String string) {
 		Assignment a = new Assignment();
-		variables.stream().forEach(v -> a.addPair(v, commonValue));
+		variables.stream().forEach(v -> a.addPair(v, string));
 		return a;
 	}
 

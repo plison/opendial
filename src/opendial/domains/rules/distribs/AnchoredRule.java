@@ -133,7 +133,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 						.forEach(p -> parameters.add(p));
 			}
 		}
-
 		if (rule.getRuleType() == RuleType.UTIL) {
 			variables.addAll(outputs.getVariables());
 		}
@@ -320,16 +319,11 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		RuleOutput output = getOutput(input);
 
 		// creating the distribution
-		double totalMass = output.getTotalMass(input);
 		CategoricalTable probTable = new CategoricalTable(id, false);
-		if (totalMass < 0.99) {
-			probTable.addRow(new Effect(), 1.0 - totalMass);
-			totalMass = 1.0;
-		}
 
 		for (Effect e : output.getEffects()) {
 			Parameter param = output.getParameter(e);
-			double paramValue = param.getValue(input) / totalMass;
+			double paramValue = param.getValue(input);
 			if (paramValue > 0) {
 				probTable.addRow(e, paramValue);
 			}

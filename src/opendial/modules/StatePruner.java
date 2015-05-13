@@ -59,7 +59,7 @@ public class StatePruner {
 
 	public static double VALUE_PRUNING_THRESHOLD = 0.01;
 
-	public static boolean ENABLE_PRUNING = true;
+	public static boolean ENABLE_REDUCTION = true;
 
 	/**
 	 * Prunes the state of all the non-necessary nodes. the operation selects a
@@ -119,7 +119,7 @@ public class StatePruner {
 					|| node.getId().endsWith("^o")) {
 				continue;
 			}
-			else if (ENABLE_PRUNING & node.getDistrib() instanceof AnchoredRule) {
+			else if (ENABLE_REDUCTION & node.getDistrib() instanceof AnchoredRule) {
 				continue;
 			}
 			else if (node.getInputNodeIds().size() < 3
@@ -192,8 +192,7 @@ public class StatePruner {
 		}
 
 		// if all nodes belong to a single clique and the evidence does not
-		// pertain to
-		// them, return the subset of nodes
+		// pertain to them, return the subset of nodes
 		else if (state.isClique(nodesToKeep)
 				&& !evidence.containsOneVar(nodesToKeep)) {
 			DialogueState newState =
@@ -223,8 +222,7 @@ public class StatePruner {
 
 		// else, select the best reduction algorithm and performs the reduction
 		BNetwork result =
-				new SwitchingAlgorithm().reduce(state, nodesToKeep,
-						state.getEvidence());
+				new SwitchingAlgorithm().reduce(state, nodesToKeep, evidence);
 		return new DialogueState(result);
 	}
 
@@ -309,11 +307,9 @@ public class StatePruner {
 			node.pruneValues(VALUE_PRUNING_THRESHOLD);
 
 			// if the node only contains a single (non-none) value, remove
-			// outgoing dependency
-			// edges (as the dependency relation is in this case superfluous)
-			if (node.getInputNodeIds().isEmpty() && node.getNbValues() == 1
-					&& !node.getOutputNodes().isEmpty()
-					&& reduced.getUtilityNodeIds().isEmpty()
+			// outgoing edges (as the dependency relation is superfluous)
+			if (node.getNbValues() == 1 && !node.getOutputNodes().isEmpty()
+			// && reduced.getUtilityNodeIds().isEmpty()
 					&& reduced.getIncrementalVars().isEmpty()) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {

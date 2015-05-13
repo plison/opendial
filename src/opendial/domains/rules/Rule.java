@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
@@ -111,23 +110,18 @@ public class Rule {
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVars = new HashSet<Template>();
 		for (RuleCase c : cases) {
-			inputVars.addAll(c.condition.getInputVariables());
-			for (Effect effect : c.getEffects()) {
-				for (String inputVariable : effect.getValueSlots()) {
-					inputVars.add(new Template(inputVariable));
-				}
-			}
+			inputVars.addAll(c.getInputVariables());
 		}
 		return inputVars;
 	}
 
 	/**
-	 * Returns the first case whose condition matches the input assignment provided
-	 * as argument. The case contains the grounded list of effects associated with
-	 * the satisfied condition.
+	 * Returns the first rule output whose condition matches the input assignment
+	 * provided as argument. The output contains the grounded list of effects
+	 * associated with the satisfied condition.
 	 * 
 	 * @param input the input assignment
-	 * @return the matched rule case.
+	 * @return the matched rule output.
 	 */
 	public RuleOutput getOutput(Assignment input) {
 
@@ -143,7 +137,7 @@ public class Rule {
 							.orElse(new RuleOutput(ruleType));
 
 			match = match.ground(full);
-			output.addCase(match);
+			output.addOutput(match);
 
 		}
 
@@ -258,10 +252,10 @@ public class Rule {
 	final class RuleCase {
 
 		// the condition for the rule (can be a VoidCondition)
-		Condition condition;
+		final Condition condition;
 
 		// the associated output for the case
-		RuleOutput output;
+		final RuleOutput output;
 
 		/**
 		 * Creates a new rule case with a condition and an output
@@ -305,12 +299,27 @@ public class Rule {
 					else {
 						Set<String> slots = e.getValueSlots();
 						slots.removeAll(input.getVariables());
-						groundings.add(Assignment.createOneValue(slots,
-								ValueFactory.create("")));
+						groundings.add(Assignment.createOneValue(slots, ""));
 					}
 				}
 			}
 			return groundings;
+		}
+
+		/**
+		 * Returns the input variables associated with the case
+		 * 
+		 * @return the set of input variables
+		 */
+		public Set<Template> getInputVariables() {
+			Set<Template> inputVars = new HashSet<Template>();
+			inputVars.addAll(condition.getInputVariables());
+			for (Effect effect : getEffects()) {
+				for (String inputVariable : effect.getValueSlots()) {
+					inputVars.add(new Template(inputVariable));
+				}
+			}
+			return inputVars;
 		}
 
 		/**
