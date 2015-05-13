@@ -62,8 +62,8 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param simulatorDomain the dialogue domain for the simulator @ if the
-	 *            simulator could not be created
+	 * @param simulatorDomain the dialogue domain for the simulator simulator could
+	 *            not be created
 	 */
 	public Simulator(DialogueSystem system, String simulatorDomain) {
 		this(system, extractDomain(simulatorDomain));
@@ -73,8 +73,7 @@ public class Simulator implements Module {
 	 * Creates a new user/environment simulator.
 	 * 
 	 * @param system the main dialogue system to which the simulator should connect
-	 * @param domain the dialogue domain for the simulator @ if the simulator could
-	 *            not be created
+	 * @param domain the dialogue domain for the simulator not be created
 	 */
 	public Simulator(DialogueSystem system, Domain domain) {
 		this.system = system;

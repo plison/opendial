@@ -41,7 +41,7 @@ import opendial.bn.distribs.ContinuousDistribution;
 import opendial.gui.GUIFrame;
 import opendial.modules.examples.WizardControl;
 import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLInteractionReader;
+import opendial.readers.XMLDialogueReader;
 
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class WizardTest {
 	@Test
 	public void testWizardLearning() {
 		List<DialogueState> interaction =
-				XMLInteractionReader.extractInteraction(interactionFile);
+				XMLDialogueReader.extractDialogue(interactionFile);
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;

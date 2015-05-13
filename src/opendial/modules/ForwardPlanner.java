@@ -243,8 +243,7 @@ public class ForwardPlanner implements Module {
 		 * Adds a particular content to the dialogue state
 		 * 
 		 * @param state the dialogue state
-		 * @param newContent the content to add @ if the update operation could not
-		 *            be performed
+		 * @param newContent the content to add be performed
 		 */
 		private void updateState(DialogueState state) {
 

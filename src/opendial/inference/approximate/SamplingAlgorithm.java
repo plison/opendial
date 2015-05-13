@@ -92,8 +92,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * Bayesian network, given the provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the resulting probability distribution @ if the inference operation
-	 *         failed
+	 * @return the resulting probability distribution failed
 	 */
 	@Override
 	public EmpiricalDistribution queryProb(Query.ProbQuery query) {
@@ -113,7 +112,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * 
 	 * @param network the network on which to extract the sample
 	 * @param queryVars the variables to extract
-	 * @return the extracted sample @ if no sample could be extracted.
+	 * @return the extracted sample
 	 */
 	public static Assignment extractSample(BNetwork network,
 			Collection<String> queryVars) {
@@ -137,7 +136,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * provided evidence
 	 * 
 	 * @param query the full query
-	 * @return the utility distribution @ if the inference operation failed
+	 * @return the utility distribution
 	 */
 	@Override
 	public UtilityTable queryUtil(Query.UtilQuery query) {
@@ -167,7 +166,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * Queries for the utility without any particular query variable
 	 * 
 	 * @param network the graphical model
-	 * @return the utility @ if the inference operation failed
+	 * @return the utility
 	 */
 
 	public double queryUtil(BNetwork network) {
@@ -252,7 +251,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	 * @param query the query
 	 * @param weightScheme the weighting scheme for the samples
 	 * @return the resulting empirical distribution for the query variables, after
-	 *         reweigthing @ if the reweighting operation failed.
+	 *         reweigthing
 	 */
 	public EmpiricalDistribution getWeightedSamples(Query query,
 			Consumer<Collection<Sample>> weightScheme) {

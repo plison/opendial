@@ -73,7 +73,7 @@ public class XMLUtils {
 	 * Opens the XML document referenced by the filename, and returns it
 	 * 
 	 * @param filename the filename
-	 * @return the XML document @ if the XML document could not be read.
+	 * @return the XML document
 	 */
 	public static Document getXMLDocument(String filename) {
 		InputStream is = null;
@@ -103,7 +103,7 @@ public class XMLUtils {
 	 * Opens the XML document referenced by the input source, and returns it
 	 * 
 	 * @param is the input source
-	 * @return the XML document @ if the XML document could not be read.
+	 * @return the XML document
 	 */
 	public static Document getXMLDocument(InputSource is) {
 		log.fine("parsing file: " + is);
@@ -154,7 +154,7 @@ public class XMLUtils {
 	/**
 	 * Creates a new XML, empty document
 	 * 
-	 * @return the empty XML document @ if the document could not be created
+	 * @return the empty XML document
 	 */
 	public static Document newXMLDocument() {
 
@@ -177,8 +177,8 @@ public class XMLUtils {
 	 * Writes the XML document to the particular file specified as argument
 	 * 
 	 * @param doc the document
-	 * @param filename the path to the file in which to write the XML data @ if the
-	 *            writing operation fails
+	 * @param filename the path to the file in which to write the XML data writing
+	 *            operation fails
 	 */
 	public static void writeXMLDocument(Document doc, String filename) {
 		try {
@@ -211,7 +211,7 @@ public class XMLUtils {
 	 * Returns the main node of the XML document
 	 * 
 	 * @param doc the XML document
-	 * @return the main node @ if node is ill-formatted
+	 * @return the main node
 	 */
 	public static Node getMainNode(Document doc) {
 		for (int i = 0; i < doc.getChildNodes().getLength(); i++) {
@@ -230,8 +230,7 @@ public class XMLUtils {
 	 * 
 	 * @param dialSpecs the domain file
 	 * @param schemaFile the schema file
-	 * @return true if document is validated, false otherwise @ if problem appears
-	 *         when parsing XML
+	 * @return true if document is validated, false otherwise when parsing XML
 	 */
 	public static boolean validateXML(String dialSpecs, String schemaFile) {
 

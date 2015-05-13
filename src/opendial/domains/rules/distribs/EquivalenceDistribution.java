@@ -207,7 +207,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 * Returns the probability of eq=true given the condition
 	 * 
 	 * @param condition the conditional assignment
-	 * @return the probability of eq=true @ if the distribution is ill-formed
+	 * @return the probability of eq=true
 	 */
 	private double getProb(Assignment condition) {
 

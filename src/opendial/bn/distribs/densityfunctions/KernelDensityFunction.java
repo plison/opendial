@@ -361,7 +361,7 @@ public class KernelDensityFunction implements DensityFunction {
 	 * Converts the distribution to a Gaussian distribution and returns its XML
 	 * representation.
 	 * 
-	 * @param doc the XML document @ if the XML representation could not be generated
+	 * @param doc the XML document
 	 * 
 	 */
 	@Override

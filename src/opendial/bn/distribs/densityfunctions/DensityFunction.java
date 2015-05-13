@@ -43,8 +43,7 @@ public interface DensityFunction {
 	 * Returns the density value of the function at a given point
 	 * 
 	 * @param x the (possibly multivariate) point
-	 * @return the density value for the point @ if the density of x could not be
-	 *         calculated.
+	 * @return the density value for the point calculated.
 	 */
 	public double getDensity(double... x);
 
@@ -100,8 +99,7 @@ public interface DensityFunction {
 	 * Returns the cumulative probability up to the given point x.
 	 * 
 	 * @param x the (possibly multivariate) point x
-	 * @return the cumulative probability from 0 to x @ if the CDF could not be
-	 *         extracted
+	 * @return the cumulative probability from 0 to x extracted
 	 */
 	public double getCDF(double... x);
 

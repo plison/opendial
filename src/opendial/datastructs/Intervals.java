@@ -59,8 +59,8 @@ public class Intervals<T> {
 	/**
 	 * Creates a new interval collection with a set of (content,probability) pairs
 	 * 
-	 * @param table the tables from which to create the intervals @ if the intervals
-	 *            could not be created
+	 * @param table the tables from which to create the intervals could not be
+	 *            created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Map<T, Double> table) {
@@ -89,8 +89,8 @@ public class Intervals<T> {
 	 * specifying the probability of each value
 	 * 
 	 * @param content the collection of content objects
-	 * @param probs the function associating a weight to each object @ if the
-	 *            intervals could not be created
+	 * @param probs the function associating a weight to each object intervals could
+	 *            not be created
 	 */
 	@SuppressWarnings("unchecked")
 	public Intervals(Collection<T> content, Function<T, Double> probs) {
@@ -118,7 +118,7 @@ public class Intervals<T> {
 	 * Samples an object from the interval collection, using a simple binary search
 	 * procedure.
 	 * 
-	 * @return the sampled object @ if the sampling could not be performed
+	 * @return the sampled object
 	 */
 	public T sample() {
 

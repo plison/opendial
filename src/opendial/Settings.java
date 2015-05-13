@@ -319,7 +319,7 @@ public class Settings {
 	 * Generates an XML element that encodes the settings
 	 * 
 	 * @param doc the document to which the element must comply
-	 * @return the resulting XML element @ if the XML generation failed
+	 * @return the resulting XML element
 	 */
 	public Element generateXML(Document doc) {
 

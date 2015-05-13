@@ -51,8 +51,7 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition the conditional assignment for Y1,..., Ym
 	 * @param head the value for the random variable
-	 * @return the associated probability, if one exists. @ if the probability could
-	 *         not be extracted
+	 * @return the associated probability, if one exists. not be extracted
 	 */
 	public double getProb(Assignment condition, Value head);
 
@@ -61,8 +60,8 @@ public interface ProbDistribution {
 	 * conditional assignment provided as argument.
 	 * 
 	 * @param condition the conditional assignment on Y1,...Ym
-	 * @return the independent probability distribution on X. @ if the unconditional
-	 *         distribution could not be extracted
+	 * @return the independent probability distribution on X. distribution could not
+	 *         be extracted
 	 */
 	public IndependentProbDistribution getProbDistrib(Assignment condition);
 
@@ -71,8 +70,7 @@ public interface ProbDistribution {
 	 * assignment.
 	 * 
 	 * @param condition the conditional assignment for Y1,...,Ym
-	 * @return the sampled values for the random variable @ if no value(s) could be
-	 *         sampled
+	 * @return the sampled values for the random variable sampled
 	 */
 	public Value sample(Assignment condition);
 
@@ -80,7 +78,7 @@ public interface ProbDistribution {
 	 * Returns the set of possible values for the distribution. If the distribution
 	 * is continuous, the method returns a discretised set.
 	 * 
-	 * @ if the values could not be extracted
+	 * @return the values in the distribution
 	 */
 	public Set<Value> getValues();
 
@@ -90,7 +88,7 @@ public interface ProbDistribution {
 	 * 
 	 * @param condition an assignment of values to (a subset of) the conditional
 	 *            variables
-	 * @return the posterior distribution @ if the posterior could not be computed.
+	 * @return the posterior distribution
 	 */
 	public abstract ProbDistribution getPosterior(Assignment condition);
 

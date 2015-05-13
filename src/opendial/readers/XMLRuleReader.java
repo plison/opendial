@@ -71,7 +71,7 @@ public class XMLRuleReader {
 	 * Extracts the rule corresponding to the XML specification.
 	 * 
 	 * @param topNode the XML node
-	 * @return the corresponding rule @ if the specification is ill-defined.
+	 * @return the corresponding rule
 	 */
 	public static Rule getRule(Node topNode) {
 
@@ -128,7 +128,7 @@ public class XMLRuleReader {
 	 * 
 	 * @param node the XML node
 	 * @param type the rule type
-	 * @return the associated rule condition @ if the specification is ill-defined.
+	 * @return the associated rule condition
 	 */
 	private static Condition getCondition(Node caseNode, RuleType type) {
 
@@ -150,7 +150,7 @@ public class XMLRuleReader {
 	 * @param node the XML node
 	 * @param type the rule type
 	 * @param condition the associated condition
-	 * @param priority the rule priority @ if the specification is ill-defined.
+	 * @param priority the rule priority
 	 */
 	private static RuleOutput getOutput(Node caseNode, RuleType type, int priority) {
 
@@ -176,7 +176,7 @@ public class XMLRuleReader {
 	 * Extracting the condition associated with an XML specification.
 	 * 
 	 * @param node the XML node
-	 * @return the associated condition @ if the specification is ill-defined.
+	 * @return the associated condition
 	 */
 	private static Condition getFullCondition(Node conditionNode) {
 
@@ -225,7 +225,7 @@ public class XMLRuleReader {
 	 * Extracting a partial condition from a rule specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding condition @ if the condition is ill-defined
+	 * @return the corresponding condition
 	 */
 	private static Condition getSubcondition(Node node) {
 
@@ -319,7 +319,7 @@ public class XMLRuleReader {
 	 * Extracts the relation specified in a condition
 	 * 
 	 * @param node the XML node containing the relation
-	 * @return the corresponding relation @ if the relation is ill-defined
+	 * @return the corresponding relation
 	 */
 	private static Relation getRelation(Node node) {
 		Relation relation = Relation.EQUAL;
@@ -397,7 +397,7 @@ public class XMLRuleReader {
 	 * 
 	 * @param node the XML node
 	 * @param priority the rule priority
-	 * @return the corresponding basic effect @ if the effect is ill-defined
+	 * @return the corresponding basic effect
 	 */
 	private static BasicEffect getSubEffect(Node node, int priority) {
 

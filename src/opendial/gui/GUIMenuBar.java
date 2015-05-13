@@ -62,7 +62,6 @@ import opendial.modules.AudioModule;
 import opendial.modules.DialogueImporter;
 import opendial.modules.DialogueRecorder;
 import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLInteractionReader;
 import opendial.readers.XMLStateReader;
 import opendial.utils.AudioUtils;
 import opendial.utils.XMLUtils;
@@ -363,12 +362,9 @@ public class GUIMenuBar extends JMenuBar {
 			String interactionFile = fc.getSelectedFile().getAbsolutePath();
 			frame.addComment("Importing interaction " + interactionFile);
 			try {
-				List<DialogueState> interaction =
-						XMLInteractionReader.extractInteraction(interactionFile);
 				DialogueImporter importer =
-						new DialogueImporter(frame.getSystem(), interaction);
+						frame.getSystem().importDialogue(interactionFile);
 				importer.setWizardOfOzMode(isWizardOfOz);
-				importer.start();
 			}
 			catch (Exception f) {
 				log.warning("could not extract interaction: " + f);
@@ -491,8 +487,7 @@ public class GUIMenuBar extends JMenuBar {
 	 * 
 	 * @param system the dialogue system
 	 * @param file the file that contains the state or parameter content
-	 * @param tag the expected top XML tag. @ if the content could not be imported
-	 *            into the system
+	 * @param tag the expected top XML tag. into the system
 	 */
 	public static void importContent(DialogueSystem system, String file, String tag) {
 		if (tag.equals("parameters")) {
@@ -537,8 +532,7 @@ public class GUIMenuBar extends JMenuBar {
 	 * 
 	 * @param system the dialogue system
 	 * @param file the file in which to write the state or parameter content
-	 * @param tag the expected top XML tag. @ if the content could not be exported
-	 *            from the system
+	 * @param tag the expected top XML tag. from the system
 	 */
 	public static void exportContent(DialogueSystem system, String file, String tag) {
 		Document doc = XMLUtils.newXMLDocument();

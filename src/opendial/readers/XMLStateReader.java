@@ -64,7 +64,7 @@ public class XMLStateReader {
 	 * 
 	 * @param file the file to process
 	 * @param tag the XML tag to search for
-	 * @return the specified Bayesian network @ if XML document is ill-formatted
+	 * @return the specified Bayesian network
 	 */
 	public static BNetwork extractBayesianNetwork(String file, String tag) {
 
@@ -90,7 +90,7 @@ public class XMLStateReader {
 	 * domain (where the variable types are already declared)
 	 * 
 	 * @param mainNode the main node for the XML document
-	 * @return the corresponding dialogue state @ if XML document is ill-formatted
+	 * @return the corresponding dialogue state
 	 */
 	public static BNetwork getBayesianNetwork(Node mainNode) {
 
@@ -111,8 +111,7 @@ public class XMLStateReader {
 	 * Creates a new chance node corresponding to the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the resulting chance node @ if the distribution is not properly
-	 *         encoded
+	 * @return the resulting chance node encoded
 	 */
 	public static ChanceNode createChanceNode(Node node) {
 
@@ -193,7 +192,7 @@ public class XMLStateReader {
 	 * is none is declared)
 	 * 
 	 * @param node the XML node
-	 * @return the value probability @ if probability is ill-formatted
+	 * @return the value probability
 	 */
 	private static float getProbability(Node node) {
 
@@ -219,8 +218,7 @@ public class XMLStateReader {
 	 * Extracts the gaussian density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding Gaussian PDF @ if the density function is not
-	 *         properly encoded
+	 * @return the corresponding Gaussian PDF properly encoded
 	 */
 	private static GaussianDensityFunction getGaussian(Node node) {
 		double[] mean = null;
@@ -257,8 +255,7 @@ public class XMLStateReader {
 	 * Extracts the uniform density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding uniform PDF @ if the density function is not
-	 *         properly encoded
+	 * @return the corresponding uniform PDF properly encoded
 	 */
 	private static UniformDensityFunction getUniform(Node node) {
 		double min = Double.MAX_VALUE;
@@ -282,8 +279,7 @@ public class XMLStateReader {
 	 * Extracts the Dirichlet density function described by the XML specification
 	 * 
 	 * @param node the XML node
-	 * @return the corresponding Dirichlet PDF @ if the density function is not
-	 *         properly encoded
+	 * @return the corresponding Dirichlet PDF properly encoded
 	 */
 	private static DirichletDensityFunction getDirichlet(Node node) {
 		List<Double> alphas = new LinkedList<Double>();

@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class XMLInteractionReader {
+public class XMLDialogueReader {
 
 	final static Logger log = Logger.getLogger("OpenDial");
 
@@ -50,9 +50,9 @@ public class XMLInteractionReader {
 	 * dialogue state (one for each turn).
 	 * 
 	 * @param dataFile the XML file containing the turns
-	 * @return the list of dialogue states @ if the XML file is corrupted.
+	 * @return the list of dialogue states
 	 */
-	public static List<DialogueState> extractInteraction(String dataFile) {
+	public static List<DialogueState> extractDialogue(String dataFile) {
 		// extract the XML document
 		Document doc = XMLUtils.getXMLDocument(dataFile);
 		Node mainNode = XMLUtils.getMainNode(doc);
@@ -85,7 +85,7 @@ public class XMLInteractionReader {
 				String fileName =
 						mainNode.getAttributes().getNamedItem("href").getNodeValue();
 				List<DialogueState> points =
-						extractInteraction(rootpath + "/" + fileName);
+						extractDialogue(rootpath + "/" + fileName);
 				sample.addAll(points);
 			}
 

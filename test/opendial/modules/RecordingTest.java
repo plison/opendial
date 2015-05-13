@@ -37,7 +37,7 @@ import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.gui.GUIFrame;
 import opendial.gui.GUIMenuBar;
 import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLInteractionReader;
+import opendial.readers.XMLDialogueReader;
 import opendial.utils.StringUtils;
 
 import org.junit.Test;
@@ -119,7 +119,7 @@ public class RecordingTest {
 		Settings.nbSamples = Settings.nbSamples / 100;
 		DialogueImporter importer =
 				new DialogueImporter(system,
-						XMLInteractionReader.extractInteraction(dialogueFile));
+						XMLDialogueReader.extractDialogue(dialogueFile));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();

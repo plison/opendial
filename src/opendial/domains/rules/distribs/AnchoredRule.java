@@ -110,12 +110,14 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		}
 		variables = new HashSet<String>(inputs.getVariables());
 
+		// if an input variable is continuous, avoid using a cache
 		if (Collections.disjoint(variables,
 				state.getNodeIds(ContinuousDistribution.class))) {
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
 
 		Set<Assignment> conditions = inputs.linearise();
+
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values)
 		for (Assignment input : conditions) {
@@ -136,7 +138,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		if (rule.getRuleType() == RuleType.UTIL) {
 			variables.addAll(outputs.getVariables());
 		}
-
 	}
 
 	/**
@@ -235,7 +236,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * 
 	 * @param condition the conditional assignment
 	 * @param head the head assignment
-	 * @return the probability @ if the probability could not be calculated.
+	 * @return the probability
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) {
@@ -273,8 +274,8 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * Returns the probability table associated with the given input assignment
 	 * 
 	 * @param condition the conditional assignment
-	 * @return the associated probability table (as a CategoricalTable) @ if the
-	 *         distribution could not be calculated.
+	 * @return the associated probability table (as a CategoricalTable) distribution
+	 *         could not be calculated.
 	 */
 	@Override
 	public ProbDistribution getPosterior(Assignment condition) {
@@ -294,7 +295,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * Samples one possible output value given the input assignment
 	 * 
 	 * @param condition the input assignment
-	 * @return the sampled value @ if sampling returned an error
+	 * @return the sampled value
 	 */
 	@Override
 	public Value sample(Assignment condition) {
@@ -332,7 +333,6 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		if (probTable.isEmpty()) {
 			log.warning("probability table is empty (no effects) for " + "input "
 					+ input + " and rule " + toString());
-			log.fine("output was " + output + " and effect " + output.getEffects());
 		}
 		return probTable;
 	}

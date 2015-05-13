@@ -174,7 +174,7 @@ public class UtilityNode extends BNode {
 	 * Returns a copy of the utility node. Note that only the node content is copied,
 	 * not its connection with other nodes.
 	 * 
-	 * @return the copy @ if the node could not be copied
+	 * @return the copy
 	 */
 	@Override
 	public UtilityNode copy() {

@@ -275,7 +275,7 @@ public class MultivariateTable implements MultivariateDistribution {
 	 * Sample an assignment from the distribution. If no assignment can be sampled
 	 * (due to e.g. an ill-formed distribution), returns an empty assignment.
 	 * 
-	 * @return the sampled assignment @ if no assignment could be sampled
+	 * @return the sampled assignment
 	 */
 	@Override
 	public Assignment sample() {

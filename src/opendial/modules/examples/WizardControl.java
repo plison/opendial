@@ -77,7 +77,7 @@ public class WizardControl implements Module {
 	/**
 	 * Creates a new wizard control for the dialogue system.
 	 * 
-	 * @param system the dialogue system @ if the GUI is not activated
+	 * @param system the dialogue system
 	 */
 	public WizardControl(DialogueSystem system) {
 		this.system = system;
@@ -160,8 +160,7 @@ public class WizardControl implements Module {
 	 * Displays the Wizard-of-Oz window with the possible action values specified in
 	 * the action node.
 	 * 
-	 * @param actionNode the action node @ if the action values could not be
-	 *            extracted
+	 * @param actionNode the action node extracted
 	 */
 	@SuppressWarnings("serial")
 	private void displayWizardBox(ActionNode actionNode) {

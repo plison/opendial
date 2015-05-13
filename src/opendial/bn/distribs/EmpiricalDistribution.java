@@ -147,8 +147,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns a sample that is compatible with the provided evidence.
 	 * 
 	 * @param evidence the evidence.
-	 * @return the compatible sample @ if no samples are consistent with the
-	 *         evidence.
+	 * @return the compatible sample evidence.
 	 */
 	public Assignment getCompatibleSample(Assignment evidence) {
 		for (int i = 0; i < 10; i++) {
@@ -244,8 +243,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * Returns a continuous representation of the distribution (if there is no
 	 * conditional variables in the distribution).
 	 * 
-	 * @return the corresponding continuous distribution. @ if the distribution
-	 *         content is discrete.
+	 * @return the corresponding continuous distribution. content is discrete.
 	 */
 	public ContinuousDistribution toContinuous() {
 		if (continuousCache == null) {
@@ -285,8 +283,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * 
 	 * @param var the head variable
 	 * @param condVars the conditional variables
-	 * @return the resulting probability distribution @ if the distribution could not
-	 *         be generated.
+	 * @return the resulting probability distribution be generated.
 	 */
 	public ProbDistribution getMarginal(String var, Set<String> condVars) {
 

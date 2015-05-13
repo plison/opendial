@@ -59,7 +59,6 @@ public interface Module {
 	/**
 	 * Starts the module.
 	 * 
-	 * @ if the initialisation fails
 	 */
 	public void start();
 

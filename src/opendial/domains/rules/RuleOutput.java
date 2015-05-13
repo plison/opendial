@@ -24,6 +24,7 @@
 package opendial.domains.rules;
 
 import java.util.logging.*;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -233,6 +234,15 @@ public class RuleOutput {
 		return effects.entrySet();
 	}
 
+	/**
+	 * Returns the collection of parameters used in the output
+	 * 
+	 * @return the parameters
+	 */
+	public Collection<Parameter> getParameters() {
+		return effects.values();
+	}
+
 	// ===================================
 	// UTILITY METHODS
 	// ===================================
@@ -373,4 +383,5 @@ public class RuleOutput {
 		return new ComplexParameter(exp1.combine(operator, exp2));
 
 	}
+
 }

@@ -28,11 +28,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import opendial.datastructs.Assignment;
 import opendial.datastructs.Template;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
 
 /**
  * Generic representation of a probabilistic rule, with an identifier and an ordered
@@ -77,13 +80,31 @@ public class Rule {
 	/**
 	 * Adds a new case to the abstract rule
 	 * 
-	 * @param newCase the new case to add
+	 * @param condition the condition
+	 * @param output the corresponding output
 	 */
 	public void addCase(Condition condition, RuleOutput output) {
 		if (!cases.isEmpty()
 				&& cases.get(cases.size() - 1).condition instanceof VoidCondition) {
 			log.warning("new case for rule " + id
 					+ " is unreachable (previous case is trivially true)");
+		}
+
+		// ensuring that the probability values are between 0 and 1
+		if (ruleType == RuleType.PROB) {
+			double totalMass = 0;
+			for (Parameter p : output.getParameters()) {
+				if (p instanceof FixedParameter) {
+					double v = ((FixedParameter) p).getValue();
+					if (v < 0.0) {
+						throw new RuntimeException("probability value must be >=0");
+					}
+					totalMass += v;
+				}
+			}
+			if (totalMass > 1) {
+				throw new RuntimeException("probability value must be <=1");
+			}
 		}
 		cases.add(new RuleCase(condition, output));
 	}

@@ -160,7 +160,7 @@ public class LikelihoodWeighting {
 	 * Samples the given chance node and add it to the sample. If the variable is
 	 * part of the evidence, updates the weight.
 	 * 
-	 * @param n the chance node to sample @ if the sampling operation failed
+	 * @param n the chance node to sample
 	 */
 	private void sampleChanceNode(ChanceNode n, Sample sample) {
 
@@ -214,8 +214,7 @@ public class LikelihoodWeighting {
 	 * the same as the one given as argument.
 	 * 
 	 * @param samples the initial samples (with their weight)
-	 * @return the redrawn samples given their weight @ if the samples could not be
-	 *         redrawn.
+	 * @return the redrawn samples given their weight redrawn.
 	 */
 	private void redrawSamples() {
 		try {
