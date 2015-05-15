@@ -24,8 +24,6 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,12 +48,15 @@ import org.w3c.dom.Node;
 
 /**
  * Representation of a categorical probability table P(X), where X is a random
- * variable.
+ * variable. Constructing a categorical table should be done via the Builder:
+ * <p>
+ * builder = new CategoricalTable.Builder("variable name"); builder.addRow(...);
+ * CategoricalTable table = builder.build();
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class CategoricalTable implements IndependentProbDistribution {
+public class CategoricalTable implements IndependentDistribution {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
@@ -69,36 +70,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 	// probability intervals (used for binary search in sampling)
 	Intervals<Value> intervals;
 
-	// whether to automatically add a default value to fill the remaining
-	// probability mass
-	boolean addDefaultValue = true;
-
 	// ===================================
 	// TABLE CONSTRUCTION
 	// ===================================
-
-	/**
-	 * Constructs a new probability table, with no values
-	 * 
-	 * @param variable the name of the random variable
-	 */
-	public CategoricalTable(String variable) {
-		table = new HashMap<Value, Double>(5);
-		table = Collections.synchronizedMap(table);
-		this.variable = variable;
-	}
-
-	/**
-	 * Constructs a new probability table, with no values
-	 * 
-	 * @param variable the name of the random variable
-	 * @param addDefaultValue whether to automatically add a default value to fill
-	 *            the remaining probability mass
-	 */
-	public CategoricalTable(String variable, boolean addDefaultValue) {
-		this(variable);
-		this.addDefaultValue = addDefaultValue;
-	}
 
 	/**
 	 * Constructs a new probability table with a mapping between head variable
@@ -108,133 +82,9 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * @param variable the name of the random variable
 	 * @param headTable the mapping to fill the table
 	 */
-	public CategoricalTable(String variable, Map<Value, Double> headTable) {
-		this(variable);
-		double totalProb = 0.0;
-		for (Value a : headTable.keySet()) {
-			addRow(a, headTable.get(a));
-			totalProb += headTable.get(a);
-		}
-		if (addDefaultValue && totalProb < 0.99999) {
-			incrementRow(ValueFactory.none(), 1.0 - totalProb);
-		}
-	}
-
-	/**
-	 * Adds a new row to the probability table. If the table already contains a
-	 * probability, it is erased.
-	 * 
-	 * @param value the value to add
-	 * @param prob the associated probability
-	 */
-	public void addRow(Value value, double prob) {
-
-		if (prob < 0.0f || prob > 1.02f) {
-			return;
-		}
-
-		table.put(value, prob);
-
-		if (addDefaultValue) {
-			double totalProb = countTotalProb();
-			if (totalProb < 0.98) {
-				table.put(ValueFactory.none(), 1.0 - totalProb);
-			}
-			else {
-				table.remove(ValueFactory.none());
-			}
-		}
-		intervals = null;
-	}
-
-	/**
-	 * Adds a new row to the probability table. If the table already contains a
-	 * probability, it is erased.
-	 * 
-	 * @param value the value to add (as a string)
-	 * @param prob the associated probability
-	 */
-	public void addRow(String value, double prob) {
-		addRow(ValueFactory.create(value), prob);
-	}
-
-	/**
-	 * Adds a new row to the probability table. If the table already contains a
-	 * probability, it is erased.
-	 * 
-	 * @param value the value to add (as a double)
-	 * @param prob the associated probability
-	 */
-	public void addRow(double value, double prob) {
-		addRow(ValueFactory.create(value), prob);
-	}
-
-	/**
-	 * Adds a new row to the probability table. If the table already contains a
-	 * probability, it is erased.
-	 * 
-	 * @param value the value to add (as a boolean)
-	 * @param prob the associated probability
-	 */
-	public void addRow(boolean value, double prob) {
-		addRow(ValueFactory.create(value), prob);
-	}
-
-	/**
-	 * Adds a new row to the probability table. If the table already contains a
-	 * probability, it is erased.
-	 * 
-	 * @param value the value to add (as a double array)
-	 * @param prob the associated probability
-	 */
-	public void addRow(double[] value, double prob) {
-		addRow(ValueFactory.create(value), prob);
-	}
-
-	/**
-	 * Increments the probability specified in the table for the given head
-	 * assignment. If none exists, simply assign the probability.
-	 * 
-	 * @param head the head assignment
-	 * @param prob the probability increment
-	 */
-	public void incrementRow(Value head, double prob) {
-		if (table.containsKey(head)) {
-			if (head.equals(ValueFactory.none())) {
-				return;
-			}
-			addRow(head, table.get(head) + prob);
-		}
-		else {
-			addRow(head, prob);
-		}
-	}
-
-	/**
-	 * Add a new set of rows to the probability table.
-	 * 
-	 * @param heads the mappings (head assignment, probability value)
-	 */
-	public void addRows(Map<Value, Double> heads) {
-		for (Value head : heads.keySet()) {
-			addRow(head, heads.get(head));
-		}
-	}
-
-	/**
-	 * Removes a row from the table.
-	 * 
-	 * @param head head assignment
-	 */
-	public void removeRow(Value head) {
-
-		table.remove(head);
-
-		double totalProb = countTotalProb();
-		if (addDefaultValue && totalProb < 0.99999 && head != ValueFactory.none()) {
-			table.put(ValueFactory.none(), 1.0 - totalProb);
-		}
-		intervals = null;
+	protected CategoricalTable(String variable, Map<Value, Double> headTable) {
+		this.variable = variable;
+		this.table = headTable;
 	}
 
 	/**
@@ -244,18 +94,18 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * @param other the table to concatenate
 	 * @return the table resulting from the concatenation
 	 */
-	public CategoricalTable concatenate(CategoricalTable other) {
+	public IndependentDistribution concatenate(CategoricalTable other) {
 
 		if (!variable.equals(other.getVariable())) {
 			log.warning("can only concatenate tables with same variable");
 		}
 
-		CategoricalTable newtable = new CategoricalTable(variable, addDefaultValue);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder(variable);
 		for (Value thisA : new HashSet<Value>(getValues())) {
 			for (Value otherA : other.getValues()) {
 				try {
 					Value concat = thisA.concatenate(otherA);
-					newtable.addRow(concat, getProb(thisA) * other.getProb(otherA));
+					builder.addRow(concat, getProb(thisA) * other.getProb(otherA));
 				}
 				catch (RuntimeException e) {
 					log.warning("could not concatenated the tables " + this
@@ -264,7 +114,7 @@ public class CategoricalTable implements IndependentProbDistribution {
 				}
 			}
 		}
-		return newtable;
+		return builder.build();
 	}
 
 	/**
@@ -291,22 +141,17 @@ public class CategoricalTable implements IndependentProbDistribution {
 	public boolean pruneValues(double threshold) {
 		Map<Value, Double> newTable = new HashMap<Value, Double>();
 		boolean changed = false;
-		double totalProb = 0.0;
 		for (Value row : table.keySet()) {
 			double prob = table.get(row);
 			if (prob >= threshold) {
 				newTable.put(row, prob);
-				totalProb += prob;
 			}
 			else {
 				changed = true;
 			}
 		}
-		if (addDefaultValue && totalProb < 1 - threshold) {
-			newTable.put(ValueFactory.none(), 1.0 - totalProb);
-			table = newTable;
-		}
-		else {
+
+		if (changed) {
 			table = InferenceUtils.normalise(newTable);
 		}
 		intervals = null;
@@ -461,9 +306,12 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 * @return the distribution with the subset of values
 	 */
 	public CategoricalTable getNBest(int nbest) {
-
-		Map<Value, Double> filteredTable = InferenceUtils.getNBest(table, nbest);
-		return new CategoricalTable(variable, filteredTable);
+		Map<Value, Double> ntable = InferenceUtils.getNBest(table, nbest);
+		Builder builder = new Builder(variable);
+		for (Value v : ntable.keySet()) {
+			builder.addRow(v, ntable.get(v));
+		}
+		return builder.build().toDiscrete();
 	}
 
 	/**
@@ -475,11 +323,16 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public Value getBest() {
 		if (table.size() > 0) {
-			CategoricalTable nbest = getNBest(1);
-			if (nbest.getValues().size() > 1) {
-				nbest.removeRow(ValueFactory.none());
+			double maxprob = -10;
+			Value maxVal = ValueFactory.none();
+			for (Value v : table.keySet()) {
+				double prob = table.get(v);
+				if (prob > maxprob) {
+					maxprob = prob;
+					maxVal = v;
+				}
 			}
-			return nbest.getValues().iterator().next();
+			return maxVal;
 		}
 		else {
 			log.warning("table is empty, cannot extract best value");
@@ -516,43 +369,6 @@ public class CategoricalTable implements IndependentProbDistribution {
 	@Override
 	public int hashCode() {
 		return table.hashCode();
-	}
-
-	/**
-	 * Returns true if the table has only one possible value (with probability 1.0).
-	 * 
-	 * @return true if the distribution is deterministic, false otherwise
-	 */
-	public boolean isDeterministic() {
-		return (table.size() == 1);
-	}
-
-	/**
-	 * Returns a deterministic distribution that corresponds to the value with
-	 * highest probability in the distribution.
-	 * 
-	 * @return the corresponding deterministic distribution
-	 */
-	public SingleValueDistribution getDeterministic() {
-		return new SingleValueDistribution(variable, getBest());
-	}
-
-	/**
-	 * Returns true if the probability table is well-formed. The method checks that
-	 * all possible assignments for the condition and head parts are covered in the
-	 * table, and that the probabilities add up to 1.0f.
-	 * 
-	 * @return true if the table is well-formed, false otherwise
-	 */
-	public boolean isWellFormed() {
-		// checks that the total probability is roughly equal to 1.0f
-		double totalProb = countTotalProb() + getProb(ValueFactory.none());
-		if (totalProb < 0.9f || totalProb > 1.1f) {
-			log.fine("total probability is " + totalProb);
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -603,14 +419,11 @@ public class CategoricalTable implements IndependentProbDistribution {
 	 */
 	@Override
 	public CategoricalTable copy() {
-		CategoricalTable tableCopy = new CategoricalTable(variable);
-		tableCopy.addDefaultValue = false;
-		for (Value head : table.keySet()) {
-			tableCopy.addRow(head.copy(), table.get(head));
+		Map<Value, Double> newTable = new HashMap<Value, Double>();
+		for (Value v : table.keySet()) {
+			newTable.put(v, table.get(v));
 		}
-		tableCopy.intervals = intervals;
-		tableCopy.addDefaultValue = addDefaultValue;
-		return tableCopy;
+		return new CategoricalTable(variable, newTable);
 	}
 
 	/**
@@ -628,31 +441,32 @@ public class CategoricalTable implements IndependentProbDistribution {
 		var.setAttributeNode(id);
 
 		for (Value v : InferenceUtils.getNBest(table, table.size()).keySet()) {
-			Element valueNode = doc.createElement("value");
-			if (table.get(v) < 0.99) {
-				Attr prob = doc.createAttribute("prob");
-				prob.setValue("" + StringUtils.getShortForm(table.get(v)));
-				valueNode.setAttributeNode(prob);
+			if (!v.equals(ValueFactory.none())) {
+				Element valueNode = doc.createElement("value");
+				if (table.get(v) < 0.99) {
+					Attr prob = doc.createAttribute("prob");
+					prob.setValue("" + StringUtils.getShortForm(table.get(v)));
+					valueNode.setAttributeNode(prob);
+				}
+				valueNode.setTextContent("" + v);
+				var.appendChild(valueNode);
 			}
-			valueNode.setTextContent("" + v);
-			var.appendChild(valueNode);
 		}
 		return var;
+	}
+
+	/**
+	 * Returns the table of values with their probability.
+	 * 
+	 * @return the table
+	 */
+	public Map<Value, Double> getTable() {
+		return table;
 	}
 
 	// ===================================
 	// PRIVATE METHODS
 	// ===================================
-
-	/**
-	 * Returns the total accumulated probability for the distribution
-	 * 
-	 * @return the total probability
-	 */
-	private double countTotalProb() {
-		return table.keySet().stream().filter(v -> !v.equals(ValueFactory.none()))
-				.mapToDouble(v -> table.get(v)).sum();
-	}
 
 	/**
 	 * Returns true if the table can be converted to a continuous distribution, and
@@ -673,6 +487,188 @@ public class CategoricalTable implements IndependentProbDistribution {
 			}
 		}
 		return false;
+	}
+
+	// ===================================
+	// BUILDER CLASS
+	// ===================================
+
+	/**
+	 * Builder class used to construct a categorical table row-by-row. When all raws
+	 * have been added, one can simply call build() to generate the corresponding
+	 * distribution. When the probabilities do not sum up to 1, a default value
+	 * "None" is added to cover the remaining probability mass.
+	 * 
+	 *
+	 */
+	public static class Builder {
+
+		// the variable name
+		String variable;
+
+		// the probability table
+		Map<Value, Double> table;
+
+		// ===================================
+		// TABLE CONSTRUCTION
+		// ===================================
+
+		/**
+		 * Constructs a new probability table, with no values
+		 * 
+		 * @param variable the name of the random variable
+		 */
+		public Builder(String variable) {
+			table = new HashMap<Value, Double>(5);
+			this.variable = variable;
+		}
+
+		/**
+		 * Adds a new row to the probability table. If the table already contains a
+		 * probability, it is erased.
+		 * 
+		 * @param value the value to add
+		 * @param prob the associated probability
+		 */
+		public void addRow(Value value, double prob) {
+
+			if (prob < 0.0f || prob > 1.02f) {
+				return;
+			}
+			table.put(value, prob);
+		}
+
+		/**
+		 * Adds a new row to the probability table. If the table already contains a
+		 * probability, it is erased.
+		 * 
+		 * @param value the value to add (as a string)
+		 * @param prob the associated probability
+		 */
+		public void addRow(String value, double prob) {
+			addRow(ValueFactory.create(value), prob);
+		}
+
+		/**
+		 * Adds a new row to the probability table. If the table already contains a
+		 * probability, it is erased.
+		 * 
+		 * @param value the value to add (as a double)
+		 * @param prob the associated probability
+		 */
+		public void addRow(double value, double prob) {
+			addRow(ValueFactory.create(value), prob);
+		}
+
+		/**
+		 * Adds a new row to the probability table. If the table already contains a
+		 * probability, it is erased.
+		 * 
+		 * @param value the value to add (as a boolean)
+		 * @param prob the associated probability
+		 */
+		public void addRow(boolean value, double prob) {
+			addRow(ValueFactory.create(value), prob);
+		}
+
+		/**
+		 * Adds a new row to the probability table. If the table already contains a
+		 * probability, it is erased.
+		 * 
+		 * @param value the value to add (as a double array)
+		 * @param prob the associated probability
+		 */
+		public void addRow(double[] value, double prob) {
+			addRow(ValueFactory.create(value), prob);
+		}
+
+		/**
+		 * Increments the probability specified in the table for the given head
+		 * assignment. If none exists, simply assign the probability.
+		 * 
+		 * @param head the head assignment
+		 * @param prob the probability increment
+		 */
+		public void incrementRow(Value head, double prob) {
+			addRow(head, table.getOrDefault(head, 0.0) + prob);
+		}
+
+		/**
+		 * Add a new set of rows to the probability table.
+		 * 
+		 * @param heads the mappings (head assignment, probability value)
+		 */
+		public void addRows(Map<Value, Double> heads) {
+			for (Value head : heads.keySet()) {
+				addRow(head, heads.get(head));
+			}
+		}
+
+		/**
+		 * Removes a row from the table.
+		 * 
+		 * @param head head assignment
+		 */
+		public void removeRow(Value head) {
+			table.remove(head);
+		}
+
+		public void normalise() {
+			table = InferenceUtils.normalise(table);
+		}
+
+		/**
+		 * Builds the categorical table based on the provided rows. If the total
+		 * probability mass is less than 1.0, adds a default value None. If the total
+		 * mass is higher than 1.0, normalise the table. Finally, if one single value
+		 * is present, creates a SingleValueDistribution instead.
+		 * 
+		 * @return the distribution (CategoricalTable or SingleValueDistribution).
+		 */
+		public IndependentDistribution build() {
+			double totalProb = table.values().stream().mapToDouble(d -> d).sum();
+			if (totalProb < 0.99) {
+				incrementRow(ValueFactory.none(), 1.0 - totalProb);
+			}
+			else if (totalProb > 1.01) {
+				table = InferenceUtils.normalise(table);
+			}
+			if (table.size() == 1) {
+				Value singleValue = table.keySet().iterator().next();
+				return new SingleValueDistribution(variable, singleValue);
+			}
+			else {
+				return new CategoricalTable(variable, table);
+			}
+		}
+
+		/**
+		 * Returns true if the probability table is well-formed. The method checks
+		 * that all possible assignments for the condition and head parts are covered
+		 * in the table, and that the probabilities add up to 1.0f.
+		 * 
+		 * @return true if the table is well-formed, false otherwise
+		 */
+		public boolean isWellFormed() {
+			// checks that the total probability is roughly equal to 1.0f
+			double totalProb =
+					table.keySet().stream().mapToDouble(v -> table.get(v)).sum();
+			if (totalProb < 0.9f || totalProb > 1.1f) {
+				log.fine("total probability is " + totalProb);
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Returns whether the current table is empty or not
+		 * 
+		 * @return true if empty, false otherwise
+		 */
+		public boolean isEmpty() {
+			return table.isEmpty();
+		}
 	}
 
 }

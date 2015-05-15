@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import opendial.bn.BNetwork;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.datastructs.Assignment;
@@ -102,7 +102,7 @@ public interface InferenceAlgorithm {
 	 * @return the resulting probability distribution for the variable inference
 	 *         process failed to deliver a result
 	 */
-	public default IndependentProbDistribution queryProb(BNetwork network,
+	public default IndependentDistribution queryProb(BNetwork network,
 			String queryVar, Assignment evidence) {
 		return queryProb(
 				new Query.ProbQuery(network, Arrays.asList(queryVar), evidence))
@@ -118,7 +118,7 @@ public interface InferenceAlgorithm {
 	 * @return the resulting probability distribution for the variable inference
 	 *         process failed to deliver a result
 	 */
-	public default IndependentProbDistribution queryProb(BNetwork network,
+	public default IndependentDistribution queryProb(BNetwork network,
 			String queryVar) {
 		return queryProb(network, queryVar, new Assignment());
 	}

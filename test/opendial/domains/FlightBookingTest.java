@@ -77,7 +77,7 @@ public class FlightBookingTest {
 		u_u.clear();
 		u_u.put("yes exactly", 0.8);
 		system.addUserInput(u_u);
-		assertEquals(1.0, system.getContent("a_u").getProb("[Confirm]"), 0.01);
+		assertEquals(0.98, system.getContent("a_u").getProb("[Confirm]"), 0.01);
 		assertEquals(1.0, system.getContent("Destination").getProb("Bergen"), 0.01);
 		assertEquals("Ground(Destination,Bergen)", system.getContent("a_m")
 				.toDiscrete().getBest().toString());
@@ -233,7 +233,7 @@ public class FlightBookingTest {
 		u_u.put("yes thank you", 0.75);
 		u_u.put("yes mind you", 0.15);
 		system.addUserInput(u_u);
-		assertEquals(1, system.getContent("a_u").getValues().size(), 0.01);
+		assertEquals(2, system.getContent("a_u").getValues().size(), 0.01);
 		assertEquals(1.0, system.getContent("a_u").getProb("[Confirm]"), 0.05);
 		assertEquals(1.0, system.getContent("NbTickets").getProb(2), 0.05);
 		assertEquals(0.0, system.getContent("NbTickets").getProb(3), 0.05);

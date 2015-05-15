@@ -225,7 +225,7 @@ public class SpeechData extends InputStream implements Value {
 	/**
 	 * Returns the raw array of bytes
 	 * 
-	 * @return
+	 * @return the byte array
 	 */
 	public byte[] toByteArray() {
 		return data;

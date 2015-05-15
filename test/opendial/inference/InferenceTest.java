@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.EmpiricalDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
@@ -209,33 +210,6 @@ public class InferenceTest {
 				0.05f);
 	}
 
-	/**
-	 * @Test public void conditionalProbsTest() {
-	 * 
-	 *       BNetwork bn2 = NetworkExamples.constructBasicNetwork2(); NaiveInference
-	 *       naive = new NaiveInference(); ProbQuery query = new ProbQuery(bn2,
-	 *       Arrays.asList("MaryCalls", "JohnCalls"), new Assignment(),
-	 *       Arrays.asList("Burglary"));
-	 * 
-	 *       ProbDistribution distrib1 = naive.queryProb(query);
-	 * 
-	 *       VariableElimination ve = new VariableElimination(); ProbDistribution
-	 *       distrib2 = ve.queryProb(query);
-	 * 
-	 *       assertEquals(distrib1.getProb(new Assignment("Burglary"), new
-	 *       Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls"))),
-	 *       distrib2.getProb(new Assignment("Burglary"), new Assignment(new
-	 *       Assignment("JohnCalls"), new Assignment("MaryCalls"))), 0.001);
-	 * 
-	 *       ProbDistribution distrib3 = new ImportanceSampling(4000,
-	 *       300).queryProb(query);
-	 * 
-	 *       assertEquals(distrib3.getProb(new Assignment("Burglary"), new
-	 *       Assignment(new Assignment("JohnCalls"), new Assignment("MaryCalls"))),
-	 *       distrib2.getProb(new Assignment("Burglary"), new Assignment(new
-	 *       Assignment("JohnCalls"), new Assignment("MaryCalls"))), 0.1); }
-	 */
-
 	@Test
 	public void testNetworkUtil() {
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
@@ -356,14 +330,17 @@ public class InferenceTest {
 						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
-		ChanceNode n1 = new ChanceNode("n1");
-		n1.addProb(ValueFactory.create("aha"), 1.0);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("n1");
+		builder.addRow(ValueFactory.create("aha"), 1.0);
+		ChanceNode n1 = new ChanceNode("n1", builder.build());
 		network.addNode(n1);
-		ChanceNode n2 = new ChanceNode("n2");
-		n2.addProb(ValueFactory.create("oho"), 0.7);
+		builder = new CategoricalTable.Builder("n2");
+		builder.addRow(ValueFactory.create("oho"), 0.7);
+		ChanceNode n2 = new ChanceNode("n2", builder.build());
 		network.addNode(n2);
-		ChanceNode n3 = new ChanceNode("n3");
-		n3.addProb(ValueFactory.create("ihi"), 0.7);
+		builder = new CategoricalTable.Builder("n3");
+		builder.addRow(ValueFactory.create("ihi"), 0.7);
+		ChanceNode n3 = new ChanceNode("n3", builder.build());
 		network.addNode(n3);
 		network.getNode("Alarm").addInputNode(n1);
 		network.getNode("Alarm").addInputNode(n2);
@@ -384,12 +361,12 @@ public class InferenceTest {
 						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
-		n1 = new ChanceNode("n1");
-		n1.setDistrib(new ContinuousDistribution("n1", new UniformDensityFunction(
-				-2, 2)));
-		n2 = new ChanceNode("n2");
-		n2.setDistrib(new ContinuousDistribution("n2", new GaussianDensityFunction(
-				-1.0, 3.0)));
+		n1 =
+				new ChanceNode("n1", new ContinuousDistribution("n1",
+						new UniformDensityFunction(-2, 2)));
+		n2 =
+				new ChanceNode("n2", new ContinuousDistribution("n2",
+						new GaussianDensityFunction(-1.0, 3.0)));
 		network.addNode(n1);
 		network.addNode(n2);
 		network.getNode("Earthquake").addInputNode(n1);

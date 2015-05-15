@@ -29,10 +29,10 @@ public class RuleAndParams {
 				.getOutputNodesIds().size(), 1);
 		assertTrue(system.getState().hasChanceNode("movements"));
 		assertTrue(system.getState().getChanceNode("movements").getDistrib() instanceof AnchoredRule);
-		CategoricalTable t = new CategoricalTable("a_u");
+		CategoricalTable.Builder t = new CategoricalTable.Builder("a_u");
 		t.addRow("I want left", 0.8);
 		t.addRow("I want forward", 0.1);
-		system.addContent(t);
+		system.addContent(t.build());
 		assertEquals(system.getState().getChanceNode("theta_moves")
 				.getOutputNodesIds().size(), 0);
 		assertFalse(system.getState().hasChanceNode("movements"));

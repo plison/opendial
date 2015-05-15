@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class ContinuousDistribution implements IndependentProbDistribution {
+public class ContinuousDistribution implements IndependentDistribution {
 
 	public final static Logger log = Logger.getLogger("OpenDial");
 
@@ -132,13 +132,15 @@ public class ContinuousDistribution implements IndependentProbDistribution {
 		if (discreteCache == null) {
 			Map<double[], Double> discretisation =
 					function.discretise(Settings.discretisationBuckets);
-			discreteCache = new CategoricalTable(variable);
+			CategoricalTable.Builder builder =
+					new CategoricalTable.Builder(variable);
 			for (double[] value : discretisation.keySet()) {
 				Value val =
 						(value.length > 1) ? new ArrayVal(value) : ValueFactory
 								.create(value[0]);
-				discreteCache.addRow(val, discretisation.get(value));
+				builder.addRow(val, discretisation.get(value));
 			}
+			discreteCache = builder.build().toDiscrete();
 		}
 		return discreteCache;
 	}

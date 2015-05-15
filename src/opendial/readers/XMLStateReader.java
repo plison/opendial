@@ -31,7 +31,6 @@ import java.util.List;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.GaussianDensityFunction;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
@@ -121,7 +120,7 @@ public class XMLStateReader {
 
 		String label = node.getAttributes().getNamedItem("id").getNodeValue();
 
-		CategoricalTable table = new CategoricalTable(label);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder(label);
 		ContinuousDistribution distrib = null;
 
 		for (int i = 0; i < node.getChildNodes().getLength(); i++) {
@@ -136,7 +135,7 @@ public class XMLStateReader {
 
 				// extracting the probability
 				float prob = getProbability(subnode);
-				table.addRow(ValueFactory.create(value), prob);
+				builder.addRow(ValueFactory.create(value), prob);
 			}
 
 			// second case: the chance node is described by a parametric
@@ -173,18 +172,12 @@ public class XMLStateReader {
 			}
 		}
 
-		ChanceNode variable = new ChanceNode(label);
 		if (distrib != null) {
-			variable.setDistrib(distrib);
-		}
-		else if (table.getValues().size() == 1) {
-			variable.setDistrib(new SingleValueDistribution(label, table.getValues()
-					.iterator().next()));
+			return new ChanceNode(label, distrib);
 		}
 		else {
-			variable.setDistrib(table);
+			return new ChanceNode(label, builder.build());
 		}
-		return variable;
 	}
 
 	/**

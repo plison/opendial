@@ -42,7 +42,7 @@ import javax.swing.JLabel;
 import opendial.DialogueState;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.densityfunctions.DensityFunction;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
@@ -74,7 +74,7 @@ public class DistributionViewer extends JDialog {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	String queryVar;
-	IndependentProbDistribution lastDistrib;
+	IndependentDistribution lastDistrib;
 
 	/**
 	 * Constructs a new viewer for the given distribution, connected to the state
@@ -126,8 +126,7 @@ public class DistributionViewer extends JDialog {
 		container.add(new JLabel("        "), BorderLayout.SOUTH);
 
 		try {
-			IndependentProbDistribution indepDistrib =
-					currentState.queryProb(queryVar);
+			IndependentDistribution indepDistrib = currentState.queryProb(queryVar);
 			if (indepDistrib instanceof ContinuousDistribution) {
 				container.add(generatePanel(indepDistrib.toContinuous()),
 						BorderLayout.CENTER);

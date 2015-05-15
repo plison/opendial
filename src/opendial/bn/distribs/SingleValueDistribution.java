@@ -24,6 +24,8 @@
 package opendial.bn.distribs;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import opendial.bn.values.Value;
@@ -40,7 +42,7 @@ import org.w3c.dom.Node;
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public class SingleValueDistribution implements IndependentProbDistribution {
+public class SingleValueDistribution implements IndependentDistribution {
 
 	/** the variable label for the distribution */
 	String variable;
@@ -137,9 +139,9 @@ public class SingleValueDistribution implements IndependentProbDistribution {
 	 */
 	@Override
 	public CategoricalTable toDiscrete() {
-		CategoricalTable table = new CategoricalTable(variable);
-		table.addRow(value, 1.0);
-		return table;
+		Map<Value, Double> map = new HashMap<Value, Double>();
+		map.put(value, 1.0);
+		return new CategoricalTable(variable, map);
 	}
 
 	/**
@@ -162,7 +164,7 @@ public class SingleValueDistribution implements IndependentProbDistribution {
 	 * Copies the distribution
 	 */
 	@Override
-	public IndependentProbDistribution copy() {
+	public IndependentDistribution copy() {
 		return new SingleValueDistribution(variable, value);
 	}
 
@@ -179,7 +181,7 @@ public class SingleValueDistribution implements IndependentProbDistribution {
 	/**
 	 * Returns the string representation for this distribution
 	 * 
-	 * @return
+	 * @return the string
 	 */
 	@Override
 	public String toString() {

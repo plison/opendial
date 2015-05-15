@@ -152,9 +152,9 @@ public class RuleTest1 {
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		system.startSystem();
-		CategoricalTable table = new CategoricalTable("var1");
-		table.addRow("value2", 0.9);
-		system.addContent(table);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("var1");
+		builder.addRow("value2", 0.9);
+		system.addContent(builder.build());
 
 		inference.checkProb(system.getState(), "o", "and we have var1=value2", 0.9);
 		inference.checkProb(system.getState(), "o", "and we have localvar=value1",

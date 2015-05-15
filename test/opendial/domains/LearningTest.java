@@ -61,11 +61,11 @@ public class LearningTest {
 		double[] initMean =
 				system.getContent("theta_1").toContinuous().getFunction().getMean();
 
-		CategoricalTable table = new CategoricalTable("a_u");
-		table.addRow("Move(Left)", 1.0);
-		table.addRow("Move(Right)", 0.0);
-		table.addRow("None", 0.0);
-		system.addContent(table);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("a_u");
+		builder.addRow("Move(Left)", 1.0);
+		builder.addRow("Move(Right)", 0.0);
+		builder.addRow("None", 0.0);
+		system.addContent(builder.build());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 

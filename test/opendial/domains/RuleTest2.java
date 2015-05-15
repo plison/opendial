@@ -84,14 +84,14 @@ public class RuleTest2 {
 		inference.checkProb(system.getState(), "a_u^p", "Ask(B)", 0.27);
 		inference.checkProb(system.getState(), "a_u^p", "None", 0.1);
 
-		CategoricalTable table = new CategoricalTable("a_u");
-		table.addRow("Ask(B)", 0.8);
-		table.addRow("None", 0.2);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("a_u");
+		builder.addRow("Ask(B)", 0.8);
+		builder.addRow("None", 0.2);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
 
-		system.addContent(table);
+		system.addContent(builder.build());
 
 		inference.checkProb(system.getState(), "i_u", "Want(A)", 0.090);
 		inference.checkProb(system.getState(), "i_u", "Want(B)", 0.91);
@@ -126,13 +126,13 @@ public class RuleTest2 {
 		inference.checkProb(system.getState(), "u_u2^p", "Could you do A?", 0.162);
 		inference.checkProb(system.getState(), "u_u2^p", "none", 0.19);
 
-		CategoricalTable table = new CategoricalTable("u_u2");
-		table.addRow("Please do B", 0.4);
-		table.addRow("Do B", 0.4);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("u_u2");
+		builder.addRow("Please do B", 0.4);
+		builder.addRow("Do B", 0.4);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(table);
+		system.addContent(builder.build());
 
 		inference.checkProb(system.getState(), "i_u2", "Want(B)", 0.654);
 		inference.checkProb(system.getState(), "i_u2", "Want(A)", 0.1963);
@@ -158,12 +158,12 @@ public class RuleTest2 {
 		inference.checkUtil(system.getState(), "a_m'", "Do(A)", 0.6);
 		inference.checkUtil(system.getState(), "a_m'", "Do(B)", -2.6);
 
-		CategoricalTable table = new CategoricalTable("a_u");
-		table.addRow("Ask(B)", 0.8);
-		table.addRow("None", 0.2);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("a_u");
+		builder.addRow("Ask(B)", 0.8);
+		builder.addRow("None", 0.2);
 		system.getState().removeNodes(system.getState().getActionNodeIds());
 		system.getState().removeNodes(system.getState().getUtilityNodeIds());
-		system.addContent(table);
+		system.addContent(builder.build());
 
 		inference.checkUtil(system.getState(), "a_m'", "Do(A)", -4.35);
 		inference.checkUtil(system.getState(), "a_m'", "Do(B)", 2.357);

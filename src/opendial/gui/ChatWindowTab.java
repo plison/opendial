@@ -419,11 +419,12 @@ public class ChatWindowTab extends JComponent {
 
 		Map<String, Double> table = StringUtils.getTableFromInput(rawText);
 
-		CategoricalTable table2 = new CategoricalTable(specialInput);
+		CategoricalTable.Builder builder =
+				new CategoricalTable.Builder(specialInput);
 		for (String value : table.keySet()) {
-			table2.addRow(value, table.get(value));
+			builder.addRow(value, table.get(value));
 		}
-		new Thread(() -> system.addContent(table2)).start();
+		new Thread(() -> system.addContent(builder.build())).start();
 	}
 
 }

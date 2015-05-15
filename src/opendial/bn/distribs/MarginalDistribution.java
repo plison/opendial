@@ -146,8 +146,9 @@ public class MarginalDistribution implements ProbDistribution {
 	 * @return the categorical table for the random variable X
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition) {
-		CategoricalTable result = new CategoricalTable(condDistrib.getVariable());
+	public IndependentDistribution getProbDistrib(Assignment condition) {
+		CategoricalTable.Builder result =
+				new CategoricalTable.Builder(condDistrib.getVariable());
 		for (Assignment assign : uncondDistrib.getValues()) {
 			double assignProb = uncondDistrib.getProb(assign);
 			Assignment augmentedCond = new Assignment(condition, assign);
@@ -157,7 +158,7 @@ public class MarginalDistribution implements ProbDistribution {
 				result.incrementRow(value, assignProb * subtable.getProb(value));
 			}
 		}
-		return result;
+		return result.build();
 	}
 
 	/**

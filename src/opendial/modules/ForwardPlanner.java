@@ -330,7 +330,8 @@ public class ForwardPlanner implements Module {
 				}
 			}
 
-			MultivariateTable modified = new MultivariateTable();
+			MultivariateTable.Builder builder = new MultivariateTable.Builder();
+
 			if (!predictionNodes.isEmpty()) {
 				MultivariateDistribution observations =
 						state.queryProb(predictionNodes);
@@ -340,10 +341,10 @@ public class ForwardPlanner implements Module {
 					for (String var : a.getVariables()) {
 						newA.addPair(var.replace("^p", ""), a.getValue(var));
 					}
-					modified.addRow(newA, observations.getProb(a));
+					builder.addRow(newA, observations.getProb(a));
 				}
 			}
-			return modified;
+			return builder.build();
 		}
 
 	}
