@@ -65,6 +65,8 @@ public class RuleOutput {
 
 	/**
 	 * Creates a new output, with a void condition and an empty list of effects
+	 * 
+	 * @param type the type of the rule
 	 */
 	public RuleOutput(RuleType type) {
 		this.type = type;

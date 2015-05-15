@@ -24,10 +24,11 @@
 package opendial.common;
 
 import java.util.logging.*;
-
 import java.util.Arrays;
 
 import opendial.bn.BNetwork;
+import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.bn.nodes.ActionNode;
@@ -50,51 +51,56 @@ public class NetworkExamples {
 	public static BNetwork constructBasicNetwork() {
 		BNetwork bn = new BNetwork();
 
-		ChanceNode b = new ChanceNode("Burglary");
-		b.addProb(ValueFactory.create(true), 0.001f);
-		b.addProb(ValueFactory.create(false), 0.999f);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("Burglary");
+		builder.addRow(ValueFactory.create(true), 0.001f);
+		builder.addRow(ValueFactory.create(false), 0.999f);
+		ChanceNode b = new ChanceNode("Burglary", builder.build());
 		bn.addNode(b);
 
-		ChanceNode e = new ChanceNode("Earthquake");
-		e.addProb(ValueFactory.create(true), 0.002f);
-		e.addProb(ValueFactory.create(false), 0.998f);
+		builder = new CategoricalTable.Builder("Earthquake");
+		builder.addRow(ValueFactory.create(true), 0.002f);
+		builder.addRow(ValueFactory.create(false), 0.998f);
+		ChanceNode e = new ChanceNode("Earthquake", builder.build());
 		bn.addNode(e);
 
-		ChanceNode a = new ChanceNode("Alarm");
+		ConditionalTable.Builder builder2 = new ConditionalTable.Builder("Alarm");
+		builder2.addRow(new Assignment(Arrays.asList("Burglary", "Earthquake")),
+				ValueFactory.create(true), 0.95f);
+		builder2.addRow(new Assignment(Arrays.asList("Burglary", "Earthquake")),
+				ValueFactory.create(false), 0.05f);
+		builder2.addRow(new Assignment(Arrays.asList("Burglary", "!Earthquake")),
+				ValueFactory.create(true), 0.95f);
+		builder2.addRow(new Assignment(Arrays.asList("Burglary", "!Earthquake")),
+				ValueFactory.create(false), 0.05f);
+		builder2.addRow(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
+				ValueFactory.create(true), 0.29f);
+		builder2.addRow(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
+				ValueFactory.create(false), 0.71f);
+		builder2.addRow(new Assignment(Arrays.asList("!Burglary", "!Earthquake")),
+				ValueFactory.create(true), 0.001f);
+		builder2.addRow(new Assignment(Arrays.asList("!Burglary", "!Earthquake")),
+				ValueFactory.create(false), 0.999f);
+		ChanceNode a = new ChanceNode("Alarm", builder2.build());
 		a.addInputNode(b);
 		a.addInputNode(e);
-		a.addProb(new Assignment(Arrays.asList("Burglary", "Earthquake")),
-				ValueFactory.create(true), 0.95f);
-		a.addProb(new Assignment(Arrays.asList("Burglary", "Earthquake")),
-				ValueFactory.create(false), 0.05f);
-		a.addProb(new Assignment(Arrays.asList("Burglary", "!Earthquake")),
-				ValueFactory.create(true), 0.95f);
-		a.addProb(new Assignment(Arrays.asList("Burglary", "!Earthquake")),
-				ValueFactory.create(false), 0.05f);
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
-				ValueFactory.create(true), 0.29f);
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
-				ValueFactory.create(false), 0.71f);
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "!Earthquake")),
-				ValueFactory.create(true), 0.001f);
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "!Earthquake")),
-				ValueFactory.create(false), 0.999f);
 		bn.addNode(a);
 
-		ChanceNode mc = new ChanceNode("MaryCalls");
+		builder2 = new ConditionalTable.Builder("MaryCalls");
+		builder2.addRow(new Assignment("Alarm"), ValueFactory.create(true), 0.7f);
+		builder2.addRow(new Assignment("Alarm"), ValueFactory.create(false), 0.3f);
+		builder2.addRow(new Assignment("!Alarm"), ValueFactory.create(true), 0.01f);
+		builder2.addRow(new Assignment("!Alarm"), ValueFactory.create(false), 0.99f);
+		ChanceNode mc = new ChanceNode("MaryCalls", builder2.build());
 		mc.addInputNode(a);
-		mc.addProb(new Assignment("Alarm"), ValueFactory.create(true), 0.7f);
-		mc.addProb(new Assignment("Alarm"), ValueFactory.create(false), 0.3f);
-		mc.addProb(new Assignment("!Alarm"), ValueFactory.create(true), 0.01f);
-		mc.addProb(new Assignment("!Alarm"), ValueFactory.create(false), 0.99f);
 		bn.addNode(mc);
 
-		ChanceNode jc = new ChanceNode("JohnCalls");
+		builder2 = new ConditionalTable.Builder("JohnCalls");
+		builder2.addRow(new Assignment("Alarm"), ValueFactory.create(true), 0.9f);
+		builder2.addRow(new Assignment("Alarm"), ValueFactory.create(false), 0.1f);
+		builder2.addRow(new Assignment("!Alarm"), ValueFactory.create(true), 0.05f);
+		builder2.addRow(new Assignment("!Alarm"), ValueFactory.create(false), 0.95f);
+		ChanceNode jc = new ChanceNode("JohnCalls", builder2.build());
 		jc.addInputNode(a);
-		jc.addProb(new Assignment("Alarm"), ValueFactory.create(true), 0.9f);
-		jc.addProb(new Assignment("Alarm"), ValueFactory.create(false), 0.1f);
-		jc.addProb(new Assignment("!Alarm"), ValueFactory.create(true), 0.05f);
-		jc.addProb(new Assignment("!Alarm"), ValueFactory.create(false), 0.95f);
 		bn.addNode(jc);
 
 		ActionNode action = new ActionNode("Action");
@@ -133,11 +139,15 @@ public class NetworkExamples {
 
 	public static BNetwork constructBasicNetwork2() {
 		BNetwork network = constructBasicNetwork();
-		network.getChanceNode("Burglary").addProb(ValueFactory.create(true), 0.1f);
-		network.getChanceNode("Burglary").addProb(ValueFactory.create(false), 0.9f);
-		network.getChanceNode("Earthquake").addProb(ValueFactory.create(true), 0.2f);
-		network.getChanceNode("Earthquake")
-				.addProb(ValueFactory.create(false), 0.8f);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("Burglary");
+		builder.addRow(ValueFactory.create(true), 0.1f);
+		builder.addRow(ValueFactory.create(false), 0.9f);
+		network.getChanceNode("Burglary").setDistrib(builder.build());
+		builder = new CategoricalTable.Builder("Earthquake");
+		builder.addRow(ValueFactory.create(true), 0.2f);
+		builder.addRow(ValueFactory.create(false), 0.8f);
+		network.getChanceNode("Earthquake").setDistrib(builder.build());
+
 		return network;
 	}
 
@@ -156,9 +166,9 @@ public class NetworkExamples {
 
 	public static BNetwork constructBasicNetwork4() {
 		BNetwork network = constructBasicNetwork();
-		ChanceNode node = new ChanceNode("gaussian");
-		node.setDistrib(new ContinuousDistribution("gaussian",
-				new UniformDensityFunction(-2, 3)));
+		ChanceNode node =
+				new ChanceNode("gaussian", new ContinuousDistribution("gaussian",
+						new UniformDensityFunction(-2, 3)));
 		network.addNode(node);
 		return network;
 	}
@@ -166,33 +176,46 @@ public class NetworkExamples {
 	public static BNetwork constructIWSDSNetwork() {
 
 		BNetwork net = new BNetwork();
-
-		ChanceNode i_u = new ChanceNode("i_u");
-		i_u.addProb(ValueFactory.create("ki"), 0.4);
-		i_u.addProb(ValueFactory.create("of"), 0.3);
-		i_u.addProb(ValueFactory.create("co"), 0.3);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("i_u");
+		builder.addRow(ValueFactory.create("ki"), 0.4);
+		builder.addRow(ValueFactory.create("of"), 0.3);
+		builder.addRow(ValueFactory.create("co"), 0.3);
+		ChanceNode i_u = new ChanceNode("i_u", builder.build());
 		net.addNode(i_u);
 
-		ChanceNode a_u = new ChanceNode("a_u");
+		ConditionalTable.Builder builder2 = new ConditionalTable.Builder("a_u");
+		builder2.addRow(new Assignment("i_u", "ki"), ValueFactory.create("ki"), 0.9);
+		builder2.addRow(new Assignment("i_u", "ki"), ValueFactory.create("null"),
+				0.1);
+		builder2.addRow(new Assignment("i_u", "of"), ValueFactory.create("of"), 0.9);
+		builder2.addRow(new Assignment("i_u", "of"), ValueFactory.create("null"),
+				0.1);
+		builder2.addRow(new Assignment("i_u", "co"), ValueFactory.create("co"), 0.9);
+		builder2.addRow(new Assignment("i_u", "co"), ValueFactory.create("null"),
+				0.1);
+		ChanceNode a_u = new ChanceNode("a_u", builder2.build());
 		a_u.addInputNode(i_u);
-		a_u.addProb(new Assignment("i_u", "ki"), ValueFactory.create("ki"), 0.9);
-		a_u.addProb(new Assignment("i_u", "ki"), ValueFactory.create("null"), 0.1);
-		a_u.addProb(new Assignment("i_u", "of"), ValueFactory.create("of"), 0.9);
-		a_u.addProb(new Assignment("i_u", "of"), ValueFactory.create("null"), 0.1);
-		a_u.addProb(new Assignment("i_u", "co"), ValueFactory.create("co"), 0.9);
-		a_u.addProb(new Assignment("i_u", "co"), ValueFactory.create("null"), 0.1);
 		net.addNode(a_u);
 
-		ChanceNode o = new ChanceNode("o");
+		builder2 = new ConditionalTable.Builder("a_u");
+		builder2.addRow(new Assignment("a_u", "ki"), ValueFactory.create("true"),
+				0.0);
+		builder2.addRow(new Assignment("a_u", "ki"), ValueFactory.create("false"),
+				1.0);
+		builder2.addRow(new Assignment("a_u", "of"), ValueFactory.create("true"),
+				0.6);
+		builder2.addRow(new Assignment("a_u", "of"), ValueFactory.create("false"),
+				0.4);
+		builder2.addRow(new Assignment("a_u", "co"), ValueFactory.create("true"),
+				0.15);
+		builder2.addRow(new Assignment("a_u", "co"), ValueFactory.create("false"),
+				0.85);
+		builder2.addRow(new Assignment("a_u", "null"), ValueFactory.create("true"),
+				0.25);
+		builder2.addRow(new Assignment("a_u", "null"), ValueFactory.create("false"),
+				0.75);
+		ChanceNode o = new ChanceNode("o", builder2.build());
 		o.addInputNode(a_u);
-		o.addProb(new Assignment("a_u", "ki"), ValueFactory.create("true"), 0.0);
-		o.addProb(new Assignment("a_u", "ki"), ValueFactory.create("false"), 1.0);
-		o.addProb(new Assignment("a_u", "of"), ValueFactory.create("true"), 0.6);
-		o.addProb(new Assignment("a_u", "of"), ValueFactory.create("false"), 0.4);
-		o.addProb(new Assignment("a_u", "co"), ValueFactory.create("true"), 0.15);
-		o.addProb(new Assignment("a_u", "co"), ValueFactory.create("false"), 0.85);
-		o.addProb(new Assignment("a_u", "null"), ValueFactory.create("true"), 0.25);
-		o.addProb(new Assignment("a_u", "null"), ValueFactory.create("false"), 0.75);
 		net.addNode(o);
 
 		ActionNode a_m = new ActionNode("a_m");

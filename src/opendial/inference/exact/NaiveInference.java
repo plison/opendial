@@ -24,10 +24,10 @@
 package opendial.inference.exact;
 
 import java.util.logging.*;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +48,6 @@ import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 import opendial.utils.CombinatoricsUtils;
-import opendial.utils.InferenceUtils;
 
 /**
  * Algorithm for naive probabilistic inference, based on computing the full joint
@@ -71,7 +70,7 @@ public class NaiveInference implements InferenceAlgorithm {
 	public MultivariateTable queryProb(Query.ProbQuery query) {
 
 		BNetwork network = query.getNetwork();
-		Collection<String> queryVars = query.getQueryVars();
+		Set<String> queryVars = new HashSet<String>(query.getQueryVars());
 		Assignment evidence = query.getEvidence();
 
 		// generates the full joint distribution
@@ -88,7 +87,7 @@ public class NaiveInference implements InferenceAlgorithm {
 		Set<Assignment> queryAssigns =
 				CombinatoricsUtils.getAllCombinations(queryValues);
 
-		Map<Assignment, Double> queryResult = new HashMap<Assignment, Double>();
+		MultivariateTable.Builder queryResult = new MultivariateTable.Builder();
 
 		// calculate the (unnormalised) probability for each assignment of the
 		// query variables
@@ -99,17 +98,11 @@ public class NaiveInference implements InferenceAlgorithm {
 					sum += fullJoint.get(a);
 				}
 			}
-			queryResult.put(queryA, sum);
+			queryResult.addRow(queryA, sum);
 		}
 
-		// normalise the end result
-		queryResult = InferenceUtils.normalise(queryResult);
-
-		// write the result in a probability table
-		MultivariateTable distrib = new MultivariateTable();
-		distrib.addRows(queryResult);
-
-		return distrib;
+		queryResult.normalise();
+		return queryResult.build();
 	}
 
 	/**
@@ -242,17 +235,16 @@ public class NaiveInference implements InferenceAlgorithm {
 					CombinatoricsUtils.getAllCombinations(inputValues);
 
 			// creating a conditional probability table for the variable
-			ConditionalTable table = new ConditionalTable(var);
+			ConditionalTable.Builder builder = new ConditionalTable.Builder(var);
 			for (Assignment a : inputs) {
 				Assignment evidence2 = new Assignment(evidence, a);
 				CategoricalTable result =
 						(CategoricalTable) queryProb(network, var, evidence2);
-				table.addDistrib(a, result);
+				builder.addRows(a, result.getTable());
 			}
 
 			// creating the node
-			ChanceNode cn = new ChanceNode(var);
-			cn.setDistrib(table);
+			ChanceNode cn = new ChanceNode(var, builder.build());
 			for (String ancestor : directAncestors) {
 				cn.addInputNode(reduced.getNode(ancestor));
 			}

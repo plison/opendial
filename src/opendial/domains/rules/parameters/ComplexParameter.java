@@ -48,7 +48,7 @@ public class ComplexParameter implements Parameter {
 	 * Constructs a new complex parameter with the given expression, assuming the
 	 * list of parameters is provided as labels within the expression.
 	 * 
-	 * @param unknowns the list of unknown parameter variables
+	 * @param expression the expression as a string
 	 */
 	public ComplexParameter(String expression) {
 		this.expression = new MathExpression(expression);

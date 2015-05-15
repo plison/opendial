@@ -28,17 +28,10 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
 import java.util.stream.Collectors;
-
-import opendial.bn.values.Value;
-import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Assignment;
 
 /**
  * Utility functions for inference operations.
@@ -50,8 +43,6 @@ public class InferenceUtils {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
-
-	static Random sampler = new Random();
 
 	/**
 	 * Normalise the given probability distribution (assuming no conditional
@@ -70,31 +61,13 @@ public class InferenceUtils {
 		}
 
 		Map<T, Double> normalisedDistrib =
-				distrib.keySet()
+				distrib.entrySet()
 						.stream()
 						.collect(
-								Collectors.toMap(a -> a, a -> distrib.get(a) / total));
+								Collectors.toMap(a -> a.getKey(), a -> a.getValue()
+										/ total));
 
 		return normalisedDistrib;
-	}
-
-	/**
-	 * Flattens a probability table, i.e. converts a double mapping into a single
-	 * one, by creating every possible combination of assignments.
-	 * 
-	 * @param table the table to flatten
-	 * @return the flattened table
-	 */
-	public static Map<Assignment, Double> flattenTable(
-			Map<Assignment, Map<Assignment, Double>> table) {
-		Map<Assignment, Double> flatTable = new HashMap<Assignment, Double>();
-		for (Assignment condition : table.keySet()) {
-			for (Assignment head : table.get(condition).keySet()) {
-				flatTable.put(new Assignment(condition, head), table.get(condition)
-						.get(head));
-			}
-		}
-		return flatTable;
 	}
 
 	/**
@@ -149,7 +122,11 @@ public class InferenceUtils {
 		List<Map.Entry<T, Double>> entries =
 				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
 
-		Collections.sort(entries, new EntryComparator<T>(0.0001));
+		Collections.sort(entries, (a, b) -> {
+			double result = a.getValue() - b.getValue();
+			return (Math.abs(result) < 0.0001) ? 0 : (int) (result * 10000000);
+		});
+
 		Collections.reverse(entries);
 
 		LinkedHashMap<T, Double> newTable = new LinkedHashMap<T, Double>();
@@ -160,13 +137,7 @@ public class InferenceUtils {
 				nb++;
 			}
 		}
-		for (T key : new ArrayList<T>(newTable.keySet())) {
-			if (key instanceof Assignment && ((Assignment) key).isDefault()
-					|| key instanceof Value && ((Value) key) == ValueFactory.none()) {
-				double val = newTable.remove(key);
-				newTable.put(key, val);
-			}
-		}
+
 		return newTable;
 	}
 
@@ -186,52 +157,34 @@ public class InferenceUtils {
 
 		List<Map.Entry<T, Double>> entries =
 				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
-		EntryComparator<T> comp = new EntryComparator<T>(minDifference);
+
+		Comparator<Map.Entry<T, Double>> comp =
+				(a, b) -> {
+					double result = a.getValue() - b.getValue();
+					return (Math.abs(result) < minDifference) ? 0
+							: (int) (result * 10000000);
+				};
+
 		Collections.sort(entries, comp);
 		Collections.reverse(entries);
 
+		// find the minimum rank
 		for (int i = 0; i < entries.size(); i++) {
 			Map.Entry<T, Double> entry = entries.get(i);
 			if (entry.getKey().equals(assign)) {
-				return entries.indexOf(entry);
+				return i;
 			}
-			else if (i < entries.size() - 1) {
-				Map.Entry<T, Double> nextEntry = entries.get(i + 1);
-				if (nextEntry.getKey().equals(assign)
-						&& comp.compare(entry, nextEntry) == 0) {
-					return entries.indexOf(entry);
+			for (int j = i + 1; j < entries.size(); j++) {
+				Map.Entry<T, Double> nextEntry = entries.get(j);
+				if (comp.compare(entry, nextEntry) != 0) {
+					break;
+				}
+				if (nextEntry.getKey().equals(assign)) {
+					return i;
 				}
 			}
 		}
 		return -1;
-	}
-
-	/**
-	 * A comparator for the pair (assignment, double) that sorts the entries
-	 * according to their double values.
-	 * 
-	 * @author Pierre Lison (plison@ifi.uio.no)
-	 */
-	static final class EntryComparator<T> implements
-			Comparator<Map.Entry<T, Double>> {
-
-		double minDifference;
-
-		public EntryComparator(double minDifference) {
-			this.minDifference = minDifference;
-		}
-
-		@Override
-		public int compare(Entry<T, Double> arg0, Entry<T, Double> arg1) {
-			double result = arg0.getValue() - arg1.getValue();
-			if (Math.abs(result) < minDifference) {
-				return 0;
-			}
-			else {
-				return (int) (result * 10000000);
-			}
-		}
-
 	}
 
 }

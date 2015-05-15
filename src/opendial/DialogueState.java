@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.SingleValueDistribution;
@@ -228,7 +228,7 @@ public class DialogueState extends BNetwork {
 	 * @param distrib a distribution over values for particular state variables @ if
 	 *            the content could not be added.
 	 */
-	public synchronized void addToState(IndependentProbDistribution distrib) {
+	public synchronized void addToState(IndependentDistribution distrib) {
 
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
@@ -265,8 +265,8 @@ public class DialogueState extends BNetwork {
 
 		String var = distrib.getVariable();
 		if (hasChanceNode(var) && isIncremental(var) & followPrevious) {
-			CategoricalTable newtable =
-					((CategoricalTable) queryProb(var)).concatenate(distrib);
+			IndependentDistribution newtable =
+					queryProb(var).toDiscrete().concatenate(distrib);
 			getChanceNode(var).setDistrib(newtable);
 			getChanceNode(var).setId(var + "'");
 		}
@@ -373,7 +373,7 @@ public class DialogueState extends BNetwork {
 	 * @param variable the variable label to query
 	 * @return the corresponding probability distribution
 	 */
-	public IndependentProbDistribution queryProb(String variable) {
+	public IndependentDistribution queryProb(String variable) {
 		return queryProb(variable, true);
 	}
 
@@ -386,17 +386,16 @@ public class DialogueState extends BNetwork {
 	 *            dialogue state
 	 * @return the corresponding probability distribution
 	 */
-	public IndependentProbDistribution queryProb(String variable,
-			boolean includeEvidence) {
+	public IndependentDistribution queryProb(String variable, boolean includeEvidence) {
 
 		if (hasChanceNode(variable)) {
 			ChanceNode cn = getChanceNode(variable);
 
 			// if the distribution can be retrieved without inference, we simply
 			// return it
-			if (cn.getDistrib() instanceof IndependentProbDistribution
+			if (cn.getDistrib() instanceof IndependentDistribution
 					&& Collections.disjoint(cn.getClique(), evidence.getVariables())) {
-				return (IndependentProbDistribution) cn.getDistrib();
+				return (IndependentDistribution) cn.getDistrib();
 			}
 
 			else {
@@ -408,14 +407,14 @@ public class DialogueState extends BNetwork {
 				}
 				catch (RuntimeException e) {
 					log.warning("Error querying variable " + variable + " : " + e);
-					return new CategoricalTable(variable);
+					return new SingleValueDistribution(variable, ValueFactory.none());
 				}
 			}
 		}
 		else {
 			log.warning("Variable " + variable
 					+ " not included in the dialogue state");
-			return new CategoricalTable(variable);
+			return new SingleValueDistribution(variable, ValueFactory.none());
 		}
 	}
 
@@ -440,7 +439,7 @@ public class DialogueState extends BNetwork {
 		catch (Exception e) {
 			log.warning("cannot perform inference: " + e);
 			e.printStackTrace();
-			return new MultivariateTable();
+			return new MultivariateTable(Assignment.createDefault());
 		}
 	}
 
@@ -620,7 +619,7 @@ public class DialogueState extends BNetwork {
 		Element root = doc.createElement("state");
 		for (String nodeId : varsToRecord) {
 			if (getChanceNodeIds().contains(nodeId)) {
-				IndependentProbDistribution distrib = queryProb(nodeId);
+				IndependentDistribution distrib = queryProb(nodeId);
 				Node var = distrib.generateXML(doc);
 				root.appendChild(var);
 			}
@@ -644,8 +643,7 @@ public class DialogueState extends BNetwork {
 			removeNode(ruleId);
 		}
 
-		ChanceNode ruleNode = new ChanceNode(ruleId);
-		ruleNode.setDistrib(arule);
+		ChanceNode ruleNode = new ChanceNode(ruleId, arule);
 		ruleNode.getValues();
 
 		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
@@ -731,10 +729,11 @@ public class DialogueState extends BNetwork {
 		String predictEquiv = baseVar + "^p";
 		if (hasChanceNode(predictEquiv) && !outputVar.equals(predictEquiv)
 				&& !outputVar.contains("^p")) {
-			ChanceNode equalityNode = new ChanceNode("=_" + baseVar);
+			ChanceNode equalityNode =
+					new ChanceNode("=_" + baseVar, new EquivalenceDistribution(
+							baseVar));
 			equalityNode.addInputNode(outputNode);
 			equalityNode.addInputNode(getNode(predictEquiv));
-			equalityNode.setDistrib(new EquivalenceDistribution(baseVar));
 			addEvidence(new Assignment(equalityNode.getId(), true));
 			addNode(equalityNode);
 		}

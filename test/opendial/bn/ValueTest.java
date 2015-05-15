@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.CategoricalTable.Builder;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.BooleanVal;
 import opendial.bn.values.DoubleVal;
@@ -48,15 +50,6 @@ public class ValueTest {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
-
-	/**
-	 * @Test public void mapTest() { String stringVersion =
-	 *       "<feature2:333.0;feature1:blablabla>"; Value val =
-	 *       ValueFactory.create(stringVersion); assertTrue(val instanceof MapVal);
-	 *       assertEquals(((MapVal)val).getMap().size(), 2);
-	 *       assertEquals(((MapVal)val).getMap().get("feature1").toString(),
-	 *       "blablabla"); assertEquals(val.toString(), stringVersion); }
-	 */
 
 	@Test
 	public void testAssign() {
@@ -126,9 +119,10 @@ public class ValueTest {
 	}
 
 	public void testClosest() {
-		CategoricalTable table = new CategoricalTable("v");
-		table.addRow(new double[] { 0.2, 0.2 }, 0.3);
-		table.addRow(new double[] { 0.6, 0.6 }, 0.4);
+		Builder builder = new CategoricalTable.Builder("v");
+		builder.addRow(new double[] { 0.2, 0.2 }, 0.3);
+		builder.addRow(new double[] { 0.6, 0.6 }, 0.4);
+		IndependentDistribution table = builder.build();
 		assertEquals(table.getProb(new double[] { 0.25, 0.3 }), 0.3, 0.01);
 		assertEquals(table.getProb(new double[] { 0.5, 0.4 }), 0.4, 0.01);
 

@@ -108,10 +108,10 @@ public class PlanningTest {
 		system.getSettings().horizon = 3;
 		system.startSystem();
 
-		CategoricalTable t1 = new CategoricalTable("a_u");
+		CategoricalTable.Builder t1 = new CategoricalTable.Builder("a_u");
 		t1.addRow("Ask(Coffee)", 0.95);
 		t1.addRow("Ask(Tea)", 0.02);
-		system.addContent(t1);
+		system.addContent(t1.build());
 		inference.checkProb(system.getState(), "a_m", "Do(Coffee)", 1.0);
 
 	}
@@ -125,10 +125,10 @@ public class PlanningTest {
 		system.getSettings().horizon = 3;
 		system.startSystem();
 
-		CategoricalTable t1 = new CategoricalTable("a_u");
+		CategoricalTable.Builder t1 = new CategoricalTable.Builder("a_u");
 		t1.addRow("Ask(Coffee)", 0.3);
 		t1.addRow("Ask(Tea)", 0.3);
-		system.addContent(t1);
+		system.addContent(t1.build());
 
 		inference.checkProb(system.getState(), "a_m", "AskRepeat", 1.0);
 

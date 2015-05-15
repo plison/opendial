@@ -30,9 +30,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import opendial.Settings;
-import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.values.Value;
@@ -64,16 +63,6 @@ public class ChanceNode extends BNode {
 	// ===================================
 
 	/**
-	 * Creates a new chance node defined by the identifier. The default probability
-	 * distribution is then a probability table.
-	 * 
-	 * @param nodeId the node identifier
-	 */
-	public ChanceNode(String nodeId) {
-		this(nodeId, new ConditionalTable(nodeId));
-	}
-
-	/**
 	 * Creates a new chance node, with the given identifier and probability
 	 * distribution
 	 * 
@@ -95,8 +84,7 @@ public class ChanceNode extends BNode {
 	 * @param value the single value for the node
 	 */
 	public ChanceNode(String nodeId, Value value) {
-		this(nodeId);
-		this.distrib = new SingleValueDistribution(nodeId, value);
+		this(nodeId, new SingleValueDistribution(nodeId, value));
 	}
 
 	/**
@@ -120,64 +108,6 @@ public class ChanceNode extends BNode {
 	@Override
 	public void addInputNode(BNode inputNode) {
 		super.addInputNode(inputNode);
-	}
-
-	/**
-	 * Adds a new value with associated probability to the node. The probability must
-	 * be independent of other nodes, and the distribution must be a probability
-	 * table.
-	 * 
-	 * @param nodeValue the node value
-	 * @param prob the associated probability
-	 */
-	public void addProb(Value nodeValue, double prob) {
-		addProb(new Assignment(), nodeValue, prob);
-	}
-
-	/**
-	 * Adds a new value with associated probability, given a specific value
-	 * assignment for the conditional nodes. The distribution must be a probability
-	 * table.
-	 * 
-	 * @param condition the condition for which the probability is value
-	 * @param nodeValue the new value
-	 * @param prob the associated probability
-	 */
-	public void addProb(Assignment condition, Value nodeValue, double prob) {
-		if (distrib instanceof ConditionalTable) {
-			((ConditionalTable) distrib).addRow(condition, nodeValue, prob);
-		}
-		else {
-			log.warning("distribution is not defined as a dependent table table, "
-					+ "impossible to add probability");
-		}
-		cachedValues = null;
-	}
-
-	/**
-	 * Removes the probability for the given value
-	 * 
-	 * @param nodeValue the node value to remove
-	 */
-	public void removeProb(Value nodeValue) {
-		removeProb(new Assignment(), nodeValue);
-	}
-
-	/**
-	 * Removes the probability for the value given the condition
-	 * 
-	 * @param condition the condition
-	 * @param nodeValue the value for the node variable
-	 */
-	public void removeProb(Assignment condition, Value nodeValue) {
-		if (distrib instanceof ConditionalTable) {
-			((ConditionalTable) distrib).removeRow(condition, nodeValue);
-		}
-		else {
-			log.warning("distribution is not defined as a table, impossible "
-					+ "to remove probability");
-		}
-		cachedValues = null;
 	}
 
 	/**
@@ -227,8 +157,8 @@ public class ChanceNode extends BNode {
 	 */
 	public double getProb(Value nodeValue) {
 
-		if (distrib instanceof IndependentProbDistribution) {
-			return ((IndependentProbDistribution) distrib).getProb(nodeValue);
+		if (distrib instanceof IndependentDistribution) {
+			return ((IndependentDistribution) distrib).getProb(nodeValue);
 		}
 
 		// log.fine("Must marginalise to compute P(" + nodeId + "="+ nodeValue
@@ -279,8 +209,8 @@ public class ChanceNode extends BNode {
 	 */
 	public Value sample() {
 
-		if (distrib instanceof IndependentProbDistribution) {
-			return ((IndependentProbDistribution) distrib).sample();
+		if (distrib instanceof IndependentDistribution) {
+			return ((IndependentDistribution) distrib).sample();
 		}
 		Assignment inputSample = new Assignment();
 		for (BNode inputNode : inputNodes.values()) {
@@ -304,8 +234,8 @@ public class ChanceNode extends BNode {
 	 * @return the sample value
 	 */
 	public Value sample(Assignment condition) {
-		if (distrib instanceof IndependentProbDistribution) {
-			return ((IndependentProbDistribution) distrib).sample();
+		if (distrib instanceof IndependentDistribution) {
+			return ((IndependentDistribution) distrib).sample();
 		}
 		return distrib.sample(condition);
 	}
@@ -362,8 +292,7 @@ public class ChanceNode extends BNode {
 		Set<Assignment> combinations = getPossibleConditions();
 		for (Assignment combination : combinations) {
 
-			IndependentProbDistribution posterior =
-					distrib.getProbDistrib(combination);
+			IndependentDistribution posterior = distrib.getProbDistrib(combination);
 			for (Value value : posterior.getValues()) {
 				factor.put(new Assignment(combination, nodeId, value),
 						posterior.getProb(value));

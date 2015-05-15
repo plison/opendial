@@ -48,7 +48,7 @@ import javax.swing.ToolTipManager;
 
 import opendial.DialogueState;
 import opendial.DialogueSystem;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -351,7 +351,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 */
 	public void displayDistrib(String queryVar) {
 		if (!shownDistribs.containsKey(queryVar)) {
-			IndependentProbDistribution distrib = currentState.queryProb(queryVar);
+			IndependentDistribution distrib = currentState.queryProb(queryVar);
 			DistributionViewer viewer =
 					new DistributionViewer(currentState, queryVar, this);
 			shownDistribs.put(distrib.getVariable(), viewer);

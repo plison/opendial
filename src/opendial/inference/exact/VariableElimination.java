@@ -24,7 +24,6 @@
 package opendial.inference.exact;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +40,7 @@ import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
+import opendial.bn.distribs.ConditionalTable.Builder;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -73,8 +73,10 @@ public class VariableElimination implements InferenceAlgorithm {
 	@Override
 	public MultivariateTable queryProb(Query.ProbQuery query) {
 		DoubleFactor queryFactor = createQueryFactor(query);
-		queryFactor.normalise();
-		return new MultivariateTable(queryFactor.getProbTable());
+		MultivariateTable.Builder builder = new MultivariateTable.Builder();
+		builder.addRows(queryFactor.getProbTable());
+		builder.normalise();
+		return builder.build();
 	}
 
 	/**
@@ -334,11 +336,10 @@ public class VariableElimination implements InferenceAlgorithm {
 			// create the factor and distribution for the variable
 			DoubleFactor factor =
 					getRelevantFactor(queryFactor, var, directAncestors);
-			ProbDistribution distrib = createProbDistribution(factor, var);
+			ProbDistribution distrib = createProbDistribution(var, factor);
 
 			// create the new node
-			ChanceNode cn = new ChanceNode(var);
-			cn.setDistrib(distrib);
+			ChanceNode cn = new ChanceNode(var, distrib);
 			for (String ancestor : directAncestors) {
 				cn.addInputNode(reduced.getNode(ancestor));
 			}
@@ -383,8 +384,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * @param variable the variable
 	 * @return the resulting probability distribution
 	 */
-	private ProbDistribution createProbDistribution(DoubleFactor factor,
-			String variable) {
+	public static ProbDistribution createProbDistribution(String headVar,
+			DoubleFactor factor) {
 
 		Set<String> variables = factor.getVariables();
 
@@ -392,34 +393,26 @@ public class VariableElimination implements InferenceAlgorithm {
 		if (variables.size() == 1) {
 
 			factor.normalise();
-			CategoricalTable table = new CategoricalTable(variable);
+			CategoricalTable.Builder builder = new CategoricalTable.Builder(headVar);
 			for (Assignment a : factor.getAssignments()) {
-				table.addRow(a.getValue(variable), factor.getProbEntry(a));
+				builder.addRow(a.getValue(headVar), factor.getProbEntry(a));
 			}
-			if (table.isDeterministic()) {
-				return table.getDeterministic();
-			}
-			return table;
+			return builder.build();
 		}
 
 		// else, create a full probability table
 		else {
 			Set<String> depVariables = new HashSet<String>(variables);
-			depVariables.remove(variable);
+			depVariables.remove(headVar);
 
 			factor.normalise(depVariables);
-			ConditionalTable table = new ConditionalTable(variable);
+			Builder builder = new ConditionalTable.Builder(headVar);
 			for (Assignment a : factor.getAssignments()) {
 				Assignment cond = a.getTrimmed(depVariables);
-				table.addRow(cond, a.getValue(variable), factor.getProbEntry(a));
+				builder.addRow(cond, a.getValue(headVar), factor.getProbEntry(a));
 			}
-
-			if (table.isDeterministic()) {
-				return table.getDeterministic();
-			}
-			return table;
+			return builder.build();
 		}
 
 	}
-
 }

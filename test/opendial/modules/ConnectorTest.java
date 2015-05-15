@@ -72,7 +72,7 @@ public class ConnectorTest {
 						+ "<interaction><!--Connected to --><userTurn>"
 						+ "<variable id=\"u_u\"><value>hello, world!</value></variable></userTurn>"
 						+ "<systemTurn><variable id=\"u_m\"><value prob=\"0.7\">hello back</value>"
-						+ "<value prob=\"0.1\">elbow black</value><value prob=\"0.2\">None</value></variable>"
+						+ "<value prob=\"0.1\">elbow black</value></variable>"
 						+ "</systemTurn></interaction>");
 		record2 = system2.getModule(DialogueRecorder.class).getRecord();
 		record2 = record2.replaceAll(system1.getLocalAddress(), "");

@@ -57,10 +57,10 @@ public class IncrementalTest {
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("go")));
-		CategoricalTable t = new CategoricalTable("u_u");
+		CategoricalTable.Builder t = new CategoricalTable.Builder("u_u");
 		t.addRow("forward", 0.7);
 		t.addRow("backward", 0.2);
-		system.addIncrementalContent(t, true);
+		system.addIncrementalContent(t.build(), true);
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("go forward")));
@@ -73,9 +73,9 @@ public class IncrementalTest {
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
 		assertFalse(system.getState().hasChanceNode("nlu"));
-		CategoricalTable t2 = new CategoricalTable("u_u");
+		CategoricalTable.Builder t2 = new CategoricalTable.Builder("u_u");
 		t2.addRow("I said go backward", 0.3);
-		system.addIncrementalContent(t2, true);
+		system.addIncrementalContent(t2.build(), true);
 		assertEquals(system.getContent("a_u").getProb("Request(Backward)"), 0.82,
 				0.05);
 		assertTrue(system.getContent("u_u").getValues()

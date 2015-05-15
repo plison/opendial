@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import opendial.bn.distribs.ConditionalTable;
+import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.nodes.ActionNode;
 import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
@@ -84,9 +84,6 @@ public class BNetworkStructureTest {
 				bn.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
 						ValueFactory.create(true)), 0.0001f);
 
-		assertTrue(((ConditionalTable) bn.getChanceNode("MaryCalls").getDistrib())
-				.isWellFormed());
-
 		assertEquals(3, bn.getActionNode("Action").getValues().size());
 		assertEquals(
 				-10f,
@@ -101,8 +98,11 @@ public class BNetworkStructureTest {
 		BNetwork bn2 = bn.copy();
 
 		ChanceNode b = bn.getChanceNode("Burglary");
-		b.addProb(ValueFactory.create(true), 0.2f);
-		b.addProb(ValueFactory.create(false), 0.8f);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("Burglary");
+		builder.addRow(ValueFactory.create(true), 0.2f);
+		builder.addRow(ValueFactory.create(false), 0.8f);
+		b.setDistrib(builder.build());
+
 		UtilityNode value = bn.getUtilityNode("Util1");
 		value.addUtility(new Assignment(new Assignment("Burglary", true), "Action",
 				ValueFactory.create("DoNothing")), -20.0f);
@@ -138,9 +138,6 @@ public class BNetworkStructureTest {
 				bn2.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
 						ValueFactory.create(true)), 0.0001f);
 
-		assertTrue(((ConditionalTable) bn2.getChanceNode("MaryCalls").getDistrib())
-				.isWellFormed());
-
 		assertEquals(3, bn2.getActionNode("Action").getValues().size());
 		assertEquals(
 				-10f,
@@ -169,41 +166,6 @@ public class BNetworkStructureTest {
 		assertEquals(0, bn.getNode("Action").getAncestorIds().size());
 		assertTrue(bn.getNode("Action").getDescendantIds().contains("Util1"));
 		assertEquals(2, bn.getNode("Action").getDescendantIds().size());
-	}
-
-	@Test
-	public void testDistribution() {
-
-		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		ChanceNode e = bn.getChanceNode("Earthquake");
-		assertTrue(((ConditionalTable) e.getDistrib()).isWellFormed());
-		e.removeProb(ValueFactory.create(false));
-		// assertFalse(e.getDistribution().isWellFormed());
-		e.addProb(ValueFactory.create(false), 0.1f);
-		// assertFalse(e.getDistribution().isWellFormed());
-		e.removeProb(ValueFactory.create(true));
-		// assertFalse(e.getDistribution().isWellFormed());
-		e.addProb(ValueFactory.create(true), 0.2f);
-		e.addProb(ValueFactory.create(false), 0.8f);
-		assertTrue(((ConditionalTable) e.getDistrib()).isWellFormed());
-
-		ChanceNode a = bn.getChanceNode("Alarm");
-		assertTrue(((ConditionalTable) a.getDistrib()).isWellFormed());
-		a.removeProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
-				ValueFactory.create(true));
-		// assertFalse(a.getDistribution().isWellFormed());
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
-				ValueFactory.create(true), 0.4f);
-		// assertFalse(a.getDistribution().isWellFormed());
-		a.addProb(new Assignment(Arrays.asList("!Burglary", "Earthquake")),
-				ValueFactory.create(true), 0.29f);
-		assertTrue(((ConditionalTable) a.getDistrib()).isWellFormed());
-
-		UtilityNode v = bn.getUtilityNode("Util1");
-		v.removeUtility(new Assignment(new Assignment("Burglary", false), "Action",
-				ValueFactory.create("CallPolice")));
-		v.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
-				ValueFactory.create("CallPolice")), 100f);
 	}
 
 	@Test
@@ -258,10 +220,11 @@ public class BNetworkStructureTest {
 	@Test
 	public void tableExpansion() {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		ChanceNode node = new ChanceNode("HouseSize");
-		node.addProb(ValueFactory.create("Small"), 0.7f);
-		node.addProb(ValueFactory.create("Big"), 0.2f);
-		node.addProb(ValueFactory.create("None"), 0.1f);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("HouseSize");
+		builder.addRow(ValueFactory.create("Small"), 0.7f);
+		builder.addRow(ValueFactory.create("Big"), 0.2f);
+		builder.addRow(ValueFactory.create("None"), 0.1f);
+		ChanceNode node = new ChanceNode("HouseSize", builder.build());
 		bn.addNode(node);
 		bn.getNode("Burglary").addInputNode(node);
 		assertEquals(
@@ -291,15 +254,15 @@ public class BNetworkStructureTest {
 
 	@Test
 	public void testDefaultValue() {
-		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		ChanceNode node = bn.getChanceNode("Burglary");
-		node.addProb(ValueFactory.create(false), 0.8);
-		assertEquals(node.getProb(ValueFactory.none()), 0.199, 0.0001);
-		node.removeProb(ValueFactory.create(false));
-		assertEquals(node.getProb(ValueFactory.none()), 0.999, 0.0001);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("Burglary");
+		builder.addRow(ValueFactory.create(false), 0.8);
+		assertEquals(builder.build().getProb(ValueFactory.none()), 0.199, 0.01);
+		builder.removeRow(ValueFactory.create(false));
+		assertEquals(builder.build().getProb(ValueFactory.none()), 0.999, 0.01);
 		// assertTrue(node.hasProb(new Assignment(), ValueFactory.none()));
-		node.addProb(ValueFactory.create(false), 0.999);
-		assertEquals(node.getProb(ValueFactory.none()), 0.0, 0.000001);
+		builder = new CategoricalTable.Builder("Burglary");
+		builder.addRow(ValueFactory.create(false), 0.999);
+		assertEquals(builder.build().getProb(ValueFactory.none()), 0.0, 0.01);
 		// assertFalse(node.hasProb(new Assignment(), ValueFactory.none()));
 	}
 
@@ -325,17 +288,6 @@ public class BNetworkStructureTest {
 		assertEquals("a_m.obj'", bn2.getSortedNodes().get(1).getId());
 		assertEquals("a_m.place'", bn2.getSortedNodes().get(0).getId());
 	}
-
-	/**
-	 * @ * @Test public void derivedActionNodes () { BNetwork bn =
-	 * NetworkExamples.constructBasicNetwork(); BNetwork bn2 =
-	 * NetworkExamples.constructBasicNetwork3();
-	 * assertTrue(bn2.getActionNode("Action") instanceof ActionNode); assertEquals(2,
-	 * bn2.getUtilityNode("Util1").getRelevantActions().size()); assertEquals(2,
-	 * bn2.getUtilityNode("Util2").getRelevantActions().size());
-	 * assertEquals(bn.getActionNode("Action").getValues(),
-	 * bn2.getActionNode("Action").getValues()); }
-	 */
 
 	@Test
 	public void testCliques() {

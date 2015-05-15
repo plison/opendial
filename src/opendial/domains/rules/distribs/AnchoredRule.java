@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import opendial.DialogueState;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.ContinuousDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityFunction;
@@ -240,7 +241,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) {
-		CategoricalTable outputTable = getProbDistrib(condition);
+		IndependentDistribution outputTable = getProbDistrib(condition);
 		double prob = outputTable.getProb(head);
 
 		return prob;
@@ -299,7 +300,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 */
 	@Override
 	public Value sample(Assignment condition) {
-		CategoricalTable outputTable = getProbDistrib(condition);
+		IndependentDistribution outputTable = getProbDistrib(condition);
 		return outputTable.sample();
 	}
 
@@ -314,27 +315,27 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	}
 
 	@Override
-	public CategoricalTable getProbDistrib(Assignment input) {
+	public IndependentDistribution getProbDistrib(Assignment input) {
 
 		// search for the matching case
 		RuleOutput output = getOutput(input);
 
 		// creating the distribution
-		CategoricalTable probTable = new CategoricalTable(id, false);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder(id);
 
 		for (Effect e : output.getEffects()) {
 			Parameter param = output.getParameter(e);
 			double paramValue = param.getValue(input);
 			if (paramValue > 0) {
-				probTable.addRow(e, paramValue);
+				builder.addRow(e, paramValue);
 			}
 		}
 
-		if (probTable.isEmpty()) {
+		if (builder.isEmpty()) {
 			log.warning("probability table is empty (no effects) for " + "input "
 					+ input + " and rule " + toString());
 		}
-		return probTable;
+		return builder.build();
 	}
 
 	// ===================================

@@ -63,7 +63,7 @@ public interface ProbDistribution {
 	 * @return the independent probability distribution on X. distribution could not
 	 *         be extracted
 	 */
-	public IndependentProbDistribution getProbDistrib(Assignment condition);
+	public IndependentDistribution getProbDistrib(Assignment condition);
 
 	/**
 	 * Returns a sample value for the distribution given a particular conditional

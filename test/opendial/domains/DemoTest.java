@@ -69,11 +69,11 @@ public class DemoTest {
 		system.startSystem();
 		system.addContent("a_m", "AskRepeat");
 
-		CategoricalTable t = new CategoricalTable("a_u");
+		CategoricalTable.Builder t = new CategoricalTable.Builder("a_u");
 		t.addRow("DoA", 0.7);
 		t.addRow("a_u", 0.2);
 		t.addRow("a_u", 0.1);
-		system.addContent(t);
+		system.addContent(t.build());
 		for (int i = 0; i < 3000; i++) {
 			System.out.println(((ArrayVal) system.getState().getChanceNode("theta")
 					.sample()).getArray()[0]);
@@ -92,10 +92,10 @@ public class DemoTest {
 
 		system.startSystem();
 
-		CategoricalTable t = new CategoricalTable("u_u");
+		CategoricalTable.Builder t = new CategoricalTable.Builder("u_u");
 		t.addRow("hello there", 0.7);
 		t.addRow("hello", 0.2);
-		Set<String> updates = system.addContent(t);
+		Set<String> updates = system.addContent(t.build());
 		assertTrue(updates.containsAll(Arrays.asList("a_u", "a_m", "u_m")));
 
 		assertEquals("Hi there", system.getContent("u_m").getBest().toString());
@@ -113,36 +113,36 @@ public class DemoTest {
 		assertEquals("OK, moving Forward", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("now do that again", 0.3);
 		t.addRow("move backward", 0.22);
 		t.addRow("move a bit to the left", 0.22);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("Sorry, could you repeat?", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("do that one more time", 0.65);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("OK, moving Forward", system.getContent("u_m").getBest()
 				.toString());
 
 		system.addContent(new SingleValueDistribution("perceived", "[BlueObj]"));
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("what do you see", 0.6);
 		t.addRow("do you see it", 0.3);
 		log.fine("-------------------");
-		system.addContent(t);
+		system.addContent(t.build());
 		assertEquals("I see a blue cylinder", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("pick up the blue object", 0.75);
 		t.addRow("turn left", 0.12);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("OK, picking up the blue object", system.getContent("u_m")
 				.getBest().toString());
@@ -150,67 +150,67 @@ public class DemoTest {
 		system.addContent(new SingleValueDistribution("perceived", "[]"));
 		system.addContent(new SingleValueDistribution("carried", "[BlueObj]"));
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("now please move a bit forward", 0.21);
 		t.addRow("move backward a little bit", 0.13);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("Should I move a bit forward?", system.getContent("u_m")
 				.getBest().toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("yes", 0.8);
 		t.addRow("move backward", 0.1);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("OK, moving Forward a little bit", system.getContent("u_m")
 				.getBest().toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("and now move forward", 0.21);
 		t.addRow("move backward", 0.09);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("Should I move forward?", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("no", 0.6);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("Should I move backward?", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("yes", 0.5);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("OK, moving Backward", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("now what can you see now?", 0.7);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("I do not see anything", system.getContent("u_m").getBest()
 				.toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("please release the object", 0.5);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("OK, putting down the object", system.getContent("u_m")
 				.getBest().toString());
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("something unexpected", 0.7);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertFalse(system.getState().hasChanceNode("u_m"));
 
-		t = new CategoricalTable("u_u");
+		t = new CategoricalTable.Builder("u_u");
 		t.addRow("goodbye", 0.7);
-		system.addContent(t);
+		system.addContent(t.build());
 
 		assertEquals("Bye, see you next time", system.getContent("u_m").getBest()
 				.toString());

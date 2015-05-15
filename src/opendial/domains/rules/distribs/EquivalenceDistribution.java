@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.BooleanVal;
@@ -181,12 +182,13 @@ public class EquivalenceDistribution implements ProbDistribution {
 	 *         the table could not be extracted for the condition
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition) {
+	public IndependentDistribution getProbDistrib(Assignment condition) {
 		double positiveProb = getProb(condition);
-		CategoricalTable table = new CategoricalTable(getVariable());
-		table.addRow(true, positiveProb);
-		table.addRow(false, 1 - positiveProb);
-		return table;
+		CategoricalTable.Builder builder =
+				new CategoricalTable.Builder(getVariable());
+		builder.addRow(true, positiveProb);
+		builder.addRow(false, 1 - positiveProb);
+		return builder.build();
 	}
 
 	/**

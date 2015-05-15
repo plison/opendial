@@ -24,7 +24,6 @@
 package opendial.domains.rules.distribs;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.bn.distribs.CategoricalTable;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.SetVal;
@@ -109,7 +109,7 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public Value sample(Assignment condition) {
-		CategoricalTable result = getProbDistrib(condition);
+		IndependentDistribution result = getProbDistrib(condition);
 		return result.sample();
 	}
 
@@ -131,7 +131,7 @@ public class OutputDistribution implements ProbDistribution {
 	 */
 	@Override
 	public double getProb(Assignment condition, Value head) {
-		CategoricalTable result = getProbDistrib(condition);
+		IndependentDistribution result = getProbDistrib(condition);
 		return result.getProb(head);
 	}
 
@@ -141,10 +141,12 @@ public class OutputDistribution implements ProbDistribution {
 	 * @param condition the condition for which to fill the cache
 	 */
 	@Override
-	public CategoricalTable getProbDistrib(Assignment condition) {
+	public IndependentDistribution getProbDistrib(Assignment condition) {
 
 		// creating the table
-		CategoricalTable probTable = new CategoricalTable(baseVar + primes, false);
+
+		CategoricalTable.Builder builder =
+				new CategoricalTable.Builder(baseVar + primes);
 
 		// combining all effects
 		List<BasicEffect> fullEffects = new ArrayList<BasicEffect>();
@@ -159,22 +161,22 @@ public class OutputDistribution implements ProbDistribution {
 		// case 1: add effects
 		if (fullEffect.isAdd(baseVar)) {
 			SetVal addVal = ValueFactory.create(values);
-			probTable.addRow(addVal, 1.0);
+			builder.addRow(addVal, 1.0);
 		}
 
 		// case 2 (most common): classical set operations
 		else if (!values.isEmpty()) {
 			for (Value v : values) {
-				probTable.addRow(v, (1.0 / values.size()));
+				builder.addRow(v, (1.0 / values.size()));
 			}
 		}
 
 		// case 3: set to none value
 		else {
-			probTable.addRow(ValueFactory.none(), 1.0);
+			builder.addRow(ValueFactory.none(), 1.0);
 		}
 
-		return probTable;
+		return builder.build();
 	}
 
 	/**

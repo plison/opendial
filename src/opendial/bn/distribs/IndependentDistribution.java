@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
-public interface IndependentProbDistribution extends ProbDistribution {
+public interface IndependentDistribution extends ProbDistribution {
 
 	public final static Logger log = Logger.getLogger("OpenDial");
 
@@ -147,7 +147,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @return the copied distribution
 	 */
 	@Override
-	public IndependentProbDistribution copy();
+	public IndependentDistribution copy();
 
 	/**
 	 * Returns itself.
@@ -155,7 +155,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * @return the distribution itself.
 	 */
 	@Override
-	public default IndependentProbDistribution getPosterior(Assignment condition) {
+	public default IndependentDistribution getPosterior(Assignment condition) {
 		return this;
 	}
 
@@ -184,7 +184,7 @@ public interface IndependentProbDistribution extends ProbDistribution {
 	 * Returns itself.
 	 */
 	@Override
-	public default IndependentProbDistribution getProbDistrib(Assignment condition) {
+	public default IndependentDistribution getProbDistrib(Assignment condition) {
 		return this;
 	}
 

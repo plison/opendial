@@ -67,20 +67,20 @@ public class RecordingTest {
 		system.getSettings().showGUI = true;
 		system.startSystem();
 
-		CategoricalTable table = new CategoricalTable("u_u");
-		table.addRow("move left", 0.3);
-		table.addRow("move a bit to the left", 0.05);
-		system.addContent(table);
-		table = new CategoricalTable("u_u");
-		table.addRow("no", 0.5);
-		system.addContent(table);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("u_u");
+		builder.addRow("move left", 0.3);
+		builder.addRow("move a bit to the left", 0.05);
+		system.addContent(builder.build());
+		builder = new CategoricalTable.Builder("u_u");
+		builder.addRow("no", 0.5);
+		system.addContent(builder.build());
 		system.pause(true);
-		table.addRow("now you should not hear anything", 0.8);
+		builder.addRow("now you should not hear anything", 0.8);
 		system.pause(false);
-		table = new CategoricalTable("u_u");
-		table.addRow("move left", 0.2);
-		table.addRow("move a bit to the left", 0.65);
-		system.addContent(table);
+		builder = new CategoricalTable.Builder("u_u");
+		builder.addRow("move left", 0.2);
+		builder.addRow("move a bit to the left", 0.65);
+		system.addContent(builder.build());
 
 		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat()
 				.contains("<font size=\"4\">move a bit to the left (0.05)</font>"));

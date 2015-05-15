@@ -27,7 +27,6 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,12 +34,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import opendial.bn.distribs.ConditionalTable.Builder;
 import opendial.bn.distribs.densityfunctions.KernelDensityFunction;
 import opendial.bn.values.ArrayVal;
 import opendial.bn.values.DoubleVal;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.utils.InferenceUtils;
 
 /**
  * Distribution defined "empirically" in terms of a set of samples on a collection of
@@ -144,29 +143,6 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	}
 
 	/**
-	 * Returns a sample that is compatible with the provided evidence.
-	 * 
-	 * @param evidence the evidence.
-	 * @return the compatible sample evidence.
-	 */
-	public Assignment getCompatibleSample(Assignment evidence) {
-		for (int i = 0; i < 10; i++) {
-			Assignment sampled = sample();
-			if (sampled.consistentWith(evidence)) {
-				return sampled;
-			}
-		}
-		Collections.shuffle(samples);
-		for (Assignment sample : samples) {
-			if (sample.consistentWith(evidence)) {
-				return sample;
-			}
-		}
-		throw new RuntimeException("no sample consistent with " + evidence + " for "
-				+ toString());
-	}
-
-	/**
 	 * Returns the head variables for the distribution.
 	 */
 	@Override
@@ -233,7 +209,14 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	@Override
 	public MultivariateTable toDiscrete() {
 		if (discreteCache == null) {
-			discreteCache = createMultivariateTable(variables);
+			MultivariateTable.Builder probs = new MultivariateTable.Builder();
+			double incr = 1.0 / samples.size();
+			for (Assignment sample : samples) {
+				Assignment trimmed = sample.getTrimmed(variables);
+				probs.incrementRow(trimmed, incr);
+			}
+
+			discreteCache = probs.build();
 		}
 		return discreteCache;
 
@@ -253,7 +236,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 								+ variables + ")");
 			}
 			String headVar = variables.iterator().next();
-			continuousCache = createContinuousDistribution(headVar);
+			continuousCache = createContinuous(headVar);
 		}
 		return continuousCache;
 	}
@@ -266,13 +249,13 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 	 * @return the probability distribution resulting from the marginalisation.
 	 */
 	@Override
-	public IndependentProbDistribution getMarginal(String var) {
+	public IndependentDistribution getMarginal(String var) {
 		if (sample().getTrimmed(Arrays.asList(var)).containContinuousValues()
 				&& samples.stream().distinct().limit(5).count() == 5) {
-			return this.createContinuousDistribution(var);
+			return createContinuous(var);
 		}
 		else {
-			return createUnivariateTable(var);
+			return createDiscrete(var);
 		}
 	}
 
@@ -291,74 +274,49 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 			return getMarginal(var);
 		}
 		else {
-			return this.createConditionalTable(var, condVars);
+			Builder builder = new ConditionalTable.Builder(var);
+			double incr = 1.0 / samples.size();
+			for (Assignment sample : samples) {
+				Assignment condition = sample.getTrimmed(condVars);
+				Value val = sample.getValue(var);
+				builder.incrementRow(condition, val, incr);
+			}
+			builder.normalise();
+			return builder.build();
 		}
 	}
 
 	/**
-	 * Creates a categorical table with the define subset of variables (or a single
-	 * value distribution if only a single value is found).
+	 * Creates a categorical table with the defined head variable given the samples
 	 * 
-	 * @param headVars the subset of variables to include in the table
+	 * @param headVar the variable for which to create the distribution
 	 * @return the resulting table
 	 */
-	protected IndependentProbDistribution createUnivariateTable(String headVar) {
+	public IndependentDistribution createDiscrete(String headVar) {
 
-		Map<Value, Double> probs = new HashMap<Value, Double>();
+		CategoricalTable.Builder probs = new CategoricalTable.Builder(headVar);
 
 		double incr = 1.0 / samples.size();
+
 		for (Assignment sample : samples) {
 			Value val = sample.getValue(headVar);
-			probs.put(val, probs.getOrDefault(val, 0.0) + incr);
-		}
-		if (probs.size() == 1) {
-			return new SingleValueDistribution(headVar, probs.keySet().iterator()
-					.next());
+			probs.incrementRow(val, incr);
 		}
 
-		CategoricalTable table = new CategoricalTable(headVar, probs);
-
-		if (!table.isWellFormed()) {
-			log.warning("table created by discretising samples is not well-formed");
-		}
-		return table;
+		return probs.build();
 	}
 
 	/**
-	 * Creates a categorical table with the define subset of variables
+	 * Creates a continuous with the defined head variable given the samples
 	 * 
-	 * @param headVars the subset of variables to include in the table
-	 * @return the resulting table
-	 */
-	protected MultivariateTable createMultivariateTable(Collection<String> headVars) {
-
-		Map<Assignment, Double> probs = new HashMap<Assignment, Double>();
-
-		double incr = 1.0 / samples.size();
-		for (Assignment sample : samples) {
-			Assignment trimmed = sample.getTrimmed(headVars);
-			probs.put(trimmed, probs.getOrDefault(trimmed, 0.0) + incr);
-		}
-
-		MultivariateTable table = new MultivariateTable(probs);
-
-		if (!table.isWellFormed()) {
-			log.warning("table created by discretising samples is not well-formed");
-		}
-		return table;
-	}
-
-	/**
-	 * Creates a continuous distribution for the provided variable
-	 * 
-	 * @param variable the variable
+	 * @param headVar the variable for which to create the distribution
 	 * @return the resulting continuous distribution
 	 */
-	protected ContinuousDistribution createContinuousDistribution(String variable) {
+	public ContinuousDistribution createContinuous(String headVar) {
 
 		List<double[]> values = new ArrayList<double[]>();
 		for (Assignment a : samples) {
-			Value v = a.getValue(variable);
+			Value v = a.getValue(headVar);
 			if (v instanceof ArrayVal) {
 				values.add(((ArrayVal) v).getArray());
 			}
@@ -366,49 +324,7 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 				values.add(new double[] { ((DoubleVal) v).getDouble() });
 			}
 		}
-		return new ContinuousDistribution(variable,
-				new KernelDensityFunction(values));
-	}
-
-	/**
-	 * Creates a conditional categorical table derived from the samples. This method
-	 * should be called in the presence of conditional variables.
-	 * 
-	 * @param headVar the name of the head variable
-	 * @param condVars the conditional variables.
-	 * @return the conditional categorical table
-	 */
-	@SuppressWarnings("rawtypes")
-	public ConditionalDistribution createConditionalTable(String headVar,
-			Collection<String> condVars) {
-
-		Map<Assignment, Map<Value, Double>> temp =
-				new HashMap<Assignment, Map<Value, Double>>();
-		for (Assignment sample : samples) {
-			Assignment condition = sample.getTrimmed(condVars);
-			Value val = sample.getValue(headVar);
-			if (!temp.containsKey(condition)) {
-				Map<Value, Double> counts = new HashMap<Value, Double>();
-				counts.put(val, 1.0);
-				temp.put(condition, counts);
-			}
-			else {
-				Map<Value, Double> counts = temp.get(condition);
-				counts.put(val, counts.getOrDefault(val, 0.0) + 1);
-			}
-		}
-
-		ConditionalTable table = new ConditionalTable(headVar);
-		for (Assignment condition : temp.keySet()) {
-			Map<Value, Double> probs = InferenceUtils.normalise(temp.get(condition));
-			CategoricalTable catTable = new CategoricalTable(headVar, probs);
-			table.addRows(condition, catTable);
-		}
-
-		if (table.isDeterministic()) {
-			return table.getDeterministic();
-		}
-		return table;
+		return new ContinuousDistribution(headVar, new KernelDensityFunction(values));
 	}
 
 	// ===================================

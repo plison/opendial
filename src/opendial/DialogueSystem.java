@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
@@ -360,11 +360,11 @@ public class DialogueSystem {
 		String var =
 				(!settings.invertedRole) ? settings.userInput
 						: settings.systemOutput;
-		CategoricalTable table = new CategoricalTable(var);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder(var);
 		for (String input : userInput.keySet()) {
-			table.addRow(input, userInput.get(input));
+			builder.addRow(input, userInput.get(input));
 		}
-		return addContent(table);
+		return addContent(builder.build());
 	}
 
 	/**
@@ -467,7 +467,7 @@ public class DialogueSystem {
 	 * @param distrib the (independent) probability distribution to add
 	 * @return the variables that were updated in the process not be updated.
 	 */
-	public Set<String> addContent(IndependentProbDistribution distrib) {
+	public Set<String> addContent(IndependentDistribution distrib) {
 		if (!paused) {
 			curState.addToState(distrib);
 			return update();
@@ -490,7 +490,7 @@ public class DialogueSystem {
 	 *            utterance)
 	 * @return the set of variables that have been updated update failed
 	 */
-	public Set<String> addIncrementalContent(IndependentProbDistribution content,
+	public Set<String> addIncrementalContent(IndependentDistribution content,
 			boolean followPrevious) {
 		if (!paused) {
 			curState.addToState_incremental(content.toDiscrete(), followPrevious);
@@ -517,11 +517,12 @@ public class DialogueSystem {
 	 */
 	public Set<String> addIncrementalUserInput(Map<String, Double> userInput,
 			boolean followPrevious) {
-		CategoricalTable table = new CategoricalTable(settings.userInput);
+		CategoricalTable.Builder builder =
+				new CategoricalTable.Builder(settings.userInput);
 		for (String input : userInput.keySet()) {
-			table.addRow(input, userInput.get(input));
+			builder.addRow(input, userInput.get(input));
 		}
-		return addIncrementalContent(table, followPrevious);
+		return addIncrementalContent(builder.build(), followPrevious);
 	}
 
 	/**
@@ -713,7 +714,7 @@ public class DialogueSystem {
 	 * @param variable the variable to query
 	 * @return the resulting probability distribution for these variables
 	 */
-	public IndependentProbDistribution getContent(String variable) {
+	public IndependentDistribution getContent(String variable) {
 		return curState.queryProb(variable);
 	}
 

@@ -23,18 +23,16 @@
 
 package opendial.bn;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
 
 import opendial.Settings;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.ConditionalDistribution;
 import opendial.bn.distribs.ConditionalTable;
 import opendial.bn.distribs.ContinuousDistribution;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateTable;
 import opendial.bn.distribs.densityfunctions.DirichletDensityFunction;
 import opendial.bn.distribs.densityfunctions.GaussianDensityFunction;
@@ -66,22 +64,25 @@ public class DistributionsTest {
 
 	@Test
 	public void testSimpleDistrib() {
-		CategoricalTable table = new CategoricalTable("var1");
-		table.addRow("val1", 0.7);
-		assertTrue(table.isWellFormed());
-		table.addRow("val2", 0.3);
-		assertTrue(table.isWellFormed());
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("var1");
+		builder.addRow("val1", 0.7);
+		assertFalse(builder.isWellFormed());
+		builder.addRow("val2", 0.3);
+		assertTrue(builder.isWellFormed());
+		IndependentDistribution table = builder.build();
 		assertEquals(table.getProb("val1"), 0.7, 0.001);
 		assertEquals(table.getProb("val1"), 0.7, 0.001);
-		MultivariateTable table2 = new MultivariateTable();
+		MultivariateTable.Builder table2 = new MultivariateTable.Builder();
 		table2.addRow(
 				new Assignment(new Assignment("var2", "val3"), "var1", "val2"), 0.9);
 		// assertFalse(table2.isWellFormed());
 		table2.addRow(
 				new Assignment(new Assignment("var2", "val3"), "var1", "val1"), 0.1);
 		assertTrue(table2.isWellFormed());
-		assertEquals(table2.getProb(new Assignment(new Assignment("var1", "val1"),
-				new Assignment("var2", "val3"))), 0.1, 0.001);
+		assertEquals(
+				table2.build().getProb(
+						new Assignment(new Assignment("var1", "val1"),
+								new Assignment("var2", "val3"))), 0.1, 0.001);
 	}
 
 	@Test
@@ -95,11 +96,12 @@ public class DistributionsTest {
 	@Test
 	public void testConversion1Distrib() {
 
-		CategoricalTable table = new CategoricalTable("var1");
-		table.addRow(1.5, 0.7);
-		table.addRow(2.0, 0.1);
-		table.addRow(-3.0, 0.2);
-		assertTrue(table.isWellFormed());
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("var1");
+		builder.addRow(1.5, 0.7);
+		builder.addRow(2.0, 0.1);
+		builder.addRow(-3.0, 0.2);
+		assertTrue(builder.isWellFormed());
+		IndependentDistribution table = builder.build();
 		assertEquals(table.getProb("2.0"), 0.1, 0.001);
 		ContinuousDistribution continuous = table.toContinuous();
 		assertEquals(continuous.getProbDensity(2.0), 0.2, 0.001);
@@ -174,9 +176,10 @@ public class DistributionsTest {
 	@Test
 	public void testDiscrete() {
 
-		CategoricalTable table = new CategoricalTable("A");
-		table.addRow(1, 0.6);
-		table.addRow(2.5, 0.3);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("A");
+		builder.addRow(1, 0.6);
+		builder.addRow(2.5, 0.3);
+		IndependentDistribution table = builder.build();
 		assertEquals(0.3, table.getProb(2.5), 0.0001f);
 		assertEquals(0.6, table.getProb(1.0), 0.0001f);
 		ContinuousDistribution distrib = table.toContinuous();
@@ -279,36 +282,34 @@ public class DistributionsTest {
 	@Test
 	public void testEmpiricalDistrib() {
 
-		CategoricalTable st = new CategoricalTable("var1");
+		CategoricalTable.Builder st = new CategoricalTable.Builder("var1");
 		st.addRow("val1", 0.6);
 		st.addRow("val2", 0.4);
 
-		ConditionalTable table = new ConditionalTable("var2");
-		table.addRow(new Assignment("var1", "val1"), "val1", 0.9);
-		table.addRow(new Assignment("var1", "val1"), "val2", 0.1);
-		table.addRow(new Assignment("var1", "val2"), "val1", 0.2);
-		table.addRow(new Assignment("var1", "val2"), "val2", 0.8);
+		ConditionalTable.Builder builder = new ConditionalTable.Builder("var2");
+		builder.addRow(new Assignment("var1", "val1"), "val1", 0.9);
+		builder.addRow(new Assignment("var1", "val1"), "val2", 0.1);
+		builder.addRow(new Assignment("var1", "val2"), "val1", 0.2);
+		builder.addRow(new Assignment("var1", "val2"), "val2", 0.8);
 
 		BNetwork bn = new BNetwork();
-		ChanceNode var1 = new ChanceNode("var1");
+		ChanceNode var1 = new ChanceNode("var1", st.build());
 
-		var1.setDistrib(st);
 		bn.addNode(var1);
 
-		ChanceNode var2 = new ChanceNode("var2");
-		var2.setDistrib(table);
+		ChanceNode var2 = new ChanceNode("var2", builder.build());
 		var2.addInputNode(var1);
 		bn.addNode(var2);
 
 		SamplingAlgorithm sampling = new SamplingAlgorithm(2000, 500);
 
-		IndependentProbDistribution distrib =
+		IndependentDistribution distrib =
 				sampling.queryProb(bn, "var2", new Assignment("var1", "val1"));
 
 		assertEquals(distrib.getProb("val1"), 0.9, 0.05);
 		assertEquals(distrib.getProb("val2"), 0.1, 0.05);
 
-		IndependentProbDistribution distrib2 = sampling.queryProb(bn, "var2");
+		IndependentDistribution distrib2 = sampling.queryProb(bn, "var2");
 
 		assertEquals(distrib2.getProb("val1"), 0.62, 0.05);
 		assertEquals(distrib2.getProb("val2"), 0.38, 0.05);
@@ -321,13 +322,12 @@ public class DistributionsTest {
 				new ContinuousDistribution("var1", new UniformDensityFunction(-1, 3));
 
 		BNetwork bn = new BNetwork();
-		ChanceNode var1 = new ChanceNode("var1");
-		var1.setDistrib(continuous);
+		ChanceNode var1 = new ChanceNode("var1", continuous);
 		bn.addNode(var1);
 
 		SamplingAlgorithm sampling = new SamplingAlgorithm(2000, 200);
 
-		IndependentProbDistribution distrib2 = sampling.queryProb(bn, "var1");
+		IndependentDistribution distrib2 = sampling.queryProb(bn, "var1");
 		assertEquals(distrib2.getPosterior(new Assignment()).getValues().size(),
 				Settings.discretisationBuckets, 2);
 		assertEquals(0, distrib2.toContinuous().getCumulativeProb(-1.1), 0.001);
@@ -347,9 +347,10 @@ public class DistributionsTest {
 	@Test
 	public void testDepEmpiricalDistribContinuous() throws InterruptedException {
 		BNetwork bn = new BNetwork();
-		ChanceNode var1 = new ChanceNode("var1");
-		var1.addProb(ValueFactory.create("one"), 0.7);
-		var1.addProb(ValueFactory.create("two"), 0.3);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("var1");
+		builder.addRow(ValueFactory.create("one"), 0.7);
+		builder.addRow(ValueFactory.create("two"), 0.3);
+		ChanceNode var1 = new ChanceNode("var1", builder.build());
 		bn.addNode(var1);
 
 		ContinuousDistribution continuous =
@@ -357,13 +358,11 @@ public class DistributionsTest {
 		ContinuousDistribution continuous2 =
 				new ContinuousDistribution("var2", new GaussianDensityFunction(3.0,
 						10.0));
-		ConditionalDistribution<ContinuousDistribution> table =
-				new ConditionalDistribution<ContinuousDistribution>("var2");
+		ConditionalTable table = new ConditionalTable("var2");
 		table.addDistrib(new Assignment("var1", "one"), continuous);
 		table.addDistrib(new Assignment("var1", "two"), continuous2);
-		ChanceNode var2 = new ChanceNode("var2");
+		ChanceNode var2 = new ChanceNode("var2", table);
 		var2.addInputNode(var1);
-		var2.setDistrib(table);
 		bn.addNode(var2);
 
 		InferenceChecks inference = new InferenceChecks();
@@ -398,12 +397,11 @@ public class DistributionsTest {
 				distrib.getProbDensity(new ArrayVal(Arrays.asList(0.333, 0.666))),
 				0.5);
 
-		ChanceNode n = new ChanceNode("x");
-		n.setDistrib(distrib);
+		ChanceNode n = new ChanceNode("x", distrib);
 		BNetwork network = new BNetwork();
 		network.addNode(n);
 
-		IndependentProbDistribution table =
+		IndependentDistribution table =
 				(new VariableElimination()).queryProb(network, "x");
 		double sum = 0;
 		for (Value a : table.getValues()) {
@@ -413,7 +411,7 @@ public class DistributionsTest {
 		}
 		assertEquals(0.5, sum, 0.1);
 
-		IndependentProbDistribution conversion1 =
+		IndependentDistribution conversion1 =
 				(new VariableElimination()).queryProb(network, "x");
 
 		assertTrue(Math.abs(conversion1.getPosterior(new Assignment()).getValues()
@@ -424,7 +422,7 @@ public class DistributionsTest {
 				conversion1.getPosterior(new Assignment()).getProb(
 						ValueFactory.create("[0.3333,0.6666]")), 0.05);
 
-		IndependentProbDistribution conversion3 =
+		IndependentDistribution conversion3 =
 				(new SamplingAlgorithm(4000, 1000)).queryProb(network, "x");
 
 		// new DistributionViewer(conversion3);
@@ -473,16 +471,18 @@ public class DistributionsTest {
 	@Test
 	public void nbestTest() {
 
-		CategoricalTable table = new CategoricalTable("test");
-		table.addRow("bla", 0.5);
-		table.addRow("blo", 0.1);
+		CategoricalTable.Builder builder = new CategoricalTable.Builder("test");
+		builder.addRow("bla", 0.5);
+		builder.addRow("blo", 0.1);
+		IndependentDistribution table = builder.build();
 		for (int i = 0; i < 10; i++) {
 			assertEquals(table.getBest().toString(), "bla");
 		}
 
-		MultivariateTable table2 = new MultivariateTable();
-		table2.addRow(new Assignment("test", "bla"), 0.5);
-		table2.addRow(new Assignment("test", "blo"), 0.1);
+		MultivariateTable.Builder builder2 = new MultivariateTable.Builder();
+		builder2.addRow(new Assignment("test", "bla"), 0.5);
+		builder2.addRow(new Assignment("test", "blo"), 0.1);
+		MultivariateTable table2 = builder2.build();
 		for (int i = 0; i < 10; i++) {
 			assertEquals(table2.getBest().getValue("test").toString(), "bla");
 		}

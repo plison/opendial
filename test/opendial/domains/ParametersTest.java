@@ -34,7 +34,7 @@ import java.util.List;
 import opendial.DialogueSystem;
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.IndependentProbDistribution;
+import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.values.ValueFactory;
 import opendial.common.InferenceChecks;
@@ -131,7 +131,7 @@ public class ParametersTest {
 
 		system.startSystem();
 		system.addContent("u_u", "brilliant");
-		IndependentProbDistribution distrib = system.getContent("a_u");
+		IndependentDistribution distrib = system.getContent("a_u");
 
 		assertEquals(0.8, distrib.getProb("Approval"), 0.05);
 

@@ -202,7 +202,6 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 
 		BNetwork network = query.getNetwork();
 		Collection<String> queryVars = query.getQueryVars();
-
 		// creates a new query thread
 		LikelihoodWeighting isquery =
 				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
@@ -233,8 +232,7 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 			ProbDistribution distrib = fullDistrib.getMarginal(var, inputNodesIds);
 
 			// creating the node
-			ChanceNode node = new ChanceNode(var);
-			node.setDistrib(distrib);
+			ChanceNode node = new ChanceNode(var, distrib);
 			for (String inputId : inputNodesIds) {
 				node.addInputNode(reduced.getNode(inputId));
 			}

@@ -72,7 +72,7 @@ public interface MultivariateDistribution {
 	 * @param variable the random variable Xi
 	 * @return the marginal distribution P(Xi)
 	 */
-	public IndependentProbDistribution getMarginal(String variable);
+	public IndependentDistribution getMarginal(String variable);
 
 	/**
 	 * Modifies the variable identifier in the distribution
