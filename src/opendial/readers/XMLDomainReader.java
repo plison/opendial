@@ -116,7 +116,7 @@ public class XMLDomainReader {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("settings")) {
-			Properties settings = XMLSettingsReader.extractMapping(mainNode);
+			Properties settings = XMLUtils.extractMapping(mainNode);
 			domain.getSettings().fillSettings(settings);
 		}
 

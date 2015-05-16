@@ -727,8 +727,7 @@ public class DialogueState extends BNetwork {
 		// adding the connection between the predicted and observed values
 		String baseVar = outputVar.substring(0, outputVar.length() - 1);
 		String predictEquiv = baseVar + "^p";
-		if (hasChanceNode(predictEquiv) && !outputVar.equals(predictEquiv)
-				&& !outputVar.contains("^p")) {
+		if (hasChanceNode(predictEquiv) && !outputVar.contains("^p")) {
 			ChanceNode equalityNode =
 					new ChanceNode("=_" + baseVar, new EquivalenceDistribution(
 							baseVar));

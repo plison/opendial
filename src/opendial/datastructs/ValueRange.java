@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import opendial.bn.values.Value;
-import opendial.utils.CombinatoricsUtils;
+import opendial.utils.InferenceUtils;
 
 /**
  * Representation of a range of alternative values for a set of variables.
@@ -148,7 +148,7 @@ public class ValueRange {
 			return range.get(var).stream().map(v -> new Assignment(var, v))
 					.collect(Collectors.toSet());
 		}
-		return CombinatoricsUtils.getAllCombinations(range);
+		return InferenceUtils.getAllCombinations(range);
 	}
 
 	/**

@@ -24,14 +24,18 @@
 package opendial.utils;
 
 import java.util.logging.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import opendial.bn.values.Value;
+import opendial.datastructs.Assignment;
 
 /**
  * Utility functions for inference operations.
@@ -103,6 +107,47 @@ public class InferenceUtils {
 		return result;
 	}
 
+	/**
+	 * Generates all possible assignment combinations from the set of values provided
+	 * as parameters -- each variable being associated with a set of alternative
+	 * values.
+	 * 
+	 * <p>
+	 * NB: use with caution, computational complexity is exponential!
+	 * 
+	 * @param valuesMatrix the set of values to combine
+	 * @return the list of all possible combinations
+	 */
+	public static Set<Assignment> getAllCombinations(
+			Map<String, Set<Value>> valuesMatrix) {
+
+		try {
+			// start with a single, empty assignment
+			Set<Assignment> assignments = new HashSet<Assignment>();
+			assignments.add(new Assignment());
+
+			// at each iterator, we expand each assignment with a new
+			// combination
+			for (String label : valuesMatrix.keySet()) {
+				Set<Value> values = valuesMatrix.get(label);
+				assignments =
+						assignments
+								.stream()
+								.flatMap(
+										a -> values
+												.stream()
+												.map(v -> new Assignment(a, label, v))
+												.sequential())
+								.collect(Collectors.toSet());
+			}
+			return assignments;
+		}
+		catch (OutOfMemoryError e) {
+			log.fine("out of memory error, initial matrix: " + valuesMatrix);
+			e.printStackTrace();
+			return new HashSet<Assignment>();
+		}
+	}
 	/**
 	 * Returns a smaller version of the initial table that only retains the N
 	 * elements with a highest value

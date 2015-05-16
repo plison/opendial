@@ -42,7 +42,7 @@ import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.effects.BasicEffect;
 import opendial.domains.rules.effects.Effect;
-import opendial.utils.CombinatoricsUtils;
+import opendial.utils.InferenceUtils;
 
 /**
  * Representation of an output distribution (see Pierre Lison's PhD thesis, page 70
@@ -261,7 +261,7 @@ public class OutputDistribution implements ProbDistribution {
 		for (int i = 0; i < inputEffects.size(); i++) {
 			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
 		}
-		Set<Assignment> combinations = CombinatoricsUtils.getAllCombinations(range);
+		Set<Assignment> combinations = InferenceUtils.getAllCombinations(range);
 		Set<Value> values =
 				combinations.stream()
 						.flatMap(cond -> getProbDistrib(cond).getValues().stream())

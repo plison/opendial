@@ -47,7 +47,7 @@ import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
-import opendial.utils.CombinatoricsUtils;
+import opendial.utils.InferenceUtils;
 
 /**
  * Algorithm for naive probabilistic inference, based on computing the full joint
@@ -85,7 +85,7 @@ public class NaiveInference implements InferenceAlgorithm {
 			}
 		}
 		Set<Assignment> queryAssigns =
-				CombinatoricsUtils.getAllCombinations(queryValues);
+				InferenceUtils.getAllCombinations(queryValues);
 
 		MultivariateTable.Builder queryResult = new MultivariateTable.Builder();
 
@@ -126,7 +126,7 @@ public class NaiveInference implements InferenceAlgorithm {
 		}
 
 		Set<Assignment> fullAssigns =
-				CombinatoricsUtils.getAllCombinations(allValues);
+				InferenceUtils.getAllCombinations(allValues);
 		Map<Assignment, Double> result = new HashMap<Assignment, Double>();
 		for (Assignment singleAssign : fullAssigns) {
 			double jointLogProb = 0.0f;
@@ -173,7 +173,7 @@ public class NaiveInference implements InferenceAlgorithm {
 			}
 		}
 		Set<Assignment> actionAssigns =
-				CombinatoricsUtils.getAllCombinations(actionValues);
+				InferenceUtils.getAllCombinations(actionValues);
 		UtilityTable table = new UtilityTable();
 		for (Assignment actionAssign : actionAssigns) {
 
@@ -232,7 +232,7 @@ public class NaiveInference implements InferenceAlgorithm {
 				inputValues.put(input, network.getNode(var).getValues());
 			}
 			Set<Assignment> inputs =
-					CombinatoricsUtils.getAllCombinations(inputValues);
+					InferenceUtils.getAllCombinations(inputValues);
 
 			// creating a conditional probability table for the variable
 			ConditionalTable.Builder builder = new ConditionalTable.Builder(var);
