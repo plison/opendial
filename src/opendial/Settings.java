@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
 import javax.sound.sampled.Mixer;
 
 import opendial.modules.Module;
-import opendial.readers.XMLSettingsReader;
 import opendial.utils.AudioUtils;
 import opendial.utils.StringUtils;
+import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -128,7 +128,7 @@ public class Settings {
 	 */
 	public Settings() {
 		explicitSettings = new HashSet<String>();
-		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
+		fillSettings(XMLUtils.extractMapping(SETTINGS_FILE));
 		explicitSettings.clear();
 
 		// formatter for the system logs
@@ -152,7 +152,7 @@ public class Settings {
 	 */
 	public Settings(Properties mapping) {
 		explicitSettings = new HashSet<String>();
-		fillSettings(XMLSettingsReader.extractMapping(SETTINGS_FILE));
+		fillSettings(XMLUtils.extractMapping(SETTINGS_FILE));
 		explicitSettings.clear();
 		fillSettings(mapping);
 	}

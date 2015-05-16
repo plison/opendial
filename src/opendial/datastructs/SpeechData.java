@@ -174,15 +174,16 @@ public class SpeechData extends InputStream implements Value {
 	@Override
 	public int read(byte[] buffer, int offset, int length) {
 		if (currentPos >= data.length) {
-			if (!isFinal) {
+			if (isFinal) {
+				return -1;
+			}
+			else {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(50);
 				}
 				catch (InterruptedException e) {
 				}
-				return read(buffer, offset, length);
 			}
-			return -1;
 		}
 		int i = 0;
 		for (i = 0; i < length & (currentPos + i) < data.length; i++) {
@@ -298,7 +299,7 @@ public class SpeechData extends InputStream implements Value {
 		if (value instanceof SpeechData) {
 			while (!isFinal() || !((SpeechData) value).isFinal()) {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(50);
 				}
 				catch (InterruptedException e) {
 				}

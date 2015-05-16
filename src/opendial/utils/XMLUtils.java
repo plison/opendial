@@ -24,13 +24,13 @@
 package opendial.utils;
 
 import java.util.logging.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -222,6 +222,49 @@ public class XMLUtils {
 			}
 		}
 		throw new RuntimeException("main node in XML file could not be retrieved");
+	}
+	
+
+	/**
+	 * Extract the settings from the XML file.
+	 * 
+	 * @param settingsFile the file containing the settings
+	 * @return the resulting list of properties
+	 */
+	public static Properties extractMapping(String settingsFile) {
+		try {
+			Document doc = XMLUtils.getXMLDocument(settingsFile);
+			Properties mapping = extractMapping(XMLUtils.getMainNode(doc));
+			return mapping;
+		}
+		catch (RuntimeException e) {
+			log.warning("error extracting the settings: " + e);
+			return new Properties();
+		}
+	}
+
+	/**
+	 * Extract the settings from the XML node.
+	 * 
+	 * @param mainNode the XML node containing the settings
+	 * @return the resulting list of properties
+	 */
+	public static Properties extractMapping(Node mainNode) {
+
+		Properties settings = new Properties();
+
+		NodeList firstElements = mainNode.getChildNodes();
+		for (int j = 0; j < firstElements.getLength(); j++) {
+
+			Node node = firstElements.item(j);
+
+			if (!node.getNodeName().equals("#text")
+					&& !node.getNodeName().equals("#comment")) {
+				settings.put(node.getNodeName().trim(), node.getTextContent());
+			}
+		}
+
+		return settings;
 	}
 
 	/**

@@ -54,7 +54,7 @@ import opendial.modules.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
-import opendial.readers.XMLSettingsReader;
+import opendial.utils.XMLUtils;
 
 /**
  * <p>
@@ -827,7 +827,7 @@ public class DialogueSystem {
 			}
 			if (settingsFile != null) {
 				system.getSettings().fillSettings(
-						XMLSettingsReader.extractMapping(settingsFile));
+						XMLUtils.extractMapping(settingsFile));
 				log.info("Settings from " + settingsFile + " successfully extracted");
 			}
 			if (dialogueFile != null) {
