@@ -303,6 +303,14 @@ public class Template {
 			double result = new MathExpression(filledTemplate).evaluate();
 			filledTemplate = StringUtils.getShortForm(result);
 		}
+		else if (filledTemplate.contains("+")) {
+			Value concatenation = ValueFactory.none();
+			for (String subval : filledTemplate.split("\\+")) {
+				concatenation =
+						concatenation.concatenate(ValueFactory.create(subval));
+			}
+			filledTemplate = concatenation.toString();
+		}
 		return filledTemplate;
 
 	}

@@ -291,7 +291,8 @@ public class AudioUtils {
 	public static double getRMS(byte[] audioData, AudioFormat format) {
 
 		byte[] sample = new byte[Math.min(50, audioData.length)];
-		System.arraycopy(audioData, audioData.length-sample.length, sample, 0, sample.length);
+		System.arraycopy(audioData, audioData.length - sample.length, sample, 0,
+				sample.length);
 
 		// we must first convert the raw array of bytes into integers
 		int[] samples = convertByteArray(audioData, format);

@@ -148,6 +148,7 @@ public class InferenceUtils {
 			return new HashSet<Assignment>();
 		}
 	}
+
 	/**
 	 * Returns a smaller version of the initial table that only retains the N
 	 * elements with a highest value

@@ -223,7 +223,6 @@ public class XMLUtils {
 		}
 		throw new RuntimeException("main node in XML file could not be retrieved");
 	}
-	
 
 	/**
 	 * Extract the settings from the XML file.

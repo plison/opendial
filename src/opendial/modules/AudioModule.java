@@ -400,7 +400,10 @@ public class AudioModule implements Module {
 				line.open(format);
 				line.start();
 				int nBytesRead = 0;
-				byte[] abData = new byte[256 * 16];
+				byte[] abData = new byte[512 * 16];
+				while (!outputSpeech.isFinal() && outputSpeech.length() < 500) {
+					Thread.sleep(100);
+				}
 				while (nBytesRead != -1) {
 					nBytesRead = outputSpeech.read(abData, 0, abData.length);
 
@@ -421,7 +424,7 @@ public class AudioModule implements Module {
 					line.close();
 				}
 			}
-			catch (LineUnavailableException e) {
+			catch (LineUnavailableException | InterruptedException e) {
 				log.warning("Audio line is unavailable: " + e);
 			}
 			if (inputSpeech == null) {

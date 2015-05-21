@@ -125,8 +125,7 @@ public class NaiveInference implements InferenceAlgorithm {
 			}
 		}
 
-		Set<Assignment> fullAssigns =
-				InferenceUtils.getAllCombinations(allValues);
+		Set<Assignment> fullAssigns = InferenceUtils.getAllCombinations(allValues);
 		Map<Assignment, Double> result = new HashMap<Assignment, Double>();
 		for (Assignment singleAssign : fullAssigns) {
 			double jointLogProb = 0.0f;
@@ -231,8 +230,7 @@ public class NaiveInference implements InferenceAlgorithm {
 			for (String input : directAncestors) {
 				inputValues.put(input, network.getNode(var).getValues());
 			}
-			Set<Assignment> inputs =
-					InferenceUtils.getAllCombinations(inputValues);
+			Set<Assignment> inputs = InferenceUtils.getAllCombinations(inputValues);
 
 			// creating a conditional probability table for the variable
 			ConditionalTable.Builder builder = new ConditionalTable.Builder(var);

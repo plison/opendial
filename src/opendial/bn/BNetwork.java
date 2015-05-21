@@ -425,6 +425,20 @@ public class BNetwork {
 	}
 
 	/**
+	 * Returns true if at least one of the nodes in nodeIds has a distribution of
+	 * type cls. Else, returns false.
+	 * 
+	 * @param nodeIds the node identifiers to check
+	 * @param cls the distribution class
+	 * @return true if at least one node in nodeIds has a distribution of type cls,
+	 *         else false.›
+	 */
+	public <T extends ProbDistribution> boolean containsDistrib(Set<String> nodeIds,
+			Class<T> cls) {
+		return !Collections.disjoint(nodeIds, getNodeIds(cls));
+	}
+
+	/**
 	 * Returns true if the network contains an action node with the given identifier,
 	 * and false otherwise
 	 * 

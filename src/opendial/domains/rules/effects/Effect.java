@@ -289,7 +289,12 @@ public final class Effect implements Value {
 	public Assignment getAssignment() {
 		Assignment a = new Assignment();
 		for (BasicEffect e : subeffects) {
-			a.addPair(e.getVariable() + "'", e.getValue());
+			if (!e.negated) {
+				a.addPair(e.getVariable() + "'", e.getValue());
+			}
+			else {
+				a.addPair(e.getVariable() + "'", ValueFactory.none());
+			}
 		}
 		return a;
 	}

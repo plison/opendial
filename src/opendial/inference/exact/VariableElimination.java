@@ -380,8 +380,8 @@ public class VariableElimination implements InferenceAlgorithm {
 	 * Creates the probability distribution for the given variable, as described by
 	 * the factor. The distribution is normalised, and encoded as a table.
 	 * 
-	 * @param factor the factor
-	 * @param variable the variable
+	 * @param headVar the variable
+	 * @param factor the double factor
 	 * @return the resulting probability distribution
 	 */
 	public static ProbDistribution createProbDistribution(String headVar,

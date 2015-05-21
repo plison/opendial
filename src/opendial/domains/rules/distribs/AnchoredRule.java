@@ -23,7 +23,6 @@
 
 package opendial.domains.rules.distribs;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -111,9 +110,9 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		}
 		variables = new HashSet<String>(inputs.getVariables());
 
-		// if an input variable is continuous, avoid using a cache
-		if (Collections.disjoint(variables,
-				state.getNodeIds(ContinuousDistribution.class))) {
+		// we use a cache if we have a probability rule with no continuous inputs
+		if (rule.getRuleType() == RuleType.PROB
+				&& !state.containsDistrib(variables, ContinuousDistribution.class)) {
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
 
@@ -136,8 +135,13 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 						.forEach(p -> parameters.add(p));
 			}
 		}
-		if (rule.getRuleType() == RuleType.UTIL) {
+
+		// we now use a cache for a utility rule with no continuous inputs
+		if (relevant && rule.getRuleType() == RuleType.UTIL) {
 			variables.addAll(outputs.getVariables());
+			if (!state.containsDistrib(variables, ContinuousDistribution.class)) {
+				cache = new ConcurrentHashMap<Assignment, RuleOutput>();
+			}
 		}
 	}
 
@@ -370,12 +374,14 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * @return the output of the rule
 	 */
 	private RuleOutput getOutput(Assignment input) {
+
 		if (cache == null) {
 			return rule.getOutput(input);
 		}
 		else if (input.size() > variables.size()) {
 			input = input.getTrimmed(variables);
 		}
+
 		return cache.computeIfAbsent(input, a -> rule.getOutput(a));
 	}
 

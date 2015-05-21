@@ -26,7 +26,6 @@ package opendial.modules;
 import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -201,8 +200,7 @@ public class StatePruner {
 
 		}
 		// if some rule nodes are included
-		else if (!Collections.disjoint(nodesToKeep,
-				state.getNodeIds(AnchoredRule.class))) {
+		else if (state.containsDistrib(nodesToKeep, AnchoredRule.class)) {
 			return reduce_light(state, nodesToKeep);
 		}
 

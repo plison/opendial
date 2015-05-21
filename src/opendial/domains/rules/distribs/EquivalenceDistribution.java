@@ -84,7 +84,7 @@ public class EquivalenceDistribution implements ProbDistribution {
 	}
 
 	/**
-	 * Copies the distributioin
+	 * Copies the distribution
 	 */
 	@Override
 	public EquivalenceDistribution copy() {

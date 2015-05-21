@@ -148,8 +148,9 @@ public final class SetVal implements Value {
 			return this;
 		}
 		else {
-			log.warning("cannot concatenate " + this + " and " + v);
-			return ValueFactory.noneValue;
+			Set<Value> newSet = new HashSet<Value>(set);
+			newSet.add(v);
+			return new SetVal(newSet);
 		}
 	}
 
