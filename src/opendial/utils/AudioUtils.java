@@ -42,6 +42,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
@@ -144,25 +145,18 @@ public class AudioUtils {
 	 * @return the list of all compatible output mixers
 	 */
 	public static List<Mixer.Info> getOutputMixers() {
-
 		List<Mixer.Info> mixers = new ArrayList<Mixer.Info>();
 		Mixer.Info defaultMixer = null;
 
 		Info[] mixerInfos = AudioSystem.getMixerInfo();
+		Line.Info lineInfo = new DataLine.Info(SourceDataLine.class, OUT);
 		for (int i = 0; i < mixerInfos.length; i++) {
-			if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(
-					new DataLine.Info(SourceDataLine.class, OUT))) {
+			if (AudioSystem.getMixer(mixerInfos[i]).isLineSupported(lineInfo)) {
 
 				mixers.add(mixerInfos[i]);
 				try {
-					if (AudioSystem
-							.getSourceDataLine(OUT)
-							.getLineInfo()
-							.matches(
-									AudioSystem
-											.getSourceDataLine(OUT, mixerInfos[i])
-											.getLineInfo())) {
-						defaultMixer = mixerInfos[i];
+					if (mixerInfos[i].getName().equals("Default Audio Device")) {
+						defaultMixer = mixerInfos[i];	
 					}
 				}
 				catch (Exception e) {
