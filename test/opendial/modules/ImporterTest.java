@@ -53,7 +53,7 @@ public class ImporterTest {
 		DialogueImporter importer = system.importDialogue(dialogueFile);
 		system.startSystem();
 		while (importer.isAlive()) {
-			Thread.sleep(100);
+			Thread.sleep(250);
 		}
 		assertEquals(20, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
@@ -73,7 +73,7 @@ public class ImporterTest {
 		DialogueImporter importer = system.importDialogue(dialogueFile);
 		importer.setWizardOfOzMode(true);
 		while (importer.isAlive()) {
-			Thread.sleep(100);
+			Thread.sleep(250);
 		}
 		assertEquals(20, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
@@ -92,7 +92,7 @@ public class ImporterTest {
 		system.startSystem();
 		DialogueImporter importer = system.importDialogue(dialogueFile2);
 		while (importer.isAlive()) {
-			Thread.sleep(100);
+			Thread.sleep(250);
 		}
 		assertEquals(10, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
@@ -115,7 +115,7 @@ public class ImporterTest {
 		DialogueImporter importer = system.importDialogue(dialogueFile2);
 		importer.setWizardOfOzMode(true);
 		while (importer.isAlive()) {
-			Thread.sleep(100);
+			Thread.sleep(250);
 		}
 		assertEquals(10, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
