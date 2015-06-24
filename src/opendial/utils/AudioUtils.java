@@ -156,7 +156,7 @@ public class AudioUtils {
 				mixers.add(mixerInfos[i]);
 				try {
 					if (mixerInfos[i].getName().equals("Default Audio Device")) {
-						defaultMixer = mixerInfos[i];	
+						defaultMixer = mixerInfos[i];
 					}
 				}
 				catch (Exception e) {

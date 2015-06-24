@@ -421,6 +421,7 @@ public class XMLRuleReader {
 		}
 		value = value.replaceAll("\\s+", " ");
 
+		// EXCLUSIVE instead??
 		boolean add =
 				node.getNodeName().equalsIgnoreCase("add")
 						|| (attrs.getNamedItem("add") != null && Boolean

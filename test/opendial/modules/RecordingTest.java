@@ -25,6 +25,7 @@ package opendial.modules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -61,43 +62,57 @@ public class RecordingTest {
 
 	@Test
 	public void testRecord() throws InterruptedException {
+		if (!GraphicsEnvironment.isHeadless()) {
+			DialogueSystem system =
+					new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 
-		DialogueSystem system =
-				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
-		system.getSettings().showGUI = true;
-		system.startSystem();
+			system.getSettings().showGUI = true;
+			system.startSystem();
 
-		CategoricalTable.Builder builder = new CategoricalTable.Builder("u_u");
-		builder.addRow("move left", 0.3);
-		builder.addRow("move a bit to the left", 0.05);
-		system.addContent(builder.build());
-		builder = new CategoricalTable.Builder("u_u");
-		builder.addRow("no", 0.5);
-		system.addContent(builder.build());
-		system.pause(true);
-		builder.addRow("now you should not hear anything", 0.8);
-		system.pause(false);
-		builder = new CategoricalTable.Builder("u_u");
-		builder.addRow("move left", 0.2);
-		builder.addRow("move a bit to the left", 0.65);
-		system.addContent(builder.build());
+			CategoricalTable.Builder builder = new CategoricalTable.Builder("u_u");
+			builder.addRow("move left", 0.3);
+			builder.addRow("move a bit to the left", 0.05);
+			system.addContent(builder.build());
+			builder = new CategoricalTable.Builder("u_u");
+			builder.addRow("no", 0.5);
+			system.addContent(builder.build());
+			system.pause(true);
+			builder.addRow("now you should not hear anything", 0.8);
+			system.pause(false);
+			builder = new CategoricalTable.Builder("u_u");
+			builder.addRow("move left", 0.2);
+			builder.addRow("move a bit to the left", 0.65);
+			system.addContent(builder.build());
 
-		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat()
-				.contains("<font size=\"4\">move a bit to the left (0.05)</font>"));
-		assertTrue(system.getModule(GUIFrame.class).getChatTab().getChat()
-				.contains("<font size=\"4\">OK, moving Left a little bit</font>"));
-		assertEquals(6, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		if (StringUtils.countOccurrences(system.getModule(DialogueRecorder.class)
-				.getRecord(), "systemTurn") != 4) {
-			Thread.sleep(250);
+			assertTrue(system
+					.getModule(GUIFrame.class)
+					.getChatTab()
+					.getChat()
+					.contains(
+							"<font size=\"4\">move a bit to the left (0.05)</font>"));
+			assertTrue(system
+					.getModule(GUIFrame.class)
+					.getChatTab()
+					.getChat()
+					.contains("<font size=\"4\">OK, moving Left a little bit</font>"));
+			assertEquals(6,
+					StringUtils.countOccurrences(
+							system.getModule(DialogueRecorder.class).getRecord(),
+							"userTurn"));
+			if (StringUtils.countOccurrences(system
+					.getModule(DialogueRecorder.class).getRecord(), "systemTurn") != 4) {
+				Thread.sleep(250);
+			}
+			assertEquals(4, StringUtils.countOccurrences(
+					system.getModule(DialogueRecorder.class).getRecord(),
+					"systemTurn"));
+			assertEquals(14,
+					StringUtils.countOccurrences(
+							system.getModule(DialogueRecorder.class).getRecord(),
+							"variable"));
+
+			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
-		assertEquals(4, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
-		assertEquals(14, StringUtils.countOccurrences(
-				system.getModule(DialogueRecorder.class).getRecord(), "variable"));
-
-		system.getModule(GUIFrame.class).getFrame().dispose();
 	}
 
 	@Test

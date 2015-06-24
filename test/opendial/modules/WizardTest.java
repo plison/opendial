@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Container;
+import java.awt.GraphicsEnvironment;
 import java.util.List;
 
 import javax.swing.JList;
@@ -84,39 +85,41 @@ public class WizardTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWizardControl() throws InterruptedException {
-		DialogueSystem system =
-				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
-		system.getSettings().showGUI = true;
-		system.attachModule(WizardControl.class);
-		system.startSystem();
+		if (!GraphicsEnvironment.isHeadless()) {
+			DialogueSystem system =
+					new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
+			system.getSettings().showGUI = true;
+			system.attachModule(WizardControl.class);
+			system.startSystem();
 
-		assertEquals(2, system.getModule(GUIFrame.class).getChatTab()
-				.getComponentCount());
-		system.addContent("u_u", "hi");
-		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
-				.getComponentCount());
-		assertEquals(3,
-				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
-						.getModule(GUIFrame.class).getChatTab().getComponent(2))
-						.getComponent(0)).getComponent(0)).getComponent(0))
-						.getModel().getSize());
-		system.addContent("a_m", "Say(Greet)");
-		system.addContent("u_u", "move left");
-		assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
-				.getComponentCount());
-		assertEquals(4,
-				((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
-						.getModule(GUIFrame.class).getChatTab().getComponent(2))
-						.getComponent(0)).getComponent(0)).getComponent(0))
-						.getModel().getSize());
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
-						+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
-						+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable>"
-						+ "<variable id=\"a_m\"><value>Say(Greet)</value></variable></systemTurn><userTurn>"
-						+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>",
-				system.getModule(DialogueRecorder.class).getRecord());
-		system.getModule(GUIFrame.class).getFrame().dispose();
+			assertEquals(2, system.getModule(GUIFrame.class).getChatTab()
+					.getComponentCount());
+			system.addContent("u_u", "hi");
+			assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
+					.getComponentCount());
+			assertEquals(3,
+					((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
+							.getModule(GUIFrame.class).getChatTab().getComponent(2))
+							.getComponent(0)).getComponent(0)).getComponent(0))
+							.getModel().getSize());
+			system.addContent("a_m", "Say(Greet)");
+			system.addContent("u_u", "move left");
+			assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
+					.getComponentCount());
+			assertEquals(4,
+					((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
+							.getModule(GUIFrame.class).getChatTab().getComponent(2))
+							.getComponent(0)).getComponent(0)).getComponent(0))
+							.getModel().getSize());
+			assertEquals(
+					"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
+							+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"
+							+ "<systemTurn><variable id=\"u_m\"><value>Hi there</value></variable>"
+							+ "<variable id=\"a_m\"><value>Say(Greet)</value></variable></systemTurn><userTurn>"
+							+ "<variable id=\"u_u\"><value>move left</value></variable></userTurn></interaction>",
+					system.getModule(DialogueRecorder.class).getRecord());
+			system.getModule(GUIFrame.class).getFrame().dispose();
+		}
 	}
 
 }
