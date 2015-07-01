@@ -1,0 +1,83 @@
+/**
+ * Gradle Build file for OpenDial (based on a previous file written by Ingmar Steiner).
+ */
+
+apply plugin: 'java'
+// apply plugin: 'eclipse'
+apply plugin: 'application'
+mainClassName = 'opendial.DialogueSystem'
+    
+
+repositories {
+	jcenter()
+    flatDir {
+    	dirs file("${projectDir}/lib")
+    }
+}
+
+
+dependencies {
+	compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.3+'
+	compile group:'net.java.balloontip', name:'balloontip', version:'1.2+'
+	compile group:'commons-io', name:'commons-io', version:'2.4+'
+	compile group:'org.json', name:'org.json', version:'2.0'
+	compile group:'org.jcommon', name:'jcommon', version:'1.0+'
+	compile group:'org.jfree', name:'jfreechart', version:'1.0.19+'
+	compile group:'net.sf.jung', name:'jung2', version:'2.0.1'
+	compile group:'net.sf.jung', name:'jung-algorithms', version:'2.0.1'
+	compile group:'net.sf.jung', name:'jung-graph-impl', version:'2.0.1'
+	compile group:'net.sf.jung', name:'jung-visualization', version:'2.0.1'
+	compile name: 'att-codekit'
+	compile name: 'exp4j'
+	testCompile group:'junit', name: 'junit',  version: '4.+'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs 'src'
+	    }
+	    resources {
+			srcDir 'resources'
+	    }
+	}
+	test {
+	    java {
+			srcDirs 'test'
+			exclude 'test/domains/**'
+	    }
+	}
+}
+
+
+tasks.withType(JavaCompile) {
+	sourceCompatibility = '1.8'
+	options.encoding = 'UTF-8'
+}
+
+
+task copySettingsXml(type: Copy) {
+    from sourceSets.main.output.resourcesDir
+    into "$buildDir/resources"
+    include 'settings.xml'
+}
+
+run {
+     dependsOn copySettingsXml
+     workingDir = buildDir
+  	 systemProperty 'file.encoding', 'UTF-8'
+}
+
+test {
+    dependsOn copySettingsXml
+  	testLogging {
+		exceptionFormat = 'full'
+    }
+  	systemProperty 'file.encoding', 'UTF-8'
+}
+
+jar {
+    manifest {
+		attributes('Main-Class': project.mainClassName)
+    }
+}
