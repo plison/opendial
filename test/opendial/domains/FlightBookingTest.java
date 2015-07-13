@@ -47,7 +47,7 @@ public class FlightBookingTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	Domain domain = XMLDomainReader
-			.extractDomain("domains/examples/example-flightbooking.xml");
+			.extractDomain("test/domains/example-flightbooking.xml");
 
 	@Test
 	public void dialogue1() throws InterruptedException {

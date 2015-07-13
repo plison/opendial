@@ -12,7 +12,7 @@
 					<if var="u_u" relation="contains" value="grab {X}" />
 				</condition>
 				<effect>
-					<set var="a_u" value="Take({X})" add="true" />
+					<set var="a_u" value="Take({X})" exclusive="false" />
 					<set var="ref_main" value="{X}" />
 					<set var="properties(ref_main)" value="[]" />
 				</effect>
@@ -25,7 +25,7 @@
 					<if var="u_u" relation="contains" value="(yes|correct|exactly)" />
 				</condition>
 				<effect>
-					<set var="a_u" value="Confirm" add="true"/>
+					<set var="a_u" value="Confirm" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -33,7 +33,7 @@
 					<if var="u_u" relation="contains" value="(no|wrong)"/>
 				</condition>
 				<effect>
-					<set var="a_u" value="Disconfirm" add="true"/>
+					<set var="a_u" value="Disconfirm" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -94,7 +94,7 @@
 					<if var="ref_{id}" value="* (to the|on|on the|at the)? {R} of {OtherRef}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="rel={R}(ref_{R})" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(ref_{R})" />
 					<set var="ref_{R}" value="{OtherRef}" />
 				</effect>
 			</case>
@@ -104,7 +104,7 @@
 					<if var="ref_{id}" value="* (on|to|at) my {R}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="rel={R}(spk)" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(spk)" />
 				</effect>
 			</case>
 			<case>
@@ -113,7 +113,7 @@
 					<if var="ref_{id}" value="* (on|to|at) your {R}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(agent)" />
 				</effect>
 			</case>
 			<case>
@@ -122,7 +122,7 @@
 					<if var="ref_{id}" value="* (on|to the|at the) {R}" />
 				</condition>
 				<effect prob="1.0">
-					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(agent)" />
 				</effect>
 			</case>
 			<case>
@@ -131,10 +131,10 @@
 					<if var="ref_{id}" value="* (on|to|at) the {R}" />
 				</condition>
 				<effect prob="0.5">
-					<set var="properties(ref_{id})" add="true" value="rel={R}(spk)" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(spk)" />
 				</effect>
 				<effect prob="0.5">
-					<set var="properties(ref_{id})" add="true" value="rel={R}(agent)" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(agent)" />
 				</effect>
 			</case>
 			<case>
@@ -145,7 +145,7 @@
 					<if var="OtherRef" relation="!=" value="top of *" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="rel={R}(ref_{R})" />
+					<set var="properties(ref_{id})" exclusive="false" value="rel={R}(ref_{R})" />
 					<set var="ref_{R}" value="{OtherRef}" />
 				</effect>
 			</case>
@@ -199,8 +199,8 @@
 					<if var="properties(ref_{id})" relation="contains" value="{rel}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_main)" value="{properties(ref_main)}" add="true"/>
-					<set var="properties(ref_main)" value="{rel}" add="true"/>
+					<set var="properties(ref_main)" value="{properties(ref_main)}" exclusive="false"/>
+					<set var="properties(ref_main)" value="{rel}" exclusive="false"/>
 					<set var="properties(ref_{id})" value="[]"/>
 					<set var="ref_{id}" value="{MainRef}"/>
 				</effect>
@@ -218,9 +218,9 @@
 					<if var="ref_{id}" value="one of (the|these) {Type}s" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="def=indef" />
-					<set var="properties(ref_{id})" add="true" value="nb=sg" />
-					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+					<set var="properties(ref_{id})" exclusive="false" value="def=indef" />
+					<set var="properties(ref_{id})" exclusive="false" value="nb=sg" />
+					<set var="properties(ref_{id})" exclusive="false" value="type={Type}" />
 			</effect>
 			</case>
 			<case>
@@ -228,9 +228,9 @@
 					<if var="ref_{id}" value="(a|one) * {Type}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="def=indef" />
-					<set var="properties(ref_{id})" add="true" value="nb=sg" />
-					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+					<set var="properties(ref_{id})" exclusive="false" value="def=indef" />
+					<set var="properties(ref_{id})" exclusive="false" value="nb=sg" />
+					<set var="properties(ref_{id})" exclusive="false" value="type={Type}" />
 				</effect>
 			</case>
 			<case>
@@ -238,9 +238,9 @@
 					<if var="ref_{id}" value="(the|this|that) * {Type}s" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="def=def" />
-					<set var="properties(ref_{id})" add="true" value="nb=pl" />
-					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+					<set var="properties(ref_{id})" exclusive="false" value="def=def" />
+					<set var="properties(ref_{id})" exclusive="false" value="nb=pl" />
+					<set var="properties(ref_{id})" exclusive="false" value="type={Type}" />
 				</effect>
 			</case>
 			<case>
@@ -249,9 +249,9 @@
 					<if var="Type" relation="!=" value="*s"/>
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="def=def" />
-					<set var="properties(ref_{id})" add="true" value="nb=sg" />
-					<set var="properties(ref_{id})" add="true" value="type={Type}" />
+					<set var="properties(ref_{id})" exclusive="false" value="def=def" />
+					<set var="properties(ref_{id})" exclusive="false" value="nb=sg" />
+					<set var="properties(ref_{id})" exclusive="false" value="type={Type}" />
 				</effect>
 			</case>
 		</rule>
@@ -266,8 +266,8 @@
 					<if var="Type" relation="!contains" value=" " />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
-					<set var="properties(ref_{id})" add="true" value="attr={Mod2}" />
+					<set var="properties(ref_{id})" exclusive="false" value="attr={Mod}" />
+					<set var="properties(ref_{id})" exclusive="false" value="attr={Mod2}" />
 				</effect>
 			</case>
 			<case>
@@ -279,8 +279,8 @@
 					<if var="Type" relation="!contains" value=" " />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
-					<set var="properties(ref_{id})" add="true" value="attr={Mod2}" />
+					<set var="properties(ref_{id})" exclusive="false" value="attr={Mod}" />
+					<set var="properties(ref_{id})" exclusive="false" value="attr={Mod2}" />
 				</effect>
 			</case>
 			<case>
@@ -291,7 +291,7 @@
 					<if var="Type" relation="!contains" value=" " />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" add="true" value="attr={Mod}" />
+					<set var="properties(ref_{id})" exclusive="false" value="attr={Mod}" />
 				</effect>
 			</case>
 		</rule>
@@ -303,7 +303,7 @@
 					<if var="properties(ref_{id})" value="{content}" />
 				</condition>
 				<effect>
-					<set var="properties(ref_{id})" value="{content}" add="true" />
+					<set var="properties(ref_{id})" value="{content}" exclusive="false" />
 				</effect>
 			</case>
 		</rule>

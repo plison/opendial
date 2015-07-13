@@ -65,7 +65,7 @@ import opendial.Settings;
 import opendial.Settings.Recording;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.UtilityFunction;
-import opendial.gui.stateviewer.StateViewer;
+import opendial.gui.utils.StateViewer;
 import opendial.utils.StringUtils;
 
 /**
@@ -87,13 +87,13 @@ import opendial.utils.StringUtils;
  *
  */
 @SuppressWarnings("serial")
-public class StateViewerTab extends JComponent {
+public class StateMonitorTab extends JComponent {
 
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// title, position and tooltip for the tab
-	public static final String TAB_TITLE = " Dialogue State Monitor ";
+	public static final String TAB_TITLE = " State Monitor ";
 	public static final String TAB_TIP =
 			"Visual monitoring as the Bayesian Network defining the dialogue state";
 
@@ -133,7 +133,7 @@ public class StateViewerTab extends JComponent {
 	 * @param mainFrame the reference to the main GUI frame.
 	 * 
 	 */
-	public StateViewerTab(GUIFrame mainFrame) {
+	public StateMonitorTab(GUIFrame mainFrame) {
 		setLayout(new BorderLayout());
 
 		this.mainFrame = mainFrame;
@@ -155,7 +155,7 @@ public class StateViewerTab extends JComponent {
 		JSplitPane topPanel =
 				new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
 						visualisation.wrapWithScrollPane());
-		topPanel.setDividerLocation(250);
+		topPanel.setDividerLocation(200);
 		JSplitPane fullPanel =
 				new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
 		fullPanel.setDividerLocation(600);
@@ -430,7 +430,7 @@ public class StateViewerTab extends JComponent {
 		public void valueChanged(ListSelectionEvent e) {
 			@SuppressWarnings("unchecked")
 			JList<String> jl = (JList<String>) e.getSource();
-			if (jl.getMinSelectionIndex() >= 0) {
+			if (jl.getMinSelectionIndex() >= 0 && !e.getValueIsAdjusting()) {
 				String selection = listModel.getElementAt(jl.getMinSelectionIndex());
 				if (!selection.contains("separator")) {
 					visualisation.showBayesianNetwork(states.get(selection));

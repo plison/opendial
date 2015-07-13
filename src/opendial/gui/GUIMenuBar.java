@@ -27,8 +27,11 @@ import java.util.logging.*;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
@@ -41,7 +44,6 @@ import javax.sound.sampled.Mixer;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -49,25 +51,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
-import opendial.DialogueState;
-import opendial.DialogueSystem;
 import opendial.Settings;
 import opendial.Settings.Recording;
-import opendial.bn.BNetwork;
-import opendial.domains.Domain;
 import opendial.modules.AudioModule;
-import opendial.modules.DialogueImporter;
-import opendial.modules.DialogueRecorder;
-import opendial.readers.XMLDomainReader;
-import opendial.readers.XMLStateReader;
 import opendial.utils.AudioUtils;
-import opendial.utils.XMLUtils;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Menu bar for the GUI.
@@ -85,6 +75,10 @@ public class GUIMenuBar extends JMenuBar {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	GUIFrame frame;
+	JMenuItem saveDomain;
+	JMenuItem saveDomainAs;
+	JMenuItem resetItem;
+	JMenuItem freezeItem;
 	JMenuItem exportState;
 	JMenuItem exportParams;
 	JMenuItem inputMenu;
@@ -101,42 +95,62 @@ public class GUIMenuBar extends JMenuBar {
 	public GUIMenuBar(final GUIFrame frame) {
 		this.frame = frame;
 		JMenu domainMenu = new JMenu("Domain");
-		JMenuItem openDomain = new JMenuItem("Open Domain");
-		openDomain.addActionListener(e -> openDomain());
+		JMenuItem newDomain = new JMenuItem("New");
+		newDomain.addActionListener(e -> frame.newDomain());
+		domainMenu.add(newDomain);
+
+		JMenuItem openDomain = new JMenuItem("Open File");
+		openDomain.addActionListener(e -> frame.openDomain());
 		domainMenu.add(openDomain);
+
+		saveDomain = new JMenuItem("Save");
+		saveDomain.addActionListener(e -> frame.saveDomain());
+		KeyStroke keyStrokeToOpen =
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit()
+						.getMenuShortcutKeyMask());
+		saveDomain.setAccelerator(keyStrokeToOpen);
+		domainMenu.add(saveDomain);
+
+		saveDomainAs = new JMenuItem("Save As...");
+		saveDomainAs.addActionListener(e -> frame.saveDomainAs());
+		domainMenu.add(saveDomainAs);
 
 		domainMenu.add(new JSeparator());
 
 		JMenu importMenu = new JMenu("Import");
 		domainMenu.add(importMenu);
 		final JMenuItem importState = new JMenuItem("Dialogue State");
-		importState.addActionListener(e -> importContent("state"));
+		importState.addActionListener(e -> frame.importContent("state"));
 		importMenu.add(importState);
 
 		final JMenuItem importParams = new JMenuItem("Parameters");
-		importParams.addActionListener(e -> importContent("parameters"));
+		importParams.addActionListener(e -> frame.importContent("parameters"));
 		importMenu.add(importParams);
 
 		JMenu exportMenu = new JMenu("Export");
 		domainMenu.add(exportMenu);
 		exportState = new JMenuItem("Dialogue State");
-		exportState.addActionListener(e -> exportContent("state"));
+		exportState.addActionListener(e -> frame.exportContent("state"));
 		exportMenu.add(exportState);
 
 		exportParams = new JMenuItem("Parameters");
-		exportParams.addActionListener(e -> exportContent("parameters"));
+		exportParams.addActionListener(e -> frame.exportContent("parameters"));
 		exportMenu.add(exportParams);
 
 		domainMenu.add(new JSeparator());
 		final JMenuItem exit = new JMenuItem("Close OpenDial");
-		exit.addActionListener(e -> System.exit(0));
+		exit.addActionListener(e -> frame.closeWindow());
 
 		domainMenu.add(exit);
 		add(domainMenu);
 
 		JMenu traceMenu = new JMenu("Interaction");
 
-		JMenuItem freezeItem = new JMenuItem("Pause/Resume");
+		resetItem = new JMenuItem("Reset");
+		resetItem.addActionListener(e -> frame.resetInteraction());
+		traceMenu.add(resetItem);
+
+		freezeItem = new JMenuItem("Pause/Resume");
 		freezeItem.addActionListener(e -> {
 			boolean toPause = !frame.getSystem().isPaused();
 			frame.getSystem().pause(toPause);
@@ -181,8 +195,7 @@ public class GUIMenuBar extends JMenuBar {
 		systemRole = new JRadioButtonMenuItem("System");
 		modeGroup.add(systemRole);
 		roleMenu.add(systemRole);
-		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections
-				.isEmpty());
+
 		traceMenu.add(roleMenu);
 		userRole.addItemListener(inversion);
 		systemRole.addItemListener(inversion);
@@ -194,12 +207,12 @@ public class GUIMenuBar extends JMenuBar {
 		JMenuItem woz = new JMenuItem("Wizard-of-Oz Transcript");
 		runThrough.add(normal);
 		runThrough.add(woz);
-		normal.addActionListener(e -> importInteraction(false));
-		woz.addActionListener(e -> importInteraction(true));
+		normal.addActionListener(e -> frame.importInteraction(false));
+		woz.addActionListener(e -> frame.importInteraction(true));
 		traceMenu.add(runThrough);
 
 		final JMenuItem saveInteraction = new JMenuItem("Save Dialogue As...");
-		saveInteraction.addActionListener(e -> saveInteraction());
+		saveInteraction.addActionListener(e -> frame.saveInteraction());
 		traceMenu.add(saveInteraction);
 
 		add(traceMenu);
@@ -224,7 +237,6 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		}
 
-		inputMenu.setEnabled(frame.isSpeechEnabled);
 		optionMenu.add(inputMenu);
 
 		outputMenu = new JMenu("Audio output");
@@ -243,7 +255,6 @@ public class GUIMenuBar extends JMenuBar {
 			}
 		}
 
-		outputMenu.setEnabled(true);
 		optionMenu.add(outputMenu);
 
 		JMenu interactionMenu = new JMenu("View Utterances");
@@ -352,28 +363,6 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 	/**
-	 * Imports a previous interaction.
-	 */
-	protected void importInteraction(boolean isWizardOfOz) {
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
-		int returnVal = fc.showOpenDialog(frame.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			String interactionFile = fc.getSelectedFile().getAbsolutePath();
-			frame.addComment("Importing interaction " + interactionFile);
-			try {
-				DialogueImporter importer =
-						frame.getSystem().importDialogue(interactionFile);
-				importer.setWizardOfOzMode(isWizardOfOz);
-			}
-			catch (Exception f) {
-				log.warning("could not extract interaction: " + f);
-				frame.addComment(f.toString());
-			}
-		}
-	}
-
-	/**
 	 * Opens the documentation on the project website
 	 */
 	protected void openDocumentation() {
@@ -446,131 +435,6 @@ public class GUIMenuBar extends JMenuBar {
 	}
 
 	/**
-	 * Records the interaction.
-	 */
-	protected void saveInteraction() {
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
-		int returnVal = fc.showSaveDialog(frame.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			String recordFile = fc.getSelectedFile().getAbsolutePath();
-			frame.getSystem().getModule(DialogueRecorder.class)
-					.writeToFile(recordFile);
-			frame.addComment("Interaction saved to " + recordFile);
-		}
-	}
-
-	/**
-	 * Imports a dialogue state or prior parameter distributions.
-	 * 
-	 * @param tag the expected top XML tag.
-	 */
-	protected void importContent(String tag) {
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
-		int returnVal = fc.showOpenDialog(frame.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			String stateFile = fc.getSelectedFile().getAbsolutePath();
-			frame.addComment("Importing " + tag + " from " + stateFile);
-			try {
-				importContent(frame.getSystem(), stateFile, tag);
-			}
-			catch (Exception f) {
-				log.warning("could not extract interaction: " + f);
-				frame.addComment(f.toString());
-			}
-		}
-	}
-
-	/**
-	 * Imports a dialogue state or prior parameter distributions.
-	 * 
-	 * @param system the dialogue system
-	 * @param file the file that contains the state or parameter content
-	 * @param tag the expected top XML tag. into the system
-	 */
-	public static void importContent(DialogueSystem system, String file, String tag) {
-		if (tag.equals("parameters")) {
-			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
-			for (String oldParam : system.getState().getParameterIds()) {
-				if (!parameters.hasChanceNode(oldParam)) {
-					parameters.addNode(system.getState().getChanceNode(oldParam));
-				}
-			}
-			system.getState().setParameters(parameters);
-		}
-		else {
-			BNetwork state = XMLStateReader.extractBayesianNetwork(file, tag);
-			system.addContent(new DialogueState(state));
-		}
-	}
-
-	/**
-	 * Exports a dialogue state or prior parameter distributions.
-	 * 
-	 * @param tag the expected top XML tag.
-	 */
-	protected void exportContent(String tag) {
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
-		int returnVal = fc.showSaveDialog(frame.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			try {
-				String recordFile = fc.getSelectedFile().getAbsolutePath();
-				exportContent(frame.getSystem(), recordFile, tag);
-				frame.addComment(tag.substring(0, 1).toUpperCase()
-						+ tag.substring(1) + " saved to " + recordFile);
-			}
-			catch (RuntimeException j) {
-				log.warning("could not save parameter distribution: " + j);
-			}
-		}
-	}
-
-	/**
-	 * Exports a dialogue state or prior parameter distributions.
-	 * 
-	 * @param system the dialogue system
-	 * @param file the file in which to write the state or parameter content
-	 * @param tag the expected top XML tag. from the system
-	 */
-	public static void exportContent(DialogueSystem system, String file, String tag) {
-		Document doc = XMLUtils.newXMLDocument();
-
-		Set<String> parameterIds =
-				new HashSet<String>(system.getState().getParameterIds());
-		Set<String> otherVarsIds =
-				new HashSet<String>(system.getState().getChanceNodeIds());
-		otherVarsIds.removeAll(parameterIds);
-		Set<String> variables =
-				(tag.equals("parameters")) ? parameterIds : otherVarsIds;
-		Node paramXML = system.getState().generateXML(doc, variables);
-		doc.renameNode(paramXML, null, tag);
-		doc.appendChild(paramXML);
-		XMLUtils.writeXMLDocument(doc, file);
-	}
-
-	/**
-	 * Opens a new dialogue domain.
-	 */
-	protected void openDomain() {
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-		fc.setFileFilter(new FileNameExtensionFilter("XML file", "xml"));
-		int returnVal = fc.showOpenDialog(frame.getFrame());
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			try {
-				String domainFile = fc.getSelectedFile().getAbsolutePath();
-				Domain domain = XMLDomainReader.extractDomain(domainFile);
-				frame.getSystem().changeDomain(domain);
-				frame.addComment("Now using domain: " + domainFile);
-			}
-			catch (RuntimeException j) {
-				frame.addComment("Cannot use domain: " + j);
-			}
-		}
-	}
-
-	/**
 	 * Updates the menu bar.
 	 */
 	public void update() {
@@ -600,6 +464,14 @@ public class GUIMenuBar extends JMenuBar {
 		}
 		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections
 				.isEmpty());
+
+		boolean realDomain = !frame.getSystem().getDomain().isEmpty();
+		saveDomainAs.setEnabled(realDomain);
+		boolean isChanged = frame.tabbedPane.getTitleAt(2).contains("*");
+		saveDomain.setEnabled(realDomain && isChanged);
+		resetItem.setEnabled(realDomain);
+		freezeItem.setEnabled(realDomain);
+
 	}
 
 }

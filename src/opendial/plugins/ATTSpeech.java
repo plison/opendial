@@ -106,7 +106,7 @@ public class ATTSpeech implements Module {
 			if (!f.exists()) {
 				f =
 						new File(
-								(new File(system.getDomain().getName()).getParent()
+								(system.getDomain().getSourceFile().getParent()
 										+ "/" + system.getSettings().params
 										.getProperty("grammar")));
 			}

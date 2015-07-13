@@ -11,7 +11,7 @@
 					<if var="properties(ref_{id})" relation="contains" value="type={T}" />
 				</condition>
 				<effect>
-					<set var="matches(ref_{id},type)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},type)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -20,7 +20,7 @@
 					<if var="properties(ref_{id})" relation="contains" value="type=(object|thing)" />
 				</condition>
 				<effect>
-					<set var="matches(ref_{id},type)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},type)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 		</rule>
@@ -33,7 +33,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-({R}-255)^2-{G}^2-{B}^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -43,7 +43,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-{R}^2-({G}-128)^2-{B}^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -53,7 +53,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-{R}^2-{G}^2-({B}-255)^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -63,7 +63,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-({R}-128)^2-({G}-128)^2-({B}-128)^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -73,7 +73,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-({R}-255)^2-({G}-255)^2-{B}^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 			<case>
@@ -83,7 +83,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-({R}-128)^2-{G}^2-({B}-128)^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 				<case>
@@ -93,7 +93,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-{R}^2-{G}^2-{B}^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 				<case>
@@ -103,7 +103,7 @@
 					<if var="rgb({X})" value="[{R},{G},{B}]" />
 				</condition>
 				<effect prob="exp((-({R}-255)^2-({G}-255)^2-({B}-255)^2)/10000)">
-					<set var="matches(ref_{id},colour)^t" add="true" value="{X}" />
+					<set var="matches(ref_{id},colour)^t" exclusive="false" value="{X}" />
 				</effect>
 			</case>
 		</rule>
@@ -116,7 +116,7 @@
 					<if var="properties(ref_{id})" relation="contains" value="attr=big"/>
 				</condition>
 				<effect prob="exp(-100/{area})">
-					<set var="matches(ref_{id},size)^t" value="{X}" add="true"/>
+					<set var="matches(ref_{id},size)^t" value="{X}" exclusive="false"/>
 				</effect>
 			</case>
 			<case>
@@ -126,7 +126,7 @@
 					<if var="properties(ref_{id})" relation="contains" value="attr=small"/>
 				</condition>
 				<effect prob="exp(-{area}/100)">
-					<set var="matches(ref_{id},size)^t" value="{X}" add="true"/>
+					<set var="matches(ref_{id},size)^t" value="{X}" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -140,7 +140,7 @@
 					<if var="pos({Y})" value="[Y1,Y2]" />
 				</condition>
 				<effect prob="exp(-X1^2/Y1^2 - (X2-Y2)^2/100000)">
-					<set var="matches(ref_{id},left)^t" value="{X}" add="true"/>
+					<set var="matches(ref_{id},left)^t" value="{X}" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -165,7 +165,7 @@
 			<if var="matches(ref_{id},{t})^t" relation="contains" value="{X}"/>
 		</condition>
 		<effect>
-			<set var="matches(ref_{id})" value="{X}" add="true"/>
+			<set var="matches(ref_{id})" value="{X}" exclusive="false"/>
 		</effect>
 		</case>
 		<case>
@@ -197,7 +197,7 @@
 			<if var="ref_main" value="*"/>
 		</condition>
 		<effect>
-			<set var="matches(ref_main)" value="[]" add="true"/>
+			<set var="matches(ref_main)" value="[]" exclusive="false"/>
 		</effect>
 		</case>
 	</rule>
@@ -220,7 +220,7 @@
 					<if var="pos({Y})" value="{Y1},{Y2}" />
 				</condition>
 				<effect prob="exp(-{X1}^2/{Y1}^2 - ({X2}-{Y2})^2/10000)">
-					<set var="matches(ref_{id},left)^t" value="{X}" add="true"/>
+					<set var="matches(ref_{id},left)^t" value="{X}" exclusive="false"/>
 				</effect>
 			</case>
 		</rule>
@@ -235,7 +235,7 @@
 					<set var="matches(ref_{R})" value="None"/>
 					<set var="objects" value="{objects}"/> 
 					<set var="matches(ref_main,prev)^t" value="{matches(ref_main)}"/> 
-					<set var="matches(ref_main,{R})^t" value="[]" add="true"/> 
+					<set var="matches(ref_main,{R})^t" value="[]" exclusive="false"/> 
 				</effect>
 			</case>
 		</rule>

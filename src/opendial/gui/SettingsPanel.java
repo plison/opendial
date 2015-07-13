@@ -117,25 +117,24 @@ public class SettingsPanel extends JDialog {
 
 		allOptions.add(gui);
 
-		JPanel planningBox = new JPanel();
-		planningBox.setLayout(new GridLayout(2, 2));
-		planningBox.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createEmptyBorder(10, 10, 10, 10), BorderFactory
-				.createCompoundBorder(
-						BorderFactory.createTitledBorder(" Planning "),
-						BorderFactory.createEmptyBorder(10, 0, 10, 0))));
-
-		planningBox.add(new JLabel(" Planning horizon:     "));
-		final JTextField horizon = new JTextField();
-		horizon.setText("" + settings.horizon);
-		planningBox.add(horizon);
-
-		planningBox.add(new JLabel(" Discount factor:     "));
-		final JTextField discount = new JTextField();
-		discount.setText("" + settings.discountFactor);
-		planningBox.add(discount);
-
-		allOptions.add(planningBox);
+		/**
+		 * JPanel planningBox = new JPanel(); planningBox.setLayout(new GridLayout(2,
+		 * 2));
+		 * planningBox.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+		 * .createEmptyBorder(10, 10, 10, 10), BorderFactory .createCompoundBorder(
+		 * BorderFactory.createTitledBorder(" Planning "),
+		 * BorderFactory.createEmptyBorder(10, 0, 10, 0))));
+		 * 
+		 * planningBox.add(new JLabel(" Planning horizon:     ")); final JTextField
+		 * horizon = new JTextField(); horizon.setText("" + settings.horizon);
+		 * planningBox.add(horizon);
+		 * 
+		 * planningBox.add(new JLabel(" Discount factor:     ")); final JTextField
+		 * discount = new JTextField(); discount.setText("" +
+		 * settings.discountFactor); planningBox.add(discount);
+		 * 
+		 * allOptions.add(planningBox);
+		 */
 
 		contentPane.add(allOptions, BorderLayout.NORTH);
 		contentPane.add(new JLabel(" "), BorderLayout.CENTER);
@@ -156,8 +155,10 @@ public class SettingsPanel extends JDialog {
 				Settings.maxSamplingTime = Integer.parseInt(sampleTime.getText());
 				Settings.discretisationBuckets =
 						Integer.parseInt(discrete.getText());
-				settings.horizon = Integer.parseInt(horizon.getText());
-				settings.discountFactor = Double.parseDouble(discount.getText());
+				/**
+				 * settings.horizon = Integer.parseInt(horizon.getText());
+				 * settings.discountFactor = Double.parseDouble(discount.getText());
+				 */
 			}
 			catch (Exception f) {
 				log.warning("invalid number format in settings");
@@ -181,8 +182,8 @@ public class SettingsPanel extends JDialog {
 		contentPane.add(okcancelBox1, BorderLayout.SOUTH);
 
 		setLocation(new Point(250, 250));
-		setMinimumSize(new Dimension(650, 480));
-		setPreferredSize(new Dimension(650, 480));
+		setMinimumSize(new Dimension(650, 350));
+		setPreferredSize(new Dimension(650, 350));
 		pack();
 
 		getRootPane().setDefaultButton(okButton);

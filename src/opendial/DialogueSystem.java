@@ -23,6 +23,7 @@
 
 package opendial;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -156,6 +157,7 @@ public class DialogueSystem {
 			catch (RuntimeException e) {
 				log.warning("could not start module "
 						+ module.getClass().getCanonicalName() + ": " + e);
+				e.printStackTrace();
 				modules.remove(module);
 			}
 		}
@@ -271,6 +273,9 @@ public class DialogueSystem {
 		if (getModule(GUIFrame.class) != null
 				&& getModule(GUIFrame.class).isRunning()) {
 			getModule(GUIFrame.class).addComment(comment);
+		}
+		else {
+			log.info(comment);
 		}
 		if (getModule(DialogueRecorder.class) != null
 				&& getModule(DialogueRecorder.class).isRunning()) {
@@ -681,6 +686,36 @@ public class DialogueSystem {
 		}
 	}
 
+	/**
+	 * Refreshes the dialogue domain by rereading its source file (in case it has
+	 * been changed by the user).
+	 * 
+	 */
+	public void refreshDomain() {
+		if (domain.isEmpty()) {
+			return;
+		}
+		String srcFile = domain.getSourceFile().getAbsolutePath();
+		DialogueState backupState = curState.copy();
+		Domain updatedDomain;
+		try {
+			updatedDomain = XMLDomainReader.extractDomain(srcFile);
+			displayComment("Dialogue domain successfully updated");
+		}
+		catch (RuntimeException e) {
+			log.severe("Cannot refresh domain: " + e.getMessage());
+			displayComment("Syntax error: " + e.getMessage());
+			updatedDomain = XMLDomainReader.extractEmptyDomain(srcFile);
+		}
+		changeDomain(updatedDomain);
+		curState.addToState(backupState);
+		curState.reduce();
+
+		if (getModule(GUIFrame.class) != null) {
+			getModule(GUIFrame.class).refresh();
+		}
+	}
+
 	// ===================================
 	// GETTERS
 	// ===================================
@@ -813,46 +848,48 @@ public class DialogueSystem {
 	 * @param args is ignored.
 	 */
 	public static void main(String[] args) {
-		try {
-			DialogueSystem system = new DialogueSystem();
-			String domainFile = System.getProperty("domain");
-			String settingsFile = System.getProperty("settings");
-			String dialogueFile = System.getProperty("dialogue");
-			String simulatorFile = System.getProperty("simulator");
+		DialogueSystem system = new DialogueSystem();
+		String domainFile = System.getProperty("domain");
+		String settingsFile = System.getProperty("settings");
+		String dialogueFile = System.getProperty("dialogue");
+		String simulatorFile = System.getProperty("simulator");
 
-			system.getSettings().fillSettings(System.getProperties());
-			if (domainFile != null) {
-				system.changeDomain(XMLDomainReader.extractDomain(domainFile));
+		system.getSettings().fillSettings(System.getProperties());
+		if (domainFile != null) {
+			Domain domain;
+			try {
+				domain = XMLDomainReader.extractDomain(domainFile);
 				log.info("Domain from " + domainFile + " successfully extracted");
 			}
-			if (settingsFile != null) {
-				system.getSettings().fillSettings(
-						XMLUtils.extractMapping(settingsFile));
-				log.info("Settings from " + settingsFile + " successfully extracted");
+			catch (RuntimeException e) {
+				system.displayComment("Cannot load domain: " + e);
+				domain = XMLDomainReader.extractEmptyDomain(domainFile);
 			}
-			if (dialogueFile != null) {
-				system.importDialogue(dialogueFile);
-			}
-			if (simulatorFile != null) {
-				Simulator simulator =
-						new Simulator(system,
-								XMLDomainReader.extractDomain(simulatorFile));
-				log.info("Simulator with domain " + simulatorFile
-						+ " successfully extracted");
-				system.attachModule(simulator);
-			}
-			Settings settings = system.getSettings();
-			system.changeSettings(settings);
-			if (!settings.showGUI) {
-				system.attachModule(new TextOnlyInterface(system));
-			}
+			system.changeDomain(domain);
+		}
+		if (settingsFile != null) {
+			system.getSettings().fillSettings(XMLUtils.extractMapping(settingsFile));
+			log.info("Settings from " + settingsFile + " successfully extracted");
+		}
+		if (dialogueFile != null) {
+			system.importDialogue(dialogueFile);
+		}
+		if (simulatorFile != null) {
+			Simulator simulator =
+					new Simulator(system,
+							XMLDomainReader.extractDomain(simulatorFile));
+			log.info("Simulator with domain " + simulatorFile
+					+ " successfully extracted");
+			system.attachModule(simulator);
+		}
+		Settings settings = system.getSettings();
+		system.changeSettings(settings);
+		if (!settings.showGUI) {
+			system.attachModule(new TextOnlyInterface(system));
+		}
 
-			system.startSystem();
-			log.info("Dialogue system started!");
-		}
-		catch (RuntimeException e) {
-			log.severe("could not start system, aborting: " + e);
-		}
+		system.startSystem();
+		log.info("Dialogue system started!");
 	}
 
 }

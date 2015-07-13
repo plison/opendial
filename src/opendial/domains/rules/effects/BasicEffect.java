@@ -64,7 +64,7 @@ public class BasicEffect {
 	 * Whether the value is mutually exclusive with other values for the variable
 	 * (default case) or not. If not, distinct values are added together in a list.
 	 */
-	final boolean add;
+	final boolean exclusive ;
 
 	/** Whether the effect includes a negation (default is false). */
 	final boolean negated;
@@ -83,7 +83,7 @@ public class BasicEffect {
 	 * @param value variable value (raw string)
 	 */
 	public BasicEffect(String variable, String value) {
-		this(variable, ValueFactory.create(value), 1, false, false);
+		this(variable, ValueFactory.create(value), 1, true, false);
 	}
 
 	/**
@@ -96,15 +96,15 @@ public class BasicEffect {
 	 * @param variable variable label (raw string)
 	 * @param value variable value
 	 * @param priority the priority level (default is 1)
-	 * @param add true if distinct values are to be added together, false otherwise
+	 * @param exclusive whether distinct values are mutually exclusive or not
 	 * @param negated whether to negate the effect or not.
 	 */
-	public BasicEffect(String variable, Value value, int priority, boolean add,
+	public BasicEffect(String variable, Value value, int priority, boolean exclusive,
 			boolean negated) {
 		this.variableLabel = variable;
 		this.variableValue = value;
 		this.priority = priority;
-		this.add = add;
+		this.exclusive = exclusive;
 		this.negated = negated;
 	}
 
@@ -180,14 +180,13 @@ public class BasicEffect {
 	}
 
 	/**
-	 * Returns true if the effect allows multiple distinct values for the variable
-	 * and false otherwise (default case).
+	 * Returns true if the effect allows only one distinct value for the variable
+	 * (default case) and false otherwise
 	 * 
-	 * @return true if the effect allows values to be added together, false
-	 *         otherwise.
+	 * @return true if the effect allows only one distinct value, else false.
 	 */
-	public boolean isAdd() {
-		return add;
+	public boolean isExclusive() {
+		return exclusive;
 	}
 
 	/**
@@ -212,7 +211,7 @@ public class BasicEffect {
 		if (negated) {
 			str += "!=";
 		}
-		else if (add) {
+		else if (!exclusive) {
 			str += "+=";
 		}
 		else {
@@ -231,7 +230,7 @@ public class BasicEffect {
 	public int hashCode() {
 		int hashcode =
 				((negated) ? -2 : 1) * variableLabel.hashCode()
-						^ (new Boolean(add)).hashCode() ^ priority
+						^ (new Boolean(exclusive)).hashCode() ^ priority
 						^ variableValue.hashCode();
 		return hashcode;
 	}
@@ -252,7 +251,7 @@ public class BasicEffect {
 			else if (!((BasicEffect) o).getValue().equals(getValue())) {
 				return false;
 			}
-			else if (((BasicEffect) o).isAdd() != add) {
+			else if (((BasicEffect) o).exclusive != exclusive) {
 				return false;
 			}
 			else if (((BasicEffect) o).isNegated() != negated) {
@@ -273,7 +272,7 @@ public class BasicEffect {
 	 */
 	public BasicEffect copy() {
 		BasicEffect copy =
-				new BasicEffect(variableLabel, variableValue, priority, add, negated);
+				new BasicEffect(variableLabel, variableValue, priority, exclusive, negated);
 		return copy;
 	}
 

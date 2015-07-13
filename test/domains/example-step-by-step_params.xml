@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <domain>
-	
+
+	<!-- Parameters -->
+	<parameters>
+
+		<variable id="theta_repeat">
+			<distrib type="gaussian">
+				<mean>0</mean>
+				<variance>1</variance>
+			</distrib>
+		</variable>
+
+		<variable id="theta_repeatpredict">
+			<distrib type="dirichlet">
+				<alpha>3</alpha>
+				<alpha>1</alpha>
+			</distrib>
+		</variable>
+
+	</parameters>
+
 	<!-- NLU model -->
 	<model trigger="u_u">
-		
-  		<rule>
+
+		<rule>
 			<case>
 				<condition operator="or">
 					<if var="u_u" value="turn * left" relation="contains" />
@@ -55,7 +74,6 @@
 				</effect>
 			</case>
 		</rule>
-		
 	</model>
 
 	<!-- Action selection model -->
@@ -83,7 +101,7 @@
 
 		<rule id="repeat">
 			<case>
-				<effect util="0.2">
+				<effect util="theta_repeat">
 					<set var="a_m" value="AskRepeat" />
 				</effect>
 			</case>
@@ -94,7 +112,6 @@
 
 	<!-- NLG model -->
 	<model trigger="a_m">
-
 		<rule>
 			<case>
 				<condition>
@@ -125,7 +142,7 @@
 				<condition>
 					<if var="a_m" value="AskRepeat" />
 				</condition>
-				<effect prob="0.95">
+				<effect prob="theta_repeatpredict[0]">
 					<set var="a_u^p" value="{a_u}" />
 				</effect>
 			</case>

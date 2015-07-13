@@ -146,7 +146,7 @@ public class Model {
 	 * 
 	 * @return the list of rules
 	 */
-	public Collection<Rule> getRules() {
+	public List<Rule> getRules() {
 		return new ArrayList<Rule>(rules);
 	}
 

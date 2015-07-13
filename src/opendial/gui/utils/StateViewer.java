@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.gui.stateviewer;
+package opendial.gui.utils;
 
 import java.util.logging.*;
 import java.awt.Color;
@@ -54,7 +54,7 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.domains.rules.distribs.AnchoredRule;
-import opendial.gui.StateViewerTab;
+import opendial.gui.StateMonitorTab;
 import opendial.utils.StringUtils;
 
 import org.apache.commons.collections15.Transformer;
@@ -90,7 +90,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 
 	// connection to the top tab including the graph viewer
 	// (necessary to write information to the logging area)
-	StateViewerTab tab;
+	StateMonitorTab tab;
 
 	// the current state to display
 	DialogueState currentState;
@@ -107,7 +107,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * 
 	 * @param tab the state viewer component
 	 */
-	public StateViewer(StateViewerTab tab) {
+	public StateViewer(StateMonitorTab tab) {
 		super(new StaticLayout<String, Integer>(
 				new DelegateForest<String, Integer>()));
 		this.tab = tab;
@@ -331,7 +331,7 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * 
 	 * @return the state viewer tab
 	 */
-	public StateViewerTab getStateMonitorTab() {
+	public StateMonitorTab getStateMonitorTab() {
 		return tab;
 	}
 

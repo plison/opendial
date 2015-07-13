@@ -121,11 +121,11 @@ public class RuleTest3 {
 		effects.add(new BasicEffect("v1", "val1"));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1"));
 
-		effects.add(new BasicEffect("v2", ValueFactory.create("val2"), 1, true,
+		effects.add(new BasicEffect("v2", ValueFactory.create("val2"), 1, false,
 				false));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 
-		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1, false,
+		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1, true,
 				true));
 		assertEquals(new Effect(effects),
 				Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));

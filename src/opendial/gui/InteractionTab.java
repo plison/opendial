@@ -56,17 +56,17 @@ import opendial.modules.AudioModule;
 import opendial.utils.StringUtils;
 
 /**
- * GUI tab for the chat window.
+ * GUI tab for the interaction tab.
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
  */
 @SuppressWarnings("serial")
-public class ChatWindowTab extends JComponent {
+public class InteractionTab extends JComponent {
 
-	public static final String TAB_TITLE = " Chat Window ";
+	public static final String TAB_TITLE = " Interaction ";
 	public static final String TAB_TIP =
-			"Chat window listing the user and system utterances";
+			"Shows the history of user and system utterances";
 	public static final String TIP_TEXT =
 			"<html><br>- To directly enter a user utterance, simply type it in the text field "
 					+ "at<br>&nbsp;&nbsp;&nbsp;the bottom of the window, for instance: <br> "
@@ -112,7 +112,7 @@ public class ChatWindowTab extends JComponent {
 	 * 
 	 * @param system the dialogue system
 	 */
-	public ChatWindowTab(DialogueSystem system) {
+	public InteractionTab(DialogueSystem system) {
 		this.system = system;
 
 		setLayout(new BorderLayout());
@@ -152,7 +152,7 @@ public class ChatWindowTab extends JComponent {
 		doc = new HTMLDocument();
 		lines.setEditorKit(kit);
 		lines.setDocument(doc);
-		updateActivation();
+		refresh();
 
 		if (system.getModule(GUIFrame.class).isSpeechEnabled) {
 			enableSpeech(true);
@@ -209,6 +209,7 @@ public class ChatWindowTab extends JComponent {
 	 */
 	public void addComment(String comment) {
 		try {
+			comment = comment.replace("<", "&lt;").replace(">", "&gt;");
 			kit.insertHTML(doc, doc.getLength(), "[" + comment + "]\n", 0, 0, null);
 		}
 		catch (Exception e) {
@@ -268,19 +269,19 @@ public class ChatWindowTab extends JComponent {
 	/**
 	 * Updates the activation status of the chat window.
 	 */
-	void updateActivation() {
-		if (system.getDomain() == null) {
+	void refresh() {
+		if (system.getDomain().isEmpty()) {
 			inputField.setEnabled(false);
 			lines.setEnabled(false);
-			if (lines.getText().length() <= 100
-					&& !lines.getText().contains("No domain currently selected")) {
-				addComment("No domain currently selected");
-			}
+			lines.setToolTipText("No dialogue domain currently selected");
+			inputField.setToolTipText("No dialogue domain currently selected");
 		}
 		else {
 			if (inputField.isEnabled() == system.isPaused()) {
 				inputField.setEnabled(!system.isPaused());
 				lines.setEnabled(!system.isPaused());
+				lines.setToolTipText(null);
+				inputField.setToolTipText(null);
 			}
 		}
 	}
@@ -294,7 +295,7 @@ public class ChatWindowTab extends JComponent {
 	 * @param updatedVars the list of recently updated variables
 	 */
 	public void trigger(DialogueState state, Collection<String> updatedVars) {
-		updateActivation();
+		refresh();
 		if (updatedVars.contains(system.getSettings().userInput)
 				&& state.hasChanceNode(system.getSettings().userInput)) {
 			CategoricalTable distrib =

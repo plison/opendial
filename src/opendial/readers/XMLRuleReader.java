@@ -113,10 +113,12 @@ public class XMLRuleReader {
 				rule.addCase(cond, output);
 
 			}
-			else if (!node.getNodeName().equals("#text")
-					&& !node.getNodeName().equals("#comment")) {
-				throw new RuntimeException("Ill-formed rule: " + node.getNodeName()
-						+ " not accepted");
+			else if (XMLUtils.hasContent(node)) {
+				if (node.getNodeName().equals("#text")) {
+					throw new RuntimeException("cannot insert free text in <rule>");
+				}
+				throw new RuntimeException("Invalid tag in <rule>: "
+						+ node.getNodeName());
 			}
 		}
 
@@ -185,8 +187,7 @@ public class XMLRuleReader {
 		for (int i = 0; i < conditionNode.getChildNodes().getLength(); i++) {
 			Node node = conditionNode.getChildNodes().item(i);
 
-			if (!node.getNodeName().equals("#text")
-					&& !node.getNodeName().equals("#comment")) {
+			if (XMLUtils.hasContent(node)) {
 				Condition subcondition = getSubcondition(node);
 				subconditions.add(subcondition);
 			}
@@ -215,6 +216,9 @@ public class XMLRuleReader {
 											BinaryOperator.AND);
 					return new NegatedCondition(negated);
 				}
+				else {
+					throw new RuntimeException("Invalid operator: " + operatorStr);
+				}
 			}
 			return (subconditions.size() == 1) ? subconditions.get(0)
 					: new ComplexCondition(subconditions, BinaryOperator.AND);
@@ -230,8 +234,12 @@ public class XMLRuleReader {
 	private static Condition getSubcondition(Node node) {
 
 		// extracting a basic condition
-		if (node.getNodeName().equals("if") && node.hasAttributes()
-				&& node.getAttributes().getNamedItem("var") != null) {
+		if (node.getNodeName().equals("if")) {
+
+			if (!node.hasAttributes()
+					|| node.getAttributes().getNamedItem("var") == null) {
+				throw new RuntimeException("<if> without attribute 'var'");
+			}
 
 			Condition condition;
 
@@ -285,8 +293,7 @@ public class XMLRuleReader {
 			List<Condition> conditions = new ArrayList<Condition>();
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 				Node subNode = node.getChildNodes().item(i);
-				if (!subNode.getNodeName().equals("#text")
-						&& !subNode.getNodeName().equals("#comment")) {
+				if (XMLUtils.hasContent(subNode)) {
 					conditions.add(getSubcondition(subNode));
 				}
 			}
@@ -299,8 +306,7 @@ public class XMLRuleReader {
 			List<Condition> conditions = new ArrayList<Condition>();
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 				Node subNode = node.getChildNodes().item(i);
-				if (!subNode.getNodeName().equals("#text")
-						&& !subNode.getNodeName().equals("#comment")) {
+				if (XMLUtils.hasContent(subNode)) {
 					conditions.add(getSubcondition(subNode));
 				}
 			}
@@ -311,6 +317,9 @@ public class XMLRuleReader {
 				return new NegatedCondition(new ComplexCondition(conditions,
 						BinaryOperator.AND));
 			}
+		}
+		else if (XMLUtils.hasContent(node)) {
+			throw new RuntimeException("Invalid condition: " + node.getNodeName());
 		}
 		return new VoidCondition();
 	}
@@ -361,7 +370,7 @@ public class XMLRuleReader {
 				relation = Relation.LOWER_THAN;
 			}
 			else {
-				throw new RuntimeException("unrecognized relation: " + relationStr);
+				throw new RuntimeException("invalid relation: " + relationStr);
 			}
 
 		}
@@ -382,9 +391,7 @@ public class XMLRuleReader {
 		for (int i = 0; i < effectNode.getChildNodes().getLength(); i++) {
 			Node node = effectNode.getChildNodes().item(i);
 
-			if (!node.getNodeName().equals("#text")
-					&& !node.getNodeName().equals("#comment")
-					&& node.hasAttributes()) {
+			if (XMLUtils.hasContent(node) && node.hasAttributes()) {
 				BasicEffect subeffect = getSubEffect(node, priority);
 				effects.add(subeffect);
 			}
@@ -403,8 +410,7 @@ public class XMLRuleReader {
 
 		NamedNodeMap attrs = node.getAttributes();
 		if (attrs.getNamedItem("var") == null) {
-			throw new RuntimeException("invalid format for effect: "
-					+ node.getNodeName() + " and var " + attrs.getNamedItem("var"));
+			throw new RuntimeException("Effect without attribute 'var'");
 		}
 
 		String var = attrs.getNamedItem("var").getNodeValue();
@@ -421,12 +427,13 @@ public class XMLRuleReader {
 		}
 		value = value.replaceAll("\\s+", " ");
 
-		// EXCLUSIVE instead??
-		boolean add =
-				node.getNodeName().equalsIgnoreCase("add")
-						|| (attrs.getNamedItem("add") != null && Boolean
-								.parseBoolean(attrs.getNamedItem("add")
-										.getNodeValue()));
+		boolean exclusive = true;
+		if (attrs.getNamedItem("exclusive") != null && 
+				attrs.getNamedItem("exclusive")
+				.getNodeValue().equalsIgnoreCase("false")) {
+			exclusive = false;
+		}
+
 
 		boolean negated =
 				attrs.getNamedItem("relation") != null
@@ -444,7 +451,7 @@ public class XMLRuleReader {
 					&& !attr.getNodeName().equals("var2")
 					&& !attr.getNodeName().equals("value")
 					&& !attr.getNodeName().equals("relation")
-					&& !attr.getNodeName().equals("add")) {
+					&& !attr.getNodeName().equals("exclusive")) {
 				throw new RuntimeException("unrecognized attribute: "
 						+ attr.getNodeName());
 			}
@@ -453,11 +460,11 @@ public class XMLRuleReader {
 		Template tvar = new Template(var);
 		Template tval = new Template(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-			return new TemplateEffect(tvar, tval, priority, add, negated);
+			return new TemplateEffect(tvar, tval, priority, exclusive, negated);
 		}
 		else {
 			return new BasicEffect(var, ValueFactory.create(tval.toString()),
-					priority, add, negated);
+					priority, exclusive, negated);
 		}
 
 	}

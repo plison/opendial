@@ -159,7 +159,7 @@ public class OutputDistribution implements ProbDistribution {
 
 		Set<Value> values = fullEffect.getValues(baseVar);
 		// case 1: add effects
-		if (fullEffect.isAdd(baseVar)) {
+		if (fullEffect.isNonExclusive(baseVar)) {
 			SetVal addVal = ValueFactory.create(values);
 			builder.addRow(addVal, 1.0);
 		}
@@ -202,7 +202,7 @@ public class OutputDistribution implements ProbDistribution {
 
 		for (Set<Effect> set : inputEffects) {
 			for (Effect e : set) {
-				if (e.isAdd(baseVar)) {
+				if (e.isNonExclusive(baseVar)) {
 					return getValues_linearise();
 				}
 				Set<Value> setValues = e.getValues(baseVar);

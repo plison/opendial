@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -46,6 +48,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
+
+import opendial.DialogueState;
+import opendial.DialogueSystem;
+import opendial.bn.BNetwork;
+import opendial.readers.XMLStateReader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -117,7 +124,7 @@ public class XMLUtils {
 			return doc;
 		}
 		catch (SAXException e) {
-			log.warning("Reading aborted: \n" + e.getMessage());
+			// log.warning("Reading aborted: \n" + e.getMessage());
 			throw new RuntimeException(e.getMessage());
 		}
 		catch (ParserConfigurationException e) {
@@ -350,6 +357,69 @@ public class XMLUtils {
 		}
 		return includedFiles;
 	}
+
+	/**
+	 * Imports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param system the dialogue system
+	 * @param file the file that contains the state or parameter content
+	 * @param tag the expected top XML tag. into the system
+	 */
+	public static void importContent(DialogueSystem system, String file, String tag) {
+		if (tag.equals("parameters")) {
+			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
+			for (String oldParam : system.getState().getParameterIds()) {
+				if (!parameters.hasChanceNode(oldParam)) {
+					parameters.addNode(system.getState().getChanceNode(oldParam));
+				}
+			}
+			system.getState().setParameters(parameters);
+		}
+		else {
+			BNetwork state = XMLStateReader.extractBayesianNetwork(file, tag);
+			system.addContent(new DialogueState(state));
+		}
+	}
+
+	/**
+	 * Exports a dialogue state or prior parameter distributions.
+	 * 
+	 * @param system the dialogue system
+	 * @param file the file in which to write the state or parameter content
+	 * @param tag the expected top XML tag. from the system
+	 */
+	public static void exportContent(DialogueSystem system, String file, String tag) {
+		Document doc = XMLUtils.newXMLDocument();
+
+		Set<String> parameterIds =
+				new HashSet<String>(system.getState().getParameterIds());
+		Set<String> otherVarsIds =
+				new HashSet<String>(system.getState().getChanceNodeIds());
+		otherVarsIds.removeAll(parameterIds);
+		Set<String> variables =
+				(tag.equals("parameters")) ? parameterIds : otherVarsIds;
+		Node paramXML = system.getState().generateXML(doc, variables);
+		doc.renameNode(paramXML, null, tag);
+		doc.appendChild(paramXML);
+		XMLUtils.writeXMLDocument(doc, file);
+	}
+
+	/**
+	 * Returns true if the node has some actual content (other than a comment or an
+	 * empty text).
+	 * 
+	 * @param node the XML node
+	 * @return true if the node contains information, false otherwise
+	 */
+	public static boolean hasContent(Node node) {
+		if (node.getNodeName().equals("#comment")) {
+			return false;
+		}
+		else if (node.getNodeName().equals("#text")) {
+			return !node.getNodeValue().trim().isEmpty();
+		}
+		return true;
+	}
 }
 
 /**
@@ -375,9 +445,7 @@ final class XMLErrorHandler extends DefaultHandler {
 
 	@Override
 	public void fatalError(SAXParseException e) {
-		log.severe("Parsing error: " + e.getMessage());
-		log.severe("Cannot continue.");
-		System.exit(1);
+		log.severe("Fatal error: " + e.getMessage());
 	}
 
 }

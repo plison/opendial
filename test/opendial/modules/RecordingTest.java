@@ -36,10 +36,10 @@ import opendial.Settings;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.gui.GUIFrame;
-import opendial.gui.GUIMenuBar;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
 import opendial.utils.StringUtils;
+import opendial.utils.XMLUtils;
 
 import org.junit.Test;
 
@@ -123,11 +123,11 @@ public class RecordingTest {
 		system.getSettings().showGUI = false;
 		system.startSystem();
 
-		GUIMenuBar.importContent(system, importState, "state");
+		XMLUtils.importContent(system, importState, "state");
 		assertEquals(12, system.getState().getChanceNodeIds().size());
 		assertEquals(0.7, system.getContent("aha").getProb("ohoho"), 0.01);
 
-		GUIMenuBar.importContent(system, importParams, "parameters");
+		XMLUtils.importContent(system, importParams, "parameters");
 		assertEquals(14, system.getState().getChanceNodeIds().size());
 		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof UniformDensityFunction);
 
@@ -142,7 +142,7 @@ public class RecordingTest {
 			Thread.sleep(50);
 		}
 		Settings.nbSamples = Settings.nbSamples * 100;
-		GUIMenuBar.exportContent(system, exportState, "state");
+		XMLUtils.exportContent(system, exportState, "state");
 		String str = "";
 		BufferedReader br = new BufferedReader(new FileReader(exportState));
 		String line = "";
@@ -152,7 +152,7 @@ public class RecordingTest {
 		br.close();
 		Thread.sleep(100);
 		assertEquals(26, StringUtils.countOccurrences(str, "variable"));
-		GUIMenuBar.exportContent(system, exportParams, "parameters");
+		XMLUtils.exportContent(system, exportParams, "parameters");
 		str = "";
 		br = new BufferedReader(new FileReader(exportParams));
 		line = "";

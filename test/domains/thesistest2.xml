@@ -25,7 +25,7 @@
 <rule id="rnew">
 	<case>
 		<effect>
-			<set var="A" value="{A}" add="true"/>
+			<set var="A" value="{A}" exclusive="false"/>
 		</effect>
 	</case>
 </rule>
@@ -37,7 +37,7 @@
 		<if var="A" value="a2" relation="!contains"/>
 		</condition>
 	<effect>
-		<add var="A" value="a2"/>
+		<set var="A" value="a2" exclusive="false"/>
 	</effect>
 	</case>
 </rule>

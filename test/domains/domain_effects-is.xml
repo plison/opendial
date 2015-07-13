@@ -9,7 +9,7 @@
 				<if var="a_m" value="Confirm(*)" />
 			</condition>
 			<effect>
-				<set var="history" value="{a_m}" add="true"/>
+				<set var="history" value="{a_m}" exclusive="false"/>
 			</effect>
 		</case>
 	</rule>

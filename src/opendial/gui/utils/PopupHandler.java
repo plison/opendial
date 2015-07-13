@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.gui.stateviewer;
+package opendial.gui.utils;
 
 import java.util.logging.*;
 import java.awt.event.InputEvent;

@@ -219,26 +219,25 @@ public final class Effect implements Value {
 	}
 
 	/**
-	 * Returns true if all of the included effects for the variable are marked as
-	 * "add" (allowing multiple values).
+	 * Returns true if all of the included effects for the variable are not 
+	 * mutually exclusive (allowing multiple values).
 	 * 
 	 * @param variable the variable to check
-	 * @return true if the effect includes add effects for the variable, false
-	 *         otherwise
+	 * @return true if the effects are not mutually exclusive, else false
 	 */
-	public boolean isAdd(String variable) {
-		boolean foundAdd = false;
+	public boolean isNonExclusive(String variable) {
+		boolean nonExclusive = false;
 		for (BasicEffect e : subeffects) {
 			if (e.getVariable().equals(variable)) {
-				if (e.isAdd()) {
-					foundAdd = true;
+				if (!e.isExclusive()) {
+					nonExclusive = true;
 				}
 				else if (e.getValue().length() > 0 && !e.isNegated()) {
 					return false;
 				}
 			}
 		}
-		return foundAdd;
+		return nonExclusive;
 	}
 
 	/**
@@ -386,7 +385,7 @@ public final class Effect implements Value {
 
 			String var = "";
 			String val = "";
-			boolean add = false;
+			boolean exclusive = true;
 			boolean negated = false;
 
 			if (str.contains(":=")) {
@@ -402,16 +401,16 @@ public final class Effect implements Value {
 			else if (str.contains("+=")) {
 				var = str.split("\\+=")[0];
 				val = str.split("\\+=")[1];
-				add = true;
+				exclusive = false;
 			}
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, 1, add, negated));
+				return new Effect(new TemplateEffect(tvar, tval, 1, exclusive, negated));
 			}
 			else {
 				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1,
-						add, negated));
+						exclusive, negated));
 			}
 		}
 	}

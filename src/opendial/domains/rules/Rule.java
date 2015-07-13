@@ -102,8 +102,9 @@ public class Rule {
 					totalMass += v;
 				}
 			}
-			if (totalMass > 1) {
-				throw new RuntimeException("probability value must be <=1");
+			if (totalMass > 1.02) {
+				throw new RuntimeException("probability value must be <=1, but is: "
+						+ totalMass);
 			}
 		}
 		cases.add(new RuleCase(condition, output));
