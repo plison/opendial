@@ -64,14 +64,12 @@ public class XMLDomainReader {
 		return extractDomain(topDomainFile, true);
 
 	}
-	
-	
+
 	/**
-	 * Extract a empty domain from the XML domain specification,
-	 * only setting the source file and its possible imports.
-	 * This method is used to be able to extract the source
-	 * and import files in case the domain is ill-formed. You
-	 * can usually safely ignore this method.
+	 * Extract a empty domain from the XML domain specification, only setting the
+	 * source file and its possible imports. This method is used to be able to
+	 * extract the source and import files in case the domain is ill-formed. You can
+	 * usually safely ignore this method.
 	 * 
 	 * @param topDomainFile the filename of the top XML file
 	 * @return the extracted dialogue domain
@@ -80,7 +78,6 @@ public class XMLDomainReader {
 		return extractDomain(topDomainFile, false);
 	}
 
-	
 	/**
 	 * Extract a dialogue domain from the XML specification
 	 * 
@@ -92,26 +89,25 @@ public class XMLDomainReader {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
-	
+
 		// determine the root path and filename
 		File f = new File(topDomainFile);
 		domain.setSourceFile(f);
 
 		// extract the XML document
 		try {
-		Document doc = XMLUtils.getXMLDocument(topDomainFile);
+			Document doc = XMLUtils.getXMLDocument(topDomainFile);
 
-		Node mainNode = XMLUtils.getMainNode(doc);
+			Node mainNode = XMLUtils.getMainNode(doc);
 
-		String rootpath = f.getParent();
+			String rootpath = f.getParent();
 
+			NodeList firstElements = mainNode.getChildNodes();
+			for (int j = 0; j < firstElements.getLength(); j++) {
 
-		NodeList firstElements = mainNode.getChildNodes();
-		for (int j = 0; j < firstElements.getLength(); j++) {
-
-			Node node = firstElements.item(j);
-			domain = extractPartialDomain(node, domain, rootpath, fullExtract);
-		}
+				Node node = firstElements.item(j);
+				domain = extractPartialDomain(node, domain, rootpath, fullExtract);
+			}
 		}
 		catch (RuntimeException e) {
 			if (fullExtract) {
@@ -120,7 +116,7 @@ public class XMLDomainReader {
 		}
 		return domain;
 	}
-	
+
 	/**
 	 * Extracts a partially specified domain from the XML node and add its content to
 	 * the dialogue domain.
@@ -130,7 +126,7 @@ public class XMLDomainReader {
 	 * @param rootpath rooth path (necessary to handle references)
 	 * @param fullExtract whether to extract the full domain or only the files
 	 * 
-	 * @return the augmented dialogue domain 
+	 * @return the augmented dialogue domain
 	 */
 	private static Domain extractPartialDomain(Node mainNode, Domain domain,
 			String rootpath, boolean fullExtract) {

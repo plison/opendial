@@ -428,12 +428,11 @@ public class XMLRuleReader {
 		value = value.replaceAll("\\s+", " ");
 
 		boolean exclusive = true;
-		if (attrs.getNamedItem("exclusive") != null && 
-				attrs.getNamedItem("exclusive")
-				.getNodeValue().equalsIgnoreCase("false")) {
+		if (attrs.getNamedItem("exclusive") != null
+				&& attrs.getNamedItem("exclusive").getNodeValue()
+						.equalsIgnoreCase("false")) {
 			exclusive = false;
 		}
-
 
 		boolean negated =
 				attrs.getNamedItem("relation") != null

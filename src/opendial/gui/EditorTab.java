@@ -26,15 +26,9 @@ package opendial.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,9 +44,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -73,7 +65,6 @@ import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.BalloonTipStyle;
 import net.java.balloontip.styles.RoundedBalloonStyle;
 import opendial.domains.Domain;
-import opendial.domains.Model;
 import opendial.gui.utils.DomainEditorKit;
 
 public class EditorTab extends JComponent {
@@ -122,7 +113,7 @@ public class EditorTab extends JComponent {
 		listBox.addListSelectionListener(listener);
 		listBox.setBorder(BorderFactory.createTitledBorder("XML File(s):"));
 		listBox.addMouseListener(frame.new ClickListener());
-		
+
 		editor = new JEditorPane();
 		// Instantiate a XMLEditorKit
 		DomainEditorKit kit = new DomainEditorKit();
@@ -170,8 +161,6 @@ public class EditorTab extends JComponent {
 		}
 	}
 
-
-
 	/**
 	 * Displays a comment as a balloon tip.
 	 * 
@@ -181,17 +170,17 @@ public class EditorTab extends JComponent {
 		Color msgColor =
 				(msg.contains("error")) ? new Color(250, 230, 230) : new Color(230,
 						250, 230);
-				BalloonTipStyle style = new RoundedBalloonStyle(5, 5, msgColor, Color.BLACK);
-				BalloonTip tip = new BalloonTip(this, msg, style, false);
-				tip.setVisible(true);
-				new Thread(() -> {
-					try {
-						Thread.sleep(2000);
-					}
-					catch (Exception e) {
-					}
-					tip.closeBalloon();
-				}).start();
+		BalloonTipStyle style = new RoundedBalloonStyle(5, 5, msgColor, Color.BLACK);
+		BalloonTip tip = new BalloonTip(this, msg, style, false);
+		tip.setVisible(true);
+		new Thread(() -> {
+			try {
+				Thread.sleep(2000);
+			}
+			catch (Exception e) {
+			}
+			tip.closeBalloon();
+		}).start();
 	}
 
 	/**
@@ -221,7 +210,6 @@ public class EditorTab extends JComponent {
 			log.severe("cannot read xml file: " + e);
 		}
 	}
-
 
 	/**
 	 * Sets the text in the editor (erasing the previous content).
@@ -257,7 +245,6 @@ public class EditorTab extends JComponent {
 		return shownFile;
 	}
 
-
 	/**
 	 * Returns the files in the left column of the editor tab.
 	 * 
@@ -266,6 +253,7 @@ public class EditorTab extends JComponent {
 	public List<File> getFiles() {
 		return new ArrayList<File>(listModel.xmlFiles.values());
 	}
+
 	// ===================================
 	// HELPER CLASSES
 	// ===================================
@@ -351,7 +339,7 @@ public class EditorTab extends JComponent {
 	 */
 	@SuppressWarnings("serial")
 	final class UndoRedoAction extends AbstractAction implements
-	UndoableEditListener {
+			UndoableEditListener {
 
 		// the undo manager
 		UndoManager undo;
@@ -416,7 +404,6 @@ public class EditorTab extends JComponent {
 		}
 	}
 
-	
 	/**
 	 * Listener for the document. Set the flag as unsaved if the domain is being
 	 * modified.
@@ -438,7 +425,5 @@ public class EditorTab extends JComponent {
 		}
 
 	}
-
-
 
 }
