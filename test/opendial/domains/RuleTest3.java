@@ -125,8 +125,7 @@ public class RuleTest3 {
 				false));
 		assertEquals(new Effect(effects), Effect.parseEffect("v1:=val1 ^ v2+=val2"));
 
-		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1, true,
-				true));
+		effects.add(new BasicEffect("v2", ValueFactory.create("val3"), 1, true, true));
 		assertEquals(new Effect(effects),
 				Effect.parseEffect("v1:=val1 ^ v2+=val2 ^ v2!=val3"));
 	}

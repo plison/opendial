@@ -84,7 +84,8 @@ public final class TemplateEffect extends BasicEffect {
 	public TemplateEffect(Template variable, Template value, int priority,
 			boolean exclusive, boolean negated) {
 		super(variable.toString(), (value.isUnderspecified()) ? ValueFactory.none()
-				: ValueFactory.create(value.getRawString()), priority, exclusive, negated);
+				: ValueFactory.create(value.getRawString()), priority, exclusive,
+				negated);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
 	}

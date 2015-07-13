@@ -31,7 +31,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,6 +42,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import opendial.DialogueState;
@@ -125,7 +125,7 @@ public class GUIFrame implements Module {
 			tabbedPane = new JTabbedPane();
 			frame.getContentPane().add(tabbedPane);
 
-			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			frame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent we) {
@@ -278,11 +278,11 @@ public class GUIFrame implements Module {
 	/**
 	 * Changes the active tab in the GUI.
 	 * 
-	 * @param i the index (0 for the interaction tab, 1 for the state
-	 * monitor, 2 for the domain editor).
+	 * @param i the index (0 for the interaction tab, 1 for the state monitor, 2 for
+	 *            the domain editor).
 	 */
 	public void setActiveTab(int i) {
-		if (i>=0 && i <=2) {
+		if (i >= 0 && i <= 2) {
 			tabbedPane.setSelectedIndex(i);
 		}
 		else {
@@ -291,15 +291,15 @@ public class GUIFrame implements Module {
 	}
 
 	/**
-	 * Asks the user whether to save the file. The method returns true
-	 * if an action (save or discard changes) has been performed. Else
-	 * (i.e. if the user has clicked cancel), return false.
+	 * Asks the user whether to save the file. The method returns true if an action
+	 * (save or discard changes) has been performed. Else (i.e. if the user has
+	 * clicked cancel), return false.
 	 * 
 	 * @return true if yes/no to save, false if cancel.
 	 */
 	private boolean requestSave() {
 		String msg = "Save edited domain file?";
-		int n =JOptionPane.showConfirmDialog(frame, msg);
+		int n = JOptionPane.showConfirmDialog(frame, msg);
 		if (n == 0) {
 			saveDomain();
 			return true;
@@ -312,12 +312,11 @@ public class GUIFrame implements Module {
 		return false;
 	}
 
-
 	/**
 	 * Closes the window (and OpenDial).
 	 */
 	public void closeWindow() {
-		WindowEvent ev =new WindowEvent(frame, WindowEvent.WINDOW_CLOSING) ; 
+		WindowEvent ev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 		frame.dispatchEvent(ev);
 	}
 
@@ -524,7 +523,7 @@ public class GUIFrame implements Module {
 		String curText = editorTab.getText();
 		if (fileToWrite != null) {
 			try {
-				Files.write(Paths.get(fileToWrite.toURI()), curText.getBytes());				
+				Files.write(Paths.get(fileToWrite.toURI()), curText.getBytes());
 			}
 			catch (IOException e) {
 				log.severe("Cannot save domain: " + e);
@@ -535,7 +534,6 @@ public class GUIFrame implements Module {
 			refresh();
 		}
 	}
-
 
 	/**
 	 * Resets the interaction (resetting the dialogue state to its initial value).
@@ -625,11 +623,9 @@ public class GUIFrame implements Module {
 		}
 	}
 
-
-
 	/**
-	 * Listener for clicks on the tabs. If the domain editor contains
-	 * unsaved content, asks the user whether to save them or not.
+	 * Listener for clicks on the tabs. If the domain editor contains unsaved
+	 * content, asks the user whether to save them or not.
 	 *
 	 */
 	final class ClickListener extends MouseAdapter implements MouseListener {
@@ -637,16 +633,14 @@ public class GUIFrame implements Module {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (!isDomainSaved() && requestSave()) {
-				e = new MouseEvent(e.getComponent(), 
-						MouseEvent.MOUSE_RELEASED, e.getWhen() + 100, 
-						e.getModifiers(), e.getX(),	e.getY(), 1, false);
+				e =
+						new MouseEvent(e.getComponent(), MouseEvent.MOUSE_RELEASED,
+								e.getWhen() + 100, e.getModifiers(), e.getX(),
+								e.getY(), 1, false);
 				e.getComponent().dispatchEvent(e);
 			}
 		}
 
 	}
-
-
-
 
 }

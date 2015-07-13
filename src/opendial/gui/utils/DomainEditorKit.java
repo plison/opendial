@@ -38,11 +38,11 @@ import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
 /**
- * Editor kit for the XML domain specification. The kit provides syntax 
- * highlighting, auto-indentation, and auto-completion.
+ * Editor kit for the XML domain specification. The kit provides syntax highlighting,
+ * auto-indentation, and auto-completion.
  * 
- * <p>Credits: part of this code are refactored from the 
- * 'bounce' XML editor kit.
+ * <p>
+ * Credits: part of this code are refactored from the 'bounce' XML editor kit.
  * 
  * @author Pierre Lison (plison@ifi.uio.no)
  *
@@ -111,7 +111,7 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 	 */
 	@Override
 	public void keyTyped(KeyEvent event) {
-		
+
 		try {
 			if (event.getKeyChar() == '>') {
 				onBraceClosed(event);
@@ -124,13 +124,13 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Does nothing
 	 */
 	@Override
-	public void keyReleased(KeyEvent e) {	}
-	
+	public void keyReleased(KeyEvent e) {
+	}
 
 	/**
 	 * Reacts to a closing brace. If the braces closes a valid XML entity, attempts
@@ -176,7 +176,7 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 			buffer.append(indent
 					+ "\t\t\t<if var=\"\" relation=\"=\" value=\"\"/>\n");
 			buffer.append(indent + "\t\t</condition>\n");
-			String param = (isUtility(doc, pos))? "util=\"0\"" : "prob=\"1\"";
+			String param = (isUtility(doc, pos)) ? "util=\"0\"" : "prob=\"1\"";
 			buffer.append(indent + "\t\t<effect " + param + ">\n");
 			buffer.append(indent + "\t\t\t<set var=\"\" value=\"\"/>\n");
 			buffer.append(indent + "\t\t</effect>\n");
@@ -188,7 +188,7 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 			buffer.append(">\n" + indent + "\t<condition>\n");
 			buffer.append(indent + "\t\t<if var=\"\" relation=\"=\" value=\"\"/>\n");
 			buffer.append(indent + "\t</condition>\n");
-			String param = (isUtility(doc, pos))? "util=\"0\"" : "prob=\"1\"";
+			String param = (isUtility(doc, pos)) ? "util=\"0\"" : "prob=\"1\"";
 			buffer.append(indent + "\t<effect " + param + ">\n");
 			buffer.append(indent + "\t\t<set var=\"\" value=\"\"/>\n");
 			buffer.append(indent + "\t</effect>\n");
@@ -340,12 +340,12 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		Document doc = editor.getDocument();
 		int pos = editor.getCaretPosition();
 		String indent = getIndent(doc, pos);
-		
+
 		Element root = doc.getDefaultRootElement();
 		Element elem = root.getElement(root.getElementIndex(pos));
 		int start = elem.getStartOffset();
 		String line = doc.getText(start, pos - start);
-		
+
 		if (isStartElement(line)) {
 			indent += "\t";
 		}
@@ -419,32 +419,33 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 			}
 			newStr.append(ch);
 		}
-		
+
 		return newStr.toString();
 	}
-	
+
 	/**
-	 * Returns true if the caret is currently in a model that contains a
-	 * majority of utility rules. Otherwise, returns false.
+	 * Returns true if the caret is currently in a model that contains a majority of
+	 * utility rules. Otherwise, returns false.
 	 * 
 	 * @param doc the document
 	 * @param position the caret position
 	 * @return true if there are more utility rules than prob rules, else false
 	 * @throws BadLocationException
 	 */
-	private static boolean isUtility(Document doc, int position) 
+	private static boolean isUtility(Document doc, int position)
 			throws BadLocationException {
-		
+
 		String before = doc.getText(0, position);
-		String after = doc.getText(position, doc.getLength()-position);
+		String after = doc.getText(position, doc.getLength() - position);
 		int start = before.lastIndexOf("<model");
 		int middle = before.lastIndexOf("</model>");
 		int end = after.indexOf("</model>");
-		
+
 		if (start >= 0 && end >= 0 && middle < start) {
-			String modeltext = before.substring(start, before.length()) 
-					+ after.substring(0, end);
-			int countProbs = 0 ;
+			String modeltext =
+					before.substring(start, before.length())
+							+ after.substring(0, end);
+			int countProbs = 0;
 			int countUtils = 0;
 			Pattern p = Pattern.compile("((?:prob)|(?:util))\\=");
 			Matcher m = p.matcher(modeltext);
@@ -460,10 +461,10 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		}
 		return false;
 	}
-	
+
 	/**
-	 *  Tries to find out if the line finishes with an element start
-	 *  
+	 * Tries to find out if the line finishes with an element start
+	 * 
 	 * @param line the line to process
 	 * @return true if the line finishes with a new entity
 	 */
@@ -474,7 +475,7 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 
 		if (last < first) {
 			return true;
-		} 
+		}
 		else {
 			int firstEnd = line.lastIndexOf("</");
 			int lastEnd = line.lastIndexOf("/>");
@@ -485,8 +486,6 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		}
 		return false;
 	}
-
-
 
 	// ===================================
 	// HELPER CLASS

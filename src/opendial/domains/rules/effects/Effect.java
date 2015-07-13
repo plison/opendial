@@ -219,8 +219,8 @@ public final class Effect implements Value {
 	}
 
 	/**
-	 * Returns true if all of the included effects for the variable are not 
-	 * mutually exclusive (allowing multiple values).
+	 * Returns true if all of the included effects for the variable are not mutually
+	 * exclusive (allowing multiple values).
 	 * 
 	 * @param variable the variable to check
 	 * @return true if the effects are not mutually exclusive, else false
@@ -406,7 +406,8 @@ public final class Effect implements Value {
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, 1, exclusive, negated));
+				return new Effect(new TemplateEffect(tvar, tval, 1, exclusive,
+						negated));
 			}
 			else {
 				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1,

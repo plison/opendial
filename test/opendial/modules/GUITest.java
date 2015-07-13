@@ -1,6 +1,6 @@
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
-                                                                            
+
 // Permission is hereby granted, free of charge, to any person 
 // obtaining a copy of this software and associated documentation 
 // files (the "Software"), to deal in the Software without restriction, 
@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 import java.awt.AWTException;
 import java.awt.GraphicsEnvironment;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.KeyStroke;
 
 import opendial.DialogueSystem;
 import opendial.gui.GUIFrame;
@@ -53,15 +50,15 @@ import org.junit.Test;
  *
  */
 public class GUITest {
-	
+
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	final Robot robot;
-	
+
 	public GUITest() throws AWTException {
 		robot = new Robot();
 	}
-	
+
 	@Test
 	public void newDomainTest() throws IOException {
 		if (!GraphicsEnvironment.isHeadless()) {
@@ -70,13 +67,16 @@ public class GUITest {
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
 			gui.newDomain(new File("blablaNew.xml"));
-			assertEquals("blablaNew.xml", system.getDomain().getSourceFile().getName());
+			assertEquals("blablaNew.xml", system.getDomain().getSourceFile()
+					.getName());
 			assertEquals(0, system.getDomain().getModels().size());
 			assertEquals("<domain>\n\n</domain>", gui.getEditorTab().getText());
-			assertEquals("blablaNew.xml", gui.getEditorTab().getShownFile().getName());
-			String minDom = "<domain><initialstate>"
-					+ "<variable id=\"foo\"><value>bar</value></variable>"
-					+ "</initialstate></domain>";
+			assertEquals("blablaNew.xml", gui.getEditorTab().getShownFile()
+					.getName());
+			String minDom =
+					"<domain><initialstate>"
+							+ "<variable id=\"foo\"><value>bar</value></variable>"
+							+ "</initialstate></domain>";
 			gui.getEditorTab().setText(minDom);
 			gui.saveDomain();
 			assertEquals(1, system.getState().getChanceNodes().size());
@@ -84,37 +84,38 @@ public class GUITest {
 			assertTrue(gui.getChatTab().getChat().contains("successfully created"));
 			assertTrue(gui.getChatTab().getChat().contains("successfully updated"));
 			Path p = Paths.get(new File("blablaNew.xml").toURI());
-			assertEquals(1,Files.readAllLines(p).size());
-			assertEquals(94,Files.readAllLines(p).get(0).length());
+			assertEquals(1, Files.readAllLines(p).size());
+			assertEquals(94, Files.readAllLines(p).get(0).length());
 			log.setLevel(null);
 			Files.delete(p);
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
-	
+
 	@Test
 	public void existingDomainTest() {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();
 			log.setLevel(Level.OFF);
-			
+
 			GUIFrame gui = system.getModule(GUIFrame.class);
-			system.changeDomain(XMLDomainReader.extractDomain(
-					"test/domains/example-step-by-step_params.xml"));
+			system.changeDomain(XMLDomainReader
+					.extractDomain("test/domains/example-step-by-step_params.xml"));
 			gui.refresh();
 			assertTrue(gui.getEditorTab().getText().contains("<parameters>"));
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals(1, gui.getEditorTab().getFiles().size());
 			system.addUserInput("move left");
-			assertEquals("Ok, moving Left", system.getContent("u_m").getBest().toString());
-			system.changeDomain(XMLDomainReader.extractDomain(
-					"test/domains/example-flightbooking.xml"));
+			assertEquals("Ok, moving Left", system.getContent("u_m").getBest()
+					.toString());
+			system.changeDomain(XMLDomainReader
+					.extractDomain("test/domains/example-flightbooking.xml"));
 			gui.refresh();
 			assertFalse(gui.getEditorTab().getText().contains("<parameters>"));
 			system.addUserInput("move left");
-			assertTrue(system.getContent("u_m").getBest().toString().
-					contains("Sorry, could you"));
+			assertTrue(system.getContent("u_m").getBest().toString()
+					.contains("Sorry, could you"));
 			assertEquals(6, system.getState().getChanceNodes().size());
 			assertEquals(4, gui.getEditorTab().getFiles().size());
 			gui.newDomain(new File("blablaNew.xml"));
@@ -127,7 +128,7 @@ public class GUITest {
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
-	
+
 	@Test
 	public void saveDomainTest() throws IOException, InterruptedException {
 		if (!GraphicsEnvironment.isHeadless()) {
@@ -136,10 +137,11 @@ public class GUITest {
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
 			gui.newDomain(new File("blablaNew.xml"));
-			String minDom = "<domain><model trigger=\"u_u\">" 
-					+ "<rule><case><condition><if var=\"u_u\" value=\"input\"/>"
-					+ "</condition><effect><set var=\"u_m\" value=\"output\"/>"
-					+ "</effect></case></rule></model></domain>";
+			String minDom =
+					"<domain><model trigger=\"u_u\">"
+							+ "<rule><case><condition><if var=\"u_u\" value=\"input\"/>"
+							+ "</condition><effect><set var=\"u_m\" value=\"output\"/>"
+							+ "</effect></case></rule></model></domain>";
 			gui.getEditorTab().setText(minDom);
 			system.addUserInput("input");
 			assertEquals(1, system.getState().getChanceNodes().size());
@@ -148,7 +150,7 @@ public class GUITest {
 			system.addUserInput("input");
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals("output", system.getContent("u_m").getBest().toString());
-			
+
 			String minDom2 = "<domain><rule></domain>";
 			gui.getEditorTab().setText(minDom2);
 			gui.saveDomain();
@@ -157,7 +159,7 @@ public class GUITest {
 			assertEquals(0, system.getDomain().getModels().size());
 			gui.resetInteraction();
 			assertEquals(0, system.getState().getChanceNodes().size());
-			
+
 			minDom2 = "<domain><rule></rule></domain>";
 			gui.getEditorTab().setText(minDom2);
 			gui.saveDomain();
@@ -171,38 +173,39 @@ public class GUITest {
 			system.addUserInput("input");
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals("output", system.getContent("u_m").getBest().toString());
-			
+
 			Path p = Paths.get(new File("blablaNew.xml").toURI());
-			assertEquals(1,Files.readAllLines(p).size());
-			assertEquals(172,Files.readAllLines(p).get(0).length());
+			assertEquals(1, Files.readAllLines(p).size());
+			assertEquals(172, Files.readAllLines(p).get(0).length());
 			gui.saveDomain(new File("blabla2.xml"));
-			if (gui.getEditorTab().getShownFile().equals(system.getDomain().getSourceFile())) {
+			if (gui.getEditorTab().getShownFile()
+					.equals(system.getDomain().getSourceFile())) {
 				system.getDomain().setSourceFile(new File("blabla2.xml"));
 			}
 			system.refreshDomain();
 
 			p = Paths.get(new File("blabla2.xml").toURI());
-			assertEquals(1,Files.readAllLines(p).size());
-			assertEquals(172,Files.readAllLines(p).get(0).length());
+			assertEquals(1, Files.readAllLines(p).size());
+			assertEquals(172, Files.readAllLines(p).get(0).length());
 			minDom2 = "<domain><rule></domain>";
 			gui.getEditorTab().setText(minDom2);
 			gui.saveDomain();
-			assertEquals(1,Files.readAllLines(p).size());
-			assertEquals(23,Files.readAllLines(p).get(0).length());
+			assertEquals(1, Files.readAllLines(p).size());
+			assertEquals(23, Files.readAllLines(p).get(0).length());
 			p = Paths.get(new File("blablaNew.xml").toURI());
-			assertEquals(1,Files.readAllLines(p).size());
-			assertEquals(172,Files.readAllLines(p).get(0).length());	
-			
+			assertEquals(1, Files.readAllLines(p).size());
+			assertEquals(172, Files.readAllLines(p).get(0).length());
+
 			log.setLevel(null);
 			Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
 			Files.delete(Paths.get(new File("blabla2.xml").toURI()));
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
-	
 
 	@Test
-	public void autoCompletion() throws IOException, InterruptedException, AWTException {
+	public void autoCompletion() throws IOException, InterruptedException,
+			AWTException {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();
@@ -210,7 +213,7 @@ public class GUITest {
 			gui.newDomain(new File("blablaNew.xml"));
 			gui.setActiveTab(2);
 			robot.delay(200);
-			for (int i = 0 ; i < 8 ; i++) {
+			for (int i = 0; i < 8; i++) {
 				typeKey(KeyEvent.VK_RIGHT);
 			}
 			typeKey(KeyEvent.VK_ENTER);
@@ -226,8 +229,8 @@ public class GUITest {
 			typeKey(KeyEvent.VK_SHIFT, KeyEvent.VK_SLASH);
 			typeKey(KeyEvent.VK_U);
 			robot.delay(100);
-			assertEquals(55,gui.getEditorTab().getText().length());
-			for (int i = 0 ; i < 2 ; i++) {
+			assertEquals(55, gui.getEditorTab().getText().length());
+			for (int i = 0; i < 2; i++) {
 				typeKey(KeyEvent.VK_RIGHT);
 			}
 			typeKey(KeyEvent.VK_ENTER);
@@ -239,7 +242,7 @@ public class GUITest {
 			typeKey(KeyEvent.VK_E);
 			typeKey(KeyEvent.VK_SHIFT, KeyEvent.VK_BACK_QUOTE);
 			robot.delay(100);
-			assertEquals(236,gui.getEditorTab().getText().length());
+			assertEquals(236, gui.getEditorTab().getText().length());
 			typeKey(KeyEvent.VK_U);
 			typeKey(KeyEvent.VK_SHIFT, KeyEvent.VK_SLASH);
 			typeKey(KeyEvent.VK_U);
@@ -249,19 +252,19 @@ public class GUITest {
 			typeKey(KeyEvent.VK_C);
 			typeKey(KeyEvent.VK_TAB);
 			typeKey(KeyEvent.VK_D);
-			for (int i = 0 ; i < 4 ; i++) {
+			for (int i = 0; i < 4; i++) {
 				typeKey(KeyEvent.VK_DOWN);
 			}
 			typeKey(KeyEvent.VK_ENTER);
 			typeKey(KeyEvent.VK_ENTER);
 			robot.delay(100);
-			assertEquals(244,gui.getEditorTab().getText().length());
-			
+			assertEquals(244, gui.getEditorTab().getText().length());
+
 			typeKey(KeyEvent.VK_META, KeyEvent.VK_Z);
 			typeKey(KeyEvent.VK_META, KeyEvent.VK_Z);
 			robot.delay(100);
-			assertEquals(242,gui.getEditorTab().getText().length());
-	
+			assertEquals(242, gui.getEditorTab().getText().length());
+
 			gui.saveDomain();
 			Path p = Paths.get(new File("blablaNew.xml").toURI());
 			assertEquals(19, Files.readAllLines(p).size());
@@ -269,9 +272,9 @@ public class GUITest {
 			assertEquals("d", system.getContent("c").getBest().toString());
 			Files.delete(Paths.get(new File("blablaNew.xml").toURI()));
 			system.getModule(GUIFrame.class).getFrame().dispose();
+		}
 	}
-	}
-	
+
 	private void typeKey(int... keys) {
 		for (int key : keys) {
 			robot.keyPress(key);

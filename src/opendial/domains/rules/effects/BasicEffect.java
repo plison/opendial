@@ -64,7 +64,7 @@ public class BasicEffect {
 	 * Whether the value is mutually exclusive with other values for the variable
 	 * (default case) or not. If not, distinct values are added together in a list.
 	 */
-	final boolean exclusive ;
+	final boolean exclusive;
 
 	/** Whether the effect includes a negation (default is false). */
 	final boolean negated;
@@ -99,8 +99,8 @@ public class BasicEffect {
 	 * @param exclusive whether distinct values are mutually exclusive or not
 	 * @param negated whether to negate the effect or not.
 	 */
-	public BasicEffect(String variable, Value value, int priority, boolean exclusive,
-			boolean negated) {
+	public BasicEffect(String variable, Value value, int priority,
+			boolean exclusive, boolean negated) {
 		this.variableLabel = variable;
 		this.variableValue = value;
 		this.priority = priority;
@@ -272,7 +272,8 @@ public class BasicEffect {
 	 */
 	public BasicEffect copy() {
 		BasicEffect copy =
-				new BasicEffect(variableLabel, variableValue, priority, exclusive, negated);
+				new BasicEffect(variableLabel, variableValue, priority, exclusive,
+						negated);
 		return copy;
 	}
 
