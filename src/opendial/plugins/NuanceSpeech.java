@@ -201,7 +201,8 @@ public class NuanceSpeech implements Module {
 
 			HttpEntity resEntity = response.getEntity();
 			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
-				log.warning("(speech could not be recognised)");
+				log.warning("(speech could not be recognised: error "
+						+ response.getStatusLine().getStatusCode() + ")");
 			}
 			else {
 				BufferedReader reader =

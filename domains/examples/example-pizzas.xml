@@ -213,7 +213,7 @@
 				<if var="a_m" value="Order({X})"/>
 			</condition>
 			<effect>
-				<set var="order" value="{X}" add="true"/>
+				<set var="order" value="{X}" exclusive="false"/>
 			</effect>
 		</case>
 	</rule>

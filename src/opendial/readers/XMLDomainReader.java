@@ -61,37 +61,66 @@ public class XMLDomainReader {
 	 * @return the extracted dialogue domain
 	 */
 	public static Domain extractDomain(String topDomainFile) {
+		return extractDomain(topDomainFile, true);
+
+	}
+	
+	
+	/**
+	 * Extract a empty domain from the XML domain specification,
+	 * only setting the source file and its possible imports.
+	 * This method is used to be able to extract the source
+	 * and import files in case the domain is ill-formed. You
+	 * can usually safely ignore this method.
+	 * 
+	 * @param topDomainFile the filename of the top XML file
+	 * @return the extracted dialogue domain
+	 */
+	public static Domain extractEmptyDomain(String topDomainFile) {
+		return extractDomain(topDomainFile, false);
+	}
+
+	
+	/**
+	 * Extract a dialogue domain from the XML specification
+	 * 
+	 * @param topDomainFile the filename of the top XML file
+	 * @param fullExtract whether to extract the full domain or only the files
+	 * @return the extracted dialogue domain
+	 */
+	private static Domain extractDomain(String topDomainFile, boolean fullExtract) {
 
 		// create a new, empty domain
 		Domain domain = new Domain();
+	
+		// determine the root path and filename
+		File f = new File(topDomainFile);
+		domain.setSourceFile(f);
 
 		// extract the XML document
+		try {
 		Document doc = XMLUtils.getXMLDocument(topDomainFile);
 
 		Node mainNode = XMLUtils.getMainNode(doc);
 
-		// determine the root path and filename
-		File f = new File(topDomainFile);
 		String rootpath = f.getParent();
 
-		if (mainNode.hasAttributes()
-				&& mainNode.getAttributes().getNamedItem("name") != null) {
-			domain.setName(mainNode.getAttributes().getNamedItem("name")
-					.getNodeValue());
-		}
-		else {
-			domain.setName(topDomainFile.replace("//", "/"));
-		}
 
 		NodeList firstElements = mainNode.getChildNodes();
 		for (int j = 0; j < firstElements.getLength(); j++) {
 
 			Node node = firstElements.item(j);
-			domain = extractPartialDomain(node, domain, rootpath);
+			domain = extractPartialDomain(node, domain, rootpath, fullExtract);
+		}
+		}
+		catch (RuntimeException e) {
+			if (fullExtract) {
+				throw e;
+			}
 		}
 		return domain;
 	}
-
+	
 	/**
 	 * Extracts a partially specified domain from the XML node and add its content to
 	 * the dialogue domain.
@@ -99,10 +128,12 @@ public class XMLDomainReader {
 	 * @param mainNode main XML node
 	 * @param domain dialogue domain
 	 * @param rootpath rooth path (necessary to handle references)
-	 * @return the augmented dialogue domain @
+	 * @param fullExtract whether to extract the full domain or only the files
+	 * 
+	 * @return the augmented dialogue domain 
 	 */
 	private static Domain extractPartialDomain(Node mainNode, Domain domain,
-			String rootpath) {
+			String rootpath, boolean fullExtract) {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("domain")) {
@@ -110,32 +141,32 @@ public class XMLDomainReader {
 			NodeList firstElements = mainNode.getChildNodes();
 			for (int j = 0; j < firstElements.getLength(); j++) {
 				Node node = firstElements.item(j);
-				domain = extractPartialDomain(node, domain, rootpath);
+				domain = extractPartialDomain(node, domain, rootpath, fullExtract);
 			}
 		}
 
 		// extracting rule-based probabilistic model
-		if (mainNode.getNodeName().equals("settings")) {
+		else if (fullExtract && mainNode.getNodeName().equals("settings")) {
 			Properties settings = XMLUtils.extractMapping(mainNode);
 			domain.getSettings().fillSettings(settings);
 		}
 
 		// extracting initial state
-		else if (mainNode.getNodeName().equals("initialstate")) {
+		else if (fullExtract && mainNode.getNodeName().equals("initialstate")) {
 			BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
 			domain.setInitialState(new DialogueState(state));
 			// log.fine(state);
 		}
 
 		// extracting rule-based probabilistic model
-		else if (mainNode.getNodeName().equals("model")) {
+		else if (fullExtract && mainNode.getNodeName().equals("model")) {
 			Model model = createModel(mainNode);
 			// log.fine(model);
 			domain.addModel(model);
 		}
 
 		// extracting parameters
-		else if (mainNode.getNodeName().equals("parameters")) {
+		else if (fullExtract && mainNode.getNodeName().equals("parameters")) {
 			BNetwork parameters = XMLStateReader.getBayesianNetwork(mainNode);
 			domain.setParameters(parameters);
 		}
@@ -146,11 +177,19 @@ public class XMLDomainReader {
 
 			String fileName =
 					mainNode.getAttributes().getNamedItem("href").getNodeValue();
-			Document subdoc =
-					XMLUtils.getXMLDocument(rootpath + File.separator + fileName);
+			String filepath = rootpath + File.separator + fileName;
+			domain.addImportedFiles(new File(filepath));
+			Document subdoc = XMLUtils.getXMLDocument(filepath);
 			domain =
 					extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
-							rootpath);
+							rootpath, fullExtract);
+		}
+		else if (fullExtract && XMLUtils.hasContent(mainNode)) {
+			if (mainNode.getNodeName().equals("#text")) {
+				throw new RuntimeException("cannot insert free text in <domain>");
+			}
+			throw new RuntimeException("Invalid tag in <domain>: "
+					+ mainNode.getNodeName());
 		}
 
 		return domain;
@@ -170,6 +209,13 @@ public class XMLDomainReader {
 				Rule rule = XMLRuleReader.getRule(node);
 				model.addRule(rule);
 			}
+			else if (XMLUtils.hasContent(node)) {
+				if (node.getNodeName().equals("#text")) {
+					throw new RuntimeException("cannot insert free text in <model>");
+				}
+				throw new RuntimeException("Invalid tag in <model>: "
+						+ node.getNodeName());
+			}
 		}
 
 		if (topNode.hasAttributes()
@@ -186,7 +232,7 @@ public class XMLDomainReader {
 			}
 		}
 		else {
-			throw new RuntimeException("each model must specify a variable trigger:"
+			throw new RuntimeException("<model> must have a 'trigger' attribute:"
 					+ XMLUtils.serialise(topNode));
 		}
 

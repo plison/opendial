@@ -669,6 +669,15 @@ public class CategoricalTable implements IndependentDistribution {
 		public boolean isEmpty() {
 			return table.isEmpty();
 		}
+
+		/**
+		 * Returns the total probability in the table
+		 * 
+		 * @return the total probability
+		 */
+		public double getTotalProb() {
+			return table.values().stream().mapToDouble(d -> d).sum();
+		}
 	}
 
 }

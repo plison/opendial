@@ -84,7 +84,7 @@
 					<if var="u_u" relation="contains" value="(3|three) (tickets)?" />
 				</condition>
 				<effect>
-					<set var="a_u" value="Inform(Number,3)" exclusive="false"/>
+					<set var="a_u" value="Inform(Number,3)" exclusive="false" />
 				</effect>
 			</case>
 				<case>

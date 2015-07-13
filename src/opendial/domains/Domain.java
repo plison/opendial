@@ -23,7 +23,9 @@
 
 package opendial.domains;
 
+import java.io.File;
 import java.util.logging.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,8 +45,9 @@ public class Domain {
 
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	// domain name
-	String domainName = "";
+	// path to the source XML file (and its imports)
+	File xmlFile;
+	List<File> importedFiles;
 
 	// initial dialogue state
 	DialogueState initState;
@@ -65,15 +68,52 @@ public class Domain {
 		models = new LinkedList<Model>();
 		initState = new DialogueState();
 		parameters = new BNetwork();
+		importedFiles = new ArrayList<File>();
 	}
 
 	/**
-	 * Sets the domain name
+	 * Associate the given source XML files to the domain
 	 * 
-	 * @param domainName the domain name
+	 * @param xmlFile the file to associate
 	 */
-	public void setName(String domainName) {
-		this.domainName = domainName;
+	public void setSourceFile(File xmlFile) {
+		this.xmlFile = xmlFile;
+	}
+
+	/**
+	 * Returns true if the domain is empty
+	 * 
+	 * @return true if empty, false otherwise
+	 */
+	public boolean isEmpty() {
+		return this.xmlFile == null;
+	}
+
+	/**
+	 * Adds the given XML files to the list of imported source files
+	 * 
+	 * @param xmlFile the file to add
+	 */
+	public void addImportedFiles(File xmlFile) {
+		importedFiles.add(xmlFile);
+	}
+
+	/**
+	 * Returns the source file containing the domain specification
+	 * 
+	 * @return the source file
+	 */
+	public File getSourceFile() {
+		return xmlFile;
+	}
+
+	/**
+	 * Returns the (possibly empty) list of imported files
+	 * 
+	 * @return the imported files
+	 */
+	public List<File> getImportedFiles() {
+		return importedFiles;
 	}
 
 	/**
@@ -135,7 +175,7 @@ public class Domain {
 	 */
 	@Override
 	public String toString() {
-		return domainName;
+		return xmlFile.getName();
 	}
 
 	/**
@@ -157,12 +197,18 @@ public class Domain {
 	}
 
 	/**
-	 * Returns the domain name
-	 * 
-	 * @return the domain name
+	 * Returns true if o is a domain with the same source file, and false otherwise.
 	 */
-	public String getName() {
-		return domainName;
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Domain) {
+			File src1 = ((Domain) o).getSourceFile();
+			if (src1 == xmlFile) {
+				return true;
+			}
+			return (src1 != null && xmlFile != null && src1.equals(xmlFile));
+		}
+		return false;
 	}
 
 }

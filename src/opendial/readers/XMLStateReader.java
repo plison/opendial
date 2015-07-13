@@ -24,7 +24,6 @@
 package opendial.readers;
 
 import java.util.logging.*;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,6 +35,7 @@ import opendial.bn.distribs.densityfunctions.GaussianDensityFunction;
 import opendial.bn.distribs.densityfunctions.UniformDensityFunction;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.ArrayVal;
+import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.XMLUtils;
 
@@ -97,10 +97,16 @@ public class XMLStateReader {
 
 		for (int i = 0; i < mainNode.getChildNodes().getLength(); i++) {
 			Node node = mainNode.getChildNodes().item(i);
-			if (node.getNodeName().equals("variable") && node.hasAttributes()) {
+			if (node.getNodeName().equals("variable")) {
 				ChanceNode chanceNode = createChanceNode(node);
 				state.addNode(chanceNode);
 			}
+			else if (!node.getNodeName().equals("#text")
+					&& !node.getNodeName().equals("#comment")) {
+				throw new RuntimeException("Invalid tag in state: "
+						+ node.getNodeName() + " not accepted");
+			}
+
 		}
 
 		return state;
@@ -114,7 +120,10 @@ public class XMLStateReader {
 	 */
 	public static ChanceNode createChanceNode(Node node) {
 
-		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id") == null) {
+		if (!node.hasAttributes()
+				|| node.getAttributes().getNamedItem("id") == null
+				|| node.getAttributes().getNamedItem("id").getNodeValue().trim()
+						.isEmpty()) {
 			throw new RuntimeException("variable id is mandatory");
 		}
 
@@ -131,11 +140,17 @@ public class XMLStateReader {
 			if (subnode.getNodeName().equals("value")) {
 
 				// extracting the value
-				String value = subnode.getFirstChild().getNodeValue().trim();
-
-				// extracting the probability
-				float prob = getProbability(subnode);
-				builder.addRow(ValueFactory.create(value), prob);
+				Node child = subnode.getFirstChild();
+				if (child != null) {
+					// extracting the probability
+					float prob = getProbability(subnode);
+					Value v = ValueFactory.create(child.getNodeValue().trim());
+					builder.addRow(v, prob);
+				}
+				else {
+					throw new RuntimeException("Value in variable " + label
+							+ " cannot be empty");
+				}
 			}
 
 			// second case: the chance node is described by a parametric
@@ -176,6 +191,10 @@ public class XMLStateReader {
 			return new ChanceNode(label, distrib);
 		}
 		else {
+			double total = builder.getTotalProb();
+			if (total > 1.01) {
+				throw new RuntimeException("Total probability is > 1: " + total);
+			}
 			return new ChanceNode(label, builder.build());
 		}
 	}
