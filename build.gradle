@@ -2,18 +2,22 @@
  * Gradle Build file for OpenDial (based on a previous file written by Ingmar Steiner).
  */
 
+
 apply plugin: 'java'
-// apply plugin: 'eclipse'
+apply plugin: 'eclipse'
 apply plugin: 'application'
 mainClassName = 'opendial.DialogueSystem'
-    
-
+ 
 repositories {
 	jcenter()
     flatDir {
     	dirs file("${projectDir}/lib")
     }
+ //    maven {
+ //       url 'http://oss.jfrog.org/artifactory/repo'
+ //   }
 }
+
 
 
 dependencies {
@@ -36,15 +40,13 @@ sourceSets {
 	main {
 		java {
 			srcDirs 'src'
-	    }
-	    resources {
-			srcDir 'resources'
+			exclude 'opendial/plugins/MaryTTS.java'
 	    }
 	}
 	test {
 	    java {
 			srcDirs 'test'
-			exclude 'test/domains/**'
+			exclude 'domains/**'
 	    }
 	}
 }
@@ -55,21 +57,12 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-
-task copySettingsXml(type: Copy) {
-    from sourceSets.main.output.resourcesDir
-    into "$buildDir/resources"
-    include 'settings.xml'
-}
-
 run {
-     dependsOn copySettingsXml
-     workingDir = buildDir
-  	 systemProperty 'file.encoding', 'UTF-8'
+     systemProperties System.getProperties()
+	systemProperty 'file.encoding', 'UTF-8'
 }
 
 test {
-    dependsOn copySettingsXml
   	testLogging {
 		exceptionFormat = 'full'
     }
