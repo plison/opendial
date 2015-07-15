@@ -22,8 +22,8 @@
 // =================================================================                                                                   
 
 package opendial.gui.utils;
-
-import java.util.logging.*;
+ 
+import java.util.logging.*; 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -81,7 +81,7 @@ import edu.uci.ics.jung.visualization.transform.MutableTransformer;
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
- */
+ */ 
 @SuppressWarnings("serial")
 public class StateViewer extends VisualizationViewer<String, Integer> {
 

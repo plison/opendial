@@ -13,34 +13,44 @@ repositories {
     flatDir {
     	dirs file("${projectDir}/lib")
     }
- //    maven {
- //       url 'http://oss.jfrog.org/artifactory/repo'
- //   }
+    maven {
+        url 'https://oss.jfrog.org/artifactory/repo'
+    }
+    maven {
+    	url 'http://oss.sonatype.org.80bola.com/content/repositories/snapshots'
+    }
 }
 
-
+configurations{
+mary
+sphinx
+maltparser
+nao
+} 
 
 dependencies {
 	compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.3+'
 	compile group:'net.java.balloontip', name:'balloontip', version:'1.2+'
-	compile group:'commons-io', name:'commons-io', version:'2.4+'
 	compile group:'org.json', name:'org.json', version:'2.0'
 	compile group:'org.jcommon', name:'jcommon', version:'1.0+'
 	compile group:'org.jfree', name:'jfreechart', version:'1.0.19+'
-	compile group:'net.sf.jung', name:'jung2', version:'2.0.1'
-	compile group:'net.sf.jung', name:'jung-algorithms', version:'2.0.1'
 	compile group:'net.sf.jung', name:'jung-graph-impl', version:'2.0.1'
 	compile group:'net.sf.jung', name:'jung-visualization', version:'2.0.1'
 	compile name: 'att-codekit'
 	compile name: 'exp4j'
 	testCompile group:'junit', name: 'junit',  version: '4.+'
-}
+ 	mary group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.1.1'
+ 	mary group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.1.1'
+    sphinx group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
+    sphinx group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'1.0-SNAPSHOT'
+  }
 
 sourceSets {
 	main {
 		java {
 			srcDirs 'src'
 			exclude 'opendial/plugins/MaryTTS.java'
+			exclude 'opendial/plugins/SphinxASR.java'
 	    }
 	}
 	test {
@@ -52,6 +62,22 @@ sourceSets {
 }
 
 
+
+task mary(type: JavaCompile) {
+	dependsOn assemble
+	source = fileTree(dir: 'src', include: 'opendial/plugins/MaryTTS.java')
+	classpath=sourceSets.main.output +configurations.mary
+ 	destinationDir = sourceSets.main.output.classesDir
+}
+
+task sphinx(type: JavaCompile) {
+	dependsOn assemble
+	source = fileTree(dir: 'src', include: 'opendial/plugins/SphinxASR.java')
+	classpath=sourceSets.main.output +configurations.sphinx
+ 	destinationDir = sourceSets.main.output.classesDir
+}
+
+
 tasks.withType(JavaCompile) {
 	sourceCompatibility = '1.8'
 	options.encoding = 'UTF-8'
@@ -60,6 +86,8 @@ tasks.withType(JavaCompile) {
 run {
      systemProperties System.getProperties()
 	systemProperty 'file.encoding', 'UTF-8'
+	classpath += configurations.mary
+	classpath += configurations.sphinx
 }
 
 test {

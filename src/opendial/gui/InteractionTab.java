@@ -271,8 +271,8 @@ public class InteractionTab extends JComponent {
 	 */
 	void refresh() {
 		if (system.getDomain().isEmpty()) {
-			inputField.setEnabled(false);
-			lines.setEnabled(false);
+//			inputField.setEnabled(false);
+//			lines.setEnabled(false);
 			lines.setToolTipText("No dialogue domain currently selected");
 			inputField.setToolTipText("No dialogue domain currently selected");
 		}
