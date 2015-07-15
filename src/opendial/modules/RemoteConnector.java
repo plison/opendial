@@ -25,6 +25,7 @@ package opendial.modules;
 
 import java.util.logging.*;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,7 +47,6 @@ import opendial.gui.GUIFrame;
 import opendial.readers.XMLStateReader;
 import opendial.utils.XMLUtils;
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -110,7 +110,7 @@ public class RemoteConnector implements Module {
 
 		// connect to remote connections
 		if (!system.getSettings().remoteConnections.isEmpty()) {
-			InputStream content = IOUtils.toInputStream(getLocalAddress());
+			InputStream content = new ByteArrayInputStream(getLocalAddress().getBytes());
 			forwardContent(MessageType.INIT, content);
 		}
 
@@ -118,7 +118,7 @@ public class RemoteConnector implements Module {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			if (!system.getSettings().remoteConnections.isEmpty()) {
 				log.fine("Shutting down remote connection");
-				InputStream content = IOUtils.toInputStream(getLocalAddress());
+				InputStream content = new ByteArrayInputStream(getLocalAddress().getBytes());
 				forwardContent(MessageType.CLOSE, content);
 				try {
 					Thread.sleep(100);
@@ -139,7 +139,7 @@ public class RemoteConnector implements Module {
 	 * @param port the port to employ
 	 */
 	public void connectTo(String address, int port) {
-		InputStream content = IOUtils.toInputStream(getLocalAddress());
+		InputStream content = new ByteArrayInputStream(getLocalAddress().getBytes());
 		sendContent(MessageType.INIT, content, address, port);
 	}
 
@@ -172,8 +172,7 @@ public class RemoteConnector implements Module {
 			// if the resulting document is non-empty, forward it through the
 			// socket
 			if (root.hasChildNodes()) {
-				InputStream content =
-						IOUtils.toInputStream(XMLUtils.serialise(xmlDoc));
+				InputStream content =new ByteArrayInputStream(XMLUtils.serialise(xmlDoc).getBytes());
 				forwardContent(MessageType.XML, content);
 				return;
 			}
@@ -263,7 +262,11 @@ public class RemoteConnector implements Module {
 				Socket socket = new Socket(address, port);
 				OutputStream out = socket.getOutputStream();
 				out.write(messageType.ordinal());
-				IOUtils.copy(IOUtils.toBufferedInputStream(content), out);
+				int n;
+				byte[] buffer = new byte[1024*4];
+		        while (-1 != (n = content.read(buffer))) {
+		        	out.write(buffer, 0, n);
+		        }
 				socket.close();
 			}
 			catch (Exception e) {
@@ -293,7 +296,13 @@ public class RemoteConnector implements Module {
 				Socket connection = local.accept();
 				InputStream in = connection.getInputStream();
 				MessageType type = MessageType.values()[in.read()];
-				byte[] message = IOUtils.toByteArray(in);
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				int n;
+				byte[] buffer = new byte[1024*4];
+		        while (-1 != (n = in.read(buffer))) {
+		        	out.write(buffer, 0, n);
+		        }
+				byte[] message = out.toByteArray();
 				if (type == MessageType.INIT) {
 					String content = new String(message);
 					String ip = content.split(":")[0];

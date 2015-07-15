@@ -68,7 +68,7 @@ import opendial.domains.Domain;
 import opendial.gui.utils.DomainEditorKit;
 
 public class EditorTab extends JComponent {
-
+ 
 	private static final long serialVersionUID = 1L;
 
 	// logger
