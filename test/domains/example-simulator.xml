@@ -25,6 +25,7 @@
 			<case>
 				<condition>
 					<if var="a_m" value="AskRepeat" />
+					<if var="a_u" relation="!=" value="None" />
 				</condition>
 				<effect prob="0.9">
 					<set var="a_u" value="{a_u}" />

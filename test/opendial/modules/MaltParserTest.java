@@ -48,7 +48,7 @@ public class MaltParserTest {
 			"resources/english-left3words-distsim.tagger";
 	public static final String PARSING_MODEL = "resources/engmalt.linear-1.7.mco";
 
-//	@Test
+	// @Test
 	public void parsingTest() throws InterruptedException {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(DOMAIN_FILE));
@@ -82,9 +82,8 @@ public class MaltParserTest {
 		assertTrue(system.getState().hasChanceNode("a_u"));
 		assertEquals(system.getContent("a_u").toDiscrete().getProb("Move(right)"),
 				0.6, 0.01);
-		ParseValue pv =
-				(ParseValue) system.getContent("parse(u_u)").getValues().stream()
-						.filter(v -> v instanceof ParseValue).findFirst().get();
+		ParseValue pv = (ParseValue) system.getContent("parse(u_u)").getValues()
+				.stream().filter(v -> v instanceof ParseValue).findFirst().get();
 		assertTrue(pv.contains(ValueFactory.create("TO DT JJ")));
 		assertFalse(pv.contains(ValueFactory.create("DT TT JJ")));
 		assertTrue(pv.contains(ValueFactory.create("(*,the,*,det,7)")));
@@ -105,12 +104,11 @@ public class MaltParserTest {
 		table = new HashMap<String, Double>();
 		table.put("this is a gnome", 0.6);
 		system.addUserInput(table);
-		pv =
-				(ParseValue) system.getContent("parse(u_u)").getValues().stream()
-						.filter(v -> v instanceof ParseValue).findFirst().get();
+		pv = (ParseValue) system.getContent("parse(u_u)").getValues().stream()
+				.filter(v -> v instanceof ParseValue).findFirst().get();
 		assertTrue(pv.contains(ValueFactory.create("DT VBZ DT NN")));
-		assertEquals("Test successful", system.getContent("i_u").getBest()
-				.toString());
+		assertEquals("Test successful",
+				system.getContent("i_u").getBest().toString());
 
 	}
 }

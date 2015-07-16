@@ -90,6 +90,7 @@ public class StatePruner {
 
 				// step 6: and final reset the state to the reduced form
 				state.reset(reduced);
+
 			}
 			else {
 				state.reset(new BNetwork());
@@ -170,7 +171,6 @@ public class StatePruner {
 	 */
 	private static DialogueState reduce(DialogueState state,
 			Set<String> nodesToKeep) {
-
 		Assignment evidence = state.getEvidence();
 		// if all nodes to keep are included in the evidence, no inference is
 		// needed
@@ -310,13 +310,17 @@ public class StatePruner {
 					&& reduced.getIncrementalVars().isEmpty()) {
 				Assignment onlyAssign = new Assignment(node.getId(), node.sample());
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
-					ProbDistribution curDistrib = outputNode.getDistrib();
-					outputNode.removeInputNode(node.getId());
-					if (outputNode.getInputNodeIds().isEmpty()) {
-						outputNode.setDistrib(curDistrib.getProbDistrib(onlyAssign));
-					}
-					else {
-						outputNode.setDistrib(curDistrib.getPosterior(onlyAssign));
+					if (!(outputNode.getDistrib() instanceof AnchoredRule)) {
+						ProbDistribution curDistrib = outputNode.getDistrib();
+						outputNode.removeInputNode(node.getId());
+						if (outputNode.getInputNodeIds().isEmpty()) {
+							outputNode.setDistrib(
+									curDistrib.getProbDistrib(onlyAssign));
+						}
+						else {
+							outputNode
+									.setDistrib(curDistrib.getPosterior(onlyAssign));
+						}
 					}
 				}
 			}

@@ -54,7 +54,6 @@ import opendial.modules.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
-import opendial.utils.XMLUtils;
 
 /**
  * <p>
@@ -306,14 +305,15 @@ public class DialogueSystem {
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
-			settings.selectAudioMixers();
-
-			attachModule(AudioModule.class);
-			if (settings.showGUI) {
-				getModule(GUIFrame.class).enableSpeech(true);
-			}
-			else {
-				getModule(AudioModule.class).activateVAD(true);
+			if (getModule(AudioModule.class) == null) {
+				settings.selectAudioMixers();
+				attachModule(AudioModule.class);
+				if (settings.showGUI) {
+					getModule(GUIFrame.class).enableSpeech(true);
+				}
+				else {
+					getModule(AudioModule.class).activateVAD(true);
+				}
 			}
 		}
 		else {
@@ -834,13 +834,12 @@ public class DialogueSystem {
 	 * the -D flag. All parameters are optional.
 	 * 
 	 * <p>
-	 * Possible properties are:
+	 * Some of the possible properties are:
 	 * <ul>
 	 * <li>-Ddomain=path/to/domain/file: dialogue domain file
-	 * <li>-Dsettings=path/to/settings/file: settings file
 	 * <li>-Ddialogue=path/to/recorded/dialogue: dialogue file to import
-	 * <li>-Dsimulator=path/to/simulator/domain/file: dialogue domain file for the
-	 * simulator
+	 * <li>-Dsimulator=path/to/simulator/file: domain file for the simulator
+	 * <li>--Dgui=true or false: activates or deactives the GUI
 	 * </ul>
 	 * 
 	 * @param args is ignored.
@@ -848,7 +847,6 @@ public class DialogueSystem {
 	public static void main(String[] args) {
 		DialogueSystem system = new DialogueSystem();
 		String domainFile = System.getProperty("domain");
-		String settingsFile = System.getProperty("settings");
 		String dialogueFile = System.getProperty("dialogue");
 		String simulatorFile = System.getProperty("simulator");
 
@@ -864,10 +862,6 @@ public class DialogueSystem {
 				domain = XMLDomainReader.extractEmptyDomain(domainFile);
 			}
 			system.changeDomain(domain);
-		}
-		if (settingsFile != null) {
-			system.getSettings().fillSettings(XMLUtils.extractMapping(settingsFile));
-			log.info("Settings from " + settingsFile + " successfully extracted");
 		}
 		if (dialogueFile != null) {
 			system.importDialogue(dialogueFile);

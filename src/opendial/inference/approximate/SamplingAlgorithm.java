@@ -229,7 +229,6 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 			}
 
 			ProbDistribution distrib = fullDistrib.getMarginal(var, inputNodesIds);
-
 			// creating the node
 			ChanceNode node = new ChanceNode(var, distrib);
 			for (String inputId : inputNodesIds) {
