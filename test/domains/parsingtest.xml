@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<model trigger="parse(u_u)">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="parse(u_u)" relation="contains" value="({X},(move|go),*,*,*)" />
+					<if var="parse(u_u)" relation="contains" value="({Y},to,*,prep,{X})" />
+					<if var="parse(u_u)" relation="contains" value="(*,{Dir},*,pobj,{Y})" />
+					<if var="Dir" value="(left|right)" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Move({Dir})" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="parse(u_u)" relation="contains" value="({X},(move|go),*,*,*)" />
+					<if var="parse(u_u)" relation="contains" value="(*,{Dir},*,*,{X})" />
+					<if var="Dir" value="(left|right)" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Move({Dir})" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule>
+			<case>
+				<condition>
+					<if var="parse(u_u)" value="TO DT right" relation="contains" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Move(Right)" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule>
+			<case>
+				<condition>
+					<if var="parse(u_u)" value="DT VBZ DT NN" relation="contains"/>
+				</condition>
+				<effect>
+					<set var="i_u" value="Test successful" />
+				</effect>
+			</case>
+		</rule>
+	</model>
+</domain>
