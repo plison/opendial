@@ -67,7 +67,8 @@ public final class BooleanVal implements Value {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof BooleanVal && ((BooleanVal) o).getBoolean() == getBoolean());
+		return (o instanceof BooleanVal
+				&& ((BooleanVal) o).getBoolean() == getBoolean());
 	}
 
 	/**

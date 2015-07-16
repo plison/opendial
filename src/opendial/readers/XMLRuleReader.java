@@ -98,9 +98,8 @@ public class XMLRuleReader {
 		int priority = 1;
 		if (topNode.hasAttributes()
 				&& topNode.getAttributes().getNamedItem("priority") != null) {
-			priority =
-					Integer.parseInt(topNode.getAttributes()
-							.getNamedItem("priority").getNodeValue());
+			priority = Integer.parseInt(
+					topNode.getAttributes().getNamedItem("priority").getNodeValue());
 		}
 
 		// extracting the rule cases
@@ -117,8 +116,8 @@ public class XMLRuleReader {
 				if (node.getNodeName().equals("#text")) {
 					throw new RuntimeException("cannot insert free text in <rule>");
 				}
-				throw new RuntimeException("Invalid tag in <rule>: "
-						+ node.getNodeName());
+				throw new RuntimeException(
+						"Invalid tag in <rule>: " + node.getNodeName());
 			}
 		}
 
@@ -197,11 +196,10 @@ public class XMLRuleReader {
 			return new VoidCondition();
 		}
 		else {
-			if (conditionNode.hasAttributes()
-					&& conditionNode.getAttributes().getNamedItem("operator") != null) {
-				String operatorStr =
-						conditionNode.getAttributes().getNamedItem("operator")
-								.getNodeValue();
+			if (conditionNode.hasAttributes() && conditionNode.getAttributes()
+					.getNamedItem("operator") != null) {
+				String operatorStr = conditionNode.getAttributes()
+						.getNamedItem("operator").getNodeValue();
 				if (operatorStr.toLowerCase().trim().equals("and")) {
 					return new ComplexCondition(subconditions, BinaryOperator.AND);
 				}
@@ -247,9 +245,8 @@ public class XMLRuleReader {
 					node.getAttributes().getNamedItem("var").getNodeValue();
 			Template tvar = new Template(variable);
 			if (tvar.isUnderspecified()) {
-				tvar =
-						new Template(tvar.getRawString().replace("*",
-								"{" + (new Random().nextInt(100)) + "}"));
+				tvar = new Template(tvar.getRawString().replace("*",
+						"{" + (new Random().nextInt(100)) + "}"));
 			}
 
 			if (node.getAttributes().getNamedItem("value") != null) {
@@ -263,8 +260,8 @@ public class XMLRuleReader {
 				String variable2 =
 						node.getAttributes().getNamedItem("var2").getNodeValue();
 				Relation relation = getRelation(node);
-				condition =
-						new BasicCondition(variable, "{" + variable2 + "}", relation);
+				condition = new BasicCondition(variable, "{" + variable2 + "}",
+						relation);
 			}
 			else {
 				throw new RuntimeException("unrecognized format for condition ");
@@ -276,19 +273,19 @@ public class XMLRuleReader {
 						&& !attr.getNodeName().equals("var2")
 						&& !attr.getNodeName().equals("value")
 						&& !attr.getNodeName().equals("relation")) {
-					throw new RuntimeException("unrecognized attribute: "
-							+ attr.getNodeName());
+					throw new RuntimeException(
+							"unrecognized attribute: " + attr.getNodeName());
 				}
 			}
 			return condition;
 		}
 
 		// extracting a conjunction or disjunction
-		else if (node.getNodeName().equals("or") || node.getNodeName().equals("and")) {
+		else if (node.getNodeName().equals("or")
+				|| node.getNodeName().equals("and")) {
 
-			BinaryOperator operator =
-					(node.getNodeName().equals("or")) ? BinaryOperator.OR
-							: BinaryOperator.AND;
+			BinaryOperator operator = (node.getNodeName().equals("or"))
+					? BinaryOperator.OR : BinaryOperator.AND;
 
 			List<Condition> conditions = new ArrayList<Condition>();
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
@@ -314,8 +311,8 @@ public class XMLRuleReader {
 				return new NegatedCondition(conditions.get(0));
 			}
 			else if (conditions.size() > 1) {
-				return new NegatedCondition(new ComplexCondition(conditions,
-						BinaryOperator.AND));
+				return new NegatedCondition(
+						new ComplexCondition(conditions, BinaryOperator.AND));
 			}
 		}
 		else if (XMLUtils.hasContent(node)) {
@@ -434,9 +431,8 @@ public class XMLRuleReader {
 			exclusive = false;
 		}
 
-		boolean negated =
-				attrs.getNamedItem("relation") != null
-						&& getRelation(node) == Relation.UNEQUAL;
+		boolean negated = attrs.getNamedItem("relation") != null
+				&& getRelation(node) == Relation.UNEQUAL;
 
 		// "clear" effect is outdated
 		if (node.getNodeName().equalsIgnoreCase("clear")) {
@@ -451,8 +447,8 @@ public class XMLRuleReader {
 					&& !attr.getNodeName().equals("value")
 					&& !attr.getNodeName().equals("relation")
 					&& !attr.getNodeName().equals("exclusive")) {
-				throw new RuntimeException("unrecognized attribute: "
-						+ attr.getNodeName());
+				throw new RuntimeException(
+						"unrecognized attribute: " + attr.getNodeName());
 			}
 		}
 
@@ -524,9 +520,8 @@ public class XMLRuleReader {
 				Pattern p = Pattern.compile(".+(\\[[0-9]+\\])");
 				Matcher m = p.matcher(paramStr);
 				if (m.matches()) {
-					int index =
-							Integer.parseInt(m.group(1).replace("[", "")
-									.replace("]", ""));
+					int index = Integer
+							.parseInt(m.group(1).replace("[", "").replace("]", ""));
 					String paramId = paramStr.replace(m.group(1), "").trim();
 					return new SingleParameter(paramId, index);
 				}

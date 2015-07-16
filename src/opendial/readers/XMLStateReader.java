@@ -120,8 +120,7 @@ public class XMLStateReader {
 	 */
 	public static ChanceNode createChanceNode(Node node) {
 
-		if (!node.hasAttributes()
-				|| node.getAttributes().getNamedItem("id") == null
+		if (!node.hasAttributes() || node.getAttributes().getNamedItem("id") == null
 				|| node.getAttributes().getNamedItem("id").getNodeValue().trim()
 						.isEmpty()) {
 			throw new RuntimeException("variable id is mandatory");
@@ -148,8 +147,8 @@ public class XMLStateReader {
 					builder.addRow(v, prob);
 				}
 				else {
-					throw new RuntimeException("Value in variable " + label
-							+ " cannot be empty");
+					throw new RuntimeException(
+							"Value in variable " + label + " cannot be empty");
 				}
 			}
 
@@ -158,25 +157,21 @@ public class XMLStateReader {
 			else if (subnode.getNodeName().equals("distrib")) {
 
 				if (subnode.getAttributes().getNamedItem("type") != null) {
-					String distribType =
-							subnode.getAttributes().getNamedItem("type")
-									.getNodeValue().trim();
+					String distribType = subnode.getAttributes().getNamedItem("type")
+							.getNodeValue().trim();
 
 					if (distribType.equalsIgnoreCase("gaussian")) {
-						distrib =
-								new ContinuousDistribution(label,
-										getGaussian(subnode));
+						distrib = new ContinuousDistribution(label,
+								getGaussian(subnode));
 					}
 
 					else if (distribType.equalsIgnoreCase("uniform")) {
-						distrib =
-								new ContinuousDistribution(label,
-										getUniform(subnode));
+						distrib = new ContinuousDistribution(label,
+								getUniform(subnode));
 					}
 					else if (distribType.equalsIgnoreCase("dirichlet")) {
-						distrib =
-								new ContinuousDistribution(label,
-										getDirichlet(subnode));
+						distrib = new ContinuousDistribution(label,
+								getDirichlet(subnode));
 					}
 					else {
 						throw new RuntimeException(
@@ -219,8 +214,8 @@ public class XMLStateReader {
 				prob = Float.parseFloat(probStr);
 			}
 			catch (NumberFormatException e) {
-				XMLDomainReader.log.warning("probability " + probStr
-						+ " not valid, assuming 1.0f");
+				XMLDomainReader.log.warning(
+						"probability " + probStr + " not valid, assuming 1.0f");
 			}
 		}
 		return prob;
@@ -298,8 +293,8 @@ public class XMLStateReader {
 		for (int j = 0; j < node.getChildNodes().getLength(); j++) {
 			Node subsubnode = node.getChildNodes().item(j);
 			if (subsubnode.getNodeName().equals("alpha")) {
-				double alpha =
-						Double.parseDouble(subsubnode.getFirstChild().getNodeValue());
+				double alpha = Double
+						.parseDouble(subsubnode.getFirstChild().getNodeValue());
 				alphas.add(alpha);
 			}
 		}

@@ -78,9 +78,8 @@ public class SpeechInputPanel extends JPanel implements MouseListener {
 		Container container = new Container();
 		container.setLayout(new FlowLayout());
 		container.add(new JLabel(""));
-		JButton button =
-				new JButton(
-						"<html>&nbsp;&nbsp;Press & hold to record speech&nbsp;&nbsp;&nbsp;&nbsp;</html>");
+		JButton button = new JButton(
+				"<html>&nbsp;&nbsp;Press & hold to record speech&nbsp;&nbsp;&nbsp;&nbsp;</html>");
 		button.addMouseListener(this);
 		container.add(button);
 		container.add(new JLabel(""));

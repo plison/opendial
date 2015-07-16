@@ -110,18 +110,10 @@ public class FlightBookingExample implements Module {
 				// to
 				// actually perform the booking. Here, we just print a small
 				// message.
-				String info =
-						"Booked "
-								+ nbtickets
-								+ " tickets from "
-								+ departure
-								+ " to "
-								+ destination
-								+ " on "
-								+ date
-								+ ((returndate.equals("NoReturn")) ? " and return on "
-										+ returndate
-										: "");
+				String info = "Booked " + nbtickets + " tickets from " + departure
+						+ " to " + destination + " on " + date
+						+ ((returndate.equals("NoReturn"))
+								? " and return on " + returndate : "");
 				log.fine(info);
 			}
 		}

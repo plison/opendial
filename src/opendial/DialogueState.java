@@ -386,15 +386,16 @@ public class DialogueState extends BNetwork {
 	 *            dialogue state
 	 * @return the corresponding probability distribution
 	 */
-	public IndependentDistribution queryProb(String variable, boolean includeEvidence) {
+	public IndependentDistribution queryProb(String variable,
+			boolean includeEvidence) {
 
 		if (hasChanceNode(variable)) {
 			ChanceNode cn = getChanceNode(variable);
 
 			// if the distribution can be retrieved without inference, we simply
 			// return it
-			if (cn.getDistrib() instanceof IndependentDistribution
-					&& Collections.disjoint(cn.getClique(), evidence.getVariables())) {
+			if (cn.getDistrib() instanceof IndependentDistribution && Collections
+					.disjoint(cn.getClique(), evidence.getVariables())) {
 				return (IndependentDistribution) cn.getDistrib();
 			}
 
@@ -407,13 +408,14 @@ public class DialogueState extends BNetwork {
 				}
 				catch (RuntimeException e) {
 					log.warning("Error querying variable " + variable + " : " + e);
-					return new SingleValueDistribution(variable, ValueFactory.none());
+					return new SingleValueDistribution(variable,
+							ValueFactory.none());
 				}
 			}
 		}
 		else {
-			log.warning("Variable " + variable
-					+ " not included in the dialogue state");
+			log.warning(
+					"Variable " + variable + " not included in the dialogue state");
 			return new SingleValueDistribution(variable, ValueFactory.none());
 		}
 	}
@@ -728,9 +730,8 @@ public class DialogueState extends BNetwork {
 		String baseVar = outputVar.substring(0, outputVar.length() - 1);
 		String predictEquiv = baseVar + "^p";
 		if (hasChanceNode(predictEquiv) && !outputVar.contains("^p")) {
-			ChanceNode equalityNode =
-					new ChanceNode("=_" + baseVar, new EquivalenceDistribution(
-							baseVar));
+			ChanceNode equalityNode = new ChanceNode("=_" + baseVar,
+					new EquivalenceDistribution(baseVar));
 			equalityNode.addInputNode(outputNode);
 			equalityNode.addInputNode(getNode(predictEquiv));
 			addEvidence(new Assignment(equalityNode.getId(), true));

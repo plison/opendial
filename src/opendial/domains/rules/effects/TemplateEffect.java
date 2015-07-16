@@ -83,9 +83,10 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	public TemplateEffect(Template variable, Template value, int priority,
 			boolean exclusive, boolean negated) {
-		super(variable.toString(), (value.isUnderspecified()) ? ValueFactory.none()
-				: ValueFactory.create(value.getRawString()), priority, exclusive,
-				negated);
+		super(variable.toString(),
+				(value.isUnderspecified()) ? ValueFactory.none()
+						: ValueFactory.create(value.getRawString()),
+				priority, exclusive, negated);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
 	}
@@ -105,8 +106,9 @@ public final class TemplateEffect extends BasicEffect {
 			return new TemplateEffect(newT, newV, priority, exclusive, negated);
 		}
 		else {
-			return new BasicEffect(newT.getRawString(), ValueFactory.create(newV
-					.getRawString()), priority, exclusive, negated);
+			return new BasicEffect(newT.getRawString(),
+					ValueFactory.create(newV.getRawString()), priority, exclusive,
+					negated);
 		}
 
 	}
@@ -184,10 +186,9 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		int hashcode =
-				((negated) ? -2 : 1) * labelTemplate.hashCode()
-						^ (new Boolean(exclusive)).hashCode() ^ priority
-						^ valueTemplate.hashCode();
+		int hashcode = ((negated) ? -2 : 1) * labelTemplate.hashCode()
+				^ (new Boolean(exclusive)).hashCode() ^ priority
+				^ valueTemplate.hashCode();
 		return hashcode;
 	}
 

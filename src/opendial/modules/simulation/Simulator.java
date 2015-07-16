@@ -88,9 +88,8 @@ public class Simulator implements Module {
 	 */
 	@Override
 	public void start() {
-		Assignment emptyAction =
-				new Assignment(system.getSettings().systemOutput,
-						ValueFactory.none());
+		Assignment emptyAction = new Assignment(system.getSettings().systemOutput,
+				ValueFactory.none());
 		if (system.isPaused()) {
 			system.getState().addToState(emptyAction);
 		}
@@ -190,11 +189,8 @@ public class Simulator implements Module {
 				String comment = "Reward: " + StringUtils.getShortForm(reward);
 				system.displayComment(comment);
 				log.fine(comment);
-				system.getState()
-						.addEvidence(
-								new Assignment(
-										"R(" + systemAssign.addPrimes() + ")",
-										reward));
+				system.getState().addEvidence(new Assignment(
+						"R(" + systemAssign.addPrimes() + ")", reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());
 			}
 

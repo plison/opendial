@@ -234,9 +234,8 @@ public class UtilityTable implements UtilityFunction {
 
 		String str = "";
 		for (Entry<Assignment, Double> entry : sortedTable.entrySet()) {
-			str +=
-					"U(" + entry.getKey() + "):="
-							+ StringUtils.getShortForm(entry.getValue()) + "\n";
+			str += "U(" + entry.getKey() + "):="
+					+ StringUtils.getShortForm(entry.getValue()) + "\n";
 		}
 		return (str.length() > 0) ? str.substring(0, str.length() - 1) : "";
 	}

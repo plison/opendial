@@ -151,8 +151,8 @@ public class TemplateStringTest {
 		assertFalse(template.partialmatch("here we have a test2").isMatching());
 		assertTrue(template.partialmatch("here we have a test that is working")
 				.isMatching());
-		assertFalse(template.match("here we have a test that is working")
-				.isMatching());
+		assertFalse(
+				template.match("here we have a test that is working").isMatching());
 
 		Template template2 = new Template("bla");
 		assertFalse(template2.partialmatch("bla2").isMatching());
@@ -167,19 +167,22 @@ public class TemplateStringTest {
 		assertEquals(0, template1.match("bla bla bla").getBoundaries()[0], 0.0);
 		assertEquals(11, template1.match("bla bla bla").getBoundaries()[1], 0.0);
 		Template template2 = new Template("this could be {anything}, right");
-		assertEquals(
-				4,
-				template2.partialmatch(
-						"and this could be pretty much anything, right")
-						.getBoundaries()[0], 0.0);
-		assertEquals(
-				"and this could be pretty much anything, right".length(),
-				template2.partialmatch(
-						"and this could be pretty much anything, right")
-						.getBoundaries()[1], 0.0);
+		assertEquals(4,
+				template2
+						.partialmatch(
+								"and this could be pretty much anything, right")
+						.getBoundaries()[0],
+				0.0);
+		assertEquals("and this could be pretty much anything, right".length(),
+				template2
+						.partialmatch(
+								"and this could be pretty much anything, right")
+						.getBoundaries()[1],
+				0.0);
 		assertEquals(-1,
 				template2.partialmatch("and this could be pretty much anything")
-						.getBoundaries()[1], 0.0);
+						.getBoundaries()[1],
+				0.0);
 
 		Template template3 = new Template("{}");
 		assertEquals(0, template3.getSlots().size());
@@ -248,10 +251,10 @@ public class TemplateStringTest {
 		assertTrue(t5.match("wine").isMatching());
 		assertFalse(t5.match("wines").isMatching());
 		assertFalse(t5.match("beer wine").isMatching());
-		assertTrue(new Template("* (to the|at the)? left of").match(
-				"window to the left of").isMatching());
 		assertTrue(new Template("* (to the|at the)? left of")
-				.match("window left of").isMatching());
+				.match("window to the left of").isMatching());
+		assertTrue(new Template("* (to the|at the)? left of").match("window left of")
+				.isMatching());
 		assertTrue(new Template("* (to the|at the)? left of").match("left of")
 				.isMatching());
 	}
@@ -292,20 +295,19 @@ public class TemplateStringTest {
 		assertTrue(t1.match("this is a ball").isMatching());
 		assertTrue(t1.match("this is a really great ball").isMatching());
 		assertFalse(t1.match("this is huge").isMatching());
-		assertEquals("ball",
-				t1.match("this is a ball").getFilledSlots().getValue("test")
-						.toString());
+		assertEquals("ball", t1.match("this is a ball").getFilledSlots()
+				.getValue("test").toString());
 		assertEquals("ball", t1.match("this is a great blue ball").getFilledSlots()
 				.getValue("test").toString());
 		t1 = new Template("* {test}");
 		assertEquals("ball", t1.match("this is a great ball").getFilledSlots()
 				.getValue("test").toString());
-		assertEquals("ball", t1.match("ball").getFilledSlots().getValue("test")
-				.toString());
+		assertEquals("ball",
+				t1.match("ball").getFilledSlots().getValue("test").toString());
 		t1 = new Template("{test} *");
 		assertEquals("great ball",
 				t1.match("great ball").getFilledSlots().getValue("test").toString());
-		assertEquals("ball", t1.match("ball").getFilledSlots().getValue("test")
-				.toString());
+		assertEquals("ball",
+				t1.match("ball").getFilledSlots().getValue("test").toString());
 	}
 }

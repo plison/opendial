@@ -94,9 +94,9 @@ public class ContinuousDistribution implements IndependentDistribution {
 	 */
 	@Override
 	public Value sample() {
-		Value v =
-				(function.getDimensions() > 1) ? ValueFactory.create(function
-						.sample()) : ValueFactory.create(function.sample()[0]);
+		Value v = (function.getDimensions() > 1)
+				? ValueFactory.create(function.sample())
+				: ValueFactory.create(function.sample()[0]);
 		return v;
 	}
 
@@ -135,9 +135,8 @@ public class ContinuousDistribution implements IndependentDistribution {
 			CategoricalTable.Builder builder =
 					new CategoricalTable.Builder(variable);
 			for (double[] value : discretisation.keySet()) {
-				Value val =
-						(value.length > 1) ? new ArrayVal(value) : ValueFactory
-								.create(value[0]);
+				Value val = (value.length > 1) ? new ArrayVal(value)
+						: ValueFactory.create(value[0]);
 				builder.addRow(val, discretisation.get(value));
 			}
 			discreteCache = builder.build().toDiscrete();

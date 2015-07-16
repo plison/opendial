@@ -131,9 +131,8 @@ public class NaiveInference implements InferenceAlgorithm {
 			double jointLogProb = 0.0f;
 			for (ChanceNode n : bn.getChanceNodes()) {
 				Assignment trimmedCon = singleAssign.getTrimmed(n.getInputNodeIds());
-				jointLogProb +=
-						Math.log10(n.getProb(trimmedCon,
-								singleAssign.getValue(n.getId())));
+				jointLogProb += Math.log10(
+						n.getProb(trimmedCon, singleAssign.getValue(n.getId())));
 			}
 			if (includeActions) {
 				for (ActionNode n : bn.getActionNodes()) {

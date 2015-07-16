@@ -214,16 +214,16 @@ public class DialogueSystem {
 		try {
 			Constructor<T> constructor = module.getConstructor(DialogueSystem.class);
 			attachModule(constructor.newInstance(this));
-			displayComment("Module " + module.getSimpleName()
-					+ " successfully attached");
+			displayComment(
+					"Module " + module.getSimpleName() + " successfully attached");
 		}
 		catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			log.warning("cannot attach " + module.getSimpleName() + ": "
-					+ e.getCause());
-			displayComment("cannot attach " + module.getSimpleName() + ": "
-					+ e.getCause());
+			log.warning(
+					"cannot attach " + module.getSimpleName() + ": " + e.getCause());
+			displayComment(
+					"cannot attach " + module.getSimpleName() + ": " + e.getCause());
 		}
 	}
 
@@ -361,9 +361,8 @@ public class DialogueSystem {
 	 * @return the variables that were updated in the process not be updated
 	 */
 	public Set<String> addUserInput(Map<String, Double> userInput) {
-		String var =
-				(!settings.invertedRole) ? settings.userInput
-						: settings.systemOutput;
+		String var = (!settings.invertedRole) ? settings.userInput
+				: settings.systemOutput;
 		CategoricalTable.Builder builder = new CategoricalTable.Builder(var);
 		for (String input : userInput.keySet()) {
 			builder.addRow(input, userInput.get(input));
@@ -874,9 +873,8 @@ public class DialogueSystem {
 			system.importDialogue(dialogueFile);
 		}
 		if (simulatorFile != null) {
-			Simulator simulator =
-					new Simulator(system,
-							XMLDomainReader.extractDomain(simulatorFile));
+			Simulator simulator = new Simulator(system,
+					XMLDomainReader.extractDomain(simulatorFile));
 			log.info("Simulator with domain " + simulatorFile
 					+ " successfully extracted");
 			system.attachModule(simulator);

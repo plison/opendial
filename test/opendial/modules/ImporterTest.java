@@ -79,8 +79,9 @@ public class ImporterTest {
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(22, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		assertTrue(((ContinuousDistribution) system.getState()
-				.getChanceNode("theta_1").getDistrib()).getFunction().getMean()[0] > 12.0);
+		assertTrue(
+				((ContinuousDistribution) system.getState().getChanceNode("theta_1")
+						.getDistrib()).getFunction().getMean()[0] > 12.0);
 		Settings.nbSamples = Settings.nbSamples * 10;
 	}
 
@@ -98,10 +99,10 @@ public class ImporterTest {
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(10, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		assertEquals(
-				((ContinuousDistribution) system.getState()
-						.getChanceNode("theta_repeat").getDistrib()).getFunction()
-						.getMean()[0], 0.0, 0.2);
+		assertEquals(((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_repeat").getDistrib()).getFunction()
+						.getMean()[0],
+				0.0, 0.2);
 	}
 
 	@Test
@@ -121,10 +122,10 @@ public class ImporterTest {
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
 		assertEquals(10, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "userTurn"));
-		assertEquals(
-				((ContinuousDistribution) system.getState()
-						.getChanceNode("theta_repeat").getDistrib()).getFunction()
-						.getMean()[0], 1.35, 0.3);
+		assertEquals(((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_repeat").getDistrib()).getFunction()
+						.getMean()[0],
+				1.35, 0.3);
 		Settings.nbSamples = Settings.nbSamples / 3;
 		Settings.maxSamplingTime = Settings.maxSamplingTime / 3;
 	}

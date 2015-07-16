@@ -68,7 +68,7 @@ import opendial.domains.Domain;
 import opendial.gui.utils.DomainEditorKit;
 
 public class EditorTab extends JComponent {
- 
+
 	private static final long serialVersionUID = 1L;
 
 	// logger
@@ -87,7 +87,7 @@ public class EditorTab extends JComponent {
 	private File shownFile;
 
 	// the domain editor
-	private JEditorPane editor;
+	public JEditorPane editor;
 
 	// ===================================
 	// EDITOR CONSTRUCTION
@@ -151,7 +151,14 @@ public class EditorTab extends JComponent {
 	 */
 	public void refresh() {
 		Domain updatedDomain = frame.getSystem().getDomain();
-
+		if (updatedDomain.isEmpty()) {
+			editor.setEnabled(false);
+			editor.setToolTipText("No dialogue domain is selected");
+		}
+		else {
+			editor.setEnabled(true);
+			editor.setToolTipText(null);
+		}
 		if (listModel.isChanged(updatedDomain)) {
 			listModel.updateDomain(updatedDomain);
 			if (!listModel.isEmpty() && !listModel.containsFile(shownFile)) {
@@ -167,9 +174,8 @@ public class EditorTab extends JComponent {
 	 * @param msg the message to display
 	 */
 	public void displayComment(String msg) {
-		Color msgColor =
-				(msg.contains("error")) ? new Color(250, 230, 230) : new Color(230,
-						250, 230);
+		Color msgColor = (msg.contains("error")) ? new Color(250, 230, 230)
+				: new Color(230, 250, 230);
 		BalloonTipStyle style = new RoundedBalloonStyle(5, 5, msgColor, Color.BLACK);
 		BalloonTip tip = new BalloonTip(this, msg, style, false);
 		tip.setVisible(true);
@@ -200,8 +206,8 @@ public class EditorTab extends JComponent {
 
 			Document doc = editor.getDocument();
 			doc.addDocumentListener(new XMLListener());
-			doc.addUndoableEditListener((UndoRedoAction) editor.getActionMap().get(
-					"Undo"));
+			doc.addUndoableEditListener(
+					(UndoRedoAction) editor.getActionMap().get("Undo"));
 			editor.requestFocus();
 			editor.requestFocusInWindow();
 
@@ -338,8 +344,8 @@ public class EditorTab extends JComponent {
 	 *
 	 */
 	@SuppressWarnings("serial")
-	final class UndoRedoAction extends AbstractAction implements
-			UndoableEditListener {
+	final class UndoRedoAction extends AbstractAction
+			implements UndoableEditListener {
 
 		// the undo manager
 		UndoManager undo;

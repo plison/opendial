@@ -262,10 +262,9 @@ public class OutputDistribution implements ProbDistribution {
 			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
 		}
 		Set<Assignment> combinations = InferenceUtils.getAllCombinations(range);
-		Set<Value> values =
-				combinations.stream()
-						.flatMap(cond -> getProbDistrib(cond).getValues().stream())
-						.collect(Collectors.toSet());
+		Set<Value> values = combinations.stream()
+				.flatMap(cond -> getProbDistrib(cond).getValues().stream())
+				.collect(Collectors.toSet());
 		if (values.isEmpty()) {
 			values.add(ValueFactory.none());
 		}

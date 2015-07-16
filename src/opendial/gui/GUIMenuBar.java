@@ -104,9 +104,8 @@ public class GUIMenuBar extends JMenuBar {
 
 		saveDomain = new JMenuItem("Save");
 		saveDomain.addActionListener(e -> frame.saveDomain());
-		KeyStroke keyStrokeToOpen =
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit()
-						.getMenuShortcutKeyMask());
+		KeyStroke keyStrokeToOpen = KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 		saveDomain.setAccelerator(keyStrokeToOpen);
 		domainMenu.add(saveDomain);
 
@@ -153,8 +152,8 @@ public class GUIMenuBar extends JMenuBar {
 		freezeItem.addActionListener(e -> {
 			boolean toPause = !frame.getSystem().isPaused();
 			frame.getSystem().pause(toPause);
-			frame.getSystem().displayComment(
-					(toPause) ? "system paused" : "system resumed");
+			frame.getSystem()
+					.displayComment((toPause) ? "system paused" : "system resumed");
 		});
 		traceMenu.add(freezeItem);
 
@@ -162,18 +161,16 @@ public class GUIMenuBar extends JMenuBar {
 
 		JMenuItem connect = new JMenuItem("Connect to Remote Client");
 		connect.addActionListener(e -> {
-			String fullAddress =
-					JOptionPane.showInputDialog(this,
-							"Enter address of remote client (IP_address:port):");
+			String fullAddress = JOptionPane.showInputDialog(this,
+					"Enter address of remote client (IP_address:port):");
 			if (fullAddress != null && fullAddress.contains(":")) {
 				String ipaddress = fullAddress.split(":")[0];
 				int port = Integer.parseInt(fullAddress.split(":")[1]);
 				frame.getSystem().connectTo(ipaddress, port);
 			}
 			else if (fullAddress != null) {
-				frame.getSystem().displayComment(
-						"address of remote client is "
-								+ "not well-formed, must be \"IP_address:port\"");
+				frame.getSystem().displayComment("address of remote client is "
+						+ "not well-formed, must be \"IP_address:port\"");
 			}
 		});
 
@@ -243,9 +240,8 @@ public class GUIMenuBar extends JMenuBar {
 		for (final Mixer.Info mixer : AudioUtils.getOutputMixers()) {
 			JRadioButtonMenuItem mixerButton =
 					new JRadioButtonMenuItem(mixer.getName());
-			mixerButton
-					.addActionListener(e -> frame.getSystem().getSettings().outputMixer =
-							mixer);
+			mixerButton.addActionListener(
+					e -> frame.getSystem().getSettings().outputMixer = mixer);
 
 			outputGroup.add(mixerButton);
 			outputMenu.add(mixerButton);
@@ -295,7 +291,8 @@ public class GUIMenuBar extends JMenuBar {
 		JRadioButtonMenuItem last = new JRadioButtonMenuItem("Last input");
 		last.addActionListener(e -> {
 			frame.getSystem().getSettings().recording = Recording.LAST_INPUT;
-			frame.addComment("Recording intermediate dialogue states for the last user input");
+			frame.addComment(
+					"Recording intermediate dialogue states for the last user input");
 		});
 
 		JRadioButtonMenuItem all = new JRadioButtonMenuItem("Full history");
@@ -393,22 +390,17 @@ public class GUIMenuBar extends JMenuBar {
 			style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
 			style.append("font-size:" + font.getSize() + "pt;");
 
-			JEditorPane ep =
-					new JEditorPane(
-							"text/html",
-							"<html><body style=\""
-									+ style
-									+ "\"><b>OpenDial dialogue toolkit, version 1.3</b><br>"
-									+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
-									+ "OpenDial is distributed as free software under<br>"
-									+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
-									+ "<i>Project website</i>: <a href=\"http://opendial-toolkit.net\">"
-									+ "http://opendial-toolkit.net</a><br>"
-									+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
-									+ "plison@ifi.uio.no</a>)<br><br>"
-									+ "<b>Local address:</b>: <i>"
-									+ frame.getSystem().getLocalAddress() + "</i>"
-									+ "</body></html>");
+			JEditorPane ep = new JEditorPane("text/html", "<html><body style=\""
+					+ style + "\"><b>OpenDial dialogue toolkit, version 1.3</b><br>"
+					+ "Copyright (C) 2011-2015 by Pierre Lison<br>University of Oslo, Norway<br><br>"
+					+ "OpenDial is distributed as free software under<br>"
+					+ "the <a href=\"http://opensource.org/licenses/MIT\">MIT free software license</a>.<br><br>"
+					+ "<i>Project website</i>: <a href=\"http://opendial-toolkit.net\">"
+					+ "http://opendial-toolkit.net</a><br>"
+					+ "<i>Contact</i>: Pierre Lison (email: <a href=\"mailto:plison@ifi.uio.no\">"
+					+ "plison@ifi.uio.no</a>)<br><br>" + "<b>Local address:</b>: <i>"
+					+ frame.getSystem().getLocalAddress() + "</i>"
+					+ "</body></html>");
 
 			// handle link events
 			ep.addHyperlinkListener(e -> {
@@ -461,8 +453,8 @@ public class GUIMenuBar extends JMenuBar {
 				((JRadioButtonMenuItem) c).setSelected(true);
 			}
 		}
-		systemRole.setEnabled(!frame.getSystem().getSettings().remoteConnections
-				.isEmpty());
+		systemRole.setEnabled(
+				!frame.getSystem().getSettings().remoteConnections.isEmpty());
 
 		boolean realDomain = !frame.getSystem().getDomain().isEmpty();
 		saveDomainAs.setEnabled(realDomain);

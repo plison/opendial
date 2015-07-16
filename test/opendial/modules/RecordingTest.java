@@ -84,28 +84,25 @@ public class RecordingTest {
 			builder.addRow("move a bit to the left", 0.65);
 			system.addContent(builder.build());
 
-			assertTrue(system
-					.getModule(GUIFrame.class)
-					.getChatTab()
-					.getChat()
-					.contains(
+			assertTrue(
+					system.getModule(GUIFrame.class).getChatTab().getChat().contains(
 							"<font size=\"4\">move a bit to the left (0.05)</font>"));
-			assertTrue(system
-					.getModule(GUIFrame.class)
-					.getChatTab()
-					.getChat()
-					.contains("<font size=\"4\">OK, moving Left a little bit</font>"));
+			assertTrue(
+					system.getModule(GUIFrame.class).getChatTab().getChat().contains(
+							"<font size=\"4\">OK, moving Left a little bit</font>"));
 			assertEquals(6,
 					StringUtils.countOccurrences(
 							system.getModule(DialogueRecorder.class).getRecord(),
 							"userTurn"));
-			if (StringUtils.countOccurrences(system
-					.getModule(DialogueRecorder.class).getRecord(), "systemTurn") != 4) {
+			if (StringUtils.countOccurrences(
+					system.getModule(DialogueRecorder.class).getRecord(),
+					"systemTurn") != 4) {
 				Thread.sleep(250);
 			}
-			assertEquals(4, StringUtils.countOccurrences(
-					system.getModule(DialogueRecorder.class).getRecord(),
-					"systemTurn"));
+			assertEquals(4,
+					StringUtils.countOccurrences(
+							system.getModule(DialogueRecorder.class).getRecord(),
+							"systemTurn"));
 			assertEquals(14,
 					StringUtils.countOccurrences(
 							system.getModule(DialogueRecorder.class).getRecord(),
@@ -129,12 +126,12 @@ public class RecordingTest {
 
 		XMLUtils.importContent(system, importParams, "parameters");
 		assertEquals(14, system.getState().getChanceNodeIds().size());
-		assertTrue(system.getContent("theta_2").toContinuous().getFunction() instanceof UniformDensityFunction);
+		assertTrue(system.getContent("theta_2").toContinuous()
+				.getFunction() instanceof UniformDensityFunction);
 
 		Settings.nbSamples = Settings.nbSamples / 100;
-		DialogueImporter importer =
-				new DialogueImporter(system,
-						XMLDialogueReader.extractDialogue(dialogueFile));
+		DialogueImporter importer = new DialogueImporter(system,
+				XMLDialogueReader.extractDialogue(dialogueFile));
 		importer.setWizardOfOzMode(true);
 		system.startSystem();
 		importer.start();

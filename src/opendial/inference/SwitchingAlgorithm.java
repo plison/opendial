@@ -35,7 +35,7 @@ import opendial.inference.approximate.SamplingAlgorithm;
 import opendial.inference.exact.VariableElimination;
 
 /**
- * Switching algorithms that alternative between an exact algorithm (variable
+ * Switching algorithms that alternates between an exact algorithm (variable
  * elimination) and an approximate algorithm (likelihood weighting) depending on the
  * query.
  * 
@@ -128,7 +128,8 @@ public class SwitchingAlgorithm implements InferenceAlgorithm {
 				return lw;
 			}
 			if (node instanceof ChanceNode) {
-				if (((ChanceNode) node).getDistrib() instanceof ContinuousDistribution) {
+				if (((ChanceNode) node)
+						.getDistrib() instanceof ContinuousDistribution) {
 					return lw;
 				}
 				int nbValues = ((ChanceNode) node).getNbValues();

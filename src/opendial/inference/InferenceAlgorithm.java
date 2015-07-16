@@ -106,7 +106,7 @@ public interface InferenceAlgorithm {
 			String queryVar, Assignment evidence) {
 		return queryProb(
 				new Query.ProbQuery(network, Arrays.asList(queryVar), evidence))
-				.getMarginal(queryVar);
+						.getMarginal(queryVar);
 	}
 
 	/**
@@ -191,8 +191,8 @@ public interface InferenceAlgorithm {
 	 */
 	public default UtilityTable queryUtil(BNetwork network, String queryVar,
 			Assignment evidence) {
-		return queryUtil(new Query.UtilQuery(network, Arrays.asList(queryVar),
-				evidence));
+		return queryUtil(
+				new Query.UtilQuery(network, Arrays.asList(queryVar), evidence));
 	}
 
 	// ===================================

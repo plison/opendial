@@ -71,7 +71,8 @@ public class DirichletDensityFunction implements DensityFunction {
 		}
 		for (int i = 0; i < alphas.length; i++) {
 			if (alphas[i] <= 0) {
-				log.warning("alphas of the Dirichlet distribution are not well formed");
+				log.warning(
+						"alphas of the Dirichlet distribution are not well formed");
 			}
 		}
 		C = calculateC();

@@ -40,7 +40,8 @@ public class ConnectorTest {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	@Test
-	public void remoteConnection() throws UnknownHostException, InterruptedException {
+	public void remoteConnection()
+			throws UnknownHostException, InterruptedException {
 		DialogueSystem system1 = new DialogueSystem();
 		system1.getSettings().showGUI = false;
 		DialogueSystem system2 = new DialogueSystem();
@@ -66,8 +67,7 @@ public class ConnectorTest {
 		Thread.sleep(200);
 		record1 = system1.getModule(DialogueRecorder.class).getRecord();
 		record1 = record1.replaceAll(system2.getLocalAddress(), "");
-		assertEquals(
-				record1,
+		assertEquals(record1,
 				"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
 						+ "<interaction><!--Connected to --><userTurn>"
 						+ "<variable id=\"u_u\"><value>hello, world!</value></variable></userTurn>"

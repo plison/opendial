@@ -219,8 +219,8 @@ public class RuleGrounding {
 	 * @return the copy
 	 */
 	public RuleGrounding copy() {
-		return new RuleGrounding(groundings.stream().map(a -> a.copy())
-				.collect(Collectors.toSet()));
+		return new RuleGrounding(
+				groundings.stream().map(a -> a.copy()).collect(Collectors.toSet()));
 	}
 
 	/**
@@ -262,8 +262,8 @@ public class RuleGrounding {
 	 * @return true if empty, false otherwise
 	 */
 	public boolean isEmpty() {
-		return groundings.isEmpty()
-				|| (groundings.size() == 1 && groundings.iterator().next().isEmpty());
+		return groundings.isEmpty() || (groundings.size() == 1
+				&& groundings.iterator().next().isEmpty());
 	}
 
 	/**

@@ -22,8 +22,8 @@
 // =================================================================                                                                   
 
 package opendial.gui.utils;
- 
-import java.util.logging.*; 
+
+import java.util.logging.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -81,7 +81,7 @@ import edu.uci.ics.jung.visualization.transform.MutableTransformer;
  *
  * @author Pierre Lison (plison@ifi.uio.no)
  *
- */ 
+ */
 @SuppressWarnings("serial")
 public class StateViewer extends VisualizationViewer<String, Integer> {
 
@@ -121,8 +121,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 		getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
 		getRenderContext()
 				.setVertexShapeTransformer(new CustomVertexShapeRenderer());
-		getRenderContext().setVertexFillPaintTransformer(
-				new CustomVertexColourRenderer());
+		getRenderContext()
+				.setVertexFillPaintTransformer(new CustomVertexColourRenderer());
 		getRenderContext().setVertexLabelRenderer(new CustomVertexLabelRenderer());
 		getRenderer().getVertexLabelRenderer().setPosition(Position.S);
 		setVertexToolTipTransformer(new CustomToolTipTransformer());
@@ -158,7 +158,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 					String nodeName = getVerticeId(node);
 
 					f.addVertex(nodeName);
-					for (BNode inputNode : new ArrayList<BNode>(node.getInputNodes())) {
+					for (BNode inputNode : new ArrayList<BNode>(
+							node.getInputNodes())) {
 						if (ds.getNode(inputNode.getId()) != null) {
 							String inputNodeName = getVerticeId(inputNode);
 							f.addEdge(counter, inputNodeName, nodeName);
@@ -304,9 +305,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 	 * @param vertical vertical offset
 	 */
 	public void translate(int horizontal, int vertical) {
-		MutableTransformer modelTransformer =
-				getRenderContext().getMultiLayerTransformer().getTransformer(
-						Layer.LAYOUT);
+		MutableTransformer modelTransformer = getRenderContext()
+				.getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
 		try {
 			int dx = -vertical;
 			int dy = horizontal;
@@ -391,18 +391,17 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				String prettyPrintNode = node.toString();
 				String htmlDistrib =
 						"<html>&nbsp;&nbsp;"
-								+ prettyPrintNode.replace("\n", "&nbsp;&nbsp;"
-										+ "<br>&nbsp;&nbsp;") + "<br></html>";
-				htmlDistrib =
-						htmlDistrib
-								.replace("if", "<b>if</b>")
-								.replace("then",
-										"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-								.replace("else",
-										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-								.replace(
-										"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
-										"<b>else if</b>");
+								+ prettyPrintNode.replace("\n",
+										"&nbsp;&nbsp;" + "<br>&nbsp;&nbsp;")
+						+ "<br></html>";
+				htmlDistrib = htmlDistrib.replace("if", "<b>if</b>")
+						.replace("then",
+								"<b>then</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+						.replace("else",
+								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+						.replace(
+								"<b>else</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b>",
+								"<b>else if</b>");
 				return StringUtils.getHtmlRendering(htmlDistrib);
 			}
 			else {
@@ -425,8 +424,8 @@ public class StateViewer extends VisualizationViewer<String, Integer> {
 				BNode node = getBNode((String) arg4);
 				if (node != null) {
 					String str = StringUtils.getHtmlRendering(node.getId());
-					if (currentState.getNodeIds(AnchoredRule.class).contains(
-							node.getId())) {
+					if (currentState.getNodeIds(AnchoredRule.class)
+							.contains(node.getId())) {
 						str = "<font size=\"6\" color=\"gray\">" + str + "</font>";
 					}
 					JLabel jlabel = new JLabel("<html>" + str + "</html>");

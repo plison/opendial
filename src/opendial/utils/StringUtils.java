@@ -42,19 +42,19 @@ public class StringUtils {
 	// logger
 	final static Logger log = Logger.getLogger("OpenDial");
 
-	final static Pattern nbestRegex = Pattern
-			.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
+	final static Pattern nbestRegex =
+			Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
 	// regular expression to detect algebraic expressions
-	final static Pattern mathExpression = Pattern
-			.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
+	final static Pattern mathExpression =
+			Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
 
 	// regular expression for slots
 	final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
 
 	// regular expressions with alternative or optional elements
-	final static Pattern altRegex = Pattern
-			.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
+	final static Pattern altRegex =
+			Pattern.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
 					+ "|(\\\\\\(((\\(\\?)|[^\\(])+?\\|((\\(\\?)"
 					+ "|[^\\(])+?\\\\\\)(\\\\\\?)?)");
 
@@ -85,9 +85,8 @@ public class StringUtils {
 		Matcher matcher = Pattern.compile("_\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher.find()) {
 			String subscript = matcher.group(1);
-			str =
-					str.replace("_{" + subscript + "}", "<sub>" + subscript
-							+ "</sub>");
+			str = str.replace("_{" + subscript + "}",
+					"<sub>" + subscript + "</sub>");
 		}
 		Matcher matcher2 = Pattern.compile("_(\\p{Alnum}*)").matcher(str);
 		while (matcher2.find()) {
@@ -97,9 +96,8 @@ public class StringUtils {
 		Matcher matcher3 = Pattern.compile("\\^\\{(\\p{Alnum}*?)\\}").matcher(str);
 		while (matcher3.find()) {
 			String subscript = matcher3.group(1);
-			str =
-					str.replace("^{" + subscript + "}", "<sup>" + subscript
-							+ "</sup>");
+			str = str.replace("^{" + subscript + "}",
+					"<sup>" + subscript + "</sup>");
 		}
 		Matcher matcher4 = Pattern.compile("\\^([\\w\\-\\^]+)").matcher(str);
 		while (matcher4.find()) {
@@ -183,7 +181,8 @@ public class StringUtils {
 	 * @param jointure the string used to join the elements
 	 * @return the concatenated string.
 	 */
-	public static String join(Collection<? extends Object> elements, String jointure) {
+	public static String join(Collection<? extends Object> elements,
+			String jointure) {
 		return elements.stream().map(o -> o.toString())
 				.collect(Collectors.joining(jointure));
 	}
@@ -368,7 +367,8 @@ public class StringUtils {
 		StringBuilder builder = new StringBuilder();
 		char[] chars = init.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
-			if (chars[i] == '*' && i == 0 && chars.length > 1 && chars[i + 1] == ' ') {
+			if (chars[i] == '*' && i == 0 && chars.length > 1
+					&& chars[i + 1] == ' ') {
 				builder.append("(?:.+ |)");
 				i++;
 			}

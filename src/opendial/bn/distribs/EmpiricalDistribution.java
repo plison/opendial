@@ -324,7 +324,8 @@ public class EmpiricalDistribution implements MultivariateDistribution {
 				values.add(new double[] { ((DoubleVal) v).getDouble() });
 			}
 		}
-		return new ContinuousDistribution(headVar, new KernelDensityFunction(values));
+		return new ContinuousDistribution(headVar,
+				new KernelDensityFunction(values));
 	}
 
 	// ===================================

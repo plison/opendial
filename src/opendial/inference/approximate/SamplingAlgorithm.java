@@ -151,8 +151,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 
 			// creates the utility table from the samples
 			UtilityTable utilityTable = new UtilityTable();
-			samples.stream().forEach(
-					s -> utilityTable.incrementUtil(s, s.getUtility()));
+			samples.stream()
+					.forEach(s -> utilityTable.incrementUtil(s, s.getUtility()));
 
 			return utilityTable;
 		}
@@ -172,9 +172,8 @@ public class SamplingAlgorithm implements InferenceAlgorithm {
 	public double queryUtil(BNetwork network) {
 
 		// creates a new query thread
-		Query query =
-				new Query.UtilQuery(network, network.getChanceNodeIds(),
-						new Assignment());
+		Query query = new Query.UtilQuery(network, network.getChanceNodeIds(),
+				new Assignment());
 		LikelihoodWeighting isquery =
 				new LikelihoodWeighting(query, nbSamples, maxSamplingTime);
 

@@ -59,8 +59,8 @@ public class XMLView extends PlainView {
 	public static Pattern TAG_PATTERN = Pattern.compile("(</?[a-z]*)\\s?>?");
 	public static Pattern TAG_END_PATTERN = Pattern.compile("(/>)");
 	public static Pattern TAG_ATTRIBUTE_PATTERN = Pattern.compile("\\s(\\w*)\\=");
-	public static Pattern TAG_ATTRIBUTE_VALUE = Pattern
-			.compile("[a-z-]*\\=(\"[^\"]*\")");
+	public static Pattern TAG_ATTRIBUTE_VALUE =
+			Pattern.compile("[a-z-]*\\=(\"[^\"]*\")");
 	public static Pattern TAG_COMMENT = Pattern.compile("(<!--.*-->)");
 	public static Pattern TAG_CDATA_START = Pattern.compile("(\\<!\\[CDATA\\[).*");
 	public static Pattern TAG_CDATA_END = Pattern.compile(".*(]]>)");
@@ -172,8 +172,8 @@ public class XMLView extends PlainView {
 			else if (next.start < current.end) {
 				current.end = next.start;
 				if (next.end < current.end) {
-					segments2.add(new ColouredText(next.end, current.end,
-							current.colour));
+					segments2.add(
+							new ColouredText(next.end, current.end, current.colour));
 				}
 			}
 			current = next;

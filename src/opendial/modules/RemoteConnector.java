@@ -110,7 +110,8 @@ public class RemoteConnector implements Module {
 
 		// connect to remote connections
 		if (!system.getSettings().remoteConnections.isEmpty()) {
-			InputStream content = new ByteArrayInputStream(getLocalAddress().getBytes());
+			InputStream content =
+					new ByteArrayInputStream(getLocalAddress().getBytes());
 			forwardContent(MessageType.INIT, content);
 		}
 
@@ -118,7 +119,8 @@ public class RemoteConnector implements Module {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			if (!system.getSettings().remoteConnections.isEmpty()) {
 				log.fine("Shutting down remote connection");
-				InputStream content = new ByteArrayInputStream(getLocalAddress().getBytes());
+				InputStream content =
+						new ByteArrayInputStream(getLocalAddress().getBytes());
 				forwardContent(MessageType.CLOSE, content);
 				try {
 					Thread.sleep(100);
@@ -172,7 +174,8 @@ public class RemoteConnector implements Module {
 			// if the resulting document is non-empty, forward it through the
 			// socket
 			if (root.hasChildNodes()) {
-				InputStream content =new ByteArrayInputStream(XMLUtils.serialise(xmlDoc).getBytes());
+				InputStream content = new ByteArrayInputStream(
+						XMLUtils.serialise(xmlDoc).getBytes());
 				forwardContent(MessageType.XML, content);
 				return;
 			}
@@ -263,14 +266,17 @@ public class RemoteConnector implements Module {
 				OutputStream out = socket.getOutputStream();
 				out.write(messageType.ordinal());
 				int n;
-				byte[] buffer = new byte[1024*4];
-		        while (-1 != (n = content.read(buffer))) {
-		        	out.write(buffer, 0, n);
-		        }
+				byte[] buffer = new byte[1024 * 4];
+				while (-1 != (n = content.read(buffer))) {
+					out.write(buffer, 0, n);
+				}
 				socket.close();
 			}
 			catch (Exception e) {
-				log.warning("cannot forward content: " + e);
+				String msg = "cannot forward content: " + e;
+				log.warning(msg);
+				system.displayComment(msg);
+				return;
 			}
 		};
 		new Thread(r).start();
@@ -298,10 +304,10 @@ public class RemoteConnector implements Module {
 				MessageType type = MessageType.values()[in.read()];
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				int n;
-				byte[] buffer = new byte[1024*4];
-		        while (-1 != (n = in.read(buffer))) {
-		        	out.write(buffer, 0, n);
-		        }
+				byte[] buffer = new byte[1024 * 4];
+				while (-1 != (n = in.read(buffer))) {
+					out.write(buffer, 0, n);
+				}
 				byte[] message = out.toByteArray();
 				if (type == MessageType.INIT) {
 					String content = new String(message);
@@ -318,9 +324,8 @@ public class RemoteConnector implements Module {
 				else if (type == MessageType.XML) {
 					String content = new String(message);
 					Document doc = XMLUtils.loadXMLFromString(content);
-					BNetwork nodes =
-							XMLStateReader.getBayesianNetwork(XMLUtils
-									.getMainNode(doc));
+					BNetwork nodes = XMLStateReader
+							.getBayesianNetwork(XMLUtils.getMainNode(doc));
 					skipNextTrigger = true;
 					system.addContent(nodes);
 				}

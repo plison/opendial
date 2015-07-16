@@ -114,9 +114,9 @@ public class WizardLearner implements Module {
 		// determine the relevant parameters (discard the isolated ones)
 		Set<String> relevantParams =
 				state.getParameterIds()
-						.stream()
-						.filter(p -> !state.getChanceNode(p).getOutputNodes()
-								.isEmpty()).collect(Collectors.toSet());
+						.stream().filter(p -> !state.getChanceNode(p)
+								.getOutputNodes().isEmpty())
+				.collect(Collectors.toSet());
 
 		if (!relevantParams.isEmpty()) {
 			try {
@@ -125,16 +125,14 @@ public class WizardLearner implements Module {
 
 				Query query =
 						new Query.UtilQuery(state, queryVars, new Assignment());
-				EmpiricalDistribution empiricalDistrib =
-						sampler.getWeightedSamples(query,
-								cs -> reweightSamples(cs, wizardAction));
+				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
+						query, cs -> reweightSamples(cs, wizardAction));
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = state.getChanceNode(param);
 
-					ProbDistribution newDistrib =
-							empiricalDistrib.getMarginal(param,
-									paramNode.getInputNodeIds());
+					ProbDistribution newDistrib = empiricalDistrib.getMarginal(param,
+							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}
@@ -165,9 +163,9 @@ public class WizardLearner implements Module {
 			copy.setUtil(sampleAssign, sample.getUtility());
 			int ranking = copy.getRanking(wizardAction, 0.1);
 			if (ranking != -1) {
-				double logweight =
-						Math.log((GEOMETRIC_FACTOR * Math.pow(1 - GEOMETRIC_FACTOR,
-								ranking)) + 0.00001);
+				double logweight = Math.log(
+						(GEOMETRIC_FACTOR * Math.pow(1 - GEOMETRIC_FACTOR, ranking))
+								+ 0.00001);
 				sample.addLogWeight(logweight);
 			}
 		}

@@ -47,16 +47,17 @@ public class ValueFactory {
 	static final NoneVal noneValue = new NoneVal();
 
 	// pattern to find a double value
-	public static Pattern doublePattern = Pattern
-			.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+	public static Pattern doublePattern =
+			Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
 	// pattern to find an array of doubles
-	static Pattern arrayPattern = Pattern
-			.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*"
+	static Pattern arrayPattern =
+			Pattern.compile("\\[([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?,\\s*)*"
 					+ "([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
-	static Pattern setPattern = Pattern.compile("[\\w\\-_\\.\\^\\=\\s]*"
-			+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s\\(]+\\)*[\\]\\)])?",
+	static Pattern setPattern = Pattern.compile(
+			"[\\w\\-_\\.\\^\\=\\s]*"
+					+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s\\(]+\\)*[\\]\\)])?",
 			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
 
 	/**

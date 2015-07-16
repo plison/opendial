@@ -62,10 +62,10 @@ public class InferenceTest {
 
 	public static void main(String[] args) {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
-		log.info(""
-				+ (new VariableElimination()).queryProb(bn, Arrays
-						.asList("Burglary"), new Assignment(new Assignment(
-						"JohnCalls", true), new Assignment("MaryCalls", false))));
+		log.info("" + (new VariableElimination()).queryProb(bn,
+				Arrays.asList("Burglary"),
+				new Assignment(new Assignment("JohnCalls", true),
+						new Assignment("MaryCalls", false))));
 	}
 
 	@Test
@@ -74,12 +74,14 @@ public class InferenceTest {
 		BNetwork bn = NetworkExamples.constructBasicNetwork();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 
-		assertEquals(0.000628f, fullJoint.get(new Assignment(Arrays.asList(
-				"JohnCalls", "MaryCalls", "Alarm", "!Burglary", "!Earthquake"))),
+		assertEquals(
+				0.000628f, fullJoint.get(new Assignment(Arrays.asList("JohnCalls",
+						"MaryCalls", "Alarm", "!Burglary", "!Earthquake"))),
 				0.000001f);
 
-		assertEquals(0.9367428f, fullJoint.get(new Assignment(Arrays.asList(
-				"!JohnCalls", "!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))),
+		assertEquals(0.9367428f,
+				fullJoint.get(new Assignment(Arrays.asList("!JohnCalls",
+						"!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))),
 				0.000001f);
 
 		NaiveInference naive = new NaiveInference();
@@ -109,12 +111,14 @@ public class InferenceTest {
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 		Map<Assignment, Double> fullJoint = NaiveInference.getFullJoint(bn, false);
 
-		assertEquals(0.000453599f, fullJoint.get(new Assignment(Arrays.asList(
-				"JohnCalls", "MaryCalls", "Alarm", "!Burglary", "!Earthquake"))),
+		assertEquals(
+				0.000453599f, fullJoint.get(new Assignment(Arrays.asList("JohnCalls",
+						"MaryCalls", "Alarm", "!Burglary", "!Earthquake"))),
 				0.000001f);
 
-		assertEquals(0.6764828f, fullJoint.get(new Assignment(Arrays.asList(
-				"!JohnCalls", "!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))),
+		assertEquals(0.6764828f,
+				fullJoint.get(new Assignment(Arrays.asList("!JohnCalls",
+						"!MaryCalls", "!Alarm", "!Burglary", "!Earthquake"))),
 				0.000001f);
 
 		NaiveInference naive = new NaiveInference();
@@ -154,8 +158,8 @@ public class InferenceTest {
 				0.0001f);
 
 		MultivariateDistribution query2 =
-				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
-						Arrays.asList("Alarm", "MaryCalls")));
+				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"),
+						new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.623974,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -168,9 +172,8 @@ public class InferenceTest {
 		VariableElimination ve = new VariableElimination();
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution query =
-				ve.queryProb(bn, Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query = ve.queryProb(bn, Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.360657, query.getProb(new Assignment("Burglary", false)),
 				0.0001f);
@@ -178,8 +181,8 @@ public class InferenceTest {
 				0.0001f);
 
 		MultivariateDistribution query2 =
-				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
-						Arrays.asList("Alarm", "MaryCalls")));
+				ve.queryProb(bn, Arrays.asList("Alarm", "Burglary"),
+						new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.3577609,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -192,9 +195,8 @@ public class InferenceTest {
 		SamplingAlgorithm is = new SamplingAlgorithm(5000, 300);
 		BNetwork bn = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution query =
-				is.queryProb(bn, Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution query = is.queryProb(bn, Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 
 		assertEquals(0.362607f, query.getProb(new Assignment("Burglary", false)),
 				0.06f);
@@ -202,8 +204,8 @@ public class InferenceTest {
 				0.06f);
 
 		MultivariateDistribution query2 =
-				is.queryProb(bn, Arrays.asList("Alarm", "Burglary"), new Assignment(
-						Arrays.asList("Alarm", "MaryCalls")));
+				is.queryProb(bn, Arrays.asList("Alarm", "Burglary"),
+						new Assignment(Arrays.asList("Alarm", "MaryCalls")));
 
 		assertEquals(0.35970f,
 				query2.getProb(new Assignment(Arrays.asList("Alarm", "!Burglary"))),
@@ -218,103 +220,67 @@ public class InferenceTest {
 		NaiveInference naive = new NaiveInference();
 		SamplingAlgorithm is = new SamplingAlgorithm(4000, 300);
 
-		assertEquals(
-				-0.680,
-				ve.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "CallPolice")), 0.001);
-		assertEquals(
-				-0.680,
-				naive.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "CallPolice")), 0.001);
-		assertEquals(
-				-0.680,
-				is.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "CallPolice")), 0.5);
-		assertEquals(
-				-6.213,
-				ve.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "DoNothing")), 0.001);
-		assertEquals(
-				-6.213,
-				naive.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "DoNothing")), 0.001);
-		assertEquals(
-				-6.213,
-				is.queryUtil(
-						network,
-						Arrays.asList("Action"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(
-						new Assignment("Action", "DoNothing")), 1.5);
+		assertEquals(-0.680, ve
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "CallPolice")), 0.001);
+		assertEquals(-0.680, naive
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "CallPolice")), 0.001);
+		assertEquals(-0.680, is
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "CallPolice")), 0.5);
+		assertEquals(-6.213, ve
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "DoNothing")), 0.001);
+		assertEquals(-6.213, naive
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "DoNothing")), 0.001);
+		assertEquals(-6.213, is
+				.queryUtil(network, Arrays.asList("Action"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Action", "DoNothing")), 1.5);
 
-		assertEquals(
-				-0.1667,
-				ve.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("!Burglary")),
-				0.001);
-		assertEquals(
-				-0.1667,
-				naive.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("!Burglary")),
-				0.001);
-		assertEquals(
-				-0.25,
-				is.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("!Burglary")),
-				0.5);
-		assertEquals(
-				-3.5,
-				ve.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("Burglary")),
-				0.001);
-		assertEquals(
-				-3.5,
-				naive.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("Burglary")),
-				0.001);
-		assertEquals(
-				-3.5,
-				is.queryUtil(
-						network,
-						Arrays.asList("Burglary"),
-						new Assignment(new Assignment("JohnCalls"), new Assignment(
-								"MaryCalls"))).getUtil(new Assignment("Burglary")),
-				1.0);
+		assertEquals(-0.1667, ve
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.1667, naive
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("!Burglary")), 0.001);
+		assertEquals(-0.25, is
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("!Burglary")), 0.5);
+		assertEquals(-3.5, ve
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, naive
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Burglary")), 0.001);
+		assertEquals(-3.5, is
+				.queryUtil(network, Arrays.asList("Burglary"),
+						new Assignment(new Assignment("JohnCalls"),
+								new Assignment("MaryCalls")))
+				.getUtil(new Assignment("Burglary")), 1.0);
 
 	}
 
@@ -324,10 +290,9 @@ public class InferenceTest {
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = 4;
 		BNetwork network = NetworkExamples.constructBasicNetwork2();
 
-		MultivariateDistribution distrib =
-				(new SwitchingAlgorithm()).queryProb(network,
-						Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		MultivariateDistribution distrib = (new SwitchingAlgorithm()).queryProb(
+				network, Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
 		CategoricalTable.Builder builder = new CategoricalTable.Builder("n1");
@@ -346,36 +311,31 @@ public class InferenceTest {
 		network.getNode("Alarm").addInputNode(n2);
 		network.getNode("Alarm").addInputNode(n3);
 
-		distrib =
-				(new SwitchingAlgorithm()).queryProb(network,
-						Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		distrib = (new SwitchingAlgorithm()).queryProb(network,
+				Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertEquals(EmpiricalDistribution.class, distrib.getClass());
 
 		network.removeNode(n1.getId());
 		network.removeNode(n2.getId());
 
-		distrib =
-				(new SwitchingAlgorithm()).queryProb(network,
-						Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
+		distrib = (new SwitchingAlgorithm()).queryProb(network,
+				Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls")));
 		assertTrue(distrib instanceof MultivariateTable);
 
-		n1 =
-				new ChanceNode("n1", new ContinuousDistribution("n1",
-						new UniformDensityFunction(-2, 2)));
-		n2 =
-				new ChanceNode("n2", new ContinuousDistribution("n2",
-						new GaussianDensityFunction(-1.0, 3.0)));
+		n1 = new ChanceNode("n1",
+				new ContinuousDistribution("n1", new UniformDensityFunction(-2, 2)));
+		n2 = new ChanceNode("n2", new ContinuousDistribution("n2",
+				new GaussianDensityFunction(-1.0, 3.0)));
 		network.addNode(n1);
 		network.addNode(n2);
 		network.getNode("Earthquake").addInputNode(n1);
 		network.getNode("Earthquake").addInputNode(n2);
 
-		distrib =
-				(new SwitchingAlgorithm().queryProb(network,
-						Arrays.asList("Burglary"),
-						new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
+		distrib = (new SwitchingAlgorithm().queryProb(network,
+				Arrays.asList("Burglary"),
+				new Assignment(Arrays.asList("JohnCalls", "MaryCalls"))));
 		assertTrue(distrib instanceof EmpiricalDistribution);
 
 		SwitchingAlgorithm.MAX_BRANCHING_FACTOR = oldFactor;

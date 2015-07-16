@@ -109,7 +109,7 @@ public class ParametersTest {
 		assertTrue(utils.getUtil(new Assignment("u_m'", "so interesting!")) > 1.7);
 		assertTrue(utils
 				.getUtil(new Assignment("u_m'", "yeah yeah talk to my hand")) < utils
-				.getUtil(new Assignment("u_m'", "so interesting!")));
+						.getUtil(new Assignment("u_m'", "so interesting!")));
 		assertEquals(11, system.getState().getNodeIds().size());
 
 		// Thread.sleep(30000000);
@@ -216,9 +216,8 @@ public class ParametersTest {
 				rules.get(0).getOutput(new Assignment("u_u", "brilliant"));
 		Effect o = new Effect(new BasicEffect("a_u", "Approval"));
 		assertTrue(outputs.getParameter(o) instanceof ComplexParameter);
-		Assignment input =
-				new Assignment(new Assignment("theta_6", 2.1), new Assignment(
-						"theta_7", 1.3));
+		Assignment input = new Assignment(new Assignment("theta_6", 2.1),
+				new Assignment("theta_7", 1.3));
 		assertEquals(0.74, outputs.getParameter(o).getValue(input), 0.01);
 
 		system.getState().removeNodes(system.getState().getActionNodeIds());
@@ -235,10 +234,8 @@ public class ParametersTest {
 
 	@Test
 	public void testParam6() {
-		DialogueSystem system =
-				new DialogueSystem(
-						XMLDomainReader
-								.extractDomain("test/domains/testparams3.xml"));
+		DialogueSystem system = new DialogueSystem(
+				XMLDomainReader.extractDomain("test/domains/testparams3.xml"));
 		system.getSettings().showGUI = false;
 		system.startSystem();
 		CategoricalTable table = system.getContent("b").toDiscrete();

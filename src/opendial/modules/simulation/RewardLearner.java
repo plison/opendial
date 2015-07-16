@@ -113,9 +113,8 @@ public class RewardLearner implements Module {
 
 		for (String evidenceVar : state.getEvidence().getVariables()) {
 			if (evidenceVar.startsWith("R(") && evidenceVar.endsWith(")")) {
-				Assignment actualAction =
-						Assignment.createFromString(evidenceVar.substring(2,
-								evidenceVar.length() - 1));
+				Assignment actualAction = Assignment.createFromString(
+						evidenceVar.substring(2, evidenceVar.length() - 1));
 				double actualUtility =
 						((DoubleVal) state.getEvidence().getValue(evidenceVar))
 								.getDouble();
@@ -157,23 +156,21 @@ public class RewardLearner implements Module {
 			// determine the relevant parameters (discard the isolated ones)
 			Set<String> relevantParams =
 					state.getParameterIds()
-							.stream()
-							.filter(p -> !state.getChanceNode(p).getOutputNodes()
-									.isEmpty()).collect(Collectors.toSet());
+							.stream().filter(p -> !state.getChanceNode(p)
+									.getOutputNodes().isEmpty())
+					.collect(Collectors.toSet());
 
 			if (!relevantParams.isEmpty()) {
 
 				Query query =
 						new Query.UtilQuery(state, relevantParams, actualAction);
-				EmpiricalDistribution empiricalDistrib =
-						sampler.getWeightedSamples(query,
-								cs -> reweightSamples(cs, actualUtility));
+				EmpiricalDistribution empiricalDistrib = sampler.getWeightedSamples(
+						query, cs -> reweightSamples(cs, actualUtility));
 
 				for (String param : relevantParams) {
 					ChanceNode paramNode = system.getState().getChanceNode(param);
-					ProbDistribution newDistrib =
-							empiricalDistrib.getMarginal(param,
-									paramNode.getInputNodeIds());
+					ProbDistribution newDistrib = empiricalDistrib.getMarginal(param,
+							paramNode.getInputNodeIds());
 					paramNode.setDistrib(newDistrib);
 				}
 			}

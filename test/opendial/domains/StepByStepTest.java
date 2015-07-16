@@ -43,10 +43,8 @@ public class StepByStepTest {
 
 	@Test
 	public void domain() {
-		DialogueSystem system =
-				new DialogueSystem(
-						XMLDomainReader
-								.extractDomain("test/domains/example-step-by-step_params.xml"));
+		DialogueSystem system = new DialogueSystem(XMLDomainReader
+				.extractDomain("test/domains/example-step-by-step_params.xml"));
 		system.detachModule(ForwardPlanner.class);
 		system.getSettings().showGUI = false;
 		// Settings.nbSamples = Settings.nbSamples / 2;

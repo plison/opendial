@@ -27,6 +27,7 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import opendial.datastructs.Assignment;
@@ -103,8 +104,8 @@ public class Rule {
 				}
 			}
 			if (totalMass > 1.02) {
-				throw new RuntimeException("probability value must be <=1, but is: "
-						+ totalMass);
+				throw new RuntimeException(
+						"probability value must be <=1, but is: " + totalMass);
 			}
 		}
 		cases.add(new RuleCase(condition, output));
@@ -153,10 +154,9 @@ public class Rule {
 
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
 
-			RuleOutput match =
-					cases.stream().filter(c -> c.condition.isSatisfiedBy(full))
-							.map(c -> c.output).findFirst()
-							.orElse(new RuleOutput(ruleType));
+			RuleOutput match = cases.stream()
+					.filter(c -> c.condition.isSatisfiedBy(full)).map(c -> c.output)
+					.findFirst().orElse(new RuleOutput(ruleType));
 
 			match = match.ground(full);
 			output.addOutput(match);
@@ -215,6 +215,7 @@ public class Rule {
 		for (RuleCase c : cases) {
 			groundings.add(c.getGroundings(input));
 		}
+		groundings.extend(new Assignment("random", (new Random()).nextInt(9999)));
 		return groundings;
 	}
 

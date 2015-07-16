@@ -163,9 +163,8 @@ public class ForwardPlanner implements Module {
 			long timeout = Settings.maxSamplingTime * 2;
 			// if the speech stream is not finished, only allow fast, reactive
 			// responses
-			timeout =
-					(initState.hasChanceNode(settings.userSpeech)) ? timeout / 5
-							: timeout;
+			timeout = (initState.hasChanceNode(settings.userSpeech)) ? timeout / 5
+					: timeout;
 			service.schedule(() -> isTerminated = true, timeout,
 					TimeUnit.MILLISECONDS);
 
@@ -223,7 +222,8 @@ public class ForwardPlanner implements Module {
 				double reward = rewards.getUtil(action);
 				qValues.setUtil(action, reward);
 
-				if (horizon > 1 && !isTerminated && !paused && hasTransition(action)) {
+				if (horizon > 1 && !isTerminated && !paused
+						&& hasTransition(action)) {
 
 					DialogueState copy = state.copy();
 					copy.addToState(action.removePrimes());
@@ -253,7 +253,8 @@ public class ForwardPlanner implements Module {
 				for (Model model : system.getDomain().getModels()) {
 					if (model.isTriggered(state, toProcess)) {
 						model.trigger(state);
-						if (model.isBlocking() && !state.getNewVariables().isEmpty()) {
+						if (model.isBlocking()
+								&& !state.getNewVariables().isEmpty()) {
 							break;
 						}
 					}
