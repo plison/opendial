@@ -84,13 +84,24 @@ test {
 task compile (type: Copy) {
 	dependsOn distTar
 	from tarTree(distTar.archivePath)
-	into '.'
+	into "$buildDir/install"
 	doLast {
         delete("scripts")
         delete("lib")
-        file("${project.name}-${project.version}/bin").renameTo(file("scripts"))
-        file("${project.name}-${project.version}/lib").renameTo(file("lib"))
-        delete("${project.name}-${project.version}/")
+        file("$buildDir/install/${project.name}-${project.version}/bin").renameTo(file("scripts"))
+        file("$buildDir/install/${project.name}-${project.version}/lib").renameTo(file("lib"))
+        delete("$buildDir/install")
+    }
+}
+
+
+/**
+ * Making sure the JVM arguments are passed in the script
+ */
+startScripts {
+    doLast {
+    	unixScript.text = unixScript.text.replaceFirst("\n", "\nJAVA_OPTS=\"\\\$@\"\n")
+    	windowsScript.text = windowsScript.text.replaceFirst("\n", "\nset JAVA_OPTS=%* \n")
     }
 }
 
