@@ -115,8 +115,9 @@ public class GUIFrame implements Module {
 					frame.setIconImage(ImageIO.read(f));
 				}
 				else {
-					frame.setIconImage(ImageIO.read(GUIFrame.class
-							.getResourceAsStream("/" + ICON_PATH.replace("//", "/"))));
+					frame.setIconImage(
+							ImageIO.read(GUIFrame.class.getResourceAsStream(
+									"/" + ICON_PATH.replace("//", "/"))));
 				}
 			}
 			catch (Exception e) {
@@ -198,8 +199,8 @@ public class GUIFrame implements Module {
 			menu.update();
 			String title = "OpenDial toolkit";
 			if (!system.getDomain().isEmpty()) {
-				title +=
-						" - domain: " + system.getDomain().getSourceFile().getName();
+				title += " - domain: "
+						+ system.getDomain().getSourceFile().getName();
 				editorTab.refresh();
 			}
 			else {
@@ -422,10 +423,9 @@ public class GUIFrame implements Module {
 		if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			File fileToSave = fileChooser.getSelectedFile();
 			if (fileToSave.exists()) {
-				int result =
-						JOptionPane.showConfirmDialog(frame,
-								"The file exists, overwrite?", "Existing file",
-								JOptionPane.YES_NO_CANCEL_OPTION);
+				int result = JOptionPane.showConfirmDialog(frame,
+						"The file exists, overwrite?", "Existing file",
+						JOptionPane.YES_NO_CANCEL_OPTION);
 				if (result == JOptionPane.NO_OPTION
 						|| result == JOptionPane.CLOSED_OPTION
 						|| result == JOptionPane.CANCEL_OPTION) {
@@ -633,10 +633,9 @@ public class GUIFrame implements Module {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (!isDomainSaved() && requestSave()) {
-				e =
-						new MouseEvent(e.getComponent(), MouseEvent.MOUSE_RELEASED,
-								e.getWhen() + 100, e.getModifiers(), e.getX(),
-								e.getY(), 1, false);
+				e = new MouseEvent(e.getComponent(), MouseEvent.MOUSE_RELEASED,
+						e.getWhen() + 100, e.getModifiers(), e.getX(), e.getY(), 1,
+						false);
 				e.getComponent().dispatchEvent(e);
 			}
 		}

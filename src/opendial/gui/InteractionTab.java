@@ -240,19 +240,17 @@ public class InteractionTab extends JComponent {
 			htmlTable += "[" + baseVar + "]";
 		}
 		htmlTable += "</font></td>";
-		List<Value> rankedValues =
-				table.getValues()
-						.stream()
-						.sorted((v1, v2) -> Double.compare(table.getProb(v2),
-								table.getProb(v1))).collect(Collectors.toList());
+		List<Value> rankedValues = table
+				.getValues().stream().sorted((v1, v2) -> Double
+						.compare(table.getProb(v2), table.getProb(v1)))
+				.collect(Collectors.toList());
 		for (Value value : rankedValues) {
 			if (!(value instanceof NoneVal)) {
 				htmlTable += "<td><font size=4>";
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content +=
-							" (" + StringUtils.getShortForm(table.getProb(value))
-									+ ")";
+					content += " (" + StringUtils.getShortForm(table.getProb(value))
+							+ ")";
 				}
 				if (system.getSettings().varsToMonitor.contains(baseVar)) {
 					content = "<i>" + content + "</i>";
@@ -271,15 +269,11 @@ public class InteractionTab extends JComponent {
 	 */
 	void refresh() {
 		if (system.getDomain().isEmpty()) {
-//			inputField.setEnabled(false);
-//			lines.setEnabled(false);
 			lines.setToolTipText("No dialogue domain currently selected");
 			inputField.setToolTipText("No dialogue domain currently selected");
 		}
 		else {
 			if (inputField.isEnabled() == system.isPaused()) {
-				inputField.setEnabled(!system.isPaused());
-				lines.setEnabled(!system.isPaused());
 				lines.setToolTipText(null);
 				inputField.setToolTipText(null);
 			}
@@ -298,15 +292,14 @@ public class InteractionTab extends JComponent {
 		refresh();
 		if (updatedVars.contains(system.getSettings().userInput)
 				&& state.hasChanceNode(system.getSettings().userInput)) {
-			CategoricalTable distrib =
-					state.queryProb(system.getSettings().userInput, false)
-							.toDiscrete();
+			CategoricalTable distrib = state
+					.queryProb(system.getSettings().userInput, false).toDiscrete();
 			showVariable(distrib);
 		}
 		if (updatedVars.contains(system.getSettings().systemOutput)
 				&& state.hasChanceNode(system.getSettings().systemOutput)) {
-			showVariable(state.queryProb(system.getSettings().systemOutput)
-					.toDiscrete());
+			showVariable(
+					state.queryProb(system.getSettings().systemOutput).toDiscrete());
 		}
 		for (String monitorVar : system.getSettings().varsToMonitor) {
 			if (updatedVars.contains(monitorVar)) {

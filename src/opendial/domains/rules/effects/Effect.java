@@ -134,10 +134,9 @@ public final class Effect implements Value {
 		if (fullyGrounded) {
 			return this;
 		}
-		List<BasicEffect> grounded =
-				subeffects.stream().map(e -> e.ground(grounding))
-						.filter(e -> !e.containsSlots())
-						.collect(Collectors.toList());
+		List<BasicEffect> grounded = subeffects.stream()
+				.map(e -> e.ground(grounding)).filter(e -> !e.containsSlots())
+				.collect(Collectors.toList());
 		return new Effect(grounded);
 	}
 
@@ -342,8 +341,8 @@ public final class Effect implements Value {
 	 */
 	@Override
 	public Effect copy() {
-		return new Effect(subeffects.stream().map(e -> e.copy())
-				.collect(Collectors.toList()));
+		return new Effect(
+				subeffects.stream().map(e -> e.copy()).collect(Collectors.toList()));
 	}
 
 	/**
@@ -406,8 +405,8 @@ public final class Effect implements Value {
 			Template tvar = new Template(var);
 			Template tval = new Template(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
-				return new Effect(new TemplateEffect(tvar, tval, 1, exclusive,
-						negated));
+				return new Effect(
+						new TemplateEffect(tvar, tval, 1, exclusive, negated));
 			}
 			else {
 				return new Effect(new BasicEffect(var, ValueFactory.create(val), 1,

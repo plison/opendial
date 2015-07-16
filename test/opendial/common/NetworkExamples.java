@@ -126,12 +126,12 @@ public class NetworkExamples {
 		value2.addInputNode(action);
 		value2.addUtility(new Assignment(new Assignment("Burglary", true), "Action",
 				ValueFactory.create("CallPolice")), 0.0f);
-		value2.addUtility(new Assignment(new Assignment("Burglary", false),
-				"Action", ValueFactory.create("CallPolice")), 0.0f);
+		value2.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
+				ValueFactory.create("CallPolice")), 0.0f);
 		value2.addUtility(new Assignment(new Assignment("Burglary", true), "Action",
 				ValueFactory.create("DoNothing")), -10.0f);
-		value2.addUtility(new Assignment(new Assignment("Burglary", false),
-				"Action", ValueFactory.create("DoNothing")), 0.5f);
+		value2.addUtility(new Assignment(new Assignment("Burglary", false), "Action",
+				ValueFactory.create("DoNothing")), 0.5f);
 		bn.addNode(value2);
 
 		return bn;
@@ -156,9 +156,9 @@ public class NetworkExamples {
 		network.removeNode("Action");
 		ActionNode ddn = new ActionNode("Action");
 		network.getUtilityNode("Util1").addInputNode(ddn);
-		network.getUtilityNode("Util1").removeUtility(
-				new Assignment(new Assignment("Burglary", false), new Assignment(
-						"Action", "DoNothing")));
+		network.getUtilityNode("Util1")
+				.removeUtility(new Assignment(new Assignment("Burglary", false),
+						new Assignment("Action", "DoNothing")));
 		network.getUtilityNode("Util2").addInputNode(ddn);
 		network.addNode(ddn);
 		return network;
@@ -228,33 +228,33 @@ public class NetworkExamples {
 		UtilityNode r = new UtilityNode("r");
 		r.addInputNode(a_m);
 		r.addInputNode(i_u);
-		r.addUtility(new Assignment(new Assignment("a_m", "ki"), new Assignment(
-				"i_u", "ki")), 3);
-		r.addUtility(new Assignment(new Assignment("a_m", "ki"), new Assignment(
-				"i_u", "of")), -5);
-		r.addUtility(new Assignment(new Assignment("a_m", "ki"), new Assignment(
-				"i_u", "co")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "ki"),
+				new Assignment("i_u", "ki")), 3);
+		r.addUtility(new Assignment(new Assignment("a_m", "ki"),
+				new Assignment("i_u", "of")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "ki"),
+				new Assignment("i_u", "co")), -5);
 
-		r.addUtility(new Assignment(new Assignment("a_m", "of"), new Assignment(
-				"i_u", "ki")), -5);
-		r.addUtility(new Assignment(new Assignment("a_m", "of"), new Assignment(
-				"i_u", "of")), 3);
-		r.addUtility(new Assignment(new Assignment("a_m", "of"), new Assignment(
-				"i_u", "co")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "of"),
+				new Assignment("i_u", "ki")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "of"),
+				new Assignment("i_u", "of")), 3);
+		r.addUtility(new Assignment(new Assignment("a_m", "of"),
+				new Assignment("i_u", "co")), -5);
 
-		r.addUtility(new Assignment(new Assignment("a_m", "co"), new Assignment(
-				"i_u", "ki")), -5);
-		r.addUtility(new Assignment(new Assignment("a_m", "co"), new Assignment(
-				"i_u", "of")), -5);
-		r.addUtility(new Assignment(new Assignment("a_m", "co"), new Assignment(
-				"i_u", "co")), 3);
+		r.addUtility(new Assignment(new Assignment("a_m", "co"),
+				new Assignment("i_u", "ki")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "co"),
+				new Assignment("i_u", "of")), -5);
+		r.addUtility(new Assignment(new Assignment("a_m", "co"),
+				new Assignment("i_u", "co")), 3);
 
-		r.addUtility(new Assignment(new Assignment("a_m", "rep"), new Assignment(
-				"i_u", "ki")), -0.5);
-		r.addUtility(new Assignment(new Assignment("a_m", "rep"), new Assignment(
-				"i_u", "of")), -0.5);
-		r.addUtility(new Assignment(new Assignment("a_m", "rep"), new Assignment(
-				"i_u", "co")), -0.5);
+		r.addUtility(new Assignment(new Assignment("a_m", "rep"),
+				new Assignment("i_u", "ki")), -0.5);
+		r.addUtility(new Assignment(new Assignment("a_m", "rep"),
+				new Assignment("i_u", "of")), -0.5);
+		r.addUtility(new Assignment(new Assignment("a_m", "rep"),
+				new Assignment("i_u", "co")), -0.5);
 		net.addNode(r);
 
 		return net;

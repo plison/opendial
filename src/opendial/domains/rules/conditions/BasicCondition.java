@@ -388,8 +388,8 @@ public final class BasicCondition implements Condition {
 	 */
 	@Override
 	public int hashCode() {
-		return variable.hashCode() + templateValue.hashCode() - 3
-				* relation.hashCode();
+		return variable.hashCode() + templateValue.hashCode()
+				- 3 * relation.hashCode();
 	}
 
 	/**
@@ -403,8 +403,8 @@ public final class BasicCondition implements Condition {
 	public boolean equals(Object o) {
 		if (o instanceof BasicCondition) {
 			return (((BasicCondition) o).getVariable().equals(variable)
-					&& ((BasicCondition) o).templateValue.equals(templateValue) && relation == ((BasicCondition) o)
-						.getRelation());
+					&& ((BasicCondition) o).templateValue.equals(templateValue)
+					&& relation == ((BasicCondition) o).getRelation());
 		}
 		return false;
 	}

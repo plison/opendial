@@ -55,7 +55,8 @@ import opendial.utils.AudioUtils;
  * data.
  * <li>an automatic mode relying on (energy-based) Voice Activity Recognition to
  * determine when speech is present in the audio stream.
- * </ol>.
+ * </ol>
+ * .
  * 
  * <p>
  * When speech is detected using one of the two above methods, the module creates a
@@ -221,8 +222,8 @@ public class AudioModule implements Module {
 			inputSpeech.setAsFinal();
 
 			if (SAVE_SPEECH.length() > 0 && inputSpeech.length() > MIN_DURATION) {
-				AudioUtils.generateFile(inputSpeech.toByteArray(), new File(
-						SAVE_SPEECH));
+				AudioUtils.generateFile(inputSpeech.toByteArray(),
+						new File(SAVE_SPEECH));
 			}
 			inputSpeech = null;
 			system.addContent(system.getSettings().floor, "free");
@@ -238,11 +239,12 @@ public class AudioModule implements Module {
 	public synchronized void trigger(DialogueState state,
 			Collection<String> updatedVars) {
 		String systemSpeech = system.getSettings().systemSpeech;
-		if (updatedVars.contains(systemSpeech) && state.hasChanceNode(systemSpeech)) {
+		if (updatedVars.contains(systemSpeech)
+				&& state.hasChanceNode(systemSpeech)) {
 			Value v = state.queryProb(systemSpeech).getBest();
 			if (v instanceof SpeechData) {
-				system.addContent(new Assignment(system.getSettings().floor,
-						"system"));
+				system.addContent(
+						new Assignment(system.getSettings().floor, "system"));
 				playSpeech((SpeechData) v);
 			}
 		}

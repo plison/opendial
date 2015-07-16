@@ -231,9 +231,8 @@ public class AudioUtils {
 		try {
 			AudioInputStream audioStream = getAudioStream(data);
 			if (outputFile.getName().endsWith("wav")) {
-				int nb =
-						AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE,
-								new FileOutputStream(outputFile));
+				int nb = AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE,
+						new FileOutputStream(outputFile));
 				log.fine("WAV file written to " + outputFile.getCanonicalPath()
 						+ " (" + (nb / 1000) + " kB)");
 			}
@@ -311,14 +310,12 @@ public class AudioUtils {
 			int offset = audioData.length - 2 * samples.length;
 			for (int i = 0; i < samples.length; i++) {
 				if (format.isBigEndian()) {
-					samples[i] =
-							((audioData[offset + i * 2] << 8) | (audioData[offset
-									+ i * 2 + 1] & 0xFF));
+					samples[i] = ((audioData[offset + i * 2] << 8)
+							| (audioData[offset + i * 2 + 1] & 0xFF));
 				}
 				else {
-					samples[i] =
-							((audioData[offset + i * 2 + 0] & 0xFF) | (audioData[offset
-									+ i * 2 + 1] << 8));
+					samples[i] = ((audioData[offset + i * 2 + 0] & 0xFF)
+							| (audioData[offset + i * 2 + 1] << 8));
 				}
 			}
 			return samples;
@@ -332,8 +329,8 @@ public class AudioUtils {
 			return samples;
 		}
 		else {
-			throw new RuntimeException("unsupported frame size: "
-					+ format.getFrameSize());
+			throw new RuntimeException(
+					"unsupported frame size: " + format.getFrameSize());
 		}
 
 	}

@@ -121,15 +121,13 @@ public class StatePruner {
 			else if (ENABLE_REDUCTION & node.getDistrib() instanceof AnchoredRule) {
 				continue;
 			}
-			else if (node.getInputNodeIds().size() < 3
-					&& node.getNbValues() == 1
+			else if (node.getInputNodeIds().size() < 3 && node.getNbValues() == 1
 					&& node.getValues().iterator().next()
 							.equals(ValueFactory.none())) {
 				continue;
 			}
-			else if (node.getId().endsWith("^p")
-					&& node.getOutputNodesIds().stream()
-							.anyMatch(i -> i.startsWith("=_"))) {
+			else if (node.getId().endsWith("^p") && node.getOutputNodesIds().stream()
+					.anyMatch(i -> i.startsWith("=_"))) {
 				continue;
 			}
 			// keeping the newest nodes
@@ -170,7 +168,8 @@ public class StatePruner {
 	 * 
 	 * @return the reduced dialogue state @
 	 */
-	private static DialogueState reduce(DialogueState state, Set<String> nodesToKeep) {
+	private static DialogueState reduce(DialogueState state,
+			Set<String> nodesToKeep) {
 
 		Assignment evidence = state.getEvidence();
 		// if all nodes to keep are included in the evidence, no inference is
@@ -235,15 +234,15 @@ public class StatePruner {
 			Collection<String> nodesToKeep) {
 
 		DialogueState newState = new DialogueState(state, state.getEvidence());
-		for (ChanceNode node : new ArrayList<ChanceNode>(newState.getChanceNodes())) {
+		for (ChanceNode node : new ArrayList<ChanceNode>(
+				newState.getChanceNodes())) {
 
 			if (!nodesToKeep.contains(node.getId())) {
 				CategoricalTable initDistrib =
 						state.queryProb(node.getId(), false).toDiscrete();
 				for (ChanceNode outputNode : node.getOutputNodes(ChanceNode.class)) {
-					MarginalDistribution newDistrib =
-							new MarginalDistribution(outputNode.getDistrib(),
-									initDistrib);
+					MarginalDistribution newDistrib = new MarginalDistribution(
+							outputNode.getDistrib(), initDistrib);
 					outputNode.setDistrib(newDistrib);
 				}
 				newState.removeNode(node.getId());
@@ -346,8 +345,8 @@ public class StatePruner {
 				reduced.addNode(n.copy());
 				for (String input : n.getInputNodeIds()) {
 					if (reduced.hasNode(input)) {
-						reduced.getUtilityNode(n.getId()).addInputNode(
-								reduced.getNode(input));
+						reduced.getUtilityNode(n.getId())
+								.addInputNode(reduced.getNode(input));
 					}
 				}
 			}

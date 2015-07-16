@@ -50,6 +50,7 @@ public class PlanningTest {
 	static Domain domain;
 	static Domain domain2;
 	static Domain domain3;
+
 	static {
 		try {
 			domain = XMLDomainReader.extractDomain(domainFile);

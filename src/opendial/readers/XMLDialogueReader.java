@@ -76,9 +76,8 @@ public class XMLDialogueReader {
 				}
 			}
 			else if (node.getNodeName().equals("wizard")) {
-				Assignment assign =
-						Assignment.createFromString(node.getFirstChild()
-								.getNodeValue().trim());
+				Assignment assign = Assignment.createFromString(
+						node.getFirstChild().getNodeValue().trim());
 				sample.get(sample.size() - 1).addEvidence(assign);
 			}
 			else if (node.getNodeName().equals("import")) {

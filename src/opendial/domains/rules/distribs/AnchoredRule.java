@@ -1,3 +1,4 @@
+
 // =================================================================                                                                   
 // Copyright (C) 2011-2015 Pierre Lison (plison@ifi.uio.no)
 
@@ -105,7 +106,8 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 		// determines the input range
 		inputs = new ValueRange();
-		for (ChanceNode inputNode : state.getMatchingNodes(rule.getInputVariables())) {
+		for (ChanceNode inputNode : state
+				.getMatchingNodes(rule.getInputVariables())) {
 			inputs.addValues(inputNode.getId(), inputNode.getValues());
 		}
 		variables = new HashSet<String>(inputs.getVariables());

@@ -108,8 +108,8 @@ public class CategoricalTable implements IndependentDistribution {
 					builder.addRow(concat, getProb(thisA) * other.getProb(otherA));
 				}
 				catch (RuntimeException e) {
-					log.warning("could not concatenated the tables " + this
-							+ " and " + other);
+					log.warning("could not concatenated the tables " + this + " and "
+							+ other);
 					return this.copy();
 				}
 			}
@@ -179,26 +179,24 @@ public class CategoricalTable implements IndependentDistribution {
 		// element
 		else if (val instanceof DoubleVal && isContinuous()) {
 			double toFind = ((DoubleVal) val).getDouble();
-			Value closest =
-					table.keySet()
-							.stream()
-							.filter(v -> v instanceof DoubleVal)
-							.min((v1, v2) -> Double.compare(
-									Math.abs(((DoubleVal) v1).getDouble() - toFind),
-									Math.abs(((DoubleVal) v2).getDouble() - toFind)))
-							.get();
+			Value closest = table.keySet().stream()
+					.filter(v -> v instanceof DoubleVal)
+					.min((v1, v2) -> Double.compare(
+							Math.abs(((DoubleVal) v1).getDouble() - toFind),
+							Math.abs(((DoubleVal) v2).getDouble() - toFind)))
+					.get();
 			return getProb(closest);
 		}
 
 		else if (val instanceof ArrayVal && isContinuous()) {
 			double[] toFind = ((ArrayVal) val).getArray();
 			Value closest =
-					table.keySet()
-							.stream()
-							.filter(v -> v instanceof ArrayVal)
-							.min((v1, v2) -> Double.compare(MathUtils.getDistance(
-									((ArrayVal) v1).getArray(), toFind), MathUtils
-									.getDistance(((ArrayVal) v2).getArray(), toFind)))
+					table.keySet().stream().filter(v -> v instanceof ArrayVal)
+							.min((v1, v2) -> Double.compare(
+									MathUtils.getDistance(((ArrayVal) v1).getArray(),
+											toFind),
+							MathUtils.getDistance(((ArrayVal) v2).getArray(),
+									toFind)))
 							.get();
 			return getProb(closest);
 		}
@@ -295,8 +293,8 @@ public class CategoricalTable implements IndependentDistribution {
 			return true;
 		}
 		else
-			return (table.size() == 1 && table.keySet().iterator().next()
-					.equals(ValueFactory.none()));
+			return (table.size() == 1
+					&& table.keySet().iterator().next().equals(ValueFactory.none()));
 	}
 
 	/**
@@ -403,7 +401,8 @@ public class CategoricalTable implements IndependentDistribution {
 				return false;
 			}
 			for (Value v : getValues()) {
-				if (Math.abs(((CategoricalTable) o).getProb(v) - getProb(v)) > 0.01) {
+				if (Math.abs(
+						((CategoricalTable) o).getProb(v) - getProb(v)) > 0.01) {
 					return false;
 				}
 			}

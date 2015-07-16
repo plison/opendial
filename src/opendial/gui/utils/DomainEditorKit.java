@@ -173,8 +173,8 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		if (tag.equals("rule")) {
 			buffer.append(">\n" + indent + "\t<case>\n");
 			buffer.append(indent + "\t\t<condition>\n");
-			buffer.append(indent
-					+ "\t\t\t<if var=\"\" relation=\"=\" value=\"\"/>\n");
+			buffer.append(
+					indent + "\t\t\t<if var=\"\" relation=\"=\" value=\"\"/>\n");
 			buffer.append(indent + "\t\t</condition>\n");
 			String param = (isUtility(doc, pos)) ? "util=\"0\"" : "prob=\"1\"";
 			buffer.append(indent + "\t\t<effect " + param + ">\n");
@@ -414,7 +414,8 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		StringBuffer newStr = new StringBuffer();
 		for (int i = 0; i < line.length(); i++) {
 			char ch = line.charAt(i);
-			if (ch == '\n' || ch == 'f' || ch == '\r' || !Character.isWhitespace(ch)) {
+			if (ch == '\n' || ch == 'f' || ch == '\r'
+					|| !Character.isWhitespace(ch)) {
 				break;
 			}
 			newStr.append(ch);
@@ -442,9 +443,8 @@ public class DomainEditorKit extends StyledEditorKit implements KeyListener {
 		int end = after.indexOf("</model>");
 
 		if (start >= 0 && end >= 0 && middle < start) {
-			String modeltext =
-					before.substring(start, before.length())
-							+ after.substring(0, end);
+			String modeltext = before.substring(start, before.length())
+					+ after.substring(0, end);
 			int countProbs = 0;
 			int countUtils = 0;
 			Pattern p = Pattern.compile("((?:prob)|(?:util))\\=");

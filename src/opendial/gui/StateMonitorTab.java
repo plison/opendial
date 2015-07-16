@@ -152,9 +152,8 @@ public class StateMonitorTab extends JComponent {
 		logScroll.setBorder(BorderFactory.createEmptyBorder());
 
 		// arrange the global layout
-		JSplitPane topPanel =
-				new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
-						visualisation.wrapWithScrollPane());
+		JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel,
+				visualisation.wrapWithScrollPane());
 		topPanel.setDividerLocation(200);
 		JSplitPane fullPanel =
 				new JSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, logScroll);
@@ -176,8 +175,8 @@ public class StateMonitorTab extends JComponent {
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
 		if (states.containsKey(CURRENT_NAME)) {
-			refresh(mainFrame.getSystem().getState(), mainFrame.getSystem()
-					.getState().getParameterIds());
+			refresh(mainFrame.getSystem().getState(),
+					mainFrame.getSystem().getState().getParameterIds());
 		}
 	}
 
@@ -258,8 +257,8 @@ public class StateMonitorTab extends JComponent {
 	public void writeToLogArea(MultivariateDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText("<html><font face=\"helvetica\">" + distribStr
-				+ "</font></html>");
+		logArea.setText(
+				"<html><font face=\"helvetica\">" + distribStr + "</font></html>");
 	}
 
 	/**
@@ -270,8 +269,8 @@ public class StateMonitorTab extends JComponent {
 	public void writeToLogArea(UtilityFunction distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText("<html><font face=\"helvetica\">" + distribStr
-				+ "</font></html>");
+		logArea.setText(
+				"<html><font face=\"helvetica\">" + distribStr + "</font></html>");
 	}
 
 	/**
@@ -323,12 +322,12 @@ public class StateMonitorTab extends JComponent {
 		Container zoomPanel = new Container();
 		zoomPanel.setLayout(new BorderLayout());
 		JButton plus = new JButton("+");
-		plus.addMouseListener(new CustomMouseListener(new ZoomAction(
-				ZoomDirection.IN)));
+		plus.addMouseListener(
+				new CustomMouseListener(new ZoomAction(ZoomDirection.IN)));
 		zoomPanel.add(plus, BorderLayout.NORTH);
 		JButton minus = new JButton("-");
-		minus.addMouseListener(new CustomMouseListener(new ZoomAction(
-				ZoomDirection.OUT)));
+		minus.addMouseListener(
+				new CustomMouseListener(new ZoomAction(ZoomDirection.OUT)));
 		zoomPanel.add(minus, BorderLayout.SOUTH);
 
 		controlPanel.add(zoomPanel, BorderLayout.WEST);
@@ -339,27 +338,27 @@ public class StateMonitorTab extends JComponent {
 		Container translationPanel = new Container();
 		translationPanel.setLayout(new BorderLayout());
 		JButton up = new BasicArrowButton(SwingConstants.NORTH);
-		up.addMouseListener(new CustomMouseListener(new TranslationAction(
-				TranslationDirection.NORTH)));
+		up.addMouseListener(new CustomMouseListener(
+				new TranslationAction(TranslationDirection.NORTH)));
 		translationPanel.add(up, BorderLayout.NORTH);
 		JButton west = new BasicArrowButton(SwingConstants.WEST);
-		west.addMouseListener(new CustomMouseListener(new TranslationAction(
-				TranslationDirection.WEST)));
+		west.addMouseListener(new CustomMouseListener(
+				new TranslationAction(TranslationDirection.WEST)));
 		translationPanel.add(west, BorderLayout.WEST);
 		translationPanel.add(new JLabel("        "), BorderLayout.CENTER);
 		JButton east = new BasicArrowButton(SwingConstants.EAST);
-		east.addMouseListener(new CustomMouseListener(new TranslationAction(
-				TranslationDirection.EAST)));
+		east.addMouseListener(new CustomMouseListener(
+				new TranslationAction(TranslationDirection.EAST)));
 		translationPanel.add(east, BorderLayout.EAST);
 		JButton south = new BasicArrowButton(SwingConstants.SOUTH);
-		south.addMouseListener(new CustomMouseListener(new TranslationAction(
-				TranslationDirection.SOUTH)));
+		south.addMouseListener(new CustomMouseListener(
+				new TranslationAction(TranslationDirection.SOUTH)));
 		translationPanel.add(south, BorderLayout.SOUTH);
 
 		controlPanel.add(translationPanel, BorderLayout.EAST);
-		controlPanel.setBorder(new CompoundBorder(BorderFactory
-				.createTitledBorder("Controls"), BorderFactory.createEmptyBorder(5,
-				5, 10, 20)));
+		controlPanel.setBorder(
+				new CompoundBorder(BorderFactory.createTitledBorder("Controls"),
+						BorderFactory.createEmptyBorder(5, 5, 10, 20)));
 
 		return controlPanel;
 	}
@@ -371,26 +370,22 @@ public class StateMonitorTab extends JComponent {
 	 * (minor) todo: check that the keyboard codes are universal
 	 */
 	private void configureKeyInputs() {
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(45, 0, false), ZoomDirection.IN);
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(47, 0, false), ZoomDirection.OUT);
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(45, 0, false), ZoomDirection.IN);
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(47, 0, false), ZoomDirection.OUT);
 
 		// NB: the translation actions are only made available when the graph is
 		// in focus,
 		// to avoid conflicts with the navigation of the selection list
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(38, 0, false),
-						TranslationDirection.NORTH);
-		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(40, 0, false),
-						TranslationDirection.SOUTH);
-		visualisation
-				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(37, 0, false), TranslationDirection.WEST);
-		visualisation
-				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-				.put(KeyStroke.getKeyStroke(39, 0, false), TranslationDirection.EAST);
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(38, 0, false), TranslationDirection.NORTH);
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(40, 0, false), TranslationDirection.SOUTH);
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(37, 0, false), TranslationDirection.WEST);
+		visualisation.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(39, 0, false), TranslationDirection.EAST);
 
 		getActionMap().put(ZoomDirection.OUT, new ZoomAction(ZoomDirection.OUT));
 		getActionMap().put(ZoomDirection.IN, new ZoomAction(ZoomDirection.IN));

@@ -83,9 +83,8 @@ public final class MathExpression {
 		this.expression = expression;
 		this.variables = getVariableLabels(expression);
 		String local = expression.replaceAll("[\\[\\]\\{\\}]", "");
-		tokens =
-				ShuntingYard.convertToRPN(local, new HashMap<String, Function>(),
-						new HashMap<String, Operator>(), getVariableLabels(local));
+		tokens = ShuntingYard.convertToRPN(local, new HashMap<String, Function>(),
+				new HashMap<String, Operator>(), getVariableLabels(local));
 	}
 
 	/**

@@ -176,16 +176,15 @@ public class XMLDomainReader {
 			String filepath = rootpath + File.separator + fileName;
 			domain.addImportedFiles(new File(filepath));
 			Document subdoc = XMLUtils.getXMLDocument(filepath);
-			domain =
-					extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
-							rootpath, fullExtract);
+			domain = extractPartialDomain(XMLUtils.getMainNode(subdoc), domain,
+					rootpath, fullExtract);
 		}
 		else if (fullExtract && XMLUtils.hasContent(mainNode)) {
 			if (mainNode.getNodeName().equals("#text")) {
 				throw new RuntimeException("cannot insert free text in <domain>");
 			}
-			throw new RuntimeException("Invalid tag in <domain>: "
-					+ mainNode.getNodeName());
+			throw new RuntimeException(
+					"Invalid tag in <domain>: " + mainNode.getNodeName());
 		}
 
 		return domain;
@@ -209,20 +208,18 @@ public class XMLDomainReader {
 				if (node.getNodeName().equals("#text")) {
 					throw new RuntimeException("cannot insert free text in <model>");
 				}
-				throw new RuntimeException("Invalid tag in <model>: "
-						+ node.getNodeName());
+				throw new RuntimeException(
+						"Invalid tag in <model>: " + node.getNodeName());
 			}
 		}
 
 		if (topNode.hasAttributes()
 				&& topNode.getAttributes().getNamedItem("trigger") != null) {
-			Pattern p =
-					Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
-							+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
-							+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
-			Matcher m =
-					p.matcher(topNode.getAttributes().getNamedItem("trigger")
-							.getNodeValue());
+			Pattern p = Pattern.compile("([\\w\\*\\^_\\-\\[\\]\\{\\}]+"
+					+ "(?:\\([\\w\\*,\\s\\^_\\-\\[\\]\\{\\}]+\\))?)"
+					+ "[\\w\\*\\^_\\-\\[\\]\\{\\}]*");
+			Matcher m = p.matcher(
+					topNode.getAttributes().getNamedItem("trigger").getNodeValue());
 			while (m.find()) {
 				model.addTrigger(m.group());
 			}
@@ -233,9 +230,8 @@ public class XMLDomainReader {
 		}
 
 		if (topNode.getAttributes().getNamedItem("blocking") != null) {
-			boolean blocking =
-					Boolean.parseBoolean(topNode.getAttributes()
-							.getNamedItem("blocking").getNodeValue());
+			boolean blocking = Boolean.parseBoolean(
+					topNode.getAttributes().getNamedItem("blocking").getNodeValue());
 			model.setBlocking(blocking);
 		}
 

@@ -53,7 +53,8 @@ public class IncrementalTest {
 		system.getSettings().recording = Settings.Recording.ALL;
 		system.startSystem();
 		system.addContent(system.getSettings().userSpeech, "busy");
-		system.addIncrementalContent(new SingleValueDistribution("u_u", "go"), false);
+		system.addIncrementalContent(new SingleValueDistribution("u_u", "go"),
+				false);
 		Thread.sleep(100);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("go")));
@@ -83,8 +84,8 @@ public class IncrementalTest {
 		assertTrue(system.getState().hasChanceNode("nlu"));
 		system.getState().setAsCommitted("u_u");
 		assertFalse(system.getState().hasChanceNode("nlu"));
-		system.addIncrementalContent(new SingleValueDistribution("u_u",
-				"yes that is right"), false);
+		system.addIncrementalContent(
+				new SingleValueDistribution("u_u", "yes that is right"), false);
 		assertTrue(system.getContent("u_u").getValues()
 				.contains(ValueFactory.create("yes that is right")));
 	}

@@ -104,11 +104,8 @@ public class ATTSpeech implements Module {
 		if (system.getSettings().params.containsKey("grammar")) {
 			File f = new File(system.getSettings().params.getProperty("grammar"));
 			if (!f.exists()) {
-				f =
-						new File(
-								(system.getDomain().getSourceFile().getParent()
-										+ "/" + system.getSettings().params
-										.getProperty("grammar")));
+				f = new File((system.getDomain().getSourceFile().getParent() + "/"
+						+ system.getSettings().params.getProperty("grammar")));
 			}
 			if (f.exists()) {
 				grammarFile = f;
@@ -239,8 +236,8 @@ public class ATTSpeech implements Module {
 			int statusCode = apiResponse.getStatusCode();
 			if (statusCode == 200 || statusCode == 201) {
 				SpeechData output = new SpeechData(apiResponse.getResponseBody());
-				system.addContent(new Assignment(system.getSettings().systemSpeech,
-						output));
+				system.addContent(
+						new Assignment(system.getSettings().systemSpeech, output));
 
 			}
 			else if (statusCode == 401) {
@@ -268,17 +265,15 @@ public class ATTSpeech implements Module {
 		try {
 			// Create service for interacting with the Speech api
 			OAuthService osrvc = new OAuthService(FQDN, key, secret);
-			asrClient =
-					new RESTClient(FQDN + "/speech/v3/speechToTextCustom")
-							.addAuthorizationHeader(osrvc.getToken("STTC"))
-							.addHeader("Accept", "application/json")
-							.addHeader("X-Arg", "HasMultipleNBest=true");
+			asrClient = new RESTClient(FQDN + "/speech/v3/speechToTextCustom")
+					.addAuthorizationHeader(osrvc.getToken("STTC"))
+					.addHeader("Accept", "application/json")
+					.addHeader("X-Arg", "HasMultipleNBest=true");
 
-			ttsClient =
-					new RESTClient(FQDN + "/speech/v3/textToSpeech")
-							.addAuthorizationHeader(osrvc.getToken("TTS"))
-							.addHeader("Content-Type", "text/plain")
-							.addHeader("Accept", "audio/x-wav");
+			ttsClient = new RESTClient(FQDN + "/speech/v3/textToSpeech")
+					.addAuthorizationHeader(osrvc.getToken("TTS"))
+					.addHeader("Content-Type", "text/plain")
+					.addHeader("Accept", "audio/x-wav");
 
 		}
 		catch (RESTException e) {

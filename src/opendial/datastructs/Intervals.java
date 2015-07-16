@@ -144,8 +144,8 @@ public class Intervals<T> {
 			}
 		}
 
-		throw new RuntimeException("could not sample given the intervals: "
-				+ toString());
+		throw new RuntimeException(
+				"could not sample given the intervals: " + toString());
 
 	}
 

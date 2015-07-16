@@ -158,9 +158,8 @@ public class ValueRange {
 	 * @return the higher bound on the number of possible combinations
 	 */
 	public int getNbCombinations() {
-		OptionalInt estimation =
-				range.values().stream().mapToInt(set -> set.size())
-						.reduce((a, b) -> a * b);
+		OptionalInt estimation = range.values().stream().mapToInt(set -> set.size())
+				.reduce((a, b) -> a * b);
 		return (estimation.isPresent()) ? estimation.getAsInt() : 1;
 	}
 

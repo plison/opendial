@@ -111,9 +111,8 @@ public class DistributionViewer extends JDialog {
 		if (!currentState.hasChanceNode(queryVar)) {
 			return;
 		}
-		else if (lastDistrib != null
-				&& this.lastDistrib.equals(currentState.getChanceNode(queryVar)
-						.getDistrib())) {
+		else if (lastDistrib != null && this.lastDistrib
+				.equals(currentState.getChanceNode(queryVar).getDistrib())) {
 			return;
 		}
 		this.lastDistrib = currentState.queryProb(queryVar);
@@ -164,17 +163,16 @@ public class DistributionViewer extends JDialog {
 		distrib.getValues().stream()
 				.forEach(d -> dataset.addValue(distrib.getProb(d), "", "" + d));
 
-		JFreeChart chart =
-				ChartFactory.createBarChart("Probability distribution P("
-						+ variableName + ")", // chart
-												// title
-						"Value", // domain axis label
-						"Probability", // range axis label
-						dataset, // data
-						PlotOrientation.VERTICAL, // orientation
-						false, // include legend
-						true, // tooltips
-						false); // URLs
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Probability distribution P(" + variableName + ")", // chart
+																	// title
+				"Value", // domain axis label
+				"Probability", // range axis label
+				dataset, // data
+				PlotOrientation.VERTICAL, // orientation
+				false, // include legend
+				true, // tooltips
+				false); // URLs
 
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
 		BarRenderer renderer = (BarRenderer) plot.getRenderer();
@@ -225,7 +223,8 @@ public class DistributionViewer extends JDialog {
 
 		return new ChartPanel(
 				new JFreeChart("Probability distribution P(" + variableName + ")",
-						JFreeChart.DEFAULT_TITLE_FONT, combined, true), false);
+						JFreeChart.DEFAULT_TITLE_FONT, combined, true),
+				false);
 	}
 
 	private List<XYSeries> extractSeries(DensityFunction function) {
@@ -247,17 +246,16 @@ public class DistributionViewer extends JDialog {
 		points.stream().forEach(addToSeries);
 
 		for (XYSeries serie : series) {
-			boolean doSmoothing =
-					(function instanceof KernelDensityFunction)
-							|| (function instanceof DirichletDensityFunction);
+			boolean doSmoothing = (function instanceof KernelDensityFunction)
+					|| (function instanceof DirichletDensityFunction);
 			while (doSmoothing) {
 				int nbFluctuations = 0;
 				double prevPrevY = serie.getY(0).doubleValue();
 				double prevY = serie.getY(1).doubleValue();
 				for (int i = 2; i < serie.getItemCount(); i++) {
 					double currentY = serie.getY(i).doubleValue();
-					if (Math.signum(prevY - prevPrevY) != Math.signum(currentY
-							- prevY)) {
+					if (Math.signum(prevY - prevPrevY) != Math
+							.signum(currentY - prevY)) {
 						double avg = (prevPrevY + prevY + currentY) / 3.0;
 						serie.updateByIndex(i - 2, avg);
 						serie.updateByIndex(i - 1, avg);

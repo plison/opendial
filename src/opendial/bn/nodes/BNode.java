@@ -133,13 +133,11 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	public boolean removeInputNode(String inputNodeId) {
 		if (!inputNodes.containsKey(inputNodeId)) {
-			log.warning("node " + inputNodeId + " is not an input node for "
-					+ nodeId);
+			log.warning(
+					"node " + inputNodeId + " is not an input node for " + nodeId);
 		}
-		boolean removal1 =
-				inputNodes.containsKey(inputNodeId)
-						&& inputNodes.get(inputNodeId).removeOutputNode_internal(
-								nodeId);
+		boolean removal1 = inputNodes.containsKey(inputNodeId)
+				&& inputNodes.get(inputNodeId).removeOutputNode_internal(nodeId);
 		boolean removal2 = removeInputNode_internal(inputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -166,13 +164,11 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	public boolean removeOutputNode(String outputNodeId) {
 		if (!outputNodes.containsKey(outputNodeId)) {
-			log.warning("node " + outputNodeId + " is not an input node for "
-					+ nodeId);
+			log.warning(
+					"node " + outputNodeId + " is not an input node for " + nodeId);
 		}
-		boolean removal1 =
-				outputNodes.containsKey(outputNodeId)
-						&& outputNodes.get(outputNodeId).removeInputNode_internal(
-								nodeId);
+		boolean removal1 = outputNodes.containsKey(outputNodeId)
+				&& outputNodes.get(outputNodeId).removeInputNode_internal(nodeId);
 		boolean removal2 = removeOutputNode_internal(outputNodeId);
 		if (removal1 != removal2) {
 			log.warning("inconsistency between input and output links for "
@@ -829,8 +825,8 @@ public abstract class BNode implements Comparable<BNode> {
 	 */
 	private boolean removeOutputNode_internal(String outputNodeId) {
 		if (!outputNodes.containsKey(outputNodeId)) {
-			log.warning("node " + outputNodeId + " is not an output node for "
-					+ nodeId);
+			log.warning(
+					"node " + outputNodeId + " is not an output node for " + nodeId);
 		}
 		BNode outputNode = outputNodes.remove(outputNodeId);
 		return (outputNode != null);

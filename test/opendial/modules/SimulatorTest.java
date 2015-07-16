@@ -69,7 +69,8 @@ public class SimulatorTest {
 			system.startSystem();
 
 			String str = "";
-			for (int i = 0; i < 40 && system.getModule(Simulator.class) != null; i++) {
+			for (int i = 0; i < 40
+					&& system.getModule(Simulator.class) != null; i++) {
 				Thread.sleep(200);
 				str = system.getModule(DialogueRecorder.class).getRecord();
 				try {
@@ -104,7 +105,8 @@ public class SimulatorTest {
 			system.getSettings().showGUI = false;
 			system.startSystem();
 
-			for (int i = 0; i < 20 && system.getModule(Simulator.class) != null; i++) {
+			for (int i = 0; i < 20
+					&& system.getModule(Simulator.class) != null; i++) {
 				Thread.sleep(100);
 				try {
 					checkCondition2(system);

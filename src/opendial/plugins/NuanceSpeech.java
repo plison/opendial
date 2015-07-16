@@ -149,8 +149,8 @@ public class NuanceSpeech implements Module {
 		String outputVar = system.getSettings().systemOutput;
 
 		// if a new user speech is detected, start the speech recognition
-		if (updatedVars.contains(userSpeechVar)
-				&& state.hasChanceNode(userSpeechVar) && !paused) {
+		if (updatedVars.contains(userSpeechVar) && state.hasChanceNode(userSpeechVar)
+				&& !paused) {
 
 			Value speechVal = system.getContent(userSpeechVar).getBest();
 			if (speechVal instanceof SpeechData) {
@@ -186,9 +186,8 @@ public class NuanceSpeech implements Module {
 		try {
 
 			HttpPost httppost = new HttpPost(asrURI);
-			String format =
-					"audio/x-wav;codec=pcm;bit=" + stream.getFormat().getFrameSize()
-							* 8 + ";rate=" + sampleRate;
+			String format = "audio/x-wav;codec=pcm;bit="
+					+ stream.getFormat().getFrameSize() * 8 + ";rate=" + sampleRate;
 			String lang = system.getSettings().params.getProperty("lang");
 			httppost.addHeader("Content-Type", format);
 			httppost.addHeader("Accept", "application/xml");
@@ -200,14 +199,14 @@ public class NuanceSpeech implements Module {
 			HttpResponse response = asrClient.execute(httppost);
 
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null
+					|| response.getStatusLine().getStatusCode() != 200) {
 				log.warning("(speech could not be recognised: error "
 						+ response.getStatusLine().getStatusCode() + ")");
 			}
 			else {
-				BufferedReader reader =
-						new BufferedReader(new InputStreamReader(
-								resEntity.getContent()));
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(resEntity.getContent()));
 
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
@@ -278,7 +277,8 @@ public class NuanceSpeech implements Module {
 			HttpResponse response = ttsClient.execute(httppost);
 
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity == null || response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null
+					|| response.getStatusLine().getStatusCode() != 200) {
 				log.info("Response status: " + response.getStatusLine());
 				return;
 			}

@@ -230,7 +230,8 @@ public class Settings {
 						remoteConnections.put(address, port);
 					}
 					else {
-						log.warning("address of remote connection must contain port");
+						log.warning(
+								"address of remote connection must contain port");
 					}
 				}
 			}
@@ -242,8 +243,8 @@ public class Settings {
 						try {
 							clazz = Class.forName(split[i].trim());
 							for (int j = 0; j < clazz.getInterfaces().length; j++) {
-								if (Module.class.isAssignableFrom(clazz
-										.getInterfaces()[j])
+								if (Module.class
+										.isAssignableFrom(clazz.getInterfaces()[j])
 										&& !modules.contains(clazz)) {
 									modules.add((Class<Module>) clazz);
 								}
@@ -291,17 +292,12 @@ public class Settings {
 		mapping.setProperty("samples", "" + nbSamples);
 		mapping.setProperty("timeout", "" + maxSamplingTime);
 		mapping.setProperty("discretisation", "" + discretisationBuckets);
-		mapping.setProperty(
-				"modules",
-				""
-						+ modules.stream().map(m -> m.getCanonicalName())
-								.collect(Collectors.joining(",")));
-		mapping.setProperty(
-				"connect",
-				""
-						+ remoteConnections.keySet().stream()
-								.map(i -> i + ":" + remoteConnections.get(i))
-								.collect(Collectors.joining(",")));
+		mapping.setProperty("modules", "" + modules.stream()
+				.map(m -> m.getCanonicalName()).collect(Collectors.joining(",")));
+		mapping.setProperty("connect",
+				"" + remoteConnections.keySet().stream()
+						.map(i -> i + ":" + remoteConnections.get(i))
+						.collect(Collectors.joining(",")));
 		return mapping;
 	}
 

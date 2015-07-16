@@ -4,10 +4,12 @@
 
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'application'
+apply plugin: 'eclipse'
 mainClassName = 'opendial.DialogueSystem'
- 
+version = '1.4'
+
+
 repositories {
     flatDir {
     	dirs file("${projectDir}/lib")
@@ -28,24 +30,14 @@ sourceSets {
 	main {
 		java {
 			srcDirs 'src'
-			exclude 'opendial/plugins/MaryTTS.java'
-			exclude 'opendial/plugins/SphinxASR.java'
 	    }
-	}
+	} 
 	test {
 	    java {
 			srcDirs 'test'
 			exclude 'domains/**'
 	    }
 	}
-	plugins {
-    	java {
-      		srcDirs 'src'
-      		include 'opendial/plugins/MaryTTS.java'
-      		include 'opendial/plugins/SphinxASR.java'
-    	}
-    	compileClasspath+=sourceSets.main.output
-  	}
 }
 
 
@@ -60,11 +52,14 @@ dependencies {
 	compile name: 'att-codekit'
 	compile name: 'exp4j'
 	testCompile group:'junit', name: 'junit',  version: '4.+'
- 	pluginsCompile group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.1.1'
- 	pluginsCompile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.1.1'
-    pluginsCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
-    pluginsCompile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'1.0-SNAPSHOT'
+ 	compile group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.1.1'
+ 	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.1.1'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
+    compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'1.0-SNAPSHOT'
+    compile group: 'org.maltparser', name: 'maltparser', version:'1.8.1'
+    compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version:'3.5.2'
   }
+
 
 
 tasks.withType(JavaCompile) {
@@ -72,9 +67,11 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
+
 run {
-     systemProperties System.getProperties()
+    systemProperties System.getProperties()
 	systemProperty 'file.encoding', 'UTF-8'
+ 	standardInput = System.in
 }
 
 test {
@@ -84,7 +81,33 @@ test {
   	systemProperty 'file.encoding', 'UTF-8'
 }
 
+task compile (type: Copy) {
+	dependsOn distTar
+	from tarTree(distTar.archivePath)
+	into '.'
+	doLast {
+        delete("scripts")
+        delete("lib")
+        file("${project.name}-${project.version}/bin").renameTo(file("scripts"))
+        file("${project.name}-${project.version}/lib").renameTo(file("lib"))
+        delete("${project.name}-${project.version}/")
+    }
+}
+
+
+task copyResources(type: Copy) {
+from 'resources'
+into 'build/resources/main/resources'
+}
+
+eclipse {
+	classpath {
+		defaultOutputDir = sourceSets.main.output.classesDir
+	}
+}
+
 jar {
+dependsOn copyResources
     manifest {
 		attributes('Main-Class': project.mainClassName)
     }

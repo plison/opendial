@@ -71,8 +71,8 @@ public class Template {
 	final Map<String, Integer> slots;
 
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
-	final static Pattern trailPattern = Pattern
-			.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
+	final static Pattern trailPattern =
+			Pattern.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
 
 	// ===================================
 	// TEMPLATE CONSTRUCTION
@@ -208,8 +208,9 @@ public class Template {
 
 			int start = input.indexOf(matcher.group(0));
 			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
-			if (((start != 0 && !isWhitespaceOrPunctuation(input.charAt(start - 1))) || (end < input
-					.length() && !isWhitespaceOrPunctuation(input.charAt(end))))
+			if (((start != 0 && !isWhitespaceOrPunctuation(input.charAt(start - 1)))
+					|| (end < input.length()
+							&& !isWhitespaceOrPunctuation(input.charAt(end))))
 					&& !rawString.equals(" ")) {
 				continue;
 			}
@@ -279,8 +280,6 @@ public class Template {
 	 * template: "my name is {name}" and a filler "name:Pierre", the method will
 	 * return "my name is Pierre".
 	 * 
-	 * <p>
-	 * In addition, the slot {random} is associated with a random integer number.
 	 * 
 	 * @param fillers the content associated with each slot.
 	 * @return the string filled with the given content
@@ -298,7 +297,6 @@ public class Template {
 						filledTemplate.replace("{" + slot + "}", v.toString());
 			}
 		}
-
 		if (StringUtils.isArithmeticExpression(filledTemplate)) {
 			double result = new MathExpression(filledTemplate).evaluate();
 			filledTemplate = StringUtils.getShortForm(result);
@@ -424,8 +422,8 @@ public class Template {
 
 		// compiling the associated pattern
 		try {
-			return Pattern.compile(regex, Pattern.CASE_INSENSITIVE
-					| Pattern.UNICODE_CASE);
+			return Pattern.compile(regex,
+					Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
 		catch (PatternSyntaxException e) {
 			log.warning("illegal pattern syntax: " + regex + " (from " + str + ")");

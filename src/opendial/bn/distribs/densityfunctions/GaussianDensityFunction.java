@@ -236,8 +236,8 @@ public class GaussianDensityFunction implements DensityFunction {
 	 */
 	@Override
 	public String toString() {
-		return "N(" + ValueFactory.create(mean) + ","
-				+ ValueFactory.create(variance) + ")";
+		return "N(" + ValueFactory.create(mean) + "," + ValueFactory.create(variance)
+				+ ")";
 	}
 
 	/**
@@ -285,12 +285,14 @@ public class GaussianDensityFunction implements DensityFunction {
 		id.setValue("gaussian");
 		distribElement.setAttributeNode(id);
 		Element meanEl = doc.createElement("mean");
-		meanEl.setTextContent((mean.length > 1) ? ValueFactory.create(mean)
-				.toString() : "" + StringUtils.getShortForm(mean[0]));
+		meanEl.setTextContent(
+				(mean.length > 1) ? ValueFactory.create(mean).toString()
+						: "" + StringUtils.getShortForm(mean[0]));
 		distribElement.appendChild(meanEl);
 		Element varianceEl = doc.createElement("variance");
-		varianceEl.setTextContent((variance.length > 1) ? ValueFactory.create(
-				variance).toString() : "" + StringUtils.getShortForm(variance[0]));
+		varianceEl.setTextContent(
+				(variance.length > 1) ? ValueFactory.create(variance).toString()
+						: "" + StringUtils.getShortForm(variance[0]));
 		distribElement.appendChild(varianceEl);
 
 		return Arrays.asList(distribElement);

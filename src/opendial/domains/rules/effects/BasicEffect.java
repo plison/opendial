@@ -99,8 +99,8 @@ public class BasicEffect {
 	 * @param exclusive whether distinct values are mutually exclusive or not
 	 * @param negated whether to negate the effect or not.
 	 */
-	public BasicEffect(String variable, Value value, int priority,
-			boolean exclusive, boolean negated) {
+	public BasicEffect(String variable, Value value, int priority, boolean exclusive,
+			boolean negated) {
 		this.variableLabel = variable;
 		this.variableValue = value;
 		this.priority = priority;
@@ -228,10 +228,9 @@ public class BasicEffect {
 	 */
 	@Override
 	public int hashCode() {
-		int hashcode =
-				((negated) ? -2 : 1) * variableLabel.hashCode()
-						^ (new Boolean(exclusive)).hashCode() ^ priority
-						^ variableValue.hashCode();
+		int hashcode = ((negated) ? -2 : 1) * variableLabel.hashCode()
+				^ (new Boolean(exclusive)).hashCode() ^ priority
+				^ variableValue.hashCode();
 		return hashcode;
 	}
 
@@ -271,9 +270,8 @@ public class BasicEffect {
 	 * @return the copy.
 	 */
 	public BasicEffect copy() {
-		BasicEffect copy =
-				new BasicEffect(variableLabel, variableValue, priority, exclusive,
-						negated);
+		BasicEffect copy = new BasicEffect(variableLabel, variableValue, priority,
+				exclusive, negated);
 		return copy;
 	}
 

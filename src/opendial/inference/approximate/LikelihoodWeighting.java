@@ -177,9 +177,8 @@ public class LikelihoodWeighting {
 			ProbDistribution distrib = n.getDistrib();
 			double evidenceProb = 1.0;
 			if (distrib instanceof ContinuousDistribution) {
-				evidenceProb =
-						((ContinuousDistribution) distrib)
-								.getProbDensity(evidenceValue);
+				evidenceProb = ((ContinuousDistribution) distrib)
+						.getProbDensity(evidenceValue);
 			}
 			else {
 				evidenceProb = n.getProb(sample, evidenceValue);

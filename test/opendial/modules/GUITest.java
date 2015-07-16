@@ -67,16 +67,15 @@ public class GUITest {
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
 			gui.newDomain(new File("blablaNew.xml"));
-			assertEquals("blablaNew.xml", system.getDomain().getSourceFile()
-					.getName());
+			assertEquals("blablaNew.xml",
+					system.getDomain().getSourceFile().getName());
 			assertEquals(0, system.getDomain().getModels().size());
 			assertEquals("<domain>\n\n</domain>", gui.getEditorTab().getText());
-			assertEquals("blablaNew.xml", gui.getEditorTab().getShownFile()
-					.getName());
-			String minDom =
-					"<domain><initialstate>"
-							+ "<variable id=\"foo\"><value>bar</value></variable>"
-							+ "</initialstate></domain>";
+			assertEquals("blablaNew.xml",
+					gui.getEditorTab().getShownFile().getName());
+			String minDom = "<domain><initialstate>"
+					+ "<variable id=\"foo\"><value>bar</value></variable>"
+					+ "</initialstate></domain>";
 			gui.getEditorTab().setText(minDom);
 			gui.saveDomain();
 			assertEquals(1, system.getState().getChanceNodes().size());
@@ -107,8 +106,8 @@ public class GUITest {
 			assertEquals(2, system.getState().getChanceNodes().size());
 			assertEquals(1, gui.getEditorTab().getFiles().size());
 			system.addUserInput("move left");
-			assertEquals("Ok, moving Left", system.getContent("u_m").getBest()
-					.toString());
+			assertEquals("Ok, moving Left",
+					system.getContent("u_m").getBest().toString());
 			system.changeDomain(XMLDomainReader
 					.extractDomain("test/domains/example-flightbooking.xml"));
 			gui.refresh();
@@ -137,11 +136,10 @@ public class GUITest {
 			GUIFrame gui = system.getModule(GUIFrame.class);
 			log.setLevel(Level.OFF);
 			gui.newDomain(new File("blablaNew.xml"));
-			String minDom =
-					"<domain><model trigger=\"u_u\">"
-							+ "<rule><case><condition><if var=\"u_u\" value=\"input\"/>"
-							+ "</condition><effect><set var=\"u_m\" value=\"output\"/>"
-							+ "</effect></case></rule></model></domain>";
+			String minDom = "<domain><model trigger=\"u_u\">"
+					+ "<rule><case><condition><if var=\"u_u\" value=\"input\"/>"
+					+ "</condition><effect><set var=\"u_m\" value=\"output\"/>"
+					+ "</effect></case></rule></model></domain>";
 			gui.getEditorTab().setText(minDom);
 			system.addUserInput("input");
 			assertEquals(1, system.getState().getChanceNodes().size());
@@ -203,9 +201,9 @@ public class GUITest {
 		}
 	}
 
-	@Test
-	public void autoCompletion() throws IOException, InterruptedException,
-			AWTException {
+	// @Test
+	public void autoCompletion()
+			throws IOException, InterruptedException, AWTException {
 		if (!GraphicsEnvironment.isHeadless()) {
 			DialogueSystem system = new DialogueSystem();
 			system.startSystem();

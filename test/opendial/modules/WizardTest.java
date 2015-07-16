@@ -67,18 +67,16 @@ public class WizardTest {
 		for (DialogueState s : interaction) {
 			system.addContent(s.copy());
 		}
-		log.fine("theta 1: "
-				+ ((ContinuousDistribution) system.getState()
-						.getChanceNode("theta_1").getDistrib()).getFunction()
-						.getMean()[0]);
-		assertTrue(((ContinuousDistribution) system.getState()
-				.getChanceNode("theta_1").getDistrib()).getFunction().getMean()[0] > 16.0);
-		log.fine("theta 2: "
-				+ ((ContinuousDistribution) system.getState()
-						.getChanceNode("theta_2").getDistrib()).getFunction()
-						.getMean()[0]);
-		assertTrue(((ContinuousDistribution) system.getState()
-				.getChanceNode("theta_2").getDistrib()).getFunction().getMean()[0] < 9.0);
+		log.fine("theta 1: " + ((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_1").getDistrib()).getFunction().getMean()[0]);
+		assertTrue(
+				((ContinuousDistribution) system.getState().getChanceNode("theta_1")
+						.getDistrib()).getFunction().getMean()[0] > 16.0);
+		log.fine("theta 2: " + ((ContinuousDistribution) system.getState()
+				.getChanceNode("theta_2").getDistrib()).getFunction().getMean()[0]);
+		assertTrue(
+				((ContinuousDistribution) system.getState().getChanceNode("theta_2")
+						.getDistrib()).getFunction().getMean()[0] < 9.0);
 
 	}
 
@@ -100,8 +98,8 @@ public class WizardTest {
 			assertEquals(3,
 					((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
 							.getModule(GUIFrame.class).getChatTab().getComponent(2))
-							.getComponent(0)).getComponent(0)).getComponent(0))
-							.getModel().getSize());
+									.getComponent(0)).getComponent(0))
+											.getComponent(0)).getModel().getSize());
 			system.addContent("a_m", "Say(Greet)");
 			system.addContent("u_u", "move left");
 			assertEquals(3, system.getModule(GUIFrame.class).getChatTab()
@@ -109,8 +107,8 @@ public class WizardTest {
 			assertEquals(4,
 					((JList<String>) ((JViewport) ((JScrollPane) ((Container) system
 							.getModule(GUIFrame.class).getChatTab().getComponent(2))
-							.getComponent(0)).getComponent(0)).getComponent(0))
-							.getModel().getSize());
+									.getComponent(0)).getComponent(0))
+											.getComponent(0)).getModel().getSize());
 			assertEquals(
 					"<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n"
 							+ "<interaction><userTurn><variable id=\"u_u\"><value>hi</value></variable></userTurn>"

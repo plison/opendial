@@ -181,15 +181,17 @@ public class RuleTest2 {
 		system2.detachModule(ForwardPlanner.class);
 		system2.startSystem();
 
-		inference.checkUtil(system2.getState(),
-				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
-						"a_m3'", "Do"), new Assignment("obj(a_m3)'", "A")), 0.3);
-		inference.checkUtil(system2.getState(),
-				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
-						"a_m3'", "Do"), new Assignment("obj(a_m3)'", "B")), -1.7);
-		inference.checkUtil(system2.getState(),
-				Arrays.asList("a_m3'", "obj(a_m3)'"), new Assignment(new Assignment(
-						"a_m3'", "SayHi"), new Assignment("obj(a_m3)'", "None")),
+		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+				new Assignment(new Assignment("a_m3'", "Do"),
+						new Assignment("obj(a_m3)'", "A")),
+				0.3);
+		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+				new Assignment(new Assignment("a_m3'", "Do"),
+						new Assignment("obj(a_m3)'", "B")),
+				-1.7);
+		inference.checkUtil(system2.getState(), Arrays.asList("a_m3'", "obj(a_m3)'"),
+				new Assignment(new Assignment("a_m3'", "SayHi"),
+						new Assignment("obj(a_m3)'", "None")),
 				-0.9);
 		// assertEquals(5, (new
 		// LikelihoodWeighting()).queryUtil(query).getTable().size());
@@ -209,17 +211,23 @@ public class RuleTest2 {
 
 		// log.fine((new VariableElimination()).queryUtility(query));
 
-		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
-				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
-				new Assignment("a_mg'", "Nod"), new Assignment("a_md'", "None")),
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
+						new Assignment("a_mg'", "Nod"),
+						new Assignment("a_md'", "None")),
 				2.4);
-		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
-				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
-				new Assignment("a_mg'", "Nod"), new Assignment("a_md'",
-						"DanceAround")), -0.6);
-		inference.checkUtil(system2.getState(), Arrays.asList("a_ml'", "a_mg'",
-				"a_md'"), new Assignment(new Assignment("a_ml'", "SayYes"),
-				new Assignment("a_mg'", "None"), new Assignment("a_md'", "None")),
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
+						new Assignment("a_mg'", "Nod"),
+						new Assignment("a_md'", "DanceAround")),
+				-0.6);
+		inference.checkUtil(system2.getState(),
+				Arrays.asList("a_ml'", "a_mg'", "a_md'"),
+				new Assignment(new Assignment("a_ml'", "SayYes"),
+						new Assignment("a_mg'", "None"),
+						new Assignment("a_md'", "None")),
 				1.6);
 
 	}

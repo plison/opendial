@@ -244,9 +244,8 @@ public class Model {
 		for (Template trigger : triggers) {
 			str += "(" + trigger + ")" + " v ";
 		}
-		str =
-				str.substring(0, str.length() - 3) + "] with " + rules.size()
-						+ " rules: ";
+		str = str.substring(0, str.length() - 3) + "] with " + rules.size()
+				+ " rules: ";
 
 		for (Rule rule : rules) {
 			str += rule.getRuleId() + ",";

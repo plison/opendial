@@ -158,9 +158,8 @@ public class RuleOutput {
 					Effect newEffect = new Effect(o, o2);
 					Parameter newParam = mergeParameters(param1, param2, '*');
 					if (newOutput.containsKey(newEffect)) {
-						newParam =
-								mergeParameters(newOutput.get(newEffect), newParam,
-										'+');
+						newParam = mergeParameters(newOutput.get(newEffect),
+								newParam, '+');
 					}
 					newOutput.put(newEffect, newParam);
 				}
@@ -209,9 +208,8 @@ public class RuleOutput {
 	 * @return true if void, false otherwise
 	 */
 	public boolean isVoid() {
-		return effects.isEmpty()
-				|| (type == RuleType.PROB && effects.size() == 1 && effects
-						.containsKey(new Effect()));
+		return effects.isEmpty() || (type == RuleType.PROB && effects.size() == 1
+				&& effects.containsKey(new Effect()));
 	}
 
 	/**
@@ -296,8 +294,8 @@ public class RuleOutput {
 	protected void pruneEffects() {
 		for (Effect e : new HashSet<Effect>(effects.keySet())) {
 			Parameter p = effects.get(e);
-			if (p instanceof FixedParameter
-					&& ((FixedParameter) p).getValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
+			if (p instanceof FixedParameter && ((FixedParameter) p)
+					.getValue() < StatePruner.VALUE_PRUNING_THRESHOLD) {
 				effects.remove(e);
 			}
 		}
@@ -343,9 +341,8 @@ public class RuleOutput {
 		// parameters p1, p2,... pn, create a new complex effect = 1 - (p1+p2+...pn)
 		// that fill the remaining probability mass
 		else {
-			MathExpression[] params =
-					effects.values().stream().map(p -> p.getExpression())
-							.toArray(s -> new MathExpression[s]);
+			MathExpression[] params = effects.values().stream()
+					.map(p -> p.getExpression()).toArray(s -> new MathExpression[s]);
 			MathExpression one = new MathExpression("1");
 			MathExpression negation = one.combine('-', params);
 			addEffect(new Effect(), new ComplexParameter(negation));

@@ -74,22 +74,20 @@ public class BNetworkStructureTest {
 		assertEquals(0.001f,
 				bn.getChanceNode("Burglary").getProb(ValueFactory.create(true)),
 				0.0001f);
-		assertEquals(
-				0.95f,
+		assertEquals(0.95f,
 				bn.getChanceNode("Alarm").getProb(
 						new Assignment(Arrays.asList("Burglary", "Earthquake")),
-						ValueFactory.create(true)), 0.0001f);
-		assertEquals(
-				0.9f,
-				bn.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
-						ValueFactory.create(true)), 0.0001f);
+						ValueFactory.create(true)),
+				0.0001f);
+		assertEquals(0.9f, bn.getChanceNode("JohnCalls").getProb(
+				new Assignment("Alarm"), ValueFactory.create(true)), 0.0001f);
 
 		assertEquals(3, bn.getActionNode("Action").getValues().size());
-		assertEquals(
-				-10f,
-				bn.getUtilityNode("Util2").getUtility(
-						new Assignment(new Assignment("Burglary"), "Action",
-								ValueFactory.create("DoNothing"))), 0.0001f);
+		assertEquals(-10f,
+				bn.getUtilityNode("Util2")
+						.getUtility(new Assignment(new Assignment("Burglary"),
+								"Action", ValueFactory.create("DoNothing"))),
+				0.0001f);
 	}
 
 	@Test
@@ -128,22 +126,20 @@ public class BNetworkStructureTest {
 		assertEquals(0.001f,
 				bn2.getChanceNode("Burglary").getProb(ValueFactory.create(true)),
 				0.0001f);
-		assertEquals(
-				0.95f,
+		assertEquals(0.95f,
 				bn2.getChanceNode("Alarm").getProb(
 						new Assignment(Arrays.asList("Burglary", "Earthquake")),
-						ValueFactory.create(true)), 0.0001f);
-		assertEquals(
-				0.9f,
-				bn2.getChanceNode("JohnCalls").getProb(new Assignment("Alarm"),
-						ValueFactory.create(true)), 0.0001f);
+						ValueFactory.create(true)),
+				0.0001f);
+		assertEquals(0.9f, bn2.getChanceNode("JohnCalls").getProb(
+				new Assignment("Alarm"), ValueFactory.create(true)), 0.0001f);
 
 		assertEquals(3, bn2.getActionNode("Action").getValues().size());
-		assertEquals(
-				-10f,
-				bn2.getUtilityNode("Util2").getUtility(
-						new Assignment(new Assignment("Burglary"), "Action",
-								ValueFactory.create("DoNothing"))), 0.0001f);
+		assertEquals(-10f,
+				bn2.getUtilityNode("Util2")
+						.getUtility(new Assignment(new Assignment("Burglary"),
+								"Action", ValueFactory.create("DoNothing"))),
+				0.0001f);
 	}
 
 	@Test
@@ -227,28 +223,30 @@ public class BNetworkStructureTest {
 		ChanceNode node = new ChanceNode("HouseSize", builder.build());
 		bn.addNode(node);
 		bn.getNode("Burglary").addInputNode(node);
-		assertEquals(
-				0.001f,
+		assertEquals(0.001f,
 				bn.getChanceNode("Burglary").getProb(
 						new Assignment("HouseSize", "Small"),
-						ValueFactory.create(true)), 0.0001f);
-		assertEquals(
-				0.001f,
+						ValueFactory.create(true)),
+				0.0001f);
+		assertEquals(0.001f,
 				bn.getChanceNode("Burglary").getProb(
 						new Assignment("HouseSize", "Big"),
-						ValueFactory.create(true)), 0.0001f);
+						ValueFactory.create(true)),
+				0.0001f);
 		bn.getNode("Alarm").addInputNode(node);
-		assertEquals(
-				0.95f,
+		assertEquals(0.95f,
 				bn.getChanceNode("Alarm").getProb(
 						new Assignment(Arrays.asList("Burglary", "Earthquake")),
-						ValueFactory.create(true)), 0.0001f);
-		assertEquals(
-				0.95f,
-				bn.getChanceNode("Alarm").getProb(
-						new Assignment(new Assignment(Arrays.asList("Burglary",
-								"Earthquake")), "HouseSize", ValueFactory
-								.create("None")), ValueFactory.create(true)),
+						ValueFactory.create(true)),
+				0.0001f);
+		assertEquals(0.95f,
+				bn.getChanceNode("Alarm")
+						.getProb(
+								new Assignment(
+										new Assignment(Arrays.asList("Burglary",
+												"Earthquake")),
+										"HouseSize", ValueFactory.create("None")),
+								ValueFactory.create(true)),
 				0.0001f);
 	}
 

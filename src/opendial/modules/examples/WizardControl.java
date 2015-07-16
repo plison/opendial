@@ -181,8 +181,8 @@ public class WizardControl implements Module {
 		container.add(scrollPane);
 		final JButton button = new JButton("Select");
 		DialogueState copy = system.getState().copy();
-		button.addActionListener(e -> recordAction(copy, listBox, actionNode.getId()
-				.replace("'", "")));
+		button.addActionListener(e -> recordAction(copy, listBox,
+				actionNode.getId().replace("'", "")));
 
 		InputMap inputMap = button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
@@ -204,9 +204,8 @@ public class WizardControl implements Module {
 
 	public void recordAction(DialogueState previousState, JList<String> listBox,
 			String actionVar) {
-		String actionValue =
-				listBox.getModel().getElementAt(listBox.getMinSelectionIndex())
-						.toString();
+		String actionValue = listBox.getModel()
+				.getElementAt(listBox.getMinSelectionIndex()).toString();
 		Assignment action = new Assignment(actionVar, actionValue);
 
 		if (system.getModule(WizardLearner.class) != null) {

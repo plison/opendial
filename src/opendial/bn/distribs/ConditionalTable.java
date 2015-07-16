@@ -343,9 +343,8 @@ public class ConditionalTable implements ProbDistribution {
 			for (Value head : distrib.getValues()) {
 				String prob = StringUtils.getShortForm(distrib.getProb(head));
 				if (condition.size() > 0) {
-					s +=
-							"P(" + headVar + "=" + head + " | " + condition + "):="
-									+ prob + "\n";
+					s += "P(" + headVar + "=" + head + " | " + condition + "):="
+							+ prob + "\n";
 				}
 				else {
 					s += "P(" + headVar + "=" + head + "):=" + prob + "\n";
@@ -493,9 +492,8 @@ public class ConditionalTable implements ProbDistribution {
 		 * @param subtable the table of values for the head distribution
 		 */
 		public void addRows(Assignment condition, Map<Value, Double> subtable) {
-			CategoricalTable.Builder builder =
-					table.computeIfAbsent(condition,
-							k -> new CategoricalTable.Builder(headVar));
+			CategoricalTable.Builder builder = table.computeIfAbsent(condition,
+					k -> new CategoricalTable.Builder(headVar));
 			builder.addRows(subtable);
 		}
 

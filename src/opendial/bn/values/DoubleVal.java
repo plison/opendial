@@ -71,9 +71,8 @@ public final class DoubleVal implements Value {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		boolean result =
-				(o instanceof DoubleVal && Math.abs(((DoubleVal) o).getDouble()
-						- getDouble()) < 0.000001);
+		boolean result = (o instanceof DoubleVal
+				&& Math.abs(((DoubleVal) o).getDouble() - getDouble()) < 0.000001);
 		return result;
 	}
 

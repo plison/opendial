@@ -95,8 +95,8 @@ public class TextOnlyInterface implements Module {
 		for (String var : Arrays.asList(system.getSettings().userInput,
 				system.getSettings().systemOutput)) {
 			if (!paused && updatedVars.contains(var) && state.hasChanceNode(var)) {
-				System.out.println(getTextRendering(system.getContent(var)
-						.toDiscrete()));
+				System.out.println(
+						getTextRendering(system.getContent(var).toDiscrete()));
 			}
 		}
 	}
@@ -141,9 +141,8 @@ public class TextOnlyInterface implements Module {
 			if (!(value instanceof NoneVal)) {
 				String content = value.toString();
 				if (table.getProb(value) < 0.98) {
-					content +=
-							" (" + StringUtils.getShortForm(table.getProb(value))
-									+ ")";
+					content += " (" + StringUtils.getShortForm(table.getProb(value))
+							+ ")";
 				}
 				textTable += content + "\n\t\t";
 			}

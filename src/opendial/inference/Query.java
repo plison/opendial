@@ -87,7 +87,8 @@ public abstract class Query {
 	Collection<String> queryVars;
 	Assignment evidence;
 
-	public Query(BNetwork network, Collection<String> queryVars, Assignment evidence) {
+	public Query(BNetwork network, Collection<String> queryVars,
+			Assignment evidence) {
 
 		this.network = network;
 		this.queryVars = queryVars;

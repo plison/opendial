@@ -64,12 +64,8 @@ public class InferenceUtils {
 			return distrib;
 		}
 
-		Map<T, Double> normalisedDistrib =
-				distrib.entrySet()
-						.stream()
-						.collect(
-								Collectors.toMap(a -> a.getKey(), a -> a.getValue()
-										/ total));
+		Map<T, Double> normalisedDistrib = distrib.entrySet().stream().collect(
+				Collectors.toMap(a -> a.getKey(), a -> a.getValue() / total));
 
 		return normalisedDistrib;
 	}
@@ -130,15 +126,10 @@ public class InferenceUtils {
 			// combination
 			for (String label : valuesMatrix.keySet()) {
 				Set<Value> values = valuesMatrix.get(label);
-				assignments =
-						assignments
-								.stream()
-								.flatMap(
-										a -> values
-												.stream()
-												.map(v -> new Assignment(a, label, v))
-												.sequential())
-								.collect(Collectors.toSet());
+				assignments = assignments.stream()
+						.flatMap(a -> values.stream()
+								.map(v -> new Assignment(a, label, v)).sequential())
+						.collect(Collectors.toSet());
 			}
 			return assignments;
 		}
@@ -204,12 +195,11 @@ public class InferenceUtils {
 		List<Map.Entry<T, Double>> entries =
 				new ArrayList<Map.Entry<T, Double>>(initTable.entrySet());
 
-		Comparator<Map.Entry<T, Double>> comp =
-				(a, b) -> {
-					double result = a.getValue() - b.getValue();
-					return (Math.abs(result) < minDifference) ? 0
-							: (int) (result * 10000000);
-				};
+		Comparator<Map.Entry<T, Double>> comp = (a, b) -> {
+			double result = a.getValue() - b.getValue();
+			return (Math.abs(result) < minDifference) ? 0
+					: (int) (result * 10000000);
+		};
 
 		Collections.sort(entries, comp);
 		Collections.reverse(entries);

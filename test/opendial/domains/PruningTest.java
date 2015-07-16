@@ -172,8 +172,8 @@ public class PruningTest {
 			howareyouNode = createdNodes.first();
 		}
 
-		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode + ","
-				+ greetNode + "]", 0.7);
+		inference.checkProb(system.getState(), "a_u3",
+				"[" + howareyouNode + "," + greetNode + "]", 0.7);
 		inference.checkProb(system.getState(), "a_u3", "none", 0.1);
 		inference.checkProb(system.getState(), "a_u3", "[" + howareyouNode + "]",
 				0.2);

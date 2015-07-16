@@ -82,7 +82,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 	}
 
 	/**
-	 * Returns the density for a given point. The density is derived in two steps:<br>
+	 * Returns the density for a given point. The density is derived in two steps:
+	 * <br>
 	 * <ol>
 	 * 
 	 * <li>locating the point in the distribution that is closest to x (according to
@@ -167,9 +168,8 @@ public class DiscreteDensityFunction implements DensityFunction {
 			for (int i = 0; i < point.length; i++) {
 				s += StringUtils.getShortForm(point[i]) + ",";
 			}
-			s =
-					s.substring(0, s.length() - 1) + "):="
-							+ StringUtils.getShortForm(points.get(point));
+			s = s.substring(0, s.length() - 1) + "):="
+					+ StringUtils.getShortForm(points.get(point));
 		}
 		return s + ")";
 	}
@@ -233,13 +233,12 @@ public class DiscreteDensityFunction implements DensityFunction {
 	@Override
 	public double getCDF(double... x) {
 		if (x.length != getDimensions()) {
-			throw new RuntimeException("Illegal dimensionality: " + x.length + "!="
-					+ getDimensions());
+			throw new RuntimeException(
+					"Illegal dimensionality: " + x.length + "!=" + getDimensions());
 		}
 
-		double cdf =
-				points.keySet().stream().filter(v -> MathUtils.isLower(v, x))
-						.mapToDouble(v -> points.get(v)).sum();
+		double cdf = points.keySet().stream().filter(v -> MathUtils.isLower(v, x))
+				.mapToDouble(v -> points.get(v)).sum();
 
 		return cdf;
 	}

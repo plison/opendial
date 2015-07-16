@@ -114,7 +114,8 @@ public class InferenceChecks {
 				expected);
 	}
 
-	public void checkProb(BNetwork network, String queryVar, Value a, double expected) {
+	public void checkProb(BNetwork network, String queryVar, Value a,
+			double expected) {
 		checkProb(network, Arrays.asList(queryVar), new Assignment(queryVar, a),
 				expected);
 	}
@@ -147,9 +148,8 @@ public class InferenceChecks {
 	public void checkCDF(BNetwork network, String variable, double value,
 			double expected) {
 
-		Query.ProbQuery query =
-				new Query.ProbQuery(network, Arrays.asList(variable),
-						new Assignment());
+		Query.ProbQuery query = new Query.ProbQuery(network, Arrays.asList(variable),
+				new Assignment());
 		ContinuousDistribution distrib1 =
 				computeProb(query, ve).getMarginal(variable).toContinuous();
 		ContinuousDistribution distrib2 =
@@ -247,9 +247,10 @@ public class InferenceChecks {
 		log.info("Average time for variable elimination: "
 				+ (timings.get(ve) / (1000000.0 * numbers.get(ve))) + " ms.");
 		log.info("Average time for importance sampling: "
-				+ ((timings.get(is) + timings.get(is2)) / (1000000.0 * numbers
-						.get(is))) + " ms. (with "
-				+ (numbers.get(is2) * 100 / numbers.get(is)) + "% of repeats)");
+				+ ((timings.get(is) + timings.get(is2))
+						/ (1000000.0 * numbers.get(is)))
+				+ " ms. (with " + (numbers.get(is2) * 100 / numbers.get(is))
+				+ "% of repeats)");
 	}
 
 }

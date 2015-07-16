@@ -94,9 +94,8 @@ public class XMLUtils {
 			}
 		}
 		else {
-			is =
-					XMLUtils.class.getResourceAsStream("/"
-							+ filename.replace("//", "/"));
+			is = XMLUtils.class
+					.getResourceAsStream("/" + filename.replace("//", "/"));
 			if (is == null) {
 				throw new RuntimeException("Resource cannot be found: " + filename);
 			}
@@ -290,8 +289,8 @@ public class XMLUtils {
 		try {
 			SchemaFactory schema =
 					SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-			factory.setSchema(schema.newSchema(new Source[] { new StreamSource(
-					schemaFile) }));
+			factory.setSchema(
+					schema.newSchema(new Source[] { new StreamSource(schemaFile) }));
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
 			try {
@@ -346,9 +345,8 @@ public class XMLUtils {
 					Node node = midNode.getChildNodes().item(k);
 					if (node.hasAttributes()
 							&& node.getAttributes().getNamedItem("href") != null) {
-						String fileName =
-								node.getAttributes().getNamedItem("href")
-										.getNodeValue();
+						String fileName = node.getAttributes().getNamedItem("href")
+								.getNodeValue();
 						includedFiles.add(fileName);
 					}
 				}
@@ -365,7 +363,8 @@ public class XMLUtils {
 	 * @param file the file that contains the state or parameter content
 	 * @param tag the expected top XML tag. into the system
 	 */
-	public static void importContent(DialogueSystem system, String file, String tag) {
+	public static void importContent(DialogueSystem system, String file,
+			String tag) {
 		if (tag.equals("parameters")) {
 			BNetwork parameters = XMLStateReader.extractBayesianNetwork(file, tag);
 			for (String oldParam : system.getState().getParameterIds()) {
@@ -388,7 +387,8 @@ public class XMLUtils {
 	 * @param file the file in which to write the state or parameter content
 	 * @param tag the expected top XML tag. from the system
 	 */
-	public static void exportContent(DialogueSystem system, String file, String tag) {
+	public static void exportContent(DialogueSystem system, String file,
+			String tag) {
 		Document doc = XMLUtils.newXMLDocument();
 
 		Set<String> parameterIds =
