@@ -783,7 +783,7 @@ public abstract class BNode implements Comparable<BNode> {
 	 * outside the addRelation method, to ensure consistency between the input and
 	 * output links.
 	 * 
-	 * @param node the input node to add
+	 * @param inputNode the input node to add
 	 */
 	protected void addInputNode_internal(BNode inputNode) {
 		if (inputNodes.containsKey(inputNode.getId())) {

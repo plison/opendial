@@ -341,7 +341,7 @@ public class GUIMenuBar extends JMenuBar {
 		JMenu helpMenu = new JMenu("Help");
 
 		JMenuItem aboutItem = new JMenuItem("About");
-		aboutItem.addActionListener(e -> showAboutPanel(frame));
+		aboutItem.addActionListener(e -> showAboutPanel());
 
 		JMenuItem docItem = new JMenuItem("Documentation");
 		docItem.addActionListener(e -> openDocumentation());
@@ -353,6 +353,8 @@ public class GUIMenuBar extends JMenuBar {
 
 	/**
 	 * Enables or disables the speech option menu
+	 * 
+	 * @param toEnable true if speech should be enabled, else false
 	 */
 	protected void enableSpeech(boolean toEnable) {
 		inputMenu.setEnabled(toEnable);
@@ -375,9 +377,8 @@ public class GUIMenuBar extends JMenuBar {
 	/**
 	 * Displays the "About" panel.
 	 * 
-	 * @param frame
 	 */
-	protected void showAboutPanel(GUIFrame frame) {
+	protected void showAboutPanel() {
 		try {
 			BufferedImage original = ImageIO.read(new File(GUIFrame.ICON_PATH));
 
