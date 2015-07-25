@@ -84,9 +84,10 @@ public class ConditionalTable implements ProbDistribution {
 	}
 
 	/**
-	 * Constructs a new probability table, with no values
+	 * Constructs a new probability table, with the values in distribs
 	 * 
 	 * @param headVar the name of the random variable
+	 * @param distribs the distribs (one for each conditional assignment)
 	 */
 	public ConditionalTable(String headVar,
 			Map<Assignment, IndependentDistribution> distribs) {

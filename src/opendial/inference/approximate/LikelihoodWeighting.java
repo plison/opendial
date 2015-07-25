@@ -113,6 +113,8 @@ public class LikelihoodWeighting {
 	 * time-out or the collection of a number of samples = nbSamples). The method
 	 * loops until terminate() is called, or enough samples have been collected.
 	 * 
+	 * @return the resulting sample
+	 * 
 	 */
 	protected Sample sample() {
 		Sample sample = new Sample();

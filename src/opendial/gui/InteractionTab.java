@@ -166,6 +166,14 @@ public class InteractionTab extends JComponent {
 	}
 
 	/**
+	 * Resets the history in the interaction window.
+	 */
+	public void reset() {
+		lines.setText("");
+		repaint();
+	}
+
+	/**
 	 * Enables or disables the speech input panel in the tab
 	 * 
 	 * @param toEnable true if the speech panel should be enabled, else false
@@ -273,10 +281,8 @@ public class InteractionTab extends JComponent {
 			inputField.setToolTipText("No dialogue domain currently selected");
 		}
 		else {
-			if (inputField.isEnabled() == system.isPaused()) {
-				lines.setToolTipText(null);
-				inputField.setToolTipText(null);
-			}
+			lines.setToolTipText(null);
+			inputField.setToolTipText(null);
 		}
 	}
 

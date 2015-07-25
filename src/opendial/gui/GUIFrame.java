@@ -539,6 +539,7 @@ public class GUIFrame implements Module {
 	 * Resets the interaction (resetting the dialogue state to its initial value).
 	 */
 	public void resetInteraction() {
+		chatTab.reset();
 		system.changeDomain(system.getDomain());
 		refresh();
 		addComment("Reinitialiting interaction...");
@@ -546,6 +547,8 @@ public class GUIFrame implements Module {
 
 	/**
 	 * Imports a previous interaction.
+	 * 
+	 * @param isWizardOfOz whether the interaction is a WOZ study.
 	 */
 	protected void importInteraction(boolean isWizardOfOz) {
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
