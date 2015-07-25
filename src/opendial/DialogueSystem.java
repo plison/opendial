@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +54,6 @@ import opendial.modules.RemoteConnector;
 import opendial.modules.simulation.Simulator;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
-import opendial.utils.XMLUtils;
 
 /**
  * <p>
@@ -92,9 +91,6 @@ public class DialogueSystem {
 
 	// whether the system is paused or active
 	protected boolean paused = true;
-
-	// whether the system is currently updating its state
-	protected volatile boolean updating = false;
 
 	// ===================================
 	// SYSTEM INITIALISATION
@@ -306,14 +302,15 @@ public class DialogueSystem {
 	 */
 	public void enableSpeech(boolean toEnable) {
 		if (toEnable) {
-			settings.selectAudioMixers();
-
-			attachModule(AudioModule.class);
-			if (settings.showGUI) {
-				getModule(GUIFrame.class).enableSpeech(true);
-			}
-			else {
-				getModule(AudioModule.class).activateVAD(true);
+			if (getModule(AudioModule.class) == null) {
+				settings.selectAudioMixers();
+				attachModule(AudioModule.class);
+				if (settings.showGUI) {
+					getModule(GUIFrame.class).enableSpeech(true);
+				}
+				else {
+					getModule(AudioModule.class).activateVAD(true);
+				}
 			}
 		}
 		else {
@@ -629,45 +626,48 @@ public class DialogueSystem {
 	private Set<String> update() {
 
 		// set of variables that have been updated
-		Set<String> updatedVars = new HashSet<String>();
+		Map<String, Integer> updatedVars = new HashMap<String, Integer>();
 
-		// if the system is already being updated, stop
-		if (updating) {
-			return updatedVars;
-		}
+		while (!curState.getNewVariables().isEmpty()) {
 
-		updating = true;
+			// finding the new variables that must be processed
+			Set<String> toProcess = curState.getNewVariables();
 
-		// finding the new variables that must be processed
-		Set<String> toProcess = curState.getNewVariables();
-		while (!toProcess.isEmpty()) {
+			// checking for recursive update loops (design errors)
+			for (String v : toProcess) {
+				if (updatedVars.getOrDefault(v, 0) > 5) {
+					displayComment("Warning: Recursive update for variable " + v);
+					return updatedVars.keySet();
+				}
+			}
+
 			synchronized (curState) {
+
 				// reducing the dialogue state to its relevant nodes
 				curState.reduce();
 
 				// applying the domain models
 				for (Model model : domain.getModels()) {
 					if (model.isTriggered(curState, toProcess)) {
-						model.trigger(curState);
-						if (model.isBlocking()
-								&& !curState.getNewVariables().isEmpty()) {
+						boolean change = model.trigger(curState);
+						if (change && model.isBlocking()) {
 							break;
 						}
 					}
 				}
 
-				// applying the external modules
-				for (Module module : modules) {
-					module.trigger(curState, toProcess);
-				}
+				// triggering the domain modules
+				modules.forEach(m -> m.trigger(curState, toProcess));
 
-				updatedVars.addAll(toProcess);
-				toProcess = curState.getNewVariables();
+				// bookkeeping on the updated variables
+				for (String v : toProcess) {
+					int count = updatedVars.getOrDefault(v, 0) + 1;
+					updatedVars.put(v, count);
+				}
 			}
 		}
 
-		updating = false;
-		return updatedVars;
+		return updatedVars.keySet();
 	}
 
 	/**
@@ -771,12 +771,8 @@ public class DialogueSystem {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Module> T getModule(Class<T> cls) {
-		for (Module mod : new ArrayList<Module>(modules)) {
-			if (cls.isAssignableFrom(mod.getClass())) {
-				return (T) mod;
-			}
-		}
-		return null;
+		return modules.stream().filter(m -> cls.isAssignableFrom(m.getClass()))
+				.map(m -> (T) m).findFirst().orElse(null);
 	}
 
 	/**
@@ -834,13 +830,12 @@ public class DialogueSystem {
 	 * the -D flag. All parameters are optional.
 	 * 
 	 * <p>
-	 * Possible properties are:
+	 * Some of the possible properties are:
 	 * <ul>
 	 * <li>-Ddomain=path/to/domain/file: dialogue domain file
-	 * <li>-Dsettings=path/to/settings/file: settings file
 	 * <li>-Ddialogue=path/to/recorded/dialogue: dialogue file to import
-	 * <li>-Dsimulator=path/to/simulator/domain/file: dialogue domain file for the
-	 * simulator
+	 * <li>-Dsimulator=path/to/simulator/file: domain file for the simulator
+	 * <li>--Dgui=true or false: activates or deactives the GUI
 	 * </ul>
 	 * 
 	 * @param args is ignored.
@@ -848,7 +843,6 @@ public class DialogueSystem {
 	public static void main(String[] args) {
 		DialogueSystem system = new DialogueSystem();
 		String domainFile = System.getProperty("domain");
-		String settingsFile = System.getProperty("settings");
 		String dialogueFile = System.getProperty("dialogue");
 		String simulatorFile = System.getProperty("simulator");
 
@@ -864,10 +858,6 @@ public class DialogueSystem {
 				domain = XMLDomainReader.extractEmptyDomain(domainFile);
 			}
 			system.changeDomain(domain);
-		}
-		if (settingsFile != null) {
-			system.getSettings().fillSettings(XMLUtils.extractMapping(settingsFile));
-			log.info("Settings from " + settingsFile + " successfully extracted");
 		}
 		if (dialogueFile != null) {
 			system.importDialogue(dialogueFile);
