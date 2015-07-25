@@ -104,7 +104,6 @@ public class WizardLearner implements Module {
 	 * Updates the domain parameters given the wizard action selected at the provided
 	 * dialogue state, and returns the list of updated parameters.
 	 * 
-	 * @param state the dialogue state to update
 	 * @param wizardAction the wizard action
 	 * @return the list of updated parameters
 	 */

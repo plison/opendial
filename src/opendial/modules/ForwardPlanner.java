@@ -252,9 +252,8 @@ public class ForwardPlanner implements Module {
 				state.reduce();
 				for (Model model : system.getDomain().getModels()) {
 					if (model.isTriggered(state, toProcess)) {
-						model.trigger(state);
-						if (model.isBlocking()
-								&& !state.getNewVariables().isEmpty()) {
+						boolean change = model.trigger(state);
+						if (change && model.isBlocking()) {
 							break;
 						}
 					}

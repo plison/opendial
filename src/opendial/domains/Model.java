@@ -155,8 +155,9 @@ public class Model {
 	 * variables.
 	 * 
 	 * @param state the current dialogue state
+	 * @return true if the state has been changed, false otherwise
 	 */
-	public void trigger(DialogueState state) {
+	public boolean trigger(DialogueState state) {
 		for (Rule r : rules) {
 			try {
 				state.applyRule(r);
@@ -167,6 +168,7 @@ public class Model {
 				e.printStackTrace();
 			}
 		}
+		return !state.getNewVariables().isEmpty();
 	}
 
 	/**

@@ -176,9 +176,8 @@ public class Simulator implements Module {
 
 			for (Model model : domain.getModels()) {
 				if (model.isTriggered(simulatorState, toProcess)) {
-					model.trigger(simulatorState);
-					if (model.isBlocking()
-							&& !simulatorState.getNewVariables().isEmpty()) {
+					boolean change = model.trigger(simulatorState);
+					if (change && model.isBlocking()) {
 						break;
 					}
 				}
