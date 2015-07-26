@@ -633,14 +633,6 @@ public class DialogueSystem {
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
 
-			// checking for recursive update loops (design errors)
-			for (String v : toProcess) {
-				if (updatedVars.getOrDefault(v, 0) > 5) {
-					displayComment("Warning: Recursive update for variable " + v);
-					return updatedVars.keySet();
-				}
-			}
-
 			synchronized (curState) {
 
 				// reducing the dialogue state to its relevant nodes
@@ -659,10 +651,15 @@ public class DialogueSystem {
 				// triggering the domain modules
 				modules.forEach(m -> m.trigger(curState, toProcess));
 
-				// bookkeeping on the updated variables
+				// bookkeeping on the updated variables and checking for
+				// recursive update loops (usually design errors)
 				for (String v : toProcess) {
 					int count = updatedVars.getOrDefault(v, 0) + 1;
 					updatedVars.put(v, count);
+					if (count > 5) {
+						displayComment("Warning: Recursive update for variable " + v);
+						return updatedVars.keySet();
+					}
 				}
 			}
 		}

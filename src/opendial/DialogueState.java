@@ -516,14 +516,31 @@ public class DialogueState extends BNetwork {
 	}
 
 	/**
-	 * Returns the set of updated variables in the dialogue state (that is, the one
-	 * that have a prime ' in their label.
+	 * Returns the set of updated variables in the dialogue state (that is, 
+	 * the ones that have a prime ' in their label).
 	 * 
 	 * @return the list of updated variables
 	 */
 	public synchronized Set<String> getNewVariables() {
 		Set<String> newVars = new HashSet<String>();
 		for (String var : getChanceNodeIds()) {
+			if (var.endsWith("'")) {
+				newVars.add(var.substring(0, var.length() - 1));
+			}
+		}
+		return newVars;
+	}
+	
+
+	/**
+	 * Returns the set of new action variables in the dialogue state 
+	 * (that is, the ones that have a prime ' in their label).
+	 * 
+	 * @return the list of new action variables
+	 */
+	public synchronized Set<String> getNewActionVariables() {
+		Set<String> newVars = new HashSet<String>();
+		for (String var : getActionNodeIds()) {
 			if (var.endsWith("'")) {
 				newVars.add(var.substring(0, var.length() - 1));
 			}

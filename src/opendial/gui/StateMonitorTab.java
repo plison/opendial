@@ -34,10 +34,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
+import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -122,7 +120,7 @@ public class StateMonitorTab extends JComponent {
 	// the logging area at the bottom
 	JEditorPane logArea;
 
-	public static String CURRENT_NAME = "<html><b>Current state</b></html>";
+	public static String CURRENT = "<html><b>Current state</b></html>";
 
 	boolean showParameters = true;
 
@@ -163,7 +161,7 @@ public class StateMonitorTab extends JComponent {
 		// configure the keyboard inputs for navigation
 		configureKeyInputs();
 
-		recordState(new DialogueState(), CURRENT_NAME);
+		recordState(new DialogueState(), CURRENT);
 		listModel.add(1, "separator-current");
 	}
 
@@ -174,7 +172,7 @@ public class StateMonitorTab extends JComponent {
 	 */
 	public void showParameters(boolean showParameters) {
 		this.showParameters = showParameters;
-		if (states.containsKey(CURRENT_NAME)) {
+		if (states.containsKey(CURRENT)) {
 			refresh(mainFrame.getSystem().getState(),
 					mainFrame.getSystem().getState().getParameterIds());
 		}
@@ -199,7 +197,7 @@ public class StateMonitorTab extends JComponent {
 	 */
 	public void refresh(DialogueState state, Collection<String> updatedVars) {
 
-		recordState(state, CURRENT_NAME);
+		recordState(state, CURRENT);
 		listBox.setSelectedIndex(0);
 		Settings settings = mainFrame.getSystem().getSettings();
 		if (updatedVars.contains(settings.userInput)) {
@@ -213,20 +211,28 @@ public class StateMonitorTab extends JComponent {
 				}
 			}
 		}
-		List<String> varsInProcessing =
-				state.getNodeIds().stream().filter(s -> s.contains("'"))
-						.map(s -> s.replace("'", "")).collect(Collectors.toList());
-		if (settings.recording != Recording.NONE && !varsInProcessing.isEmpty()) {
-			String title = "Updating " + StringUtils.join(varsInProcessing, ",");
+
+		Set<String> chanceVars = state.getNewVariables();
+		Set<String> actionVars = state.getNewActionVariables();
+
+		String title = "";
+		if (!chanceVars.isEmpty()) {
+			title = "Updating " + StringUtils.join(chanceVars,",");
+		}	
+		if (!actionVars.isEmpty()) {
+			title += (!title.isEmpty())? ", " : "";
+			title += "Selecting " + StringUtils.join(actionVars,",");
+		}
+		if (settings.recording != Recording.NONE && !title.isEmpty()) {
 			title += "[" + System.currentTimeMillis() + "]";
 			try {
 				recordState(state.copy(), title);
 			}
 			catch (RuntimeException e) {
 				log.warning("cannot copy state : " + e);
-			}
+			}			
 		}
-
+		
 		visualisation.showBayesianNetwork(state);
 	}
 
@@ -243,7 +249,7 @@ public class StateMonitorTab extends JComponent {
 		states.put(name, state);
 		if (!listModel.contains(name)) {
 			int position =
-					name.contains(CURRENT_NAME) ? 0 : Math.min(2, listModel.size());
+					name.contains(CURRENT) ? 0 : Math.min(2, listModel.size());
 			listModel.add(position, name);
 		}
 
