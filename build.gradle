@@ -69,8 +69,6 @@ dependencies {
     compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version:'3.5.2'
 	compile name: 'att-codekit'
 	compile name: 'exp4j' 
-	compile name: 'qimessaging' 
-	compile name: 'javaFlacEncoder' 
 	testCompile group:'junit', name: 'junit',  version: '4.+'
  }
 
