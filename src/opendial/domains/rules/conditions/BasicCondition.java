@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import opendial.bn.values.ArrayVal;
+import opendial.bn.values.NoneVal;
 import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -334,7 +335,8 @@ public final class BasicCondition implements Condition {
 				}
 			}
 		}
-		else if (relation == Relation.CONTAINS) {
+		else if (relation == Relation.CONTAINS
+				&& !(actualValue instanceof NoneVal)) {
 			List<MatchResult> m2 = templateValue.find(actualValue.toString(), 100);
 			for (MatchResult match : m2) {
 				grounding.add(match.getFilledSlots());

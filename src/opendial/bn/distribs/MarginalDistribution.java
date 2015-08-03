@@ -24,7 +24,7 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
-
+import java.util.HashSet;
 import java.util.Set;
 
 import opendial.bn.values.Value;
@@ -98,6 +98,18 @@ public class MarginalDistribution implements ProbDistribution {
 	@Override
 	public String getVariable() {
 		return condDistrib.getVariable();
+	}
+
+	/**
+	 * Returns the conditional variables Y1,...Yn for the distribution.
+	 * 
+	 * @return the set of conditional variables
+	 */
+	@Override
+	public Set<String> getInputVariables() {
+		Set<String> inputs = new HashSet<String>(condDistrib.getInputVariables());
+		inputs.removeAll(uncondDistrib.getVariables());
+		return inputs;
 	}
 
 	/**

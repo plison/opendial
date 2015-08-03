@@ -300,6 +300,16 @@ public class ConditionalTable implements ProbDistribution {
 		return table.keySet();
 	}
 
+	/**
+	 * Returns the conditional variables of the table
+	 * 
+	 * @return the set of conditional variables
+	 */
+	@Override
+	public Set<String> getInputVariables() {
+		return conditionalVars;
+	}
+
 	// ===================================
 	// UTILITIES
 	// ===================================

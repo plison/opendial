@@ -158,7 +158,6 @@ public class ParseValue implements Value {
 	public boolean contains(Value subvalue) {
 		if (subvalue instanceof StringVal) {
 			String str = ((StringVal) subvalue).getString().trim().toLowerCase();
-
 			// First case: contains with a factored word
 			if (str.startsWith("(") && str.split(",").length == 5
 					&& str.endsWith(")")) {

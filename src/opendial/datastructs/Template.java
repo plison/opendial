@@ -25,6 +25,7 @@ package opendial.datastructs;
 
 import java.util.logging.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,13 +206,10 @@ public class Template {
 		Matcher matcher = pattern.matcher(input);
 		List<MatchResult> results = new ArrayList<MatchResult>();
 		while ((matcher.find())) {
-
-			int start = input.indexOf(matcher.group(0));
-			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
-			if (((start != 0 && !isWhitespaceOrPunctuation(input.charAt(start - 1)))
-					|| (end < input.length()
-							&& !isWhitespaceOrPunctuation(input.charAt(end))))
-					&& !rawString.equals(" ")) {
+			
+			int start = input.indexOf(matcher.group());
+			int end = start + matcher.group().length();
+			if (isInfix(input, start, end)) {
 				continue;
 			}
 
@@ -397,15 +395,39 @@ public class Template {
 	}
 
 	/**
-	 * Returns true is the character is a white space character or a punctuation
-	 * 
-	 * @param c the character
-	 * @return true if c is a white space or a punctuation
+	 * Characters that are allowed to serve as boundaries between found matches of
+	 * the template.
 	 */
-	public static boolean isWhitespaceOrPunctuation(char c) {
-		return Character.isWhitespace(c) || c == ',' || c == '.' || c == '!'
-				|| c == '?' || c == ':' || c == ';' || c == '(' || c == ')'
-				|| c == '[' || c == ']';
+	static List<Character> punctuation =
+			Arrays.asList(',', '.', '!', '?', ':', ';', '(', ')', '[', ']');
+
+	/**
+	 * Returns true if the matched input is an infix inside a word.
+	 * 
+	 * @param input the input in which the template was found
+	 * @param start the start of the matched input
+	 * @param end the end of the matched input
+	 * @return true if the match is cutting through a word, else false.
+	 */
+	private boolean isInfix(String input, int start, int end) {
+
+		if (rawString.length() == 1 && punctuation.contains(rawString.charAt(0))) {
+			return false;
+		}
+
+		if (start > 0) {
+			char prev = input.charAt(start - 1);
+			if (!Character.isWhitespace(prev) && !punctuation.contains(prev)) {
+				return true;
+			}
+		}
+		if (end < input.length()) {
+			char next = input.charAt(end);
+			if (!Character.isWhitespace(next) && !punctuation.contains(next)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -419,7 +441,6 @@ public class Template {
 	private static Pattern constructPattern(String str) {
 		String escaped = StringUtils.escape(str);
 		String regex = StringUtils.constructRegex(escaped);
-
 		// compiling the associated pattern
 		try {
 			return Pattern.compile(regex,

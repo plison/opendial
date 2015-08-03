@@ -137,6 +137,18 @@ public class EquivalenceDistribution implements ProbDistribution {
 	}
 
 	/**
+	 * Returns the conditional variables of the equivalence distribution. (NB: not
+	 * sure where this implementation works in all cases?)
+	 */
+	@Override
+	public Set<String> getInputVariables() {
+		Set<String> inputs = new HashSet<String>();
+		inputs.add(baseVar + "^p");
+		inputs.add(baseVar + "'");
+		return inputs;
+	}
+
+	/**
 	 * Returns the probability of P(head | condition).
 	 * 
 	 * @param condition the conditional assignment

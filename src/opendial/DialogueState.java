@@ -36,6 +36,7 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.MultivariateTable;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.SingleValueDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ActionNode;
@@ -216,20 +217,12 @@ public class DialogueState extends BNetwork {
 	}
 
 	/**
-	 * Adds the content provided as argument to the dialogue state. If the state
-	 * variables in the categorical table already exist, they are erased.
+	 * Adds a new node to the dialogue state with the distribution provided as
+	 * argument.
 	 * 
-	 * <p>
-	 * It should be noted that the method only adds the content to the dialogue state
-	 * but does not trigger models or modules following this change. In order to
-	 * trigger such chain of updates, the method addContent(...) in DialogueSystem
-	 * should be used instead.
-	 * 
-	 * @param distrib a distribution over values for particular state variables @ if
-	 *            the content could not be added.
+	 * @param distrib the distribution to include
 	 */
-	public synchronized void addToState(IndependentDistribution distrib) {
-
+	public void addToState(ProbDistribution distrib) {
 		String variable = distrib.getVariable() + "'";
 		setAsCommitted(variable);
 		distrib.modifyVariableId(distrib.getVariable(), variable);
@@ -239,6 +232,11 @@ public class DialogueState extends BNetwork {
 			BNode toRemove = getNode(variable);
 			removeNodes(toRemove.getDescendantIds());
 			removeNode(toRemove.getId());
+		}
+		for (String inputVar : distrib.getInputVariables()) {
+			if (hasChanceNode(inputVar)) {
+				newNode.addInputNode(getChanceNode(inputVar));
+			}
 		}
 
 		addNode(newNode);
@@ -516,8 +514,8 @@ public class DialogueState extends BNetwork {
 	}
 
 	/**
-	 * Returns the set of updated variables in the dialogue state (that is, 
-	 * the ones that have a prime ' in their label).
+	 * Returns the set of updated variables in the dialogue state (that is, the ones
+	 * that have a prime ' in their label).
 	 * 
 	 * @return the list of updated variables
 	 */
@@ -530,11 +528,10 @@ public class DialogueState extends BNetwork {
 		}
 		return newVars;
 	}
-	
 
 	/**
-	 * Returns the set of new action variables in the dialogue state 
-	 * (that is, the ones that have a prime ' in their label).
+	 * Returns the set of new action variables in the dialogue state (that is, the
+	 * ones that have a prime ' in their label).
 	 * 
 	 * @return the list of new action variables
 	 */
@@ -665,7 +662,8 @@ public class DialogueState extends BNetwork {
 		ChanceNode ruleNode = new ChanceNode(ruleId, arule);
 		ruleNode.getValues();
 
-		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getInputVariables()
+				.forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);
 
@@ -690,7 +688,7 @@ public class DialogueState extends BNetwork {
 				outputDistrib = (OutputDistribution) outputNode.getDistrib();
 			}
 			outputNode.addInputNode(ruleNode);
-			outputDistrib.addEffects(arule.getEffects());
+			outputDistrib.addAnchoredRule(arule);
 
 		}
 	}
@@ -709,7 +707,8 @@ public class DialogueState extends BNetwork {
 		}
 		UtilityNode ruleNode = new UtilityNode(ruleId);
 		ruleNode.setDistrib(arule);
-		arule.getInputs().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		arule.getInputVariables()
+				.forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		addNode(ruleNode);
 

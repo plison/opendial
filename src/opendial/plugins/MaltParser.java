@@ -34,9 +34,7 @@ import java.util.stream.Stream;
 
 import opendial.DialogueState;
 import opendial.DialogueSystem;
-import opendial.bn.BNetwork;
 import opendial.bn.distribs.ConditionalTable;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -171,11 +169,7 @@ public class MaltParser implements Module {
 								ValueFactory.none(), 1.0);
 					}
 				}
-				ChanceNode node =
-						new ChanceNode("parse(" + updatedVar + ")", builder.build());
-				node.addInputNode(state.getChanceNode(updatedVar));
-
-				system.addContent(new BNetwork(node));
+				system.addContent(builder.build());
 			}
 		}
 	}

@@ -63,8 +63,8 @@ public class OutputDistribution implements ProbDistribution {
 	// primes attached to the variable label
 	String primes;
 
-	// possible effects from incoming rule nodes
-	List<Set<Effect>> inputEffects;
+	// incoming anchored rules
+	List<AnchoredRule> inputRules;
 
 	/**
 	 * Creates the output distribution for the output variable label
@@ -74,17 +74,16 @@ public class OutputDistribution implements ProbDistribution {
 	public OutputDistribution(String var) {
 		this.baseVar = var.replace("'", "");
 		this.primes = var.replace(baseVar, "");
-		inputEffects = new ArrayList<Set<Effect>>();
+		inputRules = new ArrayList<AnchoredRule>();
 	}
 
 	/**
-	 * Adds a collection of possible effects (from incoming rule nodes) to the output
-	 * node
+	 * Adds an incoming anchored rule to the output distribution.
 	 * 
-	 * @param effects the possible effects to add
+	 * @param rule the incoming rule
 	 */
-	public void addEffects(Set<Effect> effects) {
-		inputEffects.add(effects);
+	public void addAnchoredRule(AnchoredRule rule) {
+		inputRules.add(rule);
 	}
 
 	/**
@@ -200,8 +199,8 @@ public class OutputDistribution implements ProbDistribution {
 	public Set<Value> getValues() {
 		Set<Value> values = new HashSet<Value>();
 
-		for (Set<Effect> set : inputEffects) {
-			for (Effect e : set) {
+		for (AnchoredRule rule : inputRules) {
+			for (Effect e : rule.getEffects()) {
 				if (e.isNonExclusive(baseVar)) {
 					return getValues_linearise();
 				}
@@ -230,13 +229,22 @@ public class OutputDistribution implements ProbDistribution {
 	}
 
 	/**
+	 * Returns the set of identifiers for all incoming rule nodes.
+	 */
+	@Override
+	public Set<String> getInputVariables() {
+		return inputRules.stream().map(r -> r.getRule().getRuleId())
+				.collect(Collectors.toSet());
+	}
+
+	/**
 	 * Returns a copy of the distribution
 	 */
 	@Override
 	public OutputDistribution copy() {
 		OutputDistribution copy = new OutputDistribution(baseVar + primes);
-		for (Set<Effect> input : inputEffects) {
-			copy.addEffects(input);
+		for (AnchoredRule rule : inputRules) {
+			copy.addAnchoredRule(rule);
 		}
 		return copy;
 	}
@@ -258,8 +266,8 @@ public class OutputDistribution implements ProbDistribution {
 	private Set<Value> getValues_linearise() {
 
 		Map<String, Set<Value>> range = new HashMap<String, Set<Value>>();
-		for (int i = 0; i < inputEffects.size(); i++) {
-			range.put("" + i, new HashSet<Value>(inputEffects.get(i)));
+		for (int i = 0; i < inputRules.size(); i++) {
+			range.put("" + i, new HashSet<Value>(inputRules.get(i).getEffects()));
 		}
 		Set<Assignment> combinations = InferenceUtils.getAllCombinations(range);
 		Set<Value> values = combinations.stream()

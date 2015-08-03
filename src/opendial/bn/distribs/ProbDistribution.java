@@ -46,6 +46,13 @@ public interface ProbDistribution {
 	public String getVariable();
 
 	/**
+	 * Returns the conditional variables Y1,...Ym of the distribution
+	 * 
+	 * @return the set of conditional variables
+	 */
+	public Set<String> getInputVariables();
+
+	/**
 	 * Returns the probability P(head|condition), if any is specified. Else, returns
 	 * 0.0f.
 	 * 

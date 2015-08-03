@@ -38,6 +38,7 @@ import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
+import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
@@ -394,8 +395,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + variable + "="
-					+ value);
+			log.info("system is paused, ignoring " + variable + "=" + value);
 			return Collections.emptySet();
 		}
 	}
@@ -414,8 +414,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + variable + "="
-					+ value);
+			log.info("system is paused, ignoring " + variable + "=" + value);
 			return Collections.emptySet();
 		}
 	}
@@ -434,8 +433,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + variable + "="
-					+ value);
+			log.info("system is paused, ignoring " + variable + "=" + value);
 			return Collections.emptySet();
 		}
 	}
@@ -454,8 +452,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + variable + "="
-					+ value);
+			log.info("system is paused, ignoring " + variable + "=" + value);
 			return Collections.emptySet();
 		}
 	}
@@ -473,7 +470,25 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + distrib);
+			log.info("system is paused, ignoring content " + distrib);
+			return Collections.emptySet();
+		}
+	}
+
+	/**
+	 * Adds the content (expressed as a categorical table over variables) to the
+	 * current dialogue state, and subsequently updates the dialogue state.
+	 * 
+	 * @param distrib the (independent) probability distribution to add
+	 * @return the variables that were updated in the process not be updated.
+	 */
+	public Set<String> addContent(ProbDistribution distrib) {
+		if (!paused) {
+			curState.addToState(distrib);
+			return update();
+		}
+		else {
+			log.info("system is paused, ignoring content " + distrib);
 			return Collections.emptySet();
 		}
 	}
@@ -497,7 +512,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + content);
+			log.info("system is paused, ignoring content " + content);
 			return Collections.emptySet();
 		}
 	}
@@ -538,7 +553,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + assign);
+			log.info("system is paused, ignoring content " + assign);
 			return Collections.emptySet();
 		}
 	}
@@ -556,7 +571,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + distrib);
+			log.info("system is paused, ignoring content " + distrib);
 			return Collections.emptySet();
 		}
 	}
@@ -574,7 +589,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + network);
+			log.info("system is paused, ignoring content " + network);
 			return Collections.emptySet();
 		}
 	}
@@ -592,7 +607,7 @@ public class DialogueSystem {
 			return update();
 		}
 		else {
-			log.info("system is paused -- ignoring content " + newState);
+			log.info("system is paused, ignoring content " + newState);
 			return Collections.emptySet();
 		}
 	}
@@ -608,7 +623,7 @@ public class DialogueSystem {
 			update();
 		}
 		else {
-			log.info("system is paused -- ignoring removal of " + variableId);
+			log.info("system is paused, ignoring removal of " + variableId);
 		}
 	}
 
@@ -657,7 +672,8 @@ public class DialogueSystem {
 					int count = updatedVars.getOrDefault(v, 0) + 1;
 					updatedVars.put(v, count);
 					if (count > 5) {
-						displayComment("Warning: Recursive update for variable " + v);
+						displayComment(
+								"Warning: Recursive update for variable " + v);
 						return updatedVars.keySet();
 					}
 				}

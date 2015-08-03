@@ -217,11 +217,11 @@ public class StateMonitorTab extends JComponent {
 
 		String title = "";
 		if (!chanceVars.isEmpty()) {
-			title = "Updating " + StringUtils.join(chanceVars,",");
-		}	
+			title = "Updating " + StringUtils.join(chanceVars, ",");
+		}
 		if (!actionVars.isEmpty()) {
-			title += (!title.isEmpty())? ", " : "";
-			title += "Selecting " + StringUtils.join(actionVars,",");
+			title += (!title.isEmpty()) ? ", " : "";
+			title += "Selecting " + StringUtils.join(actionVars, ",");
 		}
 		if (settings.recording != Recording.NONE && !title.isEmpty()) {
 			title += "[" + System.currentTimeMillis() + "]";
@@ -230,9 +230,9 @@ public class StateMonitorTab extends JComponent {
 			}
 			catch (RuntimeException e) {
 				log.warning("cannot copy state : " + e);
-			}			
+			}
 		}
-		
+
 		visualisation.showBayesianNetwork(state);
 	}
 

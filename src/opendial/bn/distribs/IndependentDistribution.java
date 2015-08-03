@@ -24,7 +24,7 @@
 package opendial.bn.distribs;
 
 import java.util.logging.*;
-
+import java.util.Collections;
 import java.util.Set;
 
 import opendial.bn.values.Value;
@@ -44,6 +44,14 @@ import org.w3c.dom.Node;
 public interface IndependentDistribution extends ProbDistribution {
 
 	public final static Logger log = Logger.getLogger("OpenDial");
+
+	/**
+	 * Returns an empty set
+	 */
+	@Override
+	public default Set<String> getInputVariables() {
+		return Collections.emptySet();
+	}
 
 	/**
 	 * Returns the probability P(value), if any is specified. Else, returns 0.0f.

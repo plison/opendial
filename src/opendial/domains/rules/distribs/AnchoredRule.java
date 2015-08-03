@@ -188,7 +188,8 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		return inputs;
 	}
 
-	public Set<String> getInputs() {
+	@Override
+	public Set<String> getInputVariables() {
 		return inputs.getVariables();
 	}
 
