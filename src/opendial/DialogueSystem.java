@@ -662,18 +662,17 @@ public class DialogueSystem {
 						}
 					}
 				}
-
+ 
 				// triggering the domain modules
 				modules.forEach(m -> m.trigger(curState, toProcess));
 
-				// bookkeeping on the updated variables and checking for
+				// bookkeeping the updated variables and checking for
 				// recursive update loops (usually design errors)
 				for (String v : toProcess) {
 					int count = updatedVars.getOrDefault(v, 0) + 1;
 					updatedVars.put(v, count);
-					if (count > 5) {
-						displayComment(
-								"Warning: Recursive update for variable " + v);
+					if (count > 10) {
+						displayComment("Warning: Recursive update of variable " + v);
 						return updatedVars.keySet();
 					}
 				}
@@ -707,20 +706,17 @@ public class DialogueSystem {
 			return;
 		}
 		String srcFile = domain.getSourceFile().getAbsolutePath();
-		DialogueState backupState = curState.copy();
-		Domain updatedDomain;
 		try {
-			updatedDomain = XMLDomainReader.extractDomain(srcFile);
+			domain = XMLDomainReader.extractDomain(srcFile);
+			changeSettings(domain.getSettings());
+			curState = domain.getInitialState().copy();
+			curState.setParameters(domain.getParameters());
 			displayComment("Dialogue domain successfully updated");
 		}
 		catch (RuntimeException e) {
 			log.severe("Cannot refresh domain: " + e.getMessage());
 			displayComment("Syntax error: " + e.getMessage());
-			updatedDomain = XMLDomainReader.extractEmptyDomain(srcFile);
 		}
-		changeDomain(updatedDomain);
-		curState.addToState(backupState);
-		curState.reduce();
 
 		if (getModule(GUIFrame.class) != null) {
 			getModule(GUIFrame.class).refresh();

@@ -1,0 +1,288 @@
+<domain>
+
+	<initialstate>
+		<variable id="u_m">
+			<value>A friend is coming tomorrow.</value>
+		</variable>
+
+		<variable id="a_m">
+			<value>[comingTomorrow(E_1,X_1), friend(X_1)]</value>
+		</variable>
+		
+		<variable id="facts">
+			<value>[comingTomorrow(E_1,X_1), friend(X_1), person(X_1), named(X_1,Bo), time(E_1,noon)]</value>
+		</variable>
+		
+		<variable id="max-qud">
+			<value>1</value>
+		</variable>
+		
+		<variable id="new-qud">
+			<value>2</value>
+		</variable>
+
+		<variable id="qud[1].q">
+			<value>comingTomorrow(E_1,X_1)</value>
+		</variable>
+		
+		<variable id="qud[1].fec">
+			<value>[friend(X_1)]</value>
+		</variable>
+
+		<variable id="idx">
+			<value prob="1">2</value>
+		</variable>
+
+
+	</initialstate>
+
+	<!-- NLU + NSU  resolution -->
+	<model trigger="u_u">
+
+		<rule id="shortAns">
+			<case>
+				<condition>
+					<and>
+						<!-- Should be a Short answer -->
+						<if var="u_u" relation="!contains" value="?" />
+						<if var="qud[{max-qud}].q" value="{P-qud}({X})" />
+						<or>
+							<and>
+								<if var="qud[{max-qud}].fec" relation="contains" value="{P-fec}({X},{Y})"/>
+								<if var="facts" relation="contains" value="{P-fec}({X},{u_u})"/>
+							</and>
+							<and>
+								<if var="qud[{max-qud}].fec" relation="contains" value="{P-fec}({X})"/>
+								<if var="facts" relation="contains" value="{P-fec}({u_u})"/>
+							</and>
+						</or>
+					</and>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Assert({P-qud}({u_u}))" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<and>
+						<!-- Should be a Short answer -->
+						<if var="u_u" relation="!contains" value="?" />
+						<if var="qud[{max-qud}].q" value="{P-qud}({X},{Y})" />
+						<or>
+							<and>
+								<if var="qud[{max-qud}].fec" relation="contains" value="{P-fec}({X},{Y})"/>
+								<if var="facts" relation="contains" value="{P-fec}({X},{u_u})"/>
+							</and>
+							<and>
+								<if var="qud[{max-qud}].fec" relation="contains" value="{P-fec}({X})"/>
+								<if var="facts" relation="contains" value="{P-fec}({u_u})"/>
+							</and>
+						</or>
+					</and>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Assert({P-qud}({u_u}))" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule id="sluice-who">
+			<case>
+				<condition>
+					<!-- Should be a sluice -->
+					<if var="u_u" relation="contains" value="?" />
+					<if var="u_u" relation="contains" value="who" />
+					<if var="qud[{max-qud}].q" value="{P-qud}({Z},{X})" />
+					<if var="qud[{max-qud}].fec" value="{fec}"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Ask(named({X},X_{idx})" />
+					<set var="idx" value="{idx}+1"/>
+					<set var="new-fec" value="{fec}+[person({X})]" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="?" />
+					<if var="u_u" relation="contains" value="who" />
+					<if var="qud[{max-qud}].q" value="{P-qud}({X})"/>					
+					<if var="qud[{max-qud}].fec" value="{fec}"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Ask(named({X},X_{idx})" />
+					<set var="idx" value="{idx}+1"/>
+					<set var="new-fec" value="{fec}+[person({X})]" />
+				</effect>
+			</case> 
+		</rule>
+
+		<rule id="sluice-when">
+			<case>
+				<condition>
+					<!-- Should be a sluice -->
+					<if var="u_u" relation="contains" value="?" />
+					<if var="u_u" relation="contains" value="when" />
+					<if var="qud[{max-qud}].q" value="{P}({E},{X})"/>
+					<if var="qud[{max-qud}].fec" value="{fec}"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="Ask(time({E},{Y}))" />
+					<set var="new-fec" value="{fec}" exclusive="false" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+	<!-- Action selection -->
+	<model trigger="a_u">
+		
+		<!-- if user assert something the system accepts it right away. 
+			A more sophisticated system may check for correctness of the assertion and when it is not correct ask for clarification -->
+		<rule id="assert_u">
+			<case>
+				<condition>
+					<if var="a_u" value="Assert({X})"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Accept({X})" />
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- if user ask a question (including sluice) answer right away -->
+		<rule id="ask_u">
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({P-que}({X},{Y}))" />
+					<if var="facts" relation="contains" value="{P-que}({X},{Z}})" />
+					<if var="new-fec" relation="contains" value="{P-fec}({X})" />		
+					<if var="facts" relation="contains" value="{P-fec}({Z})" />		
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Assert({Z})" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({P}({X},{Y}))" />
+					<if var="facts" relation="contains" value="{P}({X},{Z})"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Assert({Z})" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({P-que}({X}))" />
+					<if var="new-fec" relation="contains" value="{P-fec}({X})" />
+					<if var="facts" relation="contains" value="{P-que}({Y})" />
+					<if var="facts" relation="contains" value="{P-fec}({Y})" />
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Assert({Y})" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_u" value="Ask({P}({X}))" />
+					<if var="facts" relation="contains" value="{P}({Y})"/>
+				</condition>
+				<effect prob="1">
+					<set var="a_m" value="Assert({Y})" />
+				</effect>
+			</case>
+			<!-- else ask for clarification -->
+		</rule>
+		
+	</model>
+	
+	<!-- Machine update rules -->
+	<model trigger="a_m">
+		
+		<rule id="ask_m">
+			<case>
+				<condition>
+					<if var="a_m" value="Ask({X})" />
+					<if var="new-fec" relation="contains" value="{P-fec}" />
+				</condition>
+				<effect prob="1">
+					<set var="max-qud" value="{max-qud}+1" />
+					<set var="new-qud" value="{new-qud}+1" />
+					<set var="qud[{new-qud}].q" value="{X}" />
+					<set var="qud[{new-qud}].fec" value="{P-fec}" exclusive="false" />
+					<set var="new-fec" value="None" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ask({X})" />
+				</condition>
+				<effect prob="1">
+					<set var="max-qud" value="{max-qud}+1" />
+					<set var="new-qud" value="{new-qud}+1" />
+					<set var="qud[{new-qud}].q" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+		
+		<rule id="accept_m">
+			<case>
+				<condition>
+					<if var="a_m" value="Accept({X})" />
+				</condition>
+				<effect prob="1">
+					<set var="facts" value="{facts}" exclusive="false" />
+					<set var="facts" value="{X}" exclusive="false" />
+					<set var="qud[{max-qud}].q" value="None" />
+					<set var="qud[{max-qud}].fec" value="None" />
+					<set var="max-qud" value="{max-qud}-1" />
+					<set var="new-qud" value="{new-qud}-1" />
+				</effect>
+			</case>
+		</rule>
+		
+		<rule id="assert_m">
+			<case>
+				<condition>
+					<if var="a_m" value="Assert({X})" />
+					<if var="new-fec" relation="!=" value="None" />
+				</condition>
+				<effect prob="1">
+					<set var="new-fec" value="None" />
+				</effect>
+			</case>
+		</rule>
+
+
+	</model>	
+	
+	
+	<!-- NLG -->
+	<model trigger="a_m">
+		<rule id="nlg-assert">
+			<case>
+				<condition>
+					<if var="a_m" value="Assert({X})" />
+				</condition>
+				<effect prob="1">
+					<set var="u_m" value="{X}" />
+				</effect>
+			</case>
+		</rule>
+
+		<rule id="nlg-accept">
+			<case>
+				<condition>
+					<if var="a_m" value="Accept({X})"/>
+				</condition>
+				<effect prob="1">
+					<set var="u_m" value="Ok" />
+				</effect>
+			</case>
+		</rule>
+
+	</model>
+	
+</domain>

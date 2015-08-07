@@ -513,7 +513,7 @@ public class GUIFrame implements Module {
 			system.refreshDomain();
 		}
 	}
-
+   
 	/**
 	 * Saves the dialogue domain in the editor tab to the file given as argument
 	 * 
@@ -534,15 +534,15 @@ public class GUIFrame implements Module {
 			refresh();
 		}
 	}
-
+ 
 	/**
 	 * Resets the interaction (resetting the dialogue state to its initial value).
 	 */
 	public void resetInteraction() {
 		chatTab.reset();
+		addComment("Reinitialiting interaction...");
 		system.changeDomain(system.getDomain());
 		refresh();
-		addComment("Reinitialiting interaction...");
 	}
 
 	/**
