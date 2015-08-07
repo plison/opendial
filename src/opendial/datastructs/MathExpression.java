@@ -58,7 +58,7 @@ public final class MathExpression {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// regular expression for brackets
-	final static Pattern varlabelRegex = Pattern.compile("([a-zA-Z][\\w_]*)");
+	final static Pattern varlabelRegex = Pattern.compile("([a-zA-Z][\\w_\\.]*)");
 
 	// list of predefined functions in exp4j
 	final static List<String> functions = Arrays.asList("abs", "acos", "asin",
@@ -83,6 +83,7 @@ public final class MathExpression {
 		this.expression = expression;
 		this.variables = getVariableLabels(expression);
 		String local = expression.replaceAll("[\\[\\]\\{\\}]", "");
+		local = local.replaceAll("\\.([a-zA-Z])", "_$1");
 		tokens = ShuntingYard.convertToRPN(local, new HashMap<String, Function>(),
 				new HashMap<String, Operator>(), getVariableLabels(local));
 	}
@@ -178,6 +179,10 @@ public final class MathExpression {
 		Map<String, Double> doubles = new HashMap<String, Double>();
 		for (String var : assign.getVariables()) {
 			Value v = assign.getValue(var);
+			if (!(v instanceof DoubleVal || v instanceof ArrayVal)) {
+				continue;
+			}
+			var = var.replaceAll("\\.", "_");
 			if (v instanceof DoubleVal) {
 				doubles.put(var, ((DoubleVal) v).getDouble());
 			}
