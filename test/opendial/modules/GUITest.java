@@ -78,10 +78,11 @@ public class GUITest {
 					+ "</initialstate></domain>";
 			gui.getEditorTab().setText(minDom);
 			gui.saveDomain();
-			assertEquals(1, system.getState().getChanceNodes().size());
-			assertEquals(minDom, gui.getEditorTab().getText());
 			assertTrue(gui.getChatTab().getChat().contains("successfully created"));
 			assertTrue(gui.getChatTab().getChat().contains("successfully updated"));
+			gui.resetInteraction();
+			assertEquals(1, system.getState().getChanceNodes().size());
+			assertEquals(minDom, gui.getEditorTab().getText());
 			Path p = Paths.get(new File("blablaNew.xml").toURI());
 			assertEquals(1, Files.readAllLines(p).size());
 			assertEquals(94, Files.readAllLines(p).get(0).length());

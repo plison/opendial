@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 
 import opendial.DialogueState;
 import opendial.bn.distribs.CategoricalTable;
-import opendial.bn.distribs.ContinuousDistribution;
 import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
@@ -113,8 +112,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		variables = new HashSet<String>(inputs.getVariables());
 
 		// we use a cache if we have a probability rule with no continuous inputs
-		if (rule.getRuleType() == RuleType.PROB
-				&& !state.containsDistrib(variables, ContinuousDistribution.class)) {
+		if (rule.getRuleType() == RuleType.PROB) {
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
 
@@ -138,12 +136,10 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			}
 		}
 
-		// we now use a cache for a utility rule with no continuous inputs
+		// adding the action variables, and activating the cache
 		if (relevant && rule.getRuleType() == RuleType.UTIL) {
 			variables.addAll(outputs.getVariables());
-			if (!state.containsDistrib(variables, ContinuousDistribution.class)) {
-				cache = new ConcurrentHashMap<Assignment, RuleOutput>();
-			}
+			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
 	}
 

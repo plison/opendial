@@ -23,6 +23,7 @@
 
 package opendial;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -666,11 +667,9 @@ public class DialogueSystem {
 				// triggering the domain modules
 				modules.forEach(m -> m.trigger(curState, toProcess));
 
-				// bookkeeping the updated variables and checking for
-				// recursive update loops (usually design errors)
+				// checking for recursive update loops
 				for (String v : toProcess) {
-					int count = updatedVars.getOrDefault(v, 0) + 1;
-					updatedVars.put(v, count);
+					int count = updatedVars.compute(v, (x,y) ->(y==null)?1:y+1);
 					if (count > 10) {
 						displayComment("Warning: Recursive update of variable " + v);
 						return updatedVars.keySet();
@@ -709,13 +708,13 @@ public class DialogueSystem {
 		try {
 			domain = XMLDomainReader.extractDomain(srcFile);
 			changeSettings(domain.getSettings());
-			curState = domain.getInitialState().copy();
-			curState.setParameters(domain.getParameters());
 			displayComment("Dialogue domain successfully updated");
 		}
 		catch (RuntimeException e) {
 			log.severe("Cannot refresh domain: " + e.getMessage());
 			displayComment("Syntax error: " + e.getMessage());
+			domain = new Domain();
+			domain.setSourceFile(new File(srcFile));
 		}
 
 		if (getModule(GUIFrame.class) != null) {
