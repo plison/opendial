@@ -187,7 +187,6 @@ public class Simulator implements Module {
 				double reward = simulatorState.queryUtil();
 				String comment = "Reward: " + StringUtils.getShortForm(reward);
 				system.displayComment(comment);
-				log.fine(comment);
 				system.getState().addEvidence(new Assignment(
 						"R(" + systemAssign.addPrimes() + ")", reward));
 				simulatorState.removeNodes(simulatorState.getUtilityNodeIds());

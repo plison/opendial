@@ -130,7 +130,7 @@ public class Sample extends Assignment implements Comparable<Sample> {
 
 	@Override
 	public int compareTo(Sample arg0) {
-		return (int) ((utility - arg0.getUtility()) * 1000);
+		return (int) ((utility - arg0.utility) * 1000);
 	}
 
 }

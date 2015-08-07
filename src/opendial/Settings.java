@@ -165,7 +165,6 @@ public class Settings {
 	 */
 	@SuppressWarnings("unchecked")
 	public void fillSettings(Properties mapping) {
-
 		for (String key : mapping.stringPropertyNames()) {
 			if (key.equalsIgnoreCase("horizon")) {
 				horizon = Integer.parseInt(mapping.getProperty(key));
@@ -235,7 +234,7 @@ public class Settings {
 					}
 				}
 			}
-			else if (key.equalsIgnoreCase("modules")) {
+			else if (key.equalsIgnoreCase("modules") || key.equalsIgnoreCase("module")) {
 				String[] split = mapping.getProperty(key).split(",");
 				for (int i = 0; i < split.length; i++) {
 					if (split[i].trim().length() > 0) {

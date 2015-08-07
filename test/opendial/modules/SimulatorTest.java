@@ -51,11 +51,12 @@ public class SimulatorTest {
 
 		DialogueSystem system = null;
 		int nbSamples = Settings.nbSamples;
+		log.setLevel(Level.WARNING);
 		Settings.nbSamples = nbSamples / 5;
 		outloop: for (int k = 0; k < 3; k++) {
 			system = new DialogueSystem(XMLDomainReader.extractDomain(mainDomain));
 			if (k > 0) {
-				log.info("restarting the simulator...");
+				log.warning("restarting the simulator...");
 			}
 
 			system.getDomain().getModels().remove(0);
@@ -87,12 +88,14 @@ public class SimulatorTest {
 		system.detachModule(Simulator.class);
 		system.pause(true);
 		Settings.nbSamples = nbSamples * 5;
+		log.setLevel(Level.INFO);
 	}
 
 	@Test
 	public void testRewardLearner() throws InterruptedException {
 		DialogueSystem system = null;
 		Settings.nbSamples = Settings.nbSamples * 2;
+		log.setLevel(Level.WARNING);
 		outloop: for (int k = 0; k < 3; k++) {
 			if (k > 0) {
 				log.info("restarting the learner...");
@@ -133,6 +136,7 @@ public class SimulatorTest {
 		log.fine("theta_incorrect " + theta_incorrect);
 		log.fine("theta_repeat " + theta_repeat);
 		Settings.nbSamples = Settings.nbSamples / 2;
+		log.setLevel(Level.INFO);
 	}
 
 	private static void checkCondition(String str) {

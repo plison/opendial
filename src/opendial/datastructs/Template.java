@@ -74,6 +74,8 @@ public class Template {
 	final static Pattern slotPattern = Pattern.compile("\\{(.+?)\\}");
 	final static Pattern trailPattern =
 			Pattern.compile("(?:^[\\.,\\s\\?]+)|(?:[\\.,\\s\\?]+$)");
+	final static List<Character> punctuation =
+			Arrays.asList(',', '.', '!', '?', ':', ';', '(', ')', '[', ']');
 
 	// ===================================
 	// TEMPLATE CONSTRUCTION
@@ -158,8 +160,6 @@ public class Template {
 
 		Matcher matcher = pattern.matcher(input);
 		if ((matcher.matches())) {
-			int start = input.indexOf(matcher.group(0));
-			int end = input.indexOf(matcher.group(0)) + matcher.group(0).length();
 
 			Assignment filledSlots = new Assignment();
 			for (String slot : slots.keySet()) {
@@ -168,7 +168,7 @@ public class Template {
 				filledSlots.addPair(slot, filledValue);
 			}
 
-			return new MatchResult(start, end, filledSlots);
+			return new MatchResult(matcher.start(), matcher.end(), filledSlots);
 		}
 		return new MatchResult();
 	}
@@ -207,22 +207,18 @@ public class Template {
 		List<MatchResult> results = new ArrayList<MatchResult>();
 		while ((matcher.find())) {
 			
-			int start = input.indexOf(matcher.group());
-			int end = start + matcher.group().length();
-			if (isInfix(input, start, end)) {
+			if (!isValidMatch(input, matcher)) {
 				continue;
 			}
 
 			Assignment filledSlots = new Assignment();
 			for (String slot : slots.keySet()) {
 				String filledValue = matcher.group(slots.get(slot) + 1).trim();
-				if (filledValue.indexOf(')') < filledValue.indexOf('(')) {
-					continue;
-				}
 				filledValue = trailPattern.matcher(filledValue).replaceAll("");
 				filledSlots.addPair(slot, filledValue);
 			}
-			MatchResult result = new MatchResult(start, end, filledSlots);
+			
+			MatchResult result = new MatchResult(matcher.start(), matcher.end(), filledSlots);
 			results.add(result);
 			if (results.size() >= maxResults) {
 				return results;
@@ -395,39 +391,42 @@ public class Template {
 	}
 
 	/**
-	 * Characters that are allowed to serve as boundaries between found matches of
-	 * the template.
-	 */
-	static List<Character> punctuation =
-			Arrays.asList(',', '.', '!', '?', ':', ';', '(', ')', '[', ']');
-
-	/**
-	 * Returns true if the matched input is an infix inside a word.
+	 * Returns true if the matcher group is valid (i.e. does not cut through a 
+	 * word or a logical expression).
 	 * 
 	 * @param input the input in which the template was found
-	 * @param start the start of the matched input
-	 * @param end the end of the matched input
-	 * @return true if the match is cutting through a word, else false.
+	 * @param matcher the matcher object
+	 * @return true if the match is valid, else false
 	 */
-	private boolean isInfix(String input, int start, int end) {
+	private boolean isValidMatch(String input, Matcher matcher) {
 
+		int start = matcher.start();
+		int end = matcher.end();
+		
 		if (rawString.length() == 1 && punctuation.contains(rawString.charAt(0))) {
-			return false;
+			return true;
 		}
 
 		if (start > 0) {
 			char prev = input.charAt(start - 1);
 			if (!Character.isWhitespace(prev) && !punctuation.contains(prev)) {
-				return true;
+				return false;
 			}
 		}
 		if (end < input.length()) {
 			char next = input.charAt(end);
 			if (!Character.isWhitespace(next) && !punctuation.contains(next)) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		
+		for (int slot : slots.values()) {
+			String filledValue = matcher.group(slot + 1);
+			if (filledValue.indexOf(')') != filledValue.indexOf('(')) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
