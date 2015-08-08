@@ -139,7 +139,7 @@ public class RuleTest3 {
 		system.getSettings().showGUI = false;
 
 		system.startSystem();
-		assertEquals(0.35,
+		assertEquals(0.56,
 				system.getContent("out").getProb("val1 is in [val1, val2]") + system
 						.getContent("out").getProb("val1 is in [val2, val1]"),
 				0.01);

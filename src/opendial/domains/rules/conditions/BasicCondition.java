@@ -30,9 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.bn.values.ArrayVal;
-import opendial.bn.values.NoneVal;
-import opendial.bn.values.SetVal;
+import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -51,10 +49,10 @@ public final class BasicCondition implements Condition {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	// variable label (can include slots to fill)
-	final Template variable;
+	Template variable;
 
 	// expected variable value (can include slots to fill)
-	final Template templateValue;
+	Template templateValue;
 	Value groundValue;
 
 	// possible relations used in a basic condition
@@ -81,9 +79,7 @@ public final class BasicCondition implements Condition {
 	public BasicCondition(String variable, String value, Relation relation) {
 		this.variable = new Template(variable);
 		this.templateValue = new Template(value);
-		if (!templateValue.isUnderspecified()) {
-			this.groundValue = ValueFactory.create(value);
-		}
+		groundValue = (templateValue.isUnderspecified())? null : ValueFactory.create(value);
 		this.relation = relation;
 	}
 
@@ -100,6 +96,33 @@ public final class BasicCondition implements Condition {
 		this.templateValue = new Template(value.toString());
 		this.groundValue = value;
 		this.relation = relation;
+	}
+	
+	
+	/**
+	 * Creates a new basic condition that represented the grounding of the 
+	 * provided condition together with the value assignment
+	 * 
+	 * @param condition the condition (with free variables)
+	 * @param grounding the grounding assignment
+	 */
+	private BasicCondition(BasicCondition condition, Assignment grounding) {
+		variable = condition.variable;
+		if (variable.isUnderspecified()) {
+			variable = new Template(variable.fillSlots(grounding));
+		}
+
+		relation = condition.relation;
+		templateValue = condition.templateValue;
+		groundValue = condition.groundValue;
+		if (!templateValue.getSlots().isEmpty()) {
+			templateValue = new Template(templateValue.fillSlots(grounding));	
+			if (!templateValue.isUnderspecified()) {
+				groundValue = ValueFactory.create(templateValue.toString());
+			}
+		}
+
+
 	}
 
 	// ===================================
@@ -163,82 +186,67 @@ public final class BasicCondition implements Condition {
 			return false;
 		}
 
-		String filledVar = variable.fillSlots(input);
-		Value actualValue = input.getValue(filledVar);
+		BasicCondition grounded = new BasicCondition(this, input);
+		Value actualValue = input.getValue(grounded.variable.toString());
 
-		Template filledTemplate = templateValue;
-		Value expectedValue = groundValue;
-		if (!filledTemplate.getSlots().isEmpty()) {
-			filledTemplate = new Template(templateValue.fillSlots(input));
-			if (!filledTemplate.isUnderspecified()) {
-				expectedValue = ValueFactory.create(filledTemplate.toString());
-			}
-		}
-
-		if (expectedValue != null) {
-			return isSatisfiedBy(actualValue, expectedValue);
-		}
-		else {
-			return isSatisfiedBy(actualValue, filledTemplate);
-		}
+		return grounded.isSatisfied(actualValue);
 	}
-
+	
+	
 	/**
 	 * Returns true if the relation is satisfied between the actual and expected
 	 * values.
 	 * 
 	 * @param actualValue the actual value
-	 * @param expectedValue the expected value
 	 * @return true if satisfied, false otherwise
 	 */
-	private boolean isSatisfiedBy(Value actualValue, Value expectedValue) {
-		switch (relation) {
-		case EQUAL:
-			return actualValue.equals(expectedValue);
-		case UNEQUAL:
-			return !actualValue.equals(expectedValue);
-		case GREATER_THAN:
-			return (actualValue.compareTo(expectedValue) > 0);
-		case LOWER_THAN:
-			return (actualValue.compareTo(expectedValue) < 0);
-		case CONTAINS:
-			return actualValue.contains(expectedValue);
-		case NOT_CONTAINS:
-			return !actualValue.contains(expectedValue);
-		case LENGTH:
-			return actualValue.length() == expectedValue.length();
-		case IN:
-			return expectedValue.contains(actualValue);
-		case NOT_IN:
-			return !expectedValue.contains(actualValue);
-		}
-		return false;
-	}
-
-	/**
-	 * Returns true if the relation is satisfied between the actual and (template)
-	 * expected values.
-	 * 
-	 * @param actualValue the actual value
-	 * @param templateValue the templated expected value
-	 * @return true if satisfied, false otherwise
-	 */
-	private boolean isSatisfiedBy(Value actualValue, Template templateValue) {
-		switch (relation) {
-		case EQUAL:
-			return templateValue.match(actualValue.toString()).isMatching();
-		case UNEQUAL:
-			return !templateValue.match(actualValue.toString()).isMatching();
-		case CONTAINS:
-			return templateValue.partialmatch(actualValue.toString()).isMatching();
-		case NOT_CONTAINS:
-			return !templateValue.partialmatch(actualValue.toString()).isMatching();
-		case LENGTH:
-			return templateValue.match("" + actualValue.length()).isMatching();
-		default:
+	private boolean isSatisfied(Value actualValue) {
+	
+		// standard case
+		if (groundValue != null) {
+			switch (relation) {
+			case EQUAL:
+				return actualValue.equals(groundValue);
+			case UNEQUAL:
+				return !actualValue.equals(groundValue);
+			case GREATER_THAN:
+				return (actualValue.compareTo(groundValue) > 0);
+			case LOWER_THAN:
+				return (actualValue.compareTo(groundValue) < 0);
+			case CONTAINS:
+				return actualValue.contains(groundValue);
+			case NOT_CONTAINS:
+				return !actualValue.contains(groundValue);
+			case LENGTH:
+				return actualValue.length() == groundValue.length();
+			case IN:
+				return groundValue.contains(actualValue);
+			case NOT_IN:
+				return !groundValue.contains(actualValue);
+			}
 			return false;
 		}
+		
+		// when regular expressions in the templates
+		else {
+			switch (relation) {
+			case EQUAL:
+				return templateValue.match(actualValue.toString()).isMatching();
+			case UNEQUAL:
+				return !templateValue.match(actualValue.toString()).isMatching();
+			case CONTAINS:
+				return templateValue.partialmatch(actualValue.toString()).isMatching();
+			case NOT_CONTAINS:
+				return !templateValue.partialmatch(actualValue.toString()).isMatching();
+			case LENGTH:
+				return templateValue.match("" + actualValue.length()).isMatching();
+			default:
+				return false;
+			}
+		}
 	}
+
+
 
 	/**
 	 * Returns the set of possible groundings for the given input assignment
@@ -249,13 +257,13 @@ public final class BasicCondition implements Condition {
 	@Override
 	public RuleGrounding getGroundings(Assignment input) {
 
-		// case 1: the variable label is underspecified
-		if (!variable.getSlots().isEmpty()
-				&& !new Template(variable.fillSlots(input)).getSlots().isEmpty()) {
+		BasicCondition groundCond = new BasicCondition(this, input);
+		RuleGrounding groundings = new RuleGrounding();
 
-			RuleGrounding groundings = new RuleGrounding();
+		// case 1: the variable label is underspecified
+		if (!groundCond.variable.getSlots().isEmpty()) {
 			for (String inputVar : input.getVariables()) {
-				MatchResult m = variable.match(inputVar);
+				MatchResult m = groundCond.variable.match(inputVar);
 				if (m.isMatching()) {
 					Assignment newInput = new Assignment(input, m.getFilledSlots());
 					RuleGrounding specGrounds = getGroundings(newInput);
@@ -266,59 +274,38 @@ public final class BasicCondition implements Condition {
 			return groundings;
 		}
 
-		String filledVar = variable.fillSlots(input);
-		Value actualValue = input.getValue(filledVar);
-
-		Template filledTemplate = templateValue;
-		Value expectedValue = groundValue;
-		if (!filledTemplate.getSlots().isEmpty() && input.size() > 1
-				&& input.containsOneVar(filledTemplate.getSlots())) {
-			filledTemplate = new Template(templateValue.fillSlots(input));
-			if (!filledTemplate.isUnderspecified()) {
-				expectedValue = ValueFactory.create(filledTemplate.toString());
-			}
-		}
-
+		String filledVar = groundCond.variable.toString();
+		
 		// case 2 : the expected value contains unfilled slots
-		if (!filledTemplate.getSlots().isEmpty()) {
-
-			RuleGrounding grounding = getGroundings(actualValue, filledTemplate);
-			grounding.removeVariables(input.getVariables());
-			grounding.removeValue(ValueFactory.none());
-			return grounding;
+		if (!groundCond.templateValue.getSlots().isEmpty()) {
+			Value actualValue = input.getValue(groundCond.variable.toString());
+			groundings = groundCond.getGroundings(actualValue);
+			groundings.removeVariables(input.getVariables());
+			groundings.removeValue(ValueFactory.none());
 		}
 
 		// case 3: the the relation is IN
-		else if (relation == Relation.IN) {
-			if (expectedValue instanceof SetVal) {
-				return new RuleGrounding(filledVar,
-						((SetVal) expectedValue).getSet());
-			}
-			else if (expectedValue instanceof ArrayVal) {
-				return new RuleGrounding(filledVar,
-						((ArrayVal) expectedValue).getList());
-			}
+		else if (relation == Relation.IN && !input.containsVar(filledVar)) {
+			Collection<Value> valuesColl = groundCond.groundValue.getSubValues();
+			groundings.extend(filledVar, valuesColl);
 		}
 
 		// case 4: none of this applies (usual case)
-		if (isSatisfiedBy(input)) {
-			return new RuleGrounding();
+		else if (!isSatisfiedBy(input)) {
+			groundings.setAsFailed();
 		}
-
-		else {
-			return new RuleGrounding.Failed();
-		}
+		return groundings;
 	}
 
+	
 	/**
 	 * Tries to match the template with the actual value, and returns the associated
 	 * groundings
 	 * 
 	 * @param actualValue the actual filled value
-	 * @param templateValue the template to match
 	 * @return the resulting groundings
 	 */
-	private RuleGrounding getGroundings(Value actualValue, Template templateValue) {
+	private RuleGrounding getGroundings(Value actualValue) {
 
 		RuleGrounding grounding = new RuleGrounding();
 		if (relation == Relation.EQUAL || relation == Relation.UNEQUAL) {
@@ -327,25 +314,24 @@ public final class BasicCondition implements Condition {
 				grounding.add(m.getFilledSlots());
 			}
 		}
-		else if (relation == Relation.CONTAINS && actualValue instanceof SetVal) {
-			for (Value subval : ((SetVal) actualValue).getSet()) {
-				MatchResult m2 = templateValue.match(subval.toString());
-				if (m2.isMatching()) {
-					grounding.add(m2.getFilledSlots());
-				}
-			}
-		}
-		else if (relation == Relation.CONTAINS
-				&& !(actualValue instanceof NoneVal)) {
+		else if (relation == Relation.CONTAINS && actualValue instanceof StringVal) {
 			List<MatchResult> m2 = templateValue.find(actualValue.toString(), 100);
 			for (MatchResult match : m2) {
 				grounding.add(match.getFilledSlots());
 			}
 
 		}
+		else if (relation == Relation.CONTAINS && !actualValue.getSubValues().isEmpty()) {
+			for (Value subval : actualValue.getSubValues()) {
+				MatchResult m2 = templateValue.match(subval.toString());
+				if (m2.isMatching()) {
+					grounding.add(m2.getFilledSlots());
+				}
+			}
+		}
 
 		if (grounding.isEmpty() && relation != Relation.UNEQUAL) {
-			return new RuleGrounding.Failed();
+			grounding.setAsFailed();
 		}
 		return grounding;
 	}

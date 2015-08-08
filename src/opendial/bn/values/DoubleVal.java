@@ -23,6 +23,8 @@
 
 package opendial.bn.values;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.*;
 
 import opendial.utils.StringUtils;
@@ -157,6 +159,14 @@ public final class DoubleVal implements Value {
 	@Override
 	public boolean contains(Value subvalue) {
 		return equals(subvalue);
+	}
+	
+	/**
+	 * Returns an empty list
+	 */
+	@Override
+	public Collection<Value> getSubValues() {
+		return new ArrayList<Value>();
 	}
 
 }

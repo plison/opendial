@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -200,12 +199,11 @@ public final class Effect implements Value {
 				if (e.isNegated()) {
 					result.remove(e.getValue());
 					for (Value v : new ArrayList<Value>(result)) {
-						if (v instanceof SetVal
-								&& ((SetVal) v).contains(e.getValue())) {
+						Collection<Value> subvals = v.getSubValues();
+						if (subvals.contains(e.getValue())) {
 							result.remove(v);
-							Set<Value> v2 = ((SetVal) v).getSet();
-							v2.remove(e.getValue());
-							result.add(ValueFactory.create(v2));
+							subvals.remove(e.getValue());
+							result.add(ValueFactory.create(subvals));
 						}
 					}
 				}
@@ -359,6 +357,14 @@ public final class Effect implements Value {
 	@Override
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
+	}
+	
+	/**
+	 * Returns an empty list
+	 */
+	@Override
+	public Collection<Value> getSubValues() {
+		return new ArrayList<Value>();
 	}
 
 	/**

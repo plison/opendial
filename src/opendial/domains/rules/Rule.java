@@ -36,7 +36,6 @@ import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.FixedParameter;
-import opendial.domains.rules.parameters.Parameter;
 
 /**
  * Generic representation of a probabilistic rule, with an identifier and an ordered
@@ -87,25 +86,19 @@ public class Rule {
 	public void addCase(Condition condition, RuleOutput output) {
 		if (!cases.isEmpty()
 				&& cases.get(cases.size() - 1).condition instanceof VoidCondition) {
-			log.warning("new case for rule " + id
-					+ " is unreachable (previous case is trivially true)");
+			log.warning("unreachable case for rule " + id 
+					+ "(previous case trivially true)");
 		}
 
 		// ensuring that the probability values are between 0 and 1
 		if (ruleType == RuleType.PROB) {
-			double totalMass = 0;
-			for (Parameter p : output.getParameters()) {
-				if (p instanceof FixedParameter) {
-					double v = ((FixedParameter) p).getValue();
-					if (v < 0.0) {
-						throw new RuntimeException("probability value must be >=0");
-					}
-					totalMass += v;
-				}
-			}
+			double totalMass = output.getParameters().stream()
+					.filter(p -> p instanceof FixedParameter)
+					.mapToDouble(p -> ((FixedParameter)p).getValue())
+					.peek(p -> {if (p < 0.0) throw new RuntimeException(p+" is < 0.0");})
+					.sum();
 			if (totalMass > 1.02) {
-				throw new RuntimeException(
-						"probability value must be <=1, but is: " + totalMass);
+				throw new RuntimeException(totalMass + " is > 1.0");
 			}
 		}
 		cases.add(new RuleCase(condition, output));

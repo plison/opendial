@@ -55,7 +55,7 @@ public final class SetVal implements Value {
 		this.set = new HashSet<Value>();
 		for (Value v : values) {
 			if (v instanceof SetVal) {
-				this.set.addAll(((SetVal) v).getSet());
+				this.set.addAll(((SetVal) v).getSubValues());
 			}
 			else {
 				this.set.add(v);
@@ -92,7 +92,7 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		return ((o instanceof SetVal && ((SetVal) o).getSet().equals(getSet())));
+		return ((o instanceof SetVal && ((SetVal) o).getSubValues().equals(getSubValues())));
 	}
 
 	/**
@@ -110,7 +110,8 @@ public final class SetVal implements Value {
 	 * 
 	 * @return the set
 	 */
-	public Set<Value> getSet() {
+	@Override
+	public Set<Value> getSubValues() {
 		return set;
 	}
 
@@ -141,7 +142,7 @@ public final class SetVal implements Value {
 	public Value concatenate(Value v) {
 		if (v instanceof SetVal) {
 			Set<Value> newSet = new HashSet<Value>(set);
-			newSet.addAll(((SetVal) v).getSet());
+			newSet.addAll(((SetVal) v).getSubValues());
 			return new SetVal(newSet);
 		}
 		else if (v instanceof NoneVal) {

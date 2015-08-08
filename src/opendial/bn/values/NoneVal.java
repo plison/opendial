@@ -23,6 +23,9 @@
 
 package opendial.bn.values;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * "None" value (describing the lack of value, or an empty assignment)
  * 
@@ -117,6 +120,14 @@ public final class NoneVal implements Value {
 	@Override
 	public boolean contains(Value subvalue) {
 		return false;
+	}
+	
+	/**
+	 * Returns an empty list
+	 */
+	@Override
+	public Collection<Value> getSubValues() {
+		return new ArrayList<Value>();
 	}
 
 }

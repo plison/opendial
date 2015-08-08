@@ -23,7 +23,10 @@
 
 package opendial.bn.values;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.*;
+import java.util.stream.Collectors;
 
 import opendial.datastructs.Template;
 
@@ -132,6 +135,17 @@ public final class StringVal implements Value {
 		else {
 			return 0;
 		}
+	}
+	
+	/**
+	 * Returns a list of words
+	 * 
+	 */
+	@Override
+	public Collection<Value> getSubValues() {
+		return Arrays.stream(str.split(" "))
+				.map(w -> ValueFactory.create(w))
+				.collect(Collectors.toList());
 	}
 
 	/**

@@ -53,15 +53,6 @@ public class RuleGrounding {
 		groundings.add(new Assignment());
 	}
 
-	/**
-	 * Constructs a grounding with a single assignment.
-	 * 
-	 * @param singleAssign the assignment
-	 */
-	public RuleGrounding(Assignment singleAssign) {
-		this();
-		extend(singleAssign);
-	}
 
 	/**
 	 * Constructs a set of groundings with the given collection of alternative
@@ -92,20 +83,6 @@ public class RuleGrounding {
 		}
 	}
 
-	/**
-	 * Constructs a set of groundings with the alternative values for the variable
-	 * 
-	 * @param variable the variable label
-	 * @param vals the alternative values
-	 */
-	public RuleGrounding(String variable, Collection<Value> vals) {
-		groundings = new HashSet<Assignment>();
-
-		for (Value v : vals) {
-			groundings.add(new Assignment(variable, v));
-
-		}
-	}
 
 	/**
 	 * Adds a list of alternative groundings to the existing set
@@ -133,6 +110,7 @@ public class RuleGrounding {
 			groundings.remove(new Assignment());
 		}
 	}
+
 
 	/**
 	 * Extends the existing groundings with the provided assignment
@@ -176,6 +154,35 @@ public class RuleGrounding {
 			}
 		}
 		groundings = newGroundings;
+	}
+	
+
+	/**
+	 * Extend a set of groundings with the alternative values for the variable
+	 * 
+	 * @param variable the variable label
+	 * @param vals the alternative values
+	 */
+	public void extend(String variable, Collection<Value> vals) {
+
+		Set<Assignment> newGroundings = new HashSet<Assignment>();
+		for (Assignment g : groundings) {
+			for (Value v : vals) {
+				newGroundings.add(new Assignment(g, variable, v));
+			}
+		}
+		groundings = newGroundings;
+	}
+	
+	
+	
+	/**
+	 * Sets the groundings as failed (i.e. no possible groundings for the
+	 * underspecified variables).
+	 * 
+	 */
+	public void setAsFailed() {
+		groundings.clear();
 	}
 
 	/**
@@ -266,17 +273,5 @@ public class RuleGrounding {
 				&& groundings.iterator().next().isEmpty());
 	}
 
-	/**
-	 * Special type of rule grounding when the grounding has "failed", i.e. there is
-	 * no possible assignment of values for the condition(s).
-	 *
-	 */
-	public static final class Failed extends RuleGrounding {
-
-		public Failed() {
-			super();
-			groundings.clear();
-		}
-	}
 
 }

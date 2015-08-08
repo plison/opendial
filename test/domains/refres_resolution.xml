@@ -125,7 +125,7 @@
 					<if var="area({X})" value="{A}" />					
 					<if var="properties(ref_{id})" relation="contains" value="attr=small"/>
 				</condition>
-				<effect prob="exp(-{area}/100)">
+				<effect prob="exp(-{A}/100)">
 					<set var="matches(ref_{id},size)^t" value="{X}" exclusive="false"/>
 				</effect>
 			</case>

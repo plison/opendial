@@ -162,17 +162,18 @@ public final class ComplexCondition implements Condition {
 			for (Condition cond : subconditions) {
 
 				RuleGrounding newGrounding = new RuleGrounding();
-				boolean failed = true;
+				boolean foundGrounding = false;
 				for (Assignment g : groundings.getAlternatives()) {
-					Assignment input2 =
+					Assignment g2 =
 							(g.isEmpty()) ? input : new Assignment(input, g);
-					RuleGrounding ground = cond.getGroundings(input2);
+					RuleGrounding ground = cond.getGroundings(g2);
+					foundGrounding = foundGrounding || !ground.isFailed();
 					ground.extend(g);
-					failed = failed && ground.isFailed();
 					newGrounding.add(ground);
 				}
-				if (failed) {
-					return new RuleGrounding.Failed();
+				if (!foundGrounding) {
+					newGrounding.setAsFailed();
+					return newGrounding;
 				}
 				groundings = newGrounding;
 			}

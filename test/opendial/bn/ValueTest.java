@@ -80,14 +80,14 @@ public class ValueTest {
 		assertTrue(ValueFactory
 				.create("[firstItem, secondItem, 3.6]") instanceof SetVal);
 		assertEquals(3,
-				((SetVal) ValueFactory.create("[firstItem, secondItem, 3.6]"))
-						.getSet().size());
+				(ValueFactory.create("[firstItem, secondItem, 3.6]"))
+						.getSubValues().size());
 		assertEquals(
 				new HashSet<Value>(Arrays.asList(ValueFactory.create("firstItem"),
 						ValueFactory.create("secondItem"),
 						ValueFactory.create(3.6))),
-				((SetVal) ValueFactory.create("[firstItem, secondItem,3.6]"))
-						.getSet());
+				(ValueFactory.create("[firstItem, secondItem,3.6]"))
+						.getSubValues());
 		assertTrue(ValueFactory.create("[0.6, 0.4, 32]") instanceof ArrayVal);
 		assertEquals(3, ((ArrayVal) ValueFactory.create("[0.6, 0.4, 32]"))
 				.getArray().length);
@@ -106,15 +106,15 @@ public class ValueTest {
 		assertEquals(ValueFactory.create("test").compareTo(ValueFactory.create(5)),
 				-ValueFactory.create(5).compareTo(ValueFactory.create("test")));
 		assertEquals(3,
-				((SetVal) ValueFactory.create("[test,[1,2],true]")).getSet().size());
-		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSet()
+				((SetVal) ValueFactory.create("[test,[1,2],true]")).getSubValues().size());
+		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSubValues()
 				.contains(ValueFactory.create("test")));
-		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSet()
+		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSubValues()
 				.contains(ValueFactory.create("[1,2]")));
-		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSet()
+		assertTrue(((SetVal) ValueFactory.create("[test,[1,2],true]")).getSubValues()
 				.contains(ValueFactory.create("true")));
 		assertEquals(3, ((SetVal) ValueFactory.create("[a1=test,a2=[1,2],a3=true]"))
-				.getSet().size());
+				.getSubValues().size());
 
 	}
 

@@ -24,13 +24,15 @@
 package opendial.plugins;
 
 import java.util.logging.*;
-
+import java.util.stream.Collectors;
+import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
+import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Template;
 
 import org.maltparser.concurrent.graph.ConcurrentDependencyGraph;
@@ -190,6 +192,16 @@ public class ParseValue implements Value {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Returns a collection of string values (one for each factored word).
+	 */
+	@Override
+	public Collection<Value> getSubValues() {
+		return parsedInput.values().stream()
+				.map(f -> ValueFactory.create(f.toString()))
+				.collect(Collectors.toList());
 	}
 
 	/**

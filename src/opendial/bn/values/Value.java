@@ -23,6 +23,8 @@
 
 package opendial.bn.values;
 
+import java.util.Collection;
+
 /**
  * Generic class for a variable value. The value can be:
  * <ol>
@@ -56,6 +58,14 @@ public interface Value extends Comparable<Value> {
 	 * @return true if the value is contained, false otherwise
 	 */
 	public boolean contains(Value subvalue);
+
+	/**
+	 * If the value is a container for other values, returns the collection
+	 * of contained values. Else, returns an empty set.
+	 * 
+	 * @return the collection of values inside the present value
+	 */
+	public Collection<Value> getSubValues();
 
 	/**
 	 * Returns a value that is the concatenation of the two values
@@ -96,5 +106,6 @@ public interface Value extends Comparable<Value> {
 	 */
 	@Override
 	public boolean equals(Object o);
+
 
 }

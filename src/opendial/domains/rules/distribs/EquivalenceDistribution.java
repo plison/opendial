@@ -24,6 +24,7 @@
 package opendial.domains.rules.distribs;
 
 import java.util.logging.*;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -33,7 +34,6 @@ import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.values.BooleanVal;
-import opendial.bn.values.SetVal;
 import opendial.bn.values.StringVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
@@ -255,12 +255,9 @@ public class EquivalenceDistribution implements ProbDistribution {
 			String str2 = ((StringVal) actual).getString();
 			return (Template.match(str1, str2)) ? 1.0 : 0.0;
 		}
-		else if (predicted instanceof SetVal && actual instanceof SetVal) {
-			Set<Value> vals0 = ((SetVal) predicted).getSet();
-			Set<Value> vals1 = ((SetVal) actual).getSet();
-			if (vals0.isEmpty()) {
-				return (vals1.isEmpty()) ? 1.0 : 0.0;
-			}
+		else if (!predicted.getSubValues().isEmpty() && !(actual.getSubValues().isEmpty())) {
+			Collection<Value> vals0 = predicted.getSubValues();
+			Collection<Value> vals1 = actual.getSubValues();
 			Set<Value> intersect = new HashSet<Value>(vals0);
 			intersect.retainAll(vals1);
 			return ((double) intersect.size()) / vals0.size();

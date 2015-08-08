@@ -94,6 +94,7 @@ public final class ArrayVal implements Value {
 		}
 		return hashCode() - arg0.hashCode();
 	}
+	
 
 	/**
 	 * Copies the array
@@ -146,7 +147,13 @@ public final class ArrayVal implements Value {
 		return array;
 	}
 
-	public List<Value> getList() {
+	/**
+	 * Returns the list of double values.
+	 * 
+	 * @return the list of double values
+	 */
+	@Override
+	public List<Value> getSubValues() {
 		return Arrays.stream(array).mapToObj(d -> new DoubleVal(d))
 				.collect(Collectors.toList());
 	}
