@@ -86,6 +86,9 @@ public class NuanceSpeech implements Module {
 
 	/** Cache of previously synthesised system utterances */
 	Map<String, SpeechData> ttsCache;
+	
+	/** List of speech outputs currently being synthesised */
+	List<SpeechData> currentSynthesis;
 
 	/** whether the system is paused or active */
 	boolean paused = true;
@@ -104,6 +107,7 @@ public class NuanceSpeech implements Module {
 			throw new RuntimeException("Missing parameters: " + missingParams);
 		}
 
+		currentSynthesis = new ArrayList<SpeechData>();
 		buildClients();
 
 		system.enableSpeech(true);
@@ -163,7 +167,6 @@ public class NuanceSpeech implements Module {
 		// if a new system speech is detected, start speech synthesis
 		else if (updatedVars.contains(outputVar) && state.hasChanceNode(outputVar)
 				&& !paused) {
-
 			Value utteranceVal = system.getContent(outputVar).getBest();
 			if (utteranceVal instanceof StringVal) {
 				synthesise(utteranceVal.toString());
@@ -197,17 +200,24 @@ public class NuanceSpeech implements Module {
 			httppost.setEntity(reqEntity);
 
 			HttpResponse response = asrClient.execute(httppost);
-
 			HttpEntity resEntity = response.getEntity();
-			if (resEntity == null
-					|| response.getStatusLine().getStatusCode() != 200) {
+			if (resEntity == null) {
+				log.warning("Response entity is null, aborting");
+			}
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(resEntity.getContent()));
+			
+			if (response.getStatusLine().getStatusCode() != 200) {
 				log.warning("(speech could not be recognised: error "
 						+ response.getStatusLine().getStatusCode() + ")");
+				String sentence;
+				while ((sentence = reader.readLine()) != null) {
+					log.warning(sentence);
+				}
 			}
 			else {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(resEntity.getContent()));
-
+				
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
 				while ((sentence = reader.readLine()) != null) {
@@ -241,17 +251,25 @@ public class NuanceSpeech implements Module {
 
 		String systemSpeechVar = system.getSettings().systemSpeech;
 
+		SpeechData outputSpeech;
 		if (ttsCache.containsKey(utterance)) {
-			SpeechData outputSpeech = ttsCache.get(utterance);
+			outputSpeech = ttsCache.get(utterance);
 			outputSpeech.rewind();
-			system.addContent(systemSpeechVar, outputSpeech);
 		}
 		else {
 			AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
-			SpeechData outputSpeech = new SpeechData(format);
-			system.addContent(systemSpeechVar, outputSpeech);
+			outputSpeech = new SpeechData(format);
 			new Thread(() -> synthesise(utterance, outputSpeech)).start();
 		}
+		
+		currentSynthesis.add(outputSpeech);
+		new Thread(() -> {
+		while (!currentSynthesis.get(0).equals(outputSpeech)) {
+			try { Thread.sleep(100); }
+			catch (InterruptedException e) {}
+		}
+		system.addContent(systemSpeechVar, outputSpeech);
+		currentSynthesis.remove(0);}).start();
 	}
 
 	/**
@@ -282,7 +300,6 @@ public class NuanceSpeech implements Module {
 				log.info("Response status: " + response.getStatusLine());
 				return;
 			}
-
 			output.write(resEntity.getContent());
 			httppost.releaseConnection();
 			output.setAsFinal();
@@ -290,6 +307,7 @@ public class NuanceSpeech implements Module {
 			log.fine("... Speech synthesis completed (speech duration: "
 					+ StringUtils.getShortForm((double) output.length() / 1000)
 					+ " s.)");
+			
 
 		}
 		catch (Exception e) {

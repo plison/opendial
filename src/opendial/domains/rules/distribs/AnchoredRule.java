@@ -36,7 +36,6 @@ import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MarginalDistribution;
 import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityFunction;
-import opendial.bn.nodes.ChanceNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
@@ -105,24 +104,22 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 		// determines the input range
 		inputs = new ValueRange();
-		for (ChanceNode inputNode : state
-				.getMatchingNodes(rule.getInputVariables())) {
-			inputs.addValues(inputNode.getId(), inputNode.getValues());
-		}
-		variables = new HashSet<String>(inputs.getVariables());
-
-		// we use a cache if we have a probability rule with no continuous inputs
-		if (rule.getRuleType() == RuleType.PROB) {
-			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
-		}
+		state.getMatchingNodes(rule.getInputVariables()).stream()
+			.forEach(i -> inputs.addValues(i.getId(), i.getValues()));
 
 		Set<Assignment> conditions = inputs.linearise();
 
+		// we already start a cache if we have a probability rule
+		if (rule.getRuleType() == RuleType.PROB) {
+			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
+		}
+		variables = new HashSet<String>(inputs.getVariables());
+		
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values)
 		for (Assignment input : conditions) {
 
-			RuleOutput output = getOutput(input);
+			RuleOutput output = getCachedOutput(input);
 			relevant = relevant || !output.isVoid();
 
 			// looping on all alternative effects in the output
@@ -141,6 +138,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			variables.addAll(outputs.getVariables());
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
+		
 	}
 
 	/**
@@ -261,7 +259,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	public double getUtil(Assignment fullInput) {
 
 		double totalUtil = 0.0;
-		RuleOutput output = getOutput(fullInput);
+		RuleOutput output = getCachedOutput(fullInput);
 
 		for (Effect effectOutput : output.getEffects()) {
 			Condition effectCondition = effectOutput.convertToCondition();
@@ -321,7 +319,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	public IndependentDistribution getProbDistrib(Assignment input) {
 
 		// search for the matching case
-		RuleOutput output = getOutput(input);
+		RuleOutput output = getCachedOutput(input);
 
 		// creating the distribution
 		CategoricalTable.Builder builder = new CategoricalTable.Builder(id);
@@ -372,7 +370,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	 * @param input the input assignment
 	 * @return the output of the rule
 	 */
-	private RuleOutput getOutput(Assignment input) {
+	private RuleOutput getCachedOutput(Assignment input) {
 
 		if (cache == null) {
 			return rule.getOutput(input);

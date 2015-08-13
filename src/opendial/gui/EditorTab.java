@@ -197,7 +197,7 @@ public class EditorTab extends JComponent {
 		try {
 			editor.read(new FileReader(shownFile), shownFile);
 
-			// Set the font style.
+			// Set the font style (default 13).
 			editor.setFont(new Font("Verdana", Font.PLAIN, 13));
 
 			// Set the tab size

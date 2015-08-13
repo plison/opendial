@@ -263,8 +263,8 @@ public class StateMonitorTab extends JComponent {
 	public void writeToLogArea(MultivariateDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText(
-				"<html><font face=\"helvetica\">" + distribStr + "</font></html>");
+		logArea.setText( 
+				"<html><font size=\"4\" face=\"helvetica\">" + distribStr + "</font></html>");
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class StateMonitorTab extends JComponent {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
 		logArea.setText(
-				"<html><font face=\"helvetica\">" + distribStr + "</font></html>");
+				"<html><font  size=\"4\" face=\"helvetica\">" + distribStr + "</font></html>");
 	}
 
 	/**
