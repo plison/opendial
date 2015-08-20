@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <domain>
-
+ 
 	<!-- 
 	Example of a dialogue domain for a flight-booking system specified in 
 	probabilistic rules. The system enables the user to book (single or round-trip)

@@ -89,7 +89,6 @@ public class EditorTab extends JComponent {
 	// the domain editor
 	public JEditorPane editor;
 	
-	JList<String> listBox;
 
 	// ===================================
 	// EDITOR CONSTRUCTION
@@ -109,7 +108,7 @@ public class EditorTab extends JComponent {
 		
 		listModel = new DomainFilesModel();
 
-		listBox = new JList<String>(listModel);
+		JList<String> listBox = new JList<String>(listModel);
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ListListener listener = new ListListener();
 		listBox.addListSelectionListener(listener);
