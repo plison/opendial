@@ -88,6 +88,8 @@ public class EditorTab extends JComponent {
 
 	// the domain editor
 	public JEditorPane editor;
+	
+	JList<String> listBox;
 
 	// ===================================
 	// EDITOR CONSTRUCTION
@@ -104,10 +106,10 @@ public class EditorTab extends JComponent {
 		setLayout(new BorderLayout());
 
 		this.frame = frame;
-
+		
 		listModel = new DomainFilesModel();
 
-		JList<String> listBox = new JList<String>(listModel);
+		listBox = new JList<String>(listModel);
 		listBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ListListener listener = new ListListener();
 		listBox.addListSelectionListener(listener);
@@ -177,7 +179,7 @@ public class EditorTab extends JComponent {
 		Color msgColor = (msg.contains("error")) ? new Color(250, 230, 230)
 				: new Color(230, 250, 230);
 		BalloonTipStyle style = new RoundedBalloonStyle(5, 5, msgColor, Color.BLACK);
-		BalloonTip tip = new BalloonTip(this, msg, style, false);
+		BalloonTip tip = new BalloonTip(listBox, msg, style, false);
 		tip.setVisible(true);
 		new Thread(() -> {
 			try {
