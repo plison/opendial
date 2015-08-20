@@ -179,7 +179,7 @@ public class EditorTab extends JComponent {
 		Color msgColor = (msg.contains("error")) ? new Color(250, 230, 230)
 				: new Color(230, 250, 230);
 		BalloonTipStyle style = new RoundedBalloonStyle(5, 5, msgColor, Color.BLACK);
-		BalloonTip tip = new BalloonTip(listBox, msg, style, false);
+		BalloonTip tip = new BalloonTip(frame.getMenu(), msg, style, false);
 		tip.setVisible(true);
 		new Thread(() -> {
 			try {
