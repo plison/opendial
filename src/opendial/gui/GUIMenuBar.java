@@ -146,6 +146,9 @@ public class GUIMenuBar extends JMenuBar {
 
 		resetItem = new JMenuItem("Reset");
 		resetItem.addActionListener(e -> frame.resetInteraction());
+		KeyStroke keyStrokeToReset = KeyStroke.getKeyStroke(KeyEvent.VK_R,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		resetItem.setAccelerator(keyStrokeToReset);
 		traceMenu.add(resetItem);
 
 		freezeItem = new JMenuItem("Pause/Resume");
@@ -155,6 +158,9 @@ public class GUIMenuBar extends JMenuBar {
 			frame.getSystem()
 					.displayComment((toPause) ? "system paused" : "system resumed");
 		});
+		KeyStroke keyStrokeToPause = KeyStroke.getKeyStroke(KeyEvent.VK_P,
+				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		freezeItem.setAccelerator(keyStrokeToPause);
 		traceMenu.add(freezeItem);
 
 		traceMenu.add(new JSeparator());
