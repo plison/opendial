@@ -409,8 +409,8 @@ public class AudioModule implements Module {
 				while (nBytesRead != -1) {
 					nBytesRead = outputSpeech.read(abData, 0, abData.length);
 
-					// stop playing if the user starts talking
-					if (inputSpeech != null) {
+					// stop playing if user starts talking or system is paused
+					if (inputSpeech != null || isPaused) {
 						break;
 					}
 					if (nBytesRead >= 0) {

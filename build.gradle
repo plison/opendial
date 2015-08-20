@@ -40,6 +40,8 @@ sourceSets {
 	main {
 		java {
 			srcDirs 'src'
+			exclude 'opendial/plugins/GoogleASR.java'
+			exclude 'opendial/plugins/Nao*'
 	    }
 	} 
 	test {
