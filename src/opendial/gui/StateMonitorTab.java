@@ -188,6 +188,23 @@ public class StateMonitorTab extends JComponent {
 		return showParameters;
 	}
 
+	
+	/**
+	 * Resets the dialogue state shown in the monitor tab.
+	 * 
+	 * @param state the dialogue state to reset
+	 */
+	public void reset(DialogueState state) {
+		recordState(state, CURRENT);
+		listBox.setSelectedIndex(0);
+		while (listModel.size() > 2) {
+			String name = listModel.remove(2);
+			states.remove(name);
+		}
+		visualisation.showBayesianNetwork(state);
+	}
+	
+	
 	/**
 	 * Updates the current dialogue state displayed in the component. The current
 	 * dialogue state is named "Current state" in the selection list.

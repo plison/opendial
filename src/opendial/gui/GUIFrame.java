@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
@@ -544,7 +543,7 @@ public class GUIFrame implements Module {
 		addComment("Reinitialiting interaction...");
 		system.changeDomain(system.getDomain());
 		refresh();
-		stateMonitorTab.refresh(system.getState(), new ArrayList<String>());
+		stateMonitorTab.reset(system.getState());
 	}
 
 	/**

@@ -77,7 +77,12 @@ public class Domain {
 	 * @param xmlFile the file to associate
 	 */
 	public void setSourceFile(File xmlFile) {
-		this.xmlFile = xmlFile;
+		if (xmlFile.exists()) {
+			this.xmlFile = xmlFile;
+		}
+		else {
+			this.xmlFile = new File("resources/" + xmlFile);
+		}
 	}
 
 	/**
@@ -95,7 +100,12 @@ public class Domain {
 	 * @param xmlFile the file to add
 	 */
 	public void addImportedFiles(File xmlFile) {
-		importedFiles.add(xmlFile);
+		if (xmlFile.exists()) {
+			importedFiles.add(xmlFile);
+		}
+		else {
+			importedFiles.add(new File("resources/" + xmlFile));
+		}
 	}
 
 	/**

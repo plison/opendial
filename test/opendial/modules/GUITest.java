@@ -56,7 +56,12 @@ public class GUITest {
 	final Robot robot;
 
 	public GUITest() throws AWTException {
-		robot = new Robot();
+		if (!GraphicsEnvironment.isHeadless()) {
+			robot = new Robot();
+		}
+		else {
+			robot = null;
+		}
 	}
 
 	@Test
