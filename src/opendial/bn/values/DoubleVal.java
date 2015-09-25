@@ -160,7 +160,7 @@ public final class DoubleVal implements Value {
 	public boolean contains(Value subvalue) {
 		return equals(subvalue);
 	}
-	
+
 	/**
 	 * Returns an empty list
 	 */

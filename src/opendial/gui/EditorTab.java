@@ -88,7 +88,6 @@ public class EditorTab extends JComponent {
 
 	// the domain editor
 	public JEditorPane editor;
-	
 
 	// ===================================
 	// EDITOR CONSTRUCTION
@@ -105,7 +104,7 @@ public class EditorTab extends JComponent {
 		setLayout(new BorderLayout());
 
 		this.frame = frame;
-		
+
 		listModel = new DomainFilesModel();
 
 		JList<String> listBox = new JList<String>(listModel);

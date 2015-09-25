@@ -68,12 +68,12 @@ public class ImporterTest {
 		DialogueSystem system =
 				new DialogueSystem(XMLDomainReader.extractDomain(domainFile));
 		system.getSettings().showGUI = false;
-		Settings.nbSamples = Settings.nbSamples / 10;
+		Settings.nbSamples = Settings.nbSamples / 5;
 		system.startSystem();
 		DialogueImporter importer = system.importDialogue(dialogueFile);
 		importer.setWizardOfOzMode(true);
 		while (importer.isAlive()) {
-			Thread.sleep(250);
+			Thread.sleep(300);
 		}
 		assertEquals(20, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));
@@ -82,7 +82,7 @@ public class ImporterTest {
 		assertTrue(
 				((ContinuousDistribution) system.getState().getChanceNode("theta_1")
 						.getDistrib()).getFunction().getMean()[0] > 12.0);
-		Settings.nbSamples = Settings.nbSamples * 10;
+		Settings.nbSamples = Settings.nbSamples * 5;
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class ImporterTest {
 		system.startSystem();
 		DialogueImporter importer = system.importDialogue(dialogueFile2);
 		while (importer.isAlive()) {
-			Thread.sleep(250);
+			Thread.sleep(300);
 		}
 		assertEquals(10, StringUtils.countOccurrences(
 				system.getModule(DialogueRecorder.class).getRecord(), "systemTurn"));

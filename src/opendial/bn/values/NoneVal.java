@@ -121,7 +121,7 @@ public final class NoneVal implements Value {
 	public boolean contains(Value subvalue) {
 		return false;
 	}
-	
+
 	/**
 	 * Returns an empty list
 	 */

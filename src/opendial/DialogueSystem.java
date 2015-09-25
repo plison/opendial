@@ -663,13 +663,14 @@ public class DialogueSystem {
 						}
 					}
 				}
- 
+
 				// triggering the domain modules
 				modules.forEach(m -> m.trigger(curState, toProcess));
 
 				// checking for recursive update loops
 				for (String v : toProcess) {
-					int count = updatedVars.compute(v, (x,y) ->(y==null)?1:y+1);
+					int count = updatedVars.compute(v,
+							(x, y) -> (y == null) ? 1 : y + 1);
 					if (count > 10) {
 						displayComment("Warning: Recursive update of variable " + v);
 						return updatedVars.keySet();

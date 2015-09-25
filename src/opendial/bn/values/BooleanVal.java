@@ -152,7 +152,7 @@ public final class BooleanVal implements Value {
 	public boolean contains(Value subvalue) {
 		return false;
 	}
-	
+
 	/**
 	 * Returns an empty list
 	 */

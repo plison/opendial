@@ -86,7 +86,7 @@ public class Rule {
 	public void addCase(Condition condition, RuleOutput output) {
 		if (!cases.isEmpty()
 				&& cases.get(cases.size() - 1).condition instanceof VoidCondition) {
-			log.warning("unreachable case for rule " + id 
+			log.warning("unreachable case for rule " + id
 					+ "(previous case trivially true)");
 		}
 
@@ -94,9 +94,9 @@ public class Rule {
 		if (ruleType == RuleType.PROB) {
 			double totalMass = output.getParameters().stream()
 					.filter(p -> p instanceof FixedParameter)
-					.mapToDouble(p -> ((FixedParameter)p).getValue())
-					.peek(p -> {if (p < 0.0) throw new RuntimeException(p+" is < 0.0");})
-					.sum();
+					.mapToDouble(p -> ((FixedParameter) p).getValue()).peek(p -> {
+						if (p < 0.0) throw new RuntimeException(p + " is < 0.0");
+					}).sum();
 			if (totalMass > 1.02) {
 				throw new RuntimeException(totalMass + " is > 1.0");
 			}
@@ -332,7 +332,7 @@ public class Rule {
 			inputVars.addAll(condition.getInputVariables());
 			for (Effect effect : getEffects()) {
 				for (String inputVariable : effect.getValueSlots()) {
-					inputVars.add(new Template(inputVariable));
+					inputVars.add(Template.create(inputVariable));
 				}
 			}
 			return inputVars;

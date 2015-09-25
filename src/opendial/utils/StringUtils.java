@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import opendial.datastructs.MathExpression;
+
 /**
  * Various utilities for manipulating strings
  *
@@ -45,18 +47,16 @@ public class StringUtils {
 	final static Pattern nbestRegex =
 			Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
-	// regular expression to detect algebraic expressions
-	final static Pattern mathExpression =
-			Pattern.compile("[0-9|\\-\\.\\s]+[+\\-*/][0-9|\\-\\.\\s]+");
-
 	// regular expression for slots
-	final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
+	public final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
 
-	// regular expressions with alternative or optional elements
+	// complex regular expression with alternative or optional elements
 	final static Pattern altRegex =
 			Pattern.compile("(\\\\\\(((\\(\\?)|[^\\(])+?\\\\\\)\\\\\\?)"
 					+ "|(\\\\\\(((\\(\\?)|[^\\(])+?\\|((\\(\\?)"
 					+ "|[^\\(])+?\\\\\\)(\\\\\\?)?)");
+
+	public final static String delimiters = ",.!?:;()[] \t\n";
 
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
@@ -122,35 +122,43 @@ public class StringUtils {
 	 * Checks the form of the string to ensure that all parentheses, braces and
 	 * brackets are balanced. Logs warning messages if problems are detected.
 	 * 
-	 * @param showMessage whether to show an error message or not
 	 * @param str the string
 	 * @return true if the form is correct, false otherwise
 	 */
-	public static boolean checkForm(String str, boolean showMessage) {
+	public static boolean checkForm(String str) {
 
-		if (countNbOccurrences(str, '(') != countNbOccurrences(str, ')')) {
-			if (showMessage) {
-				log.warning("Unequal number of parenthesis in string: " + str
-						+ ", Problems ahead!");
+		int openParentheses = 0;
+		int openBrackets = 0;
+		int openBraces = 0;
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			switch (c) {
+			case '(':
+				openParentheses++;
+				break;
+			case ')':
+				openParentheses--;
+				if (openParentheses < 0) return false;
+				break;
+			case '[':
+				openBrackets++;
+				break;
+			case ']':
+				openBrackets--;
+				if (openBrackets < 0) return false;
+				break;
+			case '{':
+				openBraces++;
+				break;
+			case '}':
+				openBraces--;
+				if (openBraces < 0) return false;
+				break;
 			}
-			return false;
 		}
-		if (countNbOccurrences(str, '{') != countNbOccurrences(str, '}')) {
-			if (showMessage) {
-				log.warning("Unequal number of braces in string: " + str
-						+ ", Problems ahead!");
-			}
-			return false;
-		}
-		if (countNbOccurrences(str, '[') != countNbOccurrences(str, ']')) {
-			if (showMessage) {
-				log.warning("Unequal number of brackets in string: " + str
-						+ ", Problems ahead!");
-			}
-			return false;
-
-		}
-		return true;
+		boolean balanced =
+				(openParentheses == 0 && openBrackets == 0 && openBraces == 0);
+		return balanced;
 	}
 
 	/**
@@ -213,6 +221,18 @@ public class StringUtils {
 		return table;
 	}
 
+	public static boolean isDelimited(String fullString, int start, int end) {
+		if (start > 0) {
+			char prev = fullString.charAt(start - 1);
+			if (delimiters.indexOf(prev) < 0) return false;
+		}
+		if (end < fullString.length()) {
+			char next = fullString.charAt(end);
+			if (delimiters.indexOf(next) < 0) return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Counts the occurrences of a particular pattern in the string.
 	 * 
@@ -243,8 +263,29 @@ public class StringUtils {
 	 * @param exp the string to check
 	 * @return true if the string is an arithmetic expression, false otherwise
 	 */
-	public static boolean isArithmeticExpression(String exp) {
-		return !exp.contains("{") && mathExpression.matcher(exp).matches();
+	public static boolean isFunctionalExpression(String exp) {
+		boolean mathOperators = false;
+		StringBuilder curString = new StringBuilder();
+		for (int i = 0; i < exp.length(); i++) {
+			char c = exp.charAt(i);
+			if (c == '+' || c == '-' || c == '/' || (c == '*' && exp.length() > 2)) {
+				mathOperators = true;
+			}
+			else if (c == '?' || c == '|' || c == '[' || c == '_' || c == '\'') {
+				return false;
+			}
+			else if (Character.isLetter(c)) {
+				curString.append(c);
+			}
+			else if (delimiters.indexOf(c) >= 0) {
+				if (!MathExpression.functions.contains(curString.toString())) {
+					return false;
+				}
+				mathOperators = true;
+				curString = new StringBuilder();
+			}
+		}
+		return (mathOperators);
 	}
 
 	public static String escape(String init) {
@@ -252,22 +293,23 @@ public class StringUtils {
 		char[] charArr = init.toCharArray();
 
 		for (int i = 0; i < charArr.length; i++) {
-			if (charArr[i] == '(') {
+			char c = charArr[i];
+			if (c == '(') {
 				builder.append("\\(");
 			}
-			else if (charArr[i] == ')') {
+			else if (c == ')') {
 				builder.append("\\)");
 			}
-			else if (charArr[i] == '[') {
+			else if (c == '[') {
 				builder.append("\\[");
 			}
-			else if (charArr[i] == ']') {
+			else if (c == ']') {
 				builder.append("\\]");
 			}
-			else if (charArr[i] == '?') {
+			else if (c == '?') {
 				builder.append("\\?");
 			}
-			else if (charArr[i] == ' ') {
+			else if (c == ' ') {
 				builder.append(" ");
 				for (int j = i + 1; j < charArr.length; j++) {
 					if (charArr[j] == ' ') {
@@ -278,21 +320,21 @@ public class StringUtils {
 					}
 				}
 			}
-			else if (charArr[i] == '.') {
+			else if (c == '.') {
 				builder.append("\\.");
 			}
-			else if (charArr[i] == '!') {
+			else if (c == '!') {
 				builder.append("\\!");
 			}
-			else if (charArr[i] == '^') {
+			else if (c == '^') {
 				builder.append("\\^");
 			}
-			else if (charArr[i] == '{' && charArr[i + 1] == '}') {
+			else if (c == '{' && charArr[i + 1] == '}') {
 				i++;
 				continue;
 			}
 			else {
-				builder.append(charArr[i]);
+				builder.append(c);
 			}
 		}
 		return builder.toString();
@@ -312,10 +354,13 @@ public class StringUtils {
 			case '*':
 				return true;
 			case '{':
-				return true;
+				if (i < str.length() - 1 && str.charAt(i + 1) != '}') return true;
+				break;
 			case '|':
-			case '?':
 				return true;
+			case '?':
+				if (i > 1 && str.charAt(i - 1) == ')') return true;
+				break;
 			default:
 				break;
 			}
@@ -351,10 +396,11 @@ public class StringUtils {
 			}
 		}
 
-		init = (hasStars) ? replaceStars(init) : init;
-		init = (hasSlots) ? slotRegex.matcher(init).replaceAll("(.+)") : init;
-		init = (hasAlternatives) ? replaceComplex(init) : init;
-		return init;
+		String result = (hasStars) ? replaceStars(init) : init;
+		result = (hasSlots) ? slotRegex.matcher(result).replaceAll("(.+)") : result;
+		result = (hasAlternatives) ? replaceComplex(result) : result;
+
+		return result;
 	}
 
 	/**
@@ -403,7 +449,7 @@ public class StringUtils {
 		StringBuilder builder = new StringBuilder(init);
 		Matcher m = altRegex.matcher(builder.toString());
 		while (m.find()) {
-			if (m.group().endsWith("?") && StringUtils.checkForm(m.group(), false)) {
+			if (m.group().endsWith("?") && StringUtils.checkForm(m.group())) {
 				String core = m.group().substring(2, m.group().length() - 4);
 				if (m.end() < builder.length() && builder.charAt(m.end()) == ' ') {
 					String replace = "(?:" + core.replaceAll("\\|", " \\|") + " )?";
@@ -420,12 +466,13 @@ public class StringUtils {
 				}
 				m = altRegex.matcher(builder.toString());
 			}
-			else if (StringUtils.checkForm(m.group(), false)) {
+			else if (StringUtils.checkForm(m.group())) {
 				String core = m.group().substring(2, m.group(0).length() - 2);
 				builder = builder.replace(m.start(), m.end(), "(?:" + core + ")");
 				m = altRegex.matcher(builder.toString());
 			}
 		}
+
 		return builder.toString();
 	}
 

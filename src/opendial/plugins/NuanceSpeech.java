@@ -86,7 +86,7 @@ public class NuanceSpeech implements Module {
 
 	/** Cache of previously synthesised system utterances */
 	Map<String, SpeechData> ttsCache;
-	
+
 	/** List of speech outputs currently being synthesised */
 	List<SpeechData> currentSynthesis;
 
@@ -207,7 +207,7 @@ public class NuanceSpeech implements Module {
 
 			BufferedReader reader = new BufferedReader(
 					new InputStreamReader(resEntity.getContent()));
-			
+
 			if (response.getStatusLine().getStatusCode() != 200) {
 				log.warning("(speech could not be recognised: error "
 						+ response.getStatusLine().getStatusCode() + ")");
@@ -217,7 +217,7 @@ public class NuanceSpeech implements Module {
 				}
 			}
 			else {
-				
+
 				String sentence;
 				Map<String, Double> lines = new HashMap<String, Double>();
 				while ((sentence = reader.readLine()) != null) {
@@ -261,15 +261,19 @@ public class NuanceSpeech implements Module {
 			outputSpeech = new SpeechData(format);
 			new Thread(() -> synthesise(utterance, outputSpeech)).start();
 		}
-		
+
 		currentSynthesis.add(outputSpeech);
 		new Thread(() -> {
-		while (!currentSynthesis.get(0).equals(outputSpeech)) {
-			try { Thread.sleep(100); }
-			catch (InterruptedException e) {}
-		}
-		system.addContent(systemSpeechVar, outputSpeech);
-		currentSynthesis.remove(0);}).start();
+			while (!currentSynthesis.get(0).equals(outputSpeech)) {
+				try {
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e) {
+				}
+			}
+			system.addContent(systemSpeechVar, outputSpeech);
+			currentSynthesis.remove(0);
+		}).start();
 	}
 
 	/**
@@ -307,7 +311,6 @@ public class NuanceSpeech implements Module {
 			log.fine("... Speech synthesis completed (speech duration: "
 					+ StringUtils.getShortForm((double) output.length() / 1000)
 					+ " s.)");
-			
 
 		}
 		catch (Exception e) {

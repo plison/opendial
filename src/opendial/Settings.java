@@ -234,7 +234,8 @@ public class Settings {
 					}
 				}
 			}
-			else if (key.equalsIgnoreCase("modules") || key.equalsIgnoreCase("module")) {
+			else if (key.equalsIgnoreCase("modules")
+					|| key.equalsIgnoreCase("module")) {
 				String[] split = mapping.getProperty(key).split(",");
 				for (int i = 0; i < split.length; i++) {
 					if (split[i].trim().length() > 0) {

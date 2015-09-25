@@ -105,7 +105,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		// determines the input range
 		inputs = new ValueRange();
 		state.getMatchingNodes(rule.getInputVariables()).stream()
-			.forEach(i -> inputs.addValues(i.getId(), i.getValues()));
+				.forEach(i -> inputs.addValues(i.getId(), i.getValues()));
 
 		Set<Assignment> conditions = inputs.linearise();
 
@@ -114,7 +114,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
 		variables = new HashSet<String>(inputs.getVariables());
-		
+
 		// determines the set of possible effects, output values and parameters
 		// (for all possible input values)
 		for (Assignment input : conditions) {
@@ -138,7 +138,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			variables.addAll(outputs.getVariables());
 			cache = new ConcurrentHashMap<Assignment, RuleOutput>();
 		}
-		
+
 	}
 
 	/**

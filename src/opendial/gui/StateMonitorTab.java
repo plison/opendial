@@ -188,7 +188,6 @@ public class StateMonitorTab extends JComponent {
 		return showParameters;
 	}
 
-	
 	/**
 	 * Resets the dialogue state shown in the monitor tab.
 	 * 
@@ -203,8 +202,7 @@ public class StateMonitorTab extends JComponent {
 		}
 		visualisation.showBayesianNetwork(state);
 	}
-	
-	
+
 	/**
 	 * Updates the current dialogue state displayed in the component. The current
 	 * dialogue state is named "Current state" in the selection list.
@@ -280,8 +278,8 @@ public class StateMonitorTab extends JComponent {
 	public void writeToLogArea(MultivariateDistribution distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText( 
-				"<html><font size=\"4\" face=\"helvetica\">" + distribStr + "</font></html>");
+		logArea.setText("<html><font size=\"4\" face=\"helvetica\">" + distribStr
+				+ "</font></html>");
 	}
 
 	/**
@@ -292,8 +290,8 @@ public class StateMonitorTab extends JComponent {
 	public void writeToLogArea(UtilityFunction distrib) {
 		String distribStr = distrib.toString().replace("\n", "\n<br>");
 		distribStr = StringUtils.getHtmlRendering(distribStr);
-		logArea.setText(
-				"<html><font  size=\"4\" face=\"helvetica\">" + distribStr + "</font></html>");
+		logArea.setText("<html><font  size=\"4\" face=\"helvetica\">" + distribStr
+				+ "</font></html>");
 	}
 
 	/**

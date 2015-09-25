@@ -253,9 +253,14 @@ public class EquivalenceDistribution implements ProbDistribution {
 		else if (predicted instanceof StringVal && actual instanceof StringVal) {
 			String str1 = ((StringVal) predicted).getString();
 			String str2 = ((StringVal) actual).getString();
-			return (Template.match(str1, str2)) ? 1.0 : 0.0;
+			if (Template.create(str1).match(str2).isMatching()
+					|| Template.create(str2).match(str1).isMatching()) {
+				return 1.0;
+			}
+			return 0.0;
 		}
-		else if (!predicted.getSubValues().isEmpty() && !(actual.getSubValues().isEmpty())) {
+		else if (!predicted.getSubValues().isEmpty()
+				&& !(actual.getSubValues().isEmpty())) {
 			Collection<Value> vals0 = predicted.getSubValues();
 			Collection<Value> vals1 = actual.getSubValues();
 			Set<Value> intersect = new HashSet<Value>(vals0);

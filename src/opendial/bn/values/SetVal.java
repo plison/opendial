@@ -92,7 +92,8 @@ public final class SetVal implements Value {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		return ((o instanceof SetVal && ((SetVal) o).getSubValues().equals(getSubValues())));
+		return ((o instanceof SetVal
+				&& ((SetVal) o).getSubValues().equals(getSubValues())));
 	}
 
 	/**

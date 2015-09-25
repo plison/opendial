@@ -56,8 +56,8 @@ public class ValueFactory {
 					+ "([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)\\]");
 
 	static Pattern setPattern = Pattern.compile(
-			"[\\w\\-_\\.\\^\\=\\s]*"
-					+ "([\\[\\(][\\w\\-_,\\.\\^\\=\\s\\(]+\\)*[\\]\\)])?",
+			"[/\\w\\-_\\.\\^\\=\\s]*"
+					+ "([\\[\\(][/\\w\\-_,\\.\\^\\=\\s\\(]+\\)*[\\]\\)])?",
 			Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNICODE_CASE);
 
 	/**
@@ -99,6 +99,13 @@ public class ValueFactory {
 				return new ArrayVal(subVals);
 			}
 			else if (str.startsWith("[") && str.endsWith("]")) {
+
+				if (str.contains(">")) {
+					RelationalVal relval = new RelationalVal(str);
+					if (!relval.isEmpty()) {
+						return relval;
+					}
+				}
 
 				LinkedList<Value> subVals = new LinkedList<Value>();
 				Matcher m3 = setPattern.matcher(str.substring(1, str.length() - 1));

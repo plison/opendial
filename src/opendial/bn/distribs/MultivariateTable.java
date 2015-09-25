@@ -34,7 +34,7 @@ import java.util.Set;
 
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Intervals;
+import opendial.inference.approximate.Intervals;
 import opendial.utils.InferenceUtils;
 import opendial.utils.StringUtils;
 

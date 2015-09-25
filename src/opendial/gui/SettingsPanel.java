@@ -174,7 +174,7 @@ public class SettingsPanel extends JDialog {
 
 			setVisible(false);
 		});
- 
+
 		okcancelBox.add(okButton, BorderLayout.CENTER);
 		okcancelBox.add(new JLabel("  "), BorderLayout.EAST);
 		okcancelBox1.add(okcancelBox, BorderLayout.EAST);

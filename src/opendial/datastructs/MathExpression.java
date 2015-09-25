@@ -61,7 +61,7 @@ public final class MathExpression {
 	final static Pattern varlabelRegex = Pattern.compile("([a-zA-Z][\\w_\\.]*)");
 
 	// list of predefined functions in exp4j
-	final static List<String> functions = Arrays.asList("abs", "acos", "asin",
+	public final static List<String> functions = Arrays.asList("abs", "acos", "asin",
 			"atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "log10",
 			"log2", "sin", "sinh", "sqrt", "tan", "tanh");
 

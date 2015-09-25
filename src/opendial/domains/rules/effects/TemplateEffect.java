@@ -85,7 +85,7 @@ public final class TemplateEffect extends BasicEffect {
 			boolean exclusive, boolean negated) {
 		super(variable.toString(),
 				(value.isUnderspecified()) ? ValueFactory.none()
-						: ValueFactory.create(value.getRawString()),
+						: ValueFactory.create(value.toString()),
 				priority, exclusive, negated);
 		this.labelTemplate = variable;
 		this.valueTemplate = value;
@@ -100,14 +100,14 @@ public final class TemplateEffect extends BasicEffect {
 	 */
 	@Override
 	public BasicEffect ground(Assignment grounding) {
-		Template newT = new Template(labelTemplate.fillSlots(grounding));
-		Template newV = new Template(valueTemplate.fillSlots(grounding));
+		Template newT = Template.create(labelTemplate.fillSlots(grounding));
+		Template newV = Template.create(valueTemplate.fillSlots(grounding));
 		if (newT.isUnderspecified() || (newV.isUnderspecified())) {
 			return new TemplateEffect(newT, newV, priority, exclusive, negated);
 		}
 		else {
-			return new BasicEffect(newT.getRawString(),
-					ValueFactory.create(newV.getRawString()), priority, exclusive,
+			return new BasicEffect(newT.toString(),
+					ValueFactory.create(newV.toString()), priority, exclusive,
 					negated);
 		}
 
@@ -134,8 +134,7 @@ public final class TemplateEffect extends BasicEffect {
 	@Override
 	public Condition convertToCondition() {
 		Relation r = (negated) ? Relation.UNEQUAL : Relation.EQUAL;
-		return new BasicCondition(labelTemplate.getRawString() + "'",
-				valueTemplate.getRawString(), r);
+		return new BasicCondition(labelTemplate + "'", valueTemplate.toString(), r);
 	}
 
 	/**

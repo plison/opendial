@@ -163,7 +163,7 @@ public class ParseValue implements Value {
 			// First case: contains with a factored word
 			if (str.startsWith("(") && str.split(",").length == 5
 					&& str.endsWith(")")) {
-				Template t = new Template(str.trim());
+				Template t = Template.create(str.trim());
 				for (FactoredWord fw : parsedInput.values()) {
 					if (t.match(fw.toString()).isMatching()) {
 						return true;
@@ -193,7 +193,7 @@ public class ParseValue implements Value {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns a collection of string values (one for each factored word).
 	 */

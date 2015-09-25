@@ -53,7 +53,6 @@ public class RuleGrounding {
 		groundings.add(new Assignment());
 	}
 
-
 	/**
 	 * Constructs a set of groundings with the given collection of alternative
 	 * assignments
@@ -83,7 +82,6 @@ public class RuleGrounding {
 		}
 	}
 
-
 	/**
 	 * Adds a list of alternative groundings to the existing set
 	 * 
@@ -110,7 +108,6 @@ public class RuleGrounding {
 			groundings.remove(new Assignment());
 		}
 	}
-
 
 	/**
 	 * Extends the existing groundings with the provided assignment
@@ -155,7 +152,6 @@ public class RuleGrounding {
 		}
 		groundings = newGroundings;
 	}
-	
 
 	/**
 	 * Extend a set of groundings with the alternative values for the variable
@@ -173,9 +169,7 @@ public class RuleGrounding {
 		}
 		groundings = newGroundings;
 	}
-	
-	
-	
+
 	/**
 	 * Sets the groundings as failed (i.e. no possible groundings for the
 	 * underspecified variables).
@@ -272,6 +266,5 @@ public class RuleGrounding {
 		return groundings.isEmpty() || (groundings.size() == 1
 				&& groundings.iterator().next().isEmpty());
 	}
-
 
 }

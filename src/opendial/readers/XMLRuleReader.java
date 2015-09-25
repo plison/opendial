@@ -243,9 +243,9 @@ public class XMLRuleReader {
 
 			String variable =
 					node.getAttributes().getNamedItem("var").getNodeValue();
-			Template tvar = new Template(variable);
+			Template tvar = Template.create(variable);
 			if (tvar.isUnderspecified()) {
-				tvar = new Template(tvar.getRawString().replace("*",
+				tvar = Template.create(tvar.toString().replace("*",
 						"{" + (new Random().nextInt(100)) + "}"));
 			}
 
@@ -452,8 +452,8 @@ public class XMLRuleReader {
 			}
 		}
 
-		Template tvar = new Template(var);
-		Template tval = new Template(value);
+		Template tvar = Template.create(var);
+		Template tval = Template.create(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
 			return new TemplateEffect(tvar, tval, priority, exclusive, negated);
 		}

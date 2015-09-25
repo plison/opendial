@@ -124,11 +124,11 @@ public class MaltParser implements Module {
 		}
 
 		if (system.getSettings().params.containsKey("trigger")) {
-			trigger =
-					new Template(system.getSettings().params.getProperty("trigger"));
+			trigger = Template
+					.create(system.getSettings().params.getProperty("trigger"));
 		}
 		else {
-			trigger = new Template(system.getSettings().userInput);
+			trigger = Template.create(system.getSettings().userInput);
 		}
 
 		log.fine("Initialisation of MaltParser module completed");

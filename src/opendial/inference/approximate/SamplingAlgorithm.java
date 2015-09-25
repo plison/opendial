@@ -38,7 +38,6 @@ import opendial.bn.distribs.ProbDistribution;
 import opendial.bn.distribs.UtilityTable;
 import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Intervals;
 import opendial.inference.InferenceAlgorithm;
 import opendial.inference.Query;
 

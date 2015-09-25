@@ -235,7 +235,7 @@ public class InteractionTab extends JComponent {
 
 		String htmlTable = "";
 		String baseVar = table.getVariable().replace("'", "");
-		htmlTable +=  // here font size should be 4
+		htmlTable += // here font size should be 4
 				"<p style=\"font-size:2px;\"><table><tr><td width=100><font size=4>";
 
 		if (baseVar.equals(system.getSettings().userInput)) {

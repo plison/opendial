@@ -18,7 +18,6 @@ import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
-import opendial.datastructs.Intervals;
 import opendial.inference.Query;
 
 /**

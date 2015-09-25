@@ -95,7 +95,7 @@ public class Model {
 	 * @param trigger the variable
 	 */
 	public void addTrigger(String trigger) {
-		triggers.add(new Template(trigger));
+		triggers.add(Template.create(trigger));
 	}
 
 	/**

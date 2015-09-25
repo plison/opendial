@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import opendial.utils.StringUtils;
@@ -94,7 +95,6 @@ public final class ArrayVal implements Value {
 		}
 		return hashCode() - arg0.hashCode();
 	}
-	
 
 	/**
 	 * Copies the array
@@ -181,8 +181,10 @@ public final class ArrayVal implements Value {
 			return this;
 		}
 		else {
-			log.warning("cannot concatenate " + this + " with " + v);
-			return ValueFactory.noneValue;
+			Set<Value> corresponding =
+					Arrays.stream(array).mapToObj(a -> ValueFactory.create(a))
+							.collect(Collectors.toSet());
+			return (new SetVal(corresponding)).concatenate(v);
 		}
 	}
 

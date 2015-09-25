@@ -290,8 +290,7 @@ public class SpeechData extends InputStream implements Value {
 	public boolean contains(Value subvalue) {
 		return false;
 	}
-	
-	
+
 	/**
 	 * Returns an empty list
 	 * 

@@ -164,8 +164,7 @@ public final class ComplexCondition implements Condition {
 				RuleGrounding newGrounding = new RuleGrounding();
 				boolean foundGrounding = false;
 				for (Assignment g : groundings.getAlternatives()) {
-					Assignment g2 =
-							(g.isEmpty()) ? input : new Assignment(input, g);
+					Assignment g2 = (g.isEmpty()) ? input : new Assignment(input, g);
 					RuleGrounding ground = cond.getGroundings(g2);
 					foundGrounding = foundGrounding || !ground.isFailed();
 					ground.extend(g);

@@ -358,7 +358,7 @@ public final class Effect implements Value {
 	public int compareTo(Value o) {
 		return hashCode() - o.hashCode();
 	}
-	
+
 	/**
 	 * Returns an empty list
 	 */
@@ -408,8 +408,8 @@ public final class Effect implements Value {
 				val = str.split("\\+=")[1];
 				exclusive = false;
 			}
-			Template tvar = new Template(var);
-			Template tval = new Template(val);
+			Template tvar = Template.create(var);
+			Template tval = Template.create(val);
 			if (tvar.isUnderspecified() || tval.isUnderspecified()) {
 				return new Effect(
 						new TemplateEffect(tvar, tval, 1, exclusive, negated));

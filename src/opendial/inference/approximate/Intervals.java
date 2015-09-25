@@ -21,7 +21,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // =================================================================                                                                   
 
-package opendial.datastructs;
+package opendial.inference.approximate;
 
 import java.util.logging.*;
 

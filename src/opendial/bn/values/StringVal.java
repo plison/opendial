@@ -136,15 +136,14 @@ public final class StringVal implements Value {
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * Returns a list of words
 	 * 
 	 */
 	@Override
 	public Collection<Value> getSubValues() {
-		return Arrays.stream(str.split(" "))
-				.map(w -> ValueFactory.create(w))
+		return Arrays.stream(str.split(" ")).map(w -> ValueFactory.create(w))
 				.collect(Collectors.toList());
 	}
 
@@ -179,7 +178,7 @@ public final class StringVal implements Value {
 		if (subvalue instanceof StringVal) {
 			StringVal stringval = (StringVal) subvalue;
 			if (stringval.template == null) {
-				stringval.template = new Template(stringval.str);
+				stringval.template = Template.create(stringval.str);
 			}
 			return stringval.template.partialmatch(str).isMatching();
 		}

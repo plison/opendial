@@ -36,7 +36,7 @@ import opendial.bn.values.DoubleVal;
 import opendial.bn.values.NoneVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
-import opendial.datastructs.Intervals;
+import opendial.inference.approximate.Intervals;
 import opendial.utils.InferenceUtils;
 import opendial.utils.MathUtils;
 import opendial.utils.StringUtils;
