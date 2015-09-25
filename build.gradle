@@ -69,8 +69,8 @@ dependencies {
     compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'1.0-SNAPSHOT'
     compile group: 'org.maltparser', name: 'maltparser', version:'1.8.1'
     compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version:'3.5.2'
-	compile group: 'net.objecthunter', name: 'exp4j',  version: '4.+'
 	compile name: 'att-codekit'
+	compile name: 'exp4j' 
 	testCompile group:'junit', name: 'junit',  version: '4.+'
  }
 
