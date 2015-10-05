@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -102,7 +103,6 @@ public class XMLUtils {
 		}
 
 		return getXMLDocument(new InputSource(new InputStreamReader(is)));
-
 	}
 
 	/**
@@ -203,6 +203,30 @@ public class XMLUtils {
 		catch (TransformerException e) {
 			log.warning(e.getMessage());
 		}
+	}
+
+	/**
+	 * Writes the XML document as a raw string
+	 * 
+	 * @param doc the document
+	 */
+	public static String writeXMLString(Document doc) {
+		try {
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			StringWriter writer = new StringWriter();
+			transformer.transform(new DOMSource(doc), new StreamResult(writer));
+			return writer.getBuffer().toString();
+		}
+		catch (TransformerConfigurationException e) {
+			log.warning(e.getMessage());
+		}
+		catch (TransformerException e) {
+			log.warning(e.getMessage());
+		}
+		return "";
 	}
 
 	public static Document loadXMLFromString(String xml)

@@ -434,11 +434,9 @@ public class CategoricalTable implements IndependentDistribution {
 	public Node generateXML(Document doc) {
 
 		Element var = doc.createElement("variable");
-
 		Attr id = doc.createAttribute("id");
 		id.setValue(variable.replace("'", ""));
 		var.setAttributeNode(id);
-
 		for (Value v : InferenceUtils.getNBest(table, table.size()).keySet()) {
 			if (!v.equals(ValueFactory.none())) {
 				Element valueNode = doc.createElement("value");

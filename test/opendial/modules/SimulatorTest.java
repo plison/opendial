@@ -155,7 +155,7 @@ public class SimulatorTest {
 				system.getContent("theta_incorrect").toContinuous().getFunction();
 		theta_repeat =
 				system.getContent("theta_repeat").toContinuous().getFunction();
-		assertEquals(2.0, theta_correct.getMean()[0], 0.5);
+		assertEquals(2.0, theta_correct.getMean()[0], 0.7);
 		assertEquals(-2.0, theta_incorrect.getMean()[0], 1.5);
 		assertEquals(0.5, theta_repeat.getMean()[0], 0.7);
 	}

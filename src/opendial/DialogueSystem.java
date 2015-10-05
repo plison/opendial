@@ -24,6 +24,7 @@
 package opendial;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -712,6 +713,7 @@ public class DialogueSystem {
 			displayComment("Dialogue domain successfully updated");
 		}
 		catch (RuntimeException e) {
+			// e.printStackTrace();
 			log.severe("Cannot refresh domain: " + e.getMessage());
 			displayComment("Syntax error: " + e.getMessage());
 			domain = new Domain();
@@ -848,8 +850,10 @@ public class DialogueSystem {
 	 * </ul>
 	 * 
 	 * @param args is ignored.
+	 * @throws IOException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+
 		DialogueSystem system = new DialogueSystem();
 		String domainFile = System.getProperty("domain");
 		String dialogueFile = System.getProperty("dialogue");
@@ -880,6 +884,7 @@ public class DialogueSystem {
 		}
 		Settings settings = system.getSettings();
 		system.changeSettings(settings);
+
 		if (!settings.showGUI) {
 			system.attachModule(new TextOnlyInterface(system));
 		}

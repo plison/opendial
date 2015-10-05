@@ -35,6 +35,7 @@ import org.junit.Test;
 import opendial.bn.values.RelationalVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
+import opendial.datastructs.Template;
 
 public class RelationalTest {
 
@@ -149,7 +150,11 @@ public class RelationalTest {
 		RelationalVal test3 = test.getSubGraph(3);
 		assertEquals(test3.toString(), "red");
 
-		test0 = new RelationalVal();
+	}
+
+	@Test
+	public void templateTest() {
+		RelationalVal test0 = new RelationalVal();
 		test0.addNode("Pierre");
 		test0.addNode("likes");
 		test0.addNode("his");
@@ -158,7 +163,8 @@ public class RelationalTest {
 		test0.addEdge(1, 3, "obj");
 		test0.addEdge(3, 2, "poss");
 		test0.addEdge(2, 0, "ref");
-		log.info("graph is " + test0);
-
+		Template t = Template.create("likes subj>{Name}");
+		assertEquals("SemgrexTemplate", t.getClass().getSimpleName());
+		assertTrue(t.partialmatch(test0.toString()).isMatching());
 	}
 }

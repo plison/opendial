@@ -30,7 +30,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import opendial.bn.values.StringVal;
+import opendial.bn.values.ArrayVal;
+import opendial.bn.values.NoneVal;
+import opendial.bn.values.SetVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.datastructs.Assignment;
@@ -180,11 +182,9 @@ public final class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
-
 		if (!variable.isFilledBy(input) || !templateValue.isFilledBy(input)) {
 			return false;
 		}
-
 		BasicCondition grounded = new BasicCondition(this, input);
 		Value actualValue = input.getValue(grounded.variable.toString());
 		return grounded.isSatisfied(actualValue);
@@ -310,7 +310,9 @@ public final class BasicCondition implements Condition {
 				grounding.add(m);
 			}
 		}
-		else if (relation == Relation.CONTAINS && actualValue instanceof StringVal) {
+		else if (relation == Relation.CONTAINS
+				&& !(actualValue instanceof NoneVal || actualValue instanceof SetVal
+						|| actualValue instanceof ArrayVal)) {
 			List<MatchResult> m2 = templateValue.find(actualValue.toString(), 100);
 			for (MatchResult match : m2) {
 				grounding.add(match);

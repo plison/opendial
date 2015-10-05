@@ -24,6 +24,7 @@
 package opendial.readers;
 
 import java.util.logging.*;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 /**
  * XML reader for the initial state specification (and for parameters):
@@ -82,6 +84,33 @@ public class XMLStateReader {
 			}
 		}
 		throw new RuntimeException("No tag " + tag + " found in file " + file);
+	}
+
+	/**
+	 * Extracts the bayesian network from a XML string.
+	 * 
+	 * @param fullString the string containing the initial state content
+	 * @return the corresponding Bayesian network
+	 */
+	public static BNetwork extractBayesianNetworkFromString(String fullString) {
+
+		// extract the XML document
+		InputSource is = new InputSource(new StringReader(fullString));
+		Document doc = XMLUtils.getXMLDocument(is);
+
+		Node mainNode = XMLUtils.getMainNode(doc);
+
+		if (mainNode.getNodeName().equals("state")) {
+			return getBayesianNetwork(mainNode);
+		}
+		for (int i = 0; i < mainNode.getChildNodes().getLength(); i++) {
+			Node childNode = mainNode.getChildNodes().item(i);
+			if (childNode.getNodeName().equals("state")) {
+				return getBayesianNetwork(childNode);
+			}
+		}
+		log.warning("string does not contain 'xml' tag: " + fullString);
+		return new BNetwork();
 	}
 
 	/**

@@ -26,7 +26,6 @@ package opendial.datastructs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +34,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import edu.stanford.nlp.semgraph.semgrex.SemgrexMatcher;
+import edu.stanford.nlp.semgraph.semgrex.SemgrexPattern;
+import opendial.bn.values.RelationalVal;
 import opendial.bn.values.Value;
 import opendial.bn.values.ValueFactory;
 import opendial.utils.StringUtils;
@@ -78,7 +80,10 @@ public interface Template {
 	 * @return the corresponding template object
 	 */
 	public static Template create(String value) {
-		if (StringUtils.isPossibleRegex(value)) {
+		if (StringUtils.isPossibleSemgrex(value)) {
+			return new SemgrexTemplate(value);
+		}
+		else if (StringUtils.isPossibleRegex(value)) {
 			try {
 				if (StringUtils.isFunctionalExpression(value)) {
 					return new FunctionalTemplate(value);
@@ -206,403 +211,495 @@ public interface Template {
 		}
 	}
 
+}
+
+/**
+ * Template for a string without any underspecified or optional elements. In other
+ * words, the match, find can be simplified to the usual string matching methods. The
+ * fillSlots method returns the string.
+ * 
+ *
+ */
+class StringTemplate implements Template {
+
+	// the string corresponding to the template
+	final String string;
+
+	// whether the string represents a whole word or phrase (and not a
+	// punctuation)
+	final boolean whole;
+
+	// empty set of slots
+	final Set<String> slots;
+
 	/**
-	 * Template for a string without any underspecified or optional elements. In
-	 * other words, the match, find can be simplified to the usual string matching
-	 * methods. The fillSlots method returns the string.
+	 * Creates a new string template.
 	 * 
-	 *
+	 * @param string the string object
 	 */
-	class StringTemplate implements Template {
-
-		// the string corresponding to the template
-		final String string;
-
-		// whether the string represents a whole word or phrase (and not a
-		// punctuation)
-		final boolean whole;
-
-		// empty set of slots
-		final Set<String> slots;
-
-		/**
-		 * Creates a new string template.
-		 * 
-		 * @param string the string object
-		 */
-		protected StringTemplate(String string) {
-			this.string = string;
-			whole = (StringUtils.delimiters.indexOf(this.string) < 0);
-			slots = Collections.emptySet();
-		}
-
-		/**
-		 * Returns an empty set.
-		 */
-		@Override
-		public Set<String> getSlots() {
-			return slots;
-		}
-
-		/**
-		 * Returns false.
-		 */
-		@Override
-		public boolean isUnderspecified() {
-			return false;
-		}
-
-		/**
-		 * Returns a match result if the provided string is identical to the string
-		 * template. Else, returns an unmatched result.
-		 */
-		@Override
-		public MatchResult match(String str) {
-			String input = str.trim();
-
-			if (input.equalsIgnoreCase(string)) {
-				return new MatchResult(0, string.length());
-			}
-			else {
-				return new MatchResult(false);
-			}
-		}
-
-		/**
-		 * Searches for all possible occurrences of the template in the provided
-		 * string. Stops if the maximum number of results is reached.
-		 */
-		@Override
-		public List<MatchResult> find(String str, int maxResults) {
-
-			str = str.trim();
-			List<MatchResult> results = new ArrayList<MatchResult>();
-			int start = 0;
-			while (start != -1) {
-				start = str.indexOf(string, start);
-				if (start != -1) {
-					int end = start + string.length();
-					if (!whole || StringUtils.isDelimited(str, start, end)) {
-						results.add(new MatchResult(start, end));
-					}
-					if (results.size() >= maxResults) {
-						return results;
-					}
-					start = end;
-				}
-			}
-			return results;
-		}
-
-		/**
-		 * Returns true.
-		 */
-		@Override
-		public boolean isFilledBy(Assignment input) {
-			return true;
-		}
-
-		/**
-		 * Returns the string itself.
-		 */
-		@Override
-		public String fillSlots(Assignment fillers) {
-			return string;
-		}
-
-		/**
-		 * Returns the hashcode for the string.
-		 */
-		@Override
-		public int hashCode() {
-			return string.hashCode();
-		}
-
-		/**
-		 * Returns the string itself.
-		 */
-		@Override
-		public String toString() {
-			return string;
-		}
-
-		/**
-		 * Returns true if the object is an identical string template.
-		 */
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof StringTemplate) {
-				return ((StringTemplate) o).string.equals(string);
-			}
-			return false;
-		}
-
+	protected StringTemplate(String string) {
+		this.string = string;
+		whole = (StringUtils.delimiters.indexOf(this.string) < 0);
+		slots = Collections.emptySet();
 	}
 
 	/**
-	 * Template based on regular expressions. Syntax for the templates:
-	 * <ul>
-	 * <li>underspecified slots, represented with braces, e.g. {Slot}
-	 * <li>optional elements, surrounded by parentheses followed by a question mark,
-	 * e.g. (option)?
-	 * <li>alternative elements, surrounded by parentheses and separated by the |
-	 * character, i.e. (option1|option2)
-	 * </ul>
-	 * .
-	 *
+	 * Returns an empty set.
 	 */
-	class RegexTemplate implements Template {
+	@Override
+	public Set<String> getSlots() {
+		return slots;
+	}
 
-		// raw string for the regular expression
-		final String rawString;
+	/**
+	 * Returns false.
+	 */
+	@Override
+	public boolean isUnderspecified() {
+		return false;
+	}
 
-		// the regular expression pattern corresponding to the template
-		Pattern pattern;
+	/**
+	 * Returns a match result if the provided string is identical to the string
+	 * template. Else, returns an unmatched result.
+	 */
+	@Override
+	public MatchResult match(String str) {
+		String input = str.trim();
 
-		// underspecified slots, mapped to their group index in the regex
-		final Map<String, Integer> slots;
-
-		/**
-		 * Constructs the regular expression, based on the string representation.
-		 * 
-		 * @param rawString the string
-		 */
-		public RegexTemplate(String rawString) {
-			this.rawString = rawString;
-			String escaped = StringUtils.escape(rawString);
-			String regex = StringUtils.constructRegex(escaped);
-
-			// the pattern should ignore case, and handle unicode.
-			pattern = Pattern.compile(regex,
-					Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-			slots = new HashMap<String, Integer>();
-			Matcher m = StringUtils.slotRegex.matcher(rawString);
-			while (m.find()) {
-				String var = m.group(1);
-				if (!slots.containsKey(var)) {
-					slots.put(var, slots.size() + 1);
-				}
-			}
+		if (input.equalsIgnoreCase(string)) {
+			return new MatchResult(0, string.length());
 		}
-
-		/**
-		 * Returns the (possibly empty) set of slots for the template
-		 * 
-		 */
-		@Override
-		public Set<String> getSlots() {
-			return slots.keySet();
-		}
-
-		/**
-		 * Tries to match the template against the provided string.
-		 */
-		@Override
-		public MatchResult match(String str) {
-			String input = str.trim();
-
-			Matcher matcher = pattern.matcher(input);
-
-			if ((matcher.matches())) {
-
-				MatchResult result = new MatchResult(matcher.start(), matcher.end());
-				for (String slot : slots.keySet()) {
-					String filledValue = matcher.group(slots.get(slot));
-					if (!StringUtils.checkForm(filledValue) && permutatePattern()) {
-						return match(str);
-					}
-					result.addPair(slot, filledValue);
-				}
-
-				return result;
-			}
+		else {
 			return new MatchResult(false);
 		}
+	}
 
-		/**
-		 * Returns true.
-		 */
-		@Override
-		public boolean isUnderspecified() {
-			return true;
-		}
+	/**
+	 * Searches for all possible occurrences of the template in the provided string.
+	 * Stops if the maximum number of results is reached.
+	 */
+	@Override
+	public List<MatchResult> find(String str, int maxResults) {
 
-		/**
-		 * Tries to find all occurrences of the template in the provided string.
-		 * Stops after the maximum number of results is reached.
-		 */
-		@Override
-		public List<MatchResult> find(String str, int maxResults) {
-			str = str.trim();
-			Matcher matcher = pattern.matcher(str);
-			List<MatchResult> results = new ArrayList<MatchResult>();
-
-			while ((matcher.find())) {
-
-				int start = matcher.start();
-				int end = matcher.end();
-
-				if (!StringUtils.isDelimited(str, start, end)) {
-					continue;
+		str = str.trim();
+		List<MatchResult> results = new ArrayList<MatchResult>();
+		int start = 0;
+		while (start != -1) {
+			start = str.indexOf(string, start);
+			if (start != -1) {
+				int end = start + string.length();
+				if (!whole || StringUtils.isDelimited(str, start, end)) {
+					results.add(new MatchResult(start, end));
 				}
-
-				MatchResult result = new MatchResult(start, end);
-				for (String slot : slots.keySet()) {
-					String filledValue = matcher.group(slots.get(slot)).trim();
-
-					// quick-fix to handle some rare cases where the occurrence found
-					// by the regex matcher contains unbalanced parenthesis or
-					// brackets.
-					if (!StringUtils.checkForm(filledValue) && permutatePattern()) {
-						return find(str, maxResults);
-					}
-					result.addPair(slot, filledValue);
-				}
-
-				results.add(result);
 				if (results.size() >= maxResults) {
-					break;
+					return results;
 				}
+				start = end;
 			}
-			return results;
 		}
+		return results;
+	}
 
-		/**
-		 * Returns true if all slots are filled by the assignment. Else, returns
-		 * false.
-		 */
-		@Override
-		public boolean isFilledBy(Assignment input) {
-			return slots.keySet().stream().map(s -> input.getValue(s))
-					.noneMatch(v -> v.equals(ValueFactory.none()));
+	/**
+	 * Returns true.
+	 */
+	@Override
+	public boolean isFilledBy(Assignment input) {
+		return true;
+	}
+
+	/**
+	 * Returns the string itself.
+	 */
+	@Override
+	public String fillSlots(Assignment fillers) {
+		return string;
+	}
+
+	/**
+	 * Returns the hashcode for the string.
+	 */
+	@Override
+	public int hashCode() {
+		return string.hashCode();
+	}
+
+	/**
+	 * Returns the string itself.
+	 */
+	@Override
+	public String toString() {
+		return string;
+	}
+
+	/**
+	 * Returns true if the object is an identical string template.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof StringTemplate) {
+			return ((StringTemplate) o).string.equals(string);
 		}
+		return false;
+	}
 
-		/**
-		 * Fills the template with the given content, and returns the filled string.
-		 * The content provided in the form of a slot:filler mapping. For instance,
-		 * given a template: "my name is {name}" and a filler "name:Pierre", the
-		 * method will return "my name is Pierre".
-		 * 
-		 * 
-		 * @param fillers the content associated with each slot.
-		 * @return the string filled with the given content
-		 */
-		@Override
-		public String fillSlots(Assignment fillers) {
-			if (slots.isEmpty()) {
-				return rawString;
-			}
-			String filled = rawString;
+}
+
+/**
+ * Template based on regular expressions. Syntax for the templates:
+ * <ul>
+ * <li>underspecified slots, represented with braces, e.g. {Slot}
+ * <li>optional elements, surrounded by parentheses followed by a question mark, e.g.
+ * (option)?
+ * <li>alternative elements, surrounded by parentheses and separated by the |
+ * character, i.e. (option1|option2)
+ * </ul>
+ * .
+ *
+ */
+class RegexTemplate implements Template {
+
+	// raw string for the regular expression
+	final String rawString;
+
+	// the regular expression pattern corresponding to the template
+	Pattern pattern;
+
+	// underspecified slots, mapped to their group index in the regex
+	final Map<String, Integer> slots;
+
+	/**
+	 * Constructs the regular expression, based on the string representation.
+	 * 
+	 * @param rawString the string
+	 */
+	public RegexTemplate(String rawString) {
+		this.rawString = rawString;
+		String escaped = StringUtils.escape(rawString);
+		String regex = StringUtils.constructRegex(escaped);
+
+		// the pattern should ignore case, and handle unicode.
+		pattern = Pattern.compile(regex,
+				Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+		slots = StringUtils.getSlots(rawString);
+	}
+
+	/**
+	 * Returns the (possibly empty) set of slots for the template
+	 * 
+	 */
+	@Override
+	public Set<String> getSlots() {
+		return slots.keySet();
+	}
+
+	/**
+	 * Tries to match the template against the provided string.
+	 */
+	@Override
+	public MatchResult match(String str) {
+		String input = str.trim();
+
+		Matcher matcher = pattern.matcher(input);
+
+		if ((matcher.matches())) {
+
+			MatchResult result = new MatchResult(matcher.start(), matcher.end());
 			for (String slot : slots.keySet()) {
-				Value v = fillers.getValue(slot);
-				if (v != ValueFactory.none()) {
-					filled = filled.replace("{" + slot + "}", v.toString());
+				String filledValue = matcher.group(slots.get(slot));
+				if (!StringUtils.checkForm(filledValue) && permutatePattern()) {
+					return match(str);
 				}
+				result.addPair(slot, filledValue);
 			}
+
+			return result;
+		}
+		return new MatchResult(false);
+	}
+
+	/**
+	 * Returns true.
+	 */
+	@Override
+	public boolean isUnderspecified() {
+		return true;
+	}
+
+	/**
+	 * Tries to find all occurrences of the template in the provided string. Stops
+	 * after the maximum number of results is reached.
+	 */
+	@Override
+	public List<MatchResult> find(String str, int maxResults) {
+		str = str.trim();
+		Matcher matcher = pattern.matcher(str);
+		List<MatchResult> results = new ArrayList<MatchResult>();
+
+		while ((matcher.find())) {
+
+			int start = matcher.start();
+			int end = matcher.end();
+
+			if (!StringUtils.isDelimited(str, start, end)) {
+				continue;
+			}
+
+			MatchResult result = new MatchResult(start, end);
+			for (String slot : slots.keySet()) {
+				String filledValue = matcher.group(slots.get(slot)).trim();
+
+				// quick-fix to handle some rare cases where the occurrence found
+				// by the regex leads to unbalanced parentheses or brackets.
+				if (!StringUtils.checkForm(filledValue) && permutatePattern()) {
+					return find(str, maxResults);
+				}
+				result.addPair(slot, filledValue);
+			}
+
+			results.add(result);
+			if (results.size() >= maxResults) {
+				break;
+			}
+		}
+		return results;
+	}
+
+	/**
+	 * Returns true if all slots are filled by the assignment. Else, returns false.
+	 */
+	@Override
+	public boolean isFilledBy(Assignment input) {
+		return slots.keySet().stream().map(s -> input.getValue(s))
+				.noneMatch(v -> v.equals(ValueFactory.none()));
+	}
+
+	/**
+	 * Fills the template with the given content, and returns the filled string. The
+	 * content provided in the form of a slot:filler mapping. For instance, given a
+	 * template: "my name is {name}" and a filler "name:Pierre", the method will
+	 * return "my name is Pierre".
+	 * 
+	 * 
+	 * @param fillers the content associated with each slot.
+	 * @return the string filled with the given content
+	 */
+	@Override
+	public String fillSlots(Assignment fillers) {
+		if (slots.isEmpty()) {
+			return rawString;
+		}
+		String filled = rawString;
+		for (String slot : slots.keySet()) {
+			Value v = fillers.getValue(slot);
+			if (v != ValueFactory.none()) {
+				String strval = (v instanceof RelationalVal)
+						? ((RelationalVal) v).getRootValue() : v.toString();
+				filled = filled.replace("{" + slot + "}", strval);
+			}
+		}
+		return filled;
+	}
+
+	/**
+	 * Returns the hashcode for the raw string.
+	 */
+	@Override
+	public int hashCode() {
+		return rawString.hashCode();
+	}
+
+	/**
+	 * Returns the raw string.
+	 */
+	@Override
+	public String toString() {
+		return rawString;
+	}
+
+	/**
+	 * Returns true if o is a RegexTemplate with the same string. Else false.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof RegexTemplate) {
+			return ((RegexTemplate) o).rawString.equals(rawString);
+		}
+		return false;
+	}
+
+	/**
+	 * Quick fix to make slight changes to the regular expression in case the
+	 * templates produces matching results with unbalanced parenthesis/brackets. For
+	 * instance, when the template pred({X},{Y}) is matched against a string
+	 * pred(foo,bar(1,2)), the resulting match is X="foo,bar(1" and Y="2)". We can
+	 * get the desired result X="foo", Y="bar(1,2)" by changing the patterns,
+	 * replacing greedy quantifiers by reluctant or possessive ones.
+	 * 
+	 * @return true if the permutation resulted in a change in the pattern. else,
+	 *         false.
+	 */
+	private boolean permutatePattern() {
+		String newPattern = pattern.pattern().replaceFirst("\\(\\.\\+\\)", "(.+?)");
+		if (newPattern.equals(pattern.pattern())) {
+			newPattern = pattern.pattern().replaceFirst("\\(\\.\\?\\)", "(.++)");
+		}
+		boolean change = !(newPattern.equals(pattern.pattern()));
+		pattern = Pattern.compile(newPattern);
+		return change;
+	}
+}
+
+/**
+ * Template for a functional (arithmetic) template, such as "exp(({A}+{B})/{C})".
+ * When filling the slots of the template, the function is evaluated.
+ *
+ */
+class FunctionalTemplate extends RegexTemplate {
+
+	public FunctionalTemplate(String rawString) {
+		super(rawString);
+	}
+
+	/**
+	 * Fills the slots of the template, and returns the result of the function
+	 * evaluation. If the function is not a simple arithmetic expression,
+	 */
+	@Override
+	public String fillSlots(Assignment fillers) {
+
+		String filled = super.fillSlots(fillers);
+		if (filled.contains("{")) {
 			return filled;
 		}
 
-		/**
-		 * Returns the hashcode for the raw string.
-		 */
-		@Override
-		public int hashCode() {
-			return rawString.hashCode();
-		}
-
-		/**
-		 * Returns the raw string.
-		 */
-		@Override
-		public String toString() {
-			return rawString;
-		}
-
-		/**
-		 * Returns true if o is a RegexTemplate with the same string. Else false.
-		 */
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof RegexTemplate) {
-				return ((RegexTemplate) o).rawString.equals(rawString);
+		if (StringUtils.isFunctionalExpression(filled)) {
+			try {
+				double result = new MathExpression(filled).evaluate();
+				return StringUtils.getShortForm(result);
 			}
-			return false;
+			catch (Exception e) {
+				log.warning("cannot evaluate " + filled);
+				return filled;
+			}
 		}
 
-		/**
-		 * Quick fix to make slight changes to the regular expression in case the
-		 * templates produces matching results with unbalanced parenthesis/brackets.
-		 * For instance, when the template pred({X},{Y}) is matched against a string
-		 * pred(foo,bar(1,2)), the resulting match is X="foo,bar(1" and Y="2)". We
-		 * can get the desired result X="foo", Y="bar(1,2)" by changing the patterns,
-		 * replacing greedy quantifiers by reluctant or possessive ones.
-		 * 
-		 * @return true if the permutation resulted in a change in the pattern. else,
-		 *         false.
-		 */
-		private boolean permutatePattern() {
-			String newPattern =
-					pattern.pattern().replaceFirst("\\(\\.\\+\\)", "(.+?)");
-			if (newPattern.equals(pattern.pattern())) {
-				newPattern = pattern.pattern().replaceFirst("\\(\\.\\?\\)", "(.++)");
+		// handling expressions that manipulate sets
+		// (using + and - to respectively add/remove elements)
+		Value merge = ValueFactory.none();
+		for (String split : filled.split("\\+")) {
+			String[] negation = split.split("\\-");
+			merge = merge.concatenate(ValueFactory.create(negation[0]));
+			for (int i = 1; i < negation.length; i++) {
+				Collection<Value> values = merge.getSubValues();
+				values.remove(ValueFactory.create(negation[i]));
+				merge = ValueFactory.create(values);
 			}
-			boolean change = !(newPattern.equals(pattern.pattern()));
-			pattern = Pattern.compile(newPattern);
-			return change;
+		}
+		return merge.toString();
+	}
+}
+
+class SemgrexTemplate implements Template {
+
+	final String rawString;
+	final SemgrexPattern pattern;
+	final Set<String> slots;
+
+	public SemgrexTemplate(String value) {
+		this.rawString = value;
+		slots = StringUtils.getSlots(value).keySet();
+		String semgrex = StringUtils.constructSemgrex(value);
+		pattern = SemgrexPattern.compile(semgrex);
+	}
+
+	@Override
+	public Set<String> getSlots() {
+		return slots;
+	}
+
+	@Override
+	public boolean isUnderspecified() {
+		return true;
+	}
+
+	@Override
+	public MatchResult match(String str) {
+		String input = str.trim();
+		if (input.equalsIgnoreCase(rawString)) {
+			return new MatchResult(0, rawString.length());
+		}
+		else {
+			return new MatchResult(false);
 		}
 	}
 
-	/**
-	 * Template for a functional (arithmetic) template, such as "exp(({A}+{B})/{C})".
-	 * When filling the slots of the template, the function is evaluated.
-	 *
-	 */
-	class FunctionalTemplate extends RegexTemplate {
-
-		public FunctionalTemplate(String rawString) {
-			super(rawString);
+	@Override
+	public List<MatchResult> find(String str, int maxResults) {
+		Value v = ValueFactory.create(str);
+		List<MatchResult> results = new ArrayList<MatchResult>();
+		if (v instanceof RelationalVal) {
+			RelationalVal rv = (RelationalVal) v;
+			SemgrexMatcher m = pattern.matcher(rv.getGraph());
+			while (m.find()) {
+				MatchResult result = new MatchResult(true);
+				for (String slot : slots) {
+					if (m.getNode(slot) != null) {
+						RelationalVal subgraph =
+								rv.getSubGraph(m.getNode(slot).index());
+						result.addPair(slot, subgraph);
+					}
+					else {
+						result.addPair(slot, m.getRelnString(slot));
+					}
+				}
+				results.add(result);
+			}
 		}
+		return results;
+	}
 
-		/**
-		 * Fills the slots of the template, and returns the result of the function
-		 * evaluation. If the function is not a simple arithmetic expression,
-		 */
-		@Override
-		public String fillSlots(Assignment fillers) {
+	@Override
+	public boolean isFilledBy(Assignment input) {
+		return slots.stream().map(s -> input.getValue(s))
+				.noneMatch(v -> v.equals(ValueFactory.none()));
+	}
 
-			String filled = super.fillSlots(fillers);
-			if (filled.contains("{")) {
-				return filled;
-			}
-
-			if (StringUtils.isFunctionalExpression(filled)) {
-				try {
-					double result = new MathExpression(filled).evaluate();
-					return StringUtils.getShortForm(result);
-				}
-				catch (Exception e) {
-					log.warning("cannot evaluate " + filled);
-					return filled;
-				}
-			}
-
-			// handling expressions that manipulate sets
-			// (using + and - to respectively add and remove elements)
-			Value merge = ValueFactory.none();
-			for (String split : filled.split("\\+")) {
-				String[] negation = split.split("\\-");
-				merge = merge.concatenate(ValueFactory.create(negation[0]));
-				for (int i = 1; i < negation.length; i++) {
-					Collection<Value> values = merge.getSubValues();
-					values.remove(ValueFactory.create(negation[i]));
-					merge = ValueFactory.create(values);
-				}
-			}
-			return merge.toString();
-
+	@Override
+	public String fillSlots(Assignment fillers) {
+		if (slots.isEmpty()) {
+			return rawString;
 		}
+		String filled = rawString;
+		for (String slot : slots) {
+			Value v = fillers.getValue(slot);
+			if (v != ValueFactory.none()) {
+				String strval = (v instanceof RelationalVal)
+						? ((RelationalVal) v).getRootValue() : v.toString();
+				filled = filled.replace("{" + slot + "}", strval);
+			}
+		}
+		return filled;
+	}
 
+	@Override
+	public int hashCode() {
+		return rawString.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return rawString.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof SemgrexTemplate) {
+			return ((SemgrexTemplate) o).equals(o);
+		}
+		return false;
 	}
 
 }

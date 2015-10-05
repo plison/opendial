@@ -208,6 +208,10 @@ public class RelationalVal implements Value {
 				.collect(Collectors.toList());
 	}
 
+	public String getRootValue() {
+		return graph.getRoots().iterator().next().value();
+	}
+
 	@Override
 	public Value concatenate(Value value) {
 
@@ -227,6 +231,10 @@ public class RelationalVal implements Value {
 	@Override
 	public int length() {
 		return graph.vertexSet().size();
+	}
+
+	public SemanticGraph getGraph() {
+		return graph;
 	}
 
 	@Override

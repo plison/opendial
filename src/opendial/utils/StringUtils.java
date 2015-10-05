@@ -48,7 +48,7 @@ public class StringUtils {
 			Pattern.compile(".*\\(([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\\).*");
 
 	// regular expression for slots
-	public final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
+	final static Pattern slotRegex = Pattern.compile("\\{(.+?)\\}");
 
 	// complex regular expression with alternative or optional elements
 	final static Pattern altRegex =
@@ -57,6 +57,9 @@ public class StringUtils {
 					+ "|[^\\(])+?\\\\\\)(\\\\\\?)?)");
 
 	public final static String delimiters = ",.!?:;()[] \t\n";
+
+	final static Pattern semrelRegex =
+			Pattern.compile("\\b(\\{?\\S+?\\}?)>([\\w\\[\\{])");
 
 	/**
 	 * Returns the string version of the double up to a certain decimal point.
@@ -368,6 +371,10 @@ public class StringUtils {
 		return false;
 	}
 
+	public static boolean isPossibleSemgrex(String str) {
+		return semrelRegex.matcher(str).find();
+	}
+
 	/**
 	 * Formats the regular expression corresponding to the provided string
 	 * 
@@ -401,6 +408,34 @@ public class StringUtils {
 		result = (hasAlternatives) ? replaceComplex(result) : result;
 
 		return result;
+	}
+
+	public static String constructSemgrex(String init) {
+		String result = semrelRegex.matcher(init).replaceAll(">$1 $2");
+		result = result.replaceAll("\\{>(.+?)\\}", ">=$1");
+		result = result.replaceAll("\\{(.+?)\\}", "{}=$1");
+		result = result.replaceAll("(^|[\\s\\[])(\\w+)", "$1{word:$2}");
+		result = result.replaceAll("\\[(.+?)\\]", "($1)");
+		return result;
+	}
+
+	/**
+	 * Returns the slots defined in the string as well as their sequential order
+	 * (starting at 1) in the string.
+	 * 
+	 * @param str the string to analyse
+	 * @return the extracted slots
+	 */
+	public static Map<String, Integer> getSlots(String str) {
+		Map<String, Integer> slots = new HashMap<String, Integer>();
+		Matcher m = slotRegex.matcher(str);
+		while (m.find()) {
+			String var = m.group(1);
+			if (!slots.containsKey(var)) {
+				slots.put(var, slots.size() + 1);
+			}
+		}
+		return slots;
 	}
 
 	/**
