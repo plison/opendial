@@ -885,9 +885,12 @@ public class DialogueSystem {
 		Settings settings = system.getSettings();
 		system.changeSettings(settings);
 
-		if (!settings.showGUI) {
-			system.attachModule(new TextOnlyInterface(system));
-		}
+		//	if (!settings.showGUI) {
+		//		system.attachModule(new TextOnlyInterface(system));
+		//	}
+
+		Thread t = new Thread(new InputOutputMode(system));
+		t.start();
 
 		system.startSystem();
 		log.info("Dialogue system started!");
