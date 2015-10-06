@@ -47,7 +47,6 @@ import opendial.datastructs.SpeechData;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
-import opendial.gui.TextOnlyInterface;
 import opendial.modules.AudioModule;
 import opendial.modules.DialogueImporter;
 import opendial.modules.DialogueRecorder;
@@ -640,7 +639,7 @@ public class DialogueSystem {
 	 * 
 	 * @return the set of updated variables
 	 */
-	private Set<String> update() {
+	Set<String> update() {
 
 		// set of variables that have been updated
 		Map<String, Integer> updatedVars = new HashMap<String, Integer>();
@@ -889,10 +888,10 @@ public class DialogueSystem {
 		//		system.attachModule(new TextOnlyInterface(system));
 		//	}
 
+		system.startSystem();
 		Thread t = new Thread(new InputOutputMode(system));
 		t.start();
-
-		system.startSystem();
+		
 		log.info("Dialogue system started!");
 	}
 

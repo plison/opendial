@@ -85,11 +85,12 @@ public class InputOutputMode implements Runnable {
 		catch (IOException e) {
 			log.warning("cannot extract standard input: " + e);
 		}
-
+ 
 		if (input.startsWith("<state>")) {
-			BNetwork inputVars =
+			BNetwork bn =
 					XMLStateReader.extractBayesianNetworkFromString(input);
-			ds.addContent(inputVars);
+			ds.curState = new DialogueState(bn);
+			ds.update();
 		}
 
 		Document output = XMLUtils.newXMLDocument();
